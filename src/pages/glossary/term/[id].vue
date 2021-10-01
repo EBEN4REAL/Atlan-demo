@@ -4,10 +4,10 @@
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
-            class="h-full overflow-auto"
-            :class="
-                currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
-            "
+            ref="scrollDiv"
+            class="w-2/3 h-full"
+            @scroll="handleScroll"
+            :class="{ 'overflow-y-auto': !headerReachedTop }"
         >
             <ProfileHeader
                 :title="title"
@@ -16,6 +16,7 @@
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
+                :headerReachedTop="headerReachedTop"
             />
             <div class="m-0">
                 <a-tabs
@@ -54,7 +55,9 @@
                                 :term-qualified-name="qualifiedName"
                                 :term-guid="id"
                                 :show-preview-panel="currentTab === '2'"
+                                :header-reached-top="headerReachedTop"
                                 @preview="handlePreview"
+                                @firstCardReachedTop="handleFirstCardReachedTop"
                             />
                         </div>
                     </a-tab-pane>
@@ -115,6 +118,9 @@
             const previewEntity = ref()
             const newName = ref('')
             const router = useRouter()
+            const scrollDiv = ref(null)
+            const headerReachedTop = ref(false)
+            const temp = ref(false)
 
             const {
                 entity: term,
@@ -154,7 +160,19 @@
             const redirectToProfile = () => {
                 router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
             }
-
+            const handleScroll = () => {
+                if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
+                    headerReachedTop.value = true
+                } else if (scrollDiv.value?.scrollTop > 70 && temp.value) {
+                    scrollDiv.value.scrollTop = 0
+                    temp.value = !temp.value
+                }
+            }
+            const handleFirstCardReachedTop = () => {
+                scrollDiv.value.scrollTop = 0
+                headerReachedTop.value = false
+                temp.value = true
+            }
 
             watch(updatedEntity, () => {
                 refetch()
@@ -187,6 +205,10 @@
                 handlePreview,
                 refetch,
                 updateTitle,
+                scrollDiv,
+                headerReachedTop,
+                handleScroll,
+                handleFirstCardReachedTop,
             }
         },
     })
@@ -217,7 +239,7 @@
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5 mb-0;
+            @apply px-4 mb-0;
         }
     }
 </style>

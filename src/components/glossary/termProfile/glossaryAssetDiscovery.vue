@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full" :class="$style.tabClasses">
+    <div class="relative flex w-full" :class="$style.tabClasses">
         <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
                 <div v-if="checkedAssetList.length" class="flex">
@@ -40,7 +40,7 @@
                         @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
                 </div>
-                <div
+                <!-- <div
                     v-if="showCheckBox"
                     class="flex items-center px-5 py-3 bg-gray-100"
                 >
@@ -55,10 +55,28 @@
                         />
                     </a-button>
                     Link Assets
-                </div>
+                </div> -->
                 <div
-                    class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
+                    class="flex items-center justify-between w-full px-3 mt-3 mb-2 "
                 >
+                    <!-- close filtersPane -->
+                    <a-button
+                        v-if="showFiltersPane"
+                        class="absolute z-30 px-0 border-l-0 rounded-none rounded-r shadow-md  -left-1"
+                        @click="showFiltersPane = !showFiltersPane"
+                    >
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="h-4 ml-1 transition-transform transform rotate-90 "
+                        />
+                    </a-button>
+
+                    <a-button
+                        class="flex items-center w-8 h-8 p-2 mt-1 ml-2"
+                        @click="showFiltersPane = !showFiltersPane"
+                    >
+                        <AtlanIcon icon="FilterFunnel" />
+                    </a-button>
                     <SearchAndFilter
                         v-model:value="queryText"
                         class="w-full mx-3 mt-1"
@@ -88,7 +106,6 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                     @update:model-value="handleTabChange"
-                    class="mt-2"
                 ></AssetTabs>
                 <div
                     v-if="
@@ -100,8 +117,11 @@
                 </div>
                 <div
                     v-else
-                    class="pt-4 overflow-auto"
-                    style="max-height: calc(100vh - 250px)"
+                    ref="scrollDiv"
+                    class="pt-4"
+                    style="max-height: calc(100vh - 220px)"
+                    :class="{ 'overflow-y-auto ': headerReachedTop }"
+                    @scroll="handleScroll"
                 >
                     <AssetList
                         ref="assetlist"
@@ -122,6 +142,37 @@
             </div>
         </div>
     </div>
+    <teleport to="#filterPane">
+        <a-drawer
+            v-if="showFiltersPane"
+            :visible="showFiltersPane"
+            placement="left"
+            :mask="false"
+            :get-container="false"
+            :wrap-style="{
+                position: 'absolute',
+                minWidth: '264px',
+                backgroundColor: 'rgba(250, 250, 250, var(--tw-bg-opacity))',
+            }"
+            :keyboard="false"
+            :destroy-on-close="true"
+            :closable="false"
+            width="100%"
+            :class="$style.drawerClasses"
+        >
+            <div class="relative h-full mt-12 bg-gray-100">
+                <AssetFilters
+                    :ref="
+                        (el) => {
+                            assetFilterRef = el
+                        }
+                    "
+                    @refresh="handleFilterChange"
+                    :filtersList="filtersList"
+                ></AssetFilters>
+            </div>
+        </a-drawer>
+    </teleport>
 </template>
 
 <script lang="ts">
@@ -148,7 +199,6 @@
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import Preferences from '~/components/discovery/list/preference.vue'
     import AssetList from '@/glossary/termProfile/glossaryAssetList.vue'
-    import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
@@ -169,6 +219,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { Components } from '~/api/atlas/client'
+    import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
 
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
 
@@ -259,8 +310,13 @@
                 required: true,
                 default: false,
             },
+            headerReachedTop: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['preview'],
+        emits: ['preview', 'firstCardReachedTop'],
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters, termName, termGuid } = toRefs(props)
@@ -272,7 +328,10 @@
             const filterMode = ref('custom')
             const now = ref(true)
             const showCheckBox = ref(false)
+            const scrollDiv = ref(null)
+            const filtersList = ref(['status', 'owners', 'classifications'])
 
+            const showFiltersPane = ref(false)
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
@@ -564,19 +623,6 @@
                 router.push(`/assets?${pushString}`)
             }
 
-            const handleFilterChange = (
-                payload: any,
-                filterMapData: filterMapType
-            ) => {
-                filterMap.value = filterMapData
-                filters.value = payload
-                offset.value = 0
-                isAggregate.value = true
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
-                updateBody()
-                pushQueryToRouter(routerQuery)
-            }
             const handleChangeConnectors = (payload: any) => {
                 connectorsPayload.value = payload
                 const routerOptions = getRouterOptions()
@@ -675,6 +721,23 @@
                 }
             }
 
+            const handleFilterChange = (
+                payload: any,
+                filterMapData: Record<string, Components.Schemas.FilterCriteria>
+            ) => {
+                console.log(payload)
+                console.log(filterMapData)
+                filters.value = payload
+                offset.value = 0
+                isAggregate.value = true
+                updateBody()
+            }
+            const handleScroll = (e) => {
+                if (scrollDiv.value?.scrollTop < 2) {
+                    emit('firstCardReachedTop')
+                }
+            }
+
             // watch(showCheckBox, () => {
             //     updateBody()
             // }, {
@@ -736,6 +799,10 @@
                 checkedAssetList,
                 uncheckedAssetList,
                 termQualifiedName,
+                showFiltersPane,
+                scrollDiv,
+                handleScroll,
+                filtersList,
             }
         },
         data() {
@@ -765,6 +832,11 @@
         }
         :global(.ant-tabs-bar) {
             @apply px-1 mb-0 !important;
+        }
+    }
+    .drawerClasses {
+        :global(.ant-drawer-wrapper-body) {
+            @apply bg-gray-100 !important;
         }
     }
 </style>

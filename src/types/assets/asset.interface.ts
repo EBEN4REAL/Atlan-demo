@@ -8,6 +8,7 @@ export interface assetInterface {
         ownerUsers: string
         ownerGroups: string
         assetStatusUpdatedAt: number
+        order: number
         columnCount: number
         sizeBytes: number
         connectionLastSyncedAt: number
@@ -24,6 +25,7 @@ export interface assetInterface {
         popularityScore: number
         qualifiedName: string
         userDescription: string
+        isPrimary: boolean
         rowCount: number
         schemaName: string
         sourceUpdatedAt: string

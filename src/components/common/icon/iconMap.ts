@@ -60,12 +60,14 @@ import NewQuery from '~/assets/images/icons/new-query.svg'
 import PublicFolder from '~/assets/images/icons/public-folder.svg'
 import PrivateFolder from '~/assets/images/icons/private-folder.svg'
 import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
+import FilterFunnel from '~/assets/images/icons/filterFunnel.svg'
 import FolderOpen from '~/assets/images/icons/folder-open.svg'
 import FolderClosed from '~/assets/images/icons/folder-closed.svg'
 import Schema2 from '~/assets/images/icons/schema2.svg'
 import History from '~/assets/images/icons/history.svg'
 import Queries from '~/assets/images/icons/queries.svg'
 import Play from '~/assets/images/icons/play.svg'
+import Pin from '~/assets/images/icons/pin.svg'
 import Save from '~/assets/images/icons/save.svg'
 import Globe from '~/assets/images/icons/globe.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
@@ -74,6 +76,7 @@ export default {
     Metadata,
     Relation,
     Overview,
+    Pin,
     Lineage,
     Activity,
     Columns,
@@ -133,6 +136,7 @@ export default {
     PublicFolder,
     PrivateFolder,
     TreeCollapseAll,
+    FilterFunnel,
     FolderOpen,
     FolderClosed,
     Schema2,

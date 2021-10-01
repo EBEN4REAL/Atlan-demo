@@ -17,9 +17,10 @@
             min-size="12"
             max-size="50"
             style="min-width: 264px"
-            class="bg-white"
+            class="z-20 bg-white"
+            id="filterPane"
         >
-            <div>
+            <div class="z-20">
                 <glossaryTree
                     :glossary-list="glossaryList"
                     :is-home="isHome"

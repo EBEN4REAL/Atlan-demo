@@ -1,20 +1,29 @@
 <template>
     <div class="flex items-center justify-between">
-        <div class="flex items-center w-full">
+        <div class="flex w-full">
             <!-- back button -->
-            <div class="mr-3">
-                <a-button class="px-1 py-1" @click="$router.back()">
+            <div class="self-end mt-4 mr-2">
+                <a-button
+                    class="
+                        px-1
+                        border-transparent
+                        shadow-none
+                        hover:border-gray-300
+                        py-0.5
+                    "
+                    @click="$router.back()"
+                >
                     <atlan-icon
-                        icon="ChevronDown"
-                        class="w-auto transform rotate-90"
+                        icon="ArrowRight"
+                        class="w-5 h-5 text-gray-500 transform rotate-180"
                     />
                 </a-button>
             </div>
             <div class="flex flex-col w-full">
-                <div class="flex items-center w-full">
+                <div class="flex items-center w-full gap-x-2">
                     <!-- asset logo -->
                     <AssetLogo :asset="assetData" variant="" />
-                    <HierarchyBar class="ml-3" :selected-asset="assetData" />
+                    <HierarchyBar :selected-asset="assetData" />
                 </div>
                 <div class="flex items-center">
                     <Tooltip
@@ -41,25 +50,41 @@
                 <span class="mt-1 text-sm">Open in Tableau</span></a-button
             > -->
 
-            <a-button-group>
+            <div class="flex text-gray-500">
                 <a-button
                     v-if="
                         ['table', 'view'].includes(
                             assetType(assetData).toLowerCase()
                         )
                     "
+                    class="text-gray-500 border-transparent shadow-none  hover:border-gray-300"
                 >
-                    Query</a-button
+                    <div class="flex">
+                        <AtlanIcon icon="External" class="mt-0.5 mr-2" /> Query
+                    </div></a-button
                 >
-                <a-button v-if="assetType(assetData).includes('Tableau')">
-                    Open in Tableau</a-button
+                <a-button
+                    v-if="assetType(assetData).includes('Tableau')"
+                    class="text-gray-500 border-transparent shadow-none  hover:border-gray-300"
                 >
-                <a-button><AtlanIcon icon="Share" /></a-button>
+                    <div class="flex">
+                        <AtlanIcon icon="External" class="mt-0.5 mr-2" /> Open
+                        in Tableau
+                    </div></a-button
+                >
+                <a-button
+                    class="text-gray-500 border-transparent shadow-none  hover:border-gray-300"
+                    ><div class="flex">
+                        <AtlanIcon icon="Share" class="mt-0.5 mr-2" /> Share
+                    </div></a-button
+                >
 
-                <a-button>
-                    <AtlanIcon icon="Bookmark" />
+                <a-button
+                    class="px-2 text-gray-500 border-transparent shadow-none  hover:border-gray-300"
+                >
+                    <AtlanIcon icon="KebabMenu" />
                 </a-button>
-            </a-button-group>
+            </div>
         </div>
     </div>
 </template>

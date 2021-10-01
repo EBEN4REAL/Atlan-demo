@@ -5,14 +5,7 @@
     >
         <div
             v-if="preview"
-            class="
-                flex flex-row
-                items-center
-                justify-between
-                px-5
-                py-4
-                align-middle
-            "
+            class="flex flex-row items-center justify-between px-5 pt-3 align-middle "
         >
             <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
@@ -36,7 +29,7 @@
             </div>
             <div class="flex flex-row items-center">
                 <a-button
-                    class="flex items-center justify-center p-2 mr-2 text-sm"
+                    class="flex items-center justify-center p-1 px-2 text-sm border-r-0 rounded-none rounded-l "
                     @click="redirectToProfile(entity?.typeName, entity?.guid)"
                 >
                     <atlan-icon icon="OpenTermProfile" class="w-auto" />
@@ -54,7 +47,8 @@
                         </a-menu>
                     </template>
 
-                    <a-button class="flex items-center p-2"
+                    <a-button
+                        class="flex items-center p-1 px-2 rounded-none rounded-r "
                         ><atlan-icon icon="Share" class="w-auto" />
                     </a-button>
                 </a-dropdown>
@@ -63,20 +57,11 @@
 
         <div
             v-if="preview"
-            class="flex items-center justify-between pb-6 border-b"
+            class="flex items-center justify-between pb-3 border-b"
         >
             <div class="flex w-3/4 tems-center">
                 <span
-                    class="
-                        items-baseline
-                        pl-5
-                        mr-2
-                        text-xl
-                        font-bold
-                        leading-7
-                        truncate
-                        text-primary
-                    "
+                    class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 truncate  text-primary"
                     >{{ entity.displayText }}</span
                 >
                 <component
@@ -86,14 +71,7 @@
                 />
             </div>
             <a-button
-                class="
-                    fixed
-                    z-10
-                    px-0
-                    border-r-0
-                    rounded-none rounded-l
-                    -left-5
-                "
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
                 @click="handlClosePreviewPanel"
             >
                 <AtlanIcon
@@ -127,17 +105,43 @@
                         <template #expandIcon="{ isActive }">
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="
-                                    ml-1
-                                    transition-transform
-                                    transform
-                                    duration-300
-                                "
+                                class="ml-1 transition-transform duration-300 transform "
                                 :class="isActive ? '-rotate-180' : 'rotate-0'"
                             />
                         </template>
                         <a-collapse-panel key="details" header="Details">
-                            <div class="flex flex-col pl-6 pr-2">
+                            <div class="flex flex-col pl-5 pr-2">
+                                <!-- <div
+                                    v-if="
+                                        entity?.typeName ===
+                                        'AtlasGlossaryCategory'
+                                    "
+                                    class="flex mb-4 space-x-16"
+                                >
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="mb-2 text-sm leading-5 text-gray-500 "
+                                        >
+                                            Categories
+                                        </span>
+                                        <span
+                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
+                                            >{{ categoryCount }}
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="mb-2 text-sm leading-5 text-gray-500 "
+                                        >
+                                            Terms
+                                        </span>
+                                        <span
+                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
+                                            >{{ termCount }}
+                                        </span>
+                                    </div>
+                                </div> -->
+
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
@@ -155,10 +159,16 @@
                                     :selected-asset="entity"
                                     @update:selected-asset="updateEntityAndTree"
                                 />
-                                <Categories 
-                                    v-if="entity.guid && entity.typeName === 'AtlasGlossaryTerm'"
+                                <Categories
+                                    v-if="
+                                        entity.guid &&
+                                        entity.typeName === 'AtlasGlossaryTerm'
+                                    "
                                     :categories="entity.attributes.categories"
-                                    :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                                    :glossaryQualifiedName="
+                                        entity.attributes?.anchor
+                                            ?.uniqueAttributes?.qualifiedName
+                                    "
                                     :termGuid="entity.guid"
                                     :term="entity"
                                     mode="edit"
@@ -171,7 +181,7 @@
                             key="governance"
                             header="Governance"
                         >
-                            <div class="px-6 py-0">
+                            <div class="px-5 py-0">
                                 <Classifications :selected-asset="entity" />
                             </div>
                         </a-collapse-panel>
@@ -191,11 +201,12 @@
                             key="properties"
                             header="Properties"
                         >
-                            <div class="px-6 py-0 text-gray-500">
-                                <p class="p-0 m-0 mb-2">Formula</p>
-                                <p class="p-0 m-0 mb-6 text-sm">X + Y + Z</p>
-                                <p class="p-0 m-0 mb-2">Abbreviation</p>
-                                <p class="p-0 m-0 text-sm">S2021</p>
+                            <div class="w-full px-5">
+                                <Properties
+                                    v-if="entity.guid"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="updateEntityAndTree"
+                                />
                             </div>
                         </a-collapse-panel>
                     </a-collapse>
@@ -238,7 +249,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref, inject } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        ref,
+        inject,
+        defineAsyncComponent,
+    } from 'vue'
     import { useRouter } from 'vue-router'
     // components
     import Owners from '@common/sidebar/owners.vue'
@@ -278,7 +296,10 @@
             RelatedTerms,
             LinkedAssets,
             SidePanelTabHeaders,
-            Categories
+            Properties: defineAsyncComponent(
+                () => import('@common/sidebar/properties.vue')
+            ),
+            Categories,
         },
         props: {
             entity: {
@@ -311,7 +332,21 @@
                         status.id === props.entity?.attributes?.assetStatus
                 )
             )
-
+            const termCount = computed(
+                () => props.entity?.attributes?.terms?.length ?? 0
+            )
+            const categoryCount = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossary') {
+                    return props.entity?.attributes?.categories?.length ?? 0
+                }
+                if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                    return (
+                        props.entity?.attributes?.childrenCategories?.length ??
+                        0
+                    )
+                }
+                return 0
+            })
             // methods
             const redirectToProfile = () => {
                 if (props.entity.typeName === 'AtlasGlossaryCategory')
@@ -364,6 +399,8 @@
                 tabActiveKey,
                 updateEntityAndTree,
                 handleCopyProfileLink,
+                termCount,
+                categoryCount,
             }
         },
     })
@@ -377,7 +414,7 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply px-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
+            @apply px-5 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply py-0 mt-0 border-0 !important;
@@ -403,7 +440,7 @@
             @apply mb-0 mx-0 p-0 m-0 !important;
         }
         :global(.ant-tabs-tab) {
-            @apply py-2 mb-4 px-4 !important;
+            @apply py-2 mb-4 px-3 !important;
         }
         :global(.ant-tabs) {
             @apply px-0 !important;

@@ -1,15 +1,6 @@
 <template>
     <div
-        class="
-            flex
-            items-center
-            justify-between
-            px-4
-            py-2
-            text-sm
-            bg-gray-100
-            border-b border-gray-300
-        "
+        class="flex items-center justify-between px-4 py-2 text-sm bg-gray-100 border-b border-gray-300 "
     >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
@@ -19,14 +10,7 @@
         <div class="flex items-center">
             <div
                 v-if="totalAppliedFiltersCount"
-                class="
-                    text-sm
-                    font-medium
-                    text-gray-500
-                    rounded
-                    cursor-pointer
-                    hover:text-gray-700
-                "
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -72,13 +56,7 @@
                 <div class="">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="
-                            ml-1
-                            text-gray-500
-                            transition-transform
-                            transform
-                            duration-300
-                        "
+                        class="ml-1 text-gray-500 transition-transform duration-300 transform "
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -91,12 +69,7 @@
                 <template #header>
                     <div :key="dirtyTimestamp" class="mr-8 select-none">
                         <div
-                            class="
-                                flex
-                                items-center
-                                justify-between
-                                align-middle
-                            "
+                            class="flex items-center justify-between align-middle "
                         >
                             <div class="flex flex-col flex-1">
                                 <span class="text-xs uppercase text-gray">
@@ -117,12 +90,7 @@
 
                             <div
                                 v-if="isFilterApplied(item.id)"
-                                class="
-                                    text-xs text-gray-500
-                                    opacity-0
-                                    hover:text-primary
-                                    group-hover:opacity-100
-                                "
+                                class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                 @click.stop.prevent="handleClear(item.id)"
                             >
                                 Clear
@@ -200,6 +168,13 @@
                     return {}
                 },
             },
+            filtersList: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
         },
         emits: ['refresh', 'initialize'],
         setup(props, { emit }) {
@@ -211,11 +186,15 @@
             /**
              * @desc combines static List with mapped BM object that has filter support
              * */
-            const dynamicList = computed(() => [
-                ...List,
-                ...bmFiltersList.value,
-            ])
-
+            const dynamicList = computed(() => {
+                if (props.filtersList?.length > 0) {
+                    const arr = List.filter((el) =>
+                        props.filtersList?.includes(el.id)
+                    )
+                    return [...arr]
+                }
+                return [...List, ...bmFiltersList.value]
+            })
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({
                 connector: props.initialFilters?.facetsFilters?.connector || {},

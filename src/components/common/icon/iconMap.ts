@@ -60,6 +60,7 @@ import NewQuery from '~/assets/images/icons/new-query.svg'
 import PublicFolder from '~/assets/images/icons/public-folder.svg'
 import PrivateFolder from '~/assets/images/icons/private-folder.svg'
 import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
+import FilterFunnel from '~/assets/images/icons/filterFunnel.svg'
 import FolderOpen from '~/assets/images/icons/folder-open.svg'
 import FolderClosed from '~/assets/images/icons/folder-closed.svg'
 import Schema2 from '~/assets/images/icons/schema2.svg'
@@ -135,6 +136,7 @@ export default {
     PublicFolder,
     PrivateFolder,
     TreeCollapseAll,
+    FilterFunnel,
     FolderOpen,
     FolderClosed,
     Schema2,

@@ -37,7 +37,7 @@
                                 >
                             </div>
                             <div
-                                v-if="!isActiveInlineTabSaved"
+                                v-if="!tab.isSaved"
                                 class="flex items-center mr-2 unsaved-dot"
                             >
                                 <div
@@ -305,7 +305,7 @@
     //     // min-width: 3rem;
     // }
     .inline_tab_label {
-        max-width: 4.2rem;
+        max-width: 5.8rem;
         overflow: hidden;
     }
 </style>

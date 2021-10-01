@@ -372,28 +372,28 @@
             /*-------------------------------------*/
 
             /* Watcher for save->unsave */
-            watch(activeInlineTab, (newActiveInlineTab) => {
-                console.log(
-                    activeInlineTab.value,
-                    newActiveInlineTab,
-                    'compare'
-                )
-                if (activeInlineTab.value.isSaved) {
-                    if (
-                        activeInlineTab.value.queryId ===
-                        newActiveInlineTab.queryId
-                    ) {
-                        if (
-                            !isTwoInlineTabsEqual(
-                                activeInlineTab.value,
-                                newActiveInlineTab
-                            )
-                        ) {
-                            isUpdateEnabled.value = true
-                        }
-                    }
-                }
-            })
+            // watch(activeInlineTab, (newActiveInlineTab) => {
+            //     console.log(
+            //         activeInlineTab.value,
+            //         newActiveInlineTab,
+            //         'compare'
+            //     )
+            //     if (activeInlineTab.value.isSaved) {
+            //         if (
+            //             activeInlineTab.value.queryId ===
+            //             newActiveInlineTab.queryId
+            //         ) {
+            //             if (
+            //                 !isTwoInlineTabsEqual(
+            //                     activeInlineTab.value,
+            //                     newActiveInlineTab
+            //                 )
+            //             ) {
+            //                 isUpdateEnabled.value = true
+            //             }
+            //         }
+            //     }
+            // })
             return {
                 isUpdateEnabled,
                 isUpdating,

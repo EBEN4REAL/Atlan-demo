@@ -6,17 +6,16 @@
             class="flex flex-wrap items-center"
         >
             <PillGroup
-                :data="asset.meaningNames"
-                label-key="typeName"
-                popover-trigger="hover"
+                :data="asset.meanings"
+                label-key="displayText"
                 @add="toggleLinkClassificationPopover"
                 @delete="unLinkClassification"
                 @select="handleSelect"
             >
                 <template #pillPrefix>
                     <AtlanIcon
-                        icon="Shield"
-                        class="text-pink-400 group-hover:text-white"
+                        icon="Term"
+                        class="text-primary group-hover:text-white"
                     />
                 </template>
                 <template #popover="{ item }">
@@ -108,7 +107,7 @@
                                         ? true
                                         : false
                                 "
-                                @click="createClassification"
+                                @click="createTerm"
                                 >Create</a-button
                             >
                         </div>
@@ -186,17 +185,11 @@
                 isLoading: searchLoading,
                 fetchAssets: fetchCategories,
             } = useGtcSearch(undefined, ref(true), 'AtlasGlossaryTerm')
-            console.log({
-                terms,
-                isLoading: searchLoading,
-                fetchAssets: fetchCategories,
-            })
             const availableTerms = ref([])
             watch(
                 terms,
                 () => {
                     availableTerms.value = [...terms.value]
-                    console.log(availableTerms.value)
                 },
                 { immediate: true }
             )
@@ -225,7 +218,6 @@
                     classificationsStore.classifications
                 )
             )
-            console.log(availableClassificationsForLink)
             function removeClassificationFromSelectedAsset(
                 selectedClassification: any
             ) {
@@ -277,7 +269,6 @@
                 classifications: classificationInterface[]
                 multiple: boolean
             }) {
-                console.log(selectedClassificationsForLink, 'selected Multiple')
                 let { classifications } = selectedAsset.value
                 if (classifications?.length > 0) {
                     classifications = [
@@ -333,13 +324,11 @@
                         unlinkClassificationStatus.value.typeName = null
                         unlinkClassificationStatusErrorText.value =
                             'something went wrong'
-                        console.error('unling link failed')
                     }
                 })
             }
 
             const openLinkClassificationPopover = () => {
-                console.log('clicked')
                 linkClassificationPopover.value = true
             }
 
@@ -390,7 +379,6 @@
                         linkClassificationStatus.value = 'success'
                         linkClassificationPopover.value = false
                         const classifications = payload.value
-                        console.log(payload.value, 'payloaddddd')
                         addClassificationToSelectedAsset({
                             classifications,
                             multiple: classifications.length > 1,
@@ -402,7 +390,6 @@
                             typeName: '',
                         }
                     } else {
-                        console.log('link failed')
                         linkClassificationStatus.value = 'error'
                         linkClassificationStatusError.value =
                             'Something went wrong!'
@@ -504,9 +491,11 @@
                 previewClassification.value = elm
             }
             const handleCancel = () => {
-                console.log('cancel')
                 showCreateClassificationPopover.value = false
                 linkClassificationPopover.value = false
+            }
+            const createTerm = () => {
+                console.log(selectedClassificationForLink.value)
             }
             return {
                 asset,
@@ -546,6 +535,7 @@
                 availableTerms,
                 handleCancel,
                 searchLoading,
+                createTerm,
             }
         },
     })

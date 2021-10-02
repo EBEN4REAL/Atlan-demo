@@ -1,17 +1,17 @@
 <template>
-    <div
+    <!-- <div
         v-if="isLoading"
         class="flex items-center justify-center px-5 py-4 mt-4 text-sm leading-none "
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting lineage data</span>
-    </div>
-    <div v-else>
+    </div> -->
+    <div>
         <div class="flex items-center justify-between px-5 my-3 gap-x-2">
             <SearchAndFilter
                 class="flex-grow"
                 v-model:value="query"
-                placeholder="Search assets"
+                :placeholder="placeholderText"
                 :autofocus="true"
             >
                 <template #filter> <Preferences /> </template>
@@ -141,34 +141,60 @@
             /** COMPUTED */
             const guid = computed(() => selectedAsset.value.guid)
 
-            const lineageConfig = computed(() => ({
-                depth: depth.value,
-                guid: guid.value,
-                direction: 'BOTH',
-            }))
-
-            const { guidEntityMap, isLoading, reFetch, error, data } =
-                useFetchLineage(lineageConfig)
+            const UpStreamLineage = useFetchLineage(
+                computed(() => ({
+                    depth: depth.value,
+                    guid: guid.value,
+                    direction: 'INPUT',
+                }))
+            )
+            const DownStreamLineage = useFetchLineage(
+                computed(() => ({
+                    depth: depth.value,
+                    guid: guid.value,
+                    direction: 'OUTPUT',
+                }))
+            )
 
             // useComputeGraph
-            const allEntities = computed(() => {
-                const arr = Object.values(guidEntityMap.value)
-                return {
-                    upstream: arr.slice(0, arr.length / 2) as assetInterface[],
-                    downstream: arr.slice(arr.length / 2) as assetInterface[],
-                }
-            })
+            const allEntities = computed(() => ({
+                upstream: Object.values(UpStreamLineage.guidEntityMap.value),
+                downstream: Object.values(
+                    DownStreamLineage.guidEntityMap.value
+                ),
+            }))
 
             const filteredLineageList = computed(() => {
                 const lineageMap = {}
-                for (const [key, value] of Object.entries(allEntities.value)) {
-                    lineageMap[key] = value.filter((et) =>
+                for (const [key, assetList] of Object.entries(
+                    allEntities.value
+                )) {
+                    lineageMap[key] = assetList.filter((et) =>
                         et.displayText.includes(query.value)
                     )
                 }
                 return lineageMap
             })
 
+            const totalCount = computed(() =>
+                Object.values(allEntities.value).reduce(
+                    (acc, assetList) => assetList.length + acc,
+                    0
+                )
+            )
+
+            const placeholderText = computed(() => {
+                if (
+                    UpStreamLineage.isLoading.value ||
+                    DownStreamLineage.isLoading.value
+                )
+                    return 'Loading lineage'
+                else {
+                    return totalCount.value
+                        ? `Search ${totalCount.value} assets`
+                        : 'No assets found'
+                }
+            })
             /** METHODS */
             const updateDepth = (val: number) => {
                 depth.value = val
@@ -183,19 +209,24 @@
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
             /** WATCHERS */
-            watch([depth, guid], () => reFetch())
+            watch([depth, guid], () => {
+                UpStreamLineage.reFetch()
+                DownStreamLineage.reFetch()
+            })
 
             /** LIFECYCLE */
             return {
-                isLoading,
                 guid,
                 query,
                 filteredLineageList,
                 assetTypesLengthMap,
-                guidEntityMap,
                 activeKeys,
                 streams,
                 emptyScreen,
+                totalCount,
+                placeholderText,
+                UpStreamLineage,
+                DownStreamLineage,
             }
         },
     })

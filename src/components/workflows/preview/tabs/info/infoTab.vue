@@ -79,9 +79,6 @@
             properties: defineAsyncComponent(
                 () => import('./properties/index.vue')
             ),
-            linkedAsset: defineAsyncComponent(
-                () => import('./governance/index.vue')
-            ),
             heirarchy: defineAsyncComponent(
                 () => import('./heirarchy/index.vue')
             ),

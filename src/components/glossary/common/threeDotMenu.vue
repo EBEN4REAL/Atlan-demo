@@ -1,17 +1,25 @@
 <template>
     <div
         class="group-hover:opacity-100"
-        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode, 'opacity-100': visible }"
+        :class="{
+            'opacity-100': isVisible,
+            'opacity-0 treeMode': treeMode,
+            'opacity-100': visible,
+        }"
     >
         <a-dropdown
             v-model:visible="isVisible"
             :trigger="treeMode ? ['click'] : ['click']"
-            :class="treeMode ? $style.treeMode: ''"
+            :class="treeMode ? $style.treeMode : ''"
             @click.stop="() => {}"
         >
             <a-button
                 class="px-2 three-dot-menu"
-                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode h-4 w-4 ml-0.5': treeMode }"
+                :class="{
+                    ' border-0 shadow-none outline-none':
+                        !showLinks || treeMode,
+                    'treeMode h-4 w-4 ml-0.5': treeMode,
+                }"
                 @click.prevent
             >
                 <!-- <fa icon="fal ellipsis-v" class="h-4" /> -->
@@ -54,7 +62,12 @@
                         <AddGtcModal
                             :entityType="assetTypeLabel[entity?.typeName]"
                             :glossaryId="glossaryId"
-                            :glossaryQualifiedName="entity?.typeName === 'AtlasGlossary' ? entity?.attributes?.qualifiedName : entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                            :glossaryQualifiedName="
+                                entity?.typeName === 'AtlasGlossary'
+                                    ? entity?.attributes?.qualifiedName
+                                    : entity?.attributes?.anchor
+                                          ?.uniqueAttributes?.qualifiedName
+                            "
                             :categoryId="categoryId"
                             mode="edit"
                             :entity="entity"
@@ -110,7 +123,12 @@
                         <AddGtcModal
                             entityType="term"
                             :glossaryId="glossaryId"
-                            :glossaryQualifiedName="entity?.typeName === 'AtlasGlossary' ? entity?.attributes?.qualifiedName : entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                            :glossaryQualifiedName="
+                                entity?.typeName === 'AtlasGlossary'
+                                    ? entity?.attributes?.qualifiedName
+                                    : entity?.attributes?.anchor
+                                          ?.uniqueAttributes?.qualifiedName
+                            "
                             :categoryId="categoryId"
                         >
                             <template #header>
@@ -192,7 +210,10 @@
                         <AddGtcModal
                             entityType="category"
                             :glossaryId="glossaryId"
-                            :glossaryQualifiedName="entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                            :glossaryQualifiedName="
+                                entity?.attributes?.anchor?.uniqueAttributes
+                                    ?.qualifiedName
+                            "
                             :categoryId="categoryId"
                         >
                             <template #header>
@@ -237,7 +258,10 @@
                             </template>
                             <template #trigger>
                                 <div class="flex items-center">
-                                    <AtlanIcon icon="Category" class="m-0 mr-2" />
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-2"
+                                    />
                                     <p class="p-0 m-0">Add New Category</p>
                                 </div>
                             </template>
@@ -293,13 +317,16 @@
                         </template>
                         <template #expandIcon><div></div> </template>
                         <a-menu-item class="m-0 bg-white">
-                            <Owners 
+                            <Owners
                                 :selectedAsset="entity"
                                 @update:selectedAsset="updateTree"
                             />
                         </a-menu-item>
                     </a-sub-menu>
-                    <a-sub-menu v-if="entity?.typeName === 'AtlasGlossaryTerm'" key="categories">
+                    <a-sub-menu
+                        v-if="entity?.typeName === 'AtlasGlossaryTerm'"
+                        key="categories"
+                    >
                         <template #title>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center justify-between">
@@ -316,9 +343,15 @@
                             </div>
                         </template>
                         <template #expandIcon><div></div> </template>
-                        <a-menu-item class="hover:bg-white p-0 pb-8" style="max-height: 416px">
-                            <Categories     
-                                :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                        <a-menu-item
+                            class="p-0 pb-8 hover:bg-white"
+                            style="max-height: 416px"
+                        >
+                            <Categories
+                                :glossaryQualifiedName="
+                                    entity.attributes?.anchor?.uniqueAttributes
+                                        ?.qualifiedName
+                                "
                                 :categories="entity.attributes.categories"
                                 :termGuid="entity.guid"
                                 :term="entity"
@@ -333,7 +366,7 @@
                             @click="showModal"
                         >
                             <div class="flex items-center text-red-700">
-                                <fa icon="fal trash-alt" class="mr-2"></fa>
+                                <AtlanIcon icon="Trash" class="mr-2" />
                                 <p class="p-0 m-0">Archive</p>
                             </div>
                         </a-button>
@@ -426,13 +459,13 @@
             treeMode: {
                 type: Boolean,
                 required: false,
-                default: () => false
+                default: () => false,
             },
             visible: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
         },
         setup(props, context) {
             // data
@@ -444,9 +477,12 @@
                 inject('handleFetchList')
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
-            const refetchGlossaryTree = inject<(guid: string | 'root', refreshEntityType?: 'term' | 'category') => void>(
-                'refetchGlossaryTree'
-            )
+            const refetchGlossaryTree = inject<
+                (
+                    guid: string | 'root',
+                    refreshEntityType?: 'term' | 'category'
+                ) => void
+            >('refetchGlossaryTree')
             const glossaryId = computed(() => {
                 if (props.entity?.typeName === 'AtlasGlossary')
                     return props.entity?.guid ?? ''
@@ -480,7 +516,7 @@
                 isVisible.value = false
             }
             const handleOk = () => {
-               const { data } =  serviceMap[props.entity?.typeName](
+                const { data } = serviceMap[props.entity?.typeName](
                     props.entity?.guid,
                     !props.showLinks,
                     props.entity?.attributes?.anchor?.guid
@@ -488,24 +524,31 @@
                 if (handleFetchListInj) handleFetchListInj(props.entity)
                 watch(data, () => {
                     if (refetchGlossaryTree) {
-                        if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                        if (
+                            props.entity?.typeName === 'AtlasGlossaryCategory'
+                        ) {
                             refetchGlossaryTree(
-                                props.entity?.attributes?.parentCategory?.guid ??
-                                    'root',
+                                props.entity?.attributes?.parentCategory
+                                    ?.guid ?? 'root',
                                 'category'
                             )
-                        } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
+                        } else if (
+                            props.entity?.typeName === 'AtlasGlossaryTerm'
+                        ) {
                             if (props.entity?.attributes?.categories?.length) {
                                 props.entity?.attributes?.categories?.forEach(
                                     (category) => {
-                                        refetchGlossaryTree(category.guid, 'term')
+                                        refetchGlossaryTree(
+                                            category.guid,
+                                            'term'
+                                        )
                                     }
                                 )
                             } else {
                                 refetchGlossaryTree('root', 'term')
                             }
                         }
-                    }                
+                    }
                 })
 
                 isModalVisible.value = false
@@ -577,7 +620,7 @@
     })
 </script>
 <style lang="less" module>
-  .treeMode {
-    @apply bg-black bg-opacity-0 !important;
-  }
+    .treeMode {
+        @apply bg-black bg-opacity-0 !important;
+    }
 </style>

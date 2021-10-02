@@ -20,7 +20,7 @@ type Filters = {
     }[]
 }
 export default function useGtcSearch(
-    qualifiedName: ComputedRef<string>,
+    qualifiedName?: ComputedRef<string>,
     dependantFetchingKey?: Ref<any>,
     type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm'
 ) {
@@ -120,8 +120,11 @@ export default function useGtcSearch(
                 ],
             }
         } else {
-            body.value.typeName =
-                'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary'
+            if (type && type != '') {
+                body.value.typeName = `${type}`
+            } else
+                body.value.typeName =
+                    'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary'
             body.value.entityFilters = {
                 condition: 'AND',
                 criterion: [...(localFilters.value?.criterion ?? [])],

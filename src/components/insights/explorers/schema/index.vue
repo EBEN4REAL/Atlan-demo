@@ -31,7 +31,7 @@
             <schema-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
-                :select-node="selectNodeAndOpenAssetSidebar"
+                :select-node="selectNodeAndToggleAssetSidebar"
                 :expand-node="expandNode"
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
@@ -130,14 +130,17 @@
                 )}/${activeInlineTab.value.assetSidebar.assetInfo?.title}`
                 return key
             })
-            const selectNodeAndOpenAssetSidebar = (selected, event) => {
-                if (selected.length > 0) {
-                    const item = event.selectedNodes[0].props
-                    const activeInlineTabCopy: activeInlineTabInterface =
-                        Object.assign({}, activeInlineTab.value)
-                    activeInlineTabCopy.assetSidebar.assetInfo = item
-                    activeInlineTabCopy.assetSidebar.isVisible = true
-                    openAssetSidebar(activeInlineTabCopy)
+            const selectNodeAndToggleAssetSidebar = (selected, event) => {
+                if (event.selectedNodes?.length > 0) {
+                    const item = event.selectedNodes[0]?.props
+                    if (item.typeName === 'LoadMore') return
+                    if (selected.length > 0) {
+                        const activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        activeInlineTabCopy.assetSidebar.assetInfo = item
+                        activeInlineTabCopy.assetSidebar.isVisible = true
+                        openAssetSidebar(activeInlineTabCopy)
+                    }
                 } else {
                     /* Close it if it is already opened */
                     closeAssetSidebar(activeInlineTab.value)
@@ -176,7 +179,7 @@
 
             return {
                 connectorsData,
-                selectNodeAndOpenAssetSidebar,
+                selectNodeAndToggleAssetSidebar,
                 setConnector,
                 isAssetSidebarOpened,
                 openAssetSidebar,

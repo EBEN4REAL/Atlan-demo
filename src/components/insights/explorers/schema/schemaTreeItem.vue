@@ -30,9 +30,11 @@
                         </div>
                         <div
                             class="flex items-center text-xs text-gray-500 mr-7"
-                            v-if="isPrimary(item)"
                         >
-                            <div class="flex items-center">
+                            <div
+                                class="flex items-center"
+                                v-if="isPrimary(item)"
+                            >
                                 <a-tooltip>
                                     <template #title>Pkey</template>
                                     <AtlanIcon

@@ -14,7 +14,7 @@ export default function useAssetInfo() {
         return asset.attributes
     }
     const title = (asset: assetInterface) => {
-        return attributes(asset).name
+        return attributes(asset)?.name ?? ''
     }
     const status = (asset: assetInterface) => {
         return attributes(asset).assetStatus

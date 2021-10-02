@@ -15,71 +15,10 @@
                     @expand="expandNode"
                 >
                     <template #title="item">
-                        <a-popover
+                        <SchemaTreeItem
+                            :item="item"
                             v-if="item.title !== 'Load more'"
-                            placement="right"
-                        >
-                            <SchemaTreeItem :item="item" />
-                            <template
-                                v-if="item.key !== 'root'"
-                                class="p-4"
-                                #content
-                            >
-                                <div class="flex flex-col max-w-80">
-                                    <span
-                                        class="m-0 mb-2 text-base font-bold leading-6 text-gray-700 "
-                                        >{{ item.title }}</span
-                                    >
-                                    <span
-                                        class="m-0 text-sm leading-5 tracking-wide text-gray-500 "
-                                        >{{ item.description }}</span
-                                    >
-                                    <span>{{ item.ownerUsers }}</span>
-                                    <span>{{ item.ownerGroups }}</span>
-                                </div>
-                                <!-- <Classifications :selected-asset="item" /> -->
-                                <!-- <div
-                                    v-if="item.classifications?.length > 0"
-                                    class="flex flex-wrap items-center w-56"
-                                >
-                                        <PillGroup
-                                            :data="item.classifications"
-                                            label-key="typeName"
-                                            popover-trigger="hover"
-                                        >
-                                            <template #pillPrefix>
-                                                <AtlanIcon
-                                                    icon="Shield"
-                                                    class="text-pink-400 group-hover:text-white"
-                                                />
-                                            </template>
-                                            <template #popover="{ item }">
-                                                <ClassificationInfoCard :classification="item" />
-                                            </template>
-                                            <template #suffix>
-                                                <span
-                                                    v-if="splittedOwners.b.length > 0"
-                                                    class="
-                                                        px-1
-                                                        py-0.5
-                                                        text-sm
-                                                        rounded
-                                                        text-primary
-                                                        mr-3
-                                                        cursor-pointer
-                                                    "
-                                                >
-                                                    {{
-                                                        showAll
-                                                            ? 'Show less'
-                                                            : `and ${splittedOwners.b.length} more`
-                                                    }}
-                                                </span>
-                                            </template>
-                                        </PillGroup>
-                                    </div> -->
-                            </template>
-                        </a-popover>
+                        />
                         <div
                             v-else
                             class="flex flex-row w-full text-sm font-bold leading-5  text-primary"

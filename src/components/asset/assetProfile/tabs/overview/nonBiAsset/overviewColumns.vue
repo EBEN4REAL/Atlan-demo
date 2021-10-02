@@ -174,7 +174,8 @@
             const certificationFilters: Ref<string[]> = ref([])
             const sortOrder = ref('Column.order|ascending')
             const clearAllFilters = ref<boolean>(false)
-
+            const urlColumnOrder = ref(0)
+            const columnFromUrl: Ref<assetInterface[]> = ref([])
             const { columnCount } = useAssetInfo()
 
             /** INJECTIONS */
@@ -232,69 +233,15 @@
                 reFetch()
             }
 
-            const scrollToElement = (selectedRow) => {
-                let paginationOfSelectedColumn
-                if (selectedRow % 10 === 0) {
-                    paginationOfSelectedColumn = selectedRow / 10
-                } else {
-                    paginationOfSelectedColumn =
-                        Math.floor(selectedRow / 10) + 1
-                }
-                document
-                    .querySelector(`li[title="${paginationOfSelectedColumn}"]`)
-                    .click()
+            const scrollToElement = () => {
+                const tableRow = document.querySelector(
+                    `tr[data-row-key="${selectedRow.value}"]`
+                )
 
-                setTimeout(() => {
-                    const tableRow = document.querySelector(
-                        `tr[data-row-key="${selectedRow}"]`
-                    )
-
-                    if (tableRow) {
-                        tableRow.scrollIntoView({
-                            block: 'nearest',
-                            inline: 'nearest',
-                        })
-                    }
-                }, 500)
-            }
-
-            const getDataType = (type: string) => {
-                let label = ''
-                dataTypeList.forEach((i) => {
-                    if (i.type.includes(type)) label = i.label
-                })
-                return label
-            }
-
-            // filterColumnsList
-            const filterColumnsList = () => {
-                columnsList.value = [...pinnedList.value, ...list.value]
-
-                const filteredListData = columnsList.value.map((i) => ({
-                    key: i.attributes.order,
-                    hash_index: i.attributes.order,
-                    column_name: i.attributes.name,
-                    data_type: getDataType(i.attributes.dataType),
-                    is_primary: i.attributes.isPrimary,
-                    description:
-                        i.attributes.userDescription ||
-                        i.attributes.description ||
-                        '---',
-                    popularity: i.attributes.popularityScore || 8,
-                }))
-                columnsData.value = {
-                    filteredList: filteredListData,
-                }
-
-                // If redirected from asset column discovery
-                if (column.value !== '') {
-                    columnsList.value?.forEach((singleRow) => {
-                        if (singleRow.guid === column.value) {
-                            openColumnSidebar(singleRow.attributes.order)
-                        }
-                    })
-                    nextTick(() => {
-                        scrollToElement(selectedRow.value)
+                if (tableRow) {
+                    tableRow.scrollIntoView({
+                        block: 'nearest',
+                        inline: 'nearest',
                     })
                 }
             }
@@ -314,6 +261,67 @@
 
                 showColumnPreview.value = true
             }
+
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
+            }
+
+            const fetchColumnFromUrl = () => {
+                columnsList.value?.forEach((singleRow) => {
+                    if (singleRow.guid === column.value) {
+                        urlColumnOrder.value = singleRow.attributes.order
+                        openColumnSidebar(singleRow.attributes.order)
+                    }
+                })
+
+                if (urlColumnOrder.value === 0) {
+                    const { list: urlColumnList } = useColumnsList(
+                        assetQualifiedName,
+                        {}
+                    )
+                    columnFromUrl.value = urlColumnList.value
+                    filterColumnsList()
+                } else {
+                    nextTick(() => {
+                        scrollToElement()
+                    })
+                }
+            }
+
+            // filterColumnsList
+            const filterColumnsList = () => {
+                columnsList.value = [
+                    ...pinnedList.value,
+                    ...list.value,
+                    ...columnFromUrl.value,
+                ]
+
+                const filteredListData = columnsList.value.map((i) => ({
+                    key: i.attributes.order,
+                    hash_index: i.attributes.order,
+                    column_name: i.attributes.name,
+                    data_type: getDataType(i.attributes.dataType),
+                    is_primary: i.attributes.isPrimary,
+                    description:
+                        i.attributes.userDescription ||
+                        i.attributes.description ||
+                        '---',
+                    popularity: i.attributes.popularityScore || 8,
+                }))
+                columnsData.value = {
+                    filteredList: filteredListData,
+                }
+
+                // If redirected from asset column discovery
+                if (column.value !== '') {
+                    fetchColumnFromUrl()
+                }
+            }
+
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {

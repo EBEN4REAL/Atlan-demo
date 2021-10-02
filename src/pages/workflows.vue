@@ -1,0 +1,130 @@
+<template>
+    <div class="flex w-full h-full bg-white">
+        <div class="flex-1 border-r border-gray-300 item-stretch">
+            <div class="flex h-full">
+                    <component
+                        :is="isItem ? 'router-view' : 'AssetDiscovery'"
+                        :initial-filters="initialFilters"
+                        :updateProfile="updateProfile"
+                        @preview="handlePreview"
+                        ref="assetDiscovery"
+                    ></component>
+            </div>
+        </div>
+        <div
+            id="overAssetPreviewSidebar"
+            class="relative bg-white asset-preview-container"
+        >
+            <WorkflowPreview
+                v-if="selected"
+                :selectedAsset="selected"
+                @asset-mutation="propagateToAssetList"
+                :page="page"
+            ></WorkflowPreview>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import AssetDiscovery from '~/components/workflows/assetDiscovery.vue'
+    import WorkflowPreview from '~/components/workflows/preview/workflowPreview.vue'
+    import { useHead } from '@vueuse/head'
+    import { computed, defineComponent, ref, Ref, watch } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    import { decodeQuery } from '~/utils/helper/routerHelper'
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
+
+    export interface initialFiltersType {
+        facetsFilters: any
+        searchText: string
+        limit: number
+    }
+    export default defineComponent({
+        components: {
+            WorkflowPreview,
+            AssetDiscovery,
+        },
+        setup() {
+            useHead({
+                title: 'Discover assets',
+            })
+            const router = useRouter()
+            const route = useRoute()
+            const isItem = computed(() => route.params.id)
+            const updateProfile = ref<boolean>(false)
+
+            const assetDiscovery: Ref<Element | null> = ref(null)
+            // const initialFilters: initialFiltersType =
+            //     getDecodedOptionsFromString(router)
+
+            const initialFilters: Record<string, any> = {
+                facetsFilters: {},
+                searchText: '',
+                selectedTab: 'Catalog',
+                sortOrder: 'default',
+                state: 'active',
+                ...decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                ),
+            }
+
+            router.currentRoute.value?.query
+            const selected: Ref<assetInterface | undefined> = ref(undefined)
+            const handlePreview = (selectedItem: assetInterface) => {
+                selected.value = selectedItem
+                console.log(selectedItem)
+            }
+            const page = computed(() =>
+                isItem.value ? 'profile' : 'discovery'
+            )
+
+            // * Get all available BMs and save on store
+            const { fetchBMonStore } = useBusinessMetadata()
+            fetchBMonStore()
+
+            /* Making the network request here to fetch the latest changes of classifications. 
+            So that everytime user visit the discover page it will be in sync to latest data not with store
+            */
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
+            }
+
+            function propagateToAssetList(updatedAsset: assetInterface) {
+                if (page.value === 'discovery')
+                    assetDiscovery.value.mutateAssetInList(updatedAsset)
+                handlePreview(updatedAsset)
+                updateProfile.value = true
+            }
+
+            return {
+                initialFilters,
+                selected,
+                handlePreview,
+                isItem,
+                page,
+                propagateToAssetList,
+                assetDiscovery,
+            }
+        },
+    })
+</script>
+<style scoped>
+    .asset-preview-container {
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
+    }
+</style>
+<route lang="yaml">
+meta:
+    layout: default
+    requiresAuth: true
+    middleware: [routePrint]
+</route>

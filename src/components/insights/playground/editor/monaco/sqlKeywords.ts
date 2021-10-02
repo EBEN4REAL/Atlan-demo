@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor';
-import { languageTokens } from "~/components/projects/monaco/sqlTokens";
+import { languageTokens } from "./sqlTokens";
 
 const sqlKeywords = () => {
   const keywordsList = languageTokens.keywords.map((keyword) => ({

@@ -1,11 +1,4 @@
 <template>
-    <!-- <div
-        v-if="isLoading"
-        class="flex items-center justify-center px-5 py-4 mt-4 text-sm leading-none "
-    >
-        <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>Getting lineage data</span>
-    </div> -->
     <div>
         <div class="flex items-center justify-between px-5 my-3 gap-x-2">
             <SearchAndFilter
@@ -57,8 +50,17 @@
                     </div>
                 </template>
 
+                <div
+                    v-if="isLoading[stream.key]"
+                    class="flex items-center justify-center px-5 py-4 mt-4"
+                >
+                    <a-spin size="small" class="mr-2 leading-none" />
+                    <span class="text-sm leading-none">
+                        Getting lineage data
+                    </span>
+                </div>
                 <AssetList
-                    v-if="
+                    v-else-if="
                         filteredLineageList[stream.key] &&
                         filteredLineageList[stream.key].length > 0
                     "
@@ -170,7 +172,9 @@
                     allEntities.value
                 )) {
                     lineageMap[key] = assetList.filter((et) =>
-                        et.displayText.includes(query.value)
+                        et.displayText
+                            .toLowerCase()
+                            .includes(query.value.toLowerCase())
                     )
                 }
                 return lineageMap
@@ -195,6 +199,12 @@
                         : 'No assets found'
                 }
             })
+
+            const isLoading = computed(() => ({
+                upstream: UpStreamLineage.isLoading.value,
+                downstream: DownStreamLineage.isLoading.value,
+            }))
+
             /** METHODS */
             const updateDepth = (val: number) => {
                 depth.value = val
@@ -225,8 +235,7 @@
                 emptyScreen,
                 totalCount,
                 placeholderText,
-                UpStreamLineage,
-                DownStreamLineage,
+                isLoading,
             }
         },
     })

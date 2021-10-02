@@ -1,43 +1,41 @@
 <template>
-    <div class="p-8">
+    <div class="flex flex-col p-8 gap-y-10">
         <!-- Table Summary -->
-        <div class="mb-10">
-            <tableSummary />
-        </div>
+        <tableSummary />
 
-        <!-- Preview Selector-->
-        <a-button-group class="mb-4 rounded shadow">
-            <a-button
-                :class="
-                    activePreviewTabKey === 'column-preview'
-                        ? 'text-primary font-bold'
-                        : 'text-gray-500'
-                "
-                @click="setActiveTab('column-preview')"
-            >
-                Column Preview
-            </a-button>
-            <a-tooltip
-                placement="right"
-                :title="
-                    !showTablePreview && 'No sample data found for this asset'
-                "
-            >
+        <!-- Column and Table Preview-->
+        <div class="w-full">
+            <!-- Preview Selector-->
+            <a-button-group class="mb-4 rounded shadow">
                 <a-button
                     :class="
-                        activePreviewTabKey === 'table-preview'
+                        activePreviewTabKey === 'column-preview'
                             ? 'text-primary font-bold'
                             : 'text-gray-500'
                     "
-                    :disabled="!showTablePreview"
-                    @click="setActiveTab('table-preview')"
-                    >Sample Data</a-button
-                ></a-tooltip
-            >
-        </a-button-group>
-
-        <!-- Column and Table Preview-->
-        <div class="w-full mb-10">
+                    @click="setActiveTab('column-preview')"
+                >
+                    Column Preview
+                </a-button>
+                <a-tooltip
+                    placement="right"
+                    :title="
+                        !showTablePreview &&
+                        'No sample data found for this asset'
+                    "
+                >
+                    <a-button
+                        :class="
+                            activePreviewTabKey === 'table-preview'
+                                ? 'text-primary font-bold'
+                                : 'text-gray-500'
+                        "
+                        :disabled="!showTablePreview"
+                        @click="setActiveTab('table-preview')"
+                        >Sample Data</a-button
+                    ></a-tooltip
+                >
+            </a-button-group>
             <template v-if="activePreviewTabKey === 'column-preview'">
                 <overviewColumns />
             </template>
@@ -47,14 +45,13 @@
         </div>
 
         <!-- Readme widget -->
-        <div class="mb-10">
-            <Readme
-                class="w-full"
-                :show-borders="false"
-                :show-padding-x="false"
-                :parent-asset-id="assetData"
-            />
-        </div>
+        <Readme
+            class="w-full"
+            :show-borders="false"
+            :show-padding-x="false"
+            :parent-asset-id="assetData"
+        />
+        <Resources :asset="assetData" />
     </div>
 </template>
 
@@ -67,18 +64,22 @@
         ref,
         defineAsyncComponent,
         Ref,
+        ComputedRef,
     } from 'vue'
 
     // Components
     import Readme from '@/common/readme/index.vue'
-    import tableSummary from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/tableSummary.vue'
+    import Resources from '@/asset/assetProfile/widgets/resources/resources.vue'
+    import tableSummary from '@/asset/assetProfile/tabs/overview/nonBiAsset/tableSummary.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         components: {
             Readme,
+            Resources,
             tableSummary,
             overviewColumns: defineAsyncComponent(
                 () =>
@@ -105,7 +106,9 @@
             const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
+            const assetData: ComputedRef<assetInterface> = computed(
+                () => assetDataInjection?.asset
+            )
 
             /** METHODS */
             // useAssetInfo

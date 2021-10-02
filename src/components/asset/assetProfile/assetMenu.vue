@@ -39,17 +39,11 @@
                     <template #expandIcon />
 
                     <a-menu-item class="m-0 bg-white">
-                        <div class="flex items-center justify-between">
-                            <Status
-                                v-if="asset?.guid"
-                                :selectedAsset="asset"
-                                @update:selectedAsset="updateAsset"
-                            />
-                            <AtlanIcon
-                                class="flex-none -mr-2"
-                                icon="ChevronRight"
-                            />
-                        </div>
+                        <Status
+                            v-if="asset?.guid"
+                            :selectedAsset="asset"
+                            @update:selectedAsset="updateAsset"
+                        />
                     </a-menu-item>
                 </a-sub-menu>
 

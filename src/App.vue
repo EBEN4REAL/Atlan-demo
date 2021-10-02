@@ -13,11 +13,9 @@
     import { CONNECTION_FETCH_LIST } from './constant/cache';
     import { useTenantStore } from './store/tenants';
     import { useClassificationStore } from '~/components/admin/classifications/_store';
-    import useTracking from '~/modules/tracking';
 
     export default defineComponent({
         setup(props, context) {
-            const tracking = useTracking();
             const tenantStore = useTenantStore();
             const asyncOptions = {
                 dedupingInterval: 0,
@@ -44,22 +42,19 @@
                 () => tenantStore.isAuthenticated,
                 () => {
                     isAuth.value = true;
-                    tracking.initialize({
-                        analyticsName: 'posthog',
-                        user: {
-                            userId: tenantStore?.token?.userId,
-                            email: tenantStore?.token?.email ?? '',
-                            name: tenantStore?.token?.name ?? '',
-                            username: tenantStore?.token?.username ?? '',
-                            roleCode: tenantStore?.token?.roleCode ?? '',
-                        },
-                    });
                 }
             );
 
             watch(tenantData, () => {
                 tenantStore.setData(tenantData.value);
             });
+
+            // (window as any).analytics.identify(tenantStore?.token?.userId, {
+            //             name: tenantStore?.token?.name ?? '',
+            //             email: tenantStore?.token?.email ?? '',
+            //             username: tenantStore?.token?.username ?? '',
+            //             roleCode: tenantStore?.token?.roleCode ?? '',
+            // });
 
             return {
                 tenantData,

@@ -3,12 +3,12 @@
         <div v-if="imageRequired" class="">
             <img
                 :src="logoSrc"
-                class="flex-none w-auto bg-white"
-                :class="variant == 'lg' ? 'h-5' : 'h-3.5'"
+                class="flex-none w-auto"
+                :class="variant == 'lg' ? 'h-5' : 'h-3.5 mb-0.5'"
             />
         </div>
 
-        <span class="pl-1 tracking-wider text-gray-700 uppercase">{{
+        <span class="pl-1 text-sm tracking-wider text-gray-700 uppercase">{{
             text
         }}</span>
     </div>

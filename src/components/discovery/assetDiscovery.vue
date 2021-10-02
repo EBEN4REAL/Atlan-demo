@@ -77,7 +77,7 @@
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     :typename="assetTypeListString"
-                    automaticSelectFirstAsset
+                    v-model:autoSelect="autoSelect"
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></AssetList>
@@ -168,12 +168,13 @@
             // initializing the discovery store
             const { initialFilters } = toRefs(props)
             const router = useRouter()
+
             // Asset filter component ref
             const assetFilterRef = ref()
+            const autoSelect = ref(true)
 
             // const tracking = useTracking()
             // const events = tracking.getEventsName()
-
             const isAggregate = ref(true)
 
             // Clean Stuff
@@ -390,7 +391,7 @@
                 isAggregate.value = true
                 updateBody()
                 setRouterOptions()
-                // tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
+                // tracking.send(events.EVENT_ASSET_SEARCH, {
                 //     trigger: 'discover',
                 // })
             }, 150)
@@ -428,6 +429,7 @@
                 emit('preview', item)
             }
             const loadMore = () => {
+                autoSelect.value = false
                 offset.value += limit.value
                 isAggregate.value = false
                 updateBody()
@@ -456,6 +458,7 @@
             console.log(list)
 
             return {
+                autoSelect,
                 handleClearFiltersFromList,
                 assetFilterRef,
                 initialFilters,

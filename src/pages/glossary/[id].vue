@@ -73,7 +73,7 @@
         </div>
 
         <div id="sidePanel" class="relative w-1/3">
-            <SidePanel :entity="glossary" :top-terms="glossaryTerms" />
+            <SidePanel :entity="glossary"  />
         </div>
     </div>
 </template>
@@ -82,13 +82,11 @@
     import {
         defineComponent,
         watch,
-        onMounted,
         toRef,
         ref,
         provide,
         computed,
         inject,
-        nextTick,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -101,8 +99,8 @@
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-    import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
-    import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
+    // import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
+    // import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
@@ -155,19 +153,19 @@
                 () => title.value === 'Untitled Glossary'
             )
 
-            const {
-                terms: glossaryTerms,
-                error: termsError,
-                isLoading: termsLoading,
-                fetchGlossaryTermsPaginated,
-            } = useGlossaryTerms()
+            // const {
+            //     terms: glossaryTerms,
+            //     error: termsError,
+            //     isLoading: termsLoading,
+            //     fetchGlossaryTermsPaginated,
+            // } = useGlossaryTerms()
 
-            const {
-                categories: glossaryCategories,
-                error: categoriesError,
-                isLoading: categoriesLoading,
-                fetchGlossaryCategoriesPaginated,
-            } = useGlossaryCategories()
+            // const {
+            //     categories: glossaryCategories,
+            //     error: categoriesError,
+            //     isLoading: categoriesLoading,
+            //     fetchGlossaryCategoriesPaginated,
+            // } = useGlossaryCategories()
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
@@ -176,25 +174,25 @@
             // methods
             const reInitTree = inject('reInitTree')
 
-            const refreshCategoryTermList = (type: string) => {
-                if (type === 'category') {
-                    fetchGlossaryCategoriesPaginated({
-                        refreshSamePage: true,
-                    })
-                } else if (type === 'term') {
-                    fetchGlossaryTermsPaginated({ refreshSamePage: true })
-                }
-            }
+            // const refreshCategoryTermList = (type: string) => {
+            //     if (type === 'category') {
+            //         fetchGlossaryCategoriesPaginated({
+            //             refreshSamePage: true,
+            //         })
+            //     } else if (type === 'term') {
+            //         fetchGlossaryTermsPaginated({ refreshSamePage: true })
+            //     }
+            // }
 
-            const fetchNextCategoryOrTermList = (type: string) => {
-                if (type === 'category') {
-                    fetchGlossaryCategoriesPaginated({
-                        limit: 5,
-                    })
-                } else if (type === 'term') {
-                    fetchGlossaryTermsPaginated({ limit: 5 })
-                }
-            }
+            // const fetchNextCategoryOrTermList = (type: string) => {
+            //     if (type === 'category') {
+            //         fetchGlossaryCategoriesPaginated({
+            //             limit: 5,
+            //         })
+            //     } else if (type === 'term') {
+            //         fetchGlossaryTermsPaginated({ limit: 5 })
+            //     }
+            // }
 
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
@@ -232,24 +230,24 @@
                 temp.value = true
             }
             // lifecycle methods and watchers
-            onMounted(() => {
-                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
-                fetchGlossaryCategoriesPaginated({
-                    guid: guid.value,
-                    offset: 0,
-                })
-            })
+            // onMounted(() => {
+            //     fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
+            //     fetchGlossaryCategoriesPaginated({
+            //         guid: guid.value,
+            //         offset: 0,
+            //     })
+            // })
 
-            watch(guid, (newGuid) => {
-                fetchGlossaryTermsPaginated({
-                    guid: newGuid,
-                    offset: 0,
-                })
-                fetchGlossaryCategoriesPaginated({
-                    guid: newGuid,
-                    offset: 0,
-                })
-            })
+            // watch(guid, (newGuid) => {
+            //     fetchGlossaryTermsPaginated({
+            //         guid: newGuid,
+            //         offset: 0,
+            //     })
+            //     fetchGlossaryCategoriesPaginated({
+            //         guid: newGuid,
+            //         offset: 0,
+            //     })
+            // })
 
             watch(updatedEntity, () => {
                 refetch()
@@ -266,11 +264,11 @@
                 shortDescription,
                 error,
                 isLoading,
-                termsLoading,
-                categoriesLoading,
+                // termsLoading,
+                // categoriesLoading,
                 guid,
-                glossaryTerms,
-                glossaryCategories,
+                // glossaryTerms,
+                // glossaryCategories,
                 qualifiedName,
                 currentTab,
                 previewEntity,
@@ -280,8 +278,8 @@
                 newName,
                 scrollDiv,
                 headerReachedTop,
-                refreshCategoryTermList,
-                fetchNextCategoryOrTermList,
+                // refreshCategoryTermList,
+                // fetchNextCategoryOrTermList,
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,

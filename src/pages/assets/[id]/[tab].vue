@@ -69,7 +69,7 @@
         props: {
             updateProfile: { type: Boolean, required: true },
         },
-        emits: ['preview', 'updateAssetPreview'],
+        emits: ['preview'],
         setup(props, context) {
             /** DATA */
             const activeKey = ref(1)
@@ -116,6 +116,11 @@
                 () => store.getBusinessMetadataListLoaded
             )
 
+            // handlePreview
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
+
             // fetch
             const fetch = () => {
                 if (BMListLoaded.value) {
@@ -127,17 +132,9 @@
                         data.value.asset = response.value?.entities?.[0]
                         data.value.error = error.value
 
-                        context.emit(
-                            'updateAssetPreview',
-                            data.value.asset ?? []
-                        )
+                        handlePreview(data.value?.asset)
                     })
                 }
-            }
-
-            // handlePreview
-            const handlePreview = (item) => {
-                context.emit('preview', item)
             }
 
             /** LIFECYCLES */
@@ -153,7 +150,9 @@
             })
 
             /** WATCHERS */
-            watch(id, () => fetch())
+            watch(id, () => {
+                if (id.value) fetch()
+            })
             watch(updateProfile, () => fetch())
             watch(BMListLoaded, (v: boolean) => {
                 if (v) fetch()

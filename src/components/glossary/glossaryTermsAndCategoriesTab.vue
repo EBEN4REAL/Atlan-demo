@@ -1,34 +1,42 @@
 <template>
     <div>
+        <!-- top section -->
         <div class="relative p-4 bg-gray-100 shadow">
-            <div class="flex space-x-2">
+            <div class="flex">
+                <!-- close filtersPane -->
+                <a-button
+                    v-if="showFiltersPane"
+                    class="absolute z-30 px-0 border-l-0 rounded-none rounded-r shadow-md  -left-1"
+                    @click="showFiltersPane = !showFiltersPane"
+                >
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="h-4 ml-1 transition-transform transform rotate-90 "
+                    />
+                </a-button>
+                <!-- filters -->
+                <a-button
+                    class="flex items-center w-8 h-8 p-2 border-r-0 rounded-none rounded-l "
+                    @click="showFiltersPane = !showFiltersPane"
+                    :class="{ 'ml-4': showFiltersPane }"
+                >
+                    <AtlanIcon icon="FilterFunnel" />
+                </a-button>
+                <!-- search box -->
                 <a-input-search
                     v-model:value="searchQuery"
-                    :placeholder="`Search ${
-                        displayText || qualifiedName.split('@'[1])
-                    }....`"
+                    :placeholder="`Search terms and categories`"
                     @change="onSearch"
+                    class="rounded-none rounded-r"
                 ></a-input-search>
-                <a-popover trigger="click">
-                    <template #content>
-                        <p class="mb-1 text-gray-500">Show/Hide</p>
-                        <div class="w-32">
-                            <a-checkbox-group
-                                v-model:value="projection"
-                                name="checkboxgroup"
-                                :options="projectionOptions"
-                            />
-                        </div>
-                    </template>
-                    <a-button class="p-1 ml-2 rounded">
-                        <AtlanIcon icon="FilterDot" class="h-6" />
-                    </a-button>
-                </a-popover>
+                <!-- projections  -->
+                <Projections
+                    :projectionOptions="projectionOptions"
+                    @projectionChange="handleProjectionChange"
+                />
             </div>
-            <!-- <div>
-                <GtcFilters @filterUpdated="updateFilters" />
-            </div> -->
         </div>
+        <!-- asset list starts here -->
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
@@ -43,6 +51,7 @@
                 :class="{ 'overflow-y-auto ': headerReachedTop }"
             >
                 <div ref="topSectionRef"></div>
+
                 <div>
                     <AssetList
                         :list="all"
@@ -58,6 +67,35 @@
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
+        <!-- list ends here -->
+        <!-- filters pane in left -->
+        <teleport to="#filterPane">
+            <a-drawer
+                v-if="showFiltersPane"
+                :visible="showFiltersPane"
+                placement="left"
+                :mask="false"
+                :get-container="false"
+                :wrap-style="{
+                    position: 'absolute',
+                    minWidth: '264px',
+                }"
+                :keyboard="false"
+                :destroy-on-close="true"
+                :closable="false"
+                width="100%"
+                :class="$style.drawerClasses"
+            >
+                <div class="relative h-full">
+                    <Filters
+                        :initialFilters="initialFilters"
+                        @filterUpdated="updateFilters"
+                        @initialize="handleFilterInitialize"
+                    />
+                </div>
+            </a-drawer>
+        </teleport>
+        <!-- sidebar drawer for terms and category preview -->
         <teleport to="#sidePanel">
             <a-drawer
                 v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
@@ -99,9 +137,9 @@
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import GtcEntityCard from './gtcEntityCard.vue'
-    import GtcFilters from './common/gtcFilters.vue'
     import AssetList from '@/glossary/common/assetList.vue'
+    import Projections from '@/glossary/common/projections.vue'
+    import Filters from '@/glossary/common/filters.vue'
 
     // composables
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
@@ -112,11 +150,11 @@
     export default defineComponent({
         components: {
             AssetList,
-            GtcEntityCard,
             EmptyView,
             LoadingView,
-            GtcFilters,
+            Projections,
             CategoryTermPreview,
+            Filters,
         },
         props: {
             qualifiedName: {
@@ -160,9 +198,10 @@
             const searchQuery = ref<string>()
             const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
-
+            const showFiltersPane = ref(false)
             const topSectionRef = ref(null)
             const scrollDiv = ref(null)
+            const initialFilters = ref()
             const projection = ref([
                 'status',
                 'description',
@@ -181,17 +220,15 @@
             } = useGtcSearch(glossaryQualifiedName)
 
             const projectionOptions = [
+                { value: 'categories', label: 'Categories' },
+                { value: 'classifications', label: 'Classifications' },
                 { value: 'description', label: 'Description' },
+                { value: 'linkedAssets', label: 'Linked Assets' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
-                { value: 'heirarchy', label: 'Heirarchy' },
-                { value: 'linkedAssets', label: 'Linked Assets' },
-                // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },
-                // { value: 'classifications', label: 'Classifications' },
             ]
-            console.log()
             // computed
             const terms = computed(() => {
                 if (props.type === 'AtlasGlossary') {
@@ -273,10 +310,6 @@
                 fetchAssetsPaginated({})
             }
 
-            const updateFilters = (filters: any) => {
-                fetchAssetsPaginated({ filters, offset: 0 })
-            }
-
             const updateSelectedAsset = (updatedAsset) => {
                 const idx = entities.value?.findIndex(
                     (ast) => ast.guid === updatedAsset.guid
@@ -293,7 +326,17 @@
                     emit('firstCardReachedTop')
                 }
             }
+            const handleProjectionChange = (newProjection) => {
+                projection.value = newProjection.value
+            }
 
+            const updateFilters = (filters: any) => {
+                console.log(filters)
+                fetchAssetsPaginated({ filters, offset: 0 })
+            }
+            const handleFilterInitialize = (value) => {
+                initialFilters.value = value
+            }
             // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
@@ -323,6 +366,10 @@
                 handleScroll,
                 topSectionRef,
                 scrollDiv,
+                handleProjectionChange,
+                showFiltersPane,
+                initialFilters,
+                handleFilterInitialize,
             }
         },
     })
@@ -334,6 +381,11 @@
     .glossaryTermsTab {
         :global(.ant-tabs-tabpane .ant-tabs-tabpane-active) {
             @apply h-1/3 overflow-auto;
+        }
+    }
+    .drawerClasses {
+        :global(.ant-drawer-wrapper-body) {
+            @apply bg-gray-100 !important;
         }
     }
 </style>

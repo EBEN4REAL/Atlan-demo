@@ -1,28 +1,22 @@
 <template>
     <div class="flex w-full h-full bg-white">
-        <div
-            class="flex-1 border-r border-gray-300 item-stretch"
-            style="max-width: calc(100vw - 420px)"
-        >
+        <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
-                <router-view
-                    v-show="isItem"
-                    :updateProfile="updateProfile"
-                    :selectedItem="selected"
-                    @updateAssetPreview="handlePreview"
-                    @preview="handlePreview"
-                ></router-view>
-
-                <AssetDiscovery
-                    :class="{ hidden: isItem }"
-                    :initial-filters="initialFilters"
-                    @preview="handlePreview"
-                    ref="assetDiscovery"
-                ></AssetDiscovery>
+                <KeepAlive>
+                    <component
+                        :is="isItem ? 'router-view' : 'AssetDiscovery'"
+                        :initial-filters="initialFilters"
+                        :updateProfile="updateProfile"
+                        @preview="handlePreview"
+                        ref="assetDiscovery"
+                    ></component>
+                </KeepAlive>
             </div>
         </div>
-
-        <div class="z-20 flex flex-col bg-white asset-preview-container">
+        <div
+            id="overAssetPreviewSidebar"
+            class="relative bg-white asset-preview-container"
+        >
             <AssetPreview
                 v-if="selected"
                 :selectedAsset="selected"
@@ -30,8 +24,6 @@
                 :page="page"
             ></AssetPreview>
         </div>
-
-        <div id="overAssetPreviewSidebar"></div>
     </div>
 </template>
 
@@ -107,7 +99,7 @@
             }
 
             function propagateToAssetList(updatedAsset: assetInterface) {
-                if (assetDiscovery.value)
+                if (page.value === 'discovery')
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
                 handlePreview(updatedAsset)
                 updateProfile.value = true
@@ -130,8 +122,6 @@
         width: 420px !important;
         min-width: 420px !important;
         max-width: 420px !important;
-        position: absolute;
-        right: 0;
     }
 </style>
 <route lang="yaml">

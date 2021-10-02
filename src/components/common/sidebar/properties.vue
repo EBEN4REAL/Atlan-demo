@@ -58,7 +58,7 @@
                 >
             </p>
         </div>
-        <div>
+        <div v-if="popularityScore(selectedAsset) !== undefined">
             <p class="mb-1 text-sm tracking-wide text-gray-500">
                 Popularity Score
             </p>

@@ -5,7 +5,7 @@
     >
         <a-dropdown
             v-model:visible="isVisible"
-            :trigger="treeMode ? ['hover'] : ['click']"
+            :trigger="treeMode ? ['click'] : ['click']"
             :class="treeMode ? $style.treeMode: ''"
             @click.stop="() => {}"
         >
@@ -54,6 +54,7 @@
                         <AddGtcModal
                             :entityType="assetTypeLabel[entity?.typeName]"
                             :glossaryId="glossaryId"
+                            :glossaryQualifiedName="entity?.typeName === 'AtlasGlossary' ? entity?.attributes?.qualifiedName : entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
                             :categoryId="categoryId"
                             mode="edit"
                             :entity="entity"
@@ -109,6 +110,7 @@
                         <AddGtcModal
                             entityType="term"
                             :glossaryId="glossaryId"
+                            :glossaryQualifiedName="entity?.typeName === 'AtlasGlossary' ? entity?.attributes?.qualifiedName : entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
                             :categoryId="categoryId"
                         >
                             <template #header>
@@ -190,6 +192,7 @@
                         <AddGtcModal
                             entityType="category"
                             :glossaryId="glossaryId"
+                            :glossaryQualifiedName="entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
                             :categoryId="categoryId"
                         >
                             <template #header>
@@ -296,6 +299,33 @@
                             />
                         </a-menu-item>
                     </a-sub-menu>
+                    <a-sub-menu v-if="entity?.typeName === 'AtlasGlossaryTerm'" key="categories">
+                        <template #title>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center justify-between">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-2"
+                                    />
+                                    <p class="p-0 m-0">Categories</p>
+                                </div>
+                                <AtlanIcon
+                                    class="pt-1 ml-4 transform -rotate-90"
+                                    icon="ChevronDown"
+                                />
+                            </div>
+                        </template>
+                        <template #expandIcon><div></div> </template>
+                        <a-menu-item class="hover:bg-white p-0 pb-8" style="max-height: 416px">
+                            <Categories     
+                                :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                                :categories="entity.attributes.categories"
+                                :termGuid="entity.guid"
+                                :term="entity"
+                                mode="threeDotMenu"
+                            />
+                        </a-menu-item>
+                    </a-sub-menu>
                     <a-menu-divider />
                     <a-menu-item key="archive" class="text-red-700">
                         <a-button
@@ -356,6 +386,7 @@
         PropType,
         inject,
         onMounted,
+        watch,
         computed,
     } from 'vue'
     import { useRouter } from 'vue-router'
@@ -365,6 +396,8 @@
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
     import AddGtcModal from '@/glossary/common/addGtcModal.vue'
+    import Categories from '@/glossary/common/categories.vue'
+
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -378,7 +411,7 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { Status, Owners, StatusBadge, AddGtcModal },
+        components: { Status, Owners, StatusBadge, AddGtcModal, Categories },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
@@ -411,7 +444,7 @@
                 inject('handleFetchList')
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
-            const refetchGlossaryTree = inject<(guid: string | 'root') => void>(
+            const refetchGlossaryTree = inject<(guid: string | 'root', refreshEntityType?: 'term' | 'category') => void>(
                 'refetchGlossaryTree'
             )
             const glossaryId = computed(() => {
@@ -447,31 +480,34 @@
                 isVisible.value = false
             }
             const handleOk = () => {
-                serviceMap[props.entity?.typeName](
+               const { data } =  serviceMap[props.entity?.typeName](
                     props.entity?.guid,
                     !props.showLinks,
                     props.entity?.attributes?.anchor?.guid
                 )
                 if (handleFetchListInj) handleFetchListInj(props.entity)
-
-                if (refetchGlossaryTree) {
-                    if (props.entity?.typeName === 'AtlasGlossaryCategory') {
-                        refetchGlossaryTree(
-                            props.entity?.attributes?.parentCategory?.guid ??
-                                'root'
-                        )
-                    } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
-                        if (props.entity?.attributes?.categories?.length) {
-                            props.entity?.attributes?.categories?.forEach(
-                                (category) => {
-                                    refetchGlossaryTree(category.guid)
-                                }
+                watch(data, () => {
+                    if (refetchGlossaryTree) {
+                        if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                            refetchGlossaryTree(
+                                props.entity?.attributes?.parentCategory?.guid ??
+                                    'root',
+                                'category'
                             )
-                        } else {
-                            refetchGlossaryTree('root')
+                        } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
+                            if (props.entity?.attributes?.categories?.length) {
+                                props.entity?.attributes?.categories?.forEach(
+                                    (category) => {
+                                        refetchGlossaryTree(category.guid, 'term')
+                                    }
+                                )
+                            } else {
+                                refetchGlossaryTree('root', 'term')
+                            }
                         }
-                    }
-                }
+                    }                
+                })
+
                 isModalVisible.value = false
             }
 

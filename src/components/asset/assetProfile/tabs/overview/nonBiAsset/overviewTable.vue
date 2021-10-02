@@ -5,10 +5,11 @@
             <a-table
                 :columns="tableColumns"
                 :data-source="results"
-                :pagination="{ position: 'bottom' }"
-                :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
+                :pagination="false"
+                :scroll="{ x: 'calc(700px + 50%)', y: 300 }"
                 :loading="isLoading"
                 class="absolute left-0 w-full"
+                size="small"
             >
             </a-table>
         </div>

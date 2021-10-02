@@ -1,42 +1,41 @@
 <template>
     <div
-        class="flex justify-between py-4 pl-5 pr-4 border-b cursor-pointer  group"
+        class="flex justify-between w-full py-6 pl-5 pr-4 border-b cursor-pointer  group"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->
         <div class="flex flex-row w-full">
-            <div class="mr-2">
-                <!-- <img
-                    v-if="entity.typeName === 'AtlasGlossary'"
-                    :src="GlossarySvg"
-                /> -->
-                <AtlanIcon
-                    v-if="entity.typeName === 'AtlasGlossary'"
-                    icon="Glossary"
-                    class="h-6"
-                />
-
-                <AtlanIcon
-                    v-else-if="entity.typeName === 'AtlasGlossaryCategory'"
-                    icon="Category"
-                    class="h-6"
-                />
-
-                <AtlanIcon
-                    v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
-                    icon="Term"
-                    class="h-6 mt-1"
-                />
-            </div>
-
-            <div class="flex flex-col justify-center w-3/4 ml-1 text-gray-700">
-                <span class="flex items-center cursor-pointer">
-                    <Tooltip
-                        :tooltip-text="entity.displayText"
-                        class="text-lg font-normal leading-7 text-gray-700  hover:underline"
-                        @click="redirectToProfile"
+            <div class="flex flex-col justify-center w-full max-w-2xl ml-1">
+                <span class="flex items-center mb-1 cursor-pointer">
+                    <AtlanIcon
+                        v-if="entity.typeName === 'AtlasGlossary'"
+                        icon="Glossary"
+                        class="h-5"
                     />
 
+                    <AtlanIcon
+                        v-else-if="entity.typeName === 'AtlasGlossaryCategory'"
+                        icon="Category"
+                        class="h-5"
+                    />
+
+                    <AtlanIcon
+                        v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
+                        icon="Term"
+                        class="h-5"
+                    />
+
+                    <!-- <Tooltip
+                        :tooltip-text="entity.displayText"
+                        class="ml-2 text-lg leading-7 text-primary hover:underline"
+                        @click="redirectToProfile"
+                    /> -->
+                    <span
+                        class="items-baseline ml-2 text-lg font-bold leading-7 truncate  text-primary hover:underline overflow-ellipsis"
+                        @click="redirectToProfile"
+                    >
+                        {{ entity?.displayText }}
+                    </span>
                     <component
                         :is="statusObject?.icon"
                         v-if="statusObject && projection.includes('status')"
@@ -44,26 +43,16 @@
                     />
                 </span>
 
-                <div
-                    v-if="
-                        projection.includes('description') &&
-                        entity?.attributes?.shortDescription !== '' &&
-                        entity?.attributes?.shortDescription !== undefined
-                    "
-                    class="mt-1 text-sm leading-5 text-gray-700"
-                >
-                    {{ entity?.attributes?.shortDescription }}
-                </div>
                 <div class="flex items-center w-full text-sm">
                     <div
                         v-if="
                             projection.includes('linkedAssets') &&
                             entity.typeName === 'AtlasGlossaryTerm'
                         "
-                        class="mt-2 mr-4"
+                        class="mr-4"
                     >
-                        <p class="items-baseline p-0 m-0 font-normal">
-                            <span class="font-bold">{{ assetCount }}</span>
+                        <p class="items-baseline p-0 m-0 text-gray-500">
+                            <span class="text-gray-700">{{ assetCount }}</span>
                             Linked Assets
                         </p>
                     </div>
@@ -73,12 +62,12 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(entity).length
                         "
-                        class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
+                        class="flex items-center text-sm leading-5 text-gray-500 "
                     >
                         <AtlanIcon icon="User" class="m-0 mr-1" />
 
                         <span
-                            class="mr-1"
+                            class="mr-1 capitalize"
                             v-html="
                                 getTruncatedUsers(
                                     getCombinedUsersAndGroups(entity),
@@ -88,6 +77,17 @@
                         />
                     </div>
                 </div>
+                <div
+                    v-if="
+                        projection.includes('description') &&
+                        entity?.attributes?.shortDescription !== '' &&
+                        entity?.attributes?.shortDescription !== undefined
+                    "
+                    class="mt-3 text-sm leading-5 text-gray-500"
+                >
+                    {{ entity?.attributes?.shortDescription }}
+                </div>
+
                 <!-- <div
                     v-if="
                         entity.typeName === 'AtlasGlossaryCategory' &&
@@ -104,20 +104,58 @@
                         {{ category }}
                     </div>
                 </div> -->
-                <div
-                    v-if="
-                        entity.typeName === 'AtlasGlossaryTerm' &&
-                        projection.includes('heirarchy') &&
-                        parentCategories
-                    "
-                    class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
-                >
+                <div class="flex items-center w-full">
                     <div
-                        v-for="category in parentCategories"
-                        :key="category"
-                        class="px-3 py-1 mr-2 bg-white border rounded-3xl"
+                        v-if="
+                            entity.typeName === 'AtlasGlossaryTerm' &&
+                            projection.includes('classifications') &&
+                            entity?.classificationNames?.length > 0
+                        "
+                        class="flex items-center mt-2 text-sm leading-5 text-gray-700  max-w-max"
                     >
-                        {{ referredEntities[category].displayText }}
+                        <div
+                            v-for="item in entity?.classificationNames?.slice(
+                                0,
+                                2
+                            )"
+                            :key="item"
+                            class="flex items-center px-3 py-1 mr-2 truncate bg-white border  rounded-3xl overflow-ellipsis"
+                        >
+                            <AtlanIcon
+                                icon="Shield"
+                                class="mr-1 text-pink-500 mb-0.5"
+                            ></AtlanIcon>
+                            {{ item }}
+                        </div>
+                        <div
+                            v-if="entity?.classificationNames?.length > 2"
+                            class="flex items-center px-3 py-1 mr-2 truncate bg-transparent border-0  overflow-ellipsis"
+                        >
+                            + {{ entity?.classificationNames?.length - 2 }} more
+                        </div>
+                    </div>
+
+                    <div
+                        v-if="
+                            entity.typeName === 'AtlasGlossaryTerm' &&
+                            projection.includes('categories') &&
+                            parentCategories
+                        "
+                        class="flex items-center max-w-full mt-2 text-sm leading-5 text-gray-700 "
+                    >
+                        <div
+                            v-for="category in parentCategories?.slice(0, 2)"
+                            :key="category"
+                            class="px-3 py-1 mr-2 truncate bg-white border  rounded-3xl overflow-ellipsis"
+                        >
+                            {{ category }}
+                        </div>
+                    </div>
+                    <div
+                        v-if="parentCategories > 2"
+                        class="flex items-center px-3 py-1 mr-2 truncate bg-white border  rounded-3xl overflow-ellipsis"
+                    >
+                        + {{ parentCategories?.length - 2 }} more
                     </div>
                 </div>
             </div>
@@ -126,6 +164,7 @@
         <ThreeDotMenu
             :entity="entity"
             :redirectToProfile="redirectToProfile"
+            :visible="false"
             class="opacity-0"
         />
     </div>
@@ -279,9 +318,6 @@
                     router.push(`/glossary/term/${props.entity.guid}`)
             }
 
-            // onMounted(() => {
-            //     if (termName.value) fetchLinkedAssets(termName.value)
-            // })
             return {
                 statusObject,
                 redirectToProfile,

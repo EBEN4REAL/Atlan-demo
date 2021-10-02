@@ -16,14 +16,14 @@
             class="h-4 m-0 mb-1 mr-2"
         />
 
-        <span class="text-xs">{{ entity?.displayText }}</span>
+        <span class="text-sm">{{ entity?.displayText }}</span>
 
         <AtlanIcon
             v-if="entityToAdd !== ''"
             icon="ChevronDown"
             class="h-4 mx-1 transition-transform transform -rotate-90"
         />
-        <span v-if="entityToAdd !== ''" class="text-xs font-bold text-gray-700"
+        <span v-if="entityToAdd !== ''" class="text-sm font-bold text-gray-700"
             >New {{ entityToAdd }}</span
         >
     </div>

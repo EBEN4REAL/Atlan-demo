@@ -215,7 +215,7 @@
                 refetch()
                 newName.value = ''
             })
-
+            console.log(category)
             // Providers
             provide('refreshEntity', refetch)
 

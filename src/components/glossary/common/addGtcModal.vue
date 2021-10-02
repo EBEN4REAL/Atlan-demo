@@ -39,7 +39,7 @@
                         :show-chip-style-status="false"
                         :show-no-status="true"
                         :show-label="true"
-                        class="items-center p-0 text-xs cursor-pointer"
+                        class="items-center p-0 text-sm cursor-pointer"
                     ></StatusBadge>
                     <AtlanIcon
                         class="pt-1 ml-4 transform -rotate-90"

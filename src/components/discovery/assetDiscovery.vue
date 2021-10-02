@@ -390,7 +390,7 @@
                 isAggregate.value = true
                 updateBody()
                 setRouterOptions()
-                // tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
+                // tracking.send(events.EVENT_ASSET_SEARCH, {
                 //     trigger: 'discover',
                 // })
             }, 150)

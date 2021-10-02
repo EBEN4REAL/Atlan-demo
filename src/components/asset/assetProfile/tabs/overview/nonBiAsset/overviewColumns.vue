@@ -9,19 +9,12 @@
                 @change="handleSearchChange"
             >
                 <template #filter>
-                    <div class="flex items-center justify-between mb-2 text-sm">
-                        <span>Data type</span>
-                        <a-spin v-if="isAggregateLoading" size="small" />
-                        <span
-                            class="text-gray-500 cursor-pointer hover:text-gray"
-                            @click="clearAllFilters"
-                            >Clear</span
-                        >
-                    </div>
                     <DataTypes
-                        v-model:filters="filters"
                         :data-type-map="dataTypeMap"
-                        @update:filters="handleFilterChange"
+                        :clear-all-filters="clearAllFilters"
+                        @dataTypeFilter="handleFilterChange"
+                        @sort="handleChangeSort"
+                        @certification="handleCertificationFilter"
                     />
                 </template>
             </SearchAndFilter>
@@ -178,6 +171,9 @@
             const queryText = ref('')
             const filters: Ref<string[]> = ref([])
             const columnsList: Ref<assetInterface[]> = ref([])
+            const certificationFilters: Ref<string[]> = ref([])
+            const sortOrder = ref('Column.order|ascending')
+            const clearAllFilters = ref<boolean>(false)
 
             const { columnCount } = useAssetInfo()
 
@@ -201,30 +197,38 @@
                     query: queryText,
                     dataTypes: filters,
                     pinned: false,
+                    sort: sortOrder,
+                    certification: certificationFilters,
                 })
 
             const { list: pinnedList } = useColumnsList(assetQualifiedName, {
                 pinned: true,
             })
 
-            const { dataTypeMap, isAggregateLoading } =
-                useColumnAggregation(assetQualifiedName)
+            const { dataTypeMap } = useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
                 reFetch()
             }, 150)
 
-            const clearAllFilters = () => {
-                filters.value = []
-                reFetch()
-            }
-
             const clearFiltersAndSearch = () => {
-                filters.value = []
                 queryText.value = ''
+                clearAllFilters.value = true
+                reFetch()
+                nextTick(() => {
+                    clearAllFilters.value = false
+                })
+            }
+            const handleChangeSort = (payload: any) => {
+                sortOrder.value = payload
                 reFetch()
             }
-            const handleFilterChange = () => {
+            const handleCertificationFilter = (payload: any) => {
+                certificationFilters.value = payload
+                reFetch()
+            }
+            const handleFilterChange = (payload: any) => {
+                filters.value = payload
                 reFetch()
             }
 
@@ -342,7 +346,8 @@
                 rowClassName,
                 customRow,
                 handleSearchChange,
-                clearAllFilters,
+                handleChangeSort,
+                handleCertificationFilter,
                 clearFiltersAndSearch,
                 filters,
                 isLoadMore,
@@ -352,7 +357,7 @@
                 handleFilterChange,
                 handleCloseColumnSidebar,
                 propagateToColumnList,
-                isAggregateLoading,
+                clearAllFilters,
                 columnsList,
                 selectedRow,
                 columnsData,

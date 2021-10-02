@@ -142,7 +142,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed, Ref, ref } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        computed,
+        Ref,
+        ref,
+        watch,
+    } from 'vue'
     import { dataTypeList } from '~/constant/datatype'
     import { List } from '~/constant/status'
 
@@ -153,10 +161,14 @@
                 type: Object as PropType<Record<string, number>>,
                 required: false,
             },
+            clearAllFilters: {
+                type: Boolean,
+                required: true,
+            },
         },
         emits: ['dataTypeFilter', 'sort', 'certification'],
         setup(props, { emit }) {
-            const { dataTypeMap } = toRefs(props)
+            const { dataTypeMap, clearAllFilters } = toRefs(props)
             const dataTypeFilters: Ref<any[]> = ref([])
             const sorting = ref('')
             const certificationFilters: Ref<any[]> = ref([])
@@ -227,6 +239,20 @@
                     handeChangeCertification()
                 }
             }
+            const changeToDefaultSorting = () => {
+                if (sorting.value !== 'Column.order|ascending') {
+                    sorting.value = 'Column.order|ascending'
+                    handeChangeSorting()
+                }
+            }
+
+            watch(clearAllFilters, () => {
+                if (clearAllFilters.value === true) {
+                    clearCertificationFilters()
+                    clearDataTypeFilters()
+                    changeToDefaultSorting()
+                }
+            })
 
             return {
                 options,

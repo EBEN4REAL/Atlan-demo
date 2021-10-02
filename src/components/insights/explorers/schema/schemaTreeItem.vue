@@ -30,11 +30,9 @@
                         </div>
                         <div
                             class="flex items-center text-xs text-gray-500 mr-7"
+                            v-if="isPrimary(item)"
                         >
-                            <div
-                                class="flex items-center"
-                                v-if="isPrimary(item)"
-                            >
+                            <div class="flex items-center">
                                 <a-tooltip>
                                     <template #title>Pkey</template>
                                     <AtlanIcon
@@ -119,9 +117,13 @@
         ComputedRef,
         Ref,
         inject,
+        watch,
     } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { tablesData } from './tablesDemoData'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
@@ -147,6 +149,11 @@
                 assetType,
                 title,
             } = useAssetInfo()
+            const { modifyActiveInlineTab } = useInlineTab()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const { item } = toRefs(props)
             const actionClick = (action: string) => {
@@ -155,6 +162,16 @@
                         break
                     }
                     case 'info': {
+                        if (!activeInlineTab.value.assetSidebar.isVisible) {
+                            const activeInlineTabCopy: activeInlineTabInterface =
+                                Object.assign({}, activeInlineTab.value)
+                            activeInlineTabCopy.assetSidebar.assetInfo = item
+                            activeInlineTabCopy.assetSidebar.isVisible = true
+                            openAssetSidebar(activeInlineTabCopy)
+                        } else {
+                            /* Close it if it is already opened */
+                            closeAssetSidebar(activeInlineTab.value)
+                        }
                         break
                     }
                     case 'bookmark': {

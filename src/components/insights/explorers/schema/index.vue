@@ -31,7 +31,7 @@
             <schema-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
-                :select-node="selectNodeAndToggleAssetSidebar"
+                :select-node="selectNode"
                 :expand-node="expandNode"
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
@@ -130,23 +130,24 @@
                 )}/${activeInlineTab.value.assetSidebar.assetInfo?.title}`
                 return key
             })
-            const selectNodeAndToggleAssetSidebar = (selected, event) => {
-                if (event.selectedNodes?.length > 0) {
-                    const item = event.selectedNodes[0]?.props
-                    if (item.typeName === 'LoadMore') return
-                    if (selected.length > 0) {
-                        const activeInlineTabCopy: activeInlineTabInterface =
-                            Object.assign({}, activeInlineTab.value)
-                        activeInlineTabCopy.assetSidebar.assetInfo = item
-                        activeInlineTabCopy.assetSidebar.isVisible = true
-                        openAssetSidebar(activeInlineTabCopy)
-                    }
-                } else {
-                    /* Close it if it is already opened */
-                    closeAssetSidebar(activeInlineTab.value)
-                }
-                selectNode(selected, event)
-            }
+            /* WE CAN USE THIS FXN LATER */
+            // const selectNodeAndToggleAssetSidebar = (selected, event) => {
+            //     if (event.selectedNodes?.length > 0) {
+            //         const item = event.selectedNodes[0]?.props
+            //         if (item.typeName === 'LoadMore') return
+            //         if (selected.length > 0) {
+            //             const activeInlineTabCopy: activeInlineTabInterface =
+            //                 Object.assign({}, activeInlineTab.value)
+            //             activeInlineTabCopy.assetSidebar.assetInfo = item
+            //             activeInlineTabCopy.assetSidebar.isVisible = true
+            //             openAssetSidebar(activeInlineTabCopy)
+            //         }
+            //     } else {
+            //         /* Close it if it is already opened */
+            //         closeAssetSidebar(activeInlineTab.value)
+            //     }
+            //     selectNode(selected, event)
+            // }
 
             const {
                 treeData,
@@ -179,7 +180,6 @@
 
             return {
                 connectorsData,
-                selectNodeAndToggleAssetSidebar,
                 setConnector,
                 isAssetSidebarOpened,
                 openAssetSidebar,

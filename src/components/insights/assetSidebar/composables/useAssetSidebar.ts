@@ -10,7 +10,6 @@ export function useAssetSidebar(
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
 
     const closeAssetSidebar = (activeTab: activeInlineTabInterface) => {
-        console.log(activeTab, tabsArray)
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
@@ -19,20 +18,17 @@ export function useAssetSidebar(
             tabsArray.value[index].assetSidebar.title = ''
             tabsArray.value[index].assetSidebar.id = ''
         }
-        console.log(tabsArray, 'tabsArray')
         // syncying inline tabarray in localstorage
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
 
-    const openAssetSidebar = (table: tableInterface) => {
+    const openAssetSidebar = (activeInlineTabCopy: any) => {
         if (activeInlineTab.value) {
             const index = tabsArray.value.findIndex(
                 (tab) => tab.key === activeInlineTab.value?.key
             )
             if (index !== -1) {
-                tabsArray.value[index].assetSidebar.isVisible = true
-                tabsArray.value[index].assetSidebar.title = table.label
-                tabsArray.value[index].assetSidebar.id = table.id
+                tabsArray.value[index] = activeInlineTabCopy
                 // syncying inline tabarray in localstorage
                 syncInlineTabsInLocalStorage(tabsArray.value)
             }

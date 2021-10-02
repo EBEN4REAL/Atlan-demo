@@ -28,7 +28,19 @@
                                 {{ title(item) }}
                             </span>
                         </div>
-                        <div class="mr-8 text-xs text-gray-500">
+                        <div
+                            class="flex items-center text-xs text-gray-500 mr-7"
+                            v-if="isPrimary(item)"
+                        >
+                            <div class="flex items-center">
+                                <a-tooltip>
+                                    <template #title>Pkey</template>
+                                    <AtlanIcon
+                                        icon="PrimaryKey"
+                                        class="w-4 h-4 my-auto mr-1  primary-key-color"
+                                    ></AtlanIcon>
+                                </a-tooltip>
+                            </div>
                             {{ dataType(item) }}
                         </div>
                     </div>
@@ -45,24 +57,35 @@
                             {{ title(item) }}
                         </span>
                         <div
-                            class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top right-6 group-hover:opacity-100 bg-gradient-to-l from-gray-light via-gray-light"
+                            class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top right-6 group-hover:opacity-100"
+                            :class="
+                                item?.selected
+                                    ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                    : 'bg-gradient-to-l from-gray-light via-gray-light'
+                            "
                         >
                             <div
-                                class="ml-8 mr-2 bg-gray-light"
-                                @click.stop="() => actionClick('play')"
+                                class="ml-8 mr-2"
+                                @click="() => actionClick('play')"
                             >
                                 <AtlanIcon
                                     icon="Play"
-                                    class="w-4 h-4 my-auto hover:text-primary"
+                                    class="w-4 h-4 my-auto"
+                                    :class="
+                                        item?.selected ? 'tree-light-color' : ''
+                                    "
                                 ></AtlanIcon>
                             </div>
                             <div
-                                class="mr-2 bg-gray-light"
+                                class="mr-2"
                                 @click.stop="() => actionClick('info')"
                             >
                                 <AtlanIcon
                                     icon="Info"
-                                    class="w-4 h-4 my-auto hover:text-primary"
+                                    :class="
+                                        item?.selected ? 'tree-light-color' : ''
+                                    "
+                                    class="w-4 h-4 my-auto"
                                 ></AtlanIcon>
                             </div>
                             <div
@@ -71,7 +94,10 @@
                             >
                                 <AtlanIcon
                                     icon="BookmarkOutlined"
-                                    class="w-4 h-4 my-auto hover:text-primary"
+                                    :class="
+                                        item?.selected ? 'tree-light-color' : ''
+                                    "
+                                    class="w-4 h-4 my-auto"
                                 ></AtlanIcon>
                             </div>
                         </div>
@@ -93,10 +119,7 @@
         inject,
     } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { tablesData } from './tablesDemoData'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
@@ -115,17 +138,13 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const {
+                isPrimary,
                 dataTypeImageForColumn,
                 dataTypeImage,
                 dataType,
                 assetType,
                 title,
             } = useAssetInfo()
-            const { modifyActiveInlineTab } = useInlineTab()
-            const { openAssetSidebar } = useAssetSidebar(
-                inlineTabs,
-                activeInlineTab
-            )
 
             const { item } = toRefs(props)
             const actionClick = (action: string) => {
@@ -134,19 +153,6 @@
                         break
                     }
                     case 'info': {
-                        const activeInlineTabCopy: activeInlineTabInterface =
-                            Object.assign({}, activeInlineTab.value)
-                        activeInlineTabCopy.assetSidebar.assetInfo = item.value
-
-                        console.log(activeInlineTabCopy, 'copy')
-                        modifyActiveInlineTab(
-                            activeInlineTabCopy,
-                            inlineTabs,
-                            true
-                        )
-                        const sampleTableData = tablesData[0]
-                        sampleTableData.label = item.value?.title as string
-                        openAssetSidebar(sampleTableData)
                         break
                     }
                     case 'bookmark': {
@@ -154,7 +160,10 @@
                     }
                 }
             }
+
             return {
+                activeInlineTab,
+                isPrimary,
                 title,
                 assetType,
                 dataType,
@@ -183,6 +192,21 @@
     .margin-align-top {
         margin-top: -1px;
     }
+    .primary-key-color {
+        color: #3ca5bc;
+    }
+    /* Tree selection actions bg change */
+    .tree-light-color {
+        background-color: #dbe9fe;
+    }
+    .via-tree-light-color {
+        --tw-gradient-stops: var(--tw-gradient-from), #dbe9fe,
+            var(--tw-gradient-to, rgba(244, 246, 253, 0)) !important;
+    }
+    .from-tree-light-color {
+        --tw-gradient-from: #dbe9fe !important;
+    }
+    /* ------------------------------- */
 </style>
 
 <route lang="yaml">

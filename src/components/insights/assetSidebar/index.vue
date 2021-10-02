@@ -23,13 +23,14 @@
         <AssetPreview
             v-if="selectedAsset"
             :selectedAsset="selectedAsset"
+            @asset-mutation="() => {}"
             page="discovery"
         ></AssetPreview>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ComputedRef, computed } from 'vue'
+    import { defineComponent, Ref, inject, ComputedRef, ref, watch } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
@@ -43,8 +44,15 @@
             ) as ComputedRef<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { closeAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
-            const selectedAsset = computed(
-                () => activeInlineTab.value?.assetSidebar?.assetInfo
+            const selectedAsset: Ref<any> = ref(undefined)
+
+            watch(
+                activeInlineTab,
+                () => {
+                    selectedAsset.value =
+                        activeInlineTab.value?.assetSidebar?.assetInfo
+                },
+                { immediate: true }
             )
 
             return {

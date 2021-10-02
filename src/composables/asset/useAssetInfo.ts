@@ -34,6 +34,9 @@ export default function useAssetInfo() {
             attributes(asset).userDescription || attributes(asset).description
         )
     }
+    const isPrimary = (asset: assetInterface) => {
+        return attributes(asset).isPrimary
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -464,6 +467,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        isPrimary,
         dataTypeImageForColumn,
         popularityScore,
         createdBy,

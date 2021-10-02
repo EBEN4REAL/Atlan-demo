@@ -31,7 +31,7 @@
             <schema-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
-                :select-node="selectNode"
+                :select-node="selectNodeAndOpenAssetSidebar"
                 :expand-node="expandNode"
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
@@ -74,7 +74,10 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                tabs,
+                activeInlineTab
+            )
             const {
                 setConnectorsDataInInlineTab,
                 getDatabaseQualifiedName,
@@ -119,6 +122,28 @@
             const schemaQualifiedName = computed(() =>
                 getSchemaQualifiedName(connectorsData.value.attributeValue)
             )
+            const initSelectedKeys = computed(() => {
+                /* KEY - SchemaqualifiedName/tableName */
+                let key = `${getSchemaQualifiedName(
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeValue
+                )}/${activeInlineTab.value.assetSidebar.assetInfo?.title}`
+                return key
+            })
+            const selectNodeAndOpenAssetSidebar = (selected, event) => {
+                if (selected.length > 0) {
+                    const item = event.selectedNodes[0].props
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        Object.assign({}, activeInlineTab.value)
+                    activeInlineTabCopy.assetSidebar.assetInfo = item
+                    activeInlineTabCopy.assetSidebar.isVisible = true
+                    openAssetSidebar(activeInlineTabCopy)
+                } else {
+                    /* Close it if it is already opened */
+                    closeAssetSidebar(activeInlineTab.value)
+                }
+                selectNode(selected, event)
+            }
 
             const {
                 treeData,
@@ -134,6 +159,7 @@
                 // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
                 // databaseQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA'),
                 // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
+                initSelectedKeys,
                 connectionQualifiedName,
                 databaseQualifiedName,
                 schemaQualifiedName,
@@ -146,9 +172,11 @@
                         activeInlineTab.value.explorer.schema.connectors
                 }
             })
+            console.log(selectedKeys.value, 'out')
 
             return {
                 connectorsData,
+                selectNodeAndOpenAssetSidebar,
                 setConnector,
                 isAssetSidebarOpened,
                 openAssetSidebar,

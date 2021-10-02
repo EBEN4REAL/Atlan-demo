@@ -10,11 +10,21 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         getActiveInlineTabKeyFromLocalStorage,
     } = useLocalStorageSync()
 
+    // initial sidebar will be not visible
+    const setInlineTabsVisibilityToNone = (
+        localStorageInlineTabs: activeInlineTabInterface[]
+    ) => {
+        const localStorageInlineTabsX = localStorageInlineTabs.map((tab) => {
+            tab.assetSidebar.isVisible = false
+            return tab
+        })
+        return localStorageInlineTabsX
+    }
     const setInlineTabsArray = () => {
         // checking if localstorage already have active tabs
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
-            return localStorageInlineTabs
+            return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
         return inlineTabsDemoData
     }
@@ -80,7 +90,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     const modifyActiveInlineTab = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,
-        restrictIsSavedToggle?: boolean
+        restrictIsSavedToggle?: boolean,
+        localStorageSync: boolean = true
     ) => {
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
@@ -92,9 +103,14 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab
         }
-        // syncying inline tabarray in localstorage
-        syncInlineTabsInLocalStorage(tabsArray.value)
+        if (localStorageSync) {
+            console.log('localStorageSync')
+            // syncying inline tabarray in localstorage
+            syncInlineTabsInLocalStorage(tabsArray.value)
+        }
+        console.log(tabsArray.value, 'tabarray')
     }
+
     const modifyActiveInlineTabEditor = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,

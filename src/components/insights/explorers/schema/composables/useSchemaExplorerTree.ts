@@ -40,6 +40,7 @@ interface useSchemaExplorerTreeProps {
     databaseQualifiedName?: ComputedRef<string | undefined>
     schemaQualifiedName?: ComputedRef<string | undefined>
     cacheKey?: string
+    initSelectedKeys?: ComputedRef<string | undefined>
     isAccordion?: boolean
 }
 
@@ -48,19 +49,20 @@ const useTree = ({
     connectionQualifiedName,
     databaseQualifiedName,
     schemaQualifiedName,
+    initSelectedKeys,
     cacheKey,
     isAccordion,
 }: useSchemaExplorerTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
-
+    console.log(initSelectedKeys, 'initial')
     const treeData = ref<CustomTreeDataItem[]>([])
 
     const isInitingTree = ref(false)
     const loadedKeys = ref<string[]>([])
     const selectedCacheKey = `${cacheKey}_selected`
     const expandedCacheKey = `${cacheKey}_expanded`
-    const selectedKeys = ref<string[]>([])
+    const selectedKeys = ref<string[]>([initSelectedKeys?.value])
     const expandedKeys = ref<string[]>([])
 
     const selectedCache = store.get(selectedCacheKey)
@@ -450,17 +452,25 @@ const useTree = ({
     }
 
     const selectNode = (selected: any, event: any) => {
-        if (!event.node.isLeaf) {
-            expandNode([], event)
-            // selectedKeys.value = []
+        // if (!event.node.isLeaf) {
+        //     expandNode([], event)
+        //     // selectedKeys.value = []
+        // } else {
+        //     if (selectedKeys.value.includes(selected)) {
+        //         // selectedKeys.value = []
+        //     } else {
+        //         // selectedKeys.value = [...selected]
+        //     }
+        //     emit('select', event.node.eventKey)
+        // }
+        // store.set(selectedCacheKey, selectedKeys.value)
+        /* New Logic */
+        if (selectedKeys.value.includes(selected)) {
+            selectedKeys.value = []
         } else {
-            if (selectedKeys.value.includes(selected)) {
-                // selectedKeys.value = []
-            } else {
-                // selectedKeys.value = [...selected]
-            }
-            emit('select', event.node.eventKey)
+            selectedKeys.value = [...selected]
         }
+        emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
     }
 

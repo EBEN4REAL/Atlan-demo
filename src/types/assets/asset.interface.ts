@@ -22,6 +22,7 @@ export interface assetInterface {
         name: string
         displayName: string
         popularityScore: number
+        isPrimary: boolean
         qualifiedName: string
         userDescription: string
         rowCount: number

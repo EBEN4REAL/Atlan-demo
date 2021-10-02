@@ -65,23 +65,42 @@
                             "
                         >
                             <div
-                                class="ml-8 mr-2"
-                                @click="() => actionClick('play')"
+                                class="pl-2 ml-24"
+                                @click="() => actionClick('add')"
                             >
                                 <AtlanIcon
-                                    icon="Play"
+                                    icon="AddAssetName"
                                     class="w-4 h-4 my-auto"
                                     :class="
-                                        item?.selected ? 'tree-light-color' : ''
+                                        item?.selected
+                                            ? 'tree-light-color'
+                                            : 'bg-gray-light'
                                     "
                                 ></AtlanIcon>
                             </div>
                             <div
-                                class="mr-2"
+                                class="pl-2 pr-2"
+                                :class="
+                                    item?.selected
+                                        ? 'tree-light-color'
+                                        : 'bg-gray-light'
+                                "
                                 @click.stop="() => actionClick('info')"
                             >
                                 <AtlanIcon
                                     icon="Info"
+                                    :class="
+                                        item?.selected ? 'tree-light-color' : ''
+                                    "
+                                    class="w-4 h-4 my-auto"
+                                ></AtlanIcon>
+                            </div>
+                            <div
+                                class="pr-2"
+                                @click.stop="() => actionClick('play')"
+                            >
+                                <AtlanIcon
+                                    icon="Play"
                                     :class="
                                         item?.selected ? 'tree-light-color' : ''
                                     "
@@ -122,8 +141,6 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { tablesData } from './tablesDemoData'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
@@ -149,7 +166,6 @@
                 assetType,
                 title,
             } = useAssetInfo()
-            const { modifyActiveInlineTab } = useInlineTab()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
@@ -158,6 +174,9 @@
             const { item } = toRefs(props)
             const actionClick = (action: string) => {
                 switch (action) {
+                    case 'add': {
+                        break
+                    }
                     case 'play': {
                         break
                     }

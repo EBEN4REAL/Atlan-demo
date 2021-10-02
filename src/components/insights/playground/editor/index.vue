@@ -93,14 +93,15 @@
                             class="
                                 flex
                                 items-center
-                                ml-2
+                                justify-center
                                 py-0.5
-                                px-0.5
+                                ml-2
+                                px-1
                                 border-none
                                 text-gray-500
                             "
                         >
-                            <AtlanIcon class="mr-1" icon="KebabMenu"
+                            <AtlanIcon class="" icon="KebabMenu"
                         /></a-button>
                     </div>
                 </div>

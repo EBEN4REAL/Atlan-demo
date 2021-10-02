@@ -55,6 +55,7 @@
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const monacoRoot = ref<HTMLElement>()
             const disposable: Ref<monaco.IDisposable | undefined> = ref()
+            const currentPosition: Ref<any> = ref({})
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const { onEditorContentChange } = useEditor(tabs, activeInlineTab)
 
@@ -102,6 +103,12 @@
                 'atlansql',
                 languageTokens
             )
+            const setCurrentPosition = (position: any) => {
+                currentPosition.value = position
+            }
+            const getCurrentPosition = () => {
+                return currentPosition.value
+            }
             function randStr(len = 7) {
                 let s = ''
                 while (s.length < len)
@@ -215,10 +222,14 @@
                     onEditorContentChange(event, text)
                     const lastTypedCharacter = event?.changes[0]?.text
                     triggerAutoCompletion(lastTypedCharacter)
-                    emit('setEditorInstance', editor)
+                })
+                // saving current position
+                editor?.onDidBlurEditorText(() => {
+                    setCurrentPosition(editor?.getPosition())
+                    editor?.trigger('keyboard', 'type', { text: 'value' })
+                    console.log('currPositionSet', getCurrentPosition())
                 })
                 // on mounting
-                emit('setEditorInstance', editor)
             })
 
             onUnmounted(() => {
@@ -244,6 +255,9 @@
                         lineNumber: range.endLineNumber,
                     }
                     editor?.setPosition(position)
+                    editor?.onDidBlurEditorText(() => {
+                        setCurrentPosition(editor?.getPosition())
+                    })
                     //on active inline tab change
                     emit('editorInstance', editor)
                 }

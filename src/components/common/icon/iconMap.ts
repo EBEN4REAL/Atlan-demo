@@ -69,6 +69,7 @@ import Play from '~/assets/images/icons/play.svg'
 import Save from '~/assets/images/icons/save.svg'
 import Globe from '~/assets/images/icons/globe.svg'
 import Info from '~/assets/images/icons/info.svg'
+import AddAssetName from '~/assets/images/icons/add-table.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 
 export default {
@@ -143,5 +144,6 @@ export default {
     Save,
     Globe,
     Info,
+    AddAssetName,
     VariableTrigger,
 }

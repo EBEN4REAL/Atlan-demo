@@ -86,11 +86,11 @@
             >
                 <button
                     v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                     @click="loadMore"
                 >
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -279,10 +279,7 @@
                     ...columnFromUrl.value,
                 ]
 
-                /* const columnsIds = columnsList.value.map((c) => c.guid)
-                const filtered = columnsList.value.filter(
-                    ({ guid }, index) => !columnsIds.includes(guid, index + 1)
-                ) */
+                // In case column is selected from discovery and after clicking load more duplication of the same column happens
                 const uniqueColumns = {}
                 const filteredColumnsList = columnsList.value.filter(
                     (col) =>

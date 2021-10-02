@@ -14,7 +14,6 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         // checking if localstorage already have active tabs
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
-            console.log(localStorageInlineTabs, 'local')
             return localStorageInlineTabs
         }
         return inlineTabsDemoData
@@ -87,6 +86,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
+            // changing from saved -> to unsaved
+            if (activeTab.isSaved) activeTab.isSaved = false
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab
         }
@@ -102,6 +103,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
+            // changing from saved -> to unsaved
+            if (activeTab.isSaved) activeTab.isSaved = false
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index].playground.editor =
                 activeTab.playground.editor
@@ -124,6 +127,21 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         tabsArray.value.push(inlineTab)
         activeInlineTabKey.value = inlineTab.key
     }
+    const isTwoInlineTabsEqual = (
+        obj1: activeInlineTabInterface,
+        obj2: activeInlineTabInterface
+    ) => {
+        console.log('run Equal')
+        const obj1Length = Object.keys(obj1).length
+        const obj2Length = Object.keys(obj2).length
+
+        if (obj1Length === obj2Length) {
+            return Object.keys(obj1).every(
+                (key) => obj2.hasOwnProperty(key) && obj2[key] === obj1[key]
+            )
+        }
+        return false
+    }
 
     const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
     const activeInlineTabKey = ref(setActiveInlineTabKey())
@@ -135,6 +153,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         tabsArray,
         activeInlineTabKey,
         activeInlineTab,
+        isTwoInlineTabsEqual,
         isInlineTabAlreadyOpened,
         inlineTabRemove,
         inlineTabAdd,

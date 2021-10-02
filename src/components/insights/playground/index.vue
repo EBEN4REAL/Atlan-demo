@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, Ref, inject, ref } from 'vue'
+    import { defineComponent, toRefs, computed, Ref, inject, ref } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -115,7 +115,9 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
-
+            const isActiveInlineTabSaved = computed(
+                () => activeInlineTab.value.isSaved
+            )
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
@@ -220,6 +222,7 @@
             /*-------------------------------------*/
 
             return {
+                isActiveInlineTabSaved,
                 isQueryRunning,
                 activeInlineTab,
                 tabs,
@@ -302,7 +305,7 @@
     //     // min-width: 3rem;
     // }
     .inline_tab_label {
-        max-width: 4.2rem;
+        max-width: 5.8rem;
         overflow: hidden;
     }
 </style>

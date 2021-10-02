@@ -2,20 +2,15 @@
     <div class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
-                <router-view
-                    v-show="isItem"
-                    :updateProfile="updateProfile"
-                    :selectedItem="selected"
-                    @updateAssetPreview="handlePreview"
-                    @preview="handlePreview"
-                ></router-view>
-
-                <AssetDiscovery
-                    :class="{ hidden: isItem }"
-                    :initial-filters="initialFilters"
-                    @preview="handlePreview"
-                    ref="assetDiscovery"
-                ></AssetDiscovery>
+                <KeepAlive>
+                    <component
+                        :is="isItem ? 'router-view' : 'AssetDiscovery'"
+                        :initial-filters="initialFilters"
+                        :updateProfile="updateProfile"
+                        @preview="handlePreview"
+                        ref="assetDiscovery"
+                    ></component>
+                </KeepAlive>
             </div>
         </div>
         <div
@@ -104,7 +99,7 @@
             }
 
             function propagateToAssetList(updatedAsset: assetInterface) {
-                if (assetDiscovery.value)
+                if (page.value === 'discovery')
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
                 handlePreview(updatedAsset)
                 updateProfile.value = true

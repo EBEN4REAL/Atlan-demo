@@ -211,7 +211,6 @@
         BasicSearchAttributes,
         tableauAttributes,
     } from '~/constant/projection'
-    import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
@@ -323,8 +322,6 @@
             const assetFilterRef = ref()
             const isFilterVisible = ref(false)
             const router = useRouter()
-            const tracking = useTracking()
-            const events = tracking.getEventsName()
             const filterMode = ref('custom')
             const now = ref(true)
             const showCheckBox = ref(false)
@@ -587,9 +584,6 @@
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 updateBody()
-                tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
-                    trigger: 'discover',
-                })
             }, 200)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload

@@ -19,20 +19,37 @@
                             v-if="item.title !== 'Load more'"
                             placement="right"
                         >
-                            <div class="min-w-full">
-                                <div class="flex justify-between mr-2 group">
-                                    <div class="flex m-0">
+                            <div class="w-full">
+                                <div
+                                    class="flex justify-between w-full overflow-hidden  group"
+                                >
+                                    <div class="flex w-full m-0">
                                         <div
-                                            class="flex content-center my-auto text-sm leading-5 text-gray-700 "
+                                            class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                                         >
+                                            <div
+                                                v-if="item.typeName == 'Column'"
+                                                class="mt-0.5"
+                                            >
+                                                <component
+                                                    :is="
+                                                        dataTypeImageForColumn(
+                                                            item
+                                                        )
+                                                    "
+                                                    class="flex-none w-auto h-4 mr-1 text-gray-500 "
+                                                ></component>
+                                            </div>
                                             <AtlanIcon
+                                                v-else
                                                 :icon="item.typeName"
                                                 class="w-5 h-5 my-auto mr-1"
                                             ></AtlanIcon>
                                             <span
-                                                class="text-sm leading-5 tracking-wide "
-                                                >{{ item.title }}</span
+                                                class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
                                             >
+                                                {{ item.title }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -44,17 +61,7 @@
                             >
                                 <div class="flex flex-col max-w-80">
                                     <span
-                                        class="
-                                            m-0
-                                            mb-2
-                                            text-base
-                                            font-bold
-                                            leading-6
-                                            text-gray-700
-                                            overflow-hidden
-                                            truncate
-                                            ...
-                                        "
+                                        class="m-0 mb-2 text-base font-bold leading-6 text-gray-700 "
                                         >{{ item.title }}</span
                                     >
                                     <span
@@ -156,6 +163,7 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import { KeyMaps } from '~/api/keyMap'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     // import { Glossary } from '~/api/atlas/glossary'
 
@@ -215,8 +223,13 @@
         },
         setup(props, { emit }) {
             // data
-
+            const { dataTypeImageForColumn } = useAssetInfo()
+            function consolex(item) {
+                console.log(item)
+            }
             return {
+                consolex,
+                dataTypeImageForColumn,
                 StatusList,
                 // selectedKeys,
                 // expandedKeys,
@@ -230,4 +243,31 @@
     .tree-container {
         overflow: hidden;
     }
+    .nooverflow {
+        display: inline-block;
+        overflow: hidden !important;
+        overflow-wrap: normal;
+        text-overflow: ellipsis;
+        white-space: nowrap !important;
+        width: 0;
+        min-width: 85%;
+    }
+</style>
+<style lang="less" module>
+    :global(.ant-tree .ant-tree-title) {
+        @apply pl-0 pr-0 !important;
+    }
+    :global(.ant-tree.ant-tree-block-node li .ant-tree-node-content-wrapper) {
+        @apply w-full !important;
+    }
+
+    :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+        background-color: #f3f3f3 !important;
+    }
+    // :global(.ant-tree-treenode-switcher-close:hover) {
+    //     background-color: #e5e5e5 !important;
+    // }
+    // :global(.ant-tree-treenode-switcher-close:hover) {
+    //     background-color: #e5e5e5 !important;
+    // }
 </style>

@@ -52,7 +52,7 @@ interface filterConfig extends ColumnListConfig {
     parentQfName: Ref<string>
 }
 
-function getEntityFilters({ parentQfName, dataTypes, pinned }: filterConfig) {
+function getEntityFilters({ parentQfName, dataTypes, pinned, certification }: filterConfig) {
     const baseFilter = {
         condition: 'AND',
         criterion: [
@@ -85,6 +85,15 @@ function getEntityFilters({ parentQfName, dataTypes, pinned }: filterConfig) {
                     operator: 'eq',
                 })),
         })
+    if (certification?.value?.length)
+        baseFilter.criterion.push({
+            condition: 'OR',
+            criterion: certification.value.map((filter) => ({
+                attributeName: 'assetStatus',
+                attributeValue: filter,
+                operator: 'eq',
+            })),
+        })
     if (pinned !== undefined) {
         baseFilter.criterion.push({
             // we use AND when pinned = false because we wan't all the pinned related attributes to be false
@@ -114,7 +123,7 @@ export function useColumnsList(
         dataTypes = ref([] as string[]),
         pinned,
         sort = ref('default'),
-        certificationFilters = ref([] as string[]),
+        certification = ref([] as string[]),
     }: ColumnListConfig,
     immediate = true
 ) {
@@ -142,13 +151,12 @@ export function useColumnsList(
         limit: pinned ? 100 : listLimit,
         query: query.value,
         offset: offset.value,
-        sortBy: sortBy.value,
-        sortOrder: sortOrder.value,
         attributes: staticColumnAttributes,
         entityFilters: getEntityFilters({
             parentQfName,
             dataTypes,
             pinned,
+            certification,
         }),
     }))
 

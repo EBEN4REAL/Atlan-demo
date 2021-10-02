@@ -201,6 +201,7 @@
                 reFetch()
             }
             const handleCertificationFilter = (payload: any) => {
+                certificationFilters.value = payload
                 reFetch()
             }
             const handleFilterChange = (payload: any) => {

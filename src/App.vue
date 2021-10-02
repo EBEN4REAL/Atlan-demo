@@ -42,20 +42,19 @@
                 () => tenantStore.isAuthenticated,
                 () => {
                     isAuth.value = true;
-
-                    (window as any).analytics.identify(tenantStore?.token?.userId, {
-                        name: tenantStore?.token?.name ?? '',
-                        email: tenantStore?.token?.email ?? '',
-                        username: tenantStore?.token?.username ?? '',
-                        roleCode: tenantStore?.token?.roleCode ?? '',
-                    });
-
                 }
             );
 
             watch(tenantData, () => {
                 tenantStore.setData(tenantData.value);
             });
+
+            // (window as any).analytics.identify(tenantStore?.token?.userId, {
+            //             name: tenantStore?.token?.name ?? '',
+            //             email: tenantStore?.token?.email ?? '',
+            //             username: tenantStore?.token?.username ?? '',
+            //             roleCode: tenantStore?.token?.roleCode ?? '',
+            // });
 
             return {
                 tenantData,

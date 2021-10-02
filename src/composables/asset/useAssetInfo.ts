@@ -37,9 +37,16 @@ export default function useAssetInfo() {
 
     const logo = (asset: assetInterface) => {
         let img = ''
-        const found = SourceList.find(
-            (src) => src.id === attributes(asset)?.integrationName
-        )
+
+        const found = attributes(asset)?.integrationName
+            ? SourceList.find(
+                  (src) => src.id === attributes(asset)?.integrationName
+              )
+            : SourceList.find(
+                  (src) =>
+                      src.id === attributes(asset)?.qualifiedName.split('/')[1]
+              )
+
         if (found) img = found.image
 
         return img

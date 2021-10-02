@@ -21,13 +21,32 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        py-2
+                        transition-all
+                        duration-300
+                        bg-white
+                        rounded-full
+                        text-primary
+                    "
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="
+                                m-0
+                                mr-1
+                                overflow-hidden
+                                text-sm
+                                transition-all
+                                duration-300
+                                overflow-ellipsis
+                                whitespace-nowrap
+                            "
                         >
                             Load more
                         </p>
@@ -104,59 +123,63 @@
             isLoading: {
                 type: Boolean,
                 required: true,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
             isLoadMore: {
                 type: Boolean,
                 required: true,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
-            automaticSelectFirstAsset: {
+            autoSelect: {
                 type: Boolean,
                 required: false,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
             typename: {
                 type: String,
             },
         },
-        emits: ['preview', 'loadMore'],
-        setup(props, ctx: SetupContext) {
-            const { list, automaticSelectFirstAsset, typename } = toRefs(props)
+        emits: ['preview', 'loadMore', 'update:autoSelect'],
+        setup(props, { emit }) {
+            const { list, autoSelect, typename } = toRefs(props)
             const selectedAssetId = ref('')
             let shouldReSelect = false
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
-                ctx.emit('preview', item)
+                emit('preview', item)
             }
 
-            // select first asset automatically conditionally acc to  automaticSelectFirstAsset prop
+            // select first asset automatically conditionally acc to  autoSelect prop
 
-            if (automaticSelectFirstAsset.value) {
-                watch(typename, () => {
-                    shouldReSelect = true
-                })
+            watch(
+                list,
+                () => {
+                    if (autoSelect.value) {
+                        if (list.value.length) handlePreview(list.value[0])
+                    } else emit('update:autoSelect', true)
+                },
+                { immediate: true }
+            )
 
-                watch(
-                    () => list.value?.length || 0,
-                    (len, lastLen) => {
-                        if (len > 0 && (lastLen === 0 || lastLen > len))
-                            shouldReSelect = true
+            // if (autoSelect.value) {
+            //     watch(typename, () => {
+            //         shouldReSelect = true
+            //     })
 
-                        if (shouldReSelect) {
-                            handlePreview(list.value[0])
-                            shouldReSelect = false
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
+            //     watch(
+            //         () => list.value?.length || 0,
+            //         (len, lastLen) => {
+            //             if (len > 0 && (lastLen === 0 || lastLen > len))
+            //                 shouldReSelect = true
+
+            //             if (shouldReSelect) {
+            //                 handlePreview(list.value[0])
+            //                 shouldReSelect = false
+            //             }
+            //         },
+            //         { immediate: true }
+            //     )
+            // }
 
             return { handlePreview, selectedAssetId, list }
         },

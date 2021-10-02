@@ -219,7 +219,6 @@
             const {
                 list: listUsers,
                 total: totalUsersCount,
-                filtered,
                 state: userOwnerState,
                 STATES,
                 handleSearch: handleUserSearch,

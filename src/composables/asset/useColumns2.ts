@@ -122,7 +122,7 @@ export function useColumnsList(
         query = ref(''),
         dataTypes = ref([] as string[]),
         pinned,
-        sort = ref('default'),
+        sort = ref('Column.order|ascending'),
         certification = ref([] as string[]),
     }: ColumnListConfig,
     immediate = true
@@ -133,13 +133,13 @@ export function useColumnsList(
     const sortBy = ref("")
     const sortOrder = ref("")
 
-    if (sort.value !== 'default') {
-        const split = sort.value.split('|')
-        if (split.length > 1) {
-            sortBy.value = split[0]
-            sortOrder.value = split[1].toUpperCase()
-        }
+
+    const split = sort.value.split('|')
+    if (split.length > 1) {
+        sortBy.value = split[0]
+        sortOrder.value = split[1].toUpperCase()
     }
+
 
 
     const payload = computed(() => ({
@@ -150,6 +150,8 @@ export function useColumnsList(
         includeSubTypes: false,
         limit: pinned ? 100 : listLimit,
         query: query.value,
+        sortBy: sortBy.value,
+        sortOrder: sortOrder.value,
         offset: offset.value,
         attributes: staticColumnAttributes,
         entityFilters: getEntityFilters({

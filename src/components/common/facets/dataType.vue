@@ -8,7 +8,9 @@
                 style="width: 135px"
                 @change="handeChangeSorting"
             >
-                <a-select-option value="default">Default</a-select-option>
+                <a-select-option value="Column.order|ascending"
+                    >Default</a-select-option
+                >
                 <a-select-option value="Asset.name.keyword|ascending"
                     >Name</a-select-option
                 >
@@ -160,7 +162,7 @@
             const certificationFilters: Ref<any[]> = ref([])
             const activeKey = ref('')
 
-            sorting.value = 'default'
+            sorting.value = 'Column.order|ascending'
 
             const list = computed(() => List)
 
@@ -214,12 +216,16 @@
                 handleDataTypeChange()
             }
             const clearDataTypeFilters = () => {
-                dataTypeFilters.value = []
-                handleDataTypeChange()
+                if (dataTypeFilters.value !== []) {
+                    dataTypeFilters.value = []
+                    handleDataTypeChange()
+                }
             }
             const clearCertificationFilters = () => {
-                certificationFilters.value = []
-                handeChangeCertification()
+                if (certificationFilters.value !== []) {
+                    certificationFilters.value = []
+                    handeChangeCertification()
+                }
             }
 
             return {

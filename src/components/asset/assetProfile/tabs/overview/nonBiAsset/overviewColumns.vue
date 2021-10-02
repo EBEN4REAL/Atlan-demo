@@ -133,6 +133,7 @@
         ref,
         Ref,
         nextTick,
+        onMounted,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
@@ -270,28 +271,6 @@
                 return label
             }
 
-            const fetchColumnFromUrl = () => {
-                columnsList.value?.forEach((singleRow) => {
-                    if (singleRow.guid === column.value) {
-                        urlColumnOrder.value = singleRow.attributes.order
-                        openColumnSidebar(singleRow.attributes.order)
-                    }
-                })
-
-                if (urlColumnOrder.value === 0) {
-                    const { list: urlColumnList } = useColumnsList(
-                        assetQualifiedName,
-                        {}
-                    )
-                    columnFromUrl.value = urlColumnList.value
-                    filterColumnsList()
-                } else {
-                    nextTick(() => {
-                        scrollToElement()
-                    })
-                }
-            }
-
             // filterColumnsList
             const filterColumnsList = () => {
                 columnsList.value = [
@@ -300,7 +279,18 @@
                     ...columnFromUrl.value,
                 ]
 
-                const filteredListData = columnsList.value.map((i) => ({
+                /* const columnsIds = columnsList.value.map((c) => c.guid)
+                const filtered = columnsList.value.filter(
+                    ({ guid }, index) => !columnsIds.includes(guid, index + 1)
+                ) */
+                const uniqueColumns = {}
+                const filteredColumnsList = columnsList.value.filter(
+                    (col) =>
+                        !uniqueColumns[col.guid] &&
+                        (uniqueColumns[col.guid] = true)
+                )
+
+                const filteredListData = filteredColumnsList.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
                     column_name: i.attributes.name,
@@ -316,9 +306,16 @@
                     filteredList: filteredListData,
                 }
 
-                // If redirected from asset column discovery
                 if (column.value !== '') {
-                    fetchColumnFromUrl()
+                    columnsList.value?.forEach((singleRow) => {
+                        if (singleRow.guid === column.value) {
+                            openColumnSidebar(singleRow.attributes.order)
+                        }
+                    })
+
+                    nextTick(() => {
+                        scrollToElement()
+                    })
                 }
             }
 
@@ -346,8 +343,21 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch([list, pinnedList], () => {
+            watch([list, pinnedList, columnFromUrl], () => {
                 filterColumnsList()
+            })
+
+            onMounted(() => {
+                // If redirected from asset column discovery
+                if (column.value !== '') {
+                    const { list: urlColumnList } = useColumnsList(
+                        assetQualifiedName,
+                        { columnGuid: column }
+                    )
+                    watch([urlColumnList], () => {
+                        columnFromUrl.value = urlColumnList.value
+                    })
+                }
             })
 
             return {
@@ -357,7 +367,6 @@
                 handleChangeSort,
                 handleCertificationFilter,
                 clearFiltersAndSearch,
-                filters,
                 isLoadMore,
                 dataTypeMap,
                 isLoading,

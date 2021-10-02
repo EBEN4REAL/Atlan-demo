@@ -47,12 +47,15 @@ interface ColumnListConfig {
      *  `undefined`(not pass any value) to fetch all columns
      *  */
     pinned?: boolean
+
+    /*     In case the column guid is present in the profile url */
+    columnGuid?: Ref<string>
 }
 interface filterConfig extends ColumnListConfig {
     parentQfName: Ref<string>
 }
 
-function getEntityFilters({ parentQfName, dataTypes, pinned, certification }: filterConfig) {
+function getEntityFilters({ parentQfName, dataTypes, pinned, certification, columnGuid }: filterConfig) {
     const baseFilter = {
         condition: 'AND',
         criterion: [
@@ -112,6 +115,18 @@ function getEntityFilters({ parentQfName, dataTypes, pinned, certification }: fi
             ],
         })
     }
+    if (columnGuid?.value !== undefined) {
+        baseFilter.criterion.push({
+            condition: 'OR',
+            criterion: [
+                {
+                    attributeName: '__guid',
+                    attributeValue: `${columnGuid.value}`,
+                    operator: 'eq',
+                },
+            ],
+        })
+    }
 
     return baseFilter
 }
@@ -124,6 +139,7 @@ export function useColumnsList(
         pinned,
         sort = ref('Column.order|ascending'),
         certification = ref([] as string[]),
+        columnGuid,
     }: ColumnListConfig,
     immediate = true
 ) {
@@ -159,6 +175,7 @@ export function useColumnsList(
             dataTypes,
             pinned,
             certification,
+            columnGuid,
         }),
     }))
 

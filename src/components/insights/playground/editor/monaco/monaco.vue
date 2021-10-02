@@ -224,11 +224,10 @@
                     triggerAutoCompletion(lastTypedCharacter)
                 })
                 // saving current position
-                editor?.onDidBlurEditorText(() => {
-                    setCurrentPosition(editor?.getPosition())
-                    editor?.trigger('keyboard', 'type', { text: 'value' })
-                    console.log('currPositionSet', getCurrentPosition())
-                })
+                // editor?.onDidBlurEditorText(() => {
+                //     setCurrentPosition(editor?.getPosition())
+                //     console.log('currPositionSet', getCurrentPosition())
+                // })
                 // on mounting
             })
 
@@ -255,9 +254,9 @@
                         lineNumber: range.endLineNumber,
                     }
                     editor?.setPosition(position)
-                    editor?.onDidBlurEditorText(() => {
-                        setCurrentPosition(editor?.getPosition())
-                    })
+                    // editor?.onDidBlurEditorText(() => {
+                    //     setCurrentPosition(editor?.getPosition())
+                    // })
                     //on active inline tab change
                     emit('editorInstance', editor)
                 }

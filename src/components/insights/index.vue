@@ -135,7 +135,18 @@
             const changeTab = (tab: TabInterface) => {
                 activeTabId.value = tab.id
             }
+            const editorInstance: Ref<any> = ref()
+            const monacoInstance: Ref<any> = ref()
 
+            const setEditorInstance = (
+                editorInstanceParam: any,
+                monacoInstanceParam?: any
+            ) => {
+                editorInstance.value = editorInstanceParam
+                if (monacoInstanceParam)
+                    monacoInstance.value = monacoInstanceParam
+                console.log(editorInstanceParam, editorInstance, 'fxn')
+            }
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -143,6 +154,9 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
+                editorInstance: editorInstance,
+                monacoInstance: monacoInstance,
+                setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
             /*-------------------------------------*/

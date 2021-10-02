@@ -136,6 +136,7 @@
         ComputedRef,
         Ref,
         inject,
+        toRaw,
         watch,
     } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -158,6 +159,8 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const editorInstanceRef = inject('editorInstance') as Ref<any>
+            const editorInstance = toRaw(editorInstanceRef.value)
             const {
                 isPrimary,
                 dataTypeImageForColumn,
@@ -175,6 +178,9 @@
             const actionClick = (action: string) => {
                 switch (action) {
                     case 'add': {
+                        editorInstance.trigger('keyboard', 'type', {
+                            text: `${item.value.title}`,
+                        })
                         break
                     }
                     case 'play': {

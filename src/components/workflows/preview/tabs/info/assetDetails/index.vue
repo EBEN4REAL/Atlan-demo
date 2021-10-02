@@ -62,8 +62,6 @@
 </template>
 
 <script lang="ts">
-    import Definition from '~/components/workflows/preview/hovercards/definition.vue'
-    import RowInfoHoverCard from '~/components/workflows/preview/hovercards/rowInfo.vue'
     import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -80,8 +78,6 @@
             Description,
             Status,
             Owners,
-            RowInfoHoverCard,
-            Definition,
         },
         props: {
             selectedAsset: {

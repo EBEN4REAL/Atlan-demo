@@ -149,7 +149,7 @@ const useTree = (
             }
         })
         termsList.forEach((element) => {
-            if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
+            if (element.guid) nodeToParentKeyMap[element.guid] = ['root']
             treeData.value.push(returnTreeDataItemAttributes(element, 'term', guid))        
         })
         checkAndAddLoadMoreNode(termsList, defaultLimit, 'root', 'root')
@@ -306,7 +306,8 @@ const useTree = (
         ownerUsers?: string
         shortDescription?: string
     }) => {
-        if (nodeToParentKeyMap[guid] === 'root') {
+        const currentParents = nodeToParentKeyMap[guid]
+        if (currentParents === 'root' || (typeof currentParents !== 'string' && currentParents.find((parent) => parent === 'root' )) ) {
             // if the node is at the root level, just loop through the treeData linearly
             treeData.value = treeData.value.map((treeNode) => {
                 if (treeNode.key === guid)
@@ -422,7 +423,7 @@ const useTree = (
                     if (existingTerm) {
                         updatedTreeData.push(existingTerm)
                     } else {
-                        nodeToParentKeyMap[term.guid] = 'root'
+                        nodeToParentKeyMap[term.guid] = ['root']
                         updatedTreeData.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid ?? ''))
                     }
                 })
@@ -493,7 +494,7 @@ const useTree = (
                                 updatedChildren.push(existingTerm)
                             } else {
                                 nodeToParentKeyMap[term?.guid ?? ''] =
-                                    node.key as string
+                                   [ node.key as string] 
                                 updatedChildren.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid, false, node.key))
                             }
                         })
@@ -532,8 +533,8 @@ const useTree = (
             }
 
             // find the path to the node
-            parentStack = recursivelyFindPath(guid)
-            const parent = parentStack.pop()
+            parentStack = recursivelyFindPath(guid)[0]
+            const parent = parentStack?.pop()
 
             const updatedTreeData: TreeDataItem[] = []
 
@@ -779,8 +780,6 @@ const useTree = (
     }
 
     const loadMore = async (offset: number, parentNodeId: string, parentGuid: string,) => {
-
-
         if(parentNodeId === 'root'){
             triggerLoadingState(parentNodeId);
 
@@ -788,7 +787,16 @@ const useTree = (
 
             treeData.value = treeData.value.filter((node) => node.title !== 'Load more');
             termsList?.forEach((term) => {
-                nodeToParentKeyMap[term?.guid ?? ''] = 'root'
+                let currentParent = nodeToParentKeyMap[term?.guid ?? ''];
+                
+                if(typeof currentParent !== 'string'){
+                    if(currentParent && currentParent.length){
+                        currentParent.push('root')
+                    } else if (!currentParent) {
+                        currentParent = ['root']
+                    }
+                }
+                nodeToParentKeyMap[term?.guid ?? ''] = currentParent
                 treeData.value.push(returnTreeDataItemAttributes(term, 'term', parentGuid))       
             });
             checkAndAddLoadMoreNode(termsList, offset + defaultLimit, 'root', 'root')
@@ -796,7 +804,7 @@ const useTree = (
             triggerLoadingState(parentGuid);
             const termsList = await GlossaryApi.ListTermsForCategory(parentGuid, { limit: defaultLimit, offset }) // root level terms
 
-            const path = recursivelyFindPath(parentGuid);
+            const path = recursivelyFindPath(parentGuid)[0];
 
             const appendNewNodes = (node: TreeDataItem) => {
                 const currentPath = path.pop();
@@ -805,7 +813,16 @@ const useTree = (
                     const newChildren = node.children?.filter((child) => child.title !== 'Load more');
                     termsList?.forEach((term) => {
                         newChildren?.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid ?? '', false, parentGuid));
-                        nodeToParentKeyMap[term?.guid ?? ''] = parentGuid
+                        let currentParent = nodeToParentKeyMap[term?.guid ?? ''];
+                
+                        if(typeof currentParent !== 'string'){
+                            if(currentParent && currentParent.length){
+                                currentParent.push(parentGuid)
+                            } else if (!currentParent) {
+                                currentParent = [parentGuid]
+                            }
+                        }
+                        nodeToParentKeyMap[term?.guid ?? ''] = currentParent
                     })
 
                     // Load More Node
@@ -839,7 +856,7 @@ const useTree = (
             }
 
 
-            const parent = path.pop();
+            const parent = path?.pop();
             treeData.value = treeData.value.map((node) => {
                 if(node.guid === parent) return appendNewNodes(node);
                 return node;
@@ -866,7 +883,8 @@ const useTree = (
                     guid: 'LoadMore'
                 })
             } else {
-                const path = recursivelyFindPath(parentGuid);
+                const path = recursivelyFindPath(parentGuid)[0]; // parentGuid will always be a guid of a category (since terms cannot be parents). Hence there will always be atmost 1 path
+
                 const addLoadMoreInNestedNode = (node: TreeDataItem) => {
                     const currentPath = path.pop()
                     if(node.guid === parentGuid && !currentPath) {
@@ -893,7 +911,7 @@ const useTree = (
                         })
                     }
                 }
-                const parent = path.pop()
+                const parent = path?.pop()
 
                 treeData.value = treeData.value.map((node) => {
                     if(node.guid === parent) return addLoadMoreInNestedNode(node);
@@ -915,7 +933,7 @@ const useTree = (
                 return node
             })
         } else {
-            const path = recursivelyFindPath(parentNodeId);
+            const path = recursivelyFindPath(parentNodeId)[0];
             
             const trigger = (node: TreeDataItem) => {
                 const currentPath = path.pop();

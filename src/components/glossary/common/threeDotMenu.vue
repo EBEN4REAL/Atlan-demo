@@ -248,7 +248,7 @@
                             @click="showModal"
                         >
                             <div class="flex items-center text-red-700">
-                                <fa icon="fal trash-alt" class="mr-2"></fa>
+                                <AtlanIcon icon="Trash" class="mr-2" />
                                 <p class="p-0 m-0">Archive</p>
                             </div>
                         </a-button>

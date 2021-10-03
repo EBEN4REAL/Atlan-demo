@@ -71,6 +71,12 @@ import Play from '~/assets/images/icons/play.svg'
 import Pin from '~/assets/images/icons/pin.svg'
 import Save from '~/assets/images/icons/save.svg'
 import Globe from '~/assets/images/icons/globe.svg'
+import Info from '~/assets/images/icons/info.svg'
+import AddAssetName from '~/assets/images/icons/add-table.svg'
+import Trash from '~/assets/images/icons/trash.svg'
+import Widgets from '~/assets/images/icons/widgets.svg'
+import Megaphone from '~/assets/images/icons/megaphone.svg'
+import Readme from '~/assets/images/icons/readme.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 
 export default {
@@ -146,6 +152,12 @@ export default {
     Play,
     Save,
     Globe,
+    Info,
+    AddAssetName,
     VariableTrigger,
     OpenCategoryProfile,
+    Trash,
+    Widgets,
+    Megaphone,
+    Readme,
 }

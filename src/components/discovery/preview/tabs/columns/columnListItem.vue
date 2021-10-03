@@ -53,7 +53,7 @@
             </div>
         </div>
         <AtlanBtn
-            class="flex-none hidden group-hover:block w-"
+            class="flex-none opacity-0 group-hover:opacity-100"
             size="sm"
             color="secondary"
             padding="compact"

@@ -14,7 +14,7 @@ export default function useAssetInfo() {
         return asset.attributes
     }
     const title = (asset: assetInterface) => {
-        return attributes(asset).name
+        return attributes(asset)?.name ?? ''
     }
     const status = (asset: assetInterface) => {
         return attributes(asset).assetStatus
@@ -34,12 +34,22 @@ export default function useAssetInfo() {
             attributes(asset).userDescription || attributes(asset).description
         )
     }
+    const isPrimary = (asset: assetInterface) => {
+        return attributes(asset).isPrimary
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
-        const found = SourceList.find(
-            (src) => src.id === attributes(asset)?.integrationName
-        )
+
+        const found = attributes(asset)?.integrationName
+            ? SourceList.find(
+                  (src) => src.id === attributes(asset)?.integrationName
+              )
+            : SourceList.find(
+                  (src) =>
+                      src.id === attributes(asset)?.qualifiedName.split('/')[1]
+              )
+
         if (found) img = found.image
 
         return img
@@ -464,6 +474,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        isPrimary,
         dataTypeImageForColumn,
         popularityScore,
         createdBy,

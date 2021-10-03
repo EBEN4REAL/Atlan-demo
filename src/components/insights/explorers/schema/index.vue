@@ -74,7 +74,10 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                tabs,
+                activeInlineTab
+            )
             const {
                 setConnectorsDataInInlineTab,
                 getDatabaseQualifiedName,
@@ -119,6 +122,32 @@
             const schemaQualifiedName = computed(() =>
                 getSchemaQualifiedName(connectorsData.value.attributeValue)
             )
+            const initSelectedKeys = computed(() => {
+                /* KEY - SchemaqualifiedName/tableName */
+                let key = `${getSchemaQualifiedName(
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeValue
+                )}/${activeInlineTab.value.assetSidebar.assetInfo?.title}`
+                return key
+            })
+            /* WE CAN USE THIS FXN LATER */
+            // const selectNodeAndToggleAssetSidebar = (selected, event) => {
+            //     if (event.selectedNodes?.length > 0) {
+            //         const item = event.selectedNodes[0]?.props
+            //         if (item.typeName === 'LoadMore') return
+            //         if (selected.length > 0) {
+            //             const activeInlineTabCopy: activeInlineTabInterface =
+            //                 Object.assign({}, activeInlineTab.value)
+            //             activeInlineTabCopy.assetSidebar.assetInfo = item
+            //             activeInlineTabCopy.assetSidebar.isVisible = true
+            //             openAssetSidebar(activeInlineTabCopy)
+            //         }
+            //     } else {
+            //         /* Close it if it is already opened */
+            //         closeAssetSidebar(activeInlineTab.value)
+            //     }
+            //     selectNode(selected, event)
+            // }
 
             const {
                 treeData,
@@ -134,6 +163,7 @@
                 // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
                 // databaseQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA'),
                 // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
+                initSelectedKeys,
                 connectionQualifiedName,
                 databaseQualifiedName,
                 schemaQualifiedName,
@@ -146,6 +176,7 @@
                         activeInlineTab.value.explorer.schema.connectors
                 }
             })
+            console.log(selectedKeys.value, 'out')
 
             return {
                 connectorsData,

@@ -15,105 +15,10 @@
                     @expand="expandNode"
                 >
                     <template #title="item">
-                        <a-popover
+                        <SchemaTreeItem
+                            :item="item"
                             v-if="item.title !== 'Load more'"
-                            placement="right"
-                        >
-                            <div class="w-full">
-                                <div
-                                    class="flex justify-between w-full overflow-hidden  group"
-                                >
-                                    <div class="flex w-full m-0">
-                                        <div
-                                            class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
-                                        >
-                                            <div
-                                                v-if="item.typeName == 'Column'"
-                                                class="mt-0.5"
-                                            >
-                                                <component
-                                                    :is="
-                                                        dataTypeImageForColumn(
-                                                            item
-                                                        )
-                                                    "
-                                                    class="flex-none w-auto h-4 mr-1 text-gray-500 "
-                                                ></component>
-                                            </div>
-                                            <AtlanIcon
-                                                v-else
-                                                :icon="item.typeName"
-                                                class="w-5 h-5 my-auto mr-1"
-                                            ></AtlanIcon>
-                                            <span
-                                                class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
-                                            >
-                                                {{ item.title }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <template
-                                v-if="item.key !== 'root'"
-                                class="p-4"
-                                #content
-                            >
-                                <div class="flex flex-col max-w-80">
-                                    <span
-                                        class="m-0 mb-2 text-base font-bold leading-6 text-gray-700 "
-                                        >{{ item.title }}</span
-                                    >
-                                    <span
-                                        class="m-0 text-sm leading-5 tracking-wide text-gray-500 "
-                                        >{{ item.description }}</span
-                                    >
-                                    <span>{{ item.ownerUsers }}</span>
-                                    <span>{{ item.ownerGroups }}</span>
-                                </div>
-                                <!-- <Classifications :selected-asset="item" /> -->
-                                <!-- <div
-                                    v-if="item.classifications?.length > 0"
-                                    class="flex flex-wrap items-center w-56"
-                                >
-                                        <PillGroup
-                                            :data="item.classifications"
-                                            label-key="typeName"
-                                            popover-trigger="hover"
-                                        >
-                                            <template #pillPrefix>
-                                                <AtlanIcon
-                                                    icon="Shield"
-                                                    class="text-pink-400 group-hover:text-white"
-                                                />
-                                            </template>
-                                            <template #popover="{ item }">
-                                                <ClassificationInfoCard :classification="item" />
-                                            </template>
-                                            <template #suffix>
-                                                <span
-                                                    v-if="splittedOwners.b.length > 0"
-                                                    class="
-                                                        px-1
-                                                        py-0.5
-                                                        text-sm
-                                                        rounded
-                                                        text-primary
-                                                        mr-3
-                                                        cursor-pointer
-                                                    "
-                                                >
-                                                    {{
-                                                        showAll
-                                                            ? 'Show less'
-                                                            : `and ${splittedOwners.b.length} more`
-                                                    }}
-                                                </span>
-                                            </template>
-                                        </PillGroup>
-                                    </div> -->
-                            </template>
-                        </a-popover>
+                        />
                         <div
                             v-else
                             class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
@@ -155,6 +60,7 @@
     import Avatar from '~/components/common/avatar.vue'
     import Classifications from '@common/sidebar/classifications.vue'
     import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
+    import SchemaTreeItem from './schemaTreeItem.vue'
 
     // composables
 
@@ -163,7 +69,6 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import { KeyMaps } from '~/api/keyMap'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     // import { Glossary } from '~/api/atlas/glossary'
 
@@ -178,6 +83,7 @@
             Avatar,
             Classifications,
             ClassificationInfoCard,
+            SchemaTreeItem,
         },
         props: {
             treeData: {
@@ -223,13 +129,7 @@
         },
         setup(props, { emit }) {
             // data
-            const { dataTypeImageForColumn } = useAssetInfo()
-            function consolex(item) {
-                console.log(item)
-            }
             return {
-                consolex,
-                dataTypeImageForColumn,
                 StatusList,
                 // selectedKeys,
                 // expandedKeys,
@@ -243,15 +143,6 @@
     .tree-container {
         overflow: hidden;
     }
-    .nooverflow {
-        display: inline-block;
-        overflow: hidden !important;
-        overflow-wrap: normal;
-        text-overflow: ellipsis;
-        white-space: nowrap !important;
-        width: 0;
-        min-width: 85%;
-    }
 </style>
 <style lang="less" module>
     :global(.ant-tree .ant-tree-title) {
@@ -262,7 +153,7 @@
     }
 
     :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-        background-color: #f3f3f3 !important;
+        @apply bg-gray-light;
     }
     // :global(.ant-tree-treenode-switcher-close:hover) {
     //     background-color: #e5e5e5 !important;

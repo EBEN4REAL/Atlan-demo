@@ -12,7 +12,7 @@ export const images = {
     Decimal: float1,
     Boolean: boolean,
     Text: string,
-    'Date/Timestamp': date,
+    DateTime: date,
     Array: array,
     Object: struct,
     Geography: geography,
@@ -78,8 +78,8 @@ export const dataTypeList = [
         image: boolean,
     },
     {
-        id: 'date',
-        label: 'Date/Timestamp',
+        id: 'dateTime',
+        label: 'DateTime',
         type: [
             'date',
             'time',

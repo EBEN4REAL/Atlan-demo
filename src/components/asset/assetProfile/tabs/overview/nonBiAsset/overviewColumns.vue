@@ -9,19 +9,12 @@
                 @change="handleSearchChange"
             >
                 <template #filter>
-                    <div class="flex items-center justify-between mb-2 text-sm">
-                        <span>Data type</span>
-                        <a-spin v-if="isAggregateLoading" size="small" />
-                        <span
-                            class="text-gray-500 cursor-pointer hover:text-gray"
-                            @click="clearAllFilters"
-                            >Clear</span
-                        >
-                    </div>
                     <DataTypes
-                        v-model:filters="filters"
                         :data-type-map="dataTypeMap"
-                        @update:filters="handleFilterChange"
+                        :clear-all-filters="clearAllFilters"
+                        @dataTypeFilter="handleFilterChange"
+                        @sort="handleChangeSort"
+                        @certification="handleCertificationFilter"
                     />
                 </template>
             </SearchAndFilter>
@@ -93,11 +86,11 @@
             >
                 <button
                     v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                     @click="loadMore"
                 >
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -140,6 +133,7 @@
         ref,
         Ref,
         nextTick,
+        onMounted,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
@@ -178,7 +172,11 @@
             const queryText = ref('')
             const filters: Ref<string[]> = ref([])
             const columnsList: Ref<assetInterface[]> = ref([])
-
+            const certificationFilters: Ref<string[]> = ref([])
+            const sortOrder = ref('Column.order|ascending')
+            const clearAllFilters = ref<boolean>(false)
+            const urlColumnOrder = ref(0)
+            const columnFromUrl: Ref<assetInterface[]> = ref([])
             const { columnCount } = useAssetInfo()
 
             /** INJECTIONS */
@@ -201,96 +199,50 @@
                     query: queryText,
                     dataTypes: filters,
                     pinned: false,
+                    sort: sortOrder,
+                    certification: certificationFilters,
                 })
 
             const { list: pinnedList } = useColumnsList(assetQualifiedName, {
                 pinned: true,
             })
 
-            const { dataTypeMap, isAggregateLoading } =
-                useColumnAggregation(assetQualifiedName)
+            const { dataTypeMap } = useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
                 reFetch()
             }, 150)
 
-            const clearAllFilters = () => {
-                filters.value = []
-                reFetch()
-            }
-
             const clearFiltersAndSearch = () => {
-                filters.value = []
                 queryText.value = ''
+                clearAllFilters.value = true
                 reFetch()
-            }
-            const handleFilterChange = () => {
-                reFetch()
-            }
-
-            const scrollToElement = (selectedRow) => {
-                let paginationOfSelectedColumn
-                if (selectedRow % 10 === 0) {
-                    paginationOfSelectedColumn = selectedRow / 10
-                } else {
-                    paginationOfSelectedColumn =
-                        Math.floor(selectedRow / 10) + 1
-                }
-                document
-                    .querySelector(`li[title="${paginationOfSelectedColumn}"]`)
-                    .click()
-
-                setTimeout(() => {
-                    const tableRow = document.querySelector(
-                        `tr[data-row-key="${selectedRow}"]`
-                    )
-
-                    if (tableRow) {
-                        tableRow.scrollIntoView({
-                            block: 'nearest',
-                            inline: 'nearest',
-                        })
-                    }
-                }, 500)
-            }
-
-            const getDataType = (type: string) => {
-                let label = ''
-                dataTypeList.forEach((i) => {
-                    if (i.type.includes(type)) label = i.label
+                nextTick(() => {
+                    clearAllFilters.value = false
                 })
-                return label
+            }
+            const handleChangeSort = (payload: any) => {
+                sortOrder.value = payload
+                reFetch()
+            }
+            const handleCertificationFilter = (payload: any) => {
+                certificationFilters.value = payload
+                reFetch()
+            }
+            const handleFilterChange = (payload: any) => {
+                filters.value = payload
+                reFetch()
             }
 
-            // filterColumnsList
-            const filterColumnsList = () => {
-                columnsList.value = [...pinnedList.value, ...list.value]
+            const scrollToElement = () => {
+                const tableRow = document.querySelector(
+                    `tr[data-row-key="${selectedRow.value}"]`
+                )
 
-                const filteredListData = columnsList.value.map((i) => ({
-                    key: i.attributes.order,
-                    hash_index: i.attributes.order,
-                    column_name: i.attributes.name,
-                    data_type: getDataType(i.attributes.dataType),
-                    is_primary: i.attributes.isPrimary,
-                    description:
-                        i.attributes.userDescription ||
-                        i.attributes.description ||
-                        '---',
-                    popularity: i.attributes.popularityScore || 8,
-                }))
-                columnsData.value = {
-                    filteredList: filteredListData,
-                }
-
-                // If redirected from asset column discovery
-                if (column.value !== '') {
-                    columnsList.value?.forEach((singleRow) => {
-                        if (singleRow.guid === column.value) {
-                            openColumnSidebar(singleRow.attributes.order)
-                        }
-                    })
-                    nextTick(() => {
-                        scrollToElement(selectedRow.value)
+                if (tableRow) {
+                    tableRow.scrollIntoView({
+                        block: 'nearest',
+                        inline: 'nearest',
                     })
                 }
             }
@@ -310,6 +262,60 @@
 
                 showColumnPreview.value = true
             }
+
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
+            }
+
+            // filterColumnsList
+            const filterColumnsList = () => {
+                columnsList.value = [
+                    ...pinnedList.value,
+                    ...list.value,
+                    ...columnFromUrl.value,
+                ]
+
+                // In case column is selected from discovery and after clicking load more duplication of the same column happens
+                const uniqueColumns = {}
+                const filteredColumnsList = columnsList.value.filter(
+                    (col) =>
+                        !uniqueColumns[col.guid] &&
+                        (uniqueColumns[col.guid] = true)
+                )
+
+                const filteredListData = filteredColumnsList.map((i) => ({
+                    key: i.attributes.order,
+                    hash_index: i.attributes.order,
+                    column_name: i.attributes.name,
+                    data_type: getDataType(i.attributes.dataType),
+                    is_primary: i.attributes.isPrimary,
+                    description:
+                        i.attributes.userDescription ||
+                        i.attributes.description ||
+                        '---',
+                    popularity: i.attributes.popularityScore || 8,
+                }))
+                columnsData.value = {
+                    filteredList: filteredListData,
+                }
+
+                if (column.value !== '') {
+                    columnsList.value?.forEach((singleRow) => {
+                        if (singleRow.guid === column.value) {
+                            openColumnSidebar(singleRow.attributes.order)
+                        }
+                    })
+
+                    nextTick(() => {
+                        scrollToElement()
+                    })
+                }
+            }
+
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
@@ -334,17 +340,30 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch([list, pinnedList], () => {
+            watch([list, pinnedList, columnFromUrl], () => {
                 filterColumnsList()
+            })
+
+            onMounted(() => {
+                // If redirected from asset column discovery
+                if (column.value !== '') {
+                    const { list: urlColumnList } = useColumnsList(
+                        assetQualifiedName,
+                        { columnGuid: column }
+                    )
+                    watch([urlColumnList], () => {
+                        columnFromUrl.value = urlColumnList.value
+                    })
+                }
             })
 
             return {
                 rowClassName,
                 customRow,
                 handleSearchChange,
-                clearAllFilters,
+                handleChangeSort,
+                handleCertificationFilter,
                 clearFiltersAndSearch,
-                filters,
                 isLoadMore,
                 dataTypeMap,
                 isLoading,
@@ -352,7 +371,7 @@
                 handleFilterChange,
                 handleCloseColumnSidebar,
                 propagateToColumnList,
-                isAggregateLoading,
+                clearAllFilters,
                 columnsList,
                 selectedRow,
                 columnsData,

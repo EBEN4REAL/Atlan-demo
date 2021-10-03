@@ -8,20 +8,12 @@
             :placeholder="`Search ${colCount} columns`"
         >
             <template #filter>
-                <div class="flex items-center justify-between mb-2 text-sm">
-                    <span>Data type</span>
-                    <a-spin size="small" v-if="isAggregateLoading" />
-                    <span
-                        v-else
-                        class="text-gray-500 cursor-pointer hover:text-gray"
-                        @click="clearAllFilters"
-                        >Clear</span
-                    >
-                </div>
                 <DataTypes
-                    v-model:filters="filters"
-                    @update:filters="handleFilterChange"
                     :data-type-map="dataTypeMap"
+                    :clear-all-filters="clearAllFilters"
+                    @dataTypeFilter="handleFilterChange"
+                    @sort="handleChangeSort"
+                    @certification="handleCertificationFilter"
                 />
             </template>
         </SearchAndFilter>
@@ -64,12 +56,7 @@
                     <div>
                         <AtlanIcon
                             icon="ChevronDown"
-                            class="
-                                text-gray-500
-                                transition-transform
-                                duration-300
-                                transform
-                            "
+                            class="text-gray-500 transition-transform duration-300 transform "
                             :class="isActive ? '-rotate-180' : 'rotate-0'"
                         />
                     </div>
@@ -98,32 +85,13 @@
         <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
-                class="
-                    flex
-                    items-center
-                    justify-between
-                    py-2
-                    transition-all
-                    duration-300
-                    bg-white
-                    rounded-full
-                    text-primary
-                "
+                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                 :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 @click="loadMore"
             >
                 <template v-if="!isLoading">
                     <p
-                        class="
-                            m-0
-                            mr-1
-                            overflow-hidden
-                            text-sm
-                            transition-all
-                            duration-300
-                            overflow-ellipsis
-                            whitespace-nowrap
-                        "
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -157,7 +125,15 @@
 <script lang="ts">
     import DataTypes from '@common/facets/dataType.vue'
     import { toRefs, useDebounceFn } from '@vueuse/core'
-    import { computed, defineComponent, PropType, ref, Ref, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        Ref,
+        watch,
+        nextTick,
+    } from 'vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -187,7 +163,10 @@
             const isFilterVisible = ref(false)
             const queryText = ref('')
             const filters: Ref<string[]> = ref([])
+            const certificationFilters: Ref<string[]> = ref([])
             const pinnedExpanded = ref('pin')
+            const sortOrder = ref('Column.order|ascending')
+            const clearAllFilters = ref<boolean>(false)
 
             const { dataTypeImage, columnCount } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
@@ -203,6 +182,8 @@
                     query: queryText,
                     dataTypes: filters,
                     pinned: false,
+                    sort: sortOrder,
+                    certification: certificationFilters,
                 })
 
             const {
@@ -220,17 +201,24 @@
 
             const propagateToColumnList = () => {}
 
-            const clearAllFilters = () => {
-                filters.value = []
-                reFetch()
-            }
-
             const clearFiltersAndSearch = () => {
-                filters.value = []
                 queryText.value = ''
+                clearAllFilters.value = true
+                reFetch()
+                nextTick(() => {
+                    clearAllFilters.value = false
+                })
+            }
+            const handleChangeSort = (payload: any) => {
+                sortOrder.value = payload
                 reFetch()
             }
-            const handleFilterChange = () => {
+            const handleCertificationFilter = (payload: any) => {
+                certificationFilters.value = payload
+                reFetch()
+            }
+            const handleFilterChange = (payload: any) => {
+                filters.value = payload
                 reFetch()
             }
 
@@ -250,7 +238,8 @@
                 queryText,
                 dataTypeMap,
                 dataTypeImage,
-                clearAllFilters,
+                handleChangeSort,
+                handleCertificationFilter,
                 isLoading,
                 isAggregateLoading,
                 dataTypeList,
@@ -267,6 +256,7 @@
                 pinnedList,
                 isPinnedLoading,
                 reFetchPinned,
+                clearAllFilters,
             }
         },
     })

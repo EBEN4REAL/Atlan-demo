@@ -40,17 +40,22 @@ const staticColumnAttributes = [
 interface ColumnListConfig {
     query?: Ref<string>
     dataTypes?: Ref<string[]>
+    sort?: Ref<string>
+    certification?: Ref<string[]>
     /** Set it to `true` to only fetch pinned columns,
      *  `false` to fetch only normal columns,
      *  `undefined`(not pass any value) to fetch all columns
      *  */
     pinned?: boolean
+
+    /*     In case the column guid is present in the profile url */
+    columnGuid?: Ref<string>
 }
 interface filterConfig extends ColumnListConfig {
     parentQfName: Ref<string>
 }
 
-function getEntityFilters({ parentQfName, dataTypes, pinned }: filterConfig) {
+function getEntityFilters({ parentQfName, dataTypes, pinned, certification, columnGuid }: filterConfig) {
     const baseFilter = {
         condition: 'AND',
         criterion: [
@@ -83,6 +88,15 @@ function getEntityFilters({ parentQfName, dataTypes, pinned }: filterConfig) {
                     operator: 'eq',
                 })),
         })
+    if (certification?.value?.length)
+        baseFilter.criterion.push({
+            condition: 'OR',
+            criterion: certification.value.map((filter) => ({
+                attributeName: 'assetStatus',
+                attributeValue: filter,
+                operator: 'eq',
+            })),
+        })
     if (pinned !== undefined) {
         baseFilter.criterion.push({
             // we use AND when pinned = false because we wan't all the pinned related attributes to be false
@@ -101,6 +115,18 @@ function getEntityFilters({ parentQfName, dataTypes, pinned }: filterConfig) {
             ],
         })
     }
+    if (columnGuid?.value !== undefined) {
+        baseFilter.criterion.push({
+            condition: 'OR',
+            criterion: [
+                {
+                    attributeName: '__guid',
+                    attributeValue: `${columnGuid.value}`,
+                    operator: 'eq',
+                },
+            ],
+        })
+    }
 
     return baseFilter
 }
@@ -111,10 +137,26 @@ export function useColumnsList(
         query = ref(''),
         dataTypes = ref([] as string[]),
         pinned,
+        sort = ref('Column.order|ascending'),
+        certification = ref([] as string[]),
+        columnGuid,
     }: ColumnListConfig,
     immediate = true
 ) {
+
+
     const offset = ref(0)
+    const sortBy = ref("")
+    const sortOrder = ref("")
+
+
+    const split = sort.value.split('|')
+    if (split.length > 1) {
+        sortBy.value = split[0]
+        sortOrder.value = split[1].toUpperCase()
+    }
+
+
 
     const payload = computed(() => ({
         typeName: 'Column',
@@ -124,12 +166,16 @@ export function useColumnsList(
         includeSubTypes: false,
         limit: pinned ? 100 : listLimit,
         query: query.value,
+        sortBy: sortBy.value,
+        sortOrder: sortOrder.value,
         offset: offset.value,
         attributes: staticColumnAttributes,
         entityFilters: getEntityFilters({
             parentQfName,
             dataTypes,
             pinned,
+            certification,
+            columnGuid,
         }),
     }))
 

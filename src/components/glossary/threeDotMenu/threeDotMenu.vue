@@ -312,7 +312,7 @@
     import Status from './status.vue'
     import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
     import Categories from '@/glossary/common/categories.vue'
-    import ModalHeader from '@/glossary/common/modalHeader.vue'
+    import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'

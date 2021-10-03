@@ -137,7 +137,7 @@
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
     import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
-    import AssetList from '@/glossary/common/assetList.vue'
+    import AssetList from '~/components/glossary/profile/termsAndCategories/assetList.vue'
     import Projections from '@/glossary/common/projections.vue'
     import Filters from '@/glossary/common/filters.vue'
 

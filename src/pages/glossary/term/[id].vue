@@ -89,10 +89,10 @@ import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 // components
-import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-import LinkedAssetsTab from '@/glossary/profile/linkedAssetsTab.vue'
+import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
+import LinkedAssetsTab from '~/components/glossary/profile/linkedAssets/linkedAssets.vue'
 import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
-import ProfileHeader from '@/glossary/common/profileHeader.vue'
+import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
 import LoadingView from '@common/loaders/page.vue'
 
 // composables

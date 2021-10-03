@@ -92,10 +92,10 @@
 
     // components
     import LoadingView from '@common/loaders/page.vue'
-    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+    import GlossaryTermsAndCategoriesTab from '~/components/glossary/profile/termsAndCategories/glossaryTermsAndCategoriesTab.vue'
+    import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
     import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
-    import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'

@@ -274,7 +274,7 @@
     import Description from '@common/sidebar/description.vue'
     import Status from '@common/sidebar/status.vue'
     import Activity from '@/discovery/preview/tabs/activity/activityTab.vue'
-    import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
+    import RelatedTerms from '@/glossary/profile/relatedTerms.vue'
     import LinkedAssetsTab from './linkedAssetsTab.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { Components } from '~/api/atlas/client'

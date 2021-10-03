@@ -90,7 +90,7 @@ import { useRouter } from 'vue-router'
 
 // components
 import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
+import LinkedAssetsTab from '@/glossary/profile/linkedAssetsTab.vue'
 import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
 import ProfileHeader from '@/glossary/common/profileHeader.vue'
 import LoadingView from '@common/loaders/page.vue'

@@ -14,7 +14,7 @@
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
-                            class="relative flex items-center justify-between w-full  z"
+                            class="relative flex items-center justify-between w-full "
                         >
                             <div class="flex w-full">
                                 <component
@@ -35,10 +35,12 @@
                                 </span>
                             </div>
                             <div
-                                class="flex items-center text-xs text-gray-500  mr-7"
-                                v-if="isPrimary(item)"
+                                class="flex items-center text-xs text-gray-500"
                             >
-                                <div class="flex items-center">
+                                <div
+                                    class="flex items-center"
+                                    v-if="isPrimary(item)"
+                                >
                                     <a-tooltip>
                                         <template #title>Pkey</template>
                                         <AtlanIcon
@@ -47,7 +49,7 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
-                                {{ dataType(item) }}
+                                <span> {{ dataType(item) }}</span>
                             </div>
                         </div>
                         <!------------------------------->

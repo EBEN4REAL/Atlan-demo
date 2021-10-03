@@ -64,7 +64,7 @@
                 ></a-tooltip>
 
                 <Tooltip
-                    :tooltip-text="selectedAsset?.attributes?.name"
+                    :tooltip-text="name"
                     classes="font-bold text-base cursor-pointer text-primary hover:underline w-full"
                     placement="left"
                     :route-to="
@@ -158,6 +158,7 @@
         Ref,
         toRefs,
         watch,
+        computed,
         provide,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
@@ -277,9 +278,11 @@
                 infoTabData.value = selectedAsset.value
             }
             watch(() => selectedAsset.value.guid, init)
+            const name = computed(() => selectedAsset.value.attributes?.name)
             onMounted(init)
 
             return {
+                name,
                 tabHeights,
                 isLoaded,
                 infoTabData,

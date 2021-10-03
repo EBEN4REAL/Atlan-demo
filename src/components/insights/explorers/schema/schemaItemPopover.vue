@@ -228,6 +228,7 @@
                     const terms = item.value?.meanings ?? []
                     mixedTermsAndClassifications.value =
                         mixClassificationsAndTerms(classifications, terms)
+                    console.log(mixedTermsAndClassifications.value, 'mix')
                 },
                 { immediate: true }
             )

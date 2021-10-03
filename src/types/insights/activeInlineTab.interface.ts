@@ -1,5 +1,6 @@
 import { CustomVaribaleInterface } from './customVariable.interface'
 import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+import { assetInterface } from '~/types/assets/asset.interface'
 
 export interface activeInlineTabInterface {
     key: string
@@ -50,7 +51,7 @@ export interface activeInlineTabInterface {
     }
     assetSidebar: {
         isVisible: boolean
-        assetInfo: Object
+        assetInfo: assetInterface
         title: string
         id: string
     }

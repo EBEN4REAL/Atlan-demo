@@ -44,7 +44,7 @@
                             "
                             @click="run"
                         >
-                            <AtlanIcon class="mr-1" icon="Play" />
+                            <AtlanIcon class="mr-1 text-white" icon="Play" />
                             Run</a-button
                         >
                         <a-button
@@ -89,19 +89,7 @@
                                 >Share</span
                             ></a-button
                         >
-                        <a-button
-                            class="
-                                flex
-                                items-center
-                                ml-2
-                                py-0.5
-                                px-0.5
-                                border-none
-                                text-gray-500
-                            "
-                        >
-                            <AtlanIcon class="mr-1" icon="KebabMenu"
-                        /></a-button>
+                        <ThreeDotMenu />
                     </div>
                 </div>
             </div>
@@ -117,7 +105,7 @@
                 "
                 @onSaveQuery="saveQuery"
             />
-            <Monaco @editorInstance="setEditorInstance" />
+            <Monaco @editorInstance="setInstance" />
         </div>
     </div>
 </template>
@@ -131,20 +119,14 @@
         ref,
         watch,
         ComputedRef,
-        reactive,
         computed,
-        provide,
-        watch,
         toRaw,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '../common/composables/useRunQuery'
-    import {
-        useProvide,
-        provideDataInterface,
-    } from '~/components/insights/common/composables/useProvide'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
+    import ThreeDotMenu from '~/components/insights/playground/editor/threeDotMenu/index.vue'
     import { editor } from 'monaco-editor'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
@@ -165,6 +147,7 @@
             CustomVariablesNav,
             SaveQueryModal,
             AtlanBtn,
+            ThreeDotMenu,
             StatusBadge,
         },
         props: {},
@@ -173,11 +156,8 @@
 
             const { queryRun } = useRunQuery()
             const { getParsedQuery } = useEditor()
-            const {
-                modifyActiveInlineTabEditor,
-                modifyActiveInlineTab,
-                isTwoInlineTabsEqual,
-            } = useInlineTab()
+            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
+                useInlineTab()
             const { getConnectorName, getConnectionQualifiedName } =
                 useConnector()
             const { username } = whoami()
@@ -192,6 +172,8 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+            const editorInstance = inject('editorInstance') as Ref<any>
+            const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
             const modalAction: ComputedRef<string> = computed(() =>
                 activeInlineTab.value.isSaved ? 'UPDATE' : 'CREATE'
@@ -201,13 +183,6 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
-
-            const editorInstance: Ref<
-                editor.IStandaloneCodeEditor | undefined
-            > = ref()
-            const monacoInstance: Ref<
-                editor.IStandaloneCodeEditor | undefined
-            > = ref()
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const isUpdateEnabled: Ref<boolean> = ref(false)
@@ -337,14 +312,11 @@
                 queryRun(activeInlineTab.value, getData, isQueryRunning)
             }
 
-            const setEditorInstance = (
+            const setInstance = (
                 editorInstanceParam: editor.IStandaloneCodeEditor,
                 monacoInstanceParam?: any
             ) => {
-                editorInstance.value = editorInstanceParam
-                if (monacoInstanceParam)
-                    monacoInstance.value = monacoInstanceParam
-                console.log(editorInstanceParam, editorInstance, 'fxn')
+                setEditorInstanceFxn(editorInstanceParam, monacoInstanceParam)
             }
             const updateQuery = () => {
                 updateSavedQuery(editorInstance, isUpdating)
@@ -360,16 +332,6 @@
             const toggleCustomToolbar = () => {
                 showcustomToolBar.value = !showcustomToolBar.value
             }
-
-            /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
-            const provideData: provideDataInterface = {
-                editorInstance: editorInstance,
-                monacoInstance: monacoInstance,
-            }
-            useProvide(provideData)
-            /*-------------------------------------*/
 
             /* Watcher for save->unsave */
             // watch(activeInlineTab, (newActiveInlineTab) => {
@@ -410,7 +372,7 @@
                 updateQuery,
                 openSaveQueryModal,
                 saveQuery,
-                setEditorInstance,
+                setInstance,
                 run,
             }
         },

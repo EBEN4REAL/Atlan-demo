@@ -14,7 +14,7 @@ export default function useAssetInfo() {
         return asset.attributes
     }
     const title = (asset: assetInterface) => {
-        return attributes(asset).name
+        return attributes(asset)?.name ?? ''
     }
     const status = (asset: assetInterface) => {
         return attributes(asset).assetStatus
@@ -33,6 +33,9 @@ export default function useAssetInfo() {
         return (
             attributes(asset).userDescription || attributes(asset).description
         )
+    }
+    const isPrimary = (asset: assetInterface) => {
+        return attributes(asset).isPrimary
     }
 
     const logo = (asset: assetInterface) => {
@@ -471,6 +474,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        isPrimary,
         dataTypeImageForColumn,
         popularityScore,
         createdBy,

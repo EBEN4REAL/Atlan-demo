@@ -202,6 +202,7 @@
                 if (action === 'add') {
                     handleAdd()
                 } else {
+                    console.log(targetKey)
                     inlineTabRemove(
                         targetKey as string,
                         tabs,

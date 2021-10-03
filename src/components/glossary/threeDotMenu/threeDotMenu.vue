@@ -308,8 +308,8 @@
 
     // components
     import StatusBadge from '@common/badge/status/index.vue'
-    import Owners from '@/glossary/common/owners.vue'
-    import Status from '@/glossary/common/status.vue'
+    import Owners from './owners.vue'
+    import Status from './status.vue'
     import AddGtcModal from '@/glossary/common/addGtcModal.vue'
     import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/common/modalHeader.vue'

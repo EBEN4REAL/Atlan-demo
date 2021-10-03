@@ -497,7 +497,7 @@
 
     // components
     import LoadingView from '@common/loaders/section.vue'
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AddGtcModal from '@/glossary/common/addGtcModal.vue'
 

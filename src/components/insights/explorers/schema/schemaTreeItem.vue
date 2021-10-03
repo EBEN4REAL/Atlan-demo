@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full group">
+    <div class="w-full py-1.5 group">
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
@@ -279,6 +279,9 @@
     }
     :global(.ant-tree-title) {
         width: calc(100% - 1.5rem) !important;
+    }
+    :global(.ant-tree .ant-tree-title) {
+        @apply pt-0 pb-0 !important;
     }
 </style>
 

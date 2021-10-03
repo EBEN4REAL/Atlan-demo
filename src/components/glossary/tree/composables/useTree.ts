@@ -326,10 +326,10 @@ const useTree = (
                 return treeNode
             })
         } else {
-            let parentStack: string[]
+            let parentStack: string[][]
 
-            const updateNodeNested = (node: TreeDataItem): TreeDataItem => {
-                const currentPath = parentStack.pop()
+            const updateNodeNested = (node: TreeDataItem, path: string[]): TreeDataItem => {
+                const currentPath = path.pop()
 
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
@@ -348,7 +348,7 @@ const useTree = (
                     children: node.children?.map((childNode: TreeDataItem) => {
                         // if the current element is in the path that is needed to reach the target node
                         if (childNode.key === currentPath) {
-                            return updateNodeNested(childNode)
+                            return updateNodeNested(childNode, path)
                         }
                         return childNode
                     }),
@@ -357,11 +357,13 @@ const useTree = (
 
             // find the path to the node
             parentStack = recursivelyFindPath(guid)
-            const parent = parentStack.pop()
-
-            treeData.value = treeData.value.map((node: TreeDataItem) => {
-                if (node.key === parent) return updateNodeNested(node)
-                return node
+            parentStack.forEach((path) => {
+                const parent = path.pop()
+    
+                treeData.value = treeData.value.map((node: TreeDataItem) => {
+                    if (node.key === parent) return updateNodeNested(node, path)
+                    return node
+                })
             })
         }
     }

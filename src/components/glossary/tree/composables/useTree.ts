@@ -26,7 +26,9 @@ const useTree = (
     const defaultLimit = 5;
 
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
-    const nodeToParentKeyMap: Record<string, 'root' | string> = {}
+    // categories will map to strings since categories can only have one parent ( they only belong to 1 category )
+    // terms will map to string[] as a term can be inside multiple categories ( they can belong to multiple categories )
+    const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
 
     const categoryMap: {
         [key: string]: Components.Schemas.AtlasGlossaryCategory[]
@@ -95,21 +97,37 @@ const useTree = (
         targetGuid: string,
         initialStack?: string[]
     ) => {
-        const parentStack = initialStack?.length ? initialStack : [targetGuid]
+        let parentStack = initialStack?.length ? initialStack : [targetGuid]
 
         const findPath = (currGuid: string) => {
             if (
                 nodeToParentKeyMap[currGuid] &&
                 nodeToParentKeyMap[currGuid] !== 'root'
             ) {
-                parentStack.push(nodeToParentKeyMap[currGuid])
-                findPath(nodeToParentKeyMap[currGuid])
+                const current = nodeToParentKeyMap[currGuid];
+                if(typeof current === 'string') {
+                    parentStack.push(current)
+                    findPath(current)
+                }
             }
         }
+        const allPaths: string[][] = []
 
-        findPath(targetGuid)
+        const firstParent = nodeToParentKeyMap[targetGuid];
 
-        return parentStack
+        if(typeof firstParent === 'string') {
+            parentStack = initialStack?.length ? initialStack : [targetGuid]
+            findPath(targetGuid)   
+            allPaths.push(parentStack) 
+        } else {
+            firstParent.forEach((guid) => {
+                parentStack = initialStack?.length ? initialStack : [targetGuid, guid]
+                findPath(guid) 
+                allPaths.push(parentStack) 
+            })
+        }
+
+        return allPaths
     }
 
     /**
@@ -209,7 +227,13 @@ const useTree = (
                         treeNode.dataRef.children = []
                     }
                     if (element.guid) {
-                        nodeToParentKeyMap[element.guid] = treeNode.dataRef.key
+                        const currentParentList = nodeToParentKeyMap[element.guid];
+                        if(currentParentList && currentParentList.length && typeof currentParentList !== 'string') {
+                            currentParentList.push(treeNode.dataRef.key)
+                            nodeToParentKeyMap[element.guid] = currentParentList;
+                        } else {
+                            nodeToParentKeyMap[element.guid] = [treeNode.dataRef.key]
+                        }
                     }
                     treeNode.dataRef.children.push(returnTreeDataItemAttributes(element, 'term', treeNode.dataRef.key, false, treeNode.dataRef.key))
                 })

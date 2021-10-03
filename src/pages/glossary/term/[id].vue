@@ -85,7 +85,7 @@
     // components
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import CategoryTermPreview from '~/components/glossary/sidebar/gtcPreview.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
     import LoadingView from '@common/loaders/page.vue'
 

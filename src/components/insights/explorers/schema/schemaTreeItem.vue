@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full py-1.5 group">
+    <div class="w-full group py-1.5">
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
@@ -72,7 +72,7 @@
                             >
                                 <div
                                     class="pl-2 ml-24"
-                                    @click="() => actionClick('add')"
+                                    @click="() => actionClick('add', item)"
                                 >
                                     <AtlanIcon
                                         icon="AddAssetName"
@@ -91,7 +91,9 @@
                                             ? 'tree-light-color'
                                             : 'bg-gray-light'
                                     "
-                                    @click.stop="() => actionClick('info')"
+                                    @click.stop="
+                                        () => actionClick('info', item)
+                                    "
                                 >
                                     <AtlanIcon
                                         icon="Info"
@@ -105,7 +107,9 @@
                                 </div>
                                 <div
                                     class="pr-2"
-                                    @click.stop="() => actionClick('play')"
+                                    @click.stop="
+                                        () => actionClick('play', item)
+                                    "
                                 >
                                     <AtlanIcon
                                         icon="Play"
@@ -119,7 +123,9 @@
                                 </div>
                                 <div
                                     class="bg-gray-light"
-                                    @click.stop="() => actionClick('bookmark')"
+                                    @click.stop="
+                                        () => actionClick('bookmark', item)
+                                    "
                                 >
                                     <AtlanIcon
                                         icon="BookmarkOutlined"
@@ -189,11 +195,11 @@
             )
 
             const { item } = toRefs(props)
-            const actionClick = (action: string) => {
+            const actionClick = (action: string, t: assetInterface) => {
                 switch (action) {
                     case 'add': {
                         editorInstance.trigger('keyboard', 'type', {
-                            text: `${item.value.title}`,
+                            text: `${t.title}`,
                         })
                         break
                     }
@@ -201,16 +207,23 @@
                         break
                     }
                     case 'info': {
-                        if (!activeInlineTab.value.assetSidebar.isVisible) {
-                            const activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
-                            activeInlineTabCopy.assetSidebar.assetInfo = item
-                            activeInlineTabCopy.assetSidebar.isVisible = true
-                            openAssetSidebar(activeInlineTabCopy)
-                        } else {
+                        // i button clicked on the same node -> close the sidebar
+                        if (
+                            activeInlineTab.value.assetSidebar.isVisible &&
+                            t.guid ===
+                                activeInlineTab.value.assetSidebar.assetInfo
+                                    .guid
+                        ) {
                             /* Close it if it is already opened */
                             closeAssetSidebar(activeInlineTab.value)
+                        } else {
+                            const activeInlineTabCopy: activeInlineTabInterface =
+                                Object.assign({}, activeInlineTab.value)
+                            activeInlineTabCopy.assetSidebar.assetInfo = t
+                            activeInlineTabCopy.assetSidebar.isVisible = true
+                            openAssetSidebar(activeInlineTabCopy)
                         }
+
                         break
                     }
                     case 'bookmark': {
@@ -276,12 +289,6 @@
         // min-width: 440px !important;
         max-width: none !important;
         // min-height: 228px !important;
-    }
-    :global(.ant-tree-title) {
-        width: calc(100% - 1.5rem) !important;
-    }
-    :global(.ant-tree .ant-tree-title) {
-        @apply pt-0 pb-0 !important;
     }
 </style>
 

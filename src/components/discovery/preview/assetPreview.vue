@@ -65,7 +65,7 @@
 
                 <Tooltip
                     :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
+                    classes="font-bold text-base cursor-pointer text-primary hover:underline w-full"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)

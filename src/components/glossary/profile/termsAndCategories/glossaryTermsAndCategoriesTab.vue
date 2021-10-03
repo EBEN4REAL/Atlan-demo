@@ -138,8 +138,8 @@
     import EmptyView from '@common/empty/discover.vue'
     import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
     import AssetList from '~/components/glossary/profile/termsAndCategories/assetList.vue'
-    import Projections from '@/glossary/common/projections.vue'
-    import Filters from '@/glossary/common/filters.vue'
+    import Projections from '@/glossary/profile/termsAndCategories/projections.vue'
+    import Filters from '@/glossary/profile/termsAndCategories/filters.vue'
 
     // composables
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'

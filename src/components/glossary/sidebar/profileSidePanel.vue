@@ -137,7 +137,7 @@
     import Description from '@common/sidebar/description.vue'
     import Status from '@common/sidebar/status.vue'
     import Properties from '@common/sidebar/properties.vue'
-    import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
+    import GlossaryTopTerms from '@/glossary/sidebar/glossaryTopTerms.vue'
     import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
 

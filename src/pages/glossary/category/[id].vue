@@ -91,7 +91,7 @@
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
     import { useRouter } from 'vue-router'
-    import SidePanel from '@/glossary/sidePanel/index.vue'
+    import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 

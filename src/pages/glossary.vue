@@ -58,7 +58,7 @@
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
-    import useTree from '~/components/glossary/composables/useTree'
+    import useTree from '~/components/glossary/tree/composables/useTree'
 
     // types
     import {

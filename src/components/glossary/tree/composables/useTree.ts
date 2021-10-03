@@ -6,7 +6,7 @@ import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
 
 import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
-import useGlossaryList from '~/components/glossary/composables/useGlossaryList'
+import useGlossaryList from '~/components/glossary/tree/composables/useGlossaryList'
 
 import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
 import store from '~/utils/storage'

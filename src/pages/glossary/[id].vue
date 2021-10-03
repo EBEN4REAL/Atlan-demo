@@ -94,7 +94,7 @@
     import LoadingView from '@common/loaders/page.vue'
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import SidePanel from '@/glossary/sidePanel/index.vue'
+    import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
     // composables

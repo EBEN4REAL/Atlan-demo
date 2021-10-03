@@ -17,14 +17,14 @@ export default function useInsightsTabList(): {
             name: 'Metadata',
             component: 'metadata',
             icon: undefined,
-            isVisible: true,
+            isVisible: false,
         },
         {
             id: 'queries',
             name: 'Queries',
             component: 'queries',
             icon: undefined,
-            isVisible: true,
+            isVisible: false,
         },
         {
             id: 'joins',

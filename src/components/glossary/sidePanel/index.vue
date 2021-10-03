@@ -23,13 +23,13 @@
                         <template #expandIcon="{ isActive }">
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="ml-1 transition-transform transform"
+                                class="ml-1 transition-transform duration-300 transform "
                                 :class="isActive ? '-rotate-180' : 'rotate-0'"
                             />
                         </template>
-                        <a-collapse-panel key="1" header="Details" >
-                            <div class="flex flex-col pb-2 pl-4 pr-2">
-                                <div class="flex mt-2 mb-4 space-x-16">
+                        <a-collapse-panel key="1" header="Details">
+                            <div class="flex flex-col pl-5 pr-2">
+                                <div class="flex mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
                                             class="mb-2 text-sm leading-5 text-gray-500 "
@@ -63,6 +63,16 @@
                                     :selected-asset="entity"
                                 />
                                 <Status
+                                    v-if="entity.guid"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="updateEntityAndTree"
+                                />
+                            </div>
+                        </a-collapse-panel>
+
+                        <a-collapse-panel key="2" header="Properties">
+                            <div class="w-full px-5">
+                                <Properties
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                     @update:selected-asset="updateEntityAndTree"
@@ -126,6 +136,7 @@
     import Experts from '@common/sidebar/experts.vue'
     import Description from '@common/sidebar/description.vue'
     import Status from '@common/sidebar/status.vue'
+    import Properties from '@common/sidebar/properties.vue'
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
@@ -146,6 +157,7 @@
             Experts,
             SidePanelTabHeaders,
             Activity,
+            Properties,
         },
         props: {
             entity: {
@@ -259,7 +271,7 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply m-0 pt-0 text-sm text-gray-700 bg-white !important;
+            @apply py-4 px-5 text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-0   mt-0 !important;
@@ -282,7 +294,7 @@
             @apply mb-0 mx-0 p-0 m-0 !important;
         }
         :global(.ant-tabs-tab) {
-            @apply py-2 mb-4 px-4 !important;
+            @apply py-2 mb-4 px-3 !important;
         }
         :global(.ant-tabs) {
             @apply px-0 !important;

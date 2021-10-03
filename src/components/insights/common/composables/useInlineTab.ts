@@ -10,17 +10,29 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         getActiveInlineTabKeyFromLocalStorage,
     } = useLocalStorageSync()
 
+    // initial sidebar will be not visible
+    const setInlineTabsVisibilityToNone = (
+        localStorageInlineTabs: activeInlineTabInterface[]
+    ) => {
+        const localStorageInlineTabsX = localStorageInlineTabs.map((tab) => {
+            tab.assetSidebar.isVisible = false
+            return tab
+        })
+        return localStorageInlineTabsX
+    }
     const setInlineTabsArray = () => {
         // checking if localstorage already have active tabs
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
-            console.log(localStorageInlineTabs, 'local')
-            return localStorageInlineTabs
+            return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
         return inlineTabsDemoData
     }
 
-    const isInlineTabAlreadyOpened = (inlineTab: activeInlineTabInterface) => {
+    const isInlineTabAlreadyOpened = (
+        inlineTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
         let bool = false
         tabsArray.value.forEach((tab) => {
             if (tab.key === inlineTab.key) bool = true
@@ -56,38 +68,49 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         tabsArray.value = tabsArray.value.filter(
             (tab) => tab.key !== inlineTabKey
         )
-        if(treeSelectedKeys)
-            treeSelectedKeys.value = treeSelectedKeys?.value.filter((key) => key !== inlineTabKey)
-        if (
-            tabsArray.value.length &&
-            activeInlineTabKey.value === inlineTabKey
-        ) {
-            if (lastIndex >= 0) {
-                activeInlineTabKey.value = tabsArray.value[lastIndex].key
-            } else {
-                activeInlineTabKey.value = tabsArray.value[0].key
-            }
+        if (treeSelectedKeys)
+            treeSelectedKeys.value = treeSelectedKeys?.value.filter(
+                (key) => key !== inlineTabKey
+            )
+        if (lastIndex >= 0) {
+            activeInlineTabKey.value = tabsArray.value[lastIndex].key
         } else {
-            activeInlineTabKey.value = undefined
+            if (tabsArray.value.length > 0)
+                activeInlineTabKey.value = tabsArray.value[0].key
+            else {
+                activeInlineTabKey.value = undefined
+            }
         }
+
+        console.log(activeInlineTabKey.value)
         // syncying inline tabarray in localstorage
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
 
     const modifyActiveInlineTab = (
         activeTab: activeInlineTabInterface,
-        tabsArray: Ref<activeInlineTabInterface[]>
+        tabsArray: Ref<activeInlineTabInterface[]>,
+        restrictIsSavedToggle?: boolean,
+        localStorageSync: boolean = true
     ) => {
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
+            // changing from saved -> to unsaved
+            if (activeTab.isSaved && !restrictIsSavedToggle)
+                activeTab.isSaved = false
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab
         }
-        // syncying inline tabarray in localstorage
-        syncInlineTabsInLocalStorage(tabsArray.value)
+        if (localStorageSync) {
+            console.log('localStorageSync')
+            // syncying inline tabarray in localstorage
+            syncInlineTabsInLocalStorage(tabsArray.value)
+        }
+        console.log(tabsArray.value, 'tabarray')
     }
+
     const modifyActiveInlineTabEditor = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,
@@ -97,6 +120,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
+            // changing from saved -> to unsaved
+            if (activeTab.isSaved) activeTab.isSaved = false
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index].playground.editor =
                 activeTab.playground.editor
@@ -119,6 +144,21 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         tabsArray.value.push(inlineTab)
         activeInlineTabKey.value = inlineTab.key
     }
+    const isTwoInlineTabsEqual = (
+        obj1: activeInlineTabInterface,
+        obj2: activeInlineTabInterface
+    ) => {
+        console.log('run Equal')
+        const obj1Length = Object.keys(obj1).length
+        const obj2Length = Object.keys(obj2).length
+
+        if (obj1Length === obj2Length) {
+            return Object.keys(obj1).every(
+                (key) => obj2.hasOwnProperty(key) && obj2[key] === obj1[key]
+            )
+        }
+        return false
+    }
 
     const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
     const activeInlineTabKey = ref(setActiveInlineTabKey())
@@ -130,6 +170,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         tabsArray,
         activeInlineTabKey,
         activeInlineTab,
+        isTwoInlineTabsEqual,
         isInlineTabAlreadyOpened,
         inlineTabRemove,
         inlineTabAdd,

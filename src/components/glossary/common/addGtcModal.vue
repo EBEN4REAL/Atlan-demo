@@ -4,9 +4,9 @@
     </div>
     <a-modal
         v-model:visible="visible"
-        :closable="false"
         :class="$style.input"
         width="800px"
+        :closable="false"
     >
         <template #title>
             <div class="flex items-center justify-between w-full">
@@ -39,7 +39,7 @@
                         :show-chip-style-status="false"
                         :show-no-status="true"
                         :show-label="true"
-                        class="items-center p-0 text-xs cursor-pointer"
+                        class="items-center p-0 text-sm cursor-pointer"
                     ></StatusBadge>
                     <AtlanIcon
                         class="pt-1 ml-4 transform -rotate-90"
@@ -87,6 +87,21 @@
                             </span>
                         </a-button>
                     </a-dropdown>
+                    <Categories
+                        v-if="entityType === 'term'"
+                        :glossaryQualifiedName="glossaryQualifiedName"
+                        :categories="
+                            mode === 'create'
+                                ? categoryId
+                                    ? [{ guid: categoryId }]
+                                    : []
+                                : entity.attributes.categories
+                        "
+                        :termGuid="mode === 'create' ? '' : entity.guid"
+                        :term="mode === 'create' ? {} : entity"
+                        mode="create"
+                        @updateCategories="updateSelectedCategories"
+                    />
                     <div
                         v-if="mode !== 'edit'"
                         class="flex items-center space-x-2"
@@ -114,6 +129,7 @@
             v-model:value="description"
             placeholder="Add description..."
             class="text-gray-500 border-0 shadow-none outline-none"
+            :maxlength="140"
             :rows="2"
         />
     </a-modal>
@@ -129,23 +145,30 @@
         watch,
         Ref,
         inject,
-        PropType
+        PropType,
     } from 'vue'
 
     import StatusBadge from '@common/badge/status/index.vue'
     import AddGtcModalOwners from '@/glossary/common/addGtcModalOwners.vue'
-    
+    import Categories from '@/glossary/common/categories.vue'
+
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import whoami from '~/composables/user/whoami'
     import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
-    
+    import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+
     import { List } from '~/constant/status'
-    import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         components: {
             StatusBadge,
             AddGtcModalOwners,
+            Categories,
         },
         props: {
             entityType: {
@@ -154,6 +177,11 @@
                 default: '',
             },
             glossaryId: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            glossaryQualifiedName: {
                 type: String,
                 required: false,
                 default: '',
@@ -183,18 +211,20 @@
             const currentStatus = ref<string | undefined>('draft')
             const ownerUsers = ref<Array<any>>([myUsername.value])
             const ownerGroups = ref<Array<any>>([])
-            
+            const selectedCategories = ref<{ categoryGuid: string }[]>([])
+
             const visible = ref<boolean>(false)
             const isVisible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
-            
+
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
-            
+
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
-            
-            const { createTerm, createCategory, createGlossary } = useCreateGlossary()
+
+            const { createTerm, createCategory, createGlossary } =
+                useCreateGlossary()
 
             const ownerBtnText = computed(() => {
                 let str = ''
@@ -224,7 +254,7 @@
                 description.value = ''
                 currentStatus.value = 'draft'
             }
-            
+
             const showModal = async () => {
                 resetInput()
                 visible.value = true
@@ -236,68 +266,103 @@
                         props?.entity?.attributes?.shortDescription ??
                         props?.entity?.attributes?.description
                     currentStatus.value = props?.entity?.attributes?.assetStatus
-                    ownerUsers.value = props?.entity?.attributes?.ownerUsers
-                        ?.split(',')
-                        ?.filter((s) => s !== '') ?? []
+                    ownerUsers.value =
+                        props?.entity?.attributes?.ownerUsers
+                            ?.split(',')
+                            ?.filter((s) => s !== '') ?? []
 
-                    ownerGroups.value = props?.entity?.attributes?.ownerGroups
-                        ?.split(',')
-                        ?.filter((s) => s !== '') ?? []
+                    ownerGroups.value =
+                        props?.entity?.attributes?.ownerGroups
+                            ?.split(',')
+                            ?.filter((s) => s !== '') ?? []
                 }
             }
 
             const handleOk = () => {
                 if (props.mode === 'edit') {
-                    const { data: updateData, updateEntity } = useUpdateGtcEntity()
-
-                    updateEntity(
-                        props?.entityType,
-                        props.entity?.guid ?? '',
-                        {
-                            name: title.value ?? (props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
-                            assetStatus: currentStatus.value ?? 'draft',
-                            shortDescription: description.value ?? '',
-                            ownerUsers: ownerUsers?.value?.join(),
-                            ownerGroups: ownerGroups?.value?.join()
-                        },
-                        true
-                    )
-                    watch(updateData, () => {
-                        if (refreshEntity) refreshEntity()
-                        if (updateTreeNode) {
-                            updateTreeNode({
-                                guid: props.entity?.guid,
-                                name:  title.value ?? ( props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
+                    const { data: updateData, updateEntity } =
+                        useUpdateGtcEntity()
+                    if (!selectedCategories.value.length) {
+                        updateEntity(
+                            props?.entityType,
+                            props.entity?.guid ?? '',
+                            {
+                                name:
+                                    title.value ??
+                                    (props.entityType === 'term'
+                                        ? 'Untitled Term'
+                                        : 'Untitled category'),
                                 assetStatus: currentStatus.value ?? 'draft',
+                                shortDescription: description.value ?? '',
                                 ownerUsers: ownerUsers?.value?.join(),
                                 ownerGroups: ownerGroups?.value?.join(),
-                                shortDescription: description.value ?? '',
-                            })
-                        }
-                    })
+                            },
+                            true
+                        )
+                        watch(updateData, () => {
+                            if (refreshEntity) refreshEntity()
+                            if (updateTreeNode) {
+                                updateTreeNode({
+                                    guid: props.entity?.guid,
+                                    name:
+                                        title.value ??
+                                        (props.entityType === 'term'
+                                            ? 'Untitled Term'
+                                            : 'Untitled category'),
+                                    assetStatus: currentStatus.value ?? 'draft',
+                                    ownerUsers: ownerUsers?.value?.join(),
+                                    ownerGroups: ownerGroups?.value?.join(),
+                                    shortDescription: description.value ?? '',
+                                })
+                            }
+                        })
+                    } else {
+                        const { data, error, isLoading } =
+                            GlossaryApi.UpdateGlossaryTerm(
+                                props.entity.guid ?? '',
+                                {
+                                    name:
+                                        title.value ??
+                                        (props.entityType === 'term'
+                                            ? 'Untitled Term'
+                                            : 'Untitled category'),
+                                    assetStatus: currentStatus.value ?? 'draft',
+                                    shortDescription: description.value ?? '',
+                                    ownerUsers: ownerUsers?.value?.join(),
+                                    ownerGroups: ownerGroups?.value?.join(),
+                                    anchor: {
+                                        glossaryGuid:
+                                            props.entity.attributes.anchor.guid,
+                                    },
+                                    typeName: props.entity.typeName,
+                                    categories: selectedCategories.value,
+                                }
+                            )
+                        watch(data, (newData) => {
+                            if (newData?.guid) {
+                                if (refreshEntity) refreshEntity()
+                                selectedCategories.value = []
+                            }
+                        })
+                    }
                 } else {
                     if (props.entityType === 'term')
                         createTerm(
                             props.glossaryId,
                             props.categoryId,
-                            `${
-                                !title.value
-                                    ? 'Untitled term'
-                                    : title.value
-                            }`,
+                            `${!title.value ? 'Untitled term' : title.value}`,
                             description.value,
                             currentStatus.value,
                             ownerUsers?.value?.join(),
-                            ownerGroups?.value?.join()
+                            ownerGroups?.value?.join(),
+                            selectedCategories.value
                         )
                     else if (props.entityType === 'category')
                         createCategory(
                             props.glossaryId,
                             props.categoryId,
                             `${
-                                !title.value
-                                    ? 'Untitled category'
-                                    : title.value
+                                !title.value ? 'Untitled category' : title.value
                             }`,
                             description.value,
                             currentStatus.value,
@@ -307,9 +372,7 @@
                     else if (props.entityType === 'glossary') {
                         const { data } = createGlossary(
                             `${
-                                !title.value
-                                    ? 'Untitled category'
-                                    : title.value
+                                !title.value ? 'Untitled category' : title.value
                             }`,
                             description.value,
                             currentStatus.value,
@@ -317,9 +380,8 @@
                             ownerGroups?.value?.join()
                         )
                         watch(data, (newData) => {
-                            if(newData) {
-                                console.log('new Glossary created')
-                            emit('onAddGlossary')
+                            if (newData) {
+                                emit('onAddGlossary')
                             }
                         })
                     }
@@ -341,12 +403,18 @@
                 ownerUsers.value = updatedOwners.ownerUsers.value
                 ownerGroups.value = updatedOwners.ownerGroups.value
             }
+            const updateSelectedCategories = (
+                newCategories: { categoryGuid: string }[]
+            ) => {
+                selectedCategories.value = newCategories
+            }
             onMounted(async () => {
                 await nextTick()
                 titleBar.value?.focus()
             })
 
             return {
+                selectedCategories,
                 handleOk,
                 handleCancel,
                 description,
@@ -365,6 +433,7 @@
                 ownerUsers,
                 myUsername,
                 ownerBtnText,
+                updateSelectedCategories,
             }
         },
     })

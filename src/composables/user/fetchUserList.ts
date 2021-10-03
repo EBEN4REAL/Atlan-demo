@@ -35,8 +35,8 @@ export default function fetchUserList(immediate: boolean = true) {
         () => data.value?.records ?? []
     )
 
-    const total: ComputedRef<number> = computed(() => data.value?.total_record)
-    const filtered: ComputedRef<userInterface[]> = computed(
+    // const total: ComputedRef<number> = computed(() => data.value?.total_record)
+    const total: ComputedRef<userInterface[]> = computed(
         () => data.value?.filter_record
     )
     function setLimit(limit = 20) {
@@ -75,7 +75,6 @@ export default function fetchUserList(immediate: boolean = true) {
 
     return {
         list,
-        filtered,
         total,
         data,
         error,

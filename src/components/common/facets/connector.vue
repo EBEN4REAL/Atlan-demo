@@ -60,10 +60,6 @@
 
     export default defineComponent({
         props: {
-            item: {
-                type: Object as PropType<Collapse>,
-                required: true,
-            },
             data: {
                 type: Object as PropType<{
                     attributeName: string

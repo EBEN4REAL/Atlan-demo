@@ -27,14 +27,16 @@
     </VirtualList>
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
+            v-if="showAssetSidebar"
             v-model:visible="showAssetSidebar"
             placement="right"
             :mask="false"
             :get-container="false"
-            :wrap-style="{ position: 'absolute' }"
+            :wrap-style="{ position: 'absolute', width: '100%' }"
             :keyboard="false"
             :destroy-on-close="true"
             :closable="false"
+            width="100%"
         >
             <AssetPreview
                 :selected-asset="selectedAssetData"

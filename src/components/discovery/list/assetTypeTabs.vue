@@ -100,6 +100,7 @@
                     )
                     if (!found) {
                         assetType.value = 'Catalog'
+                        handleChange()
                     }
                 },
                 {
@@ -185,7 +186,7 @@
 
 <style scoped>
     .chip {
-        @apply px-1 pt-0.5 pb-0.5 mx-1;
+        @apply py-0.5 ml-2;
         @apply rounded;
         @apply tracking-wide;
         @apply text-xs;

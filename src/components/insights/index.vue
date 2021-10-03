@@ -1,25 +1,18 @@
 <template>
     <div class="flex h-full">
         <!--Sidebar navigation pane start -->
-        <div class="w-20 sidebar">
+        <div class="py-3 bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="flex flex-col items-center my-8 text-xs"
+                    class="flex flex-col items-center text-xs  my-7 sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
                         v-if="tab?.icon"
                         :icon="tab.icon"
+                        class="w-6 h-6"
                         :class="activeTabId === tab.id ? 'text-primary' : ''"
                     />
-                    <div
-                        class="w-6 h-6 rounded"
-                        :class="
-                            activeTabId === tab.id
-                                ? 'active-placeholder'
-                                : 'placeholder'
-                        "
-                    ></div>
                     <p
                         class="mt-2 mb-0 text-gray"
                         :class="activeTabId === tab.id ? 'text-primary' : ''"
@@ -35,12 +28,16 @@
             @resize="paneResize"
             class="parent_splitpanes"
         >
-            <pane :max-size="20" :size="explorerPaneSize" :min-size="0">
+            <pane
+                :max-size="24.5"
+                :size="explorerPaneSize"
+                :min-size="0"
+                class="explorer_splitpane"
+            >
                 <!--explorer pane start -->
                 <component
                     v-if="activeTab && activeTab.component"
                     :is="activeTab.component"
-                    @openSavedQueryInNewTab="openSavedQueryInNewTab"
                 ></component>
                 <!--explorer pane end -->
             </pane>
@@ -51,20 +48,19 @@
                         ? 100 - (explorerPaneSize + assetSidebarPaneSize)
                         : 100 - explorerPaneSize
                 "
-                :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
+                :min-size="
+                    activeInlineTab?.assetSidebar?.isVisible ? 55.5 : 75.5
+                "
             >
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
-                :max-size="20"
+                :max-size="25"
                 :min-size="0"
                 :size="
                     activeInlineTab?.assetSidebar?.isVisible
                         ? assetSidebarPaneSize
                         : 0
-                "
-                v-if="
-                    activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
                 "
             >
                 <AssetSidebar />
@@ -74,7 +70,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch } from 'vue'
+    import { defineComponent, ref, computed, watch, inject, Ref } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
@@ -85,13 +81,17 @@
     import useInsightsTabList from './common/composables/useTabList'
     import { useLocalStorageSync } from './common/composables/useLocalStorageSync'
     import { useSpiltPanes } from './common/composables/useSpiltPanes'
-    import { useProvide } from './common/composables/useProvide'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     // import { useConnector } from './common/composables/useConnector'
     // import { useHotKeys } from './common/composables/useHotKeys'
 
     import { TabInterface } from '~/types/insights/tab.interface'
-    import { provideDataInterface } from './common/composables/useProvide'
+    import { SavedQuery } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: {
@@ -104,12 +104,15 @@
         },
         props: {},
         setup(props) {
+            const savedQueryInfo = inject('savedQueryInfo') as Ref<
+                SavedQuery | undefined
+            >
             const { explorerPaneSize, assetSidebarPaneSize, paneResize } =
                 useSpiltPanes()
             // TODO: will be used for HOTKEYs
             // const {explorerPaneToggle,assetSidebarToggle} =useHotKeys();
 
-            const { allTabs: tabsList } = useInsightsTabList()
+            const { filteredTabs: tabsList } = useInsightsTabList()
             const {
                 syncInlineTabsInLocalStorage,
                 syncActiveInlineTabKeyInLocalStorage,
@@ -118,6 +121,11 @@
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
                 useInlineTab()
 
+            const { openSavedQueryInNewTab } = useSavedQuery(
+                tabsArray,
+                activeInlineTab,
+                activeInlineTabKey
+            )
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -127,7 +135,18 @@
             const changeTab = (tab: TabInterface) => {
                 activeTabId.value = tab.id
             }
+            const editorInstance: Ref<any> = ref()
+            const monacoInstance: Ref<any> = ref()
 
+            const setEditorInstance = (
+                editorInstanceParam: any,
+                monacoInstanceParam?: any
+            ) => {
+                editorInstance.value = editorInstanceParam
+                if (monacoInstanceParam)
+                    monacoInstance.value = monacoInstanceParam
+                console.log(editorInstanceParam, editorInstance, 'fxn')
+            }
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -135,6 +154,9 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
+                editorInstance: editorInstance,
+                monacoInstance: monacoInstance,
+                setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -143,6 +165,15 @@
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
+            })
+            watch(savedQueryInfo, () => {
+                if (savedQueryInfo.value !== undefined) {
+                    // const savedQueryInlineTab =
+                    //     transformSavedQueryResponseInfoToInlineTab(
+                    //         savedQueryInfo as Ref<SavedQuery>
+                    //     )
+                    openSavedQueryInNewTab(savedQueryInfo.value)
+                }
             })
             return {
                 activeTab,
@@ -171,27 +202,35 @@
     }
 
     :global(.splitpanes--vertical > .splitpanes__splitter) {
-        background-color: #fff;
         position: relative;
-        width: 8px;
         margin-left: -1px;
         box-sizing: border-box;
         position: relative;
         touch-action: none;
-        @apply border-r border-l !important;
+        border-width: 1.5px !important;
+        border-right: 0px !important;
+        @apply border-r !important;
+        &:hover {
+            @apply border-primary;
+            border-width: 2px !important;
+        }
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter) {
-        background-color: #fff;
         position: relative;
-        height: 8px;
         margin-top: -1px;
         box-sizing: border-box;
         position: relative;
         touch-action: none;
-        @apply border-t border-b !important;
+        border-width: 1.5px !important;
+        border-top: 0px !important;
+        @apply border-t !important;
+        &:hover {
+            @apply border-primary;
+            border-width: 2px !important;
+        }
     }
     :global(.splitpanes--vertical > .splitpanes__splitter):before {
-        content: '';
+        // content: '';
         position: absolute;
         top: 50%;
         left: 50%;
@@ -212,7 +251,7 @@
         @apply bg-primary !important;
     }
     :global(.splitpanes--vertical > .splitpanes__splitter):after {
-        content: '';
+        // content: '';
         position: absolute;
         top: 50%;
         left: 50%;
@@ -227,22 +266,20 @@
         margin-left: 1px;
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-        content: '';
+        // content: '';
         position: absolute;
         top: 50%;
         left: 50%;
         background-color: rgba(0, 0, 0, 0.15);
         -webkit-transition: background-color 0.3s;
         transition: background-color 0.3s;
-
         margin-top: -2px;
-
         transform: translateX(-50%);
         width: 30px;
         height: 1px;
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter):after {
-        content: '';
+        // content: '';
         position: absolute;
         top: 50%;
         left: 50%;
@@ -274,7 +311,17 @@
         height: calc(100vh - 3rem);
     }
     .parent_splitpanes {
-        width: calc(100vw - 5rem);
+        width: calc(100vw - 3.75rem);
+    }
+    .explorer_splitpane {
+        width: 20.75rem;
+    }
+    .sidebar-nav-icon:first-child {
+        @apply mt-0 !important;
+    }
+    .sidebar-nav {
+        /* 60px */
+        width: 3.75rem;
     }
 </style>
 

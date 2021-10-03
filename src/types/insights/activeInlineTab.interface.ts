@@ -1,19 +1,21 @@
 import { CustomVaribaleInterface } from './customVariable.interface'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+import { assetInterface } from '~/types/assets/asset.interface'
 
 export interface activeInlineTabInterface {
     key: string
     label: String
     isSaved: boolean
     queryId: string | undefined
+    status: string // draft | verified etc.
+    connectionId: string
+    description: string
+    qualifiedName: string
+    isSQLSnippet: boolean
     explorer: {
         schema: {
-            connectors: {
-                connection: string | undefined
-                connector: string | undefined
-                selectedDefaultSchema: string | undefined
-                selectedDataSourceName: string | undefined
-            }
-        },
+            connectors: connectorsWidgetInterface
+        }
         queries: {
             connectors: {
                 connector: string | undefined
@@ -49,7 +51,7 @@ export interface activeInlineTabInterface {
     }
     assetSidebar: {
         isVisible: boolean
-        assetInfo: Object
+        assetInfo: assetInterface
         title: string
         id: string
     }

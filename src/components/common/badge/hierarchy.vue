@@ -1,29 +1,14 @@
 <template>
-    <div class="flex overflow-hidden text-gray-500 flex-nowrap">
+    <div
+        class="flex items-center overflow-hidden text-sm text-gray-500  flex-nowrap"
+    >
+        <span class="mr-2"> • </span>
         <template v-for="data in hierarchyInfo" :key="data.id">
-            <!-- <component v-else :is="data.id" class="w-auto h-4 mr-2" /> -->
             <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">{{
                 data.text
             }}</span>
             <span class="px-1 text-gray-300">/</span>
         </template>
-        <!-- <template v-for="data in tableauHierarchy" :key="data.id">
-            <atlan-icon
-                v-if="data.icon === 'connectionName'"
-                icon="Connection"
-                class="w-auto h-4 mr-2"
-            />
-            <AssetChip
-                v-else
-                :type-name="data.icon"
-                integration-name="tableau"
-                class="mr-2"
-            />
-            <span
-                class="mr-3 overflow-hidden overflow-ellipsis whitespace-nowrap"
-                >{{ data.text }}</span
-            >
-        </template> -->
     </div>
 </template>
 

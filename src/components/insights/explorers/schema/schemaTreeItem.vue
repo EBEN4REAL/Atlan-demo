@@ -5,123 +5,136 @@
                 <div
                     class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
-                    <!--For Column-->
-                    <div
-                        v-if="assetType(item) == 'Column'"
-                        class="relative flex items-center justify-between w-full "
-                    >
-                        <div class="flex w-full">
-                            <component
-                                :is="dataTypeImage(item)"
-                                class="
-                                    flex-none
-                                    w-auto
-                                    h-4
-                                    mr-1
-                                    mt-0.5
-                                    text-gray-500
-                                "
-                            ></component>
+                    <a-popover placement="rightTop">
+                        <template #content>
+                            <div>
+                                <SchemaTreeItemPopover :item="item" />
+                            </div>
+                        </template>
+                        <!--For Column-->
+                        <div
+                            v-if="assetType(item) == 'Column'"
+                            class="relative flex items-center justify-between w-full  z"
+                        >
+                            <div class="flex w-full">
+                                <component
+                                    :is="dataTypeImage(item)"
+                                    class="
+                                        flex-none
+                                        w-auto
+                                        h-4
+                                        mr-1
+                                        mt-0.5
+                                        text-gray-500
+                                    "
+                                ></component>
+                                <span
+                                    class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
+                                >
+                                    {{ title(item) }}
+                                </span>
+                            </div>
+                            <div
+                                class="flex items-center text-xs text-gray-500  mr-7"
+                                v-if="isPrimary(item)"
+                            >
+                                <div class="flex items-center">
+                                    <a-tooltip>
+                                        <template #title>Pkey</template>
+                                        <AtlanIcon
+                                            icon="PrimaryKey"
+                                            class="w-4 h-4 my-auto mr-1  primary-key-color"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                </div>
+                                {{ dataType(item) }}
+                            </div>
+                        </div>
+                        <!------------------------------->
+                        <!--For Others -->
+                        <div v-else class="relative flex w-full z">
+                            <AtlanIcon
+                                :icon="assetType(item)"
+                                class="w-4 h-4 my-auto mr-1"
+                            ></AtlanIcon>
                             <span
                                 class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
                             >
                                 {{ title(item) }}
                             </span>
-                        </div>
-                        <div
-                            class="flex items-center text-xs text-gray-500 mr-7"
-                            v-if="isPrimary(item)"
-                        >
-                            <div class="flex items-center">
-                                <a-tooltip>
-                                    <template #title>Pkey</template>
-                                    <AtlanIcon
-                                        icon="PrimaryKey"
-                                        class="w-4 h-4 my-auto mr-1  primary-key-color"
-                                    ></AtlanIcon>
-                                </a-tooltip>
-                            </div>
-                            {{ dataType(item) }}
-                        </div>
-                    </div>
-                    <!------------------------------->
-                    <!--For Others -->
-                    <div v-else class="relative flex w-full">
-                        <AtlanIcon
-                            :icon="assetType(item)"
-                            class="w-4 h-4 my-auto mr-1"
-                        ></AtlanIcon>
-                        <span
-                            class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
-                        >
-                            {{ title(item) }}
-                        </span>
-                        <div
-                            class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top right-6 group-hover:opacity-100"
-                            :class="
-                                item?.selected
-                                    ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                    : 'bg-gradient-to-l from-gray-light via-gray-light'
-                            "
-                        >
                             <div
-                                class="pl-2 ml-24"
-                                @click="() => actionClick('add')"
+                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                :class="
+                                    item?.selected
+                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                        : 'bg-gradient-to-l from-gray-light via-gray-light'
+                                "
                             >
-                                <AtlanIcon
-                                    icon="AddAssetName"
-                                    class="w-4 h-4 my-auto"
+                                <div
+                                    class="pl-2 ml-24"
+                                    @click="() => actionClick('add')"
+                                >
+                                    <AtlanIcon
+                                        icon="AddAssetName"
+                                        class="w-4 h-4 my-auto"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : 'bg-gray-light'
+                                        "
+                                    ></AtlanIcon>
+                                </div>
+                                <div
+                                    class="pl-2 pr-2"
                                     :class="
                                         item?.selected
                                             ? 'tree-light-color'
                                             : 'bg-gray-light'
                                     "
-                                ></AtlanIcon>
-                            </div>
-                            <div
-                                class="pl-2 pr-2"
-                                :class="
-                                    item?.selected
-                                        ? 'tree-light-color'
-                                        : 'bg-gray-light'
-                                "
-                                @click.stop="() => actionClick('info')"
-                            >
-                                <AtlanIcon
-                                    icon="Info"
-                                    :class="
-                                        item?.selected ? 'tree-light-color' : ''
-                                    "
-                                    class="w-4 h-4 my-auto"
-                                ></AtlanIcon>
-                            </div>
-                            <div
-                                class="pr-2"
-                                @click.stop="() => actionClick('play')"
-                            >
-                                <AtlanIcon
-                                    icon="Play"
-                                    :class="
-                                        item?.selected ? 'tree-light-color' : ''
-                                    "
-                                    class="w-4 h-4 my-auto"
-                                ></AtlanIcon>
-                            </div>
-                            <div
-                                class="bg-gray-light"
-                                @click.stop="() => actionClick('bookmark')"
-                            >
-                                <AtlanIcon
-                                    icon="BookmarkOutlined"
-                                    :class="
-                                        item?.selected ? 'tree-light-color' : ''
-                                    "
-                                    class="w-4 h-4 my-auto"
-                                ></AtlanIcon>
+                                    @click.stop="() => actionClick('info')"
+                                >
+                                    <AtlanIcon
+                                        icon="Info"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : ''
+                                        "
+                                        class="w-4 h-4 my-auto"
+                                    ></AtlanIcon>
+                                </div>
+                                <div
+                                    class="pr-2"
+                                    @click.stop="() => actionClick('play')"
+                                >
+                                    <AtlanIcon
+                                        icon="Play"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : ''
+                                        "
+                                        class="w-4 h-4 my-auto"
+                                    ></AtlanIcon>
+                                </div>
+                                <div
+                                    class="bg-gray-light"
+                                    @click.stop="() => actionClick('bookmark')"
+                                >
+                                    <AtlanIcon
+                                        icon="BookmarkOutlined"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : ''
+                                        "
+                                        class="w-4 h-4 my-auto"
+                                    ></AtlanIcon>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!------------------------------->
+                        <!------------------------------->
+                    </a-popover>
                 </div>
             </div>
         </div>
@@ -143,9 +156,10 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import SchemaTreeItemPopover from '~/components/insights/explorers/schema/schemaItemPopover.vue'
 
     export default defineComponent({
-        components: {},
+        components: { SchemaTreeItemPopover },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -231,7 +245,11 @@
         text-overflow: ellipsis;
         white-space: nowrap !important;
         width: 0;
-        min-width: 85%;
+        min-width: 100%;
+    }
+    .popover-width {
+        min-width: 440px;
+        min-height: 228px;
     }
     .margin-align-top {
         margin-top: -1px;
@@ -250,7 +268,18 @@
     .from-tree-light-color {
         --tw-gradient-from: #dbe9fe !important;
     }
+
     /* ------------------------------- */
+</style>
+<style lang="less" module>
+    :global(.ant-popover-inner-content) {
+        // min-width: 440px !important;
+        max-width: none !important;
+        // min-height: 228px !important;
+    }
+    :global(.ant-tree-title) {
+        width: calc(100% - 1.5rem) !important;
+    }
 </style>
 
 <route lang="yaml">

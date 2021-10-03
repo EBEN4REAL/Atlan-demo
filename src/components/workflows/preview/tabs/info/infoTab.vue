@@ -74,24 +74,14 @@
     export default defineComponent({
         name: 'InfoTab',
         components: {
-            assetDetails: defineAsyncComponent(
-                () => import('./assetDetails/index.vue')
-            ),
             properties: defineAsyncComponent(
                 () => import('./properties/index.vue')
-            ),
-            heirarchy: defineAsyncComponent(
-                () => import('./heirarchy/index.vue')
             ),
         },
         props: {
             id: String,
             componentData: {
                 type: Object as PropType<any>,
-            },
-            infoTabData: {
-                type: Object as PropType<assetInterface>,
-                required: true,
             },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

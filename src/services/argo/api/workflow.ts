@@ -16,11 +16,6 @@ const List = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().ge
   ...options,
 });
 
-const ArchivedList = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get(getAPIPath(serviceAlias, URL.ArchiveList), {
-  params,
-  ...options,
-});
-
 const getWorkflowTemplates = (tenant, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.WORKFLOW_TEMPLATES, 'GET', {
   options,
   pathVariables: {
@@ -28,9 +23,18 @@ const getWorkflowTemplates = (tenant, { immediate, options }) => useAPIAsyncStat
   }
 }, { immediate })
 
+const getArchivedWorkflowList = (labelSelector, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.ARCHIVED_WORKFLOW, 'GET', {
+  options,
+  params: {
+    "listOptions.labelSelector": labelSelector,
+    "listOptions.limit": 100
+  }
+
+}, { immediate })
+
 export const Workflows = {
   URL,
   List,
-  ArchivedList,
+  getArchivedWorkflowList,
   getWorkflowTemplates
 };

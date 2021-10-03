@@ -15,3 +15,22 @@ export function useWorkflowTemplateSearchList(tenant, immediate: boolean = true)
 
     return { workflowList, error, isLoading, filterList, mutate }
 }
+
+export function useArchivedWorkflowList(labelSelector, immediate: boolean = true) {
+    const label = ref(labelSelector)
+    const { data, error, isLoading, mutate } = Workflows.getArchivedWorkflowList(label.value, { immediate, options: {} })
+
+    const workflowList = ref([])
+    watch(data, () => {
+        console.log('useArchivedWorkflowList', data.value.items)
+        workflowList.value = data.value?.items
+    })
+
+    const reFetch = (l) => {
+        label.value = l;
+        mutate()
+    }
+    const filterList = (text) => workflowList.value.filter(wf => wf.metadata.name.includes(text))
+
+    return { workflowList, error, isLoading, filterList, mutate, reFetch }
+}

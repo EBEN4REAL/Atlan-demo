@@ -12,7 +12,7 @@
     import { capitalizeFirstLetter } from '~/utils/string'
     
     export default defineComponent({
-        name: 'WorkflowPropertiesWrapper',
+        name: 'WorkflowProperties',
         components: {},
         props: {
             selectedAsset: {

@@ -1,54 +1,85 @@
 <template>
     <div
-        class="mx-5 overflow-y-scroll border rounded-sm"
-        style="max-height: 310px"
+        v-for="item in lineageList"
+        class="flex mx-3 bg-white border border-transparent"
     >
-        <table class="w-full table-auto">
-            <tbody>
-                <tr
-                    v-for="(asset, index) in lineageList"
-                    :key="index"
-                    class="border-b"
-                    :class="{
-                        'border-none': index === lineageList.length - 1,
-                    }"
-                >
-                    <router-link :to="`/assets/${asset.guid}/lineage`">
-                        <td
-                            class="flex items-center justify-between p-1 px-3 cursor-pointer  hover:bg-primary-light hover:bg-opacity-20"
-                        >
-                            <div class="flex items-center w-full">
-                                <component
-                                    :is="asset.typeName"
-                                    class="w-auto h-3 mr-2"
-                                ></component>
-                                <div class="w-10/12 truncate">
-                                    {{ asset.displayText }}
-                                </div>
-                            </div>
-                        </td>
+        <div
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent border-gray-200  w-96"
+        >
+            <div
+                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
+            >
+                <!-- Asset type + Hierarchy bar -->
+                <div class="flex items-center text-gray-500 gap-x-2">
+                    <AssetLogo :asset="item" />
+
+                    <HierarchyBar :selected-asset="item" />
+                </div>
+
+                <!-- Title bar -->
+                <div class="flex items-center mb-0 overflow-hidden">
+                    <router-link
+                        :to="
+                            isColumnAsset(item)
+                                ? getColumnUrl(item)
+                                : `/assets/${item.guid}/overview`
+                        "
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap text-md"
+                    >
+                        {{ title(item) }}
                     </router-link>
-                </tr>
-            </tbody>
-        </table>
+                    <StatusBadge
+                        :key="item.guid"
+                        :show-no-status="false"
+                        :status-id="status(item)"
+                        class="flex-none mb-0.5 ml-1"
+                    ></StatusBadge>
+                </div>
+                <!-- Description -->
+                <div class="max-w-lg text-sm text-gray-500 truncate-overflow">
+                    <span v-if="description(item)?.length">{{
+                        description(item)
+                    }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType } from 'vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
+    import HierarchyBar from '@common/badge/hierarchy.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
     // Constants
 
     export default defineComponent({
         name: 'LineagePreviewTabAssetList',
+        components: { StatusBadge, HierarchyBar, AssetLogo },
         props: {
             lineageList: {
-                type: Array,
+                type: Array as PropType<assetInterface[]>,
                 required: true,
             },
         },
         setup() {
-            return {}
+            const { description, title, status, assetType } = useAssetInfo()
+            const isColumnAsset = (asset) => assetType(asset) === 'Column'
+            const getColumnUrl = (asset) => {
+                const tableGuid = asset?.attributes?.table?.guid
+                return `/assets/${tableGuid}/overview?column=${asset.guid}`
+            }
+
+            return {
+                description,
+                title,
+                status,
+                isColumnAsset,
+                getColumnUrl,
+            }
         },
     })
 </script>

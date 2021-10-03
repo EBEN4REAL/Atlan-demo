@@ -79,11 +79,12 @@
                     </div></a-button
                 >
 
-                <a-button
-                    class="px-2 text-gray-500 border-transparent shadow-none  hover:border-gray-300"
+                <!-- <a-button
+                    class="px-2 text-gray-500 border-transparent shadow-none hover:border-gray-300"
                 >
                     <AtlanIcon icon="KebabMenu" />
-                </a-button>
+                </a-button> -->
+                <AssetMenu :asset="assetData" />
             </div>
         </div>
     </div>
@@ -98,12 +99,20 @@
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import AtlanBtn from '~/components/UI/button.vue'
+    import AssetMenu from './assetMenu.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { AssetLogo, HierarchyBar, StatusBadge, AtlanBtn, Tooltip },
+        components: {
+            AssetLogo,
+            HierarchyBar,
+            StatusBadge,
+            AtlanBtn,
+            Tooltip,
+            AssetMenu,
+        },
 
         setup() {
             /** INJECTIONS */

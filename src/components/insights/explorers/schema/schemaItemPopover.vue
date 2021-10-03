@@ -215,7 +215,7 @@
             const oSidebar = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
-                activeInlineTabCopy.assetSidebar.assetInfo = item
+                activeInlineTabCopy.assetSidebar.assetInfo = item.value
                 activeInlineTabCopy.assetSidebar.isVisible = true
                 openAssetSidebar(activeInlineTabCopy)
             }

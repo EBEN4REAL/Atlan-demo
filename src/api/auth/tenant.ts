@@ -5,7 +5,7 @@ import { getEnv } from "~/modules/__env";
 
 const serviceAlias = "auth";
 
-const Get = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get(getAPIPath(serviceAlias, ""), {
+const Get = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get(getAPIPath(serviceAlias, "default/tenant"), {
     params,
     ...options,
   });

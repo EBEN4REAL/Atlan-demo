@@ -8,13 +8,13 @@ export const GET_ENTITY = 'GET_ENTITY'
 
 const groupsMap: Record<string, (...params: any) => string> = {
     [GET_ASSET_AUDIT]: ({ guid }: Record<string, string>) =>
-        getAPIPath('auth/atlas', `/entity/${guid}/audit`),
-    [BASIC_SEARCH]: () => getAPIPath('auth/atlas', '/search/basic'),
+        getAPIPath('metastore', `/entity/${guid}/audit`),
+    [BASIC_SEARCH]: () => getAPIPath('metastore', '/search/basic'),
     [GET_ASSET_RELATIONSHIP]: () =>
-        getAPIPath('auth/atlas', '/search/relationship'),
+        getAPIPath('metastore', '/search/relationship'),
     [PREVIEW_TABLE]: () => getAPIPath('query', '/preview'),
     [GET_ENTITY]: ({ guid }) =>
-        getAPIPath('auth/atlas', `/entity/guid/${guid}`),
+        getAPIPath('metastore', `/entity/guid/${guid}`),
 }
 
 export default groupsMap

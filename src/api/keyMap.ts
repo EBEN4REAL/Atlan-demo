@@ -4,40 +4,40 @@ import { getAPIPath, getHealthPath, PathParams } from '~/api'
 export const KeyMaps = {
     asset: {
         GET_ASSET_AUDIT: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/entity/${guid}/audit`),
-        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
-        SAVED_SEARCH: () => getAPIPath('auth/atlas', `/search/save`),
+            getAPIPath('metastore', `/entity/${guid}/audit`),
+        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
+        SAVED_SEARCH: () => getAPIPath('metastore', `/search/save`),
         GET_ASSET_RELATIONSHIP: () =>
-            getAPIPath('auth/atlas', '/search/relationship'),
+            getAPIPath('metastore', '/search/relationship'),
         PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
         GET_ENTITY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/entity/guid/${guid}`),
+            getAPIPath('metastore', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
-            getAPIPath('auth/atlas', '/types/typedefs?type=classification'),
+            getAPIPath('metastore', '/types/typedefs?type=classification'),
         CREATE_CLASSIFICATION: () =>
-            getAPIPath('auth/atlas', '/types/typedefs'),
-        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
+            getAPIPath('metastore', '/types/typedefs'),
+        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
         UPDATE_CLASSIFICATION: () =>
-            getAPIPath('auth/atlas', '/types/typedefs'),
+            getAPIPath('metastore', '/types/typedefs'),
         ARCHIVE_CLASSIFICATION: ({ typeName, entityGuid }: PathParams) =>
             getAPIPath(
-                'auth/atlas',
+                'metastore',
                 `/entity/guid/${entityGuid}/classification/${typeName}`
             ),
         LINK_CLASSIFICATION: ({ entityGuid }: PathParams) =>
             getAPIPath(
-                'auth/atlas',
+                'metastore',
                 `/entity/guid/${entityGuid}/classifications`
             ),
     },
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
             getAPIPath(
-                'auth/atlas',
+                'metastore',
                 `/lineage/${guid}?depth=${depth}&direction=${direction}`
             ),
     },
@@ -117,44 +117,44 @@ export const KeyMaps = {
     },
     BM: {
         GET_BUSINESS_METADATA: () =>
-            getAPIPath('auth/atlas', `/types/typedefs`),
+            getAPIPath('metastore', `/types/typedefs`),
         ADD_BUSINESS_METADATA: () =>
-            getAPIPath('auth/atlas', `/types/typedefs`),
+            getAPIPath('metastore', `/types/typedefs`),
         UPDATE_BUSINESS_METADATA: () =>
-            getAPIPath('auth/atlas', `/types/typedefs`),
+            getAPIPath('metastore', `/types/typedefs`),
         UPDATE_ASSET_BUSINESS_METADATA: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/entity/guid/${guid}/businessmetadata`),
+            getAPIPath('metastore', `/entity/guid/${guid}/businessmetadata`),
     },
     glossary: {
-        CREATE_GLOSSARY: () => getAPIPath('auth/atlas', '/glossary'),
+        CREATE_GLOSSARY: () => getAPIPath('metastore', '/glossary'),
         CREATE_GLOSSARY_CATEGORY: () =>
-            getAPIPath('auth/atlas', '/glossary/category'),
-        CREATE_GLOSSARY_TERM: () => getAPIPath('auth/atlas', '/glossary/term'),
+            getAPIPath('metastore', '/glossary/category'),
+        CREATE_GLOSSARY_TERM: () => getAPIPath('metastore', '/glossary/term'),
 
-        GET_GTC_ENTITY: () => getAPIPath('auth/atlas', `/search/basic`),
+        GET_GTC_ENTITY: () => getAPIPath('metastore', `/search/basic`),
         GET_GLOSSARY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/${guid}`),
+            getAPIPath('metastore', `/glossary/${guid}`),
         GET_CATEGORY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/category/${guid}`),
+            getAPIPath('metastore', `/glossary/category/${guid}`),
         GET_TERM: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/term/${guid}`),
+            getAPIPath('metastore', `/glossary/term/${guid}`),
 
         DELETE_GLOSSARY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/${guid}`),
+            getAPIPath('metastore', `/glossary/${guid}`),
         DELETE_GLOSSARY_CATEGORY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/category/${guid}`),
+            getAPIPath('metastore', `/glossary/category/${guid}`),
         DELETE_GLOSSARY_TERM: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/term/${guid}`),
+            getAPIPath('metastore', `/glossary/term/${guid}`),
 
         UPDATE_GLOSSARY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/${guid}`),
+            getAPIPath('metastore', `/glossary/${guid}`),
         UPDATE_GLOSSARY_CATEGORY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/category/${guid}/partial`),
+            getAPIPath('metastore', `/glossary/category/${guid}/partial`),
         UPDATE_GLOSSARY_TERM: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/term/${guid}/partial`),
+            getAPIPath('metastore', `/glossary/term/${guid}/partial`),
 
         UPDATE_GLOSSARY_CATEGORY_FULL: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/category/${guid}`),
+            getAPIPath('metastore', `/glossary/category/${guid}`),
 
         GET_GLOSSARY_CATEGORIES: ({
             guid,
@@ -163,28 +163,28 @@ export const KeyMaps = {
             searchText,
         }: Record<string, any>) =>
             getAPIPath(
-                'auth/atlas',
+                'metastore',
                 `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
-                'auth/atlas',
+                'metastore',
                 `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
 
         GET_CATEGORY_TERMS: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/category/${guid}/terms`),
+            getAPIPath('metastore', `/glossary/category/${guid}/terms`),
 
-        GET_TERM_LINKED_ASSETS: () => getAPIPath('auth/atlas', `/search/basic`),
+        GET_TERM_LINKED_ASSETS: () => getAPIPath('metastore', `/search/basic`),
         ASSIGN_TERM_LINKED_ASSETS: ({ guid }: PathParams) =>
             getAPIPath(
-                'auth/atlas',
+                'metastore',
                 `/glossary/terms/${guid}/assignedEntities`
             ),
-        GTC_SEARCH: () => getAPIPath('auth/atlas', `/search/basic`),
-        GLOSSARY_LIST: () => getAPIPath('auth/atlas', `/search/basic`),
+        GTC_SEARCH: () => getAPIPath('metastore', `/search/basic`),
+        GLOSSARY_LIST: () => getAPIPath('metastore', `/search/basic`),
     },
     health: {
         PING_USER: () => getHealthPath('auth', '/debug/health'),
@@ -197,7 +197,7 @@ export const KeyMaps = {
     connection: {
         TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
         SETUP: () => getAPIPath('auth', "/connections"),
-        CONNECTION_SETUP: () => getAPIPath('auth/atlas', `/connections/setup`),
+        CONNECTION_SETUP: () => getAPIPath('metastore', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
         CONNECTION_ARCHIVE: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),
     },
@@ -221,11 +221,11 @@ export const KeyMaps = {
             ),
     },
     insights: {
-        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
-        CREATE_SAVED_QUERY: () => getAPIPath('auth/atlas', '/entity'),
+        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
+        CREATE_SAVED_QUERY: () => getAPIPath('metastore', '/entity'),
     },
     savedQueries: {
-        RELATIONSHIP: () => getAPIPath('auth/atlas', '/search/relationship'),
-        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
+        RELATIONSHIP: () => getAPIPath('metastore', '/search/relationship'),
+        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
     },
 }

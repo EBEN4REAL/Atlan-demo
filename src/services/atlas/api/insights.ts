@@ -8,7 +8,7 @@ import {
 } from '~/types/insights/savedQuery.interface'
 import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
 
-const serviceAlias = 'auth/atlas'
+const serviceAlias = 'metastore'
 const body = ref({
     typeName: 'Query',
     excludeDeletedEntities: true,

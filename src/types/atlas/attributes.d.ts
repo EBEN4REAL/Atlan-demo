@@ -1,4 +1,4 @@
-import { Components } from "~/api/auth/atlas";
+import { Components } from "~/api/metastore";
 
 export interface BaseAttributes {
     name?: string;

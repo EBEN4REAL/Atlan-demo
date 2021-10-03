@@ -64,7 +64,7 @@ export const install: UserModule = ({ app }) => {
     cacheFlag: "cache",
   };
   axiosClient = axios.create({
-    baseURL: `/api`,
+    baseURL: `default/api`,
     timeout: getEnv().DEFAULT_REQUEST_TIMEOUT,
     timeoutErrorMessage: "timeout",
     headers: {

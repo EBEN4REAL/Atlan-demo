@@ -5,7 +5,7 @@ import { Components } from "./client";
 import { fetcherPost, getAPIPath, getAxiosClient } from "~/api";
 import { SearchParameters } from "~/types/atlas/attributes";
 
-const serviceAlias = "auth/atlas";
+const serviceAlias = "metastore";
 
 const Basic = (
   body?: SearchParameters,

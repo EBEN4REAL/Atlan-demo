@@ -5,7 +5,7 @@ import { reactive, ref, Ref, toRef, toRefs } from "vue";
 import { Components } from "./client";
 import { fetcherPost, getAPIPath, getAxiosClient } from "~/api";
 
-const serviceAlias = "auth/atlas";
+const serviceAlias = "metastore";
 
 
 export const URL = {

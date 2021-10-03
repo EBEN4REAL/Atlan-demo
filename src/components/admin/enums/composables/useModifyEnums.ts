@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { fetcherPost, getAPIPath, updater } from "~/api";
 import enumDef from "../enum.interface";
 
-const serviceAlias = "auth/atlas";
+const serviceAlias = "metastore";
 const enumTypedef = "ENUM";
 
 export function useAddEnums() {

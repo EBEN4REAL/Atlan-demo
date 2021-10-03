@@ -3,7 +3,7 @@ import { axiosClient } from "~/modules/_axios";
 
 export const getAPIPath = (serviceName: string, path = "") => {
     const realm = getEnv().DEFAULT_REALM;
-    return `${serviceName}/tenants/${realm}${path}`;
+    return `${serviceName}/${path}`;
 };
 
 export const getAxiosClient = () => axiosClient;

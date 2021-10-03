@@ -32,7 +32,16 @@
                     class="flex items-center justify-center p-1 px-2 text-sm border-r-0 rounded-none rounded-l "
                     @click="redirectToProfile(entity?.typeName, entity?.guid)"
                 >
-                    <atlan-icon icon="OpenTermProfile" class="w-auto" />
+                    <atlan-icon
+                        v-if="entity?.typeName === 'AtlasGlossaryTerm'"
+                        icon="OpenTermProfile"
+                        class="w-auto"
+                    />
+                    <atlan-icon
+                        v-if="entity?.typeName === 'AtlasGlossaryCategory'"
+                        icon="OpenCategoryProfile"
+                        class="w-auto"
+                    />
                 </a-button>
                 <a-dropdown>
                     <template #overlay>

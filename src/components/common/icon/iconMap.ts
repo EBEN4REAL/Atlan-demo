@@ -51,6 +51,7 @@ import Relation from '~/assets/images/icons/relation.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
+import OpenCategoryProfile from '~/assets/images/icons/open-category-profile.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
 import Group from '~/assets/images/icons/group.svg'
 import GroupStatic from '~/assets/images/icons/group-static.svg'
@@ -154,6 +155,7 @@ export default {
     Info,
     AddAssetName,
     VariableTrigger,
+    OpenCategoryProfile,
     Trash,
     Widgets,
     Megaphone,

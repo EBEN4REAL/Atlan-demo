@@ -22,6 +22,13 @@
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
+                <div class="flex items-center flex-none">
+                    <span
+                        class="pl-1 text-sm tracking-wider text-gray-700 uppercase "
+                        >WORKFLOW TEMPLATE</span
+                    >
+                </div>
+
                 <div class="flex items-center mb-0 overflow-hidden">
                     <router-link
                         :class="

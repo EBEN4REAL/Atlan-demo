@@ -13,8 +13,11 @@
         </div>
         <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
             <div class="flex items-center justify-between mb-0 text-sm">
-                <!-- <AssetLogo :asset="selectedAsset" variant="md" /> -->
-
+                <div class="flex items-center flex-none">
+                    <span class="text-sm tracking-wider text-gray-700 uppercase"
+                        >WORKFLOW TEMPLATE</span
+                    >
+                </div>
                 <div class="flex space-x-2">
                     <a-button-group>
                         <a-button size="small"
@@ -48,13 +51,13 @@
                 ></a-tooltip>
 
                 <Tooltip
-                    :tooltip-text="selectedAsset?.attributes?.name"
+                    :tooltip-text="selectedAsset?.metadata?.name"
                     classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
                             ? getColumnUrl(selectedAsset)
-                            : `/workflows/${selectedAsset.guid}/overview`
+                            : `/workflows/${selectedAsset.metadata.uid}/overview`
                     "
                 />
 

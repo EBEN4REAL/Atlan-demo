@@ -4,7 +4,7 @@
             <div class="flex h-full">
                 <component
                     :is="isItem ? 'router-view' : 'WorkflowDiscovery'"
-                    ref="assetDiscovery"
+                    ref="workflowDiscovery"
                     :initial-filters="initialFilters"
                     :update-profile="updateProfile"
                     @preview="handlePreview"
@@ -28,13 +28,12 @@
 <script lang="ts">
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
-    import { computed, defineComponent, ref, Ref, watch } from 'vue'
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import { computed, defineComponent, ref, Ref } from 'vue'
     import WorkflowDiscovery from '~/components/workflows/workflowDiscovery.vue'
     import WorkflowPreview from '~/components/workflows/preview/workflowPreview.vue'
+    // TODO change to workflowInterfalce
     import { assetInterface } from '~/types/assets/asset.interface'
     import { decodeQuery } from '~/utils/helper/routerHelper'
-    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -55,7 +54,8 @@
             const isItem = computed(() => route.params.id)
             const updateProfile = ref<boolean>(false)
 
-            const assetDiscovery: Ref<Element | null> = ref(null)
+            const workflowDiscovery: Ref<Element | null> = ref(null)
+            // TODO fix initialFilters set , apply , etc
             // const initialFilters: initialFiltersType =
             //     getDecodedOptionsFromString(router)
 
@@ -70,7 +70,6 @@
                 ),
             }
 
-            router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
@@ -80,24 +79,9 @@
                 isItem.value ? 'profile' : 'discovery'
             )
 
-            // * Get all available BMs and save on store
-            const { fetchBMonStore } = useBusinessMetadata()
-            fetchBMonStore()
-
-            /* Making the network request here to fetch the latest changes of classifications.
-            So that everytime user visit the discover page it will be in sync to latest data not with store
-            */
-            const {
-                isClassificationInitializedInStore,
-                initializeClassificationsInStore,
-            } = useClassifications()
-            if (!isClassificationInitializedInStore()) {
-                initializeClassificationsInStore()
-            }
-
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (page.value === 'discovery')
-                    assetDiscovery.value.mutateAssetInList(updatedAsset)
+                    workflowDiscovery.value.mutateAssetInList(updatedAsset)
                 handlePreview(updatedAsset)
                 updateProfile.value = true
             }
@@ -109,7 +93,7 @@
                 isItem,
                 page,
                 propagateToAssetList,
-                assetDiscovery,
+                workflowDiscovery,
             }
         },
     })

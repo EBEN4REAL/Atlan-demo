@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <WorkflowFilters
                 :ref="
@@ -26,14 +33,14 @@
                         :autofocus="true"
                         @change="handleSearchChange"
                     >
-                        <template #filter>
+                        <!-- <template #filter>
                             <Preferences
                                 :default-projection="projection"
                                 @change="handleChangePreferences"
                                 @sort="handleChangeSort"
                                 @state="handleState"
                             />
-                        </template>
+                        </template> -->
                         <!-- <template #buttonAggregation>
                         <span>({{ projection.length }})</span>
                     </template> -->
@@ -72,7 +79,7 @@
                     ref="assetlist"
                     v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
-                    :list="runList"
+                    :list="queryText.length ? filterList(queryText) : runList"
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     @preview="handlePreview"
@@ -116,7 +123,7 @@
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
-    import { useWorkflowSearchList } from './useWorkFlowList'
+    import { useWorkflowTemplateSearchList } from './useWorkFlowList'
     import { useAssetAggregation } from './useAssetListing'
 
     export default defineComponent({
@@ -219,10 +226,11 @@
                 initialTabs.value.join(',')
             )
 
-            const { workflowList: runList, isLoading } = useWorkflowSearchList(
-                'default',
-                true
-            )
+            const {
+                workflowList: runList,
+                isLoading,
+                filterList,
+            } = useWorkflowTemplateSearchList('default', true)
 
             const { assetTypeMap, refreshAggregation } = useAssetAggregation(
                 assetTypeListString.value,
@@ -255,7 +263,7 @@
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
-                let placeholder = 'Search for assets'
+                let placeholder = 'Search for Workflows'
                 if (placeholderLabel.value.asset) {
                     placeholder += ` in ${placeholderLabel.value.asset}`
                 } else if (placeholderLabel.value.connector) {
@@ -303,9 +311,11 @@
 
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
-                isAggregate.value = true
-                updateBody()
+                // TODO use pagination and recall api
+
+                // offset.value = 0
+                // isAggregate.value = true
+                // updateBody()
                 setRouterOptions()
                 // tracking.send(events.EVENT_ASSET_SEARCH, {
                 //     trigger: 'discover',
@@ -392,6 +402,7 @@
                 filters,
                 assetTypeListString,
                 handleFilterInit,
+                filterList,
             }
         },
         data() {

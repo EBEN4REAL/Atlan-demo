@@ -2,7 +2,7 @@
     <VirtualList
         :class="{ 'animate-pulse': isLoading }"
         :data="list"
-        data-key="guid"
+        data-key="metadata"
         variable-height
     >
         <template #default="{ item }">

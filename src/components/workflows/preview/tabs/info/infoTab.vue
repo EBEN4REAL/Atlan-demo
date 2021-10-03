@@ -1,6 +1,7 @@
 <template>
     <div v-if="!isLoaded" class="">
-        <a-collapse
+        <properties :selected-asset="selectedAsset" />
+        <!-- <a-collapse
             v-model:activeKey="activeKey"
             :bordered="false"
             class="bg-transparent"
@@ -46,7 +47,7 @@
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
-        </a-collapse>
+        </a-collapse> -->
     </div>
     <div
         v-else

@@ -13,7 +13,7 @@
         </div>
         <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
             <div class="flex items-center justify-between mb-0 text-sm">
-                <AssetLogo :asset="selectedAsset" variant="md" />
+                <!-- <AssetLogo :asset="selectedAsset" variant="md" /> -->
 
                 <div class="flex space-x-2">
                     <a-button-group>
@@ -99,7 +99,6 @@
                     <component
                         :is="tab.component"
                         :component-data="dataMap[tab.id]"
-                        :info-tab-data="selectedAsset"
                         :page="page"
                         :selected-asset="selectedAsset"
                         :is-loaded="isLoaded"
@@ -134,7 +133,7 @@
     import { images, dataTypeList } from '~/constant/datatype'
 
     export default defineComponent({
-        name: 'AssetPreview',
+        name: 'WorkflowPreview',
         components: {
             Tooltip,
             AssetLogo,
@@ -142,9 +141,7 @@
             SidePanelTabHeaders,
             AtlanButton,
             info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
-            runs: defineAsyncComponent(
-                () => import('./tabs/runs/runsTab.vue')
-            ),
+            runs: defineAsyncComponent(() => import('./tabs/runs/runsTab.vue')),
         },
         props: {
             selectedAsset: {

@@ -228,4 +228,10 @@ export const KeyMaps = {
         RELATIONSHIP: () => getAPIPath('auth/atlas', '/search/relationship'),
         BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
     },
+    workflow: {
+        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) => getAPIPath(
+            '/auth/argo',
+            `/workflow-templates/${tenant}`
+        )
+    }
 }

@@ -2,13 +2,13 @@
     <div class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
-                    <component
-                        :is="isItem ? 'router-view' : 'AssetDiscovery'"
-                        :initial-filters="initialFilters"
-                        :updateProfile="updateProfile"
-                        @preview="handlePreview"
-                        ref="assetDiscovery"
-                    ></component>
+                <component
+                    :is="isItem ? 'router-view' : 'WorkflowDiscovery'"
+                    ref="assetDiscovery"
+                    :initial-filters="initialFilters"
+                    :update-profile="updateProfile"
+                    @preview="handlePreview"
+                ></component>
             </div>
         </div>
         <div
@@ -17,23 +17,22 @@
         >
             <WorkflowPreview
                 v-if="selected"
-                :selectedAsset="selected"
-                @asset-mutation="propagateToAssetList"
+                :selected-asset="selected"
                 :page="page"
+                @asset-mutation="propagateToAssetList"
             ></WorkflowPreview>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
-    import AssetDiscovery from '~/components/workflows/assetDiscovery.vue'
-    import WorkflowPreview from '~/components/workflows/preview/workflowPreview.vue'
     import { useHead } from '@vueuse/head'
-    import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
+    import { computed, defineComponent, ref, Ref, watch } from 'vue'
+    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import WorkflowDiscovery from '~/components/workflows/workflowDiscovery.vue'
+    import WorkflowPreview from '~/components/workflows/preview/workflowPreview.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
     import { decodeQuery } from '~/utils/helper/routerHelper'
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
@@ -45,7 +44,7 @@
     export default defineComponent({
         components: {
             WorkflowPreview,
-            AssetDiscovery,
+            WorkflowDiscovery,
         },
         setup() {
             useHead({
@@ -85,7 +84,7 @@
             const { fetchBMonStore } = useBusinessMetadata()
             fetchBMonStore()
 
-            /* Making the network request here to fetch the latest changes of classifications. 
+            /* Making the network request here to fetch the latest changes of classifications.
             So that everytime user visit the discover page it will be in sync to latest data not with store
             */
             const {

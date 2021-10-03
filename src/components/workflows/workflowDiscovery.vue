@@ -3,8 +3,7 @@
         <div
             v-if="showFilters"
             class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
-        > 
-
+        >
             <WorkflowFilters
                 :ref="
                     (el) => {
@@ -40,14 +39,14 @@
                     </template> -->
                     </SearchAndFilter>
 
-                    <AssetTabs
+                    <!-- <AssetTabs
                         v-model="selectedTab"
                         class="mt-1 mb-3"
                         @update:model-value="handleTabChange"
                         :asset-type-list="assetTypeList"
                         :asset-type-map="assetTypeMap"
                         :total="totalSum"
-                    ></AssetTabs>
+                    ></AssetTabs> -->
                 </div>
                 <!-- <div
                     class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
@@ -63,25 +62,22 @@
                     >
                 </div> -->
                 <div
-                    v-if="list && list.length <= 0 && !isLoading"
+                    v-if="runList && runList.length <= 0 && !isLoading"
                     class="flex-grow"
                 >
                     <EmptyView @event="handleClearFiltersFromList"></EmptyView>
                 </div>
-                <AssetList
+                <RunList
                     v-else
                     ref="assetlist"
+                    v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
-                    :list="list"
-                    :score="searchScoreList"
-                    :projection="projection"
+                    :list="runList"
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
-                    :typename="assetTypeListString"
-                    v-model:autoSelect="autoSelect"
                     @preview="handlePreview"
                     @loadMore="loadMore"
-                ></AssetList>
+                ></RunList>
             </div>
         </div>
     </div>
@@ -90,7 +86,6 @@
 <script lang="ts">
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
@@ -106,21 +101,14 @@
         Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetTabs from '~/components/workflows/list/assetTypeTabs.vue'
     import Preferences from '~/components/workflows/list/preference.vue'
-    import AssetList from '~/components/workflows/list/assetList.vue'
+    import RunList from '~/components/workflows/list/runList.vue'
     import WorkflowFilters from '~/components/workflows/filters/workflowFilters.vue'
 
-    import { useAssetListing, useAssetAggregation } from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
-    import {
-        BaseAttributes,
-        BasicSearchAttributes,
-        tableauAttributes,
-    } from '~/constant/projection'
-    // TODO: Uncomment all tracing related code
-    // import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
@@ -128,11 +116,13 @@
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
+    import { useWorkflowSearchList } from './useWorkFlowList'
+    import { useAssetAggregation } from './useAssetListing'
 
     export default defineComponent({
-        name: 'AssetDiscovery',
+        name: 'WorkflowDiscovery',
         components: {
-            AssetList,
+            RunList,
             AssetTabs,
             WorkflowFilters,
             AssetPagination,
@@ -229,13 +219,10 @@
                 initialTabs.value.join(',')
             )
 
-            const {
-                list,
-                replaceBody,
-                isLoading,
-                searchScoreList,
-                mutateAssetInList,
-            } = useAssetListing(assetTypeListString.value, false)
+            const { workflowList: runList, isLoading } = useWorkflowSearchList(
+                'default',
+                true
+            )
 
             const { assetTypeMap, refreshAggregation } = useAssetAggregation(
                 assetTypeListString.value,
@@ -270,9 +257,9 @@
             const dynamicSearchPlaceholder = computed(() => {
                 let placeholder = 'Search for assets'
                 if (placeholderLabel.value.asset) {
-                    placeholder += ' in ' + placeholderLabel.value.asset
+                    placeholder += ` in ${placeholderLabel.value.asset}`
                 } else if (placeholderLabel.value.connector) {
-                    placeholder += ' in ' + placeholderLabel.value.connector
+                    placeholder += ` in ${placeholderLabel.value.connector}`
                 }
                 return placeholder
             })
@@ -285,69 +272,11 @@
             // Push all asset type
             const assetlist = ref(null)
             const isLoadMore = computed(
-                () => totalCount.value > list.value.length
+                () => totalCount.value > runList.value.length
             )
 
             const updateBody = () => {
-                const initialBody = {
-                    typeName: assetTypeListString.value,
-                    termName: props.termName,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
-                    limit: limit.value,
-                    offset: offset.value,
-                    entityFilters: {
-                        condition: 'AND',
-                        criterion: Array.isArray(filters?.value)
-                            ? [...filters.value]
-                            : [],
-                    },
-                    attributes: [
-                        ...BaseAttributes,
-                        ...BasicSearchAttributes,
-                        ...tableauAttributes,
-                    ],
-                    aggregationAttributes: [],
-                }
-
-                if (selectedTab.value !== 'Catalog') {
-                    initialBody.entityFilters.criterion.push({
-                        attributeName: '__typeName',
-                        attributeValue: selectedTab.value,
-                        operator: 'eq',
-                    })
-                }
-
-                if (state.value) {
-                    if (state.value === 'all') {
-                        initialBody.excludeDeletedEntities = false
-                    } else if (state.value === 'archived') {
-                        initialBody.excludeDeletedEntities = false
-                        initialBody.entityFilters.criterion.push({
-                            attributeName: '__state',
-                            attributeValue: 'DELETED',
-                            operator: 'eq',
-                        })
-                    } else {
-                        initialBody.excludeDeletedEntities = true
-                    }
-                }
-
-                if (sortOrder.value !== 'default') {
-                    const split = sortOrder.value.split('|')
-                    if (split.length > 1) {
-                        initialBody.sortBy = split[0]
-                        initialBody.sortOrder = split[1].toUpperCase()
-                    }
-                } else {
-                    delete initialBody.sortBy
-                    delete initialBody.sortOrder
-                }
-                if (queryText.value) {
-                    initialBody.query = queryText.value
-                }
-                replaceBody(initialBody)
-                if (isAggregate.value) refreshAggregation(initialBody)
+                console.log('updateBody')
             }
 
             const setRouterOptions = () => {
@@ -427,7 +356,7 @@
                 assetFilterRef.value?.resetAllFilters()
             }
 
-            console.log(list)
+            console.log(runList)
 
             return {
                 autoSelect,
@@ -436,19 +365,16 @@
                 initialFilters,
                 AllFilters,
                 initialTabs,
-                searchScoreList,
-                list,
+                runList,
                 selectedTab,
                 assetTypeLabel,
                 assetTypeList,
                 assetTypeMap,
                 isAggregate,
-                replaceBody,
                 handleSearchChange,
                 projection,
                 handleChangePreferences,
                 handleChangeSort,
-                isLoading,
                 handleFilterChange,
                 handlePreview,
                 queryText,
@@ -458,8 +384,8 @@
                 loadMore,
                 totalSum,
                 handleState,
-                mutateAssetInList,
                 handleTabChange,
+                isLoading,
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,

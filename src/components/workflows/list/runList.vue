@@ -8,9 +8,7 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="item.guid === selectedAssetId"
-                :score="score[item.guid]"
-                :projection="projection"
+                :is-selected="item.metadata.uid === selectedItemId"
                 @click="handlePreview(item)"
             ></ListItem>
         </template>
@@ -21,32 +19,13 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        py-2
-                        transition-all
-                        duration-300
-                        bg-white
-                        rounded-full
-                        text-primary
-                    "
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="
-                                m-0
-                                mr-1
-                                overflow-hidden
-                                text-sm
-                                transition-all
-                                duration-300
-                                overflow-ellipsis
-                                whitespace-nowrap
-                            "
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -76,44 +55,21 @@
             </div>
         </template>
     </VirtualList>
-    <!-- <ListItem
-        :v-for="item in list"
-        :key="item[keyField]"
-        :item="item"
-        :score="score[item.guid]"
-        :projection="projection"
-        @click="handlePreview(item)"
-    ></ListItem> -->
-    <!-- TODO: Add loading state -->
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import ListItem from './listItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
-        name: 'AssetList',
+        name: 'RunList',
         components: {
             ListItem,
             VirtualList,
         },
         props: {
             list: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
-            },
-            score: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-            projection: {
                 type: Array,
                 required: false,
                 default() {
@@ -135,17 +91,14 @@
                 required: false,
                 default: () => false,
             },
-            typename: {
-                type: String,
-            },
         },
         emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
-            const { list, autoSelect, typename } = toRefs(props)
-            const selectedAssetId = ref('')
+            const { list, autoSelect } = toRefs(props)
+            const selectedItemId = ref('')
             let shouldReSelect = false
             function handlePreview(item: any) {
-                selectedAssetId.value = item.guid
+                selectedItemId.value = item.metadata.uid
                 emit('preview', item)
             }
 
@@ -181,7 +134,7 @@
             //     )
             // }
 
-            return { handlePreview, selectedAssetId, list }
+            return { handlePreview, selectedItemId, list }
         },
     })
 </script>

@@ -31,13 +31,9 @@ const getWorkflowTemplateByName = (tenant, name, { immediate, options }) => useA
   }
 }, { immediate })
 
-const getArchivedWorkflowList = (labelSelector, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.ARCHIVED_WORKFLOW, 'GET', {
+const getArchivedWorkflowList = (params, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.ARCHIVED_WORKFLOW, 'GET', {
   options,
-  params: {
-    "listOptions.labelSelector": labelSelector,
-    "listOptions.limit": 100
-  }
-
+  params
 }, { immediate })
 
 export const Workflows = {

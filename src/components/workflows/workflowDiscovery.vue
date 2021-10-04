@@ -1,20 +1,12 @@
 <template>
     <div class="flex w-full">
         <div
-            v-if="showFilters"
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-white
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
             <WorkflowFilters
                 :ref="
                     (el) => {
-                        assetFilterRef = el
+                        workflowFilterRef = el
                     }
                 "
                 :initial-filters="AllFilters"
@@ -45,29 +37,8 @@
                         <span>({{ projection.length }})</span>
                     </template> -->
                     </SearchAndFilter>
-
-                    <!-- <AssetTabs
-                        v-model="selectedTab"
-                        class="mt-1 mb-3"
-                        @update:model-value="handleTabChange"
-                        :asset-type-list="assetTypeList"
-                        :asset-type-map="assetTypeMap"
-                        :total="totalSum"
-                    ></AssetTabs> -->
                 </div>
-                <!-- <div
-                    class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
-                >
-                    <AssetPagination
-                        v-if="!isLoading && !isValidating"
-                        :label="assetTypeLabel"
-                        :list-count="list.length"
-                        :total-count="totalCount"
-                    ></AssetPagination>
-                    <span v-else class="text-xs text-gray-500"
-                        >Searching...</span
-                    >
-                </div> -->
+
                 <div
                     v-if="runList && runList.length <= 0 && !isLoading"
                     class="flex-grow"
@@ -76,7 +47,6 @@
                 </div>
                 <RunList
                     v-else
-                    ref="assetlist"
                     v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
                     :list="queryText.length ? filterList(queryText) : runList"
@@ -92,10 +62,8 @@
 
 <script lang="ts">
     import EmptyView from '@common/empty/discover.vue'
-    import AssetPagination from '@common/pagination/index.vue'
+    import workflowPagination from '@common/pagination/index.vue'
 
-    // import { useDebounceFn } from "@vueuse/core";
-    // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
     import {
         computed,
@@ -109,76 +77,56 @@
     } from 'vue'
     import { useRouter } from 'vue-router'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import AssetTabs from '~/components/workflows/list/assetTypeTabs.vue'
     import Preferences from '~/components/workflows/list/preference.vue'
     import RunList from '~/components/workflows/list/runList.vue'
     import WorkflowFilters from '~/components/workflows/filters/workflowFilters.vue'
 
-    import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
-    import { AssetTypeList } from '~/constant/assetType'
-    import { initialFiltersType } from '~/pages/assets.vue'
-
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import { useFilteredTabs } from './useTabMapped'
-    import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
     import { useWorkflowTemplateSearchList } from './useWorkFlowList'
-    import { useAssetAggregation } from './useAssetListing'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
             RunList,
-            AssetTabs,
             WorkflowFilters,
-            AssetPagination,
+            workflowPagination,
             Preferences,
             EmptyView,
             SearchAndFilter,
         },
         props: {
             initialFilters: {
-                type: Object as PropType<initialFiltersType>,
+                type: Object,
                 required: false,
                 default() {
                     return {}
                 },
             },
-            termName: {
-                type: String,
-                required: false,
-                default: undefined,
-            },
-            showFilters: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
         },
         emits: ['preview'],
         setup(props, { emit }) {
-            // initializing the discovery store
+            // FIXME FIX FILTERS
             const { initialFilters } = toRefs(props)
             const router = useRouter()
 
-            // Asset filter component ref
-            const assetFilterRef = ref()
+            // workflow filter component ref
+            const workflowFilterRef = ref()
             const autoSelect = ref(true)
-
-            // const tracking = useTracking()
-            // const events = tracking.getEventsName()
-            const isAggregate = ref(true)
 
             // Clean Stuff
             const AllFilters: Ref = ref({ ...initialFilters.value })
 
-            const selectedTab = computed({
-                get: () => AllFilters.value.selectedTab || 'Catalog',
-                set: (val) => {
-                    AllFilters.value.selectedTab = val
-                },
-            })
+            // TODO remove
+            // const selectedTab = computed({
+            //     get: () => AllFilters.value.selectedTab || 'Catalog',
+            //     set: (val) => {
+            //         AllFilters.value.selectedTab = val
+            //     },
+            // })
+
             const queryText = computed({
                 get: () => AllFilters.value.searchText,
                 set: (val) => {
@@ -187,7 +135,7 @@
             })
 
             // This is the actual filter body
-            // FIXME: Can we make it a computed property?
+            // FIXME Can we make it a computed property?
             const filters = ref([])
             const limit = ref(20)
             const offset = ref(0)
@@ -206,60 +154,11 @@
                 })
             )
 
-            const assetTypeList = computed(() => {
-                const filteredTabs = AssetTypeList.filter(
-                    (item) =>
-                        item.isDiscoverable == true &&
-                        initialTabs.value.includes(item.id)
-                )
-
-                return [
-                    {
-                        id: 'Catalog',
-                        label: 'All',
-                    },
-                    ...filteredTabs,
-                ]
-            })
-
-            const assetTypeListString = computed(() =>
-                initialTabs.value.join(',')
-            )
-
             const {
                 workflowList: runList,
                 isLoading,
                 filterList,
             } = useWorkflowTemplateSearchList('default', true)
-
-            const { assetTypeMap, refreshAggregation } = useAssetAggregation(
-                assetTypeListString.value,
-                false
-            )
-
-            const assetTypeLabel = computed(() => {
-                const found = AssetTypeList.find(
-                    (item) => item.id == selectedTab.value
-                )
-                return found?.label
-            })
-
-            const totalSum = computed(() => {
-                let sum = 0
-                assetTypeList.value.forEach((element) => {
-                    if (assetTypeMap.value[element.id]) {
-                        sum += assetTypeMap.value[element.id]
-                    }
-                })
-                return sum
-            })
-
-            const totalCount = computed(() => {
-                if (selectedTab.value == 'Catalog') {
-                    return totalSum.value
-                }
-                return assetTypeMap.value[selectedTab.value]
-            })
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
@@ -277,16 +176,11 @@
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
 
-            // Push all asset type
-            const assetlist = ref(null)
-            const isLoadMore = computed(
-                () => totalCount.value > runList.value.length
-            )
-
             const updateBody = () => {
                 console.log('updateBody')
             }
 
+            // FIXME
             const setRouterOptions = () => {
                 const routerOptions: Record<string, any> = {
                     facetsFilters: generateFacetConfigForRouter(),
@@ -302,14 +196,6 @@
                 router.push(`/workflows?${routerQuery}`)
             }
 
-            function handleTabChange() {
-                isAggregate.value = false
-                offset.value = 0
-                updateBody()
-                setRouterOptions()
-            }
-
-            const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 // TODO use pagination and recall api
 
@@ -321,35 +207,36 @@
                 //     trigger: 'discover',
                 // })
             }, 150)
-            const handleChangePreferences = (payload: any) => {
-                projection.value = payload
-            }
-            const handleChangeSort = (payload: any) => {
-                sortOrder.value = payload
-                isAggregate.value = false
-                updateBody()
-            }
-            const handleState = (payload: any) => {
-                state.value = payload
-                isAggregate.value = true
-                updateBody()
-            }
 
-            const handleFilterChange = (
-                payload: any,
-                filterMapData: Record<string, Components.Schemas.FilterCriteria>
-            ) => {
-                AllFilters.value.facetsFilters = filterMapData
-                filters.value = payload
-                offset.value = 0
-                isAggregate.value = true
-                updateBody()
-                setRouterOptions()
-            }
+            // const handleChangePreferences = (payload: any) => {
+            //     projection.value = payload
+            // }
+            // const handleChangeSort = (payload: any) => {
+            //     sortOrder.value = payload
+            //     isAggregate.value = false
+            //     updateBody()
+            // }
+            // const handleState = (payload: any) => {
+            //     state.value = payload
+            //     isAggregate.value = true
+            //     updateBody()
+            // }
 
-            const handleFilterInit = (payload: any) => {
-                filters.value = payload
-            }
+            // const handleFilterChange = (
+            //     payload: any,
+            //     filterMapData: Record<string, Components.Schemas.FilterCriteria>
+            // ) => {
+            //     AllFilters.value.facetsFilters = filterMapData
+            //     filters.value = payload
+            //     offset.value = 0
+            //     isAggregate.value = true
+            //     updateBody()
+            //     setRouterOptions()
+            // }
+
+            // const handleFilterInit = (payload: any) => {
+            //     filters.value = payload
+            // }
 
             const handlePreview = (item) => {
                 emit('preview', item)
@@ -357,51 +244,33 @@
             const loadMore = () => {
                 autoSelect.value = false
                 offset.value += limit.value
-                isAggregate.value = false
                 updateBody()
             }
 
             const handleClearFiltersFromList = () => {
                 queryText.value = ''
-                assetFilterRef.value?.resetAllFilters()
+                workflowFilterRef.value?.resetAllFilters()
             }
-
-            console.log(runList)
 
             return {
                 autoSelect,
                 handleClearFiltersFromList,
-                assetFilterRef,
+                workflowFilterRef,
                 initialFilters,
                 AllFilters,
                 initialTabs,
                 runList,
-                selectedTab,
-                assetTypeLabel,
-                assetTypeList,
-                assetTypeMap,
-                isAggregate,
+
                 handleSearchChange,
-                projection,
-                handleChangePreferences,
-                handleChangeSort,
-                handleFilterChange,
+
                 handlePreview,
                 queryText,
-                totalCount,
-                assetlist,
-                isLoadMore,
                 loadMore,
-                totalSum,
-                handleState,
-                handleTabChange,
                 isLoading,
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
                 filters,
-                assetTypeListString,
-                handleFilterInit,
                 filterList,
             }
         },

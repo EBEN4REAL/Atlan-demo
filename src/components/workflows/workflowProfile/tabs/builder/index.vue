@@ -1,4 +1,4 @@
-<template>Builder</template>
+<template>Setup</template>
 
 <script lang="ts">
     // Vue

@@ -71,17 +71,12 @@
         setup(props) {
             const { selectedAsset: item } = toRefs(props)
 
-            const labelSelector = ref(
-                `workflows.argoproj.io/workflow-template=${item.value.metadata.name}`
+            const labelSelector = computed(
+                () =>
+                    `workflows.argoproj.io/workflow-template=${item.value.metadata.name}`
             )
-            const {
-                workflowList,
-                error,
-                isLoading,
-                filterList,
-                mutate,
-                reFetch,
-            } = useArchivedWorkflowList(labelSelector.value)
+            const { workflowList, error, isLoading, mutate } =
+                useArchivedWorkflowList(labelSelector)
 
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
@@ -92,7 +87,7 @@
                 (newValue) => {
                     console.log('asset cahnges')
                     // FIXME fix this refetch on new workflow template selection
-                    // reFetch(`workflows.argoproj.io/workflow-template=${item.value.metadata.name}`)
+                    mutate()
                 },
                 {
                     immediate: true,

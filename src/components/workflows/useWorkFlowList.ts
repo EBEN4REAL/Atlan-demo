@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { watch, ref } from 'vue'
+import { watch, ref, computed } from 'vue'
 import { Workflows } from '~/services/argo/api/workflow'
 
 export function useWorkflowTemplateSearchList(tenant, immediate: boolean = true) {
@@ -17,8 +17,12 @@ export function useWorkflowTemplateSearchList(tenant, immediate: boolean = true)
 }
 
 export function useArchivedWorkflowList(labelSelector, immediate: boolean = true) {
-    const label = ref(labelSelector)
-    const { data, error, isLoading, mutate } = Workflows.getArchivedWorkflowList(label.value, { immediate, options: {} })
+    const param = computed(() => ({
+        "listOptions.labelSelector": labelSelector.value,
+        "listOptions.limit": 100
+    }))
+
+    const { data, error, isLoading, mutate } = Workflows.getArchivedWorkflowList(param, { immediate, options: {} })
 
     const workflowList = ref([])
     watch(data, () => {
@@ -26,13 +30,9 @@ export function useArchivedWorkflowList(labelSelector, immediate: boolean = true
         workflowList.value = data.value?.items
     })
 
-    const reFetch = (l) => {
-        label.value = l;
-        mutate()
-    }
     const filterList = (text) => workflowList.value.filter(wf => wf.metadata.name.includes(text))
 
-    return { workflowList, error, isLoading, filterList, mutate, reFetch }
+    return { workflowList, error, isLoading, filterList, mutate }
 }
 
 export function useWorkflowTemplate(tenant, name, immediate: boolean = true) {

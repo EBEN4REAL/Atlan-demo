@@ -5,6 +5,7 @@
                 placement="bottomLeft"
                 :trigger="['click']"
                 @click.stop="() => {}"
+                :disabled="!editable"
             >
                 <template #overlay>
                     <a-menu>
@@ -25,11 +26,9 @@
                     </a-menu>
                 </template>
 
-                <AtlanIcon
-                    class="pt-1 ml-4 transform -rotate-90"
-                    icon="ChevronDown"
-                />
-                <div class="flex items-center align-middle">
+                <div
+                    class="flex items-center flex-none px-2 py-1 align-middle rounded cursor-pointer  bg-primary-light"
+                >
                     <span class="svg-icon">
                         <component
                             :is="announcementObject?.icon"
@@ -43,27 +42,40 @@
             <a-input
                 ref="titleBar"
                 v-model:value="announcementHeader"
+                :disabled="!editable"
                 placeholder="Add Announcement Header..."
                 class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
                 :class="$style.titleInput"
             />
             <a-textarea
                 v-model:value="announcementDescription"
+                :disabled="!editable"
                 placeholder="Add description..."
                 class="text-gray-500 border-0 shadow-none outline-none"
                 :maxlength="280"
+                @change="handleTextAreaUpdate"
             />
+        </div>
+        <div class="flex items-center">
+            <div>
+                <component :is="announcementObject?.icon" class="w-auto h-4" />
+            </div>
         </div>
         <div>
             <div v-if="editable" class="flex align-items-center">
-                <a-button class="mr-2" @click="handleUpdate">Update</a-button>
+                <a-button
+                    class="mr-2"
+                    :loading="isLoading"
+                    @click="handleUpdate"
+                    >Update</a-button
+                >
 
                 <a-button
                     type="link"
                     :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
                     :loading="false"
                     :loading-text="'Cancelling...'"
-                    @click="handleCancel"
+                    @click="onCancel"
                     >Cancel</a-button
                 >
             </div>
@@ -76,9 +88,18 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, Ref, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        PropType,
+        Ref,
+        computed,
+        toRefs,
+        watch,
+    } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AnnouncementList from '~/constant/announcement'
+    import addAnnouncement from '~/composables/asset/addAnnouncement'
 
     export default defineComponent({
         props: {
@@ -87,49 +108,70 @@
                 required: true,
             },
         },
-        setup() {
+        setup(props) {
             const editable = ref(false)
             const announcementHeader = ref('')
-            const announcementDescription = ref('')
-            const currentAnnouncement = ref<string | undefined>('information')
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
+            const { asset } = toRefs(props)
+            const {
+                handleCancel,
+                update,
+                isReady,
+                bannerType,
+                state,
+                bannerMessage,
+                isCompleted,
+                isLoading,
+            } = addAnnouncement(asset)
+
+            const announcementDescription = ref(bannerMessage.value)
+            const announcementType = ref(bannerType.value)
+
+            const handleUpdate = () => {
+                bannerMessage.value = announcementDescription.value
+                bannerType.value = announcementType.value
+                editable.value = false
+                update()
+            }
+            const onCancel = () => {
+                editable.value = false
+                handleCancel()
+            }
+            const handleTextAreaUpdate = (e: any) => {
+                announcementDescription.value = e.target.value
+            }
+
             const announcementObject = computed(() => {
                 const found = AnnouncementList.find(
-                    (item) => item.id === currentAnnouncement.value
+                    (item) => item.id === announcementType.value
                 )
 
                 return found
             })
-
-            const handleUpdate = () => {
-                editable.value = false
-            }
-
-            const handleCancel = () => {
-                editable.value = false
-            }
 
             const startEdit = () => {
                 editable.value = true
                 titleBar.value?.focus()
             }
             const handleMenuClick = (announcement) => {
-                currentAnnouncement.value = announcement.id
+                announcementType.value = announcement.id
             }
 
             return {
                 editable,
                 AnnouncementList,
                 handleUpdate,
-                handleCancel,
+                onCancel,
                 startEdit,
                 announcementHeader,
                 announcementDescription,
                 handleMenuClick,
-                currentAnnouncement,
+                announcementType,
                 announcementObject,
+                isLoading,
+                handleTextAreaUpdate,
             }
         },
     })

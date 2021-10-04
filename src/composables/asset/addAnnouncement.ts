@@ -13,9 +13,12 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
     const bannerType: WritableComputedRef<string> = computed({
         get: () =>
             banner.value.username ||
-            selectedAsset.value?.attributes?.banner,
+            selectedAsset.value?.attributes?.banner?.attributes?.username
+            || "information"
+        ,
         set: (newValue: string) => {
-            banner.value.id = newValue
+            banner.value.username = newValue
+            banner.value.timestamp = Date.now()
             body.value = getBody()
         },
     })
@@ -47,6 +50,7 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
                         selectedAsset.value.attributes?.qualifiedName,
                     name: selectedAsset.value.attributes?.name,
                     banner: banner.value,
+
                     bannerMessage: banner.value.message,
                     bannerUpdatedAt: Date.now(),
                     bannerUpdatedBy: username,

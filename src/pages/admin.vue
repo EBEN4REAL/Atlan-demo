@@ -28,6 +28,7 @@
                         >
                         <!-- <a-menu-item key="metadata_policies">Metadata Policies</a-menu-item>
             <a-menu-item key="data_policies">Data Policies</a-menu-item> -->
+                        <a-menu-item key="personas">Personas</a-menu-item>
                         <a-menu-item key="sso">SSO</a-menu-item>
                         <a-menu-item key="smtp">SMTP</a-menu-item>
                         <a-menu-item key="requests">Requests</a-menu-item>

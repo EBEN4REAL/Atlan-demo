@@ -162,6 +162,7 @@
                                 <Owners
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    @update:selected-asset="updateEntityAndTree"
                                 />
                                 <Status
                                     v-if="entity.guid"

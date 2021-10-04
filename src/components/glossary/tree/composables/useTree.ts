@@ -18,6 +18,7 @@ const useTree = (
     emit: any,
     optimisticUpdate?: boolean,
     isHome?: ComputedRef<boolean>,
+    filterMode?: boolean,
     cacheKey?: string,
     isAccordion?: boolean
 ) => {
@@ -79,7 +80,8 @@ const useTree = (
                 parentCategoryId: parentCategoryId,
                 type,
                 isRoot,
-                isLeaf: type === 'term' ? true : false
+                isLeaf: type === 'term' ? true : false,
+                checkable: type === 'term' ? true : false,
             }
     }
 
@@ -116,33 +118,65 @@ const useTree = (
      * Reinitializes the entire tree while and **loses the expanded state of the tree**
      * @param guid - Guid of the parent Glossary
      */
-    const initTreeData = async (guid: string) => {
-        const categoryList = await GlossaryApi.ListCategoryForGlossary(guid, {}) // all categories in a glossary
-        const termsList = await GlossaryApi.ListTermsForGlossary(guid, { limit: defaultLimit }) // root level terms
-
-        categoryMap[guid] = categoryList
-        treeData.value = []
-
-        categoryList.forEach((element) => {
-            // if category is root level, i.e `categoryGuid` does not exist
-            if (!element.parentCategory?.categoryGuid) {
+    const initTreeData = async (guid?: string) => {
+        if(guid) {
+            const categoryList = await GlossaryApi.ListCategoryForGlossary(guid, {}) // all categories in a glossary
+            const termsList = await GlossaryApi.ListTermsForGlossary(guid, { limit: defaultLimit }) // root level terms
+    
+            categoryMap[guid] = categoryList
+            treeData.value = []
+    
+            categoryList.forEach((element) => {
+                // if category is root level, i.e `categoryGuid` does not exist
+                if (!element.parentCategory?.categoryGuid) {
+                    if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
+                    treeData.value.push(returnTreeDataItemAttributes(element, 'category', guid))
+                }
+            })
+            termsList.forEach((element) => {
                 if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
-                treeData.value.push(returnTreeDataItemAttributes(element, 'category', guid))
+                treeData.value.push(returnTreeDataItemAttributes(element, 'term', guid))        
+            })
+            checkAndAddLoadMoreNode(termsList, defaultLimit, 'root', 'root')
+    
+            isInitingTree.value = false
+            // selectedKeys.value.push(guid)
+            // Logic to expand tree
+            // if(currentEntity.value?.typeName === 'AtlasGlossaryCategory'){
+            //     loadedKeys.value.push(currentEntity.value?.attributes?.parentCategory?.guid)
+    
+            // }
+        } else {
+            treeData.value = []
+            if(glossaryList.value?.length) {
+                glossaryList.value?.forEach((glossary) => {
+                    treeData.value.push({
+                        ...glossary.attributes,
+                        title: glossary.displayText,
+                        key: glossary.guid,
+                        glossaryID: glossary.guid,
+                        type: 'glossary',
+                        selectable: false
+                    })
+                })
             }
-        })
-        termsList.forEach((element) => {
-            if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
-            treeData.value.push(returnTreeDataItemAttributes(element, 'term', guid))        
-        })
-        checkAndAddLoadMoreNode(termsList, defaultLimit, 'root', 'root')
-
-        isInitingTree.value = false
-        // selectedKeys.value.push(guid)
-        // Logic to expand tree
-        // if(currentEntity.value?.typeName === 'AtlasGlossaryCategory'){
-        //     loadedKeys.value.push(currentEntity.value?.attributes?.parentCategory?.guid)
-
-        // }
+            watch(glossaryList, (newList) => {
+                if(newList?.length) {
+                    treeData.value = []
+                    newList?.forEach((glossary) => {
+                        treeData.value.push({
+                            ...glossary.attributes,
+                            title: glossary.displayText,
+                            key: glossary.guid,
+                            glossaryID: glossary.guid,
+                            type: 'glossary',
+                            checkable: false
+                        })
+                    })
+                    isInitingTree.value = false
+                }
+            });
+        }
     }
 
     /**
@@ -970,28 +1004,34 @@ const useTree = (
     watch(
         () => route.params.id,
         (newId) => {
-            currentGuid.value = newId as string
-            currentType.value = router.currentRoute.value.fullPath.split('/')[
-                router.currentRoute.value.fullPath.split('/').length - 2
-            ] as 'glossary' | 'category' | 'term'
-
-            fetchType.value = currentType.value
-            fetchGuid.value = currentGuid.value
-
-            if (
-                !treeData.value?.length ||
-                !parentGlossary.value?.guid ||
-                (parentGlossary.value?.guid !== currentGuid.value &&
-                    currentType.value === 'glossary')
-            ) {
-                refetch()
+            if(!filterMode) {
+                currentGuid.value = newId as string
+                currentType.value = router.currentRoute.value.fullPath.split('/')[
+                    router.currentRoute.value.fullPath.split('/').length - 2
+                ] as 'glossary' | 'category' | 'term'
+    
+                fetchType.value = currentType.value
+                fetchGuid.value = currentGuid.value
+    
+                if (
+                    !treeData.value?.length ||
+                    !parentGlossary.value?.guid ||
+                    (parentGlossary.value?.guid !== currentGuid.value &&
+                        currentType.value === 'glossary')
+                ) {
+                    refetch()
+                }
+    
+                selectedKeys.value = [currentGuid.value]
             }
-
-            selectedKeys.value = [currentGuid.value]
         }
     )
     onMounted(() => {
         isInitingTree.value = true
+        if(filterMode) {
+            console.log('brah', isInitingTree.value)
+            initTreeData()
+        }
     })
 
     return {

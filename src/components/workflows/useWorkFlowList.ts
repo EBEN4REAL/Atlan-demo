@@ -34,3 +34,11 @@ export function useArchivedWorkflowList(labelSelector, immediate: boolean = true
 
     return { workflowList, error, isLoading, filterList, mutate, reFetch }
 }
+
+export function useWorkflowTemplate(tenant, name, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowTemplateByName(tenant, name, { immediate, options: {} })
+
+    return {
+        workflow: data, error, isLoading, mutate
+    }
+}

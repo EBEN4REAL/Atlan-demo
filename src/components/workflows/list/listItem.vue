@@ -36,7 +36,7 @@
                                 ? cssClasses?.textSize
                                 : 'text-md'
                         "
-                        :to="`/workflows/${item.metadata.uid}/overview`"
+                        :to="`/workflows/${item.metadata.name}/overview`"
                         class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ item.metadata.name }}

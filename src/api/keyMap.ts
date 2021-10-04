@@ -236,6 +236,10 @@ export const KeyMaps = {
         ARCHIVED_WORKFLOW: () => getAPIPath(
             '/auth/argo',
             `/archived-workflows`
+        ),
+        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) => getAPIPath(
+            '/auth/argo',
+            `/workflow-templates/${tenant}/${name}`
         )
     }
 }

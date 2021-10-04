@@ -23,6 +23,14 @@ const getWorkflowTemplates = (tenant, { immediate, options }) => useAPIAsyncStat
   }
 }, { immediate })
 
+const getWorkflowTemplateByName = (tenant, name, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.WORKFLOW_TEMPLATES_BY_NAME, 'GET', {
+  options,
+  pathVariables: {
+    tenant,
+    name
+  }
+}, { immediate })
+
 const getArchivedWorkflowList = (labelSelector, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.ARCHIVED_WORKFLOW, 'GET', {
   options,
   params: {
@@ -36,5 +44,6 @@ export const Workflows = {
   URL,
   List,
   getArchivedWorkflowList,
+  getWorkflowTemplateByName,
   getWorkflowTemplates
 };

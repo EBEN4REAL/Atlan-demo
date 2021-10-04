@@ -9,7 +9,7 @@
     <template v-else-if="workflowList?.length">
         <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
             <div
-                class="text-base font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                class="text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
             >
                 {{ r.metadata.name }}
             </div>
@@ -74,8 +74,14 @@
             const labelSelector = ref(
                 `workflows.argoproj.io/workflow-template=${item.value.metadata.name}`
             )
-            const { workflowList, error, isLoading, filterList, mutate, reFetch } =
-                useArchivedWorkflowList(labelSelector.value)
+            const {
+                workflowList,
+                error,
+                isLoading,
+                filterList,
+                mutate,
+                reFetch,
+            } = useArchivedWorkflowList(labelSelector.value)
 
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
@@ -84,10 +90,9 @@
             watch(
                 () => item,
                 (newValue) => {
-                    // fetchMoreAuditParams.startKey = ''
-                    // fetchAudits(params, newValue)
                     console.log('asset cahnges')
-                    reFetch(`workflows.argoproj.io/workflow-template=${item.value.metadata.name}`)
+                    // FIXME fix this refetch on new workflow template selection
+                    // reFetch(`workflows.argoproj.io/workflow-template=${item.value.metadata.name}`)
                 },
                 {
                     immediate: true,

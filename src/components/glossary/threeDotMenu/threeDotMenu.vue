@@ -364,7 +364,7 @@
             const router = useRouter()
 
             const handleFetchListInj: Function | undefined =
-                inject('handleFetchList')
+                inject('handleFetchList', () => null)
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
             const refetchGlossaryTree = inject<

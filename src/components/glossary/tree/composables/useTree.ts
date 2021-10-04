@@ -308,7 +308,7 @@ const useTree = (
         shortDescription?: string
     }) => {
         const currentParents = nodeToParentKeyMap[guid]
-        if (currentParents === 'root' || (typeof currentParents !== 'string' && currentParents.find((parent) => parent === 'root' )) ) {
+        if (currentParents === 'root' || (typeof currentParents !== 'string' && currentParents?.find((parent) => parent === 'root' )) ) {
             // if the node is at the root level, just loop through the treeData linearly
             treeData.value = treeData.value.map((treeNode) => {
                 if (treeNode.key === guid)
@@ -335,6 +335,7 @@ const useTree = (
 
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
+                    console.log(node, entity)
                     return {
                         ...node,
                         assetStatus:
@@ -343,6 +344,8 @@ const useTree = (
                             node.assetStatus,
                         name: entity?.attributes?.name ?? name ?? node.name,
                         title: entity?.attributes?.name ?? name ?? node.title,
+                        ownerGroups: entity?.attributes?.ownerGroups ?? ownerGroups ?? node.ownerGroups,
+                        ownerUsers: entity?.attributes?.ownerUsers ?? ownerUsers ?? node.ownerUsers
                     }
                 }
                 return {

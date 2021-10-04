@@ -5,7 +5,7 @@
             class="w-1 h-1 mr-4 mt-4"
         />
     </div>
-    <div v-else class="max-h-64 overflow-y-auto ml-4">
+    <div v-else class="max-h-64 overflow-y-auto ml-4" :class="$style.filterTree">
         <a-tree
             :expandedKeys="expandedKeys"
             :selectedKeys="selectedKeys"
@@ -42,7 +42,7 @@
                         <div
                             class="flex justify-between mr-2 group"
                         >
-                            <div class="flex m-0">
+                            <div class="flex m-0 pb-1">
                                 <span
                                     v-if="
                                         entity.type === 'glossary'
@@ -149,8 +149,14 @@
         },
     })
 </script>
-<style lang="less" scoped>
+<style lang="less" module>
     .status:last-child {
         margin-bottom: 0 !important;
+    }
+
+    .filterTree {
+        :global(.ant-tree-checkbox) {
+            @apply mt-1 !important;
+        }
     }
 </style>

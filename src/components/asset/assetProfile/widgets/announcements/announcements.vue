@@ -3,8 +3,42 @@
         <div
             class="flex items-center justify-between w-full py-1 text-base bg-white "
         >
-            <div class="mb-3 text-base font-bold text-gray-700">
-                Announcements
+            <div class="">
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
+                >
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="item in AnnouncementList"
+                                :key="item"
+                            >
+                                <div class="flex items-center space-x-2">
+                                    <component
+                                        :is="item.icon"
+                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                    />
+
+                                    {{ item.label }}
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+
+                    <AtlanIcon
+                        class="pt-1 ml-4 transform -rotate-90"
+                        icon="ChevronDown"
+                    />
+                    <div class="flex items-center align-middle">
+                        <!-- <span class="svg-icon">
+                <component class="w-auto h-4" :is="AnnouncementList" />
+            </span> -->
+
+                        <p class="mb-0 ml-2">Information</p>
+                    </div>
+                </a-dropdown>
             </div>
             <div v-if="editable" class="flex align-items-center">
                 <a-button class="mr-2" @click="editable = false"
@@ -31,6 +65,7 @@
 <script lang="ts">
     import { defineComponent, ref, PropType } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import AnnouncementList from '~/constant/announcement'
 
     export default defineComponent({
         props: {
@@ -69,7 +104,7 @@
                 editable,
                 editor,
                 editorContent,
-
+                AnnouncementList,
                 onUpdate,
                 onCancel,
                 startEdit,

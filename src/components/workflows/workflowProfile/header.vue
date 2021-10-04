@@ -21,11 +21,8 @@
             </div>
             <div class="flex flex-col w-full">
                 <div class="flex items-center w-full gap-x-2">
-                    <!-- asset logo -->
-                    WORKFLOW TEMPLATE
-
-                    <!-- <AssetLogo :asset="assetData" variant="" />
-                    <HierarchyBar :selected-asset="assetData" /> -->
+                    <!-- workflow tyoe -->
+                    WORKFLOW
                 </div>
 
                 <div class="flex items-center">
@@ -33,25 +30,8 @@
                         :tooltip-text="assetData.metadata.name"
                         classes="mb-0 text-gray-700 font-semibold text-lg"
                     />
-
-                    <!-- <StatusBadge
-                        :key="assetData.guid"
-                        :show-no-status="false"
-                        :status-id="assetData?.attributes?.assetStatus"
-                        class="ml-1.5"
-                    ></StatusBadge> -->
                 </div>
             </div>
-        </div>
-
-        <!-- CTAs -->
-        <div class="flex">
-            <!-- <a-button
-                v-if="assetType(assetData).includes('Tableau')"
-                class="flex items-center mr-2"
-            >
-                <span class="mt-1 text-sm">Open in Tableau</span></a-button
-            > -->
         </div>
     </div>
 </template>

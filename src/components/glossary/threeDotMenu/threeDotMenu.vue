@@ -58,7 +58,11 @@
                     </a-menu-item>
 
                     <a-menu-divider v-if="showLinks" />
-                    <a-menu-item key="edit" @click="closeMenu">
+                    <a-menu-item
+                        v-if="showGtcCrud"
+                        key="edit"
+                        @click="closeMenu"
+                    >
                         <AddGtcModal
                             :entityType="assetTypeLabel[entity?.typeName]"
                             :glossaryId="glossaryId"
@@ -88,9 +92,12 @@
                     </a-menu-item>
 
                     <a-menu-item
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName !== 'AtlasGlossaryTerm'
+                        "
                         key="add"
                         @click="closeMenu"
-                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
                     >
                         <AddGtcModal
                             entityType="term"
@@ -119,9 +126,12 @@
                     </a-menu-item>
 
                     <a-menu-item
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName !== 'AtlasGlossaryTerm'
+                        "
                         key="addCat"
                         @click="closeMenu"
-                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
                     >
                         <AddGtcModal
                             entityType="category"
@@ -151,7 +161,10 @@
                     </a-menu-item>
 
                     <a-menu-divider
-                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName !== 'AtlasGlossaryTerm'
+                        "
                     />
                     <a-sub-menu key="status">
                         <template #title>
@@ -181,7 +194,7 @@
                         </a-menu-item>
                     </a-sub-menu>
 
-                    <a-sub-menu key="expert">
+                    <a-sub-menu key="owner">
                         <template #title>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center justify-between">
@@ -206,7 +219,10 @@
                         </a-menu-item>
                     </a-sub-menu>
                     <a-sub-menu
-                        v-if="entity?.typeName === 'AtlasGlossaryTerm'"
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName === 'AtlasGlossaryTerm'
+                        "
                         key="categories"
                     >
                         <template #title>
@@ -241,8 +257,12 @@
                             />
                         </a-menu-item>
                     </a-sub-menu>
-                    <a-menu-divider />
-                    <a-menu-item key="archive" class="text-red-700">
+                    <a-menu-divider v-if="showGtcCrud" />
+                    <a-menu-item
+                        v-if="showGtcCrud"
+                        key="archive"
+                        class="text-red-700"
+                    >
                         <a-button
                             class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
                             @click="showModal"
@@ -346,6 +366,12 @@
                 required: false,
                 default: () => true,
             },
+            showGtcCrud: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
+
             treeMode: {
                 type: Boolean,
                 required: false,
@@ -363,8 +389,10 @@
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
 
-            const handleFetchListInj: Function | undefined =
-                inject('handleFetchList', () => null)
+            const handleFetchListInj: Function | undefined = inject(
+                'handleFetchList',
+                () => null
+            )
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
             const refetchGlossaryTree = inject<

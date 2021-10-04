@@ -3,7 +3,7 @@
         <div
             class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
-            <WorkflowFilters
+            <!-- <WorkflowFilters
                 :ref="
                     (el) => {
                         workflowFilterRef = el
@@ -12,7 +12,7 @@
                 :initial-filters="AllFilters"
                 @refresh="handleFilterChange"
                 @initialize="handleFilterInit"
-            ></WorkflowFilters>
+            ></WorkflowFilters> -->
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
@@ -50,16 +50,15 @@
                     />
                     <span class="text-gray-500">No Workflow found</span>
                 </div>
-                <RunList
+                <WorkflowList
                     v-else
                     v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
                     :list="queryText.length ? filterList(queryText) : runList"
                     :is-loading="isLoading"
-                    :is-load-more="isLoadMore"
                     @preview="handlePreview"
                     @loadMore="loadMore"
-                ></RunList>
+                ></WorkflowList>
             </div>
         </div>
     </div>
@@ -84,7 +83,7 @@
     import emptyScreen from '~/assets/images/empty_search.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '~/components/workflows/list/preference.vue'
-    import RunList from '~/components/workflows/list/runList.vue'
+    import WorkflowList from '~/components/workflows/list/workflowList.vue'
     import WorkflowFilters from '~/components/workflows/filters/workflowFilters.vue'
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
@@ -95,7 +94,7 @@
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
-            RunList,
+            WorkflowList,
             WorkflowFilters,
             workflowPagination,
             Preferences,

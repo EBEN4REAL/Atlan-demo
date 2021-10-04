@@ -11,7 +11,13 @@
             <div
                 class="text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
             >
-                {{ r.metadata.name }}
+                <router-link
+                    v-if="page === 'discovery'"
+                    :to="`/workflows/${item.metadata.name}/overview`"
+                >
+                    {{ r.metadata.name }}
+                </router-link>
+                <span v-else>{{ r.metadata.name }}</span>
             </div>
             <div>
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
@@ -44,15 +50,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        watch,
-        reactive,
-        computed,
-        defineComponent,
-        PropType,
-        toRefs,
-        ref,
-    } from 'vue'
+    import { watch, computed, defineComponent, PropType, toRefs } from 'vue'
 
     import { useTimeAgo } from '@vueuse/core'
     import emptyScreen from '~/assets/images/empty_search.png'
@@ -66,8 +64,15 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            isLoaded: {
+                type: Boolean,
+            },
+            page: {
+                type: String,
+                required: true,
+            },
         },
-
+        emits: ['change'],
         setup(props) {
             const { selectedAsset: item } = toRefs(props)
 
@@ -83,9 +88,11 @@
             }
 
             watch(
-                () => item,
-                (v) => {
-                    mutate()
+                item,
+                (n, o) => {
+                    console.log(n, o)
+                    if (!o) mutate()
+                    else if (n.metadata.name !== o.metadata.name) mutate()
                 },
                 {
                     immediate: true,

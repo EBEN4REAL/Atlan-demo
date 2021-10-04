@@ -57,7 +57,6 @@
                     :style="{ height: tabHeights[page] }"
                 >
                     <div
-                        v-if="tab.tooltip !== 'Activity'"
                         class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
                     >
                         {{ tab.tooltip }}
@@ -65,7 +64,6 @@
 
                     <component
                         :is="tab.component"
-                        :component-data="dataMap[tab.id]"
                         :page="page"
                         :selected-asset="selectedAsset"
                         :is-loaded="isLoaded"
@@ -130,7 +128,6 @@
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
-            const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
             const tabHeights = {
                 discovery: 'calc(100vh - 7.8rem)',
@@ -163,7 +160,6 @@
             return {
                 tabHeights,
                 isLoaded,
-                dataMap,
                 activeKey,
                 filteredTabs,
                 handleChange,

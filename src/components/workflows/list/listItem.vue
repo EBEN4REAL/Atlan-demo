@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref } from 'vue'
+    import { defineComponent } from 'vue'
 
     export default defineComponent({
         name: 'RunListItem',

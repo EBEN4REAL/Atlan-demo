@@ -63,7 +63,7 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
-        name: 'RunList',
+        name: 'WorkflowList',
         components: {
             ListItem,
             VirtualList,

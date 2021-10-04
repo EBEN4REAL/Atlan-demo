@@ -79,10 +79,6 @@
             ),
         },
         props: {
-            id: String,
-            componentData: {
-                type: Object as PropType<any>,
-            },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,

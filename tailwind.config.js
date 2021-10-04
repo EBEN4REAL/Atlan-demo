@@ -51,6 +51,10 @@ module.exports = {
                     light: '#e8e8f8',
                     DEFAULT: '#64748B',
                 },
+                secondary: {
+                    DEFAULT: '#AC52D7',
+                    light: '#F9F4FD',
+                },
             },
         },
     },

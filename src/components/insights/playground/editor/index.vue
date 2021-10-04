@@ -16,7 +16,7 @@
                     </div>
                     <div class="flex items-center">
                         <div
-                            class="items-center justify-center px-1 mx-4 rounded cursor-pointer  hover:bg-gray-300"
+                            class="items-center justify-center px-1 mx-4 rounded cursor-pointer hover:bg-gray-300"
                             :class="showcustomToolBar ? 'bg-gray-300' : ''"
                             @click="toggleCustomToolbar"
                         >
@@ -292,6 +292,7 @@
                     }
                 })
             }
+            // callback fxn
             const getData = (dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =

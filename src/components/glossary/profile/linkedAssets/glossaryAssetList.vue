@@ -4,12 +4,19 @@
             <ListItem
                 :item="item"
                 :is-selected="item?.guid === selectedAssetId && isSelected"
-                :isChecked="selectedAssetList.filter((asset) => asset.guid === item.guid).length > 0"
+                :is-checked="
+                    selectedAssetList.filter(
+                        (asset) => asset.guid === item.guid
+                    ).length > 0
+                "
                 :score="score[item?.guid]"
                 :projection="projection"
-                :showCheckBox="showCheckBox"
+                :show-check-box="showCheckBox"
+                :bulk-select-mode="showCheckBox"
                 @click="handlePreview(item)"
-                @listItem:check="(e,item) => $emit('updateCheckedAssetList', e, item)"
+                @listItem:check="
+                    (e, item) => $emit('updateCheckedAssetList', e, item)
+                "
             ></ListItem>
         </template>
         <template #footer>
@@ -67,110 +74,107 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
-    import ListItem from '@/discovery/list/listItem.vue'
-    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
+import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
+import ListItem from '@/discovery/list/listItem.vue'
+import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
-    export default defineComponent({
-        name: 'AssetList',
-        components: {
-            ListItem,
-            VirtualList,
+export default defineComponent({
+    name: 'AssetList',
+    components: {
+        ListItem,
+        VirtualList,
+    },
+    props: {
+        list: {
+            type: Array,
+            required: false,
+            default() {
+                return []
+            },
         },
-        props: {
-            list: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
+        score: {
+            type: Object,
+            required: false,
+            default() {
+                return {}
             },
-            score: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-            projection: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
-            },
-            isLoading: {
-                type: Boolean,
-                required: true,
-                default() {
-                    return false
-                },
-            },
-            isLoadMore: {
-                type: Boolean,
-                required: true,
-                default() {
-                    return false
-                },
-            },
-            automaticSelectFirstAsset: {
-                type: Boolean,
-                required: false,
-                default() {
-                    return false
-                },
-            },
-            showCheckBox: {
-                type: Boolean,
-                required: false,
-                default() {
-                    return false
-                },
-            },
-            isSelected: {
-                type: Boolean,
-                required: true,
-                default() {
-                    return false
-                },
-            },
-            selectedAssetList: {
-                type: Array,
-                required: false,
-                default: () => []
-            }
         },
-        emits: ['preview', 'loadMore', 'updateCheckedAssetList'],
-        setup(props, ctx: SetupContext) {
-            const { list, automaticSelectFirstAsset } = toRefs(props)
-            const selectedAssetId = ref('')
-
-
-            function handlePreview(item: any) {
-                selectedAssetId.value = item.guid
-                ctx.emit('preview', item)
-            }
-
-            // select first asset automatically conditionally acc to  automaticSelectFirstAsset prop
-
-            if (automaticSelectFirstAsset.value) {
-                watch(
-                    list,
-                    () => {
-                        if (list.value.length > 0) {
-                            // for selecting in the list - blue bg
-                            selectedAssetId.value = list.value[0].guid
-                            // for previewing the first asset
-                            handlePreview(list.value[0])
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
-
-
-
-            return { handlePreview, selectedAssetId, list }
+        projection: {
+            type: Array,
+            required: false,
+            default() {
+                return []
+            },
         },
-    })
+        isLoading: {
+            type: Boolean,
+            required: true,
+            default() {
+                return false
+            },
+        },
+        isLoadMore: {
+            type: Boolean,
+            required: true,
+            default() {
+                return false
+            },
+        },
+        automaticSelectFirstAsset: {
+            type: Boolean,
+            required: false,
+            default() {
+                return false
+            },
+        },
+        showCheckBox: {
+            type: Boolean,
+            required: false,
+            default() {
+                return false
+            },
+        },
+        isSelected: {
+            type: Boolean,
+            required: true,
+            default() {
+                return false
+            },
+        },
+        selectedAssetList: {
+            type: Array,
+            required: false,
+            default: () => [],
+        },
+    },
+    emits: ['preview', 'loadMore', 'updateCheckedAssetList'],
+    setup(props, ctx: SetupContext) {
+        const { list, automaticSelectFirstAsset } = toRefs(props)
+        const selectedAssetId = ref('')
+
+        function handlePreview(item: any) {
+            selectedAssetId.value = item.guid
+            ctx.emit('preview', item)
+        }
+
+        // select first asset automatically conditionally acc to  automaticSelectFirstAsset prop
+
+        if (automaticSelectFirstAsset.value) {
+            watch(
+                list,
+                () => {
+                    if (list.value.length > 0) {
+                        // for selecting in the list - blue bg
+                        selectedAssetId.value = list.value[0].guid
+                        // for previewing the first asset
+                        handlePreview(list.value[0])
+                    }
+                },
+                { immediate: true }
+            )
+        }
+
+        return { handlePreview, selectedAssetId, list }
+    },
+})
 </script>

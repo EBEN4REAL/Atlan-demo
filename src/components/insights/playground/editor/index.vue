@@ -16,7 +16,7 @@
                     </div>
                     <div class="flex items-center">
                         <div
-                            class="items-center justify-center px-1 mx-4 rounded cursor-pointer hover:bg-gray-300"
+                            class="items-center justify-center px-1 mx-4 rounded cursor-pointer  hover:bg-gray-300"
                             :class="showcustomToolBar ? 'bg-gray-300' : ''"
                             @click="toggleCustomToolbar"
                         >
@@ -38,13 +38,18 @@
                     <div class="flex mr-4 text-sm">
                         <a-button
                             type="primary"
-                            class="flex items-center py-0.5 px-2 shadow"
+                            class="flex items-center py-0.5 shadow"
                             :loading="
                                 isQueryRunning === 'loading' ? true : false
                             "
                             @click="run"
                         >
-                            <AtlanIcon class="mr-1 text-white" icon="Play" />
+                            <template #icon>
+                                <AtlanIcon
+                                    class="mr-1 text-white"
+                                    icon="Play"
+                                />
+                            </template>
                             Run</a-button
                         >
                         <a-button
@@ -55,12 +60,14 @@
                                 justify-between
                                 ml-2
                                 py-0.5
-                                px-2
                                 shadow
                             "
                             @click="openSaveQueryModal"
                         >
-                            <AtlanIcon class="mr-1" icon="Save" />
+                            <template #icon>
+                                <AtlanIcon class="mr-1" icon="Save" />
+                            </template>
+
                             Save
                         </a-button>
                         <a-button
@@ -71,13 +78,15 @@
                                 justify-between
                                 ml-2
                                 py-0.5
-                                px-2
                                 shadow
                             "
                             :loading="isUpdating"
                             @click="updateQuery"
                         >
-                            <AtlanIcon class="mr-1" icon="Save" />
+                            <template #icon>
+                                <AtlanIcon class="mr-1" icon="Save" />
+                            </template>
+
                             Update
                         </a-button>
                         <a-button

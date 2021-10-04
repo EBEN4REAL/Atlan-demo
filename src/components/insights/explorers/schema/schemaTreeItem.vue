@@ -165,6 +165,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SchemaTreeItemPopover from '~/components/insights/explorers/schema/schemaItemPopover.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
 
     export default defineComponent({
         components: { SchemaTreeItemPopover },
@@ -191,6 +192,7 @@
                 assetType,
                 title,
             } = useAssetInfo()
+            const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
@@ -210,12 +212,7 @@
                     }
                     case 'info': {
                         // i button clicked on the same node -> close the sidebar
-                        if (
-                            activeInlineTab.value.assetSidebar.isVisible &&
-                            t.guid ===
-                                activeInlineTab.value.assetSidebar.assetInfo
-                                    .guid
-                        ) {
+                        if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
                             /* Close it if it is already opened */
                             closeAssetSidebar(activeInlineTab.value)
                         } else {

@@ -224,6 +224,7 @@ const useTree = ({
 
     const returnTreeDataItemAttributes = (item: SavedQuery | Folder) => {
         return {
+            attributes: item.attributes,
             key: item.attributes.qualifiedName,
             guid: item.guid,
             title: item.attributes.name,

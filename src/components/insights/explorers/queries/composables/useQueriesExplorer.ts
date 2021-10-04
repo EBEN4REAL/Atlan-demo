@@ -99,6 +99,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
 
                 const savedQueriesResponse = await getSavedQueriesForConnector(connectorQualifiedName, 0)
                 savedQueriesResponse.entities?.forEach((query) => {
+                    console.log(query,"q1")
                     treeData.value.push(returnTreeDataItemAttributes(query));
                     nodeToParentKeyMap[query.attributes.qualifiedName] = 'root'
                 })
@@ -162,6 +163,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
 
             treeData.value = treeData.value.filter((node) => node.title !== 'Load more');
             response.entities?.forEach((entity) => {
+                
                 treeData.value.push(returnTreeDataItemAttributes(entity));
                 nodeToParentKeyMap[entity.attributes.qualifiedName] = parentQualifiedName
             });
@@ -178,6 +180,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
                 if(node.qualifiedName === parentQualifiedName && !currentPath){
                     const newChildren = node.children?.filter((child) => child.title !== 'Load more');
                     response.entities?.forEach((entity) => {
+                        console.log(entity,"entity")
                         newChildren?.push(returnTreeDataItemAttributes(entity));
                         nodeToParentKeyMap[entity.attributes.qualifiedName] = parentQualifiedName
                     })

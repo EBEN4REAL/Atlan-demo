@@ -41,7 +41,7 @@
                                     <StatusBadge
                                         v-if="item.typeName !== 'QueryFolder'"
                                         :status-id="
-                                            item.entity?.attributes?.assetStatus
+                                            item?.attributes?.assetStatus
                                         "
                                         :show-chip-style-status="false"
                                         :show-no-status="true"
@@ -180,19 +180,13 @@
                 switch (action) {
                     case 'info': {
                         // i button clicked on the same node -> close the sidebar
-                        if (
-                            isSameNodeOpenedInSidebar(
-                                t?.entity,
-                                activeInlineTab
-                            )
-                        ) {
+                        if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
                             /* Close it if it is already opened */
                             closeAssetSidebar(activeInlineTab.value)
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
-                            activeInlineTabCopy.assetSidebar.assetInfo =
-                                t?.entity
+                            activeInlineTabCopy.assetSidebar.assetInfo = t
                             activeInlineTabCopy.assetSidebar.isVisible = true
                             openAssetSidebar(activeInlineTabCopy)
                         }

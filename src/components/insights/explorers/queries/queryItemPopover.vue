@@ -28,7 +28,7 @@
             </div>
             <div class="mt-0.5">
                 <StatusBadge
-                    :status-id="item?.entity.attributes.assetStatus"
+                    :status-id="item.attributes.assetStatus"
                     :show-chip-style-status="false"
                     :show-no-status="true"
                     :showLabel="true"
@@ -43,9 +43,9 @@
         </div>
         <p class="mb-2 text-sm text-gray-500">
             {{
-                item?.entity.attributes.description === ''
+                item.attributes.description === ''
                     ? 'No description'
-                    : item?.entity.attributes.description
+                    : item.attributes.description
             }}
         </p>
 
@@ -275,8 +275,9 @@
                     console.log(item, 'item')
                     mixedTermsAndClassifications.value = []
                     mixedOwnersAndGroups.value = []
-                    const classifications = item.value?.classifications ?? []
-                    const terms = item.value?.meanings ?? []
+                    const classifications =
+                        item.value?.attributes.classifications ?? []
+                    const terms = item.value?.attributes.meanings ?? []
                     const groups: string[] =
                         item.value?.attributes?.ownerGroups?.split(',') ?? []
                     const owners: string[] =

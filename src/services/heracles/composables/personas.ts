@@ -5,5 +5,5 @@ export default function usePersonaService() {
         return personaServiceAPI.listPersonas()
     }
 
-    return listPersonas()
+    return { listPersonas }
 }

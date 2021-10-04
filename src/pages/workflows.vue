@@ -2,13 +2,15 @@
     <div class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
-                <component
-                    :is="isItem ? 'router-view' : 'WorkflowDiscovery'"
-                    ref="workflowDiscovery"
-                    :initial-filters="initialFilters"
-                    :update-profile="updateProfile"
-                    @preview="handlePreview"
-                ></component>
+                <KeepAlive>
+                    <component
+                        :is="isItem ? 'router-view' : 'WorkflowDiscovery'"
+                        ref="workflowDiscovery"
+                        :initial-filters="initialFilters"
+                        :update-profile="updateProfile"
+                        @preview="handlePreview"
+                    ></component>
+                </KeepAlive>
             </div>
         </div>
         <div

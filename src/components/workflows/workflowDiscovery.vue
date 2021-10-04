@@ -123,14 +123,6 @@
             // Clean Stuff
             const AllFilters: Ref = ref({ ...initialFilters.value })
 
-            // TODO remove
-            const selectedTab = computed({
-                get: () => AllFilters.value.selectedTab || 'Catalog',
-                set: (val) => {
-                    AllFilters.value.selectedTab = val
-                },
-            })
-
             const queryText = computed({
                 get: () => AllFilters.value.searchText,
                 set: (val) => {
@@ -155,7 +147,10 @@
                 workflowList: runList,
                 isLoading,
                 filterList,
-            } = useWorkflowTemplateSearchList('default', true)
+                mutate,
+            } = useWorkflowTemplateSearchList('default', false)
+
+            if (!runList.value.length) mutate()
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
@@ -183,8 +178,6 @@
                     facetsFilters: generateFacetConfigForRouter(),
                 }
                 if (queryText.value) routerOptions.searchText = queryText.value
-                if (selectedTab.value !== 'Catalog')
-                    routerOptions.selectedTab = selectedTab.value
                 if (sortOrder.value !== 'default')
                     routerOptions.sortOrder = sortOrder.value
                 if (state.value !== 'active') routerOptions.state = state.value
@@ -195,10 +188,6 @@
 
             const handleSearchChange = useDebounceFn(() => {
                 // TODO use pagination and recall api
-
-                // offset.value = 0
-                // isAggregate.value = true
-                // updateBody()
                 setRouterOptions()
             }, 150)
 

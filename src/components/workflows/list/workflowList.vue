@@ -13,10 +13,7 @@
             ></ListItem>
         </template>
         <template #footer>
-            <div
-                v-if="isLoadMore || isLoading"
-                class="flex items-center justify-center"
-            >
+            <div v-if="isLoading" class="flex items-center justify-center">
                 <button
                     :disabled="isLoading"
                     class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
@@ -77,11 +74,6 @@
                 },
             },
             isLoading: {
-                type: Boolean,
-                required: true,
-                default: () => false,
-            },
-            isLoadMore: {
                 type: Boolean,
                 required: true,
                 default: () => false,

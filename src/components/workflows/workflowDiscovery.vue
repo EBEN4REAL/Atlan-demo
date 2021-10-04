@@ -41,9 +41,14 @@
 
                 <div
                     v-if="runList && runList.length <= 0 && !isLoading"
-                    class="flex-grow"
+                    class="flex flex-col items-center mt-10"
                 >
-                    <EmptyView @event="handleClearFiltersFromList"></EmptyView>
+                    <img
+                        :src="emptyScreen"
+                        alt="No Workflows"
+                        class="w-2/5 m-auto mb-4"
+                    />
+                    <span class="text-gray-500">No Workflow found</span>
                 </div>
                 <RunList
                     v-else
@@ -76,6 +81,7 @@
         Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
+    import emptyScreen from '~/assets/images/empty_search.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '~/components/workflows/list/preference.vue'
     import RunList from '~/components/workflows/list/runList.vue'
@@ -83,7 +89,6 @@
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
-    import { useFilteredTabs } from './useTabMapped'
     import useFilterUtils from './filters/useFilterUtils'
     import { useWorkflowTemplateSearchList } from './useWorkFlowList'
 
@@ -120,12 +125,12 @@
             const AllFilters: Ref = ref({ ...initialFilters.value })
 
             // TODO remove
-            // const selectedTab = computed({
-            //     get: () => AllFilters.value.selectedTab || 'Catalog',
-            //     set: (val) => {
-            //         AllFilters.value.selectedTab = val
-            //     },
-            // })
+            const selectedTab = computed({
+                get: () => AllFilters.value.selectedTab || 'Catalog',
+                set: (val) => {
+                    AllFilters.value.selectedTab = val
+                },
+            })
 
             const queryText = computed({
                 get: () => AllFilters.value.searchText,
@@ -146,13 +151,6 @@
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
 
             // Get All Disoverable Asset Types
-            const initialTabs: Ref<string[]> = computed(() =>
-                useFilteredTabs({
-                    connector: AllFilters.value?.facetsFilters?.connector,
-                    category:
-                        AllFilters.value?.facetsFilters?.assetCategory?.checked,
-                })
-            )
 
             const {
                 workflowList: runList,
@@ -203,40 +201,7 @@
                 // isAggregate.value = true
                 // updateBody()
                 setRouterOptions()
-                // tracking.send(events.EVENT_ASSET_SEARCH, {
-                //     trigger: 'discover',
-                // })
             }, 150)
-
-            // const handleChangePreferences = (payload: any) => {
-            //     projection.value = payload
-            // }
-            // const handleChangeSort = (payload: any) => {
-            //     sortOrder.value = payload
-            //     isAggregate.value = false
-            //     updateBody()
-            // }
-            // const handleState = (payload: any) => {
-            //     state.value = payload
-            //     isAggregate.value = true
-            //     updateBody()
-            // }
-
-            // const handleFilterChange = (
-            //     payload: any,
-            //     filterMapData: Record<string, Components.Schemas.FilterCriteria>
-            // ) => {
-            //     AllFilters.value.facetsFilters = filterMapData
-            //     filters.value = payload
-            //     offset.value = 0
-            //     isAggregate.value = true
-            //     updateBody()
-            //     setRouterOptions()
-            // }
-
-            // const handleFilterInit = (payload: any) => {
-            //     filters.value = payload
-            // }
 
             const handlePreview = (item) => {
                 emit('preview', item)
@@ -258,11 +223,9 @@
                 workflowFilterRef,
                 initialFilters,
                 AllFilters,
-                initialTabs,
                 runList,
-
+                emptyScreen,
                 handleSearchChange,
-
                 handlePreview,
                 queryText,
                 loadMore,

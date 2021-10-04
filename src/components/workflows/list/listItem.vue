@@ -25,7 +25,7 @@
                 <div class="flex items-center flex-none">
                     <span
                         class="pl-1 text-sm tracking-wider text-gray-700 uppercase "
-                        >WORKFLOW TEMPLATE</span
+                        >WORKFLOW</span
                     >
                 </div>
 

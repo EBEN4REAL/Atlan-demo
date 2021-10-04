@@ -32,42 +32,6 @@
                     </a-button-group>
                 </div>
             </div>
-
-            <div class="flex items-center w-full">
-                <a-tooltip
-                    placement="left"
-                    :mouse-enter-delay="0.5"
-                    :title="getDataType(selectedAsset?.attributes?.dataType)"
-                >
-                    <component
-                        :is="
-                            images[
-                                getDataType(selectedAsset?.attributes?.dataType)
-                            ]
-                        "
-                        v-if="isColumnAsset(selectedAsset)"
-                        class="w-4 h-4 mb-1 mr-1"
-                    ></component
-                ></a-tooltip>
-
-                <Tooltip
-                    :tooltip-text="selectedAsset?.metadata?.name"
-                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
-                    placement="left"
-                    :route-to="
-                        isColumnAsset(selectedAsset)
-                            ? getColumnUrl(selectedAsset)
-                            : `/workflows/${selectedAsset.metadata.uid}/overview`
-                    "
-                />
-
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :show-no-status="false"
-                    :status-id="selectedAsset?.attributes?.assetStatus"
-                    class="ml-1.5"
-                ></StatusBadge>
-            </div>
         </div>
 
         <a-tabs
@@ -84,7 +48,7 @@
                     <SidePanelTabHeaders
                         :title="tab.tooltip"
                         :icon="tab.icon"
-                        :isActive="activeKey === index"
+                        :is-active="activeKey === index"
                     />
                 </template>
 
@@ -129,11 +93,9 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useAssetDetailsTabList from '../../workflows/preview/tabs/useTabList'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
-    import { images, dataTypeList } from '~/constant/datatype'
+    import useAssetDetailsTabList from '../../workflows/preview/tabs/useTabList'
 
     export default defineComponent({
         name: 'WorkflowPreview',
@@ -164,40 +126,15 @@
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
-            const { assetTypeLabel, title, assetStatus, assetType } =
-                useAssetInfo()
+
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
-            const infoTabData: Ref<any> = ref({})
-            // const {} =useMagicKeys();
             const tabHeights = {
                 discovery: 'calc(100vh - 7.8rem)',
                 profile: 'calc(100vh - 3rem)',
-                biOverview: 'calc(100vh - 8.06rem)',
-                nonBiOverview: 'calc(100vh - 8.3rem)',
-            }
-
-            function getAssetEntitity(data: Ref): any {
-                if (data.value?.entities.length > 0)
-                    return data.value?.entities[0]
-                return {}
-            }
-
-            const getDataType = (type: string) => {
-                let label = ''
-                dataTypeList.forEach((i) => {
-                    if (i.type.includes(type)) label = i.label
-                })
-                return label
-            }
-            const isColumnAsset = (asset) => assetType(asset) === 'Column'
-
-            const getColumnUrl = (asset) => {
-                const tableGuid = asset.attributes?.table?.guid
-                return `/workflows/${tableGuid}/overview?column=${asset?.guid}`
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -218,26 +155,18 @@
 
             function init() {
                 isLoaded.value = false
-                infoTabData.value = selectedAsset.value
             }
+
             watch(() => selectedAsset.value.guid, init)
             onMounted(init)
 
             return {
                 tabHeights,
                 isLoaded,
-                infoTabData,
-                title,
-                assetTypeLabel,
                 dataMap,
                 activeKey,
                 filteredTabs,
-                assetStatus,
                 handleChange,
-                images,
-                getDataType,
-                isColumnAsset,
-                getColumnUrl,
             }
         },
     })

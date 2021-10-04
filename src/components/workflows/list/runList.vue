@@ -114,27 +114,23 @@
                 { immediate: true }
             )
 
-            // if (autoSelect.value) {
-            //     watch(typename, () => {
-            //         shouldReSelect = true
-            //     })
+            if (autoSelect.value) {
+                watch(
+                    () => list.value?.length || 0,
+                    (len, lastLen) => {
+                        if (len > 0 && (lastLen === 0 || lastLen > len))
+                            shouldReSelect = true
 
-            //     watch(
-            //         () => list.value?.length || 0,
-            //         (len, lastLen) => {
-            //             if (len > 0 && (lastLen === 0 || lastLen > len))
-            //                 shouldReSelect = true
+                        if (shouldReSelect) {
+                            handlePreview(list.value[0])
+                            shouldReSelect = false
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
 
-            //             if (shouldReSelect) {
-            //                 handlePreview(list.value[0])
-            //                 shouldReSelect = false
-            //             }
-            //         },
-            //         { immediate: true }
-            //     )
-            // }
-
-            return { handlePreview, selectedItemId, list }
+            return { handlePreview, selectedItemId }
         },
     })
 </script>

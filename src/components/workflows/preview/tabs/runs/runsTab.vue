@@ -38,7 +38,7 @@
         </div>
     </template>
     <div v-else class="flex flex-col items-center">
-        <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
+        <img :src="emptyScreen" alt="No Runs" class="w-2/5 m-auto mb-4" />
         <span class="text-gray-500">No runs found</span>
     </div>
 </template>
@@ -84,9 +84,7 @@
 
             watch(
                 () => item,
-                (newValue) => {
-                    console.log('asset cahnges')
-                    // FIXME fix this refetch on new workflow template selection
+                (v) => {
                     mutate()
                 },
                 {

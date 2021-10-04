@@ -33,13 +33,13 @@
                     </template>
 
                     <div
-                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer  max-w-min"
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
                         :class="
-                            bannerType === 'information'
+                            announcementType === 'information'
                                 ? 'information-bg'
-                                : bannerType === 'issue'
+                                : announcementType === 'issue'
                                 ? 'issue-bg'
-                                : bannerType === 'warning'
+                                : announcementType === 'warning'
                                 ? 'warning-bg'
                                 : ''
                         "
@@ -71,13 +71,13 @@
             <div v-else>
                 <div v-if="!bannerMessage || bannerMessage === ''">
                     <div
-                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer  max-w-min"
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
                         :class="
-                            bannerType === 'information'
+                            announcementType === 'information'
                                 ? 'information-bg'
-                                : bannerType === 'issue'
+                                : announcementType === 'issue'
                                 ? 'issue-bg'
-                                : bannerType === 'warning'
+                                : announcementType === 'warning'
                                 ? 'warning-bg'
                                 : ''
                         "
@@ -118,7 +118,7 @@
                 >
                     <div>
                         <component
-                            :is="announcementObject?.icon"
+                            :is="bannerObject?.icon"
                             class="w-auto h-4 mt-1 mr-4"
                         />
                     </div>
@@ -262,6 +262,13 @@
 
                 return found
             })
+            const bannerObject = computed(() => {
+                const found = AnnouncementList.find(
+                    (item) => item.id === bannerType.value
+                )
+
+                return found
+            })
 
             const startEdit = () => {
                 editable.value = true
@@ -277,6 +284,7 @@
                 editable,
                 AnnouncementList,
                 handleUpdate,
+                bannerObject,
                 onCancel,
                 startEdit,
                 announcementHeader,

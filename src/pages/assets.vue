@@ -5,35 +5,46 @@
                 <KeepAlive>
                     <component
                         :is="isItem ? 'router-view' : 'AssetDiscovery'"
-                        :initial-filters="initialFilters"
-                        :updateProfile="updateProfile"
-                        @preview="handlePreview"
                         ref="assetDiscovery"
+                        :initial-filters="initialFilters"
+                        :update-profile="updateProfile"
+                        @preview="handlePreview"
+                        @bulkSelectChange="updateBulkSelection"
                     ></component>
                 </KeepAlive>
             </div>
         </div>
         <div
+            v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
             <AssetPreview
                 v-if="selected"
-                :selectedAsset="selected"
-                @asset-mutation="propagateToAssetList"
+                :selected-asset="selected"
                 :page="page"
+                @asset-mutation="propagateToAssetList"
             ></AssetPreview>
+        </div>
+        <div
+            v-else
+            class="relative bg-white asset-preview-container overflow-y-auto"
+        >
+            <BulkSidebar
+                :bulk-selected-assets="bulkSelectedAssets"
+            ></BulkSidebar>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
-    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
-    import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
+    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
+    import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
     import { decodeQuery } from '~/utils/helper/routerHelper'
@@ -48,6 +59,7 @@
         components: {
             AssetPreview,
             AssetDiscovery,
+            BulkSidebar,
         },
         setup() {
             useHead({
@@ -104,7 +116,10 @@
                 handlePreview(updatedAsset)
                 updateProfile.value = true
             }
-
+            const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
+            const updateBulkSelection = (list) => {
+                bulkSelectedAssets.value = [...list.value]
+            }
             return {
                 initialFilters,
                 selected,
@@ -113,6 +128,8 @@
                 page,
                 propagateToAssetList,
                 assetDiscovery,
+                updateBulkSelection,
+                bulkSelectedAssets
             }
         },
     })

@@ -14,6 +14,7 @@ export const KeyMaps = {
             getAPIPath('auth/atlas', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
+        BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -164,13 +165,15 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
 
@@ -191,15 +194,18 @@ export const KeyMaps = {
     },
     credential: {
         CREDENTIAL_TEST: () => getAPIPath('auth', `/credentials/test`),
-        CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) => getAPIPath('auth', `/credentials/${id}/test`),
-        UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) => getAPIPath('auth', `/credentials/${id}`),
+        CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) =>
+            getAPIPath('auth', `/credentials/${id}/test`),
+        UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) =>
+            getAPIPath('auth', `/credentials/${id}`),
     },
     connection: {
-        TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
-        SETUP: () => getAPIPath('auth', "/connections"),
+        TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
+        SETUP: () => getAPIPath('auth', '/connections'),
         CONNECTION_SETUP: () => getAPIPath('auth/atlas', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
-        CONNECTION_ARCHIVE: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),
+        CONNECTION_ARCHIVE: ({ id }) =>
+            getAPIPath('auth', `/connections/${id}/archive`),
     },
     query: {
         RUN_QUERY: ({
@@ -214,7 +220,7 @@ export const KeyMaps = {
             ),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`

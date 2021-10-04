@@ -167,7 +167,7 @@
     import { useRouter } from 'vue-router'
 
     // components
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     // assets
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 

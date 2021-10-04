@@ -180,9 +180,7 @@
     } from 'vue'
     import { useRouter } from 'vue-router'
     // components
-    import Status from '@common/sidebar/status.vue'
-    import Owners from '@/glossary/common/owners.vue'
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
     // Composables
@@ -199,7 +197,7 @@
     import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
-        components: { Status, Owners, ThreeDotMenu, Tooltip },
+        components: { ThreeDotMenu, Tooltip },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,

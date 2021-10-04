@@ -111,7 +111,7 @@
                 :closable="false"
                 width="100%"
             >
-                <CategoryTermPreview
+                <GtcPreview
                     :entity="selectedEntity"
                     @closePreviewPanel="handlClosePreviewPanel"
                     @updateAsset="updateSelectedAsset"
@@ -136,10 +136,10 @@
     // components
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import AssetList from '@/glossary/common/assetList.vue'
-    import Projections from '@/glossary/common/projections.vue'
-    import Filters from '@/glossary/common/filters.vue'
+    import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
+    import AssetList from '~/components/glossary/profile/termsAndCategories/assetList.vue'
+    import Projections from '@/glossary/profile/termsAndCategories/projections.vue'
+    import Filters from '@/glossary/profile/termsAndCategories/filters.vue'
 
     // composables
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
@@ -153,7 +153,7 @@
             EmptyView,
             LoadingView,
             Projections,
-            CategoryTermPreview,
+            GtcPreview,
             Filters,
         },
         props: {

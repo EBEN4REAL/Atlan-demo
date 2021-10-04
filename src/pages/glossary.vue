@@ -58,7 +58,7 @@
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
-    import useTree from '~/components/glossary/composables/useTree'
+    import useTree from '~/components/glossary/tree/composables/useTree'
 
     // types
     import {
@@ -116,6 +116,7 @@
                 reInitTree,
                 refetchGlossaryList,
                 collapseAll,
+                reOrderNodes,
             } = useTree(emit, true, isHome)
 
             // methods
@@ -157,7 +158,7 @@
             provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
             provide('refetchGlossaryList', refetchGlossaryList)
-
+            provide('reorderTreeNodes', reOrderNodes)
             return {
                 handleOpenModal,
                 handleCloseModal,

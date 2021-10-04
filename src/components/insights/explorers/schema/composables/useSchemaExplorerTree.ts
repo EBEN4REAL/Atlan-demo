@@ -485,6 +485,7 @@ const useTree = ({
             typeName: item.typeName,
             classifications: item.classifications,
             ...item.attributes,
+            meanings: item.meanings,
             isLeaf: item.typeName === 'Column' ? true : false,
         }
     }

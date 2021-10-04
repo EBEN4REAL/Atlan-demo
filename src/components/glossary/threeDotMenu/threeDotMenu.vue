@@ -308,11 +308,11 @@
 
     // components
     import StatusBadge from '@common/badge/status/index.vue'
-    import Owners from '@/glossary/common/owners.vue'
-    import Status from '@/glossary/common/status.vue'
-    import AddGtcModal from '@/glossary/common/addGtcModal.vue'
+    import Owners from './owners.vue'
+    import Status from './status.vue'
+    import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
     import Categories from '@/glossary/common/categories.vue'
-    import ModalHeader from '@/glossary/common/modalHeader.vue'
+    import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
@@ -364,7 +364,7 @@
             const router = useRouter()
 
             const handleFetchListInj: Function | undefined =
-                inject('handleFetchList')
+                inject('handleFetchList', () => null)
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
             const refetchGlossaryTree = inject<

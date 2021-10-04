@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AssetFilters
                 :ref="
@@ -80,6 +87,7 @@
                     v-model:autoSelect="autoSelect"
                     @preview="handlePreview"
                     @loadMore="loadMore"
+                    @bulkSelectChange="(list) => $emit('bulkSelectChange', list)"
                 ></AssetList>
             </div>
         </div>
@@ -163,7 +171,7 @@
                 default: true,
             },
         },
-        emits: ['preview'],
+        emits: ['preview', 'bulkSelectChange'],
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = toRefs(props)

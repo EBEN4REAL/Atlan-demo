@@ -160,6 +160,19 @@
                         </AddGtcModal>
                     </a-menu-item>
 
+                    <a-menu-item v-if="showUnlinkAsset" key="unkink">
+                        <a-button
+                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
+                            @click="$emit('unlinkAsset', entity)"
+                        >
+                            <div class="flex items-center text-red-700">
+                                <AtlanIcon icon="Link" class="mr-2" />
+                                <p class="p-0 m-0">Unlink Asset</p>
+                            </div>
+                        </a-button>
+                    </a-menu-item>
+                    <a-menu-divider v-if="showUnlinkAsset" />
+
                     <a-menu-divider
                         v-if="
                             showGtcCrud &&
@@ -371,6 +384,11 @@
                 required: false,
                 default: () => true,
             },
+            showUnlinkAsset: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
 
             treeMode: {
                 type: Boolean,
@@ -383,6 +401,7 @@
                 default: true,
             },
         },
+        emits: ['unlinkAsset'],
         setup(props, context) {
             // data
             const isVisible = ref(false)

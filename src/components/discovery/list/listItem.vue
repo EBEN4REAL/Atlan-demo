@@ -10,7 +10,7 @@
         ]"
     >
         <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent rounded w-96 group-hover:shadow"
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent rounded  w-96 group-hover:shadow"
             :class="{ ' border-gray-200': bulkSelectMode ? true : !isSelected }"
         >
             <a-checkbox
@@ -22,7 +22,7 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden gap-y-1 lg:pr-16"
+                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
                 <!-- Asset type + Hierarchy bar -->
                 <div class="flex items-center text-gray-500 gap-x-2">
@@ -51,7 +51,7 @@
                                 ? getColumnUrl(item)
                                 : `/assets/${item.guid}/overview`
                         "
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -151,12 +151,12 @@
                     >
                         <AtlanIcon
                             icon="ChevronRight"
-                            class="text-gray-500 transform rotate-180 opacity-70 group-hover:opacity-100"
+                            class="text-gray-500 transform rotate-180  opacity-70 group-hover:opacity-100"
                         />
                     </button>
                     <div
                         ref="chipScrollWrapper"
-                        class="flex items-center overflow-x-auto flex-nowrap gap-x-2 hidden-scroll"
+                        class="flex items-center overflow-x-auto  flex-nowrap gap-x-2 hidden-scroll"
                         style="scroll-behavior: smooth"
                     >
                         <Pill
@@ -180,17 +180,20 @@
                     >
                         <AtlanIcon
                             icon="ChevronRight"
-                            class="text-gray-500 opacity-70 group-hover:opacity-100"
+                            class="text-gray-500  opacity-70 group-hover:opacity-100"
                         />
                     </button>
                 </div>
             </div>
             <ThreeDotMenu
+                v-if="showThreeDotMenu"
                 :entity="item"
                 class="opacity-0"
                 :visible="false"
                 :showGtcCrud="false"
                 :showLinks="false"
+                :showUnlinkAsset="true"
+                @unlinkAsset="$emit('unlinkAsset', item)"
             />
         </div>
     </div>
@@ -271,8 +274,14 @@
                 required: false,
                 default: false,
             },
+            // for unlinking asset in glossary
+            showThreeDotMenu: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['listItem:check'],
+        emits: ['listItem:check', 'unlinkAsset'],
         setup() {
             const {
                 description,

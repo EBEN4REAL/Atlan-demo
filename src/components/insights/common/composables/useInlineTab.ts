@@ -90,16 +90,24 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     const modifyActiveInlineTab = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,
-        restrictIsSavedToggle?: boolean,
-        localStorageSync: boolean = true
+        localStorageSync: boolean = true,
+        isSaved: boolean = false
     ) => {
+        /* There can be two case
+        1-> It's already saved and being modified so save-> unsave ( activeTab.save(true) && isSaved(false))
+        2-> It's unsaved and being saving into database so unsave-> save ( activeTab.save(true) && isSaved(true))
+         */
+        // saved query being modifed
+        if (activeTab.isSaved && !isSaved) {
+            activeTab.isSaved = false
+        }
+        if (activeTab.isSaved && isSaved) {
+            activeTab.isSaved = true
+        }
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
-            // changing from saved -> to unsaved
-            if (activeTab.isSaved && !restrictIsSavedToggle)
-                activeTab.isSaved = false
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab
         }
@@ -108,21 +116,29 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
         }
-        console.log(tabsArray.value, 'tabarray')
     }
 
     const modifyActiveInlineTabEditor = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,
-        queryDataStore?: boolean
+        isSaved: boolean = false,
+        queryDataStore: boolean = false
     ) => {
+        /* There can be two case
+        1-> It's already saved and being modified so save-> unsave ( activeTab.save(true) && isSaved(false))
+        2-> It's unsaved and being saving into database so unsave-> save ( activeTab.save(true) && isSaved(true))
+         */
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
-            // changing from saved -> to unsaved
-            if (activeTab.isSaved) activeTab.isSaved = false
-            console.log(index, activeTab, 'modifyTab')
+            // saved query being modifed
+            if (activeTab.isSaved && !isSaved) {
+                tabsArray.value[index].isSaved = false
+            }
+            if (activeTab.isSaved && isSaved) {
+                tabsArray.value[index].isSaved = true
+            }
             tabsArray.value[index].playground.editor =
                 activeTab.playground.editor
         }

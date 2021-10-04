@@ -53,7 +53,30 @@
                             Run</a-button
                         >
                         <a-button
-                            v-if="modalAction === 'CREATE'"
+                            v-if="activeInlineTab.queryId"
+                            class="
+                                flex
+                                items-center
+                                justify-between
+                                ml-2
+                                py-0.5
+                                shadow
+                            "
+                            :loading="isUpdating"
+                            :disabled="
+                                activeInlineTab.queryId &&
+                                activeInlineTab.isSaved
+                            "
+                            @click="updateQuery"
+                        >
+                            <template #icon>
+                                <AtlanIcon class="mr-1" icon="Save" />
+                            </template>
+
+                            Update
+                        </a-button>
+                        <a-button
+                            v-else
                             class="
                                 flex
                                 items-center
@@ -71,27 +94,7 @@
                             Save
                         </a-button>
                         <a-button
-                            v-else
-                            class="
-                                flex
-                                items-center
-                                justify-between
-                                ml-2
-                                py-0.5
-                                shadow
-                            "
-                            :loading="isUpdating"
-                            @click="updateQuery"
-                        >
-                            <template #icon>
-                                <AtlanIcon class="mr-1" icon="Save" />
-                            </template>
-
-                            Update
-                        </a-button>
-                        <a-button
                             class="flex items-center ml-2 py-0.5 px-2 shadow"
-                            v-if="activeInlineTab?.isSaved"
                             @click="copyURL"
                         >
                             <AtlanIcon class="mr-1" icon="Share" /><span
@@ -106,7 +109,6 @@
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
                 :saveQueryLoading="saveQueryLoading"
-                :modalAction="modalAction"
                 :ref="
                     (el) => {
                         saveModalRef = el
@@ -184,9 +186,6 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
-            const modalAction: ComputedRef<string> = computed(() =>
-                activeInlineTab.value.isSaved ? 'UPDATE' : 'CREATE'
-            )
             const { updateSavedQuery } = useSavedQuery(
                 inlineTabs,
                 activeInlineTab,
@@ -370,7 +369,6 @@
                 isUpdateEnabled,
                 isUpdating,
                 showcustomToolBar,
-                modalAction,
                 saveModalRef,
                 saveQueryLoading,
                 showSaveQueryModal,

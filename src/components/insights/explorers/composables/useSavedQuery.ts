@@ -24,8 +24,11 @@ export function useSavedQuery(
     const { getConnectorName, getConnectionQualifiedName } = useConnector()
     const { getParsedQuery } = useEditor()
 
-    const { isInlineTabAlreadyOpened, inlineTabAdd } =
-        useInlineTab(treeSelectedKeys)
+    const {
+        isInlineTabAlreadyOpened,
+        inlineTabAdd,
+        modifyActiveInlineTabEditor,
+    } = useInlineTab(treeSelectedKeys)
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedNameValues =
@@ -108,6 +111,11 @@ export function useSavedQuery(
         editorInstance: Ref<any>,
         isUpdating: Ref<boolean>
     ) => {
+        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+            {},
+            activeInlineTab.value
+        )
+
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
         const attributeName =
@@ -175,6 +183,13 @@ export function useSavedQuery(
                     message.success({
                         content: `${name} query saved!`,
                     })
+                    // making it save
+                    activeInlineTabCopy.isSaved = true
+                    modifyActiveInlineTabEditor(
+                        activeInlineTabCopy,
+                        tabsArray,
+                        true
+                    )
                 } else {
                     console.log(error.value.toString())
                     message.error({

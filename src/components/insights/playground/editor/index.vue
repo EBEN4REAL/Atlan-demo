@@ -20,25 +20,18 @@
                             :class="showcustomToolBar ? 'bg-gray-300' : ''"
                             @click="toggleCustomToolbar"
                         >
-                            <!-- <AtlanIcon
-                                class="w-4 h-4 mx-4 -mt-1 text-gray-500"
-                                @click="toggleCustomToolbar"
-                                icon="Activity"
-                            /> -->
                             {&nbsp;}
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <!-- <div class="w-full">
-                    <p class="mb-1 text-base">
-                        {{ activeInlineTab.label ?? 'ATLAN_TRIAL.PUBLIC' }}
-                    </p>
-                </div> -->
                     <div class="flex mr-4 text-sm">
                         <a-button
                             type="primary"
                             class="flex items-center py-0.5 shadow"
+                            :class="
+                                isQueryRunning === 'loading' ? 'px-4.5' : 'px-2'
+                            "
                             :loading="
                                 isQueryRunning === 'loading' ? true : false
                             "
@@ -63,6 +56,7 @@
                                 shadow
                             "
                             :loading="isUpdating"
+                            :class="isUpdating ? 'px-4.5' : 'px-2'"
                             :disabled="
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
@@ -341,30 +335,6 @@
             const toggleCustomToolbar = () => {
                 showcustomToolBar.value = !showcustomToolBar.value
             }
-
-            /* Watcher for save->unsave */
-            // watch(activeInlineTab, (newActiveInlineTab) => {
-            //     console.log(
-            //         activeInlineTab.value,
-            //         newActiveInlineTab,
-            //         'compare'
-            //     )
-            //     if (activeInlineTab.value.isSaved) {
-            //         if (
-            //             activeInlineTab.value.queryId ===
-            //             newActiveInlineTab.queryId
-            //         ) {
-            //             if (
-            //                 !isTwoInlineTabsEqual(
-            //                     activeInlineTab.value,
-            //                     newActiveInlineTab
-            //                 )
-            //             ) {
-            //                 isUpdateEnabled.value = true
-            //             }
-            //         }
-            //     }
-            // })
             return {
                 isUpdateEnabled,
                 isUpdating,

@@ -3,6 +3,7 @@
         <div class="w-full p-4 pb-1">
             <Connector
                 class=""
+                :filterSourceIds="['tableau', 'athena']"
                 v-model:data="connectorsData"
                 :item="{
                     id: 'connector',

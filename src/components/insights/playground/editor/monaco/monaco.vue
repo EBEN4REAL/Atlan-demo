@@ -234,6 +234,7 @@
             onUnmounted(() => {
                 editor?.dispose()
             })
+            new monaco.Selection()
             /*Watcher for changing the content of the editor on activeInlineTab Change*/
             watch(activeInlineTab, () => {
                 if (activeInlineTab.value) {
@@ -258,7 +259,7 @@
                     //     setCurrentPosition(editor?.getPosition())
                     // })
                     //on active inline tab change
-                    emit('editorInstance', editor)
+                    emit('editorInstance', editor, monaco)
                 }
             })
             return {

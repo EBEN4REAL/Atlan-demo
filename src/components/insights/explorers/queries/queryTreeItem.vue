@@ -158,7 +158,6 @@
         Ref,
         inject,
         toRaw,
-        ref,
         watch,
     } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -167,9 +166,6 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import SchemaTreeItemPopover from '~/components/insights/explorers/schema/schemaItemPopover.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
 
     export default defineComponent({
         components: { SchemaTreeItemPopover },
@@ -187,17 +183,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
-            const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
-
             const editorInstance = toRaw(editorInstanceRef.value)
-            const monacoInstance = toRaw(monacoInstanceRef.value)
-            const selectionObject: Ref<any> = ref({
-                startLineNumber: 1,
-                startColumnNumber: 1,
-                endLineNumber: 1,
-                endColumnNumber: 1,
-            })
             const {
                 isPrimary,
                 dataTypeImageForColumn,
@@ -207,43 +193,12 @@
                 title,
             } = useAssetInfo()
             const { isSameNodeOpenedInSidebar } = useSchema()
-            const { focusEditor, setSelection } = useEditor()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
             )
 
             const { item } = toRefs(props)
-            const { queryRun } = useRunQuery()
-            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
-                useInlineTab()
-            // callback fxn
-            const getData = (dataList, columnList) => {
-                if (activeInlineTab && inlineTabs?.value) {
-                    const activeInlineTabCopy: activeInlineTabInterface =
-                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                    activeInlineTabCopy.playground.editor.dataList = dataList
-
-                    activeInlineTabCopy.playground.editor.columnList =
-                        columnList
-                    const saveQueryDataInLocalStorage = false
-                    modifyActiveInlineTabEditor(
-                        activeInlineTabCopy,
-                        inlineTabs,
-                        saveQueryDataInLocalStorage
-                    )
-                    setSelection(
-                        editorInstance,
-                        monacoInstance,
-                        selectionObject.value
-                    )
-                    focusEditor(editorInstance)
-                }
-            }
-            // const selectAndFocus=()={
-
-            // }
-
             const actionClick = (action: string, t: assetInterface) => {
                 switch (action) {
                     case 'add': {
@@ -253,22 +208,6 @@
                         break
                     }
                     case 'play': {
-                        const activeInlineTabCopy: activeInlineTabInterface =
-                            Object.assign({}, activeInlineTab.value)
-                        // previous text
-                        const prevText =
-                            activeInlineTabCopy.playground.editor.text
-                        // new text
-                        const newQuery = `SELECT * FROM \"${item.value?.title}\" LIMIT 50;\n`
-                        const newText = `${newQuery}${prevText}`
-                        activeInlineTabCopy.playground.editor.text = newText
-                        modifyActiveInlineTab(activeInlineTabCopy, inlineTabs)
-                        queryRun(activeInlineTabCopy, getData, isQueryRunning)
-                        selectionObject.value.startLineNumber = 1
-                        selectionObject.value.startColumnNumber = 1
-                        selectionObject.value.endLineNumber = 1
-                        selectionObject.value.endColumnNumber =
-                            newQuery.length + 1 // +1 for semicolon
                         break
                     }
                     case 'info': {

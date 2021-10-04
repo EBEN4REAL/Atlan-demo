@@ -6,7 +6,7 @@
             </p>
             <div class="ml-2 -mt-0.5">
                 <StatusBadge
-                    :status-id="item.status"
+                    :status-id="item.assetStatus"
                     :show-chip-style-status="false"
                     :show-no-status="true"
                     :show-label="false"
@@ -15,7 +15,11 @@
             </div>
         </div>
         <p class="mb-2 text-sm text-gray-500">
-            {{ item.description === '' ? 'No description' : item.description }}
+            {{
+                item.attributes.userDescription === ''
+                    ? 'No description'
+                    : item.attributes.userDescription
+            }}
         </p>
 
         <div
@@ -152,6 +156,7 @@
         computed,
         inject,
         Ref,
+        toRaw,
         ComputedRef,
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
@@ -193,6 +198,7 @@
                 inlineTabs,
                 activeInlineTab
             )
+
             const {
                 mixClassificationsAndTerms,
                 mixOwnersAndGroups,
@@ -239,6 +245,7 @@
             watch(
                 item,
                 () => {
+                    console.log(item, 'item')
                     mixedTermsAndClassifications.value = []
                     mixedOwnersAndGroups.value = []
                     const classifications = item.value?.classifications ?? []

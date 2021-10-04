@@ -82,11 +82,8 @@ import Widgets from '~/assets/images/icons/widgets.svg'
 import Megaphone from '~/assets/images/icons/megaphone.svg'
 import Readme from '~/assets/images/icons/readme.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
-<<<<<<< HEAD
 import Home from '~/assets/images/icons/home.svg'
-=======
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
->>>>>>> glossary-refactor
 
 export default {
     Metadata,

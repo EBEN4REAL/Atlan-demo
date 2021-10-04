@@ -1,24 +1,27 @@
-import { ref, Ref, watch, computed, toRef } from 'vue'
+import { ref, Ref, watch, computed, ComputedRef } from 'vue'
 import { useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import whoami from '../user/whoami'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useBulkSelectOwners from '~/composables/asset/useBulkSelectOwners'
 
 export default function useBulkSelect() {
     const selectedAssets: Ref<assetInterface[]> = ref([])
     const { username } = whoami()
     // state of the composable
     // `Existing` properties are computed for all selected lists and passed to the component for initialisation of respective state of each component (ex- status, owners)
-    // `Updated` properties are refs, used to maintain a local copy of what changed - instead of calculating diffs bw existing properties before and after update, we simply store the changed value in updated properties and use that for constructing the payload and locally updating the assets once the call is successful
+    // `Updated` properties are refs, used to maintain a local copy of what changed - instead of calculating diffs bw existing properties whenever it changes/ for storing existing state in case the user tries to reset, we simply store the changed value in updated properties and use that for constructing the payload and locally updating the assets once the call is successful
     const updatedStatus: Ref<string> = ref('')
     const updatedStatusMessage: Ref<string> = ref('')
-    const updatedOwners: Ref<Record<string, string>> = ref({})
     const updatedTerms: Ref<Record<string, string>> = ref({})
     const updatedClassifications: Ref<Record<string, string>> = ref({})
-
+    /** STATUS */
     const updateSelectedAssets = (list: Ref<assetInterface[]>) => {
         selectedAssets.value = [...list.value]
     }
+    watch(selectedAssets, () => {
+        console.log('OOO', selectedAssets.value)
+    })
     const existingStatus = computed(() => {
         if (selectedAssets.value.length) {
             const assetStatusMap: Record<string, string> = {}
@@ -30,6 +33,25 @@ export default function useBulkSelect() {
         }
         return {}
     })
+    // const ownerUsersFrequencyMap = computed(() => {
+    //     console.log('in compiyed')
+    //     const frequencyMap: Record<string, number> = {}
+    //     if (selectedAssets.value.length) {
+    //         selectedAssets.value.forEach((asset: assetInterface) => {
+    //             if (asset?.attributes?.ownerUsers?.length > 0) {
+    //                 const ownerUsersArray =
+    //                     asset.attributes.ownerUsers.split(',')
+    //                 ownerUsersArray.forEach((ownerUser) => {
+    //                     if (frequencyMap.hasOwnProperty[ownerUser])
+    //                         frequencyMap[ownerUser] += 1
+    //                     else frequencyMap[ownerUser] = 1
+    //                 })
+    //             }
+    //         })
+    //     }
+    //     return frequencyMap
+    // })
+
     const handleUpdateStatus = (
         { status, statusMessage },
         statusRef,
@@ -43,6 +65,16 @@ export default function useBulkSelect() {
         statusRef.value = status
         updatedStatusMessage.value = statusMessage
     }
+    /** OWNERS */
+    const {
+        updatedOwners,
+        ownerUsersFrequencyMap,
+        ownerGroupsFrequencyMap,
+        existingOwnerUsers,
+        existingOwnerGroups,
+        handleUpdateOwners,
+    } = useBulkSelectOwners(selectedAssets)
+
     // Helper function
     const getBulkUpdateRequestPayload = (assetList) => {
         const requestPayloadSkeleton = assetList.map((asset) => ({
@@ -121,10 +153,16 @@ export default function useBulkSelect() {
     }
 
     return {
-        existingStatus,
-        handleUpdateStatus,
-        updateAssets,
-        updatedStatus,
         updateSelectedAssets,
+        existingStatus,
+        updatedStatus,
+        handleUpdateStatus,
+        ownerUsersFrequencyMap,
+        // ownerGroupsFrequencyMap,
+        // existingOwnerUsers,
+        // existingOwnerGroups,
+        // updatedOwners,
+        // handleUpdateOwners,
+        updateAssets,
     }
 }

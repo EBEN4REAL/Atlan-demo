@@ -8,6 +8,7 @@
             {{ selectedAssets.length === 1 ? `Asset` : `Assets` }} Selected
         </div>
         <Status :existing-status="existingStatus"></Status>
+        <Owners></Owners>
         <a-button @click="updateAssets(selectedAssets)">Update</a-button>
     </div>
 </template>
@@ -16,11 +17,13 @@
 import { provide, toRefs, watch } from 'vue'
 import useBulkSelect from '~/composables/asset/useBulkSelect'
 import Status from '@/common/bulk/widgets/status.vue'
+import Owners from '@/common/bulk/widgets/owners.vue'
 
 export default {
     name: 'BulkSidebar',
     components: {
         Status,
+        Owners,
     },
     props: {
         bulkSelectedAssets: {
@@ -38,10 +41,20 @@ export default {
             updatedStatus,
             updateAssets,
             updateSelectedAssets,
+            ownerUsersFrequencyMap,
+            ownerGroupsFrequencyMap,
+            existingOwnerUsers,
+            existingOwnerGroups,
+            updatedOwners,
         } = useBulkSelect()
         /** PROVIDERS */
         provide('selectedAssets', selectedAssets)
         provide('updatedStatus', updatedStatus)
+        provide('ownerUsersFrequencyMap', ownerUsersFrequencyMap)
+        // provide('ownerGroupsFrequencyMap', ownerGroupsFrequencyMap)
+        // provide('existingOwnerUsers', existingOwnerUsers)
+        // provide('existingOwnerGroups', existingOwnerGroups)
+        // provide('updatedOwners', updatedOwners)
         //  const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
         //         inject('mutateSelectedAsset', () => {})
         watch(

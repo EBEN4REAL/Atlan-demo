@@ -8,7 +8,8 @@ export interface OwnersChangeLog {
     removedOwnerGroups: Array<String>
 }
 export default function useBulkSelectOwners(selectedAssets) {
-    const ownerUsersFrequencyMap: any = ref({})
+    const ownerUsersFrequencyMap: ComputedRef<Record<string, number>> = ref({})
+    const ownerGroupsFrequencyMap: ComputedRef<Record<string, number>> = ref({})
     watch(selectedAssets, () => {
         console.log('OOO', selectedAssets.value)
         const frequencyMap: Record<string, number> = {}
@@ -34,34 +35,6 @@ export default function useBulkSelectOwners(selectedAssets) {
         removedOwnerGroups: [],
     })
 
-    // const ownerUsersFrequencyMap = computed(
-    //     () => {
-    //         console.log('in compiyed')
-    //         const frequencyMap: Record<string, number> = {}
-    //         if (selectedAssets.value.length) {
-    //             selectedAssets.value.forEach((asset: assetInterface) => {
-    //                 if (asset?.attributes?.ownerUsers?.length > 0) {
-    //                     const ownerUsersArray =
-    //                         asset.attributes.ownerUsers.split(',')
-    //                     ownerUsersArray.forEach((ownerUser) => {
-    //                         if (frequencyMap.hasOwnProperty[ownerUser])
-    //                             frequencyMap[ownerUser] += 1
-    //                         else frequencyMap[ownerUser] = 1
-    //                     })
-    //                 }
-    //             })
-    //         }
-    //         return frequencyMap
-    //     },
-    //     {
-    //         onTrack(e) {
-    //             console.log(e)
-    //         },
-    //         onTrigger(e) {
-    //             console.log(e)
-    //         },
-    //     }
-    // )
     const ownerGroupsFrequencyMap: ComputedRef<Record<string, number>> =
         computed(() => {
             const frequencyMap: Record<string, number> = {}

@@ -55,7 +55,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedWorkflowList } from '~/components/workflows/useWorkFlowList'
+    import { useArchivedWorkflowList } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {},

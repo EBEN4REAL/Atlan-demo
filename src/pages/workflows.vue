@@ -31,8 +31,8 @@
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     import { computed, defineComponent, ref, Ref } from 'vue'
-    import WorkflowDiscovery from '~/components/workflows/workflowDiscovery.vue'
-    import WorkflowPreview from '~/components/workflows/preview/workflowPreview.vue'
+    import WorkflowDiscovery from '~/components/workflows/discovery/workflowDiscovery.vue'
+    import WorkflowPreview from '~/components/workflows/shared/preview/workflowPreview.vue'
     // TODO change to workflowInterfalce
     import { assetInterface } from '~/types/assets/asset.interface'
     import { decodeQuery } from '~/utils/helper/routerHelper'

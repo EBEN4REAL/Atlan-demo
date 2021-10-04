@@ -93,7 +93,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
-    import useAssetDetailsTabList from '../../workflows/preview/tabs/useTabList'
+    import useAssetDetailsTabList from '@/workflows/shared/preview/tabs/useTabList'
 
     export default defineComponent({
         name: 'WorkflowPreview',

@@ -69,27 +69,18 @@
     import workflowPagination from '@common/pagination/index.vue'
 
     import { useDebounceFn } from '@vueuse/core'
-    import {
-        computed,
-        defineComponent,
-        onMounted,
-        ref,
-        watch,
-        toRefs,
-        PropType,
-        Ref,
-    } from 'vue'
+    import { computed, defineComponent, ref, toRefs, Ref } from 'vue'
     import { useRouter } from 'vue-router'
     import emptyScreen from '~/assets/images/empty_search.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import Preferences from '~/components/workflows/list/preference.vue'
-    import WorkflowList from '~/components/workflows/list/workflowList.vue'
-    import WorkflowFilters from '~/components/workflows/filters/workflowFilters.vue'
+    import Preferences from '@/workflows/discovery/list/preference.vue'
+    import WorkflowList from '@/workflows/discovery/list/workflowList.vue'
+    import WorkflowFilters from '@/workflows/discovery/filters/workflowFilters.vue'
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import useFilterUtils from './filters/useFilterUtils'
-    import { useWorkflowTemplateSearchList } from './useWorkFlowList'
+    import { useWorkflowTemplateSearchList } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',

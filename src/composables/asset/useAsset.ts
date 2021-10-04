@@ -48,6 +48,7 @@ export default function useAsset({
             'projectName',
             'workbookName',
             'datasourceName',
+            'banner',
             ...BasicSearchAttributes,
             ...useBusinessMetadataStore().getBusinessMetadataListProjections,
             ...tableauAttributes,

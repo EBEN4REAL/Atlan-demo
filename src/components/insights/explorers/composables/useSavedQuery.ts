@@ -185,6 +185,7 @@ export function useSavedQuery(
                     })
                     // making it save
                     activeInlineTabCopy.isSaved = true
+                    activeInlineTabCopy.key = qualifiedName
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         tabsArray,

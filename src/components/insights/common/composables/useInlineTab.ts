@@ -35,7 +35,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     ) => {
         let bool = false
         tabsArray.value.forEach((tab) => {
-            if (tab.key === inlineTab.key) bool = true
+            if (tab.key === inlineTab.key || tab?.queryId === tab?.queryId)
+                bool = true
         })
         return bool
     }

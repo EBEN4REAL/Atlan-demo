@@ -42,6 +42,10 @@ import Approve from '~/assets/images/icons/approve.svg'
 import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
+import GlossaryDeprecated from '~/assets/images/icons/glossary-deprecated.svg'
+import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
+import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
+
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
@@ -78,7 +82,11 @@ import Widgets from '~/assets/images/icons/widgets.svg'
 import Megaphone from '~/assets/images/icons/megaphone.svg'
 import Readme from '~/assets/images/icons/readme.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
+<<<<<<< HEAD
+import Home from '~/assets/images/icons/home.svg'
+=======
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
+>>>>>>> glossary-refactor
 
 export default {
     Metadata,
@@ -161,5 +169,9 @@ export default {
     Widgets,
     Megaphone,
     Readme,
+    Home,
+    GlossaryDeprecated,
+    GlossaryVerified,
+    GlossaryDraft,
     MultipleStatus,
 }

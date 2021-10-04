@@ -1,5 +1,6 @@
 <template>
     <div class="border-r glossaryTree" :class="$style.glossaryTree">
+        <div :class="$style.parentGroup">
         <div
             class="flex px-4 py-3 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
         >
@@ -7,10 +8,40 @@
                 v-model:value="currentGlossaryGuid"
                 :options="glossaryContextDropdown"
             >
-                <template #dropdownRender="{ menuNode: menu }">
+                <template #option="{value, label, status}">
+                    <hr v-if="value==='createNewGlossary'" />
+                    <span class="py-0.5 flex flex-row items-center content-center my-auto" :class="{
+                        'mt-2':value==='createNewGlossary'
+                    }">
+                        <AtlanIcon v-if="value==='all'" class="mr-2" icon="Home" />
+                        <AtlanIcon v-else-if="value==='createNewGlossary'" class="mr-2" icon="Add" />
+                        <AtlanIcon
+                            v-else
+                             class="mr-2"
+                            :icon="
+                                getEntityStatusIcon(
+                                    'glossary',
+                                    status
+                                )
+                            "
+                        />
+                        <span>{{ label }}</span>
+                    </span>
+                    
+                    <hr v-if="value==='all'" />
+                </template>
+                <!-- <template #dropdownRender="{ menuNode: menu }">
+                    <div
+                        class="flex px-4 py-2 text-sm leading-5 text-gray-700 cursor-pointer text-bold hover:bg-gray-light"
+                        @mousedown="(e) => e.preventDefault()"
+                        @click="backToHome"
+                    >
+                         All Glossaries
+                    </div>
+                    <hr class="mx-4" />
                     <v-nodes :vnodes="menu" />
 
-                    <hr class="mx-4 my-3" />
+                    <hr class="mx-4 mt-3" />
 
                     <AddGtcModal
                         entityType="glossary"
@@ -29,16 +60,15 @@
                         </template>
                         <template #trigger>
                             <div
-                                class="flex px-4 pb-3 text-sm leading-5 text-gray-700 cursor-pointer  text-bold"
+                                class="flex px-4 py-3 text-sm leading-5 text-gray-700 cursor-pointer text-bold hover:bg-gray-light"
                                 @mousedown="(e) => e.preventDefault()"
-                                @click="addItem"
                             >
-                                <AtlanIcon icon="Add" class="mr-2" /> Add New
+                                <AtlanIcon icon="Add" class="mr-2" /> Create New
                                 Glossary
                             </div>
                         </template>
                     </AddGtcModal>
-                </template>
+                </template> -->
             </a-select>
         </div>
 
@@ -187,7 +217,6 @@
             <div class="flex p-4 pb-0 pr-3 searchArea">
                 <a-input-search
                     v-model:value="searchQuery"
-                    class="mr-2"
                     :placeholder="
                         currentGuid &&
                         currentGuid === parentGlossary?.guid &&
@@ -197,9 +226,10 @@
                     "
                     @change="onSearch"
                 ></a-input-search>
-                <a-button class="flex items-center w-8 h-8 p-2 rounded">
+                <!-- Hide for GA -->
+                <!-- <a-button class="flex items-center w-8 h-8 p-2 rounded">
                     <AtlanIcon icon="Filter" />
-                </a-button>
+                </a-button> -->
             </div>
 
             <div v-if="isLoading" class="mt-4">
@@ -209,7 +239,7 @@
                 v-else-if="!isLoading && !searchQuery?.length"
                 class="h-full mt-2"
             >
-                <div class="flex justify-between px-4">
+                <div class="flex justify-between px-4 hover:bg-black hover:bg-opacity-5">
                     <div class="flex items-center ml-3">
                         <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                         <div
@@ -233,7 +263,7 @@
                         </div>
                     </div>
 
-                    <div class="flex tree-glossary-actions">
+                    <div class="flex my-autoc content-center tree-glossary-actions parent-group-hover">
                         <div
                             v-if="expandedKeys.length"
                             class="flex bg-opacity-0 cursor-pointer  w-7 h-7 py-auto"
@@ -242,17 +272,20 @@
                             <AtlanIcon class="m-auto" icon="TreeCollapseAll" />
                         </div>
                         <div
-                            class="flex flex-col justify-center p-2 bg-opacity-0  w-7 h-7"
+                            class="flex flex-col justify-center p-2 bg-opacity-0"
                         >
-                            <fa icon="fal plus" />
+                            <AtlanIcon icon="Add" />
                         </div>
-
-                        <ThreeDotMenu
-                            class="w-7 h-7 ml-0.5"
-                            :entity="parentGlossary"
-                            :showLinks="false"
-                            :treeMode="true"
-                        />
+                        <div
+                            class="flex flex-col justify-center mt-1 bg-opacity-0"
+                        >
+                            <ThreeDotMenu
+                                class="w-7 h-7 ml-0.5"
+                                :entity="parentGlossary"
+                                :showLinks="false"
+                                :treeMode="true"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div
@@ -478,6 +511,7 @@
                 <LoadingView />
             </div>
         </div>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -612,8 +646,10 @@
                 const list = props.glossaryList.map((glossary) => ({
                     value: glossary.guid,
                     label: glossary.attributes.name,
+                    status: glossary.attributes.assetStatus 
                 }))
-                list.unshift({ label: 'All Glosaries', value: 'all' })
+                list.unshift({ label: 'All Glossaries', value: 'all' })
+                list.push({label: 'Create New Glossary', value: 'createNewGlossary'})
                 return list
             })
 
@@ -790,6 +826,17 @@
                 @apply p-0 h-2 w-2 !important;
                 margin-right: 6px;
                 // margin-top: -2px;
+            }
+        }
+
+    }
+        .parentGroup {
+            :global(.parent-group-hover) {
+                @apply opacity-0 !important;
+            }
+        &:hover {
+            :global(.parent-group-hover) {
+                @apply opacity-100 !important;
             }
         }
     }

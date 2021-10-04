@@ -1,6 +1,6 @@
 <template>
     <div class="popover-container">
-        <div class="flex text-gray-500">
+        <div class="flex mb-1 text-gray-500">
             <div class="flex items-center flex-1 mr-5 text-xs">
                 <div class="flex items-center h-full">
                     <div class="relative w-4 h-4 mr-1 overflow-hidden">
@@ -26,96 +26,148 @@
                     <span>308 total runs</span>
                 </div>
             </div>
-            <div>
+            <div class="mt-0.5">
                 <StatusBadge
-                    :status-id="item.status"
+                    :status-id="item?.entity.attributes.assetStatus"
                     :show-chip-style-status="false"
                     :show-no-status="true"
-                    :show-label="true"
+                    :showLabel="true"
                     class="p-0 text-xs cursor-pointer"
                 ></StatusBadge>
             </div>
         </div>
-        <p class="my-1.5 mb-2 text-base font-bold text-gray-700">
-            {{ item.title }}
-        </p>
+        <div class="flex items-center mb-2">
+            <p class="text-base font-bold text-gray-700">
+                {{ item.title }}
+            </p>
+        </div>
         <p class="mb-2 text-sm text-gray-500">
-            {{ item.description === '' ? 'No description' : item.description }}
+            {{
+                item?.entity.attributes.description === ''
+                    ? 'No description'
+                    : item?.entity.attributes.description
+            }}
         </p>
 
-        <div class="flex items-center">
-            <template
-                v-for="(item, index) in mixedTermsAndClassifications"
-                :key="index"
-            >
-                <Pill
-                    class="flex-none mr-2"
-                    :label="item?.displayText"
-                    :has-action="false"
-                >
-                    <template #prefix>
-                        <AtlanIcon
-                            icon="Shield"
-                            class="text-pink-400"
-                            v-if="item?.typeName"
-                        ></AtlanIcon>
-                        <AtlanIcon icon="Term" v-else></AtlanIcon>
-                    </template>
-                </Pill>
-            </template>
-
-            <!-- <PillGroup
-                :data="mixedTermsAndClassifications"
+        <div
+            class="flex flex-wrap items-center"
+            :class="TAndCList.length > 0 ? 'mb-4' : ''"
+        >
+            <PillGroup
+                :data="TAndCList"
                 label-key="displayText"
-                popover-trigger="hover"
                 read-only
+                popover-trigger="hover"
             >
                 <template #pillPrefix="{ item }">
                     <AtlanIcon
+                        v-if="item && item.type === 'classification'"
                         icon="Shield"
                         class="text-pink-400"
-                        v-if="item?.typeName"
-                    ></AtlanIcon>
-                    <AtlanIcon icon="Term" v-else></AtlanIcon>
+                    />
+                    <AtlanIcon v-else icon="Term" class="text-purple-500" />
                 </template>
-
                 <template #popover="{ item }">
                     <ClassificationInfoCard
+                        v-if="item.type === 'classification'"
                         :classification="item"
                         class="w-32"
-                        v-if="item?.typeName"
                 /></template>
-            </PillGroup> -->
+                <template #suffix>
+                    <span
+                        v-if="splittedTAndC.b.length > 0"
+                        class="
+                            px-1
+                            py-0.5
+                            text-sm
+                            rounded
+                            text-primary
+                            mr-3
+                            cursor-pointer
+                        "
+                        @click="() => toggleAllTAndC()"
+                    >
+                        {{
+                            showAllTAndC
+                                ? 'Show less'
+                                : `and ${splittedTAndC.b.length} more`
+                        }}
+                    </span>
+                </template>
+            </PillGroup>
         </div>
 
-        <div>
-            <p class="mb-2 text-gray-700">Owned By</p>
-            <div class="flex items-center justify-between">
-                <Pill class="flex-none" label="Nitya" :has-action="false">
-                    <template #prefix>
+        <div class="">
+            <p class="mb-1 text-gray-700">Owned by</p>
+            <div
+                class="flex items-center justify-between mb-3"
+                v-if="ownerList.length > 0"
+            >
+                <PillGroup
+                    :data="ownerList"
+                    label-key="username"
+                    read-only
+                    popover-trigger="hover"
+                >
+                    <template #pillPrefix="{ item }">
                         <avatar
                             class="-ml-2.5"
+                            v-if="item && item.type === 'user'"
                             :image-url="
                                 KeyMaps.auth.avatar.GET_AVATAR({
-                                    username: 'nitya',
+                                    username: item.username,
                                 })
                             "
                             :allow-upload="false"
-                            avatar-name="'nitya'"
+                            :avatar-name="item.username"
                             avatar-size="small"
                             :avatar-shape="'circle'"
                         />
+                        <AtlanIcon
+                            v-else-if="item && item.type === 'group'"
+                            icon="Group"
+                            class="
+                                h-4
+                                -ml-0.5
+                                text-primary
+                                group-hover:text-white
+                            "
+                        />
                     </template>
-                </Pill>
-                <div class="text-primary">
-                    <div
-                        class="flex items-center cursor-pointer"
-                        @click="oSidebar"
-                    >
-                        View in sidebar
-                        <AtlanIcon icon="ArrowRight" class="ml-1"></AtlanIcon>
-                    </div>
-                </div>
+                    <template #popover="{ item }"
+                        ><OwnerInfoCard :user="item"
+                    /></template>
+                    <template #suffix>
+                        <span
+                            v-if="splittedUsers.b.length > 0"
+                            class="
+                                px-1
+                                py-0.5
+                                text-sm
+                                rounded
+                                text-primary
+                                mr-3
+                                cursor-pointer
+                            "
+                            @click="() => toggleAllUsers()"
+                        >
+                            {{
+                                showAllUsers
+                                    ? 'Show less'
+                                    : `and ${splittedUsers.b.length} more`
+                            }}
+                        </span>
+                    </template>
+                </PillGroup>
+            </div>
+            <p class="m-0 mb-1 text-sm text-gray-500" v-else>
+                {{ 'None' }}
+            </p>
+        </div>
+        <div class="flex justify-end w-full text-primary">
+            <div class="flex items-center cursor-pointer" @click="oSidebar">
+                View in sidebar
+                <AtlanIcon icon="ArrowRight" class="ml-1"></AtlanIcon>
             </div>
         </div>
     </div>
@@ -128,7 +180,10 @@
         PropType,
         watch,
         toRefs,
+        computed,
         inject,
+        Ref,
+        toRaw,
         ComputedRef,
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
@@ -141,12 +196,15 @@
     import Avatar from '~/components/common/avatar.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
 
     export default defineComponent({
         components: {
             StatusBadge,
             PillGroup,
             ClassificationInfoCard,
+            OwnerInfoCard,
             Pill,
             Avatar,
         },
@@ -163,52 +221,24 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+            const { openAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
             )
+
+            const {
+                mixClassificationsAndTerms,
+                mixOwnersAndGroups,
+                splitArray,
+            } = useSchema()
             const { item } = toRefs(props)
             const mixedTermsAndClassifications = ref([])
-            const mixClassificationsAndTerms = (
-                classifications: any[],
-                terms: any[]
-            ) => {
-                const mix = []
-                let i = 0,
-                    clength = classifications.length
-                let j = 0,
-                    tlength = terms.length
-                let k = 0
-                while (i < clength && j < tlength) {
-                    if (k % 2 == 0) {
-                        // classifications does not have displayText property
-                        mix.push({
-                            ...classifications[i],
-                            displayText: classifications[i].typeName,
-                        })
-                        i++
-                    } else {
-                        // terms already have displayText property
-                        mix.push(terms[j])
-                        j++
-                    }
-                    k++
-                }
-                if (i < clength) {
-                    for (let m = i; m < clength; m++) {
-                        mix.push({
-                            ...classifications[i],
-                            displayText: classifications[i].typeName,
-                        })
-                    }
-                }
-                if (j < tlength) {
-                    for (let m = i; m < tlength; m++) {
-                        mix.push(terms[i])
-                    }
-                }
-                return mix
-            }
+            const mixedOwnersAndGroups = ref([])
+            const showAllUsers = ref(false)
+            const showAllTAndC = ref(false)
+            const showPillsCount = ref(4)
+            const sidebarDisabled = ref(false)
+
             const oSidebar = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
@@ -216,21 +246,72 @@
                 activeInlineTabCopy.assetSidebar.isVisible = true
                 openAssetSidebar(activeInlineTabCopy)
             }
+
+            const splittedUsers = ref(splitArray(5, mixedOwnersAndGroups.value))
+            const splittedTAndC = ref(
+                splitArray(5, mixedTermsAndClassifications.value)
+            )
+
+            const ownerList = computed(() =>
+                showAllUsers.value
+                    ? [...splittedUsers.value.a, ...splittedUsers.value.b]
+                    : splittedUsers.value.a
+            )
+            const TAndCList = computed(() =>
+                showAllTAndC.value
+                    ? [...splittedTAndC.value.a, ...splittedTAndC.value.b]
+                    : splittedTAndC.value.a
+            )
+            const toggleAllUsers = () => {
+                showAllUsers.value = !showAllUsers.value
+            }
+            const toggleAllTAndC = () => {
+                showAllTAndC.value = !showAllTAndC.value
+            }
+
             watch(
                 item,
                 () => {
-                    console.log(item.value, 'item')
+                    console.log(item, 'item')
                     mixedTermsAndClassifications.value = []
+                    mixedOwnersAndGroups.value = []
                     const classifications = item.value?.classifications ?? []
                     const terms = item.value?.meanings ?? []
+                    const groups: string[] =
+                        item.value?.attributes?.ownerGroups?.split(',') ?? []
+                    const owners: string[] =
+                        item.value?.attributes?.ownerUsers?.split(',') ?? []
+
                     mixedTermsAndClassifications.value =
                         mixClassificationsAndTerms(classifications, terms)
-                    console.log(mixedTermsAndClassifications.value, 'mix')
+                    mixedOwnersAndGroups.value = mixOwnersAndGroups(
+                        owners,
+                        groups
+                    )
+                    splittedUsers.value = splitArray(
+                        showPillsCount.value,
+                        mixedOwnersAndGroups.value
+                    )
+                    splittedTAndC.value = splitArray(
+                        showPillsCount.value,
+                        mixedTermsAndClassifications.value
+                    )
+                    // console.log(mixedTermsAndClassifications.value, 'mix')
                 },
                 { immediate: true }
             )
             return {
+                sidebarDisabled,
+                activeInlineTab,
+                toggleAllTAndC,
+                toggleAllUsers,
+                showAllTAndC,
+                TAndCList,
+                splittedTAndC,
+                showAllUsers,
+                ownerList,
                 oSidebar,
+                splittedUsers,
                 mixedTermsAndClassifications,
                 KeyMaps,
                 List,

@@ -6,7 +6,7 @@
     >
         <a-checkbox
             :checked="isChecked"
-            class="ml-2 mr-3 opacity-0 group-hover:opacity-100"
+            class="mt-1 ml-2 mr-3 opacity-0 group-hover:opacity-100"
             :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
             @click.stop
             @change="(e) => $emit('listItem:check', e, entity)"
@@ -39,7 +39,17 @@
                         @click="redirectToProfile"
                     /> -->
                     <span
-                        class="items-baseline ml-2 text-lg font-bold leading-7 truncate  text-primary hover:underline overflow-ellipsis"
+                        class="
+                            ml-2
+                            mt-0.5
+                            text-lg
+                            font-bold
+                            leading-7
+                            truncate
+                            text-primary
+                            hover:underline
+                            overflow-ellipsis
+                        "
                         @click="redirectToProfile"
                     >
                         {{ entity?.displayText }}
@@ -173,7 +183,7 @@
             :entity="entity"
             :redirectToProfile="redirectToProfile"
             :visible="false"
-            class="opacity-0"
+            class="mt-1 opacity-0"
         />
     </div>
 </template>

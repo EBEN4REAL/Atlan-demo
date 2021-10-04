@@ -116,6 +116,7 @@
                 reInitTree,
                 refetchGlossaryList,
                 collapseAll,
+                reOrderNodes,
             } = useTree(emit, true, isHome)
 
             // methods
@@ -157,7 +158,7 @@
             provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
             provide('refetchGlossaryList', refetchGlossaryList)
-
+            provide('reorderTreeNodes', reOrderNodes)
             return {
                 handleOpenModal,
                 handleCloseModal,

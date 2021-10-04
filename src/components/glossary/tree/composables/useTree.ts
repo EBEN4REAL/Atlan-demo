@@ -121,7 +121,7 @@ const useTree = (
             findPath(targetGuid)   
             allPaths.push(parentStack) 
         } else {
-            firstParent.forEach((guid) => {
+            firstParent?.forEach((guid) => {
                 parentStack = initialStack?.length ? initialStack : [targetGuid, guid]
                 findPath(guid) 
                 allPaths.push(parentStack) 
@@ -555,25 +555,31 @@ const useTree = (
 
     const reOrderNodes = (
         nodeKey: string,
-        fromGuid: string,
-        toGuid: string,
-        updatedCategories: any
+        fromGuid?: string,
+        toGuid?: string,
+        updatedCategories?: any
     ) => {
         let parentStack: string[]
         let nodeToReorder: TreeDataItem
+        let _fromGuid = fromGuid 
+        if(!_fromGuid && nodeToParentKeyMap[nodeKey]) {
+            _fromGuid = nodeToParentKeyMap[nodeKey][0]
+        }
 
         const removeNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
-            if (node.key === fromGuid && !currentPath) {
+            if (node.key === _fromGuid && !currentPath) {
                 nodeToReorder = node.children?.find(
                     (childNode) => childNode.key === nodeKey
                 )
-                return {
-                    ...node,
-                    children: node.children?.filter(
-                        (childNode) => childNode.key !== nodeKey
-                    ),
-                }
+                if(fromGuid)
+                    return {
+                        ...node,
+                        children: node.children?.filter(
+                            (childNode) => childNode.key !== nodeKey
+                        ),
+                    }
+                else return node
             }
             return {
                 ...node,
@@ -613,7 +619,7 @@ const useTree = (
         }
 
         // remove
-        if(fromGuid === 'root') {
+        if(_fromGuid === 'root') {
             treeData.value = treeData.value.filter((node) => {
                 if(node.key === nodeKey) {
                     nodeToReorder = node;
@@ -622,7 +628,7 @@ const useTree = (
                 return true
             })
         } else {
-            parentStack = recursivelyFindPath(fromGuid)[0]
+            parentStack = recursivelyFindPath(_fromGuid)[0]
             const parent = parentStack?.pop()
     
             treeData.value = treeData.value.map((node: TreeDataItem) => {
@@ -630,26 +636,28 @@ const useTree = (
                 return node
             })
         }
-
+        console.log(toGuid, nodeToReorder)
         // add
-        if(toGuid === 'root') {
-            nodeToReorder.parentCategoryId = undefined
-            nodeToReorder.parentCategory = undefined
-            nodeToReorder.isRoot = true
-            nodeToReorder.categories = updatedCategories
+        if(toGuid) {
+            if(toGuid === 'root') {
+                nodeToReorder.parentCategoryId = undefined
+                nodeToReorder.parentCategory = undefined
+                nodeToReorder.isRoot = true
+                nodeToReorder.categories = updatedCategories
 
-            treeData.value.push(nodeToReorder)
-        } else {
-            parentStack = recursivelyFindPath(toGuid)[0]
-            const toParent = parentStack?.pop()
-            treeData.value = treeData.value.map((node: TreeDataItem) => {
-                if (node.key === toParent) return addNode(node)
-                return node
-            })
+                treeData.value.push(nodeToReorder)
+            } else {
+                parentStack = recursivelyFindPath(toGuid)[0]
+                const toParent = parentStack?.pop()
+                treeData.value = treeData.value.map((node: TreeDataItem) => {
+                    if (node.key === toParent) return addNode(node)
+                    return node
+                })
+            }
         }
 
         let currentParent =  nodeToParentKeyMap[nodeKey]
-        if(typeof currentParent !== 'string') {
+        if(currentParent && typeof currentParent !== 'string') {
             currentParent = currentParent.filter((guid) => guid !== fromGuid)
             if(!currentParent.includes(toGuid)) {
                 currentParent.push(toGuid)
@@ -1077,7 +1085,8 @@ const useTree = (
         updateNode,
         refetchNode,
         refetchGlossaryList,
-        collapseAll
+        collapseAll,
+        reOrderNodes
     }
 }
 

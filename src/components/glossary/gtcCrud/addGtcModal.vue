@@ -212,6 +212,8 @@
             const ownerUsers = ref<Array<any>>([myUsername.value])
             const ownerGroups = ref<Array<any>>([])
             const selectedCategories = ref<{ categoryGuid: string }[]>([])
+            const addedCategories = ref([]);
+            const removedCategories = ref([]);
 
             const visible = ref<boolean>(false)
             const isVisible = ref<boolean>(false)
@@ -222,6 +224,7 @@
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
+            const reorderTreeNodes = inject<(guid: string, fromGuid?: string, toGuid?: string, categories?: {categoryGuid: string}[]) => void>('reorderTreeNodes')
 
             const { createTerm, createCategory, createGlossary } =
                 useCreateGlossary()
@@ -315,6 +318,14 @@
                                     shortDescription: description.value ?? '',
                                 })
                             }
+                            if(reorderTreeNodes) {
+                                addedCategories.value.forEach((category: any) => {
+                                    reorderTreeNodes(props.entity?.guid ?? '', undefined, category.categoryGuid, selectedCategories.value)
+                                });
+                                removedCategories.value.forEach((category: any) => {
+                                    reorderTreeNodes(props.entity?.guid ?? '', category.guid, undefined, selectedCategories.value)
+                                })
+                            }
                         })
                     } else {
                         const { data, error, isLoading } =
@@ -341,6 +352,14 @@
                         watch(data, (newData) => {
                             if (newData?.guid) {
                                 if (refreshEntity) refreshEntity()
+                                if(reorderTreeNodes) {
+                                    addedCategories.value.forEach((category: any) => {
+                                        reorderTreeNodes(props.entity?.guid ?? '', undefined, category.categoryGuid, selectedCategories.value)
+                                    });
+                                    removedCategories.value.forEach((category: any) => {
+                                        reorderTreeNodes(props.entity?.guid ?? '', category.guid, undefined, selectedCategories.value)
+                                    })
+                                }
                                 selectedCategories.value = []
                             }
                         })
@@ -404,9 +423,13 @@
                 ownerGroups.value = updatedOwners.ownerGroups.value
             }
             const updateSelectedCategories = (
-                newCategories: { categoryGuid: string }[]
+                newCategories: { categoryGuid: string }[],
+                added: any,
+                removed: any
             ) => {
                 selectedCategories.value = newCategories
+                addedCategories.value = added
+                removedCategories.value = removed
             }
             onMounted(async () => {
                 await nextTick()

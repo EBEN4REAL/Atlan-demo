@@ -1,6 +1,7 @@
 import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
+import { message } from 'ant-design-vue'
 
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
@@ -587,7 +588,7 @@ const useTree = (
         const addNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
             const newChildren: TreeDataItem[] = []
-
+            
             node.children?.forEach((childNode: TreeDataItem) => {
                 if (childNode.key === currentPath) {
                     newChildren.push(addNode(childNode) ?? childNode)
@@ -601,6 +602,7 @@ const useTree = (
                 nodeToReorder.categories = updatedCategories
                 newChildren.push(nodeToReorder)
             }
+
             if(loadedKeys.value.find((key) => node.key === key)) {
                 return {
                     ...node,
@@ -620,8 +622,8 @@ const useTree = (
                 return true
             })
         } else {
-            parentStack = recursivelyFindPath(fromGuid)
-            const parent = parentStack.pop()
+            parentStack = recursivelyFindPath(fromGuid)[0]
+            const parent = parentStack?.pop()
     
             treeData.value = treeData.value.map((node: TreeDataItem) => {
                 if (node.key === parent) return removeNode(node)
@@ -638,62 +640,112 @@ const useTree = (
 
             treeData.value.push(nodeToReorder)
         } else {
-            parentStack = recursivelyFindPath(toGuid)
-            const toParent = parentStack.pop()
+            parentStack = recursivelyFindPath(toGuid)[0]
+            const toParent = parentStack?.pop()
             treeData.value = treeData.value.map((node: TreeDataItem) => {
                 if (node.key === toParent) return addNode(node)
                 return node
             })
         }
 
-        nodeToParentKeyMap[nodeKey] = toGuid
+        let currentParent =  nodeToParentKeyMap[nodeKey]
+        if(typeof currentParent !== 'string') {
+            currentParent = currentParent.filter((guid) => guid !== fromGuid)
+            if(!currentParent.includes(toGuid)) {
+                currentParent.push(toGuid)
+            }
+        } else {
+            currentParent = [toGuid]
+        }
+        nodeToParentKeyMap[nodeKey] = currentParent
     }
 
     const dragAndDropNode = async ({ dragNode, node, event }) => {
         // const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
-                if (dragNode.dataRef.categories?.length) {
-                    const orignalCategories = dragNode.dataRef.categories
-                    const fromGuid = dragNode.dataRef.parentCategoryId
-                    const toGuid = node.dataRef.guid
+                console.log(node.dataRef.children, dragNode.dataRef.guid)
+                if(!node.dataRef.children?.find((child) => child.guid === dragNode.dataRef.guid)) {
+                    if (dragNode.dataRef.categories?.length) {
+                        const orignalCategories = dragNode.dataRef.categories
+                        const fromGuid = dragNode.dataRef.parentCategoryId
+                        const toGuid = node.dataRef.guid
 
-                    const newCategories = dragNode.dataRef.categories?.filter(
-                        (category: any) =>
-                            category.categoryGuid !==
-                            dragNode.dataRef.parentCategoryId
-                    )
-                    newCategories.push({
-                        categoryGuid: node.dataRef.guid,
-                    })
-                    if (optimisticUpdate) {
-                        reOrderNodes(
-                            dragNode.dataRef.guid,
-                            fromGuid,
-                            toGuid,
-                            newCategories
+                        const newCategories = dragNode.dataRef.categories?.filter(
+                            (category: any) =>
+                                category.categoryGuid !==
+                                dragNode.dataRef.parentCategoryId
                         )
-
-                        const { data, error: dropError } =
-                            GlossaryApi.UpdateGlossaryTerm(
-                                dragNode.dataRef.guid,
-                                {
-                                    ...dragNode.dataRef,
-                                    categories: newCategories,
-                                }
-                            )
-                        watch(dropError, (err) => {
-                            setTimeout(() => {
-                                reOrderNodes(
-                                    dragNode.dataRef.guid,
-                                    toGuid,
-                                    fromGuid,
-                                    orignalCategories
-                                )
-                            }, 1500)
+                        newCategories.push({
+                            categoryGuid: node.dataRef.guid,
                         })
+                        if (optimisticUpdate) {
+                            reOrderNodes(
+                                dragNode.dataRef.guid,
+                                fromGuid,
+                                toGuid,
+                                newCategories
+                            )
+
+                            const { data, error: dropError } =
+                                GlossaryApi.UpdateGlossaryTerm(
+                                    dragNode.dataRef.guid,
+                                    {
+                                        ...dragNode.dataRef,
+                                        categories: newCategories,
+                                    }
+                                )
+                            watch(dropError, (err) => {
+                                setTimeout(() => {
+                                    reOrderNodes(
+                                        dragNode.dataRef.guid,
+                                        toGuid,
+                                        fromGuid,
+                                        orignalCategories
+                                    )
+                                }, 1500)
+                            })
+                        } else {
+                            const { data, error: dropError } =
+                                GlossaryApi.UpdateGlossaryTerm(
+                                    dragNode.dataRef.guid,
+                                    {
+                                        ...dragNode.dataRef,
+                                        categories: newCategories,
+                                    }
+                                )
+
+                            watch(data, async (newData) => {
+                                if (newData.guid) {
+                                    // await refetchNode(node.dataRef.guid)
+                                    // refetchNode(dragNode.dataRef.parentCategoryId)
+                                    reOrderNodes(
+                                        dragNode.dataRef.guid,
+                                        dragNode.dataRef.parentCategoryId,
+                                        node.dataRef.guid,
+                                        newCategories
+                                    )
+                                }
+                            })
+                        }
                     } else {
-                        const { data, error: dropError } =
+                        const newCategories = [
+                            {
+                                categoryGuid: node.dataRef.guid,
+                            },
+                        ]
+
+                        if (optimisticUpdate) {
+                            const toGuid = node.dataRef.guid
+                            
+                            reOrderNodes(
+                                dragNode.dataRef.guid,
+                                'root',
+                                toGuid,
+                                newCategories
+                            )
+
+                            const { data, error: dropError } =
                             GlossaryApi.UpdateGlossaryTerm(
                                 dragNode.dataRef.guid,
                                 {
@@ -701,74 +753,41 @@ const useTree = (
                                     categories: newCategories,
                                 }
                             )
-
-                        watch(data, async (newData) => {
-                            if (newData.guid) {
-                                // await refetchNode(node.dataRef.guid)
-                                // refetchNode(dragNode.dataRef.parentCategoryId)
-                                reOrderNodes(
-                                    dragNode.dataRef.guid,
-                                    dragNode.dataRef.parentCategoryId,
-                                    node.dataRef.guid,
-                                    newCategories
-                                )
-                            }
-                        })
+                            watch(dropError, (err) => {
+                                setTimeout(() => {
+                                    reOrderNodes(
+                                        dragNode.dataRef.guid,
+                                        toGuid,
+                                        'root',
+                                        []
+                                    )
+                                }, 1500)
+                            })
+                        } else {
+                            const { data } = GlossaryApi.UpdateGlossaryTerm(
+                                dragNode.dataRef.guid,
+                                {
+                                    ...dragNode.dataRef,
+                                    categories: newCategories,
+                                }
+                            )
+        
+                            watch(data, async (newData) => {
+                                if (newData?.guid) {
+                                    await refetchNode('root')
+                                    refetchNode(node.dataRef.guid)
+                                }
+                            })
+                        }
+                        // updateEntity('term', dragNode.dataRef.guid, {
+                        //     categories: newCategories,
+                        // })
                     }
                 } else {
-                    const newCategories = [
-                        {
-                            categoryGuid: node.dataRef.guid,
-                        },
-                    ]
-
-                    if (optimisticUpdate) {
-                        const toGuid = node.dataRef.guid
-                        
-                        reOrderNodes(
-                            dragNode.dataRef.guid,
-                            'root',
-                            toGuid,
-                            newCategories
-                        )
-
-                        const { data, error: dropError } =
-                        GlossaryApi.UpdateGlossaryTerm(
-                            dragNode.dataRef.guid,
-                            {
-                                ...dragNode.dataRef,
-                                categories: newCategories,
-                            }
-                        )
-                        watch(dropError, (err) => {
-                            setTimeout(() => {
-                                reOrderNodes(
-                                    dragNode.dataRef.guid,
-                                    toGuid,
-                                    'root',
-                                    []
-                                )
-                            }, 1500)
-                        })
-                    } else {
-                        const { data } = GlossaryApi.UpdateGlossaryTerm(
-                            dragNode.dataRef.guid,
-                            {
-                                ...dragNode.dataRef,
-                                categories: newCategories,
-                            }
-                        )
-    
-                        watch(data, async (newData) => {
-                            if (newData?.guid) {
-                                await refetchNode('root')
-                                refetchNode(node.dataRef.guid)
-                            }
-                        })
-                    }
-                    // updateEntity('term', dragNode.dataRef.guid, {
-                    //     categories: newCategories,
-                    // })
+                    message.error({
+                        content: `${dragNode.dataRef.title} is already a part of ${node.dataRef.title}!`,
+                        duration: 3,
+                    })
                 }
             }
         }

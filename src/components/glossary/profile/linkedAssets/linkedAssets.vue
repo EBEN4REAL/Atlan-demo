@@ -47,7 +47,7 @@
 
     import AssetList from '@/discovery/list/assetList.vue'
     import EmptyView from '@common/empty/discover.vue'
-    import GlossaryAssetDiscovery from '@/glossary/termProfile/glossaryAssetDiscovery.vue'
+    import GlossaryAssetDiscovery from '~/components/glossary/profile/linkedAssets/glossaryAssetDiscovery.vue'
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     import useTermLinkedAssets from '~/components/glossary/composables/useTermLinkedAssets'

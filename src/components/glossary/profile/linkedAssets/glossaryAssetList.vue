@@ -1,29 +1,22 @@
 <template>
-    <VirtualList
-        :class="{ 'animate-pulse': isLoading }"
-        :data="list"
-        data-key="guid"
-        variable-height
-    >
+    <VirtualList :data="list" data-key="guid" :variable-height="false">
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="item.guid === selectedAssetId"
-                :score="score[item.guid]"
-                :projection="projection"
-                :show-check-box="true"
-                :bulk-select-mode="
-                    bulkSelectedAssets && bulkSelectedAssets.length
-                        ? true
-                        : false
-                "
+                :is-selected="item?.guid === selectedAssetId && isSelected"
                 :is-checked="
-                    bulkSelectedAssets.findIndex(
-                        (listItem) => listItem.guid === item.guid
-                    ) > -1
+                    selectedAssetList.filter(
+                        (asset) => asset.guid === item.guid
+                    ).length > 0
                 "
+                :score="score[item?.guid]"
+                :projection="projection"
+                :show-check-box="showCheckBox"
+                :bulk-select-mode="showCheckBox"
                 @click="handlePreview(item)"
-                @listItem:check="(e, item) => updateBulkSelectedAssets(item)"
+                @listItem:check="
+                    (e, item) => $emit('updateCheckedAssetList', e, item)
+                "
             ></ListItem>
         </template>
         <template #footer>
@@ -33,7 +26,7 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 rounded-full  bg-primary-light text-primary"
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
@@ -81,10 +74,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, ref, toRefs, watch, Ref } from 'vue'
-import ListItem from './listItem.vue'
+import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
+import ListItem from '@/discovery/list/listItem.vue'
 import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-import { assetInterface } from '~/types/assets/asset.interface'
 
 export default defineComponent({
     name: 'AssetList',
@@ -117,79 +109,72 @@ export default defineComponent({
         isLoading: {
             type: Boolean,
             required: true,
-            default: () => false,
+            default() {
+                return false
+            },
         },
         isLoadMore: {
             type: Boolean,
             required: true,
-            default: () => false,
+            default() {
+                return false
+            },
         },
-        autoSelect: {
+        automaticSelectFirstAsset: {
             type: Boolean,
             required: false,
-            default: () => false,
+            default() {
+                return false
+            },
         },
-        typename: {
-            type: String,
+        showCheckBox: {
+            type: Boolean,
+            required: false,
+            default() {
+                return false
+            },
+        },
+        isSelected: {
+            type: Boolean,
+            required: true,
+            default() {
+                return false
+            },
+        },
+        selectedAssetList: {
+            type: Array,
+            required: false,
+            default: () => [],
         },
     },
-    emits: ['preview', 'loadMore', 'update:autoSelect', 'bulkSelectChange'],
-    setup(props, { emit }) {
-        const { list, autoSelect, typename } = toRefs(props)
+    emits: ['preview', 'loadMore', 'updateCheckedAssetList'],
+    setup(props, ctx: SetupContext) {
+        const { list, automaticSelectFirstAsset } = toRefs(props)
         const selectedAssetId = ref('')
-        const shouldReSelect = false
+
         function handlePreview(item: any) {
             selectedAssetId.value = item.guid
-            emit('preview', item)
+            ctx.emit('preview', item)
         }
-        const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
-        const updateBulkSelectedAssets = (listItem) => {
-            const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                (item) => item?.guid === listItem?.guid
+
+        // select first asset automatically conditionally acc to  automaticSelectFirstAsset prop
+
+        if (automaticSelectFirstAsset.value) {
+            watch(
+                list,
+                () => {
+                    if (list.value.length > 0) {
+                        // for selecting in the list - blue bg
+                        selectedAssetId.value = list.value[0].guid
+                        // for previewing the first asset
+                        handlePreview(list.value[0])
+                    }
+                },
+                { immediate: true }
             )
-            if (itemIndex >= 0) bulkSelectedAssets.value.splice(itemIndex, 1)
-            else bulkSelectedAssets.value.push(listItem)
-            emit('bulkSelectChange', bulkSelectedAssets)
         }
 
-        // select first asset automatically conditionally acc to  autoSelect prop
-        watch(
-            list,
-            () => {
-                if (autoSelect.value) {
-                    if (list.value.length) handlePreview(list.value[0])
-                } else emit('update:autoSelect', true)
-            },
-            { immediate: true }
-        )
-
-        // if (autoSelect.value) {
-        //     watch(typename, () => {
-        //         shouldReSelect = true
-        //     })
-
-        //     watch(
-        //         () => list.value?.length || 0,
-        //         (len, lastLen) => {
-        //             if (len > 0 && (lastLen === 0 || lastLen > len))
-        //                 shouldReSelect = true
-
-        //             if (shouldReSelect) {
-        //                 handlePreview(list.value[0])
-        //                 shouldReSelect = false
-        //             }
-        //         },
-        //         { immediate: true }
-        //     )
-        // }
-
-        return {
-            handlePreview,
-            selectedAssetId,
-            list,
-            bulkSelectedAssets,
-            updateBulkSelectedAssets,
-        }
+        return { handlePreview, selectedAssetId, list }
     },
 })
 </script>

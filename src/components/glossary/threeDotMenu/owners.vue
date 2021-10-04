@@ -387,8 +387,8 @@
             watch(isOwnersLoading, () => {
                 if (!isOwnersLoading.value) showOwnersDropdown.value = false
             })
-            watch(isReady, () => {
-                if (isReady.value) {
+            watch(isReady, (newIsReady) => {
+                if (newIsReady) {
                     emit('update:selectedAsset', selectedAsset.value)
                 }
             })

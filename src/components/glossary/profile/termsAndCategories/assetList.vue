@@ -1,22 +1,19 @@
 <template>
     <VirtualList :data="list" data-key="guid" :variable-height="false">
         <template #default="{ item }">
-            <ListItem
-                :item="item"
-                :is-selected="item?.guid === selectedAssetId && isSelected"
-                :isChecked="selectedAssetList.filter((asset) => asset.guid === item.guid).length > 0"
-                :score="score[item?.guid]"
+            <GtcEntityCard
+                :class="{
+                    'hover:bg-gray-100': true,
+                    'bg-primary-light hover:bg-primary-light':
+                        selectedEntity?.guid === item.guid,
+                }"
+                :entity="item"
                 :projection="projection"
-                :showCheckBox="showCheckBox"
-                @click="handlePreview(item)"
-                @listItem:check="(e,item) => $emit('updateCheckedAssetList', e, item)"
-            ></ListItem>
+                @gtcCardClicked="handleGtcCardClicked"
+            />
         </template>
         <template #footer>
-            <div
-                v-if="isLoadMore || isLoading"
-                class="flex items-center justify-center"
-            >
+            <div class="flex items-center justify-center">
                 <button
                     :disabled="isLoading"
                     class="flex items-center justify-between py-2 transition-all duration-300 rounded-full  bg-primary-light text-primary"
@@ -67,14 +64,23 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
-    import ListItem from '@/discovery/list/listItem.vue'
+    import {
+        defineComponent,
+        SetupContext,
+        ref,
+        toRefs,
+        watch,
+        PropType,
+    } from 'vue'
+    import GtcEntityCard from './gtcEntityCard.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
+    import { Category, Term } from '~/types/glossary/glossary.interface'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'AssetList',
         components: {
-            ListItem,
+            GtcEntityCard,
             VirtualList,
         },
         props: {
@@ -83,13 +89,6 @@
                 required: false,
                 default() {
                     return []
-                },
-            },
-            score: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
                 },
             },
             projection: {
@@ -108,69 +107,25 @@
             },
             isLoadMore: {
                 type: Boolean,
-                required: true,
-                default() {
-                    return false
-                },
-            },
-            automaticSelectFirstAsset: {
-                type: Boolean,
                 required: false,
                 default() {
                     return false
                 },
             },
-            showCheckBox: {
-                type: Boolean,
+            selectedEntity: {
+                type: Object as PropType<assetInterface>,
                 required: false,
                 default() {
-                    return false
+                    return undefined
                 },
             },
-            isSelected: {
-                type: Boolean,
-                required: true,
-                default() {
-                    return false
-                },
-            },
-            selectedAssetList: {
-                type: Array,
-                required: false,
-                default: () => []
-            }
         },
-        emits: ['preview', 'loadMore', 'updateCheckedAssetList'],
+        emits: ['loadMore', 'gtcCardClicked'],
         setup(props, ctx: SetupContext) {
-            const { list, automaticSelectFirstAsset } = toRefs(props)
-            const selectedAssetId = ref('')
-
-
-            function handlePreview(item: any) {
-                selectedAssetId.value = item.guid
-                ctx.emit('preview', item)
+            const handleGtcCardClicked = (entity: Category | Term) => {
+                ctx.emit('gtcCardClicked', entity)
             }
-
-            // select first asset automatically conditionally acc to  automaticSelectFirstAsset prop
-
-            if (automaticSelectFirstAsset.value) {
-                watch(
-                    list,
-                    () => {
-                        if (list.value.length > 0) {
-                            // for selecting in the list - blue bg
-                            selectedAssetId.value = list.value[0].guid
-                            // for previewing the first asset
-                            handlePreview(list.value[0])
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
-
-
-
-            return { handlePreview, selectedAssetId, list }
+            return { handleGtcCardClicked }
         },
     })
 </script>

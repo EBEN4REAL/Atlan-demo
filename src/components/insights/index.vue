@@ -92,6 +92,7 @@
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
+    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 
     export default defineComponent({
         components: {
@@ -126,6 +127,7 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
+            const { isQueryRunning } = useRunQuery()
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -154,6 +156,7 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
+                isQueryRunning: isQueryRunning,
                 editorInstance: editorInstance,
                 monacoInstance: monacoInstance,
                 setEditorInstance: setEditorInstance,

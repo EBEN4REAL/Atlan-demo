@@ -14,6 +14,7 @@ export const KeyMaps = {
             getAPIPath('metastore', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
+        BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -171,12 +172,7 @@ export const KeyMaps = {
             getAPIPath(
                 'metastore',
                 `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
-                }${searchText ? `&searchText=${searchText}` : ''}`
-            ),
-
-        GET_CATEGORY_TERMS: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/category/${guid}/terms`),
-
+                }${searchText ? `&searchText=${searchText}` : ''}`),
         GET_TERM_LINKED_ASSETS: () => getAPIPath('metastore', `/search/basic`),
         ASSIGN_TERM_LINKED_ASSETS: ({ guid }: PathParams) =>
             getAPIPath(
@@ -191,15 +187,18 @@ export const KeyMaps = {
     },
     credential: {
         CREDENTIAL_TEST: () => getAPIPath('auth', `/credentials/test`),
-        CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) => getAPIPath('auth', `/credentials/${id}/test`),
-        UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) => getAPIPath('auth', `/credentials/${id}`),
+        CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) =>
+            getAPIPath('auth', `/credentials/${id}/test`),
+        UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) =>
+            getAPIPath('auth', `/credentials/${id}`),
     },
     connection: {
         TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
         SETUP: () => getAPIPath('auth', "/connections"),
         CONNECTION_SETUP: () => getAPIPath('metastore', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
-        CONNECTION_ARCHIVE: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),
+        CONNECTION_ARCHIVE: ({ id }) =>
+            getAPIPath('auth', `/connections/${id}/archive`),
     },
     query: {
         RUN_QUERY: ({
@@ -214,7 +213,7 @@ export const KeyMaps = {
             ),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`

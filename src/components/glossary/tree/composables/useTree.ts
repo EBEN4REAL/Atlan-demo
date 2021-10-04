@@ -1,12 +1,13 @@
 import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
+import { message } from 'ant-design-vue'
 
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
 
 import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
-import useGlossaryList from '~/components/glossary/composables/useGlossaryList'
+import useGlossaryList from '~/components/glossary/tree/composables/useGlossaryList'
 
 import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
 import store from '~/utils/storage'
@@ -26,7 +27,9 @@ const useTree = (
     const defaultLimit = 5;
 
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
-    const nodeToParentKeyMap: Record<string, 'root' | string> = {}
+    // categories will map to strings since categories can only have one parent ( they only belong to 1 category )
+    // terms will map to string[] as a term can be inside multiple categories ( they can belong to multiple categories )
+    const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
 
     const categoryMap: {
         [key: string]: Components.Schemas.AtlasGlossaryCategory[]
@@ -95,21 +98,37 @@ const useTree = (
         targetGuid: string,
         initialStack?: string[]
     ) => {
-        const parentStack = initialStack?.length ? initialStack : [targetGuid]
+        let parentStack = initialStack?.length ? initialStack : [targetGuid]
 
         const findPath = (currGuid: string) => {
             if (
                 nodeToParentKeyMap[currGuid] &&
                 nodeToParentKeyMap[currGuid] !== 'root'
             ) {
-                parentStack.push(nodeToParentKeyMap[currGuid])
-                findPath(nodeToParentKeyMap[currGuid])
+                const current = nodeToParentKeyMap[currGuid];
+                if(typeof current === 'string') {
+                    parentStack.push(current)
+                    findPath(current)
+                }
             }
         }
+        const allPaths: string[][] = []
 
-        findPath(targetGuid)
+        const firstParent = nodeToParentKeyMap[targetGuid];
 
-        return parentStack
+        if(typeof firstParent === 'string') {
+            parentStack = initialStack?.length ? initialStack : [targetGuid]
+            findPath(targetGuid)   
+            allPaths.push(parentStack) 
+        } else {
+            firstParent?.forEach((guid) => {
+                parentStack = initialStack?.length ? initialStack : [targetGuid, guid]
+                findPath(guid) 
+                allPaths.push(parentStack) 
+            })
+        }
+
+        return allPaths
     }
 
     /**
@@ -131,7 +150,7 @@ const useTree = (
             }
         })
         termsList.forEach((element) => {
-            if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
+            if (element.guid) nodeToParentKeyMap[element.guid] = ['root']
             treeData.value.push(returnTreeDataItemAttributes(element, 'term', guid))        
         })
         checkAndAddLoadMoreNode(termsList, defaultLimit, 'root', 'root')
@@ -209,7 +228,13 @@ const useTree = (
                         treeNode.dataRef.children = []
                     }
                     if (element.guid) {
-                        nodeToParentKeyMap[element.guid] = treeNode.dataRef.key
+                        const currentParentList = nodeToParentKeyMap[element.guid];
+                        if(currentParentList && currentParentList.length && typeof currentParentList !== 'string') {
+                            currentParentList.push(treeNode.dataRef.key)
+                            nodeToParentKeyMap[element.guid] = currentParentList;
+                        } else {
+                            nodeToParentKeyMap[element.guid] = [treeNode.dataRef.key]
+                        }
                     }
                     treeNode.dataRef.children.push(returnTreeDataItemAttributes(element, 'term', treeNode.dataRef.key, false, treeNode.dataRef.key))
                 })
@@ -282,7 +307,8 @@ const useTree = (
         ownerUsers?: string
         shortDescription?: string
     }) => {
-        if (nodeToParentKeyMap[guid] === 'root') {
+        const currentParents = nodeToParentKeyMap[guid]
+        if (currentParents === 'root' || (typeof currentParents !== 'string' && currentParents?.find((parent) => parent === 'root' )) ) {
             // if the node is at the root level, just loop through the treeData linearly
             treeData.value = treeData.value.map((treeNode) => {
                 if (treeNode.key === guid)
@@ -302,13 +328,14 @@ const useTree = (
                 return treeNode
             })
         } else {
-            let parentStack: string[]
+            let parentStack: string[][]
 
-            const updateNodeNested = (node: TreeDataItem): TreeDataItem => {
-                const currentPath = parentStack.pop()
+            const updateNodeNested = (node: TreeDataItem, path: string[]): TreeDataItem => {
+                const currentPath = path.pop()
 
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
+                    console.log(node, entity)
                     return {
                         ...node,
                         assetStatus:
@@ -317,6 +344,8 @@ const useTree = (
                             node.assetStatus,
                         name: entity?.attributes?.name ?? name ?? node.name,
                         title: entity?.attributes?.name ?? name ?? node.title,
+                        ownerGroups: entity?.attributes?.ownerGroups ?? ownerGroups ?? node.ownerGroups,
+                        ownerUsers: entity?.attributes?.ownerUsers ?? ownerUsers ?? node.ownerUsers
                     }
                 }
                 return {
@@ -324,7 +353,7 @@ const useTree = (
                     children: node.children?.map((childNode: TreeDataItem) => {
                         // if the current element is in the path that is needed to reach the target node
                         if (childNode.key === currentPath) {
-                            return updateNodeNested(childNode)
+                            return updateNodeNested(childNode, path)
                         }
                         return childNode
                     }),
@@ -333,11 +362,13 @@ const useTree = (
 
             // find the path to the node
             parentStack = recursivelyFindPath(guid)
-            const parent = parentStack.pop()
-
-            treeData.value = treeData.value.map((node: TreeDataItem) => {
-                if (node.key === parent) return updateNodeNested(node)
-                return node
+            parentStack.forEach((path) => {
+                const parent = path.pop()
+    
+                treeData.value = treeData.value.map((node: TreeDataItem) => {
+                    if (node.key === parent) return updateNodeNested(node, path)
+                    return node
+                })
             })
         }
     }
@@ -396,7 +427,7 @@ const useTree = (
                     if (existingTerm) {
                         updatedTreeData.push(existingTerm)
                     } else {
-                        nodeToParentKeyMap[term.guid] = 'root'
+                        nodeToParentKeyMap[term.guid] = ['root']
                         updatedTreeData.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid ?? ''))
                     }
                 })
@@ -467,7 +498,7 @@ const useTree = (
                                 updatedChildren.push(existingTerm)
                             } else {
                                 nodeToParentKeyMap[term?.guid ?? ''] =
-                                    node.key as string
+                                   [ node.key as string] 
                                 updatedChildren.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid, false, node.key))
                             }
                         })
@@ -506,8 +537,8 @@ const useTree = (
             }
 
             // find the path to the node
-            parentStack = recursivelyFindPath(guid)
-            const parent = parentStack.pop()
+            parentStack = recursivelyFindPath(guid)[0]
+            const parent = parentStack?.pop()
 
             const updatedTreeData: TreeDataItem[] = []
 
@@ -527,25 +558,31 @@ const useTree = (
 
     const reOrderNodes = (
         nodeKey: string,
-        fromGuid: string,
-        toGuid: string,
-        updatedCategories: any
+        fromGuid?: string,
+        toGuid?: string,
+        updatedCategories?: any
     ) => {
         let parentStack: string[]
         let nodeToReorder: TreeDataItem
+        let _fromGuid = fromGuid 
+        if(!_fromGuid && nodeToParentKeyMap[nodeKey]) {
+            _fromGuid = nodeToParentKeyMap[nodeKey][0]
+        }
 
         const removeNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
-            if (node.key === fromGuid && !currentPath) {
+            if (node.key === _fromGuid && !currentPath) {
                 nodeToReorder = node.children?.find(
                     (childNode) => childNode.key === nodeKey
                 )
-                return {
-                    ...node,
-                    children: node.children?.filter(
-                        (childNode) => childNode.key !== nodeKey
-                    ),
-                }
+                if(fromGuid)
+                    return {
+                        ...node,
+                        children: node.children?.filter(
+                            (childNode) => childNode.key !== nodeKey
+                        ),
+                    }
+                else return node
             }
             return {
                 ...node,
@@ -560,7 +597,7 @@ const useTree = (
         const addNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
             const newChildren: TreeDataItem[] = []
-
+            
             node.children?.forEach((childNode: TreeDataItem) => {
                 if (childNode.key === currentPath) {
                     newChildren.push(addNode(childNode) ?? childNode)
@@ -574,6 +611,7 @@ const useTree = (
                 nodeToReorder.categories = updatedCategories
                 newChildren.push(nodeToReorder)
             }
+
             if(loadedKeys.value.find((key) => node.key === key)) {
                 return {
                     ...node,
@@ -584,7 +622,7 @@ const useTree = (
         }
 
         // remove
-        if(fromGuid === 'root') {
+        if(_fromGuid === 'root') {
             treeData.value = treeData.value.filter((node) => {
                 if(node.key === nodeKey) {
                     nodeToReorder = node;
@@ -593,80 +631,132 @@ const useTree = (
                 return true
             })
         } else {
-            parentStack = recursivelyFindPath(fromGuid)
-            const parent = parentStack.pop()
+            parentStack = recursivelyFindPath(_fromGuid)[0]
+            const parent = parentStack?.pop()
     
             treeData.value = treeData.value.map((node: TreeDataItem) => {
                 if (node.key === parent) return removeNode(node)
                 return node
             })
         }
-
+        console.log(toGuid, nodeToReorder)
         // add
-        if(toGuid === 'root') {
-            nodeToReorder.parentCategoryId = undefined
-            nodeToReorder.parentCategory = undefined
-            nodeToReorder.isRoot = true
-            nodeToReorder.categories = updatedCategories
+        if(toGuid) {
+            if(toGuid === 'root') {
+                nodeToReorder.parentCategoryId = undefined
+                nodeToReorder.parentCategory = undefined
+                nodeToReorder.isRoot = true
+                nodeToReorder.categories = updatedCategories
 
-            treeData.value.push(nodeToReorder)
-        } else {
-            parentStack = recursivelyFindPath(toGuid)
-            const toParent = parentStack.pop()
-            treeData.value = treeData.value.map((node: TreeDataItem) => {
-                if (node.key === toParent) return addNode(node)
-                return node
-            })
+                treeData.value.push(nodeToReorder)
+            } else {
+                parentStack = recursivelyFindPath(toGuid)[0]
+                const toParent = parentStack?.pop()
+                treeData.value = treeData.value.map((node: TreeDataItem) => {
+                    if (node.key === toParent) return addNode(node)
+                    return node
+                })
+            }
         }
 
-        nodeToParentKeyMap[nodeKey] = toGuid
+        let currentParent =  nodeToParentKeyMap[nodeKey]
+        if(currentParent && typeof currentParent !== 'string') {
+            currentParent = currentParent.filter((guid) => guid !== fromGuid)
+            if(!currentParent.includes(toGuid)) {
+                currentParent.push(toGuid)
+            }
+        } else {
+            currentParent = [toGuid]
+        }
+        nodeToParentKeyMap[nodeKey] = currentParent
     }
 
     const dragAndDropNode = async ({ dragNode, node, event }) => {
         // const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
-                if (dragNode.dataRef.categories?.length) {
-                    const orignalCategories = dragNode.dataRef.categories
-                    const fromGuid = dragNode.dataRef.parentCategoryId
-                    const toGuid = node.dataRef.guid
+                console.log(node.dataRef.children, dragNode.dataRef.guid)
+                if(!node.dataRef.children?.find((child) => child.guid === dragNode.dataRef.guid)) {
+                    if (dragNode.dataRef.categories?.length) {
+                        const orignalCategories = dragNode.dataRef.categories
+                        const fromGuid = dragNode.dataRef.parentCategoryId
+                        const toGuid = node.dataRef.guid
 
-                    const newCategories = dragNode.dataRef.categories?.filter(
-                        (category: any) =>
-                            category.categoryGuid !==
-                            dragNode.dataRef.parentCategoryId
-                    )
-                    newCategories.push({
-                        categoryGuid: node.dataRef.guid,
-                    })
-                    if (optimisticUpdate) {
-                        reOrderNodes(
-                            dragNode.dataRef.guid,
-                            fromGuid,
-                            toGuid,
-                            newCategories
+                        const newCategories = dragNode.dataRef.categories?.filter(
+                            (category: any) =>
+                                category.categoryGuid !==
+                                dragNode.dataRef.parentCategoryId
                         )
-
-                        const { data, error: dropError } =
-                            GlossaryApi.UpdateGlossaryTerm(
-                                dragNode.dataRef.guid,
-                                {
-                                    ...dragNode.dataRef,
-                                    categories: newCategories,
-                                }
-                            )
-                        watch(dropError, (err) => {
-                            setTimeout(() => {
-                                reOrderNodes(
-                                    dragNode.dataRef.guid,
-                                    toGuid,
-                                    fromGuid,
-                                    orignalCategories
-                                )
-                            }, 1500)
+                        newCategories.push({
+                            categoryGuid: node.dataRef.guid,
                         })
+                        if (optimisticUpdate) {
+                            reOrderNodes(
+                                dragNode.dataRef.guid,
+                                fromGuid,
+                                toGuid,
+                                newCategories
+                            )
+
+                            const { data, error: dropError } =
+                                GlossaryApi.UpdateGlossaryTerm(
+                                    dragNode.dataRef.guid,
+                                    {
+                                        ...dragNode.dataRef,
+                                        categories: newCategories,
+                                    }
+                                )
+                            watch(dropError, (err) => {
+                                setTimeout(() => {
+                                    reOrderNodes(
+                                        dragNode.dataRef.guid,
+                                        toGuid,
+                                        fromGuid,
+                                        orignalCategories
+                                    )
+                                }, 1500)
+                            })
+                        } else {
+                            const { data, error: dropError } =
+                                GlossaryApi.UpdateGlossaryTerm(
+                                    dragNode.dataRef.guid,
+                                    {
+                                        ...dragNode.dataRef,
+                                        categories: newCategories,
+                                    }
+                                )
+
+                            watch(data, async (newData) => {
+                                if (newData.guid) {
+                                    // await refetchNode(node.dataRef.guid)
+                                    // refetchNode(dragNode.dataRef.parentCategoryId)
+                                    reOrderNodes(
+                                        dragNode.dataRef.guid,
+                                        dragNode.dataRef.parentCategoryId,
+                                        node.dataRef.guid,
+                                        newCategories
+                                    )
+                                }
+                            })
+                        }
                     } else {
-                        const { data, error: dropError } =
+                        const newCategories = [
+                            {
+                                categoryGuid: node.dataRef.guid,
+                            },
+                        ]
+
+                        if (optimisticUpdate) {
+                            const toGuid = node.dataRef.guid
+                            
+                            reOrderNodes(
+                                dragNode.dataRef.guid,
+                                'root',
+                                toGuid,
+                                newCategories
+                            )
+
+                            const { data, error: dropError } =
                             GlossaryApi.UpdateGlossaryTerm(
                                 dragNode.dataRef.guid,
                                 {
@@ -674,74 +764,41 @@ const useTree = (
                                     categories: newCategories,
                                 }
                             )
-
-                        watch(data, async (newData) => {
-                            if (newData.guid) {
-                                // await refetchNode(node.dataRef.guid)
-                                // refetchNode(dragNode.dataRef.parentCategoryId)
-                                reOrderNodes(
-                                    dragNode.dataRef.guid,
-                                    dragNode.dataRef.parentCategoryId,
-                                    node.dataRef.guid,
-                                    newCategories
-                                )
-                            }
-                        })
+                            watch(dropError, (err) => {
+                                setTimeout(() => {
+                                    reOrderNodes(
+                                        dragNode.dataRef.guid,
+                                        toGuid,
+                                        'root',
+                                        []
+                                    )
+                                }, 1500)
+                            })
+                        } else {
+                            const { data } = GlossaryApi.UpdateGlossaryTerm(
+                                dragNode.dataRef.guid,
+                                {
+                                    ...dragNode.dataRef,
+                                    categories: newCategories,
+                                }
+                            )
+        
+                            watch(data, async (newData) => {
+                                if (newData?.guid) {
+                                    await refetchNode('root')
+                                    refetchNode(node.dataRef.guid)
+                                }
+                            })
+                        }
+                        // updateEntity('term', dragNode.dataRef.guid, {
+                        //     categories: newCategories,
+                        // })
                     }
                 } else {
-                    const newCategories = [
-                        {
-                            categoryGuid: node.dataRef.guid,
-                        },
-                    ]
-
-                    if (optimisticUpdate) {
-                        const toGuid = node.dataRef.guid
-                        
-                        reOrderNodes(
-                            dragNode.dataRef.guid,
-                            'root',
-                            toGuid,
-                            newCategories
-                        )
-
-                        const { data, error: dropError } =
-                        GlossaryApi.UpdateGlossaryTerm(
-                            dragNode.dataRef.guid,
-                            {
-                                ...dragNode.dataRef,
-                                categories: newCategories,
-                            }
-                        )
-                        watch(dropError, (err) => {
-                            setTimeout(() => {
-                                reOrderNodes(
-                                    dragNode.dataRef.guid,
-                                    toGuid,
-                                    'root',
-                                    []
-                                )
-                            }, 1500)
-                        })
-                    } else {
-                        const { data } = GlossaryApi.UpdateGlossaryTerm(
-                            dragNode.dataRef.guid,
-                            {
-                                ...dragNode.dataRef,
-                                categories: newCategories,
-                            }
-                        )
-    
-                        watch(data, async (newData) => {
-                            if (newData?.guid) {
-                                await refetchNode('root')
-                                refetchNode(node.dataRef.guid)
-                            }
-                        })
-                    }
-                    // updateEntity('term', dragNode.dataRef.guid, {
-                    //     categories: newCategories,
-                    // })
+                    message.error({
+                        content: `${dragNode.dataRef.title} is already a part of ${node.dataRef.title}!`,
+                        duration: 3,
+                    })
                 }
             }
         }
@@ -753,8 +810,6 @@ const useTree = (
     }
 
     const loadMore = async (offset: number, parentNodeId: string, parentGuid: string,) => {
-
-
         if(parentNodeId === 'root'){
             triggerLoadingState(parentNodeId);
 
@@ -762,7 +817,16 @@ const useTree = (
 
             treeData.value = treeData.value.filter((node) => node.title !== 'Load more');
             termsList?.forEach((term) => {
-                nodeToParentKeyMap[term?.guid ?? ''] = 'root'
+                let currentParent = nodeToParentKeyMap[term?.guid ?? ''];
+                
+                if(typeof currentParent !== 'string'){
+                    if(currentParent && currentParent.length){
+                        currentParent.push('root')
+                    } else if (!currentParent) {
+                        currentParent = ['root']
+                    }
+                }
+                nodeToParentKeyMap[term?.guid ?? ''] = currentParent
                 treeData.value.push(returnTreeDataItemAttributes(term, 'term', parentGuid))       
             });
             checkAndAddLoadMoreNode(termsList, offset + defaultLimit, 'root', 'root')
@@ -770,7 +834,7 @@ const useTree = (
             triggerLoadingState(parentGuid);
             const termsList = await GlossaryApi.ListTermsForCategory(parentGuid, { limit: defaultLimit, offset }) // root level terms
 
-            const path = recursivelyFindPath(parentGuid);
+            const path = recursivelyFindPath(parentGuid)[0];
 
             const appendNewNodes = (node: TreeDataItem) => {
                 const currentPath = path.pop();
@@ -779,7 +843,16 @@ const useTree = (
                     const newChildren = node.children?.filter((child) => child.title !== 'Load more');
                     termsList?.forEach((term) => {
                         newChildren?.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid ?? '', false, parentGuid));
-                        nodeToParentKeyMap[term?.guid ?? ''] = parentGuid
+                        let currentParent = nodeToParentKeyMap[term?.guid ?? ''];
+                
+                        if(typeof currentParent !== 'string'){
+                            if(currentParent && currentParent.length){
+                                currentParent.push(parentGuid)
+                            } else if (!currentParent) {
+                                currentParent = [parentGuid]
+                            }
+                        }
+                        nodeToParentKeyMap[term?.guid ?? ''] = currentParent
                     })
 
                     // Load More Node
@@ -813,7 +886,7 @@ const useTree = (
             }
 
 
-            const parent = path.pop();
+            const parent = path?.pop();
             treeData.value = treeData.value.map((node) => {
                 if(node.guid === parent) return appendNewNodes(node);
                 return node;
@@ -840,7 +913,8 @@ const useTree = (
                     guid: 'LoadMore'
                 })
             } else {
-                const path = recursivelyFindPath(parentGuid);
+                const path = recursivelyFindPath(parentGuid)[0]; // parentGuid will always be a guid of a category (since terms cannot be parents). Hence there will always be atmost 1 path
+
                 const addLoadMoreInNestedNode = (node: TreeDataItem) => {
                     const currentPath = path.pop()
                     if(node.guid === parentGuid && !currentPath) {
@@ -867,7 +941,7 @@ const useTree = (
                         })
                     }
                 }
-                const parent = path.pop()
+                const parent = path?.pop()
 
                 treeData.value = treeData.value.map((node) => {
                     if(node.guid === parent) return addLoadMoreInNestedNode(node);
@@ -889,7 +963,7 @@ const useTree = (
                 return node
             })
         } else {
-            const path = recursivelyFindPath(parentNodeId);
+            const path = recursivelyFindPath(parentNodeId)[0];
             
             const trigger = (node: TreeDataItem) => {
                 const currentPath = path.pop();
@@ -1014,7 +1088,8 @@ const useTree = (
         updateNode,
         refetchNode,
         refetchGlossaryList,
-        collapseAll
+        collapseAll,
+        reOrderNodes
     }
 }
 

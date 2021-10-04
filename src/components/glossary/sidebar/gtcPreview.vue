@@ -162,6 +162,7 @@
                                 <Owners
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    @update:selected-asset="updateEntityAndTree"
                                 />
                                 <Status
                                     v-if="entity.guid"
@@ -233,7 +234,7 @@
                     />
                 </template>
                 <div class="h-screen overflow-auto pb-52">
-                    <LinkedAssets
+                    <LinkedAssetsTab
                         :term-qualified-name="entity.attributes.qualifiedName"
                     />
                 </div>
@@ -274,8 +275,8 @@
     import Description from '@common/sidebar/description.vue'
     import Status from '@common/sidebar/status.vue'
     import Activity from '@/discovery/preview/tabs/activity/activityTab.vue'
-    import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
-    import LinkedAssets from './linkedAssets.vue'
+    import RelatedTerms from '@/glossary/profile/relatedTerms.vue'
+    import LinkedAssetsTab from './linkedAssetsTab.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { Components } from '~/api/atlas/client'
     import Categories from '@/glossary/common/categories.vue'
@@ -303,7 +304,7 @@
             Activity,
             Classifications,
             RelatedTerms,
-            LinkedAssets,
+            LinkedAssetsTab,
             SidePanelTabHeaders,
             Properties: defineAsyncComponent(
                 () => import('@common/sidebar/properties.vue')

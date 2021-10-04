@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
 
     export default defineComponent({
         props: {
@@ -49,10 +49,12 @@
                 default: '',
             },
         },
-        setup() {
+        setup(props) {
             const truncated = ref<boolean>(false)
+            const { tooltipText } = toRefs(props)
 
             return {
+                tooltipText,
                 truncated,
             }
         },

@@ -129,7 +129,7 @@
 
     // components
     import Owners from '@common/sidebar/owners.vue'
-    import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
+    import GlossaryAddDescriptionCard from '~/components/glossary/continueSettingUp/glossaryAddDescriptionCard.vue'
     import { Components } from '~/api/atlas/client'
     // static
 

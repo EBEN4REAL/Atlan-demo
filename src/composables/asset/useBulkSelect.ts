@@ -58,17 +58,30 @@ export default function useBulkSelect() {
 
     // Helper function
     const getBulkUpdateRequestPayload = (assetList) => {
-        const requestPayloadSkeleton = assetList.map((asset) => ({
-            guid: asset.guid,
-            typeName: asset.typeName,
-            attributes: {
-                qualifiedName: asset?.attributes?.qualifiedName,
-                name: asset?.attributes?.name,
-                tenantId: asset.attributes?.tenantId,
-                assetStatusMessage: asset.attributes?.assetStatusMessage,
-                assetStatus: asset.attributes?.assetStatus,
-            },
-        }))
+        const requestPayloadSkeleton = assetList.map((asset) => {
+            const payloadObj = {
+                guid: asset.guid,
+                typeName: asset.typeName,
+                attributes: {
+                    qualifiedName: asset?.attributes?.qualifiedName,
+                    name: asset?.attributes?.name,
+                    tenantId: asset.attributes?.tenantId,
+                    assetStatusMessage: asset.attributes?.assetStatusMessage,
+                    assetStatus: asset.attributes?.assetStatus,
+                },
+            }
+            // parent glossary guid is mandatory for gtc updation
+            if (
+                asset?.typeName === 'AtlasGlossaryCategory' ||
+                asset?.typeName === 'AtlasGlossaryTerm'
+            ) {
+                payloadObj.attributes.anchor = {
+                    guid: asset?.attributes?.anchor?.guid,
+                }
+            }
+
+            return payloadObj
+        })
         let requestPayloadAssetList = []
         if (updatedStatus.value || updatedStatusMessage.value) {
             requestPayloadAssetList = requestPayloadSkeleton.map((asset) => {

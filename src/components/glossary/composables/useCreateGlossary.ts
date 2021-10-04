@@ -199,7 +199,7 @@ const useCreateGlossary = () => {
                 },
             ]
         }
-        if(categories) {
+        if(categories && categories.length) {
             body.value.categories = categories;
         }
 

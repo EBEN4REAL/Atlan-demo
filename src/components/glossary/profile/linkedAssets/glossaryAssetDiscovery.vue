@@ -198,7 +198,7 @@
     import { useRouter } from 'vue-router'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import Preferences from '~/components/discovery/list/preference.vue'
-    import AssetList from '@/glossary/termProfile/glossaryAssetList.vue'
+    import AssetList from '@/glossary/profile/linkedAssets/glossaryAssetList.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";

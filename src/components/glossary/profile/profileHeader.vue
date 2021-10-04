@@ -25,7 +25,7 @@
                 <AtlanIcon
                     v-if="entity.typeName === 'AtlasGlossaryCategory'"
                     icon="Category"
-                    class="h-5 m-0 mb-1 mr-2"
+                    class="h-5 m-0 mr-2"
                 />
                 <span class="mr-2 text-sm">{{ title }}</span>
                 <component
@@ -49,7 +49,7 @@
                 <AtlanIcon
                     v-if="entity.typeName === 'AtlasGlossaryCategory'"
                     icon="Category"
-                    class="h-5 m-0 mb-1 mr-2"
+                    class="h-5 m-0 mr-2"
                 />
 
                 <span class="mr-3 text-sm">{{
@@ -167,7 +167,7 @@
     import { useRouter } from 'vue-router'
 
     // components
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     // assets
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 

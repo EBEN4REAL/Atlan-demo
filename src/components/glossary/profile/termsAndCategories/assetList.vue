@@ -7,8 +7,19 @@
                     'bg-primary-light hover:bg-primary-light':
                         selectedEntity?.guid === item.guid,
                 }"
+                :bulk-select-mode="
+                    bulkSelectedAssets && bulkSelectedAssets.length
+                        ? true
+                        : false
+                "
+                :is-checked="
+                    bulkSelectedAssets.findIndex(
+                        (listItem) => listItem.guid === item.guid
+                    ) > -1
+                "
                 :entity="item"
                 :projection="projection"
+                @listItem:check="(e, item) => updateBulkSelectedAssets(item)"
                 @gtcCardClicked="handleGtcCardClicked"
             />
         </template>
@@ -72,7 +83,7 @@
         watch,
         PropType,
     } from 'vue'
-    import GtcEntityCard from '@/glossary/gtcEntityCard.vue'
+    import GtcEntityCard from './gtcEntityCard.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import { Category, Term } from '~/types/glossary/glossary.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -120,12 +131,31 @@
                 },
             },
         },
-        emits: ['loadMore', 'gtcCardClicked'],
+        emits: ['loadMore', 'gtcCardClicked', 'bulkSelectChange'],
         setup(props, ctx: SetupContext) {
+            // data
+            const bulkSelectedAssets = ref([])
+
+            // methods
+            const updateBulkSelectedAssets = (listItem) => {
+                const itemIndex = bulkSelectedAssets?.value?.findIndex(
+                    (item) => item?.guid === listItem?.guid
+                )
+                if (itemIndex >= 0)
+                    bulkSelectedAssets.value.splice(itemIndex, 1)
+                else bulkSelectedAssets.value.push(listItem)
+                console.log(bulkSelectedAssets)
+                ctx.emit('bulkSelectChange', bulkSelectedAssets)
+            }
+
             const handleGtcCardClicked = (entity: Category | Term) => {
                 ctx.emit('gtcCardClicked', entity)
             }
-            return { handleGtcCardClicked }
+            return {
+                handleGtcCardClicked,
+                bulkSelectedAssets,
+                updateBulkSelectedAssets,
+            }
         },
     })
 </script>

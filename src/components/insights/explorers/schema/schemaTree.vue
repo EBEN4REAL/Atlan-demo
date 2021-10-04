@@ -12,6 +12,7 @@
                     :block-node="true"
                     :auto-expand-parent="false"
                     @select="selectNode"
+                    :class="$style.tree"
                     @expand="expandNode"
                 >
                     <template #title="item">
@@ -145,6 +146,12 @@
     }
 </style>
 <style lang="less" module>
+    :global(.ant-tree-title) {
+        width: calc(100% - 1.5rem) !important;
+    }
+    :global(.ant-tree .ant-tree-title) {
+        @apply pt-0 pb-0 !important;
+    }
     :global(.ant-tree .ant-tree-title) {
         @apply pl-0 pr-0 !important;
     }

@@ -5,9 +5,12 @@
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
             class="w-2/3 h-full"
-            @scroll="handleScroll"
             ref="scrollDiv"
-            :class="{ 'overflow-y-auto': !headerReachedTop }"
+            :class="{
+                'overflow-y-auto': !headerReachedTop,
+                ' border-r': bulkSelectedAssets.length,
+            }"
+            @scroll="handleScroll"
         >
             <!-- top section -->
             <ProfileHeader
@@ -61,6 +64,7 @@
                             :headerReachedTop="headerReachedTop"
                             @entityPreview="handleCategoryOrTermPreview"
                             @firstCardReachedTop="handleFirstCardReachedTop"
+                            @bulkSelectChange="updateBulkSelection"
                         />
                     </a-tab-pane>
                     <!-- Hide for GA -->
@@ -71,9 +75,15 @@
                 </a-tabs>
             </div>
         </div>
-
         <div id="sidePanel" class="relative w-1/3">
-            <SidePanel :entity="glossary"  />
+            <SidePanel
+                v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
+                :entity="glossary"
+            />
+            <BulkSidebar
+                v-else
+                :bulk-selected-assets="bulkSelectedAssets"
+            ></BulkSidebar>
         </div>
     </div>
 </template>
@@ -92,10 +102,11 @@
 
     // components
     import LoadingView from '@common/loaders/page.vue'
-    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import SidePanel from '@/glossary/sidePanel/index.vue'
-    import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import GlossaryTermsAndCategoriesTab from '~/components/glossary/profile/termsAndCategories/glossaryTermsAndCategoriesTab.vue'
+    import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
+    import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
+    import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
+    import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -117,6 +128,7 @@
             LoadingView,
             SidePanel,
             ProfileHeader,
+            BulkSidebar,
         },
         props: {
             id: {
@@ -134,7 +146,8 @@
             const newName = ref('')
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
-            const temp = ref(false)
+            const temp = ref(false) // flag for sticky header
+            const bulkSelectedAssets = ref([])
 
             const router = useRouter()
             const {
@@ -253,6 +266,11 @@
                 refetch()
                 newName.value = ''
             })
+            // upate bulk list for sidebar
+            const updateBulkSelection = (list) => {
+                bulkSelectedAssets.value = [...list.value]
+                console.log(bulkSelectedAssets.value)
+            }
 
             // Providers
             provide('refreshEntity', refetch)
@@ -287,6 +305,8 @@
                 updateTitle,
                 handleScroll,
                 handleFirstCardReachedTop,
+                updateBulkSelection,
+                bulkSelectedAssets,
             }
         },
     })

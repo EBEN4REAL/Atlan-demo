@@ -49,8 +49,9 @@
             watch(
                 activeInlineTab,
                 () => {
-                    selectedAsset.value =
-                        activeInlineTab.value?.assetSidebar?.assetInfo
+                    selectedAsset.value = {
+                        ...activeInlineTab.value?.assetSidebar?.assetInfo,
+                    }
                 },
                 { immediate: true }
             )

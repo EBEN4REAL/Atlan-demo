@@ -13,7 +13,15 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                            class="
+                                inline-flex
+                                items-center
+                                justify-center
+                                p-2
+                                rounded-full
+                                btn-add
+                                hover:bg-gray-300
+                            "
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -82,12 +90,8 @@
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
-    import useRunQuery from './common/composables/useRunQuery'
+    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import {
-        useProvide,
-        provideDataInterface,
-    } from '~/components/insights/common/composables/useProvide'
     import { useRouter } from 'vue-router'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
@@ -102,7 +106,7 @@
         },
         setup(props, { emit }) {
             const router = useRouter()
-            const { queryRun, isQueryRunning } = useRunQuery()
+            const { queryRun } = useRunQuery()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
@@ -115,6 +119,7 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+            const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const isActiveInlineTabSaved = computed(
                 () => activeInlineTab.value.isSaved
             )
@@ -210,17 +215,6 @@
                     )
                 }
             }
-
-            /*---------------------------------------------*/
-            /*---------- PROVIDERS FOR CHILDRENS -----------------
-                ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-                */
-            const provideData: provideDataInterface = {
-                isQueryRunning: isQueryRunning,
-            }
-            useProvide(provideData)
-
-            /*-------------------------------------*/
 
             return {
                 isActiveInlineTabSaved,

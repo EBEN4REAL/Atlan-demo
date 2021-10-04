@@ -8,52 +8,11 @@ export interface OwnersChangeLog {
     removedOwnerGroups: Array<String>
 }
 export default function useBulkSelectOwners(selectedAssets) {
-    const ownerUsersFrequencyMap: ComputedRef<Record<string, number>> = ref({})
-    const ownerGroupsFrequencyMap: ComputedRef<Record<string, number>> = ref({})
+    // const ownerUsersFrequencyMap: Ref<Record<string, number>> = ref({})
+    // const ownerGroupsFrequencyMap: Ref<Record<string, number>> = ref({})
     watch(selectedAssets, () => {
         console.log('OOO', selectedAssets.value)
-        const frequencyMap: Record<string, number> = {}
-        if (selectedAssets.value.length) {
-            selectedAssets.value.forEach((asset: assetInterface) => {
-                if (asset?.attributes?.ownerUsers?.length > 0) {
-                    const ownerUsersArray =
-                        asset.attributes.ownerUsers.split(',')
-                    ownerUsersArray.forEach((ownerUser) => {
-                        if (frequencyMap.hasOwnProperty[ownerUser])
-                            frequencyMap[ownerUser] += 1
-                        else frequencyMap[ownerUser] = 1
-                    })
-                }
-            })
-        }
-        ownerUsersFrequencyMap.value = { ...frequencyMap }
     })
-    const updatedOwners: Ref<OwnersChangeLog> = ref({
-        addedOwnerUsers: [],
-        removedOwnerUsers: [],
-        addedOwnerGroups: [],
-        removedOwnerGroups: [],
-    })
-
-    const ownerGroupsFrequencyMap: ComputedRef<Record<string, number>> =
-        computed(() => {
-            const frequencyMap: Record<string, number> = {}
-            if (selectedAssets.value.length) {
-                selectedAssets.value.forEach((asset: assetInterface) => {
-                    if (asset?.attributes?.ownerGroups?.length > 0) {
-                        const ownerGroupsArray =
-                            asset.attributes.ownerGroups.split(',')
-                        ownerGroupsArray.forEach((ownerGroup) => {
-                            if (frequencyMap.hasOwnProperty[ownerGroup])
-                                frequencyMap[ownerGroup] += 1
-                            else frequencyMap[ownerGroup] = 1
-                        })
-                    }
-                })
-            }
-            return frequencyMap
-        })
-
     const existingOwnerUsers = computed(() => {
         if (selectedAssets.value.length) {
             const assetOwnerUsersMap: Record<string, string> = {}
@@ -65,6 +24,49 @@ export default function useBulkSelectOwners(selectedAssets) {
         }
         return {}
     })
+    const updatedOwners: Ref<OwnersChangeLog> = ref({
+        addedOwnerUsers: [],
+        removedOwnerUsers: [],
+        addedOwnerGroups: [],
+        removedOwnerGroups: [],
+    })
+    const ownerUsersFrequencyMap: ComputedRef<Record<string, number>> =
+        computed(() => {
+            const frequencyMap: Record<string, number> = {}
+            if (selectedAssets.value.length) {
+                selectedAssets.value.forEach((asset: assetInterface) => {
+                    if (asset?.attributes?.ownerUsers?.length > 0) {
+                        const ownerUsersArray =
+                            asset.attributes.ownerUsers.split(',')
+                        ownerUsersArray.forEach((ownerUser) => {
+                            if (frequencyMap.hasOwnProperty(ownerUser))
+                                frequencyMap[ownerUser] += 1
+                            else frequencyMap[ownerUser] = 1
+                        })
+                    }
+                })
+            }
+            return frequencyMap
+        })
+    const ownerGroupsFrequencyMap: ComputedRef<Record<string, number>> =
+        computed(() => {
+            const frequencyMap: Record<string, number> = {}
+            if (selectedAssets.value.length) {
+                selectedAssets.value.forEach((asset: assetInterface) => {
+                    if (asset?.attributes?.ownerGroups?.length > 0) {
+                        const ownerGroupsArray =
+                            asset.attributes.ownerGroups.split(',')
+                        ownerGroupsArray.forEach((ownerGroup) => {
+                            if (frequencyMap.hasOwnProperty(ownerGroup))
+                                frequencyMap[ownerGroup] += 1
+                            else frequencyMap[ownerGroup] = 1
+                        })
+                    }
+                })
+            }
+            return frequencyMap
+        })
+
     const existingOwnerGroups = computed(() => {
         if (selectedAssets.value.length) {
             const assetOwnerGroupsMap: Record<string, string> = {}
@@ -94,19 +96,22 @@ export default function useBulkSelectOwners(selectedAssets) {
             )
             // eslint-disable-next-line no-param-reassign
             existingOwnerUsersRef.value[assetKey] = updatedOwnerUsers
-
-            let updatedOwnerGroups = [
-                ...new Set([
-                    ...existingOwnerGroupsRef.value[assetKey],
-                    ...changeLog.addedOwnerGroups,
-                ]),
-            ]
-            updatedOwnerGroups = updatedOwnerGroups.filter(
-                (oGroup) => changeLog.removedOwnerGroups.findIndex(oGroup) < 0
-            )
-            // eslint-disable-next-line no-param-reassign
-            existingOwnerGroupsRef.value[assetKey] = updatedOwnerGroups
+            if (false) {
+                let updatedOwnerGroups = [
+                    ...new Set([
+                        ...existingOwnerGroupsRef.value[assetKey],
+                        ...changeLog.addedOwnerGroups,
+                    ]),
+                ]
+                updatedOwnerGroups = updatedOwnerGroups.filter(
+                    (oGroup) =>
+                        changeLog.removedOwnerGroups.findIndex(oGroup) < 0
+                )
+                // eslint-disable-next-line no-param-reassign
+                existingOwnerGroupsRef.value[assetKey] = updatedOwnerGroups
+            }
         })
+
         // eslint-disable-next-line no-param-reassign
         ownersRef.value = changeLog
     }

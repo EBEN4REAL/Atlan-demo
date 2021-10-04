@@ -33,25 +33,6 @@ export default function useBulkSelect() {
         }
         return {}
     })
-    // const ownerUsersFrequencyMap = computed(() => {
-    //     console.log('in compiyed')
-    //     const frequencyMap: Record<string, number> = {}
-    //     if (selectedAssets.value.length) {
-    //         selectedAssets.value.forEach((asset: assetInterface) => {
-    //             if (asset?.attributes?.ownerUsers?.length > 0) {
-    //                 const ownerUsersArray =
-    //                     asset.attributes.ownerUsers.split(',')
-    //                 ownerUsersArray.forEach((ownerUser) => {
-    //                     if (frequencyMap.hasOwnProperty[ownerUser])
-    //                         frequencyMap[ownerUser] += 1
-    //                     else frequencyMap[ownerUser] = 1
-    //                 })
-    //             }
-    //         })
-    //     }
-    //     return frequencyMap
-    // })
-
     const handleUpdateStatus = (
         { status, statusMessage },
         statusRef,
@@ -114,7 +95,7 @@ export default function useBulkSelect() {
         ) {
             // call to bulk endpoint
             const requestPayload = getBulkUpdateRequestPayload(assetList)
-            const { data, mutate, error, isLoading } = useAPIAsyncState<any>(
+            const { data, error, isLoading } = useAPIAsyncState<any>(
                 KeyMaps.asset.BULK_UPDATE_ASSETS,
                 'POST',
                 { body: requestPayload },
@@ -158,11 +139,11 @@ export default function useBulkSelect() {
         updatedStatus,
         handleUpdateStatus,
         ownerUsersFrequencyMap,
-        // ownerGroupsFrequencyMap,
-        // existingOwnerUsers,
-        // existingOwnerGroups,
-        // updatedOwners,
-        // handleUpdateOwners,
+        ownerGroupsFrequencyMap,
+        existingOwnerUsers,
+        existingOwnerGroups,
+        updatedOwners,
+        handleUpdateOwners,
         updateAssets,
     }
 }

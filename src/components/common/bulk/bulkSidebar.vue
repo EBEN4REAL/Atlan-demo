@@ -51,12 +51,11 @@ export default {
         provide('selectedAssets', selectedAssets)
         provide('updatedStatus', updatedStatus)
         provide('ownerUsersFrequencyMap', ownerUsersFrequencyMap)
-        // provide('ownerGroupsFrequencyMap', ownerGroupsFrequencyMap)
-        // provide('existingOwnerUsers', existingOwnerUsers)
-        // provide('existingOwnerGroups', existingOwnerGroups)
-        // provide('updatedOwners', updatedOwners)
-        //  const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
-        //         inject('mutateSelectedAsset', () => {})
+        provide('ownerGroupsFrequencyMap', ownerGroupsFrequencyMap)
+        provide('existingOwnerUsers', existingOwnerUsers)
+        provide('existingOwnerGroups', existingOwnerGroups)
+        provide('updatedOwners', updatedOwners)
+
         watch(
             selectedAssets,
             () => {

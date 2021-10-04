@@ -1,9 +1,17 @@
 <template>
     <div
-        class="flex justify-between w-full py-6 pl-5 pr-4 border-b cursor-pointer  group"
+        class="flex justify-between w-full py-6 pl-0 pr-4 border-b cursor-pointer  group"
+        :class="[bulkSelectMode && isChecked ? 'bg-primary-light' : '']"
         @click="$emit('gtcCardClicked', entity)"
     >
-        <!-- projections start here -->
+        <a-checkbox
+            :checked="isChecked"
+            class="mt-1 ml-2 mr-3 opacity-0 group-hover:opacity-100"
+            :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+            @click.stop
+            @change="(e) => $emit('listItem:check', e, entity)"
+        />
+
         <div class="flex flex-row w-full">
             <div class="flex flex-col justify-center w-full max-w-2xl ml-1">
                 <span class="flex items-center mb-1 cursor-pointer">
@@ -31,7 +39,17 @@
                         @click="redirectToProfile"
                     /> -->
                     <span
-                        class="items-baseline ml-2 text-lg font-bold leading-7 truncate  text-primary hover:underline overflow-ellipsis"
+                        class="
+                            ml-2
+                            mt-0.5
+                            text-lg
+                            font-bold
+                            leading-7
+                            truncate
+                            text-primary
+                            hover:underline
+                            overflow-ellipsis
+                        "
                         @click="redirectToProfile"
                     >
                         {{ entity?.displayText }}
@@ -165,7 +183,7 @@
             :entity="entity"
             :redirectToProfile="redirectToProfile"
             :visible="false"
-            class="opacity-0"
+            class="mt-1 opacity-0"
         />
     </div>
 </template>
@@ -209,8 +227,18 @@
                 required: false,
                 default: () => ['description'],
             },
+            isChecked: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            bulkSelectMode: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['gtcCardClicked'],
+        emits: ['gtcCardClicked', 'listItem:check'],
         setup(props) {
             const router = useRouter()
             const { ownerGroups, ownerUsers } = useAssetInfo()

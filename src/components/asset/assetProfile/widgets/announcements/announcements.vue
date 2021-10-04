@@ -1,102 +1,125 @@
 <template>
     <div class="flex justify-between w-full">
         <div class="flex-grow">
-            <a-dropdown
-                placement="bottomLeft"
-                :trigger="['click']"
-                @click.stop="() => {}"
-                :disabled="!editable"
-            >
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item
-                            v-for="item in AnnouncementList"
-                            :key="item"
-                            @click="handleMenuClick(item)"
-                        >
-                            <div class="flex items-center space-x-2">
-                                <component
-                                    :is="item.icon"
-                                    class="w-auto h-4 ml-1 mr-2 pushtop"
-                                />
-
-                                {{ item.label }}
-                            </div>
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-
-                <div
-                    class="flex items-center flex-none px-2 py-1 align-middle rounded cursor-pointer  bg-primary-light"
+            <div v-if="editable">
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
                 >
-                    <span class="svg-icon">
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="item in AnnouncementList"
+                                :key="item"
+                                @click="handleMenuClick(item)"
+                            >
+                                <div class="flex items-center space-x-2">
+                                    <component
+                                        :is="item.icon"
+                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                    />
+
+                                    {{ item.label }}
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+
+                    <div
+                        class="flex items-center flex-none px-2 py-1 align-middle rounded cursor-pointer  bg-primary-light"
+                    >
+                        <span class="svg-icon">
+                            <component
+                                :is="announcementObject?.icon"
+                                class="w-auto h-4"
+                            />
+                        </span>
+
+                        <p class="mb-0 ml-2">{{ announcementObject?.label }}</p>
+                    </div>
+                </a-dropdown>
+                <a-input
+                    ref="titleBar"
+                    v-model:value="announcementHeader"
+                    placeholder="Add Announcement Header..."
+                    class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                    :class="$style.titleInput"
+                />
+                <a-textarea
+                    v-model:value="announcementDescription"
+                    placeholder="Add description..."
+                    class="text-gray-500 border-0 shadow-none outline-none"
+                    :maxlength="280"
+                    @change="handleTextAreaUpdate"
+                />
+            </div>
+            <div v-else>
+                <div v-if="!bannerMessage || bannerMessage === ''">
+                    <div
+                        class="flex items-center flex-none px-2 py-1 align-middle rounded cursor-pointer  bg-primary-light"
+                    >
+                        <span class="svg-icon">
+                            <component
+                                :is="announcementObject?.icon"
+                                class="w-auto h-4"
+                            />
+                        </span>
+
+                        <p class="mb-0 ml-2">{{ announcementObject?.label }}</p>
+                    </div>
+
+                    <div
+                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
+                    >
+                        Add Announcement Header...
+                    </div>
+                    <div
+                        class="text-gray-500 border-0 shadow-none outline-none"
+                    >
+                        Add description...
+                    </div>
+                </div>
+                <div v-else class="flex items-center">
+                    <div>
                         <component
                             :is="announcementObject?.icon"
                             class="w-auto h-4"
                         />
-                    </span>
-
-                    <p class="mb-0 ml-2">{{ announcementObject?.label }}</p>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-gray-700"
+                            >Announcement Header</span
+                        >
+                        <span class="text-gray-500">{{ bannerMessage }}</span>
+                    </div>
                 </div>
-            </a-dropdown>
-            <a-input
-                ref="titleBar"
-                v-model:value="announcementHeader"
-                :disabled="!editable"
-                placeholder="Add Announcement Header..."
-                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-                :class="$style.titleInput"
-            />
-            <a-textarea
-                v-model:value="announcementDescription"
-                :disabled="!editable"
-                placeholder="Add description..."
-                class="text-gray-500 border-0 shadow-none outline-none"
-                :maxlength="280"
-                @change="handleTextAreaUpdate"
-            />
-        </div>
-        <div class="flex items-center">
-            <div>
-                <component :is="announcementObject?.icon" class="w-auto h-4" />
             </div>
         </div>
-        <div>
-            <div v-if="editable" class="flex align-items-center">
-                <a-button
-                    class="mr-2"
-                    :loading="isLoading"
-                    @click="handleUpdate"
-                    >Update</a-button
-                >
 
-                <a-button
-                    type="link"
-                    :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
-                    :loading="false"
-                    :loading-text="'Cancelling...'"
-                    @click="onCancel"
-                    >Cancel</a-button
-                >
-            </div>
-            <a-button v-else type="link" class="text-sm" @click="startEdit">
-                <fa icon="fa pencil" class="mx-2 text-xs" />
-                Edit
-            </a-button>
+        <div v-if="editable" class="flex ml-2">
+            <a-button class="mr-2" :loading="isLoading" @click="handleUpdate"
+                >Update</a-button
+            >
+
+            <a-button
+                type="link"
+                :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
+                :loading="false"
+                :loading-text="'Cancelling...'"
+                @click="onCancel"
+                >Cancel</a-button
+            >
         </div>
+        <a-button v-else type="link" class="ml-2 text-sm" @click="startEdit">
+            <fa icon="fa pencil" class="mx-2 text-xs" />
+            Edit
+        </a-button>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        PropType,
-        Ref,
-        computed,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, ref, PropType, Ref, computed, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AnnouncementList from '~/constant/announcement'
     import addAnnouncement from '~/composables/asset/addAnnouncement'
@@ -118,9 +141,7 @@
             const {
                 handleCancel,
                 update,
-                isReady,
                 bannerType,
-                state,
                 bannerMessage,
                 isCompleted,
                 isLoading,
@@ -172,6 +193,8 @@
                 announcementObject,
                 isLoading,
                 handleTextAreaUpdate,
+                bannerMessage,
+                bannerType,
             }
         },
     })
@@ -189,9 +212,7 @@
             @apply shadow-none outline-none px-0 border-0 !important;
         }
     }
-    .titleInput {
-        :global(.ant-input::-webkit-input-placeholder) {
-            @apply font-bold  !important;
-        }
+    :global(.ant-input::-webkit-input-placeholder) {
+        @apply font-bold text-gray-500 !important;
     }
 </style>

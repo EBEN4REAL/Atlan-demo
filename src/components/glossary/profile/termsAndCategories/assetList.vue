@@ -72,7 +72,7 @@
         watch,
         PropType,
     } from 'vue'
-    import GtcEntityCard from '@/glossary/gtcEntityCard.vue'
+    import GtcEntityCard from './gtcEntityCard.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import { Category, Term } from '~/types/glossary/glossary.interface'
     import { assetInterface } from '~/types/assets/asset.interface'

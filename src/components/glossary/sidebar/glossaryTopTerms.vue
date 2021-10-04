@@ -27,7 +27,7 @@
     import { defineComponent, computed, onMounted } from 'vue'
     import { useHead } from '@vueuse/head'
 
-    import TermPreviewCard from '@/glossary/termPreviewCard.vue'
+    import TermPreviewCard from './termPreviewCard.vue'
     import LoadingView from '@common/loaders/page.vue'
 
     import { Components } from '~/api/atlas/client'

@@ -149,7 +149,7 @@
     } from 'vue'
 
     import StatusBadge from '@common/badge/status/index.vue'
-    import AddGtcModalOwners from '@/glossary/common/addGtcModalOwners.vue'
+    import AddGtcModalOwners from './addGtcModalOwners.vue'
     import Categories from '@/glossary/common/categories.vue'
 
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'

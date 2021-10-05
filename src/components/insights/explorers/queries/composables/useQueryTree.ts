@@ -116,13 +116,13 @@ const useTree = ({
         folders.entities?.forEach((folder) => {
             if (!folder.attributes.parentFolder) {
                 treeData.value.push(returnTreeDataItemAttributes(folder))
-                nodeToParentKeyMap[folder.attributes.qualifiedName] = 'root'
+                nodeToParentKeyMap[folder.guid] = 'root'
             }
         })
         queries.entities?.forEach((query) => {
             if (!query.attributes.folder) {
                 treeData.value.push(returnTreeDataItemAttributes(query))
-                nodeToParentKeyMap[query.attributes.qualifiedName] = 'root'
+                nodeToParentKeyMap[query.guid] = 'root'
             }
         })
         isInitingTree.value = false
@@ -150,22 +150,22 @@ const useTree = ({
             subFoldersResponse.entities?.forEach((folder) => {
                 if (
                     !loadedKeys.value.find(
-                        (key) => folder.attributes.qualifiedName === key
+                        (key) => folder.guid === key
                     )
                 ) {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(folder)
                     )
-                    nodeToParentKeyMap[folder.attributes.qualifiedName] =
-                        treeNode.dataRef.qualifiedName
+                    nodeToParentKeyMap[folder.guid] =
+                        treeNode.dataRef.guid
                 }
             })
             subQueriesResponse.entities?.forEach((query) => {
                 treeNode.dataRef.children?.push(
                     returnTreeDataItemAttributes(query)
                 )
-                nodeToParentKeyMap[query.attributes.qualifiedName] =
-                    treeNode.dataRef.qualifiedName
+                nodeToParentKeyMap[query.guid] =
+                    treeNode.dataRef.guid
             })
 
             if (
@@ -204,7 +204,7 @@ const useTree = ({
 
         if (item.typeName === 'Query') {
             openSavedQueryInNewTab(item)
-            selectedKeys.value.push(item.attributes.qualifiedName)
+            selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
                 pushGuidToURL(item.guid)
             }
@@ -239,7 +239,7 @@ const useTree = ({
     const returnTreeDataItemAttributes = (item: SavedQuery | Folder) => {
         return {
             attributes: item.attributes,
-            key: item.attributes.qualifiedName,
+            key: item.guid,
             qualifiedName: item.attributes.qualifiedName,
             guid: item.guid,
             title: item.attributes.name,

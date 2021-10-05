@@ -83,6 +83,7 @@
         watch,
         ref,
         toRaw,
+        onMounted
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
@@ -212,6 +213,10 @@
                     createFolder(saveQueryData, saveQueryLoading, showSaveQueryModal, saveModalRef)
                 }
             }
+
+            onMounted(() => {
+                selectedKeys.value = [activeInlineTabKey.value]
+            })
 
             return {
                 saveModalRef,

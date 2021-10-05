@@ -236,6 +236,210 @@ const useTree = ({
         store.set(selectedCacheKey, selectedKeys.value)
     }
 
+      /**
+     * Refreshes a node via API ( All attributes and new children ) while maintaining the state
+     *
+     * @param guid - guid/key of the node that needs to be refetched
+     */
+       const refetchNode = async (guid: string | 'root', refetchEntityType?: 'query' | 'queryFolder') => {
+        // if the root level of the tree needs a refetch
+        if (guid === 'root') {
+            let folderResponse: BasicSearchResponse<Folder> | null = null;
+            let queryResponse: BasicSearchResponse<SavedQuery> | null = null;
+
+            if(refetchEntityType === 'queryFolder' || !refetchEntityType) {
+                folderResponse= await getQueryFolders()
+            }
+
+            if(refetchEntityType === 'query' || !refetchEntityType) {
+                queryResponse = await getQueries()
+            } 
+
+
+            const updatedFolders = checkAndAppendNewNodes(folderResponse, 'QueryFolder', true)
+            const updatedQueries = checkAndAppendNewNodes(queryResponse, 'QueryFolder', true)
+
+            const updatedTreeData: CustomTreeDataItem[] = [...updatedFolders, ...updatedQueries]
+
+            
+            // if(folderResponse !== null) {
+            //     folderResponse?.entities?.forEach((folder) => {
+            //         const existingFolder = treeData.value.find(
+            //             (entity) => entity.guid === folder.guid
+            //         )
+            //         // if the folder already exists,ignore it so as to maintain the expanded state
+            //         if (existingFolder) {
+            //             updatedTreeData.push(existingFolder)
+            //         } else {
+            //             // if a new folder is found at the root level, append it
+            //             nodeToParentKeyMap[folder.guid] = 'root';
+            //             updatedTreeData.push(returnTreeDataItemAttributes(folder))
+            //         }
+            //     })
+            // } else {
+            //     treeData.value.forEach((item) => {
+            //         if(item.typeName === 'QueryFolder') updatedTreeData.push(item)
+            //     })
+            // }
+            // if(queryResponse !== null) {
+            //     queryResponse?.entities?.forEach((query) => {
+            //         const existingQuery = treeData.value.find(
+            //             (entity) => entity.guid === query.guid
+            //         )
+            //         // if term already exists, append the existing one
+            //         if (existingQuery) {
+            //             updatedTreeData.push(existingQuery)
+            //         } else {
+            //             nodeToParentKeyMap[query.guid] = 'root'
+            //             updatedTreeData.push(returnTreeDataItemAttributes(query))
+            //         }
+            //     })
+            // } else {
+            //     treeData.value.forEach((item) => {
+            //         if(item.typeName === 'Query') updatedTreeData.push(item)
+            //     })
+            // }
+
+            treeData.value.forEach((item) => {
+                if(item.title === 'Load more') updatedTreeData.push(item);
+            });
+
+            treeData.value = updatedTreeData
+        } else {
+            let parentStack: string[]
+
+            const updateNodeNested = async (node: CustomTreeDataItem) => {
+                const currentPath = parentStack.pop()
+
+                // if the target node is reached
+                if (node.key === guid || !currentPath) {
+                    let folderResponse: BasicSearchResponse<Folder> | null = null;
+                    let queryResponse: BasicSearchResponse<SavedQuery> | null = null;
+
+                    if(refetchEntityType === 'queryFolder' || !refetchEntityType) {
+                        folderResponse = await getSubFolders(node.qualifiedName)
+                    } 
+                    if(refetchEntityType === 'query' || !refetchEntityType) {
+                        queryResponse= await getFolderQueries(node.qualifiedName)
+                    }
+
+                    const updatedFolders = checkAndAppendNewNodes(folderResponse, 'QueryFolder', false, node)
+                    const updatedQueries = checkAndAppendNewNodes(queryResponse, 'QueryFolder', false, node)
+        
+                    const updatedChildren: CustomTreeDataItem[] = [...updatedFolders, ...updatedQueries]
+
+                    // if(folderResponse !== null){
+                    //     folderResponse?.entities?.forEach((folder) => {
+                    //         const existingFolder = node.children?.find(
+                    //             (entity) => entity.guid === folder.guid
+                    //         )
+                    //         // if current folder already exists, append the existing one to maintain expanded state
+                    //         // else append the new one
+                    //         if (existingFolder) {
+                    //             updatedChildren.push(existingFolder)
+                    //         } else {
+                    //             nodeToParentKeyMap[folder.guid] = node.key 
+                    //             updatedChildren.push(returnTreeDataItemAttributes(folder))
+                    //         }
+                    //     })
+                    // } else {
+                    //     node.children?.forEach((item) => {
+                    //         if(item.typeName === 'QueryFolder') updatedChildren.push(item)
+                    //     })
+                    // }
+
+                    // if(queryResponse !== null) {
+                    //     queryResponse?.entities?.forEach((query) => {
+                    //         const existingQuery = node.children?.find(
+                    //             (entity) => entity.guid === query.guid
+                    //         )
+                    //         if (existingQuery) {
+                    //             updatedChildren.push(existingQuery)
+                    //         } else {
+                    //             nodeToParentKeyMap[query.guid] = node.key
+                    //             updatedChildren.push(returnTreeDataItemAttributes(query))
+                    //         }
+                    //     })
+                    // } else {
+                    //     node.children?.forEach((item) => {
+                    //         if(item.typeName === 'Query') updatedChildren.push(item)
+                    //     })
+                    // }
+            
+                    node.children?.forEach((item) => {
+                        if(item.title === 'Load more')  updatedChildren.push(item)
+                    });
+            
+
+                    return {
+                        ...node,
+                        children: updatedChildren,
+                    }
+                }
+                const updatedChildren: CustomTreeDataItem[] = []
+
+                // eslint-disable-next-line no-restricted-syntax
+                for (const childNode of node?.children ?? []) {
+                    // if the current node is in the path that is needed to reach the target node
+                    if (childNode.key === currentPath) {
+                        const updatedNode = await updateNodeNested(childNode)
+                        updatedChildren.push(updatedNode)
+                    } else {
+                        updatedChildren.push(childNode)
+                    }
+                }
+                return {
+                    ...node,
+                    children: updatedChildren,
+                }
+            }
+
+            // find the path to the node
+            parentStack = recursivelyFindPath(guid)
+            const parent = parentStack.pop()
+
+            const updatedTreeData: CustomTreeDataItem[] = []
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const node of treeData.value) {
+                if (node.key === parent) {
+                    const updatedNode = await updateNodeNested(node)
+                    updatedTreeData.push(updatedNode)
+                } else {
+                    updatedTreeData.push(node)
+                }
+            }
+
+            treeData.value = updatedTreeData
+        }
+    }
+
+    const checkAndAppendNewNodes = (response: BasicSearchResponse<SavedQuery | Folder> | null, typeName: 'Query' | 'QueryFolder', isRoot: boolean, node?: CustomTreeDataItem) => {
+        const updatedTreeData: CustomTreeDataItem[] = []
+
+        if(response !== null) {
+            response?.entities?.forEach((entity) => {
+                const existingentity = treeData.value.find(
+                    (item) => item.guid === entity.guid
+                )
+                // if the entity already exists,ignore it so as to maintain the expanded state
+                if (existingentity) {
+                    updatedTreeData.push(existingentity)
+                } else {
+                    // if a new folder is found at the root level, append it
+                    nodeToParentKeyMap[entity.guid] = isRoot ? 'root' : node?.key;
+                    updatedTreeData.push(returnTreeDataItemAttributes(entity))
+                }
+            })
+        } else {
+            treeData.value.forEach((item) => {
+                if(item.typeName === typeName) updatedTreeData.push(item)
+            })
+        }
+
+        return updatedTreeData
+    }
+
     const returnTreeDataItemAttributes = (item: SavedQuery | Folder) => {
         return {
             attributes: item.attributes,

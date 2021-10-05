@@ -9,6 +9,8 @@ import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
 
 const useLoadQueryData = () => {
+    const defaultLimit = 50;
+
     const attributes = [
         "name",
         "displayName",
@@ -23,6 +25,7 @@ const useLoadQueryData = () => {
 
         "integrationName",
         "connectionQualifiedName",
+        "parentFolderQualifiedName",
         "parentFolder",
         "columns", //TODO: queries
         "folder",
@@ -37,7 +40,7 @@ const useLoadQueryData = () => {
         includeClassificationAttributes: true,
         includeSubClassifications: true,
         includeSubTypes: true,
-        limit: 50,
+        limit: defaultLimit,
         offset: 0,
         attributes,
         entityFilters: {
@@ -86,50 +89,32 @@ const useLoadQueryData = () => {
     }
 
     const getSubFolders = (folderGuid: string, offset?: number, limit?: number) => {
-        const params = new URLSearchParams();
+        body.value.typeName = 'QueryFolder';
+        body.value.entityFilters.criterion = [{
+            attributeName: "parentFolderQualifiedName",
+            operator: "eq",
+            attributeValue: folderGuid
+        }]
+        body.value.offset = offset ?? 0
+        body.value.limit = limit ?? defaultLimit
 
-        attributes.forEach((param: string) => {
-            params.append('attributes', param)
-        })
-
-        const paramsObj: any = {
-            limit: limit ?? 50,
-            offset: 0,
-            relation: 'childFolders',
-            includeClassificationAttributes: true,
-            guid: folderGuid,
-            excludeDeletedEntities: true,
-        }
-        Object.keys(paramsObj).forEach((key) => {
-            params.append(key, paramsObj[key])
-        })
-
-        return useAPIPromise(KeyMaps.savedQueries.RELATIONSHIP(), 'GET', {
-            params
-        }) as Promise<RelationshipSearchResponse<Folder>>
+        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+            body
+        }) as Promise<BasicSearchResponse<Folder>>
     }
 
     const getFolderQueries = (folderGuid: string, offset?: number, limit?: number) => {
-        const params = new URLSearchParams();
+        body.value.typeName = 'Query';
+        body.value.entityFilters.criterion = [{
+            attributeName: "parentFolderQualifiedName",
+            operator: "eq",
+            attributeValue: folderGuid
+        }]
+        body.value.offset = offset ?? 0
+        body.value.limit = limit ?? defaultLimit
 
-        attributes.forEach((param: string) => {
-            params.append('attributes', param)
-        })
-
-        const paramsObj: any = {
-            limit: limit ?? 50,
-            offset: 0,
-            relation: 'columns', //TODO: replace with queries on atlas reset
-            includeClassificationAttributes: true,
-            guid: folderGuid,
-            excludeDeletedEntities: true,
-        }
-        Object.keys(paramsObj).forEach((key) => {
-            params.append(key, paramsObj[key])
-        })
-
-        return useAPIPromise(KeyMaps.savedQueries.RELATIONSHIP(), 'GET', {
-            params
+        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+            body
         }) as Promise<RelationshipSearchResponse<SavedQuery>>
     }
 

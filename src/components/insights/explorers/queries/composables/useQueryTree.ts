@@ -145,10 +145,10 @@ const useTree = ({
 
         if (treeNode.dataRef.typeName === 'QueryFolder') {
             const subFoldersResponse = await getSubFolders(
-                treeNode.dataRef.guid
+                treeNode.dataRef.qualifiedName
             )
             const subQueriesResponse = await getFolderQueries(
-                treeNode.dataRef.guid
+                treeNode.dataRef.qualifiedName
             )
 
             subFoldersResponse.entities?.forEach((folder) => {
@@ -244,6 +244,7 @@ const useTree = ({
         return {
             attributes: item.attributes,
             key: item.attributes.qualifiedName,
+            qualifiedName: item.attributes.qualifiedName,
             guid: item.guid,
             title: item.attributes.name,
             typeName: item.typeName,

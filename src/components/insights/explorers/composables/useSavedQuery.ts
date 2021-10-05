@@ -262,6 +262,7 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
+                    parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
                 },
                 relationshipAttributes: {
                     folder: {
@@ -371,6 +372,7 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
+                    parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
                 },
                 relationshipAttributes: {
                     folder: {

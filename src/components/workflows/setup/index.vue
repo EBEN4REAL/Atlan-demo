@@ -112,13 +112,13 @@
     import { useRouter } from 'vue-router'
     import emptyScreen from '~/assets/images/empty_search.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import Preferences from '@/workflows/discovery/list/preference.vue'
-    import WorkflowList from '@/workflows/discovery/list/workflowList.vue'
-    import WorkflowFilters from '@/workflows/discovery/filters/workflowFilters.vue'
+    import Preferences from '@/workflows/setup/list/preference.vue'
+    import WorkflowList from '@/workflows/setup/list/workflowList.vue'
+    import WorkflowFilters from '@/workflows/setup/filters/workflowFilters.vue'
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
-    import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
+    import useFilterUtils from '@/workflows/setup/filters/useFilterUtils'
     import { useWorkflowTemplateSearchList } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/setup/cards.vue'
@@ -213,7 +213,7 @@
                 if (state.value !== 'active') routerOptions.state = state.value
 
                 const routerQuery = serializeQuery(routerOptions)
-                router.push(`/workflows?${routerQuery}`)
+                router.push(`/workflows/new?${routerQuery}`)
             }
 
             const handleSearchChange = useDebounceFn(() => {

@@ -26,12 +26,20 @@ export interface assetInterface {
         isPrimary: boolean
         qualifiedName: string
         userDescription: string
-        isPrimary: boolean
         rowCount: number
         schemaName: string
         sourceUpdatedAt: string
         tenantId: string
         viewDefinition: string
+        banner?: {
+            message: string
+            username: string
+            timestamp: number
+        }
+        bannerMessage: string
+        bannerUpdatedAt: number
+        bannerUpdatedBy: string
+
         table?: {
             guid: string
             typeName: string

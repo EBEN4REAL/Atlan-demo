@@ -11,6 +11,7 @@ import { serializeQuery } from '~/utils/helper/routerHelper'
 import { message } from 'ant-design-vue'
 import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/atlas/api/insights'
+import { generateUUID } from '~/utils/helper/generator'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -26,6 +27,7 @@ export function useSavedQuery(
     const {
         isInlineTabAlreadyOpened,
         inlineTabAdd,
+        modifyActiveInlineTab,
         modifyActiveInlineTabEditor,
     } = useInlineTab(treeSelectedKeys)
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
@@ -198,8 +200,242 @@ export function useSavedQuery(
             }
         })
     }
+    const saveQueryToDatabase = async (
+        saveQueryData: any,
+        editorInstance: Ref<any>,
+        saveQueryLoading: Ref<boolean>,
+        showSaveQueryModal: Ref<boolean>,
+        saveModalRef: Ref<any>,
+        router: any
+    ) => {
+        const editorInstanceRaw = toRaw(editorInstance.value)
+        const attributeValue =
+            activeInlineTab.value.explorer.schema.connectors.attributeValue
+        const attributeName =
+            activeInlineTab.value.explorer.schema.connectors.attributeName
+        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+            {},
+            activeInlineTab.value
+        )
+        activeInlineTabCopy.isSaved = true
+        activeInlineTabCopy.label = saveQueryData.title
+        activeInlineTabCopy.status = saveQueryData.assetStatus
+
+        const uuidv4 = generateUUID()
+        const integrationName = getConnectorName(attributeValue) ?? ''
+        const connectionQualifiedName =
+            getConnectionQualifiedName(attributeValue)
+        const connectionGuid = ''
+        const connectionName = getConnectorName(attributeValue)
+        const name = saveQueryData.title
+        const description = saveQueryData.description
+        const assetStatus = saveQueryData.assetStatus
+        const isSQLSnippet = saveQueryData.isSQLSnippet
+        const rawQuery = editorInstanceRaw?.getValue()
+        const compiledQuery = getParsedQuery(
+            activeInlineTab.value.playground.editor.variables,
+            editorInstanceRaw?.getValue() as string
+        )
+        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const defaultSchemaQualifiedName =
+            `${attributeName}.${attributeValue}` ?? ''
+        const variablesSchemaBase64 = serializeQuery(
+            activeInlineTab.value.playground.editor.variables
+        )
+
+        const body = ref({
+            entity: {
+                typeName: 'Query',
+                attributes: {
+                    integrationName,
+                    name,
+                    qualifiedName,
+                    connectionName,
+                    defaultSchemaQualifiedName,
+                    assetStatus,
+                    isSnippet: isSQLSnippet,
+                    connectionQualifiedName,
+                    description,
+                    owner: username.value,
+                    tenantId: 'default',
+                    rawQuery,
+                    compiledQuery,
+                    variablesSchemaBase64,
+                    connectionId: connectionGuid,
+                    isPrivate: true,
+                },
+                relationshipAttributes: {
+                    folder: {
+                        guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                        typeName: 'QueryFolder',
+                    },
+                },
+                /*TODO Created by will eventually change according to the owners*/
+                isIncomplete: false,
+                status: 'ACTIVE',
+                createdBy: username.value,
+            },
+        })
+        console.log(body.value, 'hola')
+        // chaing loading to true
+        saveQueryLoading.value = true
+        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
+
+        watch([data, error, isLoading], () => {
+            if (isLoading.value == false) {
+                saveQueryLoading.value = false
+                if (error.value === undefined) {
+                    showSaveQueryModal.value = false
+                    message.success({
+                        content: `${name} query saved!`,
+                    })
+                    saveModalRef.value?.clearData()
+                    const guid = data.value.mutatedEntities.CREATE[0].guid
+                    console.log(data.value, 'saved')
+                    if (guid) router.push(`/insights?id=${guid}`)
+                    activeInlineTabCopy.queryId = guid
+                    modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
+                } else {
+                    console.log(error.value.toString())
+                    message.error({
+                        content: `Error in saving query!`,
+                    })
+                }
+            }
+        })
+    }
+    const saveQueryToDatabaseAndOpenInNewTab = async (
+        saveQueryData: any,
+        editorInstance: Ref<any>,
+        saveQueryLoading: Ref<boolean>,
+        showSaveQueryModal: Ref<boolean>,
+        saveModalRef: Ref<any>,
+        router: any
+    ) => {
+        const editorInstanceRaw = toRaw(editorInstance.value)
+        const attributeValue =
+            activeInlineTab.value.explorer.schema.connectors.attributeValue
+        const attributeName =
+            activeInlineTab.value.explorer.schema.connectors.attributeName
+        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+            {},
+            activeInlineTab.value
+        )
+        activeInlineTabCopy.isSaved = true
+        activeInlineTabCopy.label = saveQueryData.title
+        activeInlineTabCopy.status = saveQueryData.assetStatus
+        // /* Editor text */
+        // activeInlineTabCopy.playground.editor.text = ''
+
+        const uuidv4 = generateUUID()
+        const integrationName = getConnectorName(attributeValue) ?? ''
+        const connectionQualifiedName =
+            getConnectionQualifiedName(attributeValue)
+        const connectionGuid = ''
+        const connectionName = getConnectorName(attributeValue)
+        const name = saveQueryData.title
+        const description = saveQueryData.description
+        const assetStatus = saveQueryData.assetStatus
+        const isSQLSnippet = saveQueryData.isSQLSnippet
+        const rawQuery = editorInstanceRaw?.getValue()
+        const compiledQuery = getParsedQuery(
+            activeInlineTab.value.playground.editor.variables,
+            editorInstanceRaw?.getValue() as string
+        )
+        // const rawQuery = activeInlineTabCopy.playground.editor.text
+        // const compiledQuery = activeInlineTabCopy.playground.editor.text
+        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const defaultSchemaQualifiedName =
+            `${attributeName}.${attributeValue}` ?? ''
+        const variablesSchemaBase64 = serializeQuery(
+            activeInlineTab.value.playground.editor.variables
+        )
+        // const variablesSchemaBase64 = []
+
+        const body = ref({
+            entity: {
+                typeName: 'Query',
+                attributes: {
+                    integrationName,
+                    name,
+                    qualifiedName,
+                    connectionName,
+                    defaultSchemaQualifiedName,
+                    assetStatus,
+                    isSnippet: isSQLSnippet,
+                    connectionQualifiedName,
+                    description,
+                    owner: username.value,
+                    tenantId: 'default',
+                    rawQuery,
+                    compiledQuery,
+                    variablesSchemaBase64,
+                    connectionId: connectionGuid,
+                    isPrivate: true,
+                },
+                relationshipAttributes: {
+                    folder: {
+                        guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                        typeName: 'QueryFolder',
+                    },
+                },
+                /*TODO Created by will eventually change according to the owners*/
+                isIncomplete: false,
+                status: 'ACTIVE',
+                createdBy: username.value,
+            },
+        })
+        console.log(body.value, 'hola')
+        // chaing loading to true
+        saveQueryLoading.value = true
+        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
+
+        watch([data, error, isLoading], () => {
+            if (isLoading.value == false) {
+                saveQueryLoading.value = false
+                if (error.value === undefined) {
+                    const savedQuery = data.value.mutatedEntities.CREATE[0]
+                    /* properties not coming in the response */
+                    savedQuery.attributes.defaultSchemaQualifiedName =
+                        defaultSchemaQualifiedName
+                    savedQuery.attributes.integrationName = integrationName
+                    savedQuery.attributes.connectionQualifiedName =
+                        connectionQualifiedName
+                    savedQuery.attributes.connectionGuid = connectionGuid
+                    savedQuery.attributes.connectionName = connectionName
+                    savedQuery.attributes.name = name
+                    savedQuery.attributes.description = description
+                    savedQuery.attributes.assetStatus = assetStatus
+                    savedQuery.attributes.isSQLSnippet = isSQLSnippet
+                    /* Initial should be empty */
+                    savedQuery.attributes.rawQuery = ''
+                    savedQuery.attributes.compiledQuery = ''
+                    savedQuery.attributes.qualifiedName = qualifiedName
+                    savedQuery.attributes.variablesSchemaBase64 = []
+                    /* properties not coming in the response */
+                    showSaveQueryModal.value = false
+                    message.success({
+                        content: `${name} query saved!`,
+                    })
+                    saveModalRef.value?.clearData()
+                    const guid = savedQuery.guid
+                    console.log(data.value, 'saved')
+                    if (guid) router.push(`/insights?id=${guid}`)
+                    activeInlineTabCopy.queryId = guid
+                    openSavedQueryInNewTab(savedQuery)
+                } else {
+                    console.log(error.value.toString())
+                    message.error({
+                        content: `Error in saving query!`,
+                    })
+                }
+            }
+        })
+    }
 
     return {
+        saveQueryToDatabaseAndOpenInNewTab,
+        saveQueryToDatabase,
         updateSavedQuery,
         openSavedQueryInNewTab,
     }

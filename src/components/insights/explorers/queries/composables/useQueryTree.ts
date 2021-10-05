@@ -208,17 +208,29 @@ const useTree = ({
             }
         }
 
+        // if (!event.node.isLeaf) {
+        //     expandNode([], event)
+        //     // selectedKeys.value = []
+        // } else {
+        //     if (selectedKeys.value.includes(selected)) {
+        //         // selectedKeys.value = []
+        //     } else {
+        //         // selectedKeys.value = [...selected]
+        //     }
+        //     emit('select', event.node.eventKey)
+        // }
+        // store.set(selectedCacheKey, selectedKeys.value)
+
+        /* New Logic */
         if (!event.node.isLeaf) {
             expandNode([], event)
-            // selectedKeys.value = []
-        } else {
-            if (selectedKeys.value.includes(selected)) {
-                // selectedKeys.value = []
-            } else {
-                // selectedKeys.value = [...selected]
-            }
-            emit('select', event.node.eventKey)
         }
+        if (selectedKeys.value.includes(selected)) {
+            selectedKeys.value = []
+        } else {
+            selectedKeys.value = [...selected]
+        }
+        emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
     }
 

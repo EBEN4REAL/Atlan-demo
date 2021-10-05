@@ -6,6 +6,9 @@ import { BasicSearchResponse, RelationshipSearchResponse } from '~/types/common/
 import { useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+
+import whoami from '~/composables/user/whoami'
+
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
 
 interface useLoadQueryDataProps {
@@ -15,6 +18,8 @@ interface useLoadQueryDataProps {
 }
 
 const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) => {
+    const { username } = whoami()
+
     const defaultLimit = 50;
 
     const attributes = [
@@ -82,6 +87,13 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
                    }
                  ]
                })
+        } 
+        else {
+            body.value.entityFilters.criterion.push({
+                attributeName: "owner",
+                attributeValue: username.value,
+                operator: "eq"
+              })
         }
     }
 

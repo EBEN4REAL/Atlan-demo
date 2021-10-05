@@ -12,6 +12,7 @@
                     mode="inline"
                     :class="$style.sidebar"
                     @click="handleClick"
+                    v-model:selectedKeys="current"
                 >
                     <a-menu-item-group class="mb-3" title="Workspace">
                         <!-- <a-menu-item key="general">General</a-menu-item> -->
@@ -55,18 +56,26 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { computed, defineComponent, ref } from 'vue'
+    import { useRouter, useRoute } from 'vue-router'
 
     export default defineComponent({
         setup() {
             const router = useRouter()
-            const handleClick = (e: Event) => {
-                router.push(`/admin/${e.key}`)
+            const route = useRoute()
+
+            const handleClick = ({ key }) => {
+                router.push(`/admin/${key}`)
             }
+
+            const initialRoute = route.path.split('/').slice(-1)
+            const current = ref(
+                initialRoute[0] === 'admin' ? ['members'] : initialRoute
+            )
 
             return {
                 handleClick,
+                current,
             }
         },
     })

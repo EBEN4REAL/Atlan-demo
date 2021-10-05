@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-8 gap-y-10">
+    <div class="flex flex-col gap-y-10" style="padding: 2rem 3.75rem">
         <!-- Announcements -->
         <Announcements :asset="assetData" />
 

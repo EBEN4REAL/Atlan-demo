@@ -32,7 +32,7 @@
                 </template>
 
                 <div
-                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer  max-w-min"
+                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer max-w-min"
                     :class="
                         announcementType === 'information'
                             ? 'information-bg'
@@ -90,7 +90,7 @@
             >
                 <div>
                     <div
-                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer  max-w-min"
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
                         :class="
                             announcementType === 'information'
                                 ? 'information-bg'
@@ -124,7 +124,9 @@
                 </div>
                 <div>
                     <a-dropdown trigger="click" placement="bottomRight">
-                        <a-button class="px-2">
+                        <a-button
+                            class="px-2 bg-transparent border-transparent shadow-none hover:border-current"
+                        >
                             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                         </a-button>
                         <template #overlay>
@@ -215,7 +217,7 @@
                 <div>
                     <a-dropdown trigger="click" placement="bottomRight">
                         <a-button
-                            class="px-2 ml-2 bg-transparent border-transparent shadow-none  hover:border-current"
+                            class="px-2 ml-2 bg-transparent border-transparent shadow-none hover:border-current"
                         >
                             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                         </a-button>

@@ -2,7 +2,7 @@
     <div
         class="flex items-center overflow-hidden text-sm text-gray-500  flex-nowrap"
     >
-        <span class="mr-2"> • </span>
+        <span class="mr-2" style="color: #c4c4c4"> • </span>
         <template v-for="data in hierarchyInfo" :key="data.id">
             <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">{{
                 data.text

@@ -241,15 +241,7 @@
 
 <script lang="ts">
     import { useTimeAgo } from '@vueuse/core'
-    import {
-        defineComponent,
-        ref,
-        PropType,
-        Ref,
-        computed,
-        toRefs,
-        nextTick,
-    } from 'vue'
+    import { defineComponent, ref, PropType, Ref, computed, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AnnouncementList from '~/constant/announcement'
     import addAnnouncement from '~/composables/asset/addAnnouncement'
@@ -269,7 +261,6 @@
         setup(props) {
             const editable = ref(false)
             const announcementHeader = ref('')
-            const kebabMenuVisible = ref(false)
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
             const { asset } = toRefs(props)
@@ -344,7 +335,6 @@
                 KeyMaps,
                 isCompleted,
                 titleBar,
-                kebabMenuVisible,
             }
         },
     })

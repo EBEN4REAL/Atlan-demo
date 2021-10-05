@@ -4,7 +4,9 @@
         trigger="click"
         placement="bottomRight"
     >
-        <a-button class="px-2">
+        <a-button
+            class="px-2 text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+        >
             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
         </a-button>
         <template #overlay>

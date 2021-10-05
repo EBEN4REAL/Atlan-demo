@@ -25,6 +25,14 @@ const CreateSavedQuery = (body: Record<string, any>) => {
     })
     return { data, error, isLoading }
 }
+const CreateQueryFolder = (body: Record<string, any>) => {
+    const { data, error, isLoading } = useAPIAsyncState<
+        BasicSearchResponse<any>
+    >(KeyMaps.insights.CREATE_QUERY_FOLDER, 'POST', {
+        body,
+    })
+    return { data, error, isLoading }
+}
 const GetSavedQuery = (guid: string) => {
     const { data, error, isLoading } = useAPIAsyncState<SavedQueryResponse>(
         KeyMaps.insights.GET_SAVED_QUERY,
@@ -53,4 +61,5 @@ export const Insights = {
     UpdateSavedQuery,
     CreateSavedQuery,
     GetSavedQuery,
+    CreateQueryFolder
 }

@@ -43,6 +43,8 @@ interface useSavedQueriesTreeProps {
     pushGuidToURL?: Function
     cacheKey?: string
     isAccordion?: boolean
+    connector: Ref<string | undefined>
+    savedQueryType: Ref<'personal' | 'all'>
 }
 
 const useTree = ({
@@ -51,6 +53,8 @@ const useTree = ({
     cacheKey,
     isAccordion,
     pushGuidToURL,
+    connector,
+    savedQueryType
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -69,7 +73,7 @@ const useTree = ({
     const expandedCache = store.get(expandedCacheKey)
 
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
-        useLoadQueryData()
+        useLoadQueryData({connector, savedQueryType})
 
     /** *
      * @param targetGuid - guid / key of the node whose path needs to be found
@@ -106,30 +110,22 @@ const useTree = ({
      */
     const initTreeData = async () => {
         treeData.value = []
-        const {data: queries} =  getQueries()
-        const {data: folders} =  getQueryFolders()
+        const queries = await getQueries()
+        const folders =  await getQueryFolders()
 
-        watch(folders, (newFolders) => {
-            if(newFolders) {
-                newFolders.entities?.forEach((folder) => {
-                    if (!folder.attributes.parentFolder) {
-                        treeData.value.push(returnTreeDataItemAttributes(folder))
-                        nodeToParentKeyMap[folder.attributes.qualifiedName] = 'root'
-                    }
-                })
+        folders.entities?.forEach((folder) => {
+            if (!folder.attributes.parentFolder) {
+                treeData.value.push(returnTreeDataItemAttributes(folder))
+                nodeToParentKeyMap[folder.guid] = 'root'
             }
         })
-        watch(queries, (newQueries) => {
-            if(newQueries) {
-                newQueries.entities?.forEach((query) => {
-                    if (!query.attributes.folder) {
-                        treeData.value.push(returnTreeDataItemAttributes(query))
-                        nodeToParentKeyMap[query.attributes.qualifiedName] = 'root'
-                    }
-                })
+        queries.entities?.forEach((query) => {
+            if (!query.attributes.folder) {
+                treeData.value.push(returnTreeDataItemAttributes(query))
+                nodeToParentKeyMap[query.guid] = 'root'
             }
-            isInitingTree.value = false
         })
+        isInitingTree.value = false
     }
 
     /**
@@ -145,31 +141,31 @@ const useTree = ({
 
         if (treeNode.dataRef.typeName === 'QueryFolder') {
             const subFoldersResponse = await getSubFolders(
-                treeNode.dataRef.guid
+                treeNode.dataRef.qualifiedName
             )
             const subQueriesResponse = await getFolderQueries(
-                treeNode.dataRef.guid
+                treeNode.dataRef.qualifiedName
             )
 
             subFoldersResponse.entities?.forEach((folder) => {
                 if (
                     !loadedKeys.value.find(
-                        (key) => folder.attributes.qualifiedName === key
+                        (key) => folder.guid === key
                     )
                 ) {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(folder)
                     )
-                    nodeToParentKeyMap[folder.attributes.qualifiedName] =
-                        treeNode.dataRef.qualifiedName
+                    nodeToParentKeyMap[folder.guid] =
+                        treeNode.dataRef.guid
                 }
             })
             subQueriesResponse.entities?.forEach((query) => {
                 treeNode.dataRef.children?.push(
                     returnTreeDataItemAttributes(query)
                 )
-                nodeToParentKeyMap[query.attributes.qualifiedName] =
-                    treeNode.dataRef.qualifiedName
+                nodeToParentKeyMap[query.guid] =
+                    treeNode.dataRef.guid
             })
 
             if (
@@ -208,7 +204,7 @@ const useTree = ({
 
         if (item.typeName === 'Query') {
             openSavedQueryInNewTab(item)
-            selectedKeys.value.push(item.attributes.qualifiedName)
+            selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
                 pushGuidToURL(item.guid)
             }
@@ -243,7 +239,8 @@ const useTree = ({
     const returnTreeDataItemAttributes = (item: SavedQuery | Folder) => {
         return {
             attributes: item.attributes,
-            key: item.attributes.qualifiedName,
+            key: item.guid,
+            qualifiedName: item.attributes.qualifiedName,
             guid: item.guid,
             title: item.attributes.name,
             typeName: item.typeName,
@@ -254,6 +251,12 @@ const useTree = ({
         }
     }
 
+    watch([connector,savedQueryType], () => {
+        isInitingTree.value = true
+        loadedKeys.value = []
+        expandedKeys.value = []
+        initTreeData()
+    })
     onMounted(() => {
         isInitingTree.value = true
         initTreeData()

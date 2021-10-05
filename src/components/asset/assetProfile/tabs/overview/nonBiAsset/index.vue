@@ -39,12 +39,14 @@
                     ></a-tooltip
                 >
             </a-button-group>
-            <template v-if="activePreviewTabKey === 'column-preview'">
-                <overviewColumns />
-            </template>
-            <template v-if="activePreviewTabKey === 'table-preview'">
-                <overviewTable />
-            </template>
+            <KeepAlive>
+                <overviewColumns
+                    v-if="activePreviewTabKey === 'column-preview'"
+                />
+                <overviewTable
+                    v-else-if="activePreviewTabKey === 'table-preview'"
+                />
+            </KeepAlive>
         </div>
 
         <!-- Readme widget -->

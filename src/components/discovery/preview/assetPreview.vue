@@ -50,7 +50,7 @@
 
                 <Tooltip
                     :tooltip-text="name"
-                    classes="font-bold text-base cursor-pointer text-primary hover:underline w-full"
+                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
@@ -63,7 +63,7 @@
                     :key="selectedAsset.guid"
                     :show-no-status="false"
                     :status-id="selectedAsset?.attributes?.assetStatus"
-                    class="ml-1.5"
+                    class="ml-1.5 mb-1"
                 ></StatusBadge>
             </div>
         </div>

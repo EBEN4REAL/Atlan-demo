@@ -16,7 +16,7 @@
                                 assetType(assetData).toLowerCase()
                             )
                         "
-                        class="text-gray-500 border-transparent shadow-none hover:border-gray-300 hover:shadow-sm"
+                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -25,7 +25,7 @@
                     >
                     <a-button
                         v-if="assetType(assetData).includes('Tableau')"
-                        class="text-gray-500 border-transparent shadow-none hover:border-gray-300 hover:shadow-sm"
+                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -33,7 +33,7 @@
                         </div></a-button
                     >
                     <a-button
-                        class="text-gray-500 border-transparent shadow-none hover:border-gray-300 hover:shadow-sm"
+                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
                         ><div class="flex">
                             <AtlanIcon icon="Share" class="mt-0.5 mr-2" /> Share
                         </div></a-button
@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center">
+        <div class="flex items-center w-full">
             <div class="mr-2">
                 <a-button
                     class="
@@ -62,10 +62,10 @@
                 </a-button>
             </div>
             <div class="flex items-center">
-                <Tooltip
-                    :tooltip-text="title(assetData)"
-                    classes="mb-0 text-gray-700 font-semibold text-lg"
-                />
+                <span
+                    class="mb-0 text-lg font-semibold text-gray-700 truncate"
+                    >{{ title(assetData) }}</span
+                >
 
                 <StatusBadge
                     :key="assetData.guid"
@@ -79,7 +79,6 @@
 </template>
 
 <script lang="ts">
-    import Tooltip from '@common/ellipsis/index.vue'
     // Vue
     import { defineComponent, computed, inject } from 'vue'
     // Components
@@ -96,8 +95,6 @@
             AssetLogo,
             HierarchyBar,
             StatusBadge,
-
-            Tooltip,
             AssetMenu,
         },
 

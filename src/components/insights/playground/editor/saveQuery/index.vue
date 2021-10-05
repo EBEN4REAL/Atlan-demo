@@ -168,6 +168,12 @@
                 type: Object as PropType<boolean>,
                 required: true,
             },
+            createEntityType: {
+                type: Object as PropType<'query' | 'queryFolder'>,
+                required: true,
+                default: 'query'
+            },
+
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {

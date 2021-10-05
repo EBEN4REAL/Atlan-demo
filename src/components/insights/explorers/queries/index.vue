@@ -38,6 +38,7 @@
                     </div>
                     <div class="">
                         <AtlanIcon
+                            @click="toggleCreateQueryFolderModal"
                             icon="NewFolder"
                             class="h-4 m-0 -mt-0.5 hover:text-primary"
                         />
@@ -61,6 +62,7 @@
         </div>
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
+            :createEntityType="createEntityType"
             :saveQueryLoading="saveQueryLoading"
             :ref="
                 (el) => {
@@ -102,6 +104,8 @@
             const router = useRouter()
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const saveQueryLoading = ref(false)
+            const createEntityType = ref<'query' | 'queryFolder'>('query')
+
             const saveModalRef = ref()
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -135,6 +139,7 @@
             const {
                 openSavedQueryInNewTab,
                 saveQueryToDatabaseAndOpenInNewTab,
+                createFolder
             } = useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
                 let bool = false
@@ -154,6 +159,11 @@
                 )
             }
             const toggleCreateQueryModal = () => {
+                createEntityType.value = 'query'
+                showSaveQueryModal.value = !showSaveQueryModal.value
+            }
+            const toggleCreateQueryFolderModal = () => {
+                createEntityType.value = 'queryFolder'
                 showSaveQueryModal.value = !showSaveQueryModal.value
             }
             const pushGuidToURL = (guid: string) => {
@@ -188,23 +198,29 @@
                 }
             })
             const saveQuery = (saveQueryData: any) => {
-                saveQueryToDatabaseAndOpenInNewTab(
-                    saveQueryData,
-                    editorInstance,
-                    saveQueryLoading,
-                    showSaveQueryModal,
-                    saveModalRef,
-                    router
-                )
-                focusEditor(toRaw(editorInstance.value))
+                if(createEntityType.value === 'query') {
+                    saveQueryToDatabaseAndOpenInNewTab(
+                        saveQueryData,
+                        editorInstance,
+                        saveQueryLoading,
+                        showSaveQueryModal,
+                        saveModalRef,
+                        router
+                    )
+                    focusEditor(toRaw(editorInstance.value))
+                } else if(createEntityType.value === 'queryFolder'){
+                    createFolder(saveQueryData, saveQueryLoading, showSaveQueryModal, saveModalRef)
+                }
             }
 
             return {
                 saveModalRef,
                 saveQueryLoading,
                 showSaveQueryModal,
+                createEntityType,
                 saveQuery,
                 toggleCreateQueryModal,
+                toggleCreateQueryFolderModal,
                 onSelectQueryType,
                 isSelectedType,
                 isSavedQueryOpened,

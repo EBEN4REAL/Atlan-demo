@@ -3,10 +3,6 @@
         <div class="w-full h-full overflow-x-hidden rounded">
             <div class="flex items-center justify-between w-full my-2">
                 <div class="flex items-center text-base">
-                    <AtlanIcon
-                        class="w-4 h-4 mr-2 -mt-1 text-gray-500"
-                        icon="Globe"
-                    />
                     <span class="mr-1">{{ activeInlineTab.label }}</span>
                     <div class="-mt-0.5">
                         <StatusBadge

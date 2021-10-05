@@ -46,10 +46,10 @@
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
-    import Header from '@/workflows/workflowProfile/header.vue'
+    import Header from '@/workflows/profile/header.vue'
 
     // Composables
-    import { useWorkflowTemplate } from '~/components/workflows/useWorkFlowList'
+    import { useWorkflowTemplate } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {
@@ -57,17 +57,14 @@
             LoadingView,
             ErrorView,
             setup: defineAsyncComponent(
-                () => import('@/workflows/workflowProfile/tabs/setup/index.vue')
+                () => import('@/workflows/profile/tabs/setup/index.vue')
             ),
             monitor: defineAsyncComponent(
-                () =>
-                    import('@/workflows/workflowProfile/tabs/monitor/index.vue')
+                () => import('@/workflows/profile/tabs/monitor/index.vue')
             ),
+
             settings: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/workflows/workflowProfile/tabs/settings/index.vue'
-                    )
+                () => import('@/workflows/profile/tabs/settings/index.vue')
             ),
         },
         props: {

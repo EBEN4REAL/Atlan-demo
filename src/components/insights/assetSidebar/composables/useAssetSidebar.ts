@@ -28,8 +28,7 @@ export function useAssetSidebar(
                 (tab) => tab.key === activeInlineTab.value?.key
             )
             if (index !== -1) {
-                tabsArray.value[index].assetSidebar =
-                    activeInlineTabCopy.assetSidebar
+                tabsArray.value[index] = activeInlineTabCopy
                 // syncying inline tabarray in localstorage
                 syncInlineTabsInLocalStorage(tabsArray.value)
             }

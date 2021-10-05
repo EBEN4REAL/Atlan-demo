@@ -88,12 +88,12 @@
     } from 'vue'
 
     // components
-    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+    import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
     import { useRouter } from 'vue-router'
-    import SidePanel from '@/glossary/sidePanel/index.vue'
-    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-    import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
+    import GlossaryTermsAndCategoriesTab from '~/components/glossary/profile/termsAndCategories/glossaryTermsAndCategoriesTab.vue'
+    import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'

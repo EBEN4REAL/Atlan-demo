@@ -31,6 +31,7 @@
                 <div class="flex items-center">
                     <div class="">
                         <AtlanIcon
+                            @click="toggleCreateQueryModal"
                             icon="NewQuery"
                             class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary"
                         />
@@ -58,16 +59,36 @@
                 :expanded-keys="expandedKeys"
             />
         </div>
+        <SaveQueryModal
+            v-model:showSaveQueryModal="showSaveQueryModal"
+            :saveQueryLoading="saveQueryLoading"
+            :ref="
+                (el) => {
+                    saveModalRef = el
+                }
+            "
+            @onSaveQuery="saveQuery"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref, ComputedRef, watch, ref } from 'vue'
+    import {
+        defineComponent,
+        inject,
+        Ref,
+        ComputedRef,
+        watch,
+        ref,
+        toRaw,
+    } from 'vue'
     import { useRouter } from 'vue-router'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
 
     import QueryTree from './queryTree.vue'
     import useQueryTree from './composables/useQueryTree'
@@ -75,10 +96,13 @@
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
 
     export default defineComponent({
-        components: { QueryTree, Connector },
+        components: { QueryTree, Connector, SaveQueryModal },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
+            const showSaveQueryModal: Ref<boolean> = ref(false)
+            const saveQueryLoading = ref(false)
+            const saveModalRef = ref()
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -86,6 +110,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const savedQueryType: Ref<string> = ref('personal')
+            const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
@@ -98,28 +123,8 @@
                         .attributeValue
                 )
             )
+            const { focusEditor } = useEditor()
 
-            const savedQueries: SavedQueryInterface[] = [
-                {
-                    id: '1x',
-                    label: ' Saved Query 1',
-                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                    result: 'Saved Query 1',
-                },
-
-                {
-                    id: '2x',
-                    label: 'Saved Query 2',
-                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                    result: 'Saved Query 2',
-                },
-                {
-                    id: '3x',
-                    label: 'Saved Query 3',
-                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                    result: 'Saved Query 3',
-                },
-            ]
             const isSelectedType = (type: string) => {
                 return savedQueryType.value === type
             }
@@ -127,11 +132,10 @@
                 savedQueryType.value = type
             }
 
-            const { openSavedQueryInNewTab } = useSavedQuery(
-                inlineTabs,
-                activeInlineTab,
-                activeInlineTabKey
-            )
+            const {
+                openSavedQueryInNewTab,
+                saveQueryToDatabaseAndOpenInNewTab,
+            } = useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
                 let bool = false
                 inlineTabs.value.forEach((tab) => {
@@ -147,6 +151,9 @@
                     connector,
                     'queries'
                 )
+            }
+            const toggleCreateQueryModal = () => {
+                showSaveQueryModal.value = !showSaveQueryModal.value
             }
             const pushGuidToURL = (guid: string) => {
                 router.push(`/insights?id=${guid}`)
@@ -177,8 +184,24 @@
                         newActiveInlineTab?.explorer?.queries?.connectors?.connector
                 }
             })
+            const saveQuery = (saveQueryData: any) => {
+                saveQueryToDatabaseAndOpenInNewTab(
+                    saveQueryData,
+                    editorInstance,
+                    saveQueryLoading,
+                    showSaveQueryModal,
+                    saveModalRef,
+                    router
+                )
+                focusEditor(toRaw(editorInstance.value))
+            }
 
             return {
+                saveModalRef,
+                saveQueryLoading,
+                showSaveQueryModal,
+                saveQuery,
+                toggleCreateQueryModal,
                 onSelectQueryType,
                 isSelectedType,
                 isSavedQueryOpened,
@@ -186,7 +209,6 @@
                 connector,
                 updateConnector,
                 savedQueryType,
-                savedQueries,
                 treeData,
                 loadedKeys,
                 isInitingTree,

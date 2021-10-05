@@ -1,24 +1,51 @@
 <template>
     <div class="popover-container">
-        <div class="flex items-center mb-2">
-            <p class="text-base font-bold text-gray-700">
-                {{ item.title }}
-            </p>
-            <div class="ml-2 -mt-0.5">
+        <div class="flex mb-1 text-gray-500">
+            <div class="flex items-center flex-1 mr-5 text-xs">
+                <div class="flex items-center h-full">
+                    <div class="relative w-4 h-4 mr-1 overflow-hidden">
+                        <div class="absolute absolute-center">
+                            <AtlanIcon icon="PublicFolder" class="h-4" />
+                        </div>
+                        <!-- <div class="absolute absolute-center">
+                                <AtlanIcon
+                                    icon="PrivateFolder"
+                                    class="h-4 m-0 -ml-0.5 -mt-0.5 absolute"
+                                />
+                            </div> -->
+                    </div>
+
+                    <span>Metrics</span>
+                </div>
+                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
+                <div class="flex items-center h-full">
+                    <span>Last run 5 days ago</span>
+                </div>
+                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
+                <div class="flex items-center h-full">
+                    <span>308 total runs</span>
+                </div>
+            </div>
+            <div class="mt-0.5">
                 <StatusBadge
-                    :status-id="item.assetStatus"
+                    :status-id="item.attributes.assetStatus"
                     :show-chip-style-status="false"
                     :show-no-status="true"
-                    :show-label="false"
+                    :showLabel="true"
                     class="p-0 text-xs cursor-pointer"
                 ></StatusBadge>
             </div>
         </div>
+        <div class="flex items-center mb-2">
+            <p class="text-base font-bold text-gray-700">
+                {{ item.title }}
+            </p>
+        </div>
         <p class="mb-2 text-sm text-gray-500">
             {{
-                item.attributes.userDescription === ''
+                item.attributes.description === ''
                     ? 'No description'
-                    : item.attributes.userDescription
+                    : item.attributes.description
             }}
         </p>
 
@@ -71,9 +98,9 @@
         </div>
 
         <div class="">
-            <p class="mb-1 text-gray-700">Owned By</p>
+            <p class="mb-1 text-gray-700">Owned by</p>
             <div
-                class="flex items-center justify-between"
+                class="flex items-center justify-between mb-3"
                 v-if="ownerList.length > 0"
             >
                 <PillGroup
@@ -133,11 +160,11 @@
                     </template>
                 </PillGroup>
             </div>
-            <p class="text-sm text-gray-500" v-else>
+            <p class="m-0 mb-1 text-sm text-gray-500" v-else>
                 {{ 'None' }}
             </p>
         </div>
-        <div class="flex justify-end w-full mt-3 text-primary">
+        <div class="flex justify-end w-full text-primary">
             <div class="flex items-center cursor-pointer" @click="oSidebar">
                 View in sidebar
                 <AtlanIcon icon="ArrowRight" class="ml-1"></AtlanIcon>
@@ -248,8 +275,9 @@
                     console.log(item, 'item')
                     mixedTermsAndClassifications.value = []
                     mixedOwnersAndGroups.value = []
-                    const classifications = item.value?.classifications ?? []
-                    const terms = item.value?.meanings ?? []
+                    const classifications =
+                        item.value?.attributes.classifications ?? []
+                    const terms = item.value?.attributes.meanings ?? []
                     const groups: string[] =
                         item.value?.attributes?.ownerGroups?.split(',') ?? []
                     const owners: string[] =

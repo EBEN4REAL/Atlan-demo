@@ -13,15 +13,7 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="
-                                inline-flex
-                                items-center
-                                justify-center
-                                p-2
-                                rounded-full
-                                btn-add
-                                hover:bg-gray-300
-                            "
+                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -211,7 +203,8 @@
                     inlineTabRemove(
                         targetKey as string,
                         tabs,
-                        activeInlineTabKey
+                        activeInlineTabKey,
+                        pushGuidToURL
                     )
                 }
             }

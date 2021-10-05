@@ -66,8 +66,8 @@
                     </a-dropdown>
                 </div>
             </div>
-            <div>
-                <div class="my-2">
+            <div class="my-2">
+                <div class="">
                     <a-input
                         :ref="titleBarRef"
                         v-model:value="title"
@@ -79,7 +79,9 @@
                     v-model:value="description"
                     placeholder="Add Description"
                     class="text-sm text-gray-500 border-0 shadow-none outline-none "
-                    :rows="4"
+                    :rows="3"
+                    show-count
+                    :maxlength="140"
                 />
             </div>
             <div class="flex items-center w-full">

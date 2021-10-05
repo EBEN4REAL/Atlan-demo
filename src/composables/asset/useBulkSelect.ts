@@ -26,8 +26,9 @@ export default function useBulkSelect() {
         if (selectedAssets.value.length) {
             const assetStatusMap: Record<string, string> = {}
             selectedAssets.value.forEach((asset: assetInterface) => {
-                assetStatusMap[asset.guid] =
-                    asset?.attributes?.assetStatus ?? 'is_null'
+                assetStatusMap[asset.guid] = asset?.attributes?.assetStatus
+                    ? asset.attributes.assetStatus
+                    : 'is_null'
             })
             return assetStatusMap
         }
@@ -83,9 +84,11 @@ export default function useBulkSelect() {
             return payloadObj
         })
         let requestPayloadAssetList = []
-        if (updatedStatus.value || updatedStatusMessage.value) {
-            requestPayloadAssetList = requestPayloadSkeleton.map((asset) => {
-                const updatedAsset = { ...asset }
+
+        requestPayloadAssetList = requestPayloadSkeleton.map((asset) => {
+            const updatedAsset = { ...asset }
+            // Update status
+            if (updatedStatus.value || updatedStatusMessage.value) {
                 updatedAsset.attributes.assetStatus =
                     updatedStatus.value || updatedAsset.attributes.assetStatus
                 updatedAsset.attributes.assetStatusMessage =
@@ -93,11 +96,37 @@ export default function useBulkSelect() {
                     updatedAsset.attributes.assetStatusMessage
                 updatedAsset.attributes.assetStatusUpdatedAt = Date.now()
                 updatedAsset.attributes.assetStatusUpdatedBy = username.value
-                return updatedAsset
-            })
-        }
+            }
+            // Update owners
+            const didOwnerUsersChange =
+                updatedOwners.value?.addedOwnerUsers?.length ||
+                updatedOwners.value?.removedOwnerUsers?.length
+
+            // if updated properties are empty, it means that attribute didn't change
+            const didOwnerGroupsChange =
+                updatedOwners.value?.addedOwnerGroups?.length ||
+                updatedOwners.value?.removedOwnerGroups?.length
+            if (didOwnerUsersChange || didOwnerGroupsChange) {
+                if (didOwnerUsersChange)
+                    updatedAsset.attributes.ownerUsers =
+                        existingOwnerUsers.value[asset.guid]
+                if (didOwnerGroupsChange)
+                    updatedAsset.attributes.ownerGroups =
+                        existingOwnerGroups.value[asset.guid]
+            }
+            return updatedAsset
+        })
+
+        // if (didOwnerUsersChange || didOwnerGroupsChange) {
+        //     requestPayloadAssetList = requestPayloadSkeleton.map((asset) => {
+        //         const updatedAsset = { ...asset }
+
+        //         updatedAsset.attributes.ownerUsers =
+        //             existingOwnerUsers.value[asset.guid]
+        //         return updatedAsset
+        //     })
+        // }
         // Add flow for updating asset status message
-        // Add flow for updating owners
         return { entities: requestPayloadAssetList }
     }
     const updateAssets = (assetList) => {
@@ -118,13 +147,15 @@ export default function useBulkSelect() {
                 if (isLoading.value === false) {
                     if (error.value === undefined) {
                         assetList.forEach((asset) => {
+                            const updatedAttributes =
+                                requestPayload.entities.find(
+                                    (entity) => entity.guid === asset.guid
+                                )?.attributes
                             // eslint-disable-next-line no-param-reassign
-                            asset.attributes.assetStatus = updatedStatus.value
-                            // eslint-disable-next-line no-param-reassign
-                            asset.attributes.assetStatusMessage =
-                                updatedStatus.value
-                            // eslint-disable-next-line no-param-reassign
-                            asset.attributes.assetStatusUpdatedAt = Date.now()
+                            asset.attributes = {
+                                ...asset.attributes,
+                                ...(updatedAttributes || {}),
+                            }
                         })
                         // } else {
                         //     message.error({

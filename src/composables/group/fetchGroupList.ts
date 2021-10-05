@@ -28,7 +28,7 @@ export default function fetchGroupList(immediate: boolean = true) {
     )
     const { state, STATES } = swrvState(data, error, isValidating)
 
-    const list = computed(() => data.value?.records)
+    const list = computed(() => data.value?.records ?? [])
     const total = computed(() => data.value?.total_record)
     const filtered = computed(() => data.value?.filter_record)
     function setLimit(limit = 20) {

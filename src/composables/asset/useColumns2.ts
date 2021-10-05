@@ -156,8 +156,6 @@ export function useColumnsList(
         sortOrder.value = split[1].toUpperCase()
     }
 
-
-
     const payload = computed(() => ({
         typeName: 'Column',
         excludeDeletedEntities: true,

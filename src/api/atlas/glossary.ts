@@ -5,7 +5,7 @@ import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
 
 import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY, UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY_FULL, UPDATE_GLOSSARY_TERM_FULL } from "~/api/keyMaps/glossary"
-import { useAPI } from "../useAPI";
+import { useAPI, useAPIPromise } from "../useAPI";
 
 const serviceAlias = "metastore";
 
@@ -39,6 +39,10 @@ const List = (params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
         loading: !resp.error && !resp.data,
         ...toRefs(resp),
     }
+}
+
+const ListGlossary = (params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
+    return useAPIPromise(getAPIPath(serviceAlias, "/glossary"), 'GET', {})
 }
 
 const ListCategoryHeadersForGlossary = (glossaryID: string, params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
@@ -175,6 +179,7 @@ export const Glossary = {
     ListCategoryForGlossary,
     ListTermsForGlossary,
     ListTermsForCategory,
+    ListGlossary,
     CreateGlossary,
     CreateGlossaryCategory,
     CreateGlossaryTerm,

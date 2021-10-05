@@ -1,5 +1,8 @@
 <template>
     <div class="flex flex-col p-8 gap-y-10">
+        <!-- Announcements -->
+        <Announcements :asset="assetData" />
+
         <!-- Table Summary -->
         <tableSummary />
 
@@ -71,6 +74,7 @@
     import Readme from '@/common/readme/index.vue'
     import Resources from '@/asset/assetProfile/widgets/resources/resources.vue'
     import tableSummary from '@/asset/assetProfile/tabs/overview/nonBiAsset/tableSummary.vue'
+    import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -80,6 +84,7 @@
         components: {
             Readme,
             Resources,
+            Announcements,
             tableSummary,
             overviewColumns: defineAsyncComponent(
                 () =>

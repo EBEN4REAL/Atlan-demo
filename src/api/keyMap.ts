@@ -227,4 +227,18 @@ export const KeyMaps = {
         RELATIONSHIP: () => getAPIPath('metastore', '/search/relationship'),
         BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
     },
+    workflow: {
+        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) => getAPIPath(
+            '/auth/argo',
+            `/workflow-templates/${tenant}`
+        ),
+        ARCHIVED_WORKFLOW: () => getAPIPath(
+            '/auth/argo',
+            `/archived-workflows`
+        ),
+        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) => getAPIPath(
+            '/auth/argo',
+            `/workflow-templates/${tenant}/${name}`
+        )
+    }
 }

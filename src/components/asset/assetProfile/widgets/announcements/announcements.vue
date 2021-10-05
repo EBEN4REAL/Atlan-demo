@@ -1,0 +1,330 @@
+<template>
+    <div
+        v-if="isLoading"
+        class="flex items-center justify-center text-sm leading-none"
+    >
+        <a-spin size="small"></a-spin>
+    </div>
+    <div v-else class="flex justify-between w-full">
+        <div class="flex-grow">
+            <div v-if="editable" class="p-2 shadow">
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
+                >
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="item in AnnouncementList"
+                                :key="item"
+                                @click="handleMenuClick(item)"
+                            >
+                                <div class="flex items-center space-x-2">
+                                    <component
+                                        :is="item.icon"
+                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                    />
+
+                                    {{ item.label }}
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+
+                    <div
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
+                        :class="
+                            announcementType === 'information'
+                                ? 'information-bg'
+                                : announcementType === 'issue'
+                                ? 'issue-bg'
+                                : announcementType === 'warning'
+                                ? 'warning-bg'
+                                : ''
+                        "
+                    >
+                        <component
+                            :is="announcementObject?.icon"
+                            class="w-auto h-4"
+                        />
+
+                        <span class="mb-0 ml-2">
+                            {{ announcementObject?.label }}
+                        </span>
+                    </div>
+                </a-dropdown>
+                <a-input
+                    :ref="titleBar"
+                    v-model:value="announcementHeader"
+                    placeholder="Add Announcement Header..."
+                    class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                />
+                <a-textarea
+                    v-model:value="announcementDescription"
+                    placeholder="Add description..."
+                    class="text-gray-500 border-0 shadow-none outline-none"
+                    :maxlength="280"
+                    @change="handleTextAreaUpdate"
+                />
+            </div>
+            <div v-else>
+                <div v-if="!bannerMessage || bannerMessage === ''">
+                    <div
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
+                        :class="
+                            announcementType === 'information'
+                                ? 'information-bg'
+                                : announcementType === 'issue'
+                                ? 'issue-bg'
+                                : announcementType === 'warning'
+                                ? 'warning-bg'
+                                : ''
+                        "
+                    >
+                        <component
+                            :is="announcementObject?.icon"
+                            class="w-auto h-4"
+                        />
+
+                        <span class="mb-0 ml-2">
+                            {{ announcementObject?.label }}
+                        </span>
+                    </div>
+
+                    <div
+                        class="px-3 py-1 text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
+                    >
+                        Add Announcement Header...
+                    </div>
+                    <div
+                        class="px-3 py-1 text-gray-500 border-0 shadow-none outline-none "
+                    >
+                        Add description...
+                    </div>
+                </div>
+                <div
+                    v-else
+                    class="flex p-4 border rounded"
+                    :class="
+                        bannerType === 'information'
+                            ? 'information-bg information-border'
+                            : bannerType === 'issue'
+                            ? 'issue-bg issue-border'
+                            : bannerType === 'warning'
+                            ? 'warning-bg warning-border'
+                            : ''
+                    "
+                >
+                    <div>
+                        <component
+                            :is="bannerObject?.icon"
+                            class="w-auto h-4 mt-1 mr-4"
+                        />
+                    </div>
+                    <div>
+                        <div class="mb-1 text-lg font-bold text-gray-700">
+                            Announcement Header
+                        </div>
+                        <div class="mb-2 text-gray-500">
+                            {{ bannerMessage }}
+                        </div>
+                        <div class="flex items-center">
+                            <a-popover>
+                                <template #content>
+                                    <OwnerInfoCard
+                                        :user="
+                                            asset?.attributes?.bannerUpdatedBy
+                                        "
+                                    />
+                                </template>
+                                <div
+                                    class="
+                                        flex
+                                        items-center
+                                        mr-2.5
+                                        cursor-pointer
+                                    "
+                                >
+                                    <avatar
+                                        class="mr-2"
+                                        :image-url="
+                                            KeyMaps.auth.avatar.GET_AVATAR({
+                                                username:
+                                                    asset?.attributes
+                                                        ?.bannerUpdatedBy,
+                                            })
+                                        "
+                                        :allow-upload="false"
+                                        :avatar-name="
+                                            asset?.attributes?.bannerUpdatedBy
+                                        "
+                                        avatar-size="small"
+                                        :avatar-shape="'circle'"
+                                    />
+                                    {{ asset?.attributes?.bannerUpdatedBy }}
+                                </div></a-popover
+                            >
+                            <span class="text-xs text-gray-500">{{
+                                timeAgo(asset?.attributes?.bannerUpdatedAt)
+                            }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="editable" class="flex ml-2">
+            <a-button class="mr-2" :loading="isLoading" @click="handleUpdate"
+                >Update</a-button
+            >
+
+            <a-button
+                type="link"
+                :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
+                :loading="false"
+                :loading-text="'Cancelling...'"
+                @click="onCancel"
+                >Cancel</a-button
+            >
+        </div>
+        <a-button v-else type="link" class="ml-2 text-sm" @click="startEdit">
+            <fa icon="fa pencil" class="mx-2 text-xs" />
+            Edit
+        </a-button>
+    </div>
+</template>
+
+<script lang="ts">
+    import { useTimeAgo } from '@vueuse/core'
+    import {
+        defineComponent,
+        ref,
+        PropType,
+        Ref,
+        computed,
+        toRefs,
+        nextTick,
+    } from 'vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import AnnouncementList from '~/constant/announcement'
+    import addAnnouncement from '~/composables/asset/addAnnouncement'
+    import Pill from '~/components/UI/pill/pill.vue'
+    import { KeyMaps } from '~/api/keyMap'
+    import Avatar from '~/components/common/avatar.vue'
+    import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
+
+    export default defineComponent({
+        components: { Pill, Avatar, OwnerInfoCard },
+        props: {
+            asset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+        },
+        setup(props) {
+            const editable = ref(false)
+            const announcementHeader = ref('')
+
+            const titleBar: Ref<null | HTMLInputElement> = ref(null)
+
+            const { asset } = toRefs(props)
+            const {
+                handleCancel,
+                update,
+                bannerType,
+                bannerMessage,
+                isCompleted,
+                isLoading,
+            } = addAnnouncement(asset)
+
+            const announcementDescription = ref(bannerMessage.value)
+            const announcementType = ref(bannerType.value)
+
+            const handleUpdate = () => {
+                bannerMessage.value = announcementDescription.value
+                bannerType.value = announcementType.value
+                editable.value = false
+                update()
+            }
+            const onCancel = () => {
+                editable.value = false
+                handleCancel()
+            }
+            const handleTextAreaUpdate = (e: any) => {
+                announcementDescription.value = e.target.value
+            }
+
+            const announcementObject = computed(() => {
+                const found = AnnouncementList.find(
+                    (item) => item.id === announcementType.value
+                )
+
+                return found
+            })
+            const bannerObject = computed(() => {
+                const found = AnnouncementList.find(
+                    (item) => item.id === bannerType.value
+                )
+
+                return found
+            })
+
+            const startEdit = () => {
+                editable.value = true
+                titleBar.value?.focus()
+            }
+            const handleMenuClick = (announcement) => {
+                announcementType.value = announcement.id
+            }
+
+            const timeAgo = (time: string | number) => useTimeAgo(time).value
+
+            return {
+                editable,
+                AnnouncementList,
+                handleUpdate,
+                bannerObject,
+                onCancel,
+                startEdit,
+                announcementHeader,
+                announcementDescription,
+                handleMenuClick,
+                announcementType,
+                announcementObject,
+                isLoading,
+                handleTextAreaUpdate,
+                bannerMessage,
+                bannerType,
+                timeAgo,
+                KeyMaps,
+                isCompleted,
+                titleBar,
+            }
+        },
+    })
+</script>
+
+<style lang="less" scoped>
+    .information-bg {
+        @apply bg-primary-light;
+    }
+    .issue-bg {
+        background-color: rgba(249, 220, 210, 1);
+    }
+    .warning-bg {
+        background-color: rgba(255, 239, 208, 1);
+    }
+    .information-border {
+        @apply border-primary;
+    }
+    .issue-border {
+        border-color: rgba(207, 89, 46, 1);
+    }
+    .warning-border {
+        border-color: rgba(255, 177, 25, 1);
+    }
+    :global(.ant-input::-webkit-input-placeholder) {
+        @apply text-gray-500 !important;
+    }
+</style>

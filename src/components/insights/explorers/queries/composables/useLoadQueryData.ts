@@ -6,7 +6,7 @@ import { BasicSearchResponse, RelationshipSearchResponse } from '~/types/common/
 import { useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
-
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
 
 interface useLoadQueryDataProps {
     connector: Ref<string | undefined>
@@ -72,12 +72,12 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
                 criterion: [
                    {
                      attributeName: "__classificationNames",
-                     attributeValue: "atlan_public_query",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
                      operator: "eq"
                    },
                    {
                      attributeName: "__propagatedClassificationNames",
-                     attributeValue: "atlan_public_query",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
                      operator: "eq"
                    }
                  ]

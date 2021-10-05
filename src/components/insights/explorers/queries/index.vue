@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white">
+    <div class="flex flex-col items-center w-full h-full bg-white border-r">
         <div class="w-full p-4 pb-0 rounded">
             <Connector :connector="connector" @update:data="updateConnector" />
             <div class="flex flex-row space-x-2">

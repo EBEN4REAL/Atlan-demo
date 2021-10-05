@@ -28,8 +28,8 @@
                             />
                         </template>
                         <a-collapse-panel key="1" header="Details">
-                            <div class="flex flex-col pl-5 pr-2">
-                                <div class="flex mb-4 space-x-16">
+                            <div class="flex flex-col pl-5 pr-2 gap-y-4">
+                                <div class="flex space-x-16">
                                     <div class="flex flex-col">
                                         <span
                                             class="mb-2 text-sm leading-5 text-gray-500 "

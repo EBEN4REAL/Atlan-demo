@@ -275,7 +275,6 @@ const useAssetAudit = (params: any, guid: string) => {
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value = parsedDetails
-                            console.log(data.value)
                             data.displayValue = 'bmUpdated'
 
                             return data

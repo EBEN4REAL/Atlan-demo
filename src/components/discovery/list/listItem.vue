@@ -1,22 +1,19 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div
-        class="flex mx-3 border group"
-        :class="[
-            !bulkSelectMode && isSelected
-                ? 'border-primary rounded bg-primary-light'
-                : 'bg-white border-transparent',
-            bulkSelectMode && isChecked ? 'bg-primary-light' : '',
-        ]"
-    >
+    <div class="flex flex-col mx-3 my-1">
         <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent rounded  w-96 group-hover:shadow"
-            :class="{ ' border-gray-200': bulkSelectMode ? true : !isSelected }"
+            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border rounded  hover:shadow hover:border-none"
+            :class="[
+                !bulkSelectMode && isSelected
+                    ? 'border-primary bg-primary-light'
+                    : 'bg-white border-transparent',
+                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+            ]"
         >
             <a-checkbox
                 v-if="showCheckBox"
                 :checked="isChecked"
-                class="ml-2 mr-3 opacity-0 group-hover:opacity-100"
+                class="ml-2 mr-3 opacity-60 hover:opacity-100"
                 :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
                 @click.stop
                 @change="(e) => $emit('listItem:check', e, item)"
@@ -189,6 +186,7 @@
                 @unlinkAsset="$emit('unlinkAsset', item)"
             />
         </div>
+        <hr class="mx-4" />
     </div>
 </template>
 

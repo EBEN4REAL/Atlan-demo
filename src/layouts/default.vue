@@ -44,13 +44,17 @@
                 glossary: '/glossary',
                 insights: '/insights',
                 connections: '/connections',
+                workflows: '/workflows',
                 admin: '/admin',
+                404: '/404',
             }
 
             const handleChange = (key: string) => {
                 if (key && Object.keys(pages).find((page) => page === key)) {
                     activeKey.value = [key]
                     router.push(pages[key])
+                }else {
+                    router.push(pages[404])
                 }
             }
 
@@ -59,6 +63,8 @@
                 const page = currentRoute.value.path.split('/')[1]
                 if (Object.keys(pages).find((item) => item === page)) {
                     activeKey.value = [page]
+                }else {
+                    router.push(pages[404])
                 }
             })
             return {

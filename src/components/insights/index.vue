@@ -32,13 +32,21 @@
                 :max-size="24.5"
                 :size="explorerPaneSize"
                 :min-size="0"
-                class="explorer_splitpane"
+                class="relative explorer_splitpane"
             >
                 <!--explorer pane start -->
-                <component
-                    v-if="activeTab && activeTab.component"
-                    :is="activeTab.component"
-                ></component>
+                <div
+                    class="absolute h-full full-width"
+                    :class="activeTab.component === 'schema' ? 'z-10' : 'z-1'"
+                >
+                    <Schema />
+                </div>
+                <div
+                    class="absolute h-full full-width"
+                    :class="activeTab.component === 'queries' ? 'z-10' : 'z-1'"
+                >
+                    <Queries />
+                </div>
                 <!--explorer pane end -->
             </pane>
             <pane
@@ -98,10 +106,10 @@
         components: {
             Playground,
             AssetSidebar,
-            schema: Schema,
-            queries: Queries,
-            history: History,
-            schedule: Schedule,
+            Schema,
+            Queries,
+            History,
+            Schedule,
         },
         props: {},
         setup(props) {
@@ -210,13 +218,12 @@
         box-sizing: border-box;
         position: relative;
         touch-action: none;
-        border-width: 1.5px !important;
         border-right: 0px !important;
         @apply border-r !important;
+        border-width: 1.5px !important;
         &:hover {
             @apply bg-primary !important;
-            border-width: 1.5px !important;
-            // border-width: 2px !important;
+            // border-width: 1.5px !important;
             &:before {
                 content: '';
                 position: absolute;
@@ -225,10 +232,11 @@
                 @apply bg-primary;
                 -webkit-transition: background-color 0.3s;
                 transition: background-color 0.3s;
-                margin-left: -2px;
+                margin-left: 0px;
                 transform: translateY(-50%);
                 width: 2px;
                 height: 100%;
+                @apply z-50 !important;
             }
             &:after {
                 content: '';
@@ -241,7 +249,7 @@
                 transform: translateY(-50%);
                 width: 5px;
                 height: 100%;
-                margin-left: 1px;
+                margin-left: 0px;
             }
         }
     }
@@ -251,15 +259,66 @@
         box-sizing: border-box;
         position: relative;
         touch-action: none;
-        border-width: 1.5px !important;
-        border-top: 0px !important;
         @apply border-t !important;
         &:hover {
-            // @apply border-primary;
-            // border-width: 2px !important;
+            // border-width: 1.5px !important;
+            @apply bg-primary !important;
+            &:before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                -webkit-transition: background-color 0.3s;
+                transition: background-color 0.3s;
+                margin-top: -2px;
+                transform: translateX(-50%);
+                width: 100%;
+                height: 2px;
+                @apply z-50 bg-primary !important;
+            }
+            &:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                @apply z-50 bg-transparent !important;
+                -webkit-transition: background-color 0.3s;
+                transition: background-color 0.3s;
+                margin-top: -2px;
+                transform: translateX(-50%);
+                width: 100%;
+                height: 8px;
+            }
         }
     }
-    // :global(.splitpanes--vertical > .splitpanes__splitter):before {
+    // :global(.splitpanes--horizontal > .splitpanes__splitter) {
+    //     position: relative;
+    //     margin-top: -1px;
+    //     box-sizing: border-box;
+    //     position: relative;
+    //     touch-action: none;
+    //     border-width: 1.5px !important;
+    //     @apply border-t !important;
+    //     &:hover {
+    //         // @apply border-primary;
+    //         // border-width: 2px !important;
+    //     }
+    // }
+
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):before {
+    //     content: '';
+    //     position: absolute;
+    //     top: 50%;
+    //     left: 50%;
+    //     background-color: rgba(0, 0, 0, 0.15);
+    //     -webkit-transition: background-color 0.3s;
+    //     transition: background-color 0.3s;
+    //     margin-top: -2px;
+    //     transform: translateX(-50%);
+    //     width: 30px;
+    //     height: 1px;
+    // }
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):after {
     //     // content: '';
     //     position: absolute;
     //     top: 50%;
@@ -268,67 +327,18 @@
     //     -webkit-transition: background-color 0.3s;
     //     transition: background-color 0.3s;
 
-    //     margin-left: -2px;
+    //     transform: translateX(-50%);
+    //     width: 30px;
+    //     height: 1px;
 
-    //     transform: translateY(-50%);
-    //     width: 5px;
-    //     height: 30px;
+    //     margin-top: 1px;
     // }
-    // :global(.splitpanes--vertical > .splitpanes__splitter):hover:before {
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
     //     @apply bg-primary !important;
     // }
-    // :global(.splitpanes--vertical > .splitpanes__splitter):hover:after {
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
     //     @apply bg-primary !important;
     // }
-    // :global(.splitpanes--vertical > .splitpanes__splitter):after {
-    //     // content: '';
-    //     position: absolute;
-    //     top: 50%;
-    //     left: 50%;
-    //     background-color: rgba(0, 0, 0, 0.15);
-    //     -webkit-transition: background-color 0.3s;
-    //     transition: background-color 0.3s;
-
-    //     transform: translateY(-50%);
-    //     width: 1px;
-    //     height: 30px;
-
-    //     margin-left: 1px;
-    // }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-        // content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        background-color: rgba(0, 0, 0, 0.15);
-        -webkit-transition: background-color 0.3s;
-        transition: background-color 0.3s;
-        margin-top: -2px;
-        transform: translateX(-50%);
-        width: 30px;
-        height: 1px;
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):after {
-        // content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        background-color: rgba(0, 0, 0, 0.15);
-        -webkit-transition: background-color 0.3s;
-        transition: background-color 0.3s;
-
-        transform: translateX(-50%);
-        width: 30px;
-        height: 1px;
-
-        margin-top: 1px;
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
-        @apply bg-primary !important;
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
-        @apply bg-primary !important;
-    }
 </style>
 <style lang="less" scoped>
     .placeholder {
@@ -352,6 +362,9 @@
     .sidebar-nav {
         /* 60px */
         width: 3.75rem;
+    }
+    .full-width {
+        width: 99.9%;
     }
 </style>
 

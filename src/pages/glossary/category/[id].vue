@@ -76,7 +76,7 @@
         <div id="sidePanel" class="relative w-1/3 h-full">
             <SidePanel
                 v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
-                :entity="glossary"
+                :entity="category"
             />
             <BulkSidebar
                 v-else

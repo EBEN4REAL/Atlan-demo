@@ -235,17 +235,13 @@ export const KeyMaps = {
         BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
     },
     workflow: {
-        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) => getAPIPath(
-            '/auth/argo',
-            `/workflow-templates/${tenant}`
-        ),
-        ARCHIVED_WORKFLOW: () => getAPIPath(
-            '/auth/argo',
-            `/archived-workflows`
-        ),
-        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) => getAPIPath(
-            '/auth/argo',
-            `/workflow-templates/${tenant}/${name}`
-        )
-    }
+        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}`),
+        ARCHIVED_WORKFLOW: () =>
+            getAPIPath('/auth/argo', `/archived-workflows`),
+        ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
+            getAPIPath('/auth/argo', `/archived-workflows/${guid}`),
+        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}/${name}`),
+    },
 }

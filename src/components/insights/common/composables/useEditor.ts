@@ -44,7 +44,13 @@ export function useEditor(
         }
         return query
     }
-
+    function semicolonSeparateQuery(query: string) {
+        // check if it have semicolon
+        const queryTextValues = query.split(';')
+        // always select the first one for now
+        let queryText = queryTextValues[0]
+        return queryText
+    }
     function getParsedQuery(
         variables: CustomVaribaleInterface[],
         query: string
@@ -53,17 +59,48 @@ export function useEditor(
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
         ) {
+            const queryText = semicolonSeparateQuery(query)
             const parseVariables: { [key: string]: string } = {}
             variables.forEach((v) => {
                 parseVariables[v.name] = v.value
             })
-            return moustacheInterpolator(query, parseVariables)
+            return moustacheInterpolator(queryText, parseVariables)
         }
 
-        return query
+        return semicolonSeparateQuery(query)
+    }
+    function focusEditor(editorInstance) {
+        editorInstance.focus()
+    }
+    function setSelection(
+        editorInstance,
+        monacoInstance,
+        selectionObject: {
+            startLineNumber: number
+            startColumnNumber: number
+            endLineNumber: number
+            endColumnNumber: number
+        }
+    ) {
+        const {
+            startLineNumber,
+            startColumnNumber,
+            endLineNumber,
+            endColumnNumber,
+        } = selectionObject
+        editorInstance.setSelection(
+            new monacoInstance.Selection(
+                startLineNumber,
+                startColumnNumber,
+                endLineNumber,
+                endColumnNumber
+            )
+        )
     }
 
     return {
+        setSelection,
+        focusEditor,
         modifyEditorContent,
         onEditorContentChange,
         getParsedQuery,

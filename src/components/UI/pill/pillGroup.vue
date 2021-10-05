@@ -27,7 +27,8 @@
                 @action="handleDelete(index)"
                 @click="handleClick(item, index)"
                 :has-action="!readOnly"
-                ><template #prefix> <slot name="pillPrefix" :item="item"></slot> </template
+                ><template #prefix>
+                    <slot name="pillPrefix" :item="item"></slot> </template
             ></Pill>
         </template>
         <slot name="suffix"></slot>
@@ -35,7 +36,7 @@
             <template #prefix>
                 <AtlanIcon
                     icon="Add"
-                    class="h-4 text-primary group-hover:text-white"
+                    class="h-4 text-gray group-hover:text-white"
                 />
             </template>
         </Pill>

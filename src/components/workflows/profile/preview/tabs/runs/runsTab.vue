@@ -9,15 +9,16 @@
     <template v-else-if="workflowList?.length">
         <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
             <div
-                class="text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                class="text-base truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                :class="{ 'font-bold underline': currRunId === r.metadata.uid }"
+                @click="loadRunGraph(r.metadata.uid)"
             >
-                <router-link
-                    v-if="page === 'discovery'"
-                    :to="`/workflows/${item.metadata.name}/overview`"
-                >
+                <span>
                     {{ r.metadata.name }}
-                </router-link>
-                <span v-else>{{ r.metadata.name }}</span>
+                </span>
+                <a-spin
+                    v-if="isLoadingRunGraph && currRunId === r.metadata.uid"
+                />
             </div>
             <div>
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
@@ -50,7 +51,14 @@
 </template>
 
 <script lang="ts">
-    import { watch, computed, defineComponent, PropType, toRefs } from 'vue'
+    import {
+        watch,
+        computed,
+        defineComponent,
+        PropType,
+        toRefs,
+        ref,
+    } from 'vue'
 
     import { useTimeAgo } from '@vueuse/core'
     import emptyScreen from '~/assets/images/empty_search.png'
@@ -60,21 +68,17 @@
     export default defineComponent({
         components: {},
         props: {
-            selectedAsset: {
+            selectedWorkflow: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
             isLoaded: {
                 type: Boolean,
             },
-            page: {
-                type: String,
-                required: true,
-            },
         },
-        emits: ['change'],
-        setup(props) {
-            const { selectedAsset: item } = toRefs(props)
+        emits: ['change', 'preview'],
+        setup(props, { emit }) {
+            const { selectedWorkflow: item } = toRefs(props)
 
             const labelSelector = computed(
                 () =>
@@ -86,6 +90,23 @@
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
             }
+
+            const isLoadingRunGraph = ref(false)
+            const currRunId = ref('')
+
+            const loadRunGraph = (id) => {
+                if (currRunId.value === id) return
+                currRunId.value = id
+                isLoadingRunGraph.value = true
+                emit('preview', id)
+                setTimeout(() => {
+                    isLoadingRunGraph.value = false
+                }, 2500)
+            }
+
+            watch(workflowList, (newVal) => {
+                if (newVal) currRunId.value = newVal[0].metadata.uid
+            })
 
             watch(
                 item,
@@ -107,6 +128,10 @@
                 isLoading,
                 timeAgo,
                 emptyScreen,
+                emit,
+                loadRunGraph,
+                isLoadingRunGraph,
+                currRunId,
             }
         },
     })

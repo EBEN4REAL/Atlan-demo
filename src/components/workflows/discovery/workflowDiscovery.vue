@@ -3,6 +3,18 @@
         <div
             class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
+            <AtlanBtn
+                class="m-2"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                @click="goToSetup"
+            >
+                <div class="flex items-center gap-2">
+                    <div>Setup</div>
+                    <AtlanIcon icon="Add" class="" />
+                </div>
+            </AtlanBtn>
             <!-- <WorkflowFilters
                 :ref="
                     (el) => {
@@ -79,8 +91,10 @@
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
-    import useFilterUtils from './filters/useFilterUtils'
+    import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
+
     import { useWorkflowTemplateSearchList } from '~/composables/workflow/useWorkFlowList'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
@@ -90,6 +104,7 @@
             workflowPagination,
             Preferences,
             EmptyView,
+            AtlanBtn,
             SearchAndFilter,
         },
         props: {
@@ -196,8 +211,13 @@
                 workflowFilterRef.value?.resetAllFilters()
             }
 
+            const goToSetup = () => {
+                router.push(`/workflows/new`)
+            }
+
             return {
                 autoSelect,
+                goToSetup,
                 handleClearFiltersFromList,
                 workflowFilterRef,
                 initialFilters,

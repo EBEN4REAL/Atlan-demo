@@ -106,24 +106,30 @@ const useTree = ({
      */
     const initTreeData = async () => {
         treeData.value = []
-        const folders = await getQueryFolders()
-        const queries = await getQueries()
+        const {data: queries} =  getQueries()
+        const {data: folders} =  getQueryFolders()
 
-        folders.entities?.forEach((folder) => {
-            if (!folder.attributes.parentFolder) {
-                treeData.value.push(returnTreeDataItemAttributes(folder))
-                nodeToParentKeyMap[folder.attributes.qualifiedName] = 'root'
+        watch(folders, (newFolders) => {
+            if(newFolders) {
+                newFolders.entities?.forEach((folder) => {
+                    if (!folder.attributes.parentFolder) {
+                        treeData.value.push(returnTreeDataItemAttributes(folder))
+                        nodeToParentKeyMap[folder.attributes.qualifiedName] = 'root'
+                    }
+                })
             }
         })
-
-        queries.entities?.forEach((query) => {
-            if (!query.attributes.folder) {
-                treeData.value.push(returnTreeDataItemAttributes(query))
-                nodeToParentKeyMap[query.attributes.qualifiedName] = 'root'
+        watch(queries, (newQueries) => {
+            if(newQueries) {
+                newQueries.entities?.forEach((query) => {
+                    if (!query.attributes.folder) {
+                        treeData.value.push(returnTreeDataItemAttributes(query))
+                        nodeToParentKeyMap[query.attributes.qualifiedName] = 'root'
+                    }
+                })
             }
+            isInitingTree.value = false
         })
-
-        isInitingTree.value = false
     }
 
     /**
@@ -208,22 +214,35 @@ const useTree = ({
             }
         }
 
+        // if (!event.node.isLeaf) {
+        //     expandNode([], event)
+        //     // selectedKeys.value = []
+        // } else {
+        //     if (selectedKeys.value.includes(selected)) {
+        //         // selectedKeys.value = []
+        //     } else {
+        //         // selectedKeys.value = [...selected]
+        //     }
+        //     emit('select', event.node.eventKey)
+        // }
+        // store.set(selectedCacheKey, selectedKeys.value)
+
+        /* New Logic */
         if (!event.node.isLeaf) {
             expandNode([], event)
-            // selectedKeys.value = []
-        } else {
-            if (selectedKeys.value.includes(selected)) {
-                // selectedKeys.value = []
-            } else {
-                // selectedKeys.value = [...selected]
-            }
-            emit('select', event.node.eventKey)
         }
+        if (selectedKeys.value.includes(selected)) {
+            selectedKeys.value = []
+        } else {
+            selectedKeys.value = [...selected]
+        }
+        emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
     }
 
     const returnTreeDataItemAttributes = (item: SavedQuery | Folder) => {
         return {
+            attributes: item.attributes,
             key: item.attributes.qualifiedName,
             guid: item.guid,
             title: item.attributes.name,

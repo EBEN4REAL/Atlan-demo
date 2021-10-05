@@ -4,6 +4,7 @@
             <Connector
                 class=""
                 :filterSourceIds="['tableau', 'athena']"
+                :isLeafNodeSelectable="false"
                 v-model:data="connectorsData"
                 :item="{
                     id: 'connector',

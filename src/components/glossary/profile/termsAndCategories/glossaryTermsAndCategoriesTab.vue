@@ -60,6 +60,9 @@
                         :selectedEntity="selectedEntity"
                         @loadMore="loadMore"
                         @gtcCardClicked="onEntitySelect"
+                        @bulkSelectChange="
+                            (list) => $emit('bulkSelectChange', list)
+                        "
                     />
                 </div>
             </div>
@@ -190,7 +193,7 @@
                 default: false,
             },
         },
-        emits: ['entityPreview', 'firstCardReachedTop'],
+        emits: ['entityPreview', 'firstCardReachedTop', 'bulkSelectChange'],
         setup(props, { emit }) {
             // data
             const glossaryQualifiedName = computed(() => props.qualifiedName)

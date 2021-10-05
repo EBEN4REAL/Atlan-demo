@@ -53,6 +53,18 @@ export const List: CollapseArray = [
         exclude: false,
     },
     {
+        id: 'term',
+        label: 'Term',
+        component: 'governance',
+        overallCondition: 'OR',
+        filters: [
+            
+        ],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
         id: 'owners',
         label: 'Owners',
         component: 'owners',

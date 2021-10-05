@@ -1,5 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import { getAPIPath, getAxiosClient } from "~/api";
+import { KeyMaps } from '~/api/keyMap';
+import { useAPISWRV, useAPIAsyncState } from '~/api/useAPI';
 
 const serviceAlias = "auth/argo";
 
@@ -10,18 +12,34 @@ export const URL = {
 
 
 const List = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get(getAPIPath(serviceAlias, URL.WorkflowList), {
-    params,
-    ...options,
-  });
+  params,
+  ...options,
+});
 
-const ArchivedList = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get(getAPIPath(serviceAlias, URL.ArchiveList), {
-    params,
-    ...options,
-  });
+const getWorkflowTemplates = (tenant, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.WORKFLOW_TEMPLATES, 'GET', {
+  options,
+  pathVariables: {
+    tenant
+  }
+}, { immediate })
 
+const getWorkflowTemplateByName = (tenant, name, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.WORKFLOW_TEMPLATES_BY_NAME, 'GET', {
+  options,
+  pathVariables: {
+    tenant,
+    name
+  }
+}, { immediate })
+
+const getArchivedWorkflowList = (params, { immediate, options }) => useAPIAsyncState(KeyMaps.workflow.ARCHIVED_WORKFLOW, 'GET', {
+  options,
+  params
+}, { immediate })
 
 export const Workflows = {
   URL,
   List,
-  ArchivedList,
+  getArchivedWorkflowList,
+  getWorkflowTemplateByName,
+  getWorkflowTemplates
 };

@@ -139,7 +139,7 @@ const useAssetAudit = (params: any, guid: string) => {
             if (owners) {
                 const users = attributes.ownerUsers.split(',')
                 if (attributes.ownerUsers === '') {
-                    data.displayValue = 'Removed all owners'
+                    data.displayValue = 'owners'
                     return data
                 }
                 data.displayValue = 'owners'
@@ -167,7 +167,9 @@ const useAssetAudit = (params: any, guid: string) => {
             if (userDescription) {
                 const value = attributes.userDescription
                 data.value = value
+
                 data.displayValue = 'description'
+
                 return data
             }
         }

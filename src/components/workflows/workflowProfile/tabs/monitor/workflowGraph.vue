@@ -14,13 +14,10 @@
 <script lang="ts">
     /** PACKAGES */
     import { defineComponent, ref, onMounted, toRefs, watch } from 'vue'
-    /** DATA */
-    // import workflow from './workflowData.js'
+
     /** COMPOSABLES */
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
-
-    // import { Workflows } from '~/services/argo/api/workflow'
 
     export default defineComponent({
         name: 'WorkflowGraph',
@@ -30,15 +27,13 @@
                 required: true,
             },
         },
-        setup(props, { emit }) {
+        setup(props) {
             /** DATA */
-            // const workflowData = ref(workflow)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const workflowContainer = ref(null)
             const graph = ref(null)
             const { graphData } = toRefs(props)
-            const isLoading = ref(false)
 
             /** METHODS */
             // initialize

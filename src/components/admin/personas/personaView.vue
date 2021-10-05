@@ -10,7 +10,7 @@
                 class="pt-6 mb-4"
             />
             <aside class="overflow-y-auto" style="height: calc(100% - 4.5rem)">
-                <a-menu v-model:selectedKeys="selectedPersona" mode="inline">
+                <a-menu v-model:selectedKeys="selectedPersonaId" mode="inline">
                     <a-menu-item
                         v-for="persona in filteredPersonas"
                         :key="persona.id"
@@ -22,27 +22,7 @@
         </div>
 
         <div class="flex flex-col w-3/4 h-full px-4 overflow-y-hidden">
-            <template v-if="selectedPersona">
-                <span class="pb-2 text-xl pt-7 text-gray">Scopes</span>
-                <div class="py-2 overflow-y-auto">
-                    <div class="mb-3" v-for="scope in scopeList">
-                        <span
-                            class="block mb-1 text-base text-gray-500 capitalize "
-                            >{{ scope.type }}</span
-                        >
-                        <a-checkbox-group
-                            :name="scope.type"
-                            :options="scope.scopes"
-                        />
-                    </div>
-                </div>
-            </template>
-            <div v-else class="flex items-center justify-center h-full">
-                <a-spin v-if="scopeListLoading" />
-                <span v-else class="mx-auto"
-                    >Add a new persona or select one to edit it</span
-                >
-            </div>
+            <PersonaScopes :selectedPersona="selectedPersona" />
         </div>
     </div>
 </template>
@@ -50,14 +30,14 @@
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
     import usePersonaService from '~/services/heracles/composables/personas'
-    import useScopeService from '~/services/heracles/composables/scopes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import PersonaScopes from './personaScopes.vue'
 
     export default defineComponent({
-        name: 'RequestList',
-        components: { SearchAndFilter },
+        name: 'PersonaView',
+        components: { SearchAndFilter, PersonaScopes },
         setup() {
-            const selectedPersona = ref('')
+            const selectedPersonaId = ref([])
             const searchTerm = ref('')
 
             const { listPersonas } = usePersonaService()
@@ -73,18 +53,20 @@
                 else return personaList.value
             })
 
-            const {
-                scopeList,
-                error,
-                isLoading: scopeListLoading,
-            } = useScopeService().listScopes()
+            const selectedPersona = computed(() => {
+                if (selectedPersonaId.value[0])
+                    return personaList.value.find(
+                        (ps) => ps.id === selectedPersonaId.value[0]
+                    )
+                else return undefined
+            })
 
             return {
                 filteredPersonas,
                 selectedPersona,
+                selectedPersonaId,
                 searchTerm,
-                scopeList,
-                scopeListLoading,
+                personaList,
             }
         },
     })

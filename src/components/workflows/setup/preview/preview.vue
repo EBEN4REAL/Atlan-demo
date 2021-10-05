@@ -1,5 +1,5 @@
 <template>
-    <div>Preview Bar</div>
+    <div>{{ selectedWorkflow.metadata.name }}</div>
     <AtlanButton
         class="absolute bottom-0 m-2"
         style="width: 90%"

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap justify-between gap-y-5">
+    <div class="flex justify-between gap-y-5">
         <div
             v-for="(i, x) in list"
             :key="x"

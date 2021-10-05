@@ -72,7 +72,10 @@
 
                 <div
                     v-if="
-                        workflowList && workflowList.length <= 0 && !isLoading
+                        !isLoading &&
+                        !(queryText.length
+                            ? filterList(queryText).length
+                            : workflowList.length)
                     "
                     class="flex flex-col items-center mt-10"
                 >
@@ -81,12 +84,14 @@
                         alt="No Workflows"
                         class="w-2/5 m-auto mb-4"
                     />
-                    <span class="text-gray-500">No Workflow found</span>
+                    <span class="text-gray-500"
+                        >No Workflow template found</span
+                    >
                 </div>
 
                 <div v-else class="">
                     <div
-                        v-if="workflowList.length"
+                        v-if="workflowList.length && !queryText"
                         class="mx-3 text-xl font-bold text-gray-600"
                     >
                         All
@@ -135,7 +140,7 @@
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import useFilterUtils from '@/workflows/setup/filters/useFilterUtils'
-    import { useWorkflowTemplateSearchList } from '~/composables/workflow/useWorkFlowList'
+    import { useClusterWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/setup/cards.vue'
 
@@ -195,13 +200,13 @@
             // Get All Disoverable Asset Types
 
             const { workflowList, isLoading, filterList, mutate } =
-                useWorkflowTemplateSearchList('default', false)
+                useClusterWorkflowTemplates('default', false)
 
             if (!workflowList.value.length) mutate()
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
-                let placeholder = 'Search for Workflows Templates'
+                let placeholder = 'Search for Workflow Templates'
                 if (placeholderLabel.value.asset) {
                     placeholder += ` in ${placeholderLabel.value.asset}`
                 } else if (placeholderLabel.value.connector) {

@@ -2,13 +2,15 @@
     <div class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
+                <KeepAlive>
                     <component
-                        :is="isItem ? 'router-view' : 'AssetDiscovery'"
+                        :is="isItem ? 'router-view' : 'WorkflowDiscovery'"
+                        ref="workflowDiscovery"
                         :initial-filters="initialFilters"
-                        :updateProfile="updateProfile"
+                        :update-profile="updateProfile"
                         @preview="handlePreview"
-                        ref="assetDiscovery"
                     ></component>
+                </KeepAlive>
             </div>
         </div>
         <div
@@ -17,25 +19,23 @@
         >
             <WorkflowPreview
                 v-if="selected"
-                :selectedAsset="selected"
-                @asset-mutation="propagateToAssetList"
+                :selected-asset="selected"
                 :page="page"
+                @asset-mutation="propagateToAssetList"
             ></WorkflowPreview>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
-    import AssetDiscovery from '~/components/workflows/assetDiscovery.vue'
-    import WorkflowPreview from '~/components/workflows/preview/workflowPreview.vue'
     import { useHead } from '@vueuse/head'
-    import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
+    import { computed, defineComponent, ref, Ref } from 'vue'
+    import WorkflowDiscovery from '~/components/workflows/discovery/workflowDiscovery.vue'
+    import WorkflowPreview from '~/components/workflows/shared/preview/workflowPreview.vue'
+    // TODO change to workflowInterfalce
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
     import { decodeQuery } from '~/utils/helper/routerHelper'
-    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -45,7 +45,7 @@
     export default defineComponent({
         components: {
             WorkflowPreview,
-            AssetDiscovery,
+            WorkflowDiscovery,
         },
         setup() {
             useHead({
@@ -56,7 +56,8 @@
             const isItem = computed(() => route.params.id)
             const updateProfile = ref<boolean>(false)
 
-            const assetDiscovery: Ref<Element | null> = ref(null)
+            const workflowDiscovery: Ref<Element | null> = ref(null)
+            // TODO fix initialFilters set , apply , etc
             // const initialFilters: initialFiltersType =
             //     getDecodedOptionsFromString(router)
 
@@ -71,7 +72,6 @@
                 ),
             }
 
-            router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
@@ -81,24 +81,9 @@
                 isItem.value ? 'profile' : 'discovery'
             )
 
-            // * Get all available BMs and save on store
-            const { fetchBMonStore } = useBusinessMetadata()
-            fetchBMonStore()
-
-            /* Making the network request here to fetch the latest changes of classifications. 
-            So that everytime user visit the discover page it will be in sync to latest data not with store
-            */
-            const {
-                isClassificationInitializedInStore,
-                initializeClassificationsInStore,
-            } = useClassifications()
-            if (!isClassificationInitializedInStore()) {
-                initializeClassificationsInStore()
-            }
-
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (page.value === 'discovery')
-                    assetDiscovery.value.mutateAssetInList(updatedAsset)
+                    workflowDiscovery.value.mutateAssetInList(updatedAsset)
                 handlePreview(updatedAsset)
                 updateProfile.value = true
             }
@@ -110,7 +95,7 @@
                 isItem,
                 page,
                 propagateToAssetList,
-                assetDiscovery,
+                workflowDiscovery,
             }
         },
     })

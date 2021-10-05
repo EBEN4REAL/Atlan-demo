@@ -23,14 +23,14 @@ export default function useAssetDetailsTabList(
         {
             name: 'Overview',
             component: 'info',
-            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            visibleOn: ['discovery', 'profile'],
             icon: 'Overview',
             tooltip: 'Overview',
         },
         {
             name: 'Runs',
             component: 'runs',
-            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            visibleOn: ['discovery', 'profile'],
             icon: 'Activity',
             tooltip: 'Runs',
         },

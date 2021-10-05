@@ -3,7 +3,13 @@
         <div
             v-for="(i, x) in list"
             :key="x"
-            class="flex items-center justify-center w-40 h-24 border-2"
+            class="flex items-center justify-center w-40 h-24 border rounded cursor-pointer "
+            :class="
+                selectedItemId === i.metadata.uid
+                    ? 'border-primary  bg-primary-light'
+                    : 'bg-white'
+            "
+            @click="handlePreview(i)"
         >
             {{ i.metadata.name }}
         </div>
@@ -11,7 +17,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, toRefs, watch } from 'vue'
 
     export default defineComponent({
         name: 'WorkflowCards',
@@ -20,9 +26,38 @@
                 type: Array,
                 required: true,
             },
+            selectedItemId: {
+                type: String,
+                required: true,
+                default: () => null,
+            },
+            autoSelect: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
-        setup() {
-            return {}
+        emits: ['preview', 'update:autoSelect'],
+
+        setup(props, { emit }) {
+            const { list } = toRefs(props)
+
+            function handlePreview(item: any) {
+                emit('preview', item)
+            }
+
+            // watch(
+            //     list,
+            //     () => {
+            //         if (autoSelect.value) {
+            //             if (list.value.length) handlePreview(list.value[0])
+            //         } else emit('update:autoSelect', true)
+            //     },
+            //     { immediate: true }
+            // )
+            return {
+                handlePreview,
+            }
         },
     })
 </script>

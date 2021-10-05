@@ -49,15 +49,25 @@
                     </template> -->
                     </SearchAndFilter>
                 </div>
-                <div v-if="workflowList.length" class="mx-3">
+                <div v-if="workflowList.length && !queryText" class="mx-3">
                     <p class="mb-2 text-xl font-bold text-gray-600">Featured</p>
-                    <WorkflowCards :list="workflowList.slice(10, 14)" />
+                    <WorkflowCards
+                        v-model:autoSelect="autoSelect"
+                        :list="workflowList.slice(10, 14)"
+                        :selected-item-id="selectedItemId"
+                        @preview="handlePreview"
+                    />
                 </div>
-                <div v-if="workflowList.length" class="mx-3">
+                <div v-if="workflowList.length && !queryText" class="mx-3">
                     <p class="mb-2 text-xl font-bold text-gray-600">
                         Suggested
                     </p>
-                    <WorkflowCards :list="workflowList.slice(15, 19)" />
+                    <WorkflowCards
+                        v-model:autoSelect="autoSelect"
+                        :list="workflowList.slice(15, 19)"
+                        :selected-item-id="selectedItemId"
+                        @preview="handlePreview"
+                    />
                 </div>
 
                 <div
@@ -73,6 +83,7 @@
                     />
                     <span class="text-gray-500">No Workflow found</span>
                 </div>
+
                 <div v-else class="">
                     <div
                         v-if="workflowList.length"
@@ -82,7 +93,11 @@
                     </div>
                     <div
                         class="overflow-y-auto"
-                        style="height: calc(100vh - 29rem)"
+                        :style="
+                            queryText
+                                ? `height: calc(100vh - 9.5rem)`
+                                : `height: calc(100vh - 29rem)`
+                        "
                     >
                         <WorkflowList
                             v-model:autoSelect="autoSelect"
@@ -93,6 +108,7 @@
                                     : workflowList
                             "
                             :is-loading="isLoading"
+                            :selected-item-id="selectedItemId"
                             @preview="handlePreview"
                             @loadMore="loadMore"
                         ></WorkflowList>
@@ -152,8 +168,9 @@
 
             // workflow filter component ref
             const workflowFilterRef = ref()
+            // FIXME auto select logic bug
             const autoSelect = ref(true)
-
+            const selectedItemId = ref('')
             // Clean Stuff
             const AllFilters: Ref = ref({ ...initialFilters.value })
 
@@ -184,7 +201,7 @@
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
-                let placeholder = 'Search for Workflows'
+                let placeholder = 'Search for Workflows Templates'
                 if (placeholderLabel.value.asset) {
                     placeholder += ` in ${placeholderLabel.value.asset}`
                 } else if (placeholderLabel.value.connector) {
@@ -222,6 +239,7 @@
             }, 150)
 
             const handlePreview = (item) => {
+                selectedItemId.value = item.metadata.uid
                 emit('preview', item)
             }
             const loadMore = () => {
@@ -258,6 +276,7 @@
                 filters,
                 filterList,
                 goToWorkflow,
+                selectedItemId,
             }
         },
         data() {

@@ -1,6 +1,7 @@
 <template>
     <div
-        class="flex items-center justify-between py-1 transition duration-300 border border-gray-300 rounded shadow  hover:shadow-md focus-within:ring-2 focus-within:border-primary focus-within:shadow-none"
+        class="flex items-center justify-between py-1 transition duration-300  searchbar"
+        :class="size"
     >
         <AtlanIcon icon="Search" class="pl-2 pr-1 text-gray-500" />
         <input
@@ -49,6 +50,7 @@
         Ref,
         ref,
         toRefs,
+        PropType,
     } from 'vue'
 
     export default defineComponent({
@@ -57,7 +59,10 @@
             autofocus: { type: Boolean, default: () => false },
             dot: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
-            size: { type: String, default: () => 'default' },
+            size: {
+                type: String as PropType<'default' | 'minimal'>,
+                default: () => 'default',
+            },
             value: { type: String },
         },
         emits: ['update:value', 'change'],
@@ -92,3 +97,26 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .searchbar {
+        &.default {
+            @apply border border-gray-300 rounded shadow;
+            &:hover {
+                @apply shadow-md;
+            }
+            &:focus-within {
+                @apply ring-2 border-primary shadow-none;
+            }
+        }
+
+        &.minimal {
+            @apply border-b border-gray-300;
+            &:hover {
+                @apply border-primary-focus;
+            }
+            &:focus-within {
+                @apply border-primary;
+            }
+        }
+    }
+</style>

@@ -2,12 +2,12 @@
     <div class="flex items-center">
         <button
             v-if="isOverflowing"
-            class="w-8 h-8 p-2 group"
+            class="w-8 h-8 p-2 opacity-70 hover:opacity-100"
             @click="() => scrollWrapper?.scrollBy(-200, 0)"
         >
             <AtlanIcon
                 icon="ChevronRight"
-                class="text-gray-500 transform rotate-180  opacity-70 group-hover:opacity-100"
+                class="text-gray-500 transform rotate-180"
             />
         </button>
         <div
@@ -19,13 +19,10 @@
         </div>
         <button
             v-if="isOverflowing"
-            class="w-8 h-8 p-2 group"
+            class="w-8 h-8 p-2 opacity-70 hover:opacity-100"
             @click="() => scrollWrapper?.scrollBy(200, 0)"
         >
-            <AtlanIcon
-                icon="ChevronRight"
-                class="text-gray-500 opacity-70 group-hover:opacity-100"
-            />
+            <AtlanIcon icon="ChevronRight" class="text-gray-500" />
         </button>
     </div>
 </template>
@@ -34,8 +31,7 @@
     import { computed, defineComponent, Ref, ref } from 'vue'
     export default defineComponent({
         name: 'ScrollStrip',
-        emits: ['action'],
-        setup(prop, { emit }) {
+        setup() {
             const scrollWrapper: Ref<HTMLElement | null> = ref(null)
 
             const isOverflowing = computed(

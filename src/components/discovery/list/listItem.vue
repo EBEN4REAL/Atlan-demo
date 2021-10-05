@@ -143,7 +143,7 @@
                         projection?.includes('terms')
                     "
                 >
-                    <ScrollStrip>
+                    <ScrollStrip class="-ml-3">
                         <Pill
                             v-if="projection?.includes('classifications')"
                             v-for="clsf in item.classifications"

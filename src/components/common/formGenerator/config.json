@@ -22,6 +22,17 @@
         "template": "xx-jdbc:redshift://{{host}}:asdasd{{port}}/{{database}}-xx"
     },
     {
+        "type": "enum",
+        "id": "enum1",
+        "label": "Enum 1",
+        "isVisible": true,
+        "default": true,
+        "options": [
+            { "id": "01", "value": "o1" },
+            { "id": "02", "value": "o2" }
+        ]
+    },
+    {
         "type": "boolean",
         "id": "boolean",
         "label": "boolean",
@@ -48,7 +59,7 @@
             {
                 "type": "regexp",
                 "source": "(^|\\s)((https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+\\.?(:\\d+)?(\\/\\S*)?)",
-                "flags":"gm",
+                "flags": "gm",
                 "enabled": true,
                 "errorMessage": "Url is not valid"
             }
@@ -235,6 +246,13 @@
                         "type": "required",
                         "enabled": true,
                         "errorMessage": "Host name is mandatory"
+                    },
+                    {
+                        "type": "regexp",
+                        "source": "(^|\\s)((https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+\\.?(:\\d+)?(\\/\\S*)?)",
+                        "flags": "gm",
+                        "enabled": true,
+                        "errorMessage": "Url is not valid"
                     }
                 ]
             },

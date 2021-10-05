@@ -50,6 +50,8 @@
                                     :multiple="c?.isMultivalued"
                                     :request-config="f?.requestConfig"
                                     :response-config="f?.responseConfig"
+                                    :limit-after="c.limitAfter"
+                                    :limit-before="c.limitBefore"
                                     v-bind="
                                         c.type === 'asyncSelect'
                                             ? { valueObject }
@@ -92,6 +94,8 @@
                             :multiple="f?.isMultivalued"
                             :request-config="f?.requestConfig"
                             :response-config="f?.responseConfig"
+                            :limit-after="f.limitAfter"
+                            :limit-before="f.limitBefore"
                             v-bind="
                                 f.type === 'asyncSelect' ? { valueObject } : {}
                             "

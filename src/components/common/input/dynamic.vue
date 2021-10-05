@@ -21,6 +21,8 @@
             :default-value="modelValue"
             :placeholder="placeholder"
             @change="handleChange"
+            :disabled-date="disabledDate"
+            format="MM-DD-YYYY"
         ></component>
         <a-time-picker
             v-if="dataType === 'time'"
@@ -120,6 +122,7 @@
 </template>
 
 <script lang="ts">
+    import dayjs from 'dayjs'
     import { defineComponent, PropType, ref } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
@@ -204,6 +207,20 @@
                     return ''
                 },
             },
+            limitBefore: {
+                type: [String, Boolean],
+                required: false,
+                default(): string | boolean {
+                    return false
+                },
+            },
+            limitAfter: {
+                type: [String, Boolean],
+                required: false,
+                default(): string | boolean {
+                    return false
+                },
+            },
         },
         emits: ['update:modelValue', 'change', 'blur'],
         setup(props) {
@@ -229,6 +246,7 @@
         data() {
             return {
                 isCustom: false,
+                dayjs,
             }
         },
         computed: {
@@ -263,9 +281,20 @@
             // }
         },
         methods: {
-            handleChange(e, timeStamp) {
-                // console.log(e)
+            disabledDate(current) {
+                // console.log(this.limitAfter, this.limitBefore)
 
+                const limitAfter =
+                    typeof this.limitAfter === 'boolean'
+                        ? this.limitAfter
+                        : current < dayjs(this.limitAfter, 'MM-DD-YYYY')
+                const limitBefore =
+                    typeof this.limitBefore === 'boolean'
+                        ? this.limitBefore
+                        : current < dayjs(this.limitBefore, 'MM-DD-YYYY')
+                return current && limitAfter && current && limitBefore
+            },
+            handleChange(e, timeStamp) {
                 let val = e
                 if (e?.target) {
                     val = e.target.value

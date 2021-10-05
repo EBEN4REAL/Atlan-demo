@@ -5,6 +5,7 @@
                 <component
                     :is="isItem ? 'router-view' : 'WorkflowDiscovery'"
                     ref="workflowDiscovery"
+                    :selected-run-id="selectedRunId"
                     :initial-filters="initialFilters"
                     :update-profile="updateProfile"
                     @preview="handlePreview"
@@ -20,6 +21,7 @@
                 :selected-asset="selected"
                 :page="page"
                 @asset-mutation="propagateToAssetList"
+                @preview="selectedRunId = $event"
             ></WorkflowPreview>
         </div>
     </div>
@@ -53,6 +55,7 @@
             const route = useRoute()
             const isItem = computed(() => route.params.id)
             const updateProfile = ref<boolean>(false)
+            const selectedRunId = ref('')
 
             const workflowDiscovery: Ref<Element | null> = ref(null)
             // TODO fix initialFilters set , apply , etc
@@ -94,6 +97,7 @@
                 page,
                 propagateToAssetList,
                 workflowDiscovery,
+                selectedRunId,
             }
         },
     })

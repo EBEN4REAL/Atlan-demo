@@ -2,7 +2,14 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="
+                    fixed
+                    z-10
+                    px-0
+                    border-r-0
+                    rounded-none rounded-l
+                    -left-5
+                "
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -58,7 +65,15 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            px-4
+                            pt-2
+                            font-semibold
+                            text-gray-700 text-md
+                        "
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -70,6 +85,7 @@
                         :selected-asset="selectedAsset"
                         :is-loaded="isLoaded"
                         @change="handleChange"
+                        @preview="emit('preview', $event)"
                     ></component>
                 </div>
             </a-tab-pane>
@@ -167,6 +183,7 @@
                 activeKey,
                 filteredTabs,
                 handleChange,
+                emit,
             }
         },
     })

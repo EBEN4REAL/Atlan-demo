@@ -7,7 +7,7 @@
             const route = useRoute()
             const router = useRouter()
             const id = computed(() => route?.params?.id || '')
-            router.replace(`/assets/${id.value}/overview`)
+            router.replace(`/assets/${id.value}/monitor`)
         },
     })
 </script>

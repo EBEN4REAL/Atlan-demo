@@ -9,9 +9,14 @@
     <template v-else-if="workflowList?.length">
         <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
             <div
-                class="text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                class="text-base truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                :class="{ 'font-bold underline': currRunId === r.metadata.uid }"
+                @click="loadRunGraph(r.metadata.uid)"
             >
                 {{ r.metadata.name }}
+                <a-spin
+                    v-if="isLoadingRunGraph && currRunId === r.metadata.uid"
+                />
             </div>
             <div>
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
@@ -46,7 +51,6 @@
 <script lang="ts">
     import {
         watch,
-        reactive,
         computed,
         defineComponent,
         PropType,
@@ -67,8 +71,9 @@
                 required: true,
             },
         },
+        emits: ['preview'],
 
-        setup(props) {
+        setup(props, { emit }) {
             const { selectedAsset: item } = toRefs(props)
 
             const labelSelector = computed(
@@ -81,6 +86,23 @@
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
             }
+
+            const isLoadingRunGraph = ref(false)
+            const currRunId = ref('')
+
+            const loadRunGraph = (id) => {
+                if (currRunId.value === id) return
+                currRunId.value = id
+                isLoadingRunGraph.value = true
+                emit('preview', id)
+                setTimeout(() => {
+                    isLoadingRunGraph.value = false
+                }, 2500)
+            }
+
+            watch(workflowList, (newVal) => {
+                if (newVal) currRunId.value = newVal[0].metadata.uid
+            })
 
             watch(
                 () => item,
@@ -100,6 +122,10 @@
                 isLoading,
                 timeAgo,
                 emptyScreen,
+                emit,
+                loadRunGraph,
+                isLoadingRunGraph,
+                currRunId,
             }
         },
     })

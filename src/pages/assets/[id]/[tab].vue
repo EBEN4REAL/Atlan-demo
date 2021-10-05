@@ -87,11 +87,11 @@
                     name: 'Lineage',
                     component: 'lineage',
                 },
-                {
+                /*  {
                     id: 3,
                     name: 'Settings',
                     component: 'settings',
-                },
+                }, */
             ]
 
             /** UTILS */

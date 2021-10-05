@@ -109,7 +109,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const savedQueryType: Ref<string> = ref('personal')
+            const savedQueryType: Ref<'personal' | 'all'> = ref('personal')
             const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -128,7 +128,7 @@
             const isSelectedType = (type: string) => {
                 return savedQueryType.value === type
             }
-            const onSelectQueryType = (type: string) => {
+            const onSelectQueryType = (type: 'personal' | 'all') => {
                 savedQueryType.value = type
             }
 
@@ -173,7 +173,8 @@
                 emit,
                 openSavedQueryInNewTab,
                 pushGuidToURL,
-                connector
+                connector,
+                savedQueryType
             })
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {

@@ -44,6 +44,7 @@ interface useSavedQueriesTreeProps {
     cacheKey?: string
     isAccordion?: boolean
     connector: Ref<string | undefined>
+    savedQueryType: Ref<'personal' | 'all'>
 }
 
 const useTree = ({
@@ -52,7 +53,8 @@ const useTree = ({
     cacheKey,
     isAccordion,
     pushGuidToURL,
-    connector
+    connector,
+    savedQueryType
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -71,7 +73,7 @@ const useTree = ({
     const expandedCache = store.get(expandedCacheKey)
 
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
-        useLoadQueryData({connector})
+        useLoadQueryData({connector, savedQueryType})
 
     /** *
      * @param targetGuid - guid / key of the node whose path needs to be found
@@ -249,7 +251,7 @@ const useTree = ({
         }
     }
 
-    watch(connector, (newConnector) => {
+    watch([connector,savedQueryType], () => {
         isInitingTree.value = true
         initTreeData()
     })

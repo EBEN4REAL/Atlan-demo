@@ -10,9 +10,11 @@ import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
 interface useLoadQueryDataProps {
     connector: Ref<string | undefined>
+    savedQueryType?: Ref<'personal' | 'all'>
+
 }
 
-const useLoadQueryData = ({connector }: useLoadQueryDataProps) => {
+const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) => {
     const defaultLimit = 50;
 
     const attributes = [
@@ -38,28 +40,7 @@ const useLoadQueryData = ({connector }: useLoadQueryDataProps) => {
         ...BaseAttributes,
         ...BasicSearchAttributes
     ];
-    const body = ref({
-        typeName: "QueryFolder",
-        excludeDeletedEntities: true,
-        includeClassificationAttributes: true,
-        includeSubClassifications: true,
-        includeSubTypes: true,
-        limit: defaultLimit,
-        offset: 0,
-        attributes,
-        entityFilters: {
-            condition: "AND",
-            criterion: [
-                {
-                    attributeName: "",
-                    attributeValue: "",
-                    operator: "eq"
-                }
-            ]
-        },
-        sortBy: "Asset.name.keyword",
-        sortOrder: "ASCENDING",
-    });
+    const body = ref();
 
     const refreshBody = () => {
         body.value = {
@@ -84,6 +65,23 @@ const useLoadQueryData = ({connector }: useLoadQueryDataProps) => {
                 attributeValue: connector.value,
                 operator: "eq"
             })
+        }
+        if(savedQueryType?.value === 'all') {
+            body.value.entityFilters.criterion.push({
+                condition: "OR",
+                criterion: [
+                   {
+                     attributeName: "__classificationNames",
+                     attributeValue: "atlan_public_query",
+                     operator: "eq"
+                   },
+                   {
+                     attributeName: "__propagatedClassificationNames",
+                     attributeValue: "atlan_public_query",
+                     operator: "eq"
+                   }
+                 ]
+               })
         }
     }
 

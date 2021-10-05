@@ -45,11 +45,14 @@
                     <div :key="dirtyTimestamp" class="select-none">
                         <div class="flex flex-col flex-1">
                             <div class="flex items-center">
-                                <span class="text-xs uppercase text-gray">
+                                <span
+                                    class="text-xs uppercase text-gray"
+                                    style="letter-spacing: 0.07em"
+                                >
                                     <img
                                         v-if="item.image"
                                         :src="item.image"
-                                        class="float-left w-auto h-5 mr-2"
+                                        class="float-left w-auto h-4 mr-2"
                                     />
                                     {{ item.label }}</span
                                 >
@@ -72,7 +75,7 @@
                             </div>
                             <div
                                 v-if="!activeKey.includes(item.id)"
-                                class="text-gray-500"
+                                class="text-primary"
                             >
                                 {{ getFiltersAppliedString(item.id) }}
                             </div>
@@ -141,7 +144,7 @@
             ),
             Classifications: defineAsyncComponent(
                 () => import('@common/facets/classifications.vue')
-            ),            
+            ),
             Governance: defineAsyncComponent(
                 () => import('@common/facets/governance.vue')
             ),
@@ -269,7 +272,7 @@
                 refresh()
                 // updateChangesInStore(value);
             }
-            
+
             const handleTermChange = (termName: string) => {
                 emit('termNameChange', termName)
             }

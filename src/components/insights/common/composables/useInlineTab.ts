@@ -35,8 +35,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     ) => {
         let bool = false
         tabsArray.value.forEach((tab) => {
-            if (tab.key === inlineTab.key || tab?.queryId === tab?.queryId)
-                bool = true
+            if (tab.queryId === inlineTab.queryId) bool = true
+            if (tab.key === inlineTab.key) bool = true
         })
         return bool
     }
@@ -58,7 +58,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     const inlineTabRemove = (
         inlineTabKey: string,
         tabsArray: Ref<activeInlineTabInterface[]>,
-        activeInlineTabKey: Ref<string>
+        activeInlineTabKey: Ref<string>,
+        pushGuidToURL: Function
     ) => {
         let lastIndex = 0
         tabsArray.value.forEach((tab, i) => {
@@ -75,11 +76,18 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
             )
         if (lastIndex >= 0) {
             activeInlineTabKey.value = tabsArray.value[lastIndex].key
+            if (tabsArray.value[lastIndex].queryId)
+                pushGuidToURL(tabsArray.value[lastIndex].key)
+            else pushGuidToURL()
         } else {
-            if (tabsArray.value.length > 0)
+            if (tabsArray.value.length > 0) {
                 activeInlineTabKey.value = tabsArray.value[0].key
-            else {
+                if (tabsArray.value[lastIndex].queryId)
+                    pushGuidToURL(tabsArray.value[0].key)
+                else pushGuidToURL()
+            } else {
                 activeInlineTabKey.value = undefined
+                pushGuidToURL()
             }
         }
 
@@ -91,8 +99,8 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     const modifyActiveInlineTab = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,
-        localStorageSync: boolean = true,
-        isSaved: boolean = false
+        isSaved: boolean = false,
+        localStorageSync: boolean = true
     ) => {
         /* There can be two case
         1-> It's already saved and being modified so save-> unsave ( activeTab.save(true) && isSaved(false))

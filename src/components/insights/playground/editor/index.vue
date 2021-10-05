@@ -204,6 +204,7 @@
                 activeInlineTabCopy.isSaved = true
                 activeInlineTabCopy.label = saveQueryData.title
                 activeInlineTabCopy.status = saveQueryData.assetStatus
+
                 const uuidv4 = generateUUID()
                 const integrationName = getConnectorName(attributeValue) ?? ''
                 const connectionQualifiedName =
@@ -276,15 +277,17 @@
                                 content: `${name} query saved!`,
                             })
                             saveModalRef.value?.clearData()
-                            modifyActiveInlineTab(
-                                activeInlineTabCopy,
-                                inlineTabs
-                            )
                             isUpdateEnabled.value = false
                             const guid =
                                 data.value.mutatedEntities.CREATE[0].guid
                             console.log(data.value, 'saved')
                             if (guid) router.push(`/insights?id=${guid}`)
+                            activeInlineTabCopy.queryId = guid
+                            modifyActiveInlineTab(
+                                activeInlineTabCopy,
+                                inlineTabs,
+                                true
+                            )
                         } else {
                             console.log(error.value.toString())
                             message.error({

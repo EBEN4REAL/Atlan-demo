@@ -153,6 +153,7 @@ export function useSavedQuery(
                     defaultSchemaQualifiedName,
                     assetStatus,
                     isSnippet: isSQLSnippet,
+                    connectionId: connectionQualifiedName,
                     connectionQualifiedName,
                     description,
                     owner: username.value,
@@ -160,7 +161,6 @@ export function useSavedQuery(
                     rawQuery,
                     compiledQuery,
                     variablesSchemaBase64,
-                    connectionId,
                     isPrivate: true,
                 },
                 relationshipAttributes: {

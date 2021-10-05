@@ -135,7 +135,8 @@ const useAssetAudit = (params: any, guid: string) => {
             const owners = 'ownerUsers' in attributes
             const experts = 'expertUsers' in attributes
             const status = 'assetStatusUpdatedAt' in attributes
-            const userDescription = 'userDescription' in attributes
+            const userDescription = 'userDescription' in attributes || 'shortDescription' in attributes
+
             if (owners) {
                 const users = attributes.ownerUsers.split(',')
                 if (attributes.ownerUsers === '') {
@@ -165,13 +166,15 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (userDescription) {
-                const value = attributes.userDescription
+                const value = attributes.userDescription || attributes.shortDescription
                 data.value = value
 
                 data.displayValue = 'description'
 
                 return data
             }
+
+
         }
         return data
     }

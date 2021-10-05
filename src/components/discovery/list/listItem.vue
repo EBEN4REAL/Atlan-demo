@@ -140,26 +140,15 @@
                     }}</span>
                 </div>
                 <!-- Classification and terms -->
-                <div
-                    v-if="projection?.includes('classifications')"
-                    class="flex items-center"
+                <template
+                    v-if="
+                        projection?.includes('classifications') ||
+                        projection?.includes('terms')
+                    "
                 >
-                    <button
-                        v-if="isOverflowing"
-                        class="w-8 h-8 p-2 group"
-                        @click="() => chipScrollWrapper?.scrollBy(-200, 0)"
-                    >
-                        <AtlanIcon
-                            icon="ChevronRight"
-                            class="text-gray-500 transform rotate-180  opacity-70 group-hover:opacity-100"
-                        />
-                    </button>
-                    <div
-                        ref="chipScrollWrapper"
-                        class="flex items-center overflow-x-auto  flex-nowrap gap-x-2 hidden-scroll"
-                        style="scroll-behavior: smooth"
-                    >
+                    <ScrollStrip>
                         <Pill
+                            v-if="projection?.includes('classifications')"
                             v-for="clsf in item.classifications"
                             class="flex-none"
                             :label="clsf.typeName"
@@ -172,18 +161,22 @@
                                 />
                             </template>
                         </Pill>
-                    </div>
-                    <button
-                        v-if="isOverflowing"
-                        class="w-8 h-8 p-2 group"
-                        @click="() => chipScrollWrapper?.scrollBy(200, 0)"
-                    >
-                        <AtlanIcon
-                            icon="ChevronRight"
-                            class="text-gray-500  opacity-70 group-hover:opacity-100"
-                        />
-                    </button>
-                </div>
+                        <Pill
+                            v-if="projection?.includes('terms')"
+                            v-for="clsf in item.meanings"
+                            class="flex-none"
+                            :label="clsf.displayText"
+                            :has-action="false"
+                        >
+                            <template #prefix>
+                                <AtlanIcon
+                                    icon="Term"
+                                    class="text-gray group-hover:text-white"
+                                />
+                            </template>
+                        </Pill>
+                    </ScrollStrip>
+                </template>
             </div>
             <ThreeDotMenu
                 v-if="showThreeDotMenu"
@@ -203,13 +196,14 @@
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { computed, defineComponent, PropType, Ref, ref } from 'vue'
-    import Pill from '~/components/UI/pill/pill.vue'
-    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+    import Pill from '@/UI/pill/pill.vue'
+    import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
 
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import ScrollStrip from '@/UI/scrollStrip.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -219,6 +213,7 @@
             AssetLogo,
             Pill,
             ThreeDotMenu,
+            ScrollStrip,
         },
         props: {
             item: {
@@ -350,16 +345,7 @@
                 return `/assets/${tableGuid}/overview?column=${asset.guid}`
             }
 
-            const chipScrollWrapper: Ref<HTMLElement | null> = ref(null)
-
-            const isOverflowing = computed(
-                () =>
-                    (chipScrollWrapper.value?.scrollWidth || 0) >
-                    (chipScrollWrapper.value?.clientWidth || 0)
-            )
             return {
-                chipScrollWrapper,
-                isOverflowing,
                 isColumnAsset,
                 getColumnUrl,
                 description,
@@ -377,13 +363,3 @@
         },
     })
 </script>
-<style scoped>
-    .hidden-scroll::-webkit-scrollbar {
-        height: 0 !important;
-        width: 0 !important;
-    }
-    .hidden-scroll {
-        overflow: -moz-scrollbars-none;
-        scrollbar-width: none;
-    }
-</style>

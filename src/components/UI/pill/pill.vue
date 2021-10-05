@@ -2,7 +2,7 @@
     <!-- TODO: Add disabled styles -->
     <button
         :tabindex="!disabled && $attrs.onClick ? 0 : undefined"
-        class="relative flex items-center text-gray-700 transition duration-300 border rounded-full cursor-pointer  gap-x-1 group border-gray-light hover:border-primary hover:bg-primary hover:text-white"
+        class="relative flex items-center text-gray-700 transition duration-300 border border-gray-300 rounded-full cursor-pointer  gap-x-1 group hover:border-primary hover:bg-primary hover:text-white"
         :class="size === 'sm' ? 'px-2' : 'px-3'"
         :style="{ height: size === 'sm' ? '22px' : '30px' }"
     >

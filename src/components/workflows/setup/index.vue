@@ -1,18 +1,17 @@
 <template>
     <div class="flex w-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
         >
             <AtlanBtn
                 class="m-2"
                 size="sm"
                 color="secondary"
                 padding="compact"
-                @click="goToSetup"
+                @click="goToWorkflow"
             >
                 <div class="flex items-center gap-2">
-                    <div>Setup</div>
-                    <AtlanIcon icon="Add" class="" />
+                    <div>Back to Workflows</div>
                 </div>
             </AtlanBtn>
             <!-- <WorkflowFilters
@@ -28,7 +27,7 @@
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
-            <div class="flex flex-col h-full">
+            <div class="flex flex-col h-full gap-y-5">
                 <div class="bg-white">
                     <SearchAndFilter
                         v-model:value="queryText"
@@ -50,9 +49,21 @@
                     </template> -->
                     </SearchAndFilter>
                 </div>
+                <div v-if="workflowList.length" class="mx-3">
+                    <p class="mb-2 text-xl font-bold text-gray-600">Featured</p>
+                    <WorkflowCards :list="workflowList.slice(10, 14)" />
+                </div>
+                <div v-if="workflowList.length" class="mx-3">
+                    <p class="mb-2 text-xl font-bold text-gray-600">
+                        Suggested
+                    </p>
+                    <WorkflowCards :list="workflowList.slice(15, 19)" />
+                </div>
 
                 <div
-                    v-if="runList && runList.length <= 0 && !isLoading"
+                    v-if="
+                        workflowList && workflowList.length <= 0 && !isLoading
+                    "
                     class="flex flex-col items-center mt-10"
                 >
                     <img
@@ -62,15 +73,31 @@
                     />
                     <span class="text-gray-500">No Workflow found</span>
                 </div>
-                <WorkflowList
-                    v-else
-                    v-model:autoSelect="autoSelect"
-                    class="pt-2 bg-white"
-                    :list="queryText.length ? filterList(queryText) : runList"
-                    :is-loading="isLoading"
-                    @preview="handlePreview"
-                    @loadMore="loadMore"
-                ></WorkflowList>
+                <div v-else class="">
+                    <div
+                        v-if="workflowList.length"
+                        class="mx-3 text-xl font-bold text-gray-600"
+                    >
+                        All
+                    </div>
+                    <div
+                        class="overflow-y-auto"
+                        style="height: calc(100vh - 29rem)"
+                    >
+                        <WorkflowList
+                            v-model:autoSelect="autoSelect"
+                            class="pt-2 bg-white"
+                            :list="
+                                queryText.length
+                                    ? filterList(queryText)
+                                    : workflowList
+                            "
+                            :is-loading="isLoading"
+                            @preview="handlePreview"
+                            @loadMore="loadMore"
+                        ></WorkflowList>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -92,9 +119,9 @@
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
-
     import { useWorkflowTemplateSearchList } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
+    import WorkflowCards from '@/workflows/setup/cards.vue'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
@@ -104,8 +131,9 @@
             workflowPagination,
             Preferences,
             EmptyView,
-            AtlanBtn,
+            WorkflowCards,
             SearchAndFilter,
+            AtlanBtn,
         },
         props: {
             initialFilters: {
@@ -149,14 +177,10 @@
 
             // Get All Disoverable Asset Types
 
-            const {
-                workflowList: runList,
-                isLoading,
-                filterList,
-                mutate,
-            } = useWorkflowTemplateSearchList('default', false)
+            const { workflowList, isLoading, filterList, mutate } =
+                useWorkflowTemplateSearchList('default', false)
 
-            if (!runList.value.length) mutate()
+            if (!workflowList.value.length) mutate()
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
@@ -211,18 +235,17 @@
                 workflowFilterRef.value?.resetAllFilters()
             }
 
-            const goToSetup = () => {
-                router.push(`/workflows/new`)
+            const goToWorkflow = () => {
+                router.push(`/workflows`)
             }
 
             return {
                 autoSelect,
-                goToSetup,
                 handleClearFiltersFromList,
                 workflowFilterRef,
                 initialFilters,
                 AllFilters,
-                runList,
+                workflowList,
                 emptyScreen,
                 handleSearchChange,
                 handlePreview,
@@ -234,6 +257,7 @@
                 placeholderLabel,
                 filters,
                 filterList,
+                goToWorkflow,
             }
         },
         data() {

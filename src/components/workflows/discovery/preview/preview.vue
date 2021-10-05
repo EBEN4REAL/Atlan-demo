@@ -11,7 +11,7 @@
                 />
             </a-button>
         </div>
-        <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
+        <div class="px-5 py-3 border-b">
             <div class="flex items-center justify-between mb-0 text-sm">
                 <div class="flex items-center flex-none">
                     <span class="text-sm tracking-wider text-gray-700 uppercase"
@@ -54,7 +54,7 @@
 
                 <div
                     class="flex flex-col"
-                    :style="{ height: tabHeights[page] }"
+                    :style="{ height: 'calc(100vh - 7.8rem)' }"
                 >
                     <div
                         class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
@@ -64,8 +64,7 @@
 
                     <component
                         :is="tab.component"
-                        :page="page"
-                        :selected-asset="selectedAsset"
+                        :selected-workflow="selectedWorkflow"
                         :is-loaded="isLoaded"
                         @change="handleChange"
                     ></component>
@@ -93,10 +92,9 @@
     import AtlanButton from '@/UI/button.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
-    import useAssetDetailsTabList from '@/workflows/shared/preview/tabs/useTabList'
 
     export default defineComponent({
-        name: 'WorkflowPreview',
+        name: 'DiscoverWorkflowPreview',
         components: {
             Tooltip,
             AssetLogo,
@@ -107,14 +105,11 @@
             runs: defineAsyncComponent(() => import('./tabs/runs/runsTab.vue')),
         },
         props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
+            selectedWorkflow: {
+                type: Object,
                 required: true,
             },
-            page: {
-                type: String,
-                required: true,
-            },
+
             showCrossIcon: {
                 type: Boolean,
                 required: false,
@@ -122,8 +117,22 @@
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
-            const { selectedAsset, page } = toRefs(props)
-            const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
+            const { selectedWorkflow } = toRefs(props)
+
+            const filteredTabs = [
+                {
+                    name: 'Overview',
+                    component: 'info',
+                    icon: 'Overview',
+                    tooltip: 'Overview',
+                },
+                {
+                    name: 'Runs',
+                    component: 'runs',
+                    icon: 'Activity',
+                    tooltip: 'Runs',
+                },
+            ]
 
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
@@ -139,22 +148,19 @@
             })
 
             provide('switchTab', (tabName: string) => {
-                const idx = filteredTabs.value.findIndex(
-                    (tl) => tl.name === tabName
-                )
+                const idx = filteredTabs.findIndex((tl) => tl.name === tabName)
                 if (idx > -1) activeKey.value = idx
             })
 
-            watch(page, () => {
-                if (activeKey.value > filteredTabs.value.length)
-                    activeKey.value = 0
-            })
+            // watch(page, () => {
+            //     if (activeKey.value > filteredTabs.length) activeKey.value = 0
+            // })
 
             function init() {
                 isLoaded.value = false
             }
 
-            watch(() => selectedAsset.value.guid, init)
+            watch(selectedWorkflow, init, { deep: true })
             onMounted(init)
 
             return {

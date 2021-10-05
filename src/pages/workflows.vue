@@ -4,7 +4,7 @@
             <div class="flex h-full">
                 <KeepAlive>
                     <component
-                        :is="isItem ? 'router-view' : 'WorkflowDiscovery'"
+                        :is="whichComponent.main"
                         ref="workflowDiscovery"
                         :initial-filters="initialFilters"
                         :update-profile="updateProfile"
@@ -17,12 +17,29 @@
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
-            <WorkflowPreview
+            <component
+                :is="whichComponent.preview"
                 v-if="selected"
+                :selected-workflow="selected"
+                @workflow-mutation="propagateToAssetList"
+            ></component>
+            <!-- <WorkflowPreview
+                v-if="selected && ['profile', 'discovery'].includes(page)"
                 :selected-asset="selected"
                 :page="page"
                 @asset-mutation="propagateToAssetList"
             ></WorkflowPreview>
+            <div v-else class="flex flex-col">
+                <div>Preview Bar</div>
+                <AtlanBtn
+                    class="m-2"
+                    style="width: 90%"
+                    size="sm"
+                    color="primary"
+                    padding="compact"
+                >
+                    Setup
+                </AtlanBtn> -->
         </div>
     </div>
 </template>
@@ -30,12 +47,19 @@
 <script lang="ts">
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
-    import { computed, defineComponent, ref, Ref } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        defineAsyncComponent,
+        ref,
+        Ref,
+    } from 'vue'
     import WorkflowDiscovery from '~/components/workflows/discovery/workflowDiscovery.vue'
-    import WorkflowPreview from '~/components/workflows/shared/preview/workflowPreview.vue'
+    import Setup from '@/workflows/setup/index.vue'
     // TODO change to workflowInterfalce
     import { assetInterface } from '~/types/assets/asset.interface'
     import { decodeQuery } from '~/utils/helper/routerHelper'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -44,8 +68,18 @@
     }
     export default defineComponent({
         components: {
-            WorkflowPreview,
             WorkflowDiscovery,
+            AtlanBtn,
+            Setup,
+            discoveryPreview: defineAsyncComponent(
+                () => import('@/workflows/discovery/preview/preview.vue')
+            ),
+            profilePreview: defineAsyncComponent(
+                () => import('@/workflows/profile/preview/preview.vue')
+            ),
+            setupPreview: defineAsyncComponent(
+                () => import('@/workflows/setup/preview/preview.vue')
+            ),
         },
         setup() {
             useHead({
@@ -54,6 +88,22 @@
             const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
+            const whichComponent = computed(() => {
+                if (route.params.id === 'new')
+                    return {
+                        main: 'Setup',
+                        preview: 'setupPreview',
+                    }
+                if (route.params.id)
+                    return {
+                        main: 'router-view',
+                        preview: 'profilePreview',
+                    }
+                return {
+                    main: 'WorkflowDiscovery',
+                    preview: 'discoveryPreview',
+                }
+            })
             const updateProfile = ref<boolean>(false)
 
             const workflowDiscovery: Ref<Element | null> = ref(null)
@@ -77,10 +127,12 @@
                 selected.value = selectedItem
                 console.log(selectedItem)
             }
-            const page = computed(() =>
-                isItem.value ? 'profile' : 'discovery'
-            )
+            const page = computed(() => {
+                if (isItem.value === 'new') return 'setup'
+                return isItem.value ? 'profile' : 'discovery'
+            })
 
+            // !KILL this
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (page.value === 'discovery')
                     workflowDiscovery.value.mutateAssetInList(updatedAsset)
@@ -94,8 +146,10 @@
                 handlePreview,
                 isItem,
                 page,
+                updateProfile,
                 propagateToAssetList,
                 workflowDiscovery,
+                whichComponent,
             }
         },
     })

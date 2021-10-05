@@ -11,13 +11,9 @@
             <div
                 class="text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
             >
-                <router-link
-                    v-if="page === 'discovery'"
-                    :to="`/workflows/${item.metadata.name}/overview`"
-                >
+                <span>
                     {{ r.metadata.name }}
-                </router-link>
-                <span v-else>{{ r.metadata.name }}</span>
+                </span>
             </div>
             <div>
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
@@ -60,21 +56,17 @@
     export default defineComponent({
         components: {},
         props: {
-            selectedAsset: {
+            selectedWorkflow: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
             isLoaded: {
                 type: Boolean,
             },
-            page: {
-                type: String,
-                required: true,
-            },
         },
         emits: ['change'],
         setup(props) {
-            const { selectedAsset: item } = toRefs(props)
+            const { selectedWorkflow: item } = toRefs(props)
 
             const labelSelector = computed(
                 () =>

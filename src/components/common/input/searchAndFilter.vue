@@ -3,13 +3,13 @@
         class="flex items-center justify-between py-1 transition duration-300  searchbar"
         :class="size"
     >
-        <AtlanIcon icon="Search" class="pl-2 pr-1 text-gray-500" />
+        <AtlanIcon icon="Search" class="flex-none pl-2 pr-1 text-gray-500" />
         <input
             ref="searchBar"
             :placeholder="placeholder"
             v-model="value"
             type="text"
-            class="flex-grow text-sm focus:outline-none"
+            class="flex-1 text-sm bg-transparent focus:outline-none"
             @keyup.esc="$event.target.blur()"
         />
         <div class="flex-none h-7 w-7">
@@ -99,6 +99,10 @@
 </script>
 <style lang="less" scoped>
     .searchbar {
+        min-width: 100px;
+        input {
+            min-width: 100px;
+        }
         &.default {
             @apply border border-gray-300 rounded shadow;
             &:hover {

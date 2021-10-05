@@ -91,6 +91,7 @@
                             :autofocus="true"
                             placeholder="Search "
                             @change="handleOwnerSearch"
+                            size="minimal"
                         >
                         </SearchAndFilter>
                         <a-button-group>

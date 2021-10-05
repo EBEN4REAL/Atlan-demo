@@ -2,7 +2,7 @@
     <div class="flex items-center">
         <button
             v-if="isOverflowing"
-            class="w-8 h-8 p-2 opacity-70 hover:opacity-100"
+            class="w-8 h-8 p-2 -ml-3 opacity-70 hover:opacity-100"
             @click="() => scrollWrapper?.scrollBy(-200, 0)"
         >
             <AtlanIcon

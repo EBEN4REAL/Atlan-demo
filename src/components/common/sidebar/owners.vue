@@ -1,6 +1,6 @@
 <template>
-    <div class="mb-3 text-xs text-gray-500">
-        <p class="mb-1 text-sm">Owners</p>
+    <div class="text-xs text-gray-500">
+        <p class="mb-2 text-sm">Owners</p>
 
         <div
             v-if="ownerUsers.length > 0 || ownerGroups.length"

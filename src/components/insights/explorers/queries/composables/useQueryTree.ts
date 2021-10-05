@@ -253,6 +253,8 @@ const useTree = ({
 
     watch([connector,savedQueryType], () => {
         isInitingTree.value = true
+        loadedKeys.value = []
+        expandedKeys.value = []
         initTreeData()
     })
     onMounted(() => {

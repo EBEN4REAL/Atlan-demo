@@ -57,7 +57,7 @@
                         : 100 - explorerPaneSize
                 "
                 :min-size="
-                    activeInlineTab?.assetSidebar?.isVisible ? 55.5 : 75.5
+                    activeInlineTab?.assetSidebar?.isVisible ? 50.5 : 75.5
                 "
             >
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
@@ -78,7 +78,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch, inject, Ref } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        watch,
+        inject,
+        Ref,
+        onUnmounted,
+        onMounted,
+    } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
@@ -96,7 +105,7 @@
     import { useInlineTab } from './common/composables/useInlineTab'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     // import { useConnector } from './common/composables/useConnector'
-    // import { useHotKeys } from './common/composables/useHotKeys'
+    import { useHotKeys } from './common/composables/useHotKeys'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
@@ -116,10 +125,14 @@
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
             >
-            const { explorerPaneSize, assetSidebarPaneSize, paneResize } =
-                useSpiltPanes()
+            const {
+                explorerPaneSize,
+                assetSidebarPaneSize,
+                outputPaneSize,
+                paneResize,
+            } = useSpiltPanes()
             // TODO: will be used for HOTKEYs
-            // const {explorerPaneToggle,assetSidebarToggle} =useHotKeys();
+            const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
 
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
@@ -167,6 +180,7 @@
                 isQueryRunning: isQueryRunning,
                 editorInstance: editorInstance,
                 monacoInstance: monacoInstance,
+                outputPaneSize: outputPaneSize,
                 setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
@@ -185,6 +199,23 @@
                     //     )
                     openSavedQueryInNewTab(savedQueryInfo.value)
                 }
+            })
+            const _keyListener = (e) => {
+                e.preventDefault()
+                if (e.key === 'b' && e.ctrlKey) {
+                    explorerPaneToggle(explorerPaneSize)
+                    //prevent the default action
+                }
+                if (e.key === 'j' && e.ctrlKey) {
+                    resultsPaneSizeToggle(outputPaneSize)
+                    //prevent the default action
+                }
+            }
+            onMounted(() => {
+                window.addEventListener('keypress', _keyListener)
+            })
+            onUnmounted(() => {
+                window.removeEventListener('keypress', _keyListener)
             })
             return {
                 activeTab,

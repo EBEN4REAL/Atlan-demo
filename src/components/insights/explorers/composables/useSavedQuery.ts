@@ -40,8 +40,8 @@ export function useSavedQuery(
         /* --------NOTE- TEMPERORY FIX-------*/
 
         const newTab: activeInlineTabInterface = {
-            label: savedQuery.attributes.name,
-            key: savedQuery.attributes.qualifiedName,
+            label: savedQuery.attributes.name ?? '',
+            key: savedQuery?.guid,
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery.guid,
@@ -98,13 +98,13 @@ export function useSavedQuery(
         }
         if (!isInlineTabAlreadyOpened(newTab, tabsArray)) {
             console.log('not opened')
-            activeInlineTabKey.value = newTab.key
+            activeInlineTabKey.value = newTab.queryId
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {
             // show user that this tab is already opened
-            activeInlineTabKey.value = newTab.key
+            activeInlineTabKey.value = newTab.queryId
         }
     }
     /* Involved network requests */
@@ -185,7 +185,6 @@ export function useSavedQuery(
                     })
                     // making it save
                     activeInlineTabCopy.isSaved = true
-                    activeInlineTabCopy.key = qualifiedName
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         tabsArray,

@@ -1,21 +1,23 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex mx-3 border"
-        :class="
-            isSelected
+        class="flex mx-3 border group"
+        :class="[
+            !bulkSelectMode && isSelected
                 ? 'border-primary rounded bg-primary-light'
-                : 'bg-white border-transparent'
-        "
+                : 'bg-white border-transparent',
+            bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+        ]"
     >
         <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent  w-96"
-            :class="{ ' border-gray-200': !isSelected }"
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent rounded  w-96 group-hover:shadow"
+            :class="{ ' border-gray-200': bulkSelectMode ? true : !isSelected }"
         >
             <a-checkbox
                 v-if="showCheckBox"
-                class="self-center mr-6"
                 :checked="isChecked"
+                class="ml-2 mr-3 opacity-0 group-hover:opacity-100"
+                :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
                 @click.stop
                 @change="(e) => $emit('listItem:check', e, item)"
             />
@@ -114,8 +116,8 @@
 
                     <!-- Owner bar -->
                     <div
-                        class="flex items-center text-sm text-gray-500 gap-x-1"
                         v-if="getCombinedUsersAndGroups(item).length"
+                        class="flex items-center text-sm text-gray-500 gap-x-1"
                     >
                         <AtlanIcon icon="User" />
                         <span
@@ -158,8 +160,8 @@
                         style="scroll-behavior: smooth"
                     >
                         <Pill
-                            class="flex-none"
                             v-for="clsf in item.classifications"
+                            class="flex-none"
                             :label="clsf.typeName"
                             :has-action="false"
                         >
@@ -183,17 +185,28 @@
                     </button>
                 </div>
             </div>
+            <ThreeDotMenu
+                v-if="showThreeDotMenu"
+                :entity="item"
+                class="opacity-0"
+                :visible="false"
+                :showGtcCrud="false"
+                :showLinks="false"
+                :showUnlinkAsset="true"
+                @unlinkAsset="$emit('unlinkAsset', item)"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import AssetLogo from '@/common/icon/assetIcon.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import Pill from '~/components/UI/pill/pill.vue'
-
     import { computed, defineComponent, PropType, Ref, ref } from 'vue'
+    import Pill from '~/components/UI/pill/pill.vue'
+    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+
+    import AssetLogo from '@/common/icon/assetIcon.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -205,6 +218,7 @@
             HierarchyBar,
             AssetLogo,
             Pill,
+            ThreeDotMenu,
         },
         props: {
             item: {
@@ -248,13 +262,26 @@
                 required: false,
                 default: () => true,
             },
+            // If the list items are selectable or not
             showCheckBox: {
                 type: Boolean,
                 required: false,
                 default: () => false,
             },
+            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
+            bulkSelectMode: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            // for unlinking asset in glossary
+            showThreeDotMenu: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['listItem:check'],
+        emits: ['listItem:check', 'unlinkAsset'],
         setup() {
             const {
                 description,

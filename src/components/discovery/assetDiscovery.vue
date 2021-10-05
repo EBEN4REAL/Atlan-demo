@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AssetFilters
                 :ref="
@@ -12,6 +19,7 @@
                 "
                 :initial-filters="AllFilters"
                 @refresh="handleFilterChange"
+                @termNameChange="termNameChange"
                 @initialize="handleFilterInit"
             ></AssetFilters>
         </div>
@@ -80,6 +88,7 @@
                     v-model:autoSelect="autoSelect"
                     @preview="handlePreview"
                     @loadMore="loadMore"
+                    @bulkSelectChange="(list) => $emit('bulkSelectChange', list)"
                 ></AssetList>
             </div>
         </div>
@@ -163,7 +172,7 @@
                 default: true,
             },
         },
-        emits: ['preview'],
+        emits: ['preview', 'bulkSelectChange'],
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = toRefs(props)
@@ -192,6 +201,8 @@
                     AllFilters.value.searchText = val
                 },
             })
+
+            const termName = ref<string | undefined>()
 
             // This is the actual filter body
             // FIXME: Can we make it a computed property?
@@ -303,7 +314,7 @@
             const updateBody = () => {
                 const initialBody = {
                     typeName: assetTypeListString.value,
-                    termName: props.termName,
+                    termName: props.termName ?? termName.value,
                     includeClassificationAttributes: true,
                     includeSubClassifications: true,
                     limit: limit.value,
@@ -367,6 +378,7 @@
                 const routerOptions: Record<string, any> = {
                     facetsFilters: generateFacetConfigForRouter(),
                 }
+                console.log(routerOptions)
                 if (queryText.value) routerOptions.searchText = queryText.value
                 if (selectedTab.value !== 'Catalog')
                     routerOptions.selectedTab = selectedTab.value
@@ -419,6 +431,12 @@
                 isAggregate.value = true
                 updateBody()
                 setRouterOptions()
+            }
+            const termNameChange = (termQName: string) => {
+                termName.value = termQName;
+                isAggregate.value = true
+                updateBody()
+                // setRouterOptions()
             }
 
             const handleFilterInit = (payload: any) => {
@@ -494,6 +512,7 @@
                 filters,
                 assetTypeListString,
                 handleFilterInit,
+                termNameChange,
             }
         },
         data() {

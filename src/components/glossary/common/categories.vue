@@ -144,7 +144,7 @@ export default defineComponent({
             default: () => []
         },
         mode: {
-            type: String as PropType<'edit' | 'create'>,
+            type: String as PropType<'edit' | 'create' | 'threeDotMenu'>,
             required: true,
             default: 'create'
         }
@@ -165,6 +165,7 @@ export default defineComponent({
         const isUpdateButtonLoading = ref(false);
 
         const refreshEntity = inject<() => void>('refreshEntity')
+        const reorderTreeNodes = inject<(guid: string, fromGuid?: string, toGuid?: string, categories?: {categoryGuid: string}[]) => void>('reorderTreeNodes')
 
         const toggleCategoriesTree = () => {
             if(!showAddCategoriesTree.value) {
@@ -189,7 +190,10 @@ export default defineComponent({
         }
         const handleUpdate = () => {
             const newCategories = selectedCategories.value.map((category) => ({ categoryGuid: category.value }));
-            if((props.mode === 'edit' || props.mode === 'threeDotMenu' )&& props.term) {
+            const addedCategories = newCategories.filter((category) => !existingCategories.value.find((existing) => existing.guid === category.categoryGuid))
+            const removedCategories = existingCategories.value.filter((category) => !newCategories.find((newCat) => newCat.categoryGuid === category.guid))
+
+            if((props.mode === 'edit' || props.mode === 'threeDotMenu' ) && props.term) {
                 const { data: updateData, updateEntity } = useUpdateGtcEntity()
                 isUpdateButtonLoading.value = true
 
@@ -219,10 +223,19 @@ export default defineComponent({
                         showAddCategoriesTree.value = false;
                         isUpdateButtonLoading.value = false;
                         if(refreshEntity) refreshEntity()
+                        console.log('whaaa', reorderTreeNodes)
+                        if(reorderTreeNodes) {
+                            addedCategories.forEach((category) => {
+                                reorderTreeNodes(props.termGuid, undefined, category.categoryGuid, newCategories)
+                            });
+                            removedCategories.forEach((category) => {
+                                reorderTreeNodes(props.termGuid, category.guid, undefined, newCategories)
+                            })
+                        }
                     }
                 })
             } else if ( props.mode === 'create') {
-                emit('updateCategories', newCategories)
+                emit('updateCategories', newCategories, addedCategories, removedCategories)
                 showAddCategoriesTree.value = false;
                 existingCategories.value = selectedCategories.value.map((category) => ({
                     guid: category.value,
@@ -231,13 +244,6 @@ export default defineComponent({
                         qualifiedName: category.value
                     }
                 }))
-                console.log('why', selectedCategories.value.map((category) => ({
-                    guid: category.value,
-                    typeName: 'AtlasGlossaryCategory',
-                    uniqueAttributes: {
-                        qualifiedName: category.value
-                    }
-                })), existingCategories.value)
             }
         }
 
@@ -282,6 +288,10 @@ export default defineComponent({
         })
         watch(term, (newTerm) => {
             existingCategories.value = newTerm?.attributes?.categories ?? [];
+            selectedCategories.value = existingCategories.value.map((category) => ({
+                value: category.guid,
+                label: category.guid
+            }))
         })
 
         const getPopupContainer = (trigger) => {

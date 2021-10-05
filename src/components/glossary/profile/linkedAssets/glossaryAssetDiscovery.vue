@@ -137,6 +137,7 @@
                         @preview="handlePreview"
                         @loadMore="loadMore"
                         @updateCheckedAssetList="modifyLinkList"
+                        @unlinkAsset="handleUnlinkAsset"
                     ></AssetList>
                 </div>
             </div>
@@ -714,7 +715,10 @@
                     }
                 }
             }
-
+            const handleUnlinkAsset = (entity) => {
+                uncheckedAssetList.value.push(entity)
+                handleConfirmLinkAssets()
+            }
             const handleFilterChange = (
                 payload: any,
                 filterMapData: Record<string, Components.Schemas.FilterCriteria>
@@ -797,6 +801,7 @@
                 scrollDiv,
                 handleScroll,
                 filtersList,
+                handleUnlinkAsset,
             }
         },
         data() {

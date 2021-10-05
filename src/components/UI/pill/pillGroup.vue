@@ -27,6 +27,7 @@
                 v-else
                 :label="item[labelKey]"
                 :has-action="!readOnly"
+                :has-action="!readOnly"
                 @action="handleDelete(index)"
                 @click="handleClick(item, index)"
                 ><template #prefix>
@@ -38,7 +39,7 @@
             <template #prefix>
                 <AtlanIcon
                     icon="Add"
-                    class="h-4 text-primary group-hover:text-white"
+                    class="h-4 text-gray group-hover:text-white"
                 />
             </template>
         </Pill>

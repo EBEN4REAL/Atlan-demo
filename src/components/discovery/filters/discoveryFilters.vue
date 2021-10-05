@@ -89,6 +89,14 @@
                     @change="handleChange"
                 ></component>
                 <component
+                    v-else-if="item.component === 'governance'"
+                    is="governance"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    :list="bmDataList[item.id]"
+                    @change="handleTermChange"
+                ></component>
+                <component
                     v-else
                     :is="item.component"
                     v-model:data="dataMap[item.id]"
@@ -133,6 +141,9 @@
             ),
             Classifications: defineAsyncComponent(
                 () => import('@common/facets/classifications.vue')
+            ),            
+            Governance: defineAsyncComponent(
+                () => import('@common/facets/governance.vue')
             ),
             Advanced: defineAsyncComponent(
                 () => import('@common/facets/advanced/index.vue')
@@ -157,7 +168,7 @@
                 },
             },
         },
-        emits: ['refresh', 'initialize'],
+        emits: ['refresh', 'initialize', 'termNameChange'],
         setup(props, { emit }) {
             const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
@@ -257,6 +268,10 @@
                 console.log(dirtyTimestamp.value)
                 refresh()
                 // updateChangesInStore(value);
+            }
+            
+            const handleTermChange = (termName: string) => {
+                emit('termNameChange', termName)
             }
 
             const setConnector = (payload: any) => {
@@ -455,6 +470,7 @@
                 bmFiltersList,
                 bmDataList,
                 setConnector,
+                handleTermChange,
             }
         },
     })

@@ -45,49 +45,48 @@ import {
   Typography,
   Image
 } from "ant-design-vue";
-import { updater } from "../api/index";
 import { UserModule } from "~/types/vitessg";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
 export const install: UserModule = ({ app }) => {
-  app.use(Button);
-  app.use(Input);
-  app.use(Spin);
-  app.use(Menu);
-  app.use(Layout);
-  app.use(Tabs);
+  app.use(Alert);
   app.use(Avatar);
-  app.use(Dropdown);
-  app.use(Collapse);
+  app.use(Badge);
+  app.use(Button);
+  app.use(Cascader);
   app.use(Checkbox);
+  app.use(Collapse);
+  app.use(DatePicker);
+  app.use(Divider);
+  app.use(Drawer);
+  app.use(Dropdown);
+  app.use(Empty);
+  app.use(Form);
+  app.use(Image);
+  app.use(Input);
+  app.use(InputNumber);
+  app.use(Layout);
+  app.use(List);
+  app.use(Menu);
+  app.use(Modal);
+  app.use(Pagination);
+  app.use(Popconfirm);
+  app.use(Popover);
+  app.use(Progress);
+  app.use(Radio);
+  app.use(Select);
+  app.use(Spin);
+  app.use(Steps);
+  app.use(Switch);
+  app.use(Table);
+  app.use(Tabs);
+  app.use(Tag);
+  app.use(Timeline);
   app.use(Tooltip);
   app.use(Tree);
   app.use(TreeSelect);
-  app.use(Select);
-  app.use(Popover);
-  app.use(Steps);
-  app.use(Form);
-  app.use(Divider);
-  app.use(Radio);
-  app.use(InputNumber);
-  app.use(Switch);
-  app.use(Alert);
-  app.use(Progress);
-  app.use(Table);
-  app.use(Modal);
-  app.use(Upload);
-  app.use(Drawer);
-  app.use(List);
-  app.use(Cascader);
-  app.use(Timeline);
-  app.use(Badge);
-  app.use(Tag);
-  app.use(Pagination);
-  app.use(DatePicker);
-  app.use(Image);
-  app.use(Popconfirm);
   app.use(Typography);
-  app.use(Empty);
+  app.use(Upload);
 
 
   app.config.globalProperties.$message = message;

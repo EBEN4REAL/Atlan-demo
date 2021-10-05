@@ -67,13 +67,18 @@
                 }>,
                 required: true,
             },
+            filterSourceIds: {
+                type: Object as PropType<string[]>,
+                required: false,
+                default: [],
+            },
         },
         components: {
             AssetDropdown,
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
-            const { data } = toRefs(props)
+            const { data, filterSourceIds } = toRefs(props)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'integrationName')
@@ -96,10 +101,21 @@
             const selectedValue = computed(
                 () => connection.value || connector.value || undefined
             )
+            /* Remove the sources mentioned in filterIds array */
+            const filterSourceList = (filterSourceIds: string[]) => {
+                return store.getSourceList.filter(
+                    (item) => !filterSourceIds.includes(item.id)
+                )
+            }
 
             const store = useConnectionsStore()
-
-            const filteredList = computed(() => store.getSourceList)
+            /* Checking if filterSourceIds passed -> whitelist the sourcelist
+            else fetch all the sourcelist from store */
+            const filteredList = computed(() =>
+                filterSourceIds.value.length > 0
+                    ? filterSourceList(filterSourceIds.value)
+                    : store.getSourceList
+            )
             const getImage = (id: string) => store.getImage(id)
             const list = computed(() => List)
             const checkedValues = ref([])

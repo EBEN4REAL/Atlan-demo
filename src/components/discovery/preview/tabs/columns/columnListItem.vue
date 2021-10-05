@@ -2,7 +2,7 @@
     <div
         class="flex px-3 py-2 -mx-3 -my-2 rounded hover:bg-primary-light group"
     >
-        <div class="flex-grow">
+        <div class="flex-grow overflow-hidden">
             <ColumnInfoCard :column-asset="asset">
                 <div class="flex items-center mb-1">
                     <component
@@ -35,10 +35,7 @@
                 </div>
             </ColumnInfoCard>
             <Description :selected-asset="asset" :using-in-info="false" />
-            <div
-                v-if="asset.classifications"
-                class="flex items-center py-1 overflow-x-auto  flex-nowrap gap-x-2"
-            >
+            <ScrollStrip v-if="asset.classifications">
                 <Pill
                     class="flex-none"
                     v-for="clsf in asset.classifications"
@@ -50,7 +47,7 @@
                         <AtlanIcon icon="Shield" class="h-3 text-pink-400" />
                     </template>
                 </Pill>
-            </div>
+            </ScrollStrip>
         </div>
         <AtlanBtn
             class="flex-none opacity-0 group-hover:opacity-100"
@@ -94,6 +91,7 @@
     import ColumnInfoCard from './columnInfoCard.vue'
     import AtlanBtn from '@/UI/button.vue'
     import Pill from '~/components/UI/pill/pill.vue'
+    import ScrollStrip from '@/UI/scrollStrip.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -103,6 +101,7 @@
             ColumnInfoCard,
             AtlanBtn,
             Pill,
+            ScrollStrip,
         },
         props: {
             asset: {

@@ -3,7 +3,7 @@ import { Ref, ref } from 'vue'
 import { SavedQuery, Folder } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse, RelationshipSearchResponse } from '~/types/common/atlasSearch.interface'
 
-import { useAPIPromise } from '~/api/useAPI'
+import { useAPIPromise, useAPI } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
@@ -56,28 +56,33 @@ const useLoadQueryData = () => {
 
     const getQueryFolders = (offset?: number) => {
         body.value.typeName = 'QueryFolder';
-        // body.value.entityFilters.criterion = [{
-        //     attributeName: "parentFolderQualifiedName",
-        //     operator: "is_null"
-        // }]
+        body.value.entityFilters.criterion = [{
+            attributeName: "parentFolderQualifiedName",
+            operator: "is_null",
+            attributeValue: ''
+        }]
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+        return useAPI<BasicSearchResponse<Folder>>('BASIC_SEARCH', 'POST', {
+            cache: 'ROOT_FOLDERS',
             body,
-        }) as Promise<BasicSearchResponse<Folder>>
+        })
+
     }
 
     const getQueries = (offset?: number) => {
         body.value.typeName = 'Query';
-        // body.value.entityFilters.criterion = [{
-        //     attributeName: "parentFolderQualifiedName",
-        //     operator: "is_null"
-        // }]
+        body.value.entityFilters.criterion = [{
+            attributeName: "parentFolderQualifiedName",
+            operator: "is_null",
+            attributeValue: ''
+        }]
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+        return useAPI<BasicSearchResponse<SavedQuery>>('BASIC_SEARCH', 'POST', {
+            cache: 'ROOT_QUERIES',
             body,
-        }) as Promise<BasicSearchResponse<SavedQuery>>
+        })
     }
 
     const getSubFolders = (folderGuid: string, offset?: number, limit?: number) => {

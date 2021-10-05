@@ -7,7 +7,8 @@
             const route = useRoute()
             const router = useRouter()
             const id = computed(() => route?.params?.id || '')
-            router.replace(`/assets/${id.value}/overview`)
+            if (id.value !== 'new')
+                router.replace(`/workflow/${id.value}/monitor`)
         },
     })
 </script>

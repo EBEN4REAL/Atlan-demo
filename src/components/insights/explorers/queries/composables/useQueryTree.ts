@@ -257,7 +257,7 @@ const useTree = ({
 
 
             const updatedFolders = checkAndAppendNewNodes(folderResponse, 'QueryFolder', true)
-            const updatedQueries = checkAndAppendNewNodes(queryResponse, 'QueryFolder', true)
+            const updatedQueries = checkAndAppendNewNodes(queryResponse, 'Query', true)
 
             const updatedTreeData: CustomTreeDataItem[] = [...updatedFolders, ...updatedQueries]
 
@@ -324,7 +324,7 @@ const useTree = ({
                     }
 
                     const updatedFolders = checkAndAppendNewNodes(folderResponse, 'QueryFolder', false, node)
-                    const updatedQueries = checkAndAppendNewNodes(queryResponse, 'QueryFolder', false, node)
+                    const updatedQueries = checkAndAppendNewNodes(queryResponse, 'Query', false, node)
         
                     const updatedChildren: CustomTreeDataItem[] = [...updatedFolders, ...updatedQueries]
 
@@ -417,14 +417,15 @@ const useTree = ({
     const checkAndAppendNewNodes = (response: BasicSearchResponse<SavedQuery | Folder> | null, typeName: 'Query' | 'QueryFolder', isRoot: boolean, node?: CustomTreeDataItem) => {
         const updatedTreeData: CustomTreeDataItem[] = []
 
+        const parent = isRoot ? treeData.value : node?.children;
         if(response !== null) {
             response?.entities?.forEach((entity) => {
-                const existingentity = treeData.value.find(
+                const existingEntity = parent?.find(
                     (item) => item.guid === entity.guid
                 )
                 // if the entity already exists,ignore it so as to maintain the expanded state
-                if (existingentity) {
-                    updatedTreeData.push(existingentity)
+                if (existingEntity) {
+                    updatedTreeData.push(existingEntity)
                 } else {
                     // if a new folder is found at the root level, append it
                     nodeToParentKeyMap[entity.guid] = isRoot ? 'root' : node?.key;
@@ -432,7 +433,7 @@ const useTree = ({
                 }
             })
         } else {
-            treeData.value.forEach((item) => {
+            parent?.forEach((item) => {
                 if(item.typeName === typeName) updatedTreeData.push(item)
             })
         }
@@ -477,6 +478,7 @@ const useTree = ({
         onLoadData,
         expandNode,
         selectNode,
+        refetchNode
     }
 }
 

@@ -304,7 +304,7 @@ export function useSavedQuery(
             }
         })
     }
-    const saveQueryToDatabaseAndOpenInNewTab = async (
+    const saveQueryToDatabaseAndOpenInNewTab =  (
         saveQueryData: any,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
@@ -432,9 +432,11 @@ export function useSavedQuery(
                 }
             }
         })
+
+        return { data, error, isLoading }
     }
 
-    const createFolder = async (
+    const createFolder =  (
         saveFolderData: any,
         saveFolderLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
@@ -519,6 +521,8 @@ export function useSavedQuery(
                 }
             }
         })
+
+        return { data, error, isLoading } 
     }
 
     return {

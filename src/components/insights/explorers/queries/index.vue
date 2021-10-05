@@ -180,6 +180,7 @@
                 onLoadData,
                 expandNode,
                 selectNode,
+                refetchNode
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -198,9 +199,9 @@
                         newActiveInlineTab?.explorer?.queries?.connectors?.connector
                 }
             })
-            const saveQuery = (saveQueryData: any) => {
+            const saveQuery = async (saveQueryData: any) => {
                 if(createEntityType.value === 'query') {
-                    saveQueryToDatabaseAndOpenInNewTab(
+                   const { data } = saveQueryToDatabaseAndOpenInNewTab(
                         saveQueryData,
                         editorInstance,
                         saveQueryLoading,
@@ -209,8 +210,15 @@
                         router
                     )
                     focusEditor(toRaw(editorInstance.value))
+
+                    watch(data, (newData) => {
+                        if(newData) refetchNode("4a6ccb76-02f0-4cc3-9550-24c46166a93d", createEntityType.value)
+                    })
                 } else if(createEntityType.value === 'queryFolder'){
-                    createFolder(saveQueryData, saveQueryLoading, showSaveQueryModal, saveModalRef)
+                    const { data } = createFolder(saveQueryData, saveQueryLoading, showSaveQueryModal, saveModalRef)
+                    watch(data, (newData) => {
+                        if(newData) refetchNode("root", createEntityType.value)
+                    })
                 }
             }
 

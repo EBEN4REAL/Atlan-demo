@@ -5,7 +5,6 @@ import { useInlineTab } from '~/components/insights/common/composables/useInline
 import { SavedQuery } from '~/types/insights/savedQuery.interface'
 import { decodeQuery as decodeBase64Data } from '~/utils/helper/routerHelper'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
-import { generateUUID } from '~/utils/helper/generator'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { serializeQuery } from '~/utils/helper/routerHelper'
@@ -126,7 +125,6 @@ export function useSavedQuery(
         const connectionName = getConnectorName(attributeValue)
         const name = activeInlineTab.value.label
         const assetStatus = activeInlineTab.value.status
-        const connectionId = activeInlineTab.value.connectionId
         const description = activeInlineTab.value.description
         const isSQLSnippet = activeInlineTab.value.isSQLSnippet
         const editorInstanceRaw = toRaw(editorInstance.value)

@@ -14,7 +14,7 @@
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
-                            class="relative flex items-center justify-between w-full "
+                            class="relative flex items-center justify-between w-full  z"
                         >
                             <div class="flex w-full">
                                 <component
@@ -33,6 +33,66 @@
                                 >
                                     {{ title(item) }}
                                 </span>
+                            </div>
+                            <div
+                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                :class="
+                                    item?.selected
+                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                        : 'bg-gradient-to-l from-gray-light via-gray-light'
+                                "
+                            >
+                                <div
+                                    class="pl-2 ml-20"
+                                    @click="() => actionClick('add', item)"
+                                >
+                                    <AtlanIcon
+                                        icon="AddAssetName"
+                                        class="w-4 h-4 my-auto"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : 'bg-gray-light'
+                                        "
+                                    ></AtlanIcon>
+                                </div>
+                                <div
+                                    class="pl-2 pr-2"
+                                    :class="
+                                        item?.selected
+                                            ? 'tree-light-color'
+                                            : 'bg-gray-light'
+                                    "
+                                    @click.stop="
+                                        () => actionClick('info', item)
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="Info"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : ''
+                                        "
+                                        class="w-4 h-4 my-auto"
+                                    ></AtlanIcon>
+                                </div>
+                                <div
+                                    class="bg-gray-light"
+                                    @click.stop="
+                                        () => actionClick('bookmark', item)
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="BookmarkOutlined"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : ''
+                                        "
+                                        class="w-4 h-4 my-auto"
+                                    ></AtlanIcon>
+                                </div>
                             </div>
                             <div
                                 class="flex items-center text-xs text-gray-500"

@@ -201,12 +201,13 @@
                 }
             })
             const _keyListener = (e) => {
-                e.preventDefault()
                 if (e.key === 'b' && e.ctrlKey) {
+                    e.preventDefault()
                     explorerPaneToggle(explorerPaneSize)
                     //prevent the default action
                 }
                 if (e.key === 'j' && e.ctrlKey) {
+                    e.preventDefault()
                     resultsPaneSizeToggle(outputPaneSize)
                     //prevent the default action
                 }

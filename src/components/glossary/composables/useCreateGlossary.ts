@@ -22,9 +22,9 @@ const useCreateGlossary = () => {
 
     const { username } = whoami()
 
-    const refetchGlossaryTree = inject<(guid: string | 'root', refetchEntityType?: 'category' | 'term') => void>(
-        'refetchGlossaryTree'
-    )
+    const refetchGlossaryTree = inject<
+        (guid: string | 'root', refetchEntityType?: 'category' | 'term') => void
+    >('refetchGlossaryTree')
 
     const redirectToProfile = (
         type: 'glossary' | 'category' | 'term',
@@ -148,7 +148,7 @@ const useCreateGlossary = () => {
                         parentCategoryGuid || parentCategoryGuid !== ''
                             ? parentCategoryGuid
                             : 'root',
-                            'category'
+                        'category'
                     )
                 }
             }
@@ -163,7 +163,7 @@ const useCreateGlossary = () => {
                     1
                 )}`,
                 key: `${title}`,
-                duration: 2,
+                duration: 5,
             })
 
             isLoading.value = newValidating?.value
@@ -178,7 +178,7 @@ const useCreateGlossary = () => {
         status?: string,
         ownerUsers?: string,
         ownerGroups?: string,
-        categories?: {categoryGuid: string}[]
+        categories?: { categoryGuid: string }[]
     ) => {
         body.value = {
             name: title ?? generateUUID(),
@@ -199,8 +199,8 @@ const useCreateGlossary = () => {
                 },
             ]
         }
-        if(categories && categories.length) {
-            body.value.categories = categories;
+        if (categories && categories.length) {
+            body.value.categories = categories
         }
 
         const {
@@ -229,7 +229,7 @@ const useCreateGlossary = () => {
                         parentCategoryGuid || parentCategoryGuid !== ''
                             ? parentCategoryGuid
                             : 'root',
-                            'term'
+                        'term'
                     )
                 }
             }
@@ -242,7 +242,7 @@ const useCreateGlossary = () => {
                     1
                 )}`,
                 key: `${title}`,
-                duration: 2,
+                duration: 5,
             })
 
             isLoading.value = newValidating?.value

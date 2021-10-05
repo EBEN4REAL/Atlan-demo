@@ -145,6 +145,7 @@
             }
 
             const updateConnector = (value: string) => {
+                connector.value = value;
                 setConnectorsDataInInlineTab(
                     activeInlineTab,
                     inlineTabs,
@@ -172,6 +173,7 @@
                 emit,
                 openSavedQueryInNewTab,
                 pushGuidToURL,
+                connector
             })
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {

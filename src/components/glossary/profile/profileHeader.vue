@@ -167,6 +167,7 @@
     import { useRouter } from 'vue-router'
 
     // components
+    import { message } from 'ant-design-vue'
     import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     // assets
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -253,6 +254,10 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
+
+                message.info({
+                    content: 'Copied!',
+                })
             }
             return {
                 redirectToProfile,

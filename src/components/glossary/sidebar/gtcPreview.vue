@@ -280,6 +280,7 @@
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { Components } from '~/api/atlas/client'
     import Categories from '@/glossary/common/categories.vue'
+    import { message } from 'ant-design-vue'
 
     //  utils
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -390,6 +391,9 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
+                message.info({
+                    content: 'Copied!',
+                })
             }
             const {
                 isClassificationInitializedInStore,

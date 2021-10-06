@@ -1,28 +1,26 @@
 <template>
-  <div>
-    <Health></Health>
-  </div>
+    <Health />
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useHead } from "@vueuse/head";
-import Health from "@/admin/health/health.vue";
+    import { defineComponent } from 'vue'
+    import { useHead } from '@vueuse/head'
+    import Health from '@/admin/health/health.vue'
 
-export default defineComponent({
-  components: {
-    Health,
-  },
-  setup() {
-    useHead({
-      title: "Health page",
-    });
-  },
-});
+    export default defineComponent({
+        components: {
+            Health,
+        },
+        setup() {
+            useHead({
+                title: 'Health page',
+            })
+        },
+    })
 </script>
 <style lang="less" module></style>
 <route lang="yaml">
-  meta:
+meta:
     layout: default
     requiresAuth: true
 </route>

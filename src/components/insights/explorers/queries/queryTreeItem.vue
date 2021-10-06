@@ -55,7 +55,7 @@
                                 v-if="item.typeName !== 'QueryFolder'"
                                 class="
                                     absolute
-                                    right-0
+                                    right-4
                                     flex
                                     items-center
                                     mt-0.5

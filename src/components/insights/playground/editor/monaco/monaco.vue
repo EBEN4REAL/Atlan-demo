@@ -57,7 +57,10 @@
             const disposable: Ref<monaco.IDisposable | undefined> = ref()
             const currentPosition: Ref<any> = ref({})
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
-            const { onEditorContentChange } = useEditor(tabs, activeInlineTab)
+            const { onEditorContentChange, formatter } = useEditor(
+                tabs,
+                activeInlineTab
+            )
 
             const entityFilters = {
                 condition: 'OR',
@@ -231,10 +234,25 @@
                 // on mounting
             })
 
+            monaco.languages.registerDocumentRangeFormattingEditProvider(
+                'atlansql',
+                {
+                    provideDocumentRangeFormattingEdits(model) {
+                        let formatted = formatter(model.getValue())
+                        return [
+                            {
+                                range: model.getFullModelRange(),
+                                text: formatted,
+                            },
+                        ]
+                    },
+                }
+            )
+
             onUnmounted(() => {
                 editor?.dispose()
             })
-            new monaco.Selection()
+
             /*Watcher for changing the content of the editor on activeInlineTab Change*/
             watch(activeInlineTab, () => {
                 if (activeInlineTab.value) {

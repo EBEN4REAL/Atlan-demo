@@ -22,6 +22,7 @@
                 </div>
                 <div class="flex items-center">
                     <div class="flex mr-4 text-sm">
+                        <a-button @click="formatDocument">Format</a-button>
                         <a-button
                             type="primary"
                             class="flex items-center py-0.5 shadow"
@@ -161,6 +162,7 @@
                 'activeInlineTabKey'
             ) as Ref<string>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
             const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
@@ -226,6 +228,13 @@
                     router
                 )
             }
+            const formatDocument = () => {
+                const editorInstanceRaw = toRaw(editorInstance.value)
+                editorInstanceRaw.trigger(
+                    'editor',
+                    'editor.action.formatDocument'
+                )
+            }
             return {
                 isUpdating,
                 showcustomToolBar,
@@ -235,6 +244,7 @@
                 editorInstance,
                 activeInlineTab,
                 isQueryRunning,
+                formatDocument,
                 toggleCustomToolbar,
                 copyURL,
                 updateQuery,

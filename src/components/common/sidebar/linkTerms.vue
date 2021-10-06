@@ -1,6 +1,7 @@
 <template>
     <div class="text-sm text-gray-500">
         <p class="mb-1 text-sm">Terms</p>
+        <!-- shown in side bar  -->
         <div v-if="pillTerms.length > 0" class="flex flex-wrap items-center">
             <PillGroup
                 :data="pillTerms"
@@ -30,6 +31,7 @@
                     </div>
                 </div>
             </div>
+            <!-- popover content  -->
             <template #content>
                 <div class="flex flex-col overflow-y-auto w-72">
                     <template v-if="!showLinkTermPopover">
@@ -43,6 +45,7 @@
                             placeholder="Search for terms"
                             :loading="searchLoading"
                         >
+                            <!-- term list -->
                             <template
                                 v-for="term in availableTerms"
                                 :key="term.guid"
@@ -73,7 +76,7 @@
                                 type="primary"
                                 class="px-4"
                                 @click="createTerm"
-                                >Create</a-button
+                                >Link</a-button
                             >
                         </div>
                     </div>
@@ -88,13 +91,8 @@
         computed,
         defineComponent,
         PropType,
-        reactive,
         ref,
-        Ref,
-        toRaw,
-        UnwrapRef,
         watch,
-        onMounted,
         toRefs,
     } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -102,40 +100,29 @@
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
     export default defineComponent({
+        components: { PillGroup },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        components: { PillGroup },
-
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
-            const { selectedAsset } = toRefs(props)
+            // data
+            const { selectedAsset } = toRefs(props) // to update in cards
             const asset = computed(() => props.selectedAsset ?? {})
             const linkTermPopover = ref(false)
-            const linkClassificationStatus = ref('')
-            const showAll = ref(false)
             const showLinkTermPopover = ref(false)
 
-            const showAddClassificationBtn = ref(false)
-            const pillTerms = ref([...props.selectedAsset?.meanings])
-            const isDrawerVisible = ref(false)
-            const {
-                terms,
-                isLoading: searchLoading,
-                fetchAssets: fetchCategories,
-            } = useGtcSearch(undefined, ref(true), 'AtlasGlossaryTerm')
+            const pillTerms = ref([...props.selectedAsset?.meanings]) // linked terms show in sidebar as pills
+            const { terms, isLoading: searchLoading } = useGtcSearch(
+                undefined,
+                ref(true),
+                'AtlasGlossaryTerm'
+            ) // gets all the terms using basic search
 
-            const availableTerms = ref([])
-            watch(
-                terms,
-                () => {
-                    availableTerms.value = [...terms.value]
-                },
-                { immediate: true }
-            )
+            const availableTerms = ref([]) // terms to show in popover
 
             const assetLinkedTerms = computed(
                 () => selectedAsset.value.meaningNames ?? []
@@ -144,6 +131,18 @@
             const selectedTermForLink = ref([])
             const createErrorText = ref('')
             const createClassificationFormRef = ref()
+            // methods
+
+            // update avaible terms on link and unlink
+            const updateAvailableTerms = () => {
+                availableTerms.value = [...terms.value]
+                availableTerms.value = availableTerms.value.filter(
+                    (el) =>
+                        !selectedAsset.value.meaningNames.includes(
+                            el.displayText
+                        )
+                )
+            }
 
             const handlePopoverVisibleChange = () => {
                 showLinkTermPopover.value = false
@@ -156,12 +155,15 @@
                     showLinkTermPopover.value = false
                     selectedTermForLink.value = []
                 }
+                updateAvailableTerms()
             }
 
             const handleCancel = () => {
                 showLinkTermPopover.value = false
                 linkTermPopover.value = false
             }
+
+            // link term on click ok
             const createTerm = () => {
                 const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
                 selectedTermForLink.value.map((el) => {
@@ -173,20 +175,22 @@
                             (term) => term.guid === el
                         )
                         handleCancel()
-                        pillTerms.value = [...pillTerms.value, ...termToBeAdded]
-                        console.log(termToBeAdded[0])
-                        selectedAsset.value.meanings.push({
+                        const obj = {
                             displayText: termToBeAdded[0].displayText,
                             termGuid:
                                 termToBeAdded[0].termGuid ||
                                 termToBeAdded[0].guid,
-                        })
-                        console.log(selectedAsset.value?.meanings)
+                        }
+                        pillTerms.value = [...pillTerms.value, obj]
+                        selectedAsset.value.meanings.push(obj)
+                        selectedAsset.value.meaningNames.push(obj.displayText)
 
+                        updateAvailableTerms()
                         emit('update:selectedAsset', props.selectedAsset)
                     })
                 })
             }
+            // unlink term on pill cross btn clicked
             const unLinkTerm = (term: any) => {
                 const { unLinkAssets } = useLinkAssets()
                 const { response: unlinkResponse, loading } = unLinkAssets(
@@ -195,21 +199,41 @@
                 )
                 pillTerms.value = pillTerms.value.filter((el) => {
                     if (term?.termGuid) {
-                        console.log('termGuid called')
                         return el?.termGuid !== term?.termGuid
                     }
                     if (el?.guid) return el?.guid !== term?.guid
                     return el?.termGuid !== term?.guid
                 })
+                selectedAsset.value.meaningNames =
+                    selectedAsset.value?.meaningNames.filter(
+                        (el) => el !== term?.displayText
+                    )
+                selectedAsset.value.meanings =
+                    selectedAsset.value.meanings.filter((el) => {
+                        if (term?.termGuid) {
+                            return el?.termGuid !== term?.termGuid
+                        }
+                        return el?.termGuid !== term?.guid
+                    })
 
                 watch(unlinkResponse, (data) => {
                     // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
                     emit('update:selectedAsset', props.selectedAsset)
+                    updateAvailableTerms()
                 })
             }
+            //  watchers
+            watch(
+                terms,
+                () => {
+                    updateAvailableTerms()
+                },
+                { immediate: true }
+            )
 
-            watch(asset, () => {
+            watch(selectedAsset, () => {
                 pillTerms.value = [...props.selectedAsset?.meanings]
+                updateAvailableTerms()
             })
 
             return {
@@ -217,16 +241,12 @@
                 selectedAsset,
                 createClassificationFormRef,
                 showLinkTermPopover,
-                linkClassificationStatus,
                 selectedTermForLink,
                 linkTermPopover,
                 assetLinkedTerms,
                 createErrorText,
-                showAddClassificationBtn,
                 handlePopoverVisibleChange,
                 toggleLinkTermPopover,
-                showAll,
-                isDrawerVisible,
                 terms,
                 availableTerms,
                 handleCancel,

@@ -22,27 +22,7 @@
                 :is="whichComponent.preview"
                 v-if="selected"
                 :selected-workflow="selected"
-                @preview="selectedRunId = $event"
-                @workflow-mutation="propagateToAssetList"
             ></component>
-            <!-- <WorkflowPreview
-                v-if="selected && ['profile', 'discovery'].includes(page)"
-                :selected-asset="selected"
-                :page="page"
-                @asset-mutation="propagateToAssetList"
-                @preview="selectedRunId = $event"
-            ></WorkflowPreview>
-            <div v-else class="flex flex-col">
-                <div>Preview Bar</div>
-                <AtlanBtn
-                    class="m-2"
-                    style="width: 90%"
-                    size="sm"
-                    color="primary"
-                    padding="compact"
-                >
-                    Setup
-                </AtlanBtn> -->
         </div>
     </div>
 </template>

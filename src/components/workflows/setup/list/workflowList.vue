@@ -83,28 +83,32 @@
                 required: false,
                 default: () => false,
             },
+            selectedItemId: {
+                type: String,
+                required: true,
+                default: () => null,
+            },
         },
         emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
             const { list, autoSelect } = toRefs(props)
-            const selectedItemId = ref('')
+
             let shouldReSelect = false
             function handlePreview(item: any) {
-                selectedItemId.value = item.metadata.uid
                 emit('preview', item)
             }
 
             // select first asset automatically conditionally acc to  autoSelect prop
 
-            watch(
-                list,
-                () => {
-                    if (autoSelect.value) {
-                        if (list.value.length) handlePreview(list.value[0])
-                    } else emit('update:autoSelect', true)
-                },
-                { immediate: true }
-            )
+            // watch(
+            //     list,
+            //     () => {
+            //         if (autoSelect.value) {
+            //             if (list.value.length) handlePreview(list.value[0])
+            //         } else emit('update:autoSelect', true)
+            //     },
+            //     { immediate: true }
+            // )
 
             if (autoSelect.value) {
                 watch(
@@ -122,7 +126,7 @@
                 )
             }
 
-            return { handlePreview, selectedItemId }
+            return { handlePreview }
         },
     })
 </script>

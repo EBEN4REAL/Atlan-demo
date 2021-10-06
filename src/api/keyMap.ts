@@ -165,15 +165,13 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
 
@@ -220,7 +218,7 @@ export const KeyMaps = {
             ),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
@@ -241,6 +239,8 @@ export const KeyMaps = {
             getAPIPath('/auth/argo', `/archived-workflows`),
         ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
             getAPIPath('/auth/argo', `/archived-workflows/${guid}`),
+        CLUSTER_WORKFLOW_TEMPLATE: () =>
+            getAPIPath('/auth/argo', `/cluster-workflow-templates`),
         WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) =>
             getAPIPath('/auth/argo', `/workflow-templates/${tenant}/${name}`),
     },

@@ -49,20 +49,33 @@
                     </template> -->
                     </SearchAndFilter>
                 </div>
-                <div v-if="workflowList.length" class="mx-3">
+                <div v-if="workflowList.length && !queryText" class="mx-3">
                     <p class="mb-2 text-xl font-bold text-gray-600">Featured</p>
-                    <WorkflowCards :list="workflowList.slice(10, 14)" />
+                    <WorkflowCards
+                        v-model:autoSelect="autoSelect"
+                        :list="workflowList.slice(10, 14)"
+                        :selected-item-id="selectedItemId"
+                        @preview="handlePreview"
+                    />
                 </div>
-                <div v-if="workflowList.length" class="mx-3">
+                <div v-if="workflowList.length && !queryText" class="mx-3">
                     <p class="mb-2 text-xl font-bold text-gray-600">
                         Suggested
                     </p>
-                    <WorkflowCards :list="workflowList.slice(15, 19)" />
+                    <WorkflowCards
+                        v-model:autoSelect="autoSelect"
+                        :list="workflowList.slice(15, 19)"
+                        :selected-item-id="selectedItemId"
+                        @preview="handlePreview"
+                    />
                 </div>
 
                 <div
                     v-if="
-                        workflowList && workflowList.length <= 0 && !isLoading
+                        !isLoading &&
+                        !(queryText.length
+                            ? filterList(queryText).length
+                            : workflowList.length)
                     "
                     class="flex flex-col items-center mt-10"
                 >
@@ -71,18 +84,25 @@
                         alt="No Workflows"
                         class="w-2/5 m-auto mb-4"
                     />
-                    <span class="text-gray-500">No Workflow found</span>
+                    <span class="text-gray-500"
+                        >No Workflow template found</span
+                    >
                 </div>
+
                 <div v-else class="">
                     <div
-                        v-if="workflowList.length"
+                        v-if="workflowList.length && !queryText"
                         class="mx-3 text-xl font-bold text-gray-600"
                     >
                         All
                     </div>
                     <div
                         class="overflow-y-auto"
-                        style="height: calc(100vh - 29rem)"
+                        :style="
+                            queryText
+                                ? `height: calc(100vh - 9.5rem)`
+                                : `height: calc(100vh - 29rem)`
+                        "
                     >
                         <WorkflowList
                             v-model:autoSelect="autoSelect"
@@ -93,6 +113,7 @@
                                     : workflowList
                             "
                             :is-loading="isLoading"
+                            :selected-item-id="selectedItemId"
                             @preview="handlePreview"
                             @loadMore="loadMore"
                         ></WorkflowList>
@@ -119,7 +140,7 @@
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import useFilterUtils from '@/workflows/setup/filters/useFilterUtils'
-    import { useWorkflowTemplateSearchList } from '~/composables/workflow/useWorkFlowList'
+    import { useClusterWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/setup/cards.vue'
 
@@ -152,8 +173,9 @@
 
             // workflow filter component ref
             const workflowFilterRef = ref()
+            // FIXME auto select logic bug
             const autoSelect = ref(true)
-
+            const selectedItemId = ref('')
             // Clean Stuff
             const AllFilters: Ref = ref({ ...initialFilters.value })
 
@@ -178,13 +200,13 @@
             // Get All Disoverable Asset Types
 
             const { workflowList, isLoading, filterList, mutate } =
-                useWorkflowTemplateSearchList('default', false)
+                useClusterWorkflowTemplates('default', false)
 
             if (!workflowList.value.length) mutate()
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
-                let placeholder = 'Search for Workflows'
+                let placeholder = 'Search for Workflow Templates'
                 if (placeholderLabel.value.asset) {
                     placeholder += ` in ${placeholderLabel.value.asset}`
                 } else if (placeholderLabel.value.connector) {
@@ -222,6 +244,7 @@
             }, 150)
 
             const handlePreview = (item) => {
+                selectedItemId.value = item.metadata.uid
                 emit('preview', item)
             }
             const loadMore = () => {
@@ -258,6 +281,7 @@
                 filters,
                 filterList,
                 goToWorkflow,
+                selectedItemId,
             }
         },
         data() {

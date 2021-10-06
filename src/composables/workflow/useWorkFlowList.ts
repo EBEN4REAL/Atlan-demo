@@ -47,6 +47,24 @@ export function useArchivedWorkflowList(
     return { workflowList, error, isLoading, filterList, mutate }
 }
 
+export function useClusterWorkflowTemplates(
+    immediate: boolean = true
+) {
+    const { data, error, isLoading, mutate } =
+        Workflows.getClusterWorkflowTemplates({ immediate, options: {} })
+
+    const workflowList = ref([])
+    watch(data, () => {
+        console.log('useClusterWorkflowTemplates', data.value.items)
+        workflowList.value = data.value?.items
+    })
+
+    const filterList = (text) =>
+        workflowList.value.filter((wf) => wf.metadata.name.includes(text))
+
+    return { workflowList, error, isLoading, filterList, mutate }
+}
+
 export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
     const { data, error, isLoading, mutate } = Workflows.getArchivedWorkflowRun(
         guid,

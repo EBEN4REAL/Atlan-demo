@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex mx-3 border"
+        class="flex mx-3 border cursor-pointer"
         :class="
             isSelected
                 ? 'border-primary rounded bg-primary-light'
@@ -25,22 +25,15 @@
                 <div class="flex items-center flex-none">
                     <span
                         class="pl-1 text-sm tracking-wider text-gray-700 uppercase "
-                        >WORKFLOW</span
+                        >WORKFLOW TEMPLATE</span
                     >
                 </div>
 
                 <div class="flex items-center mb-0 overflow-hidden">
-                    <router-link
-                        :class="
-                            cssClasses?.textSize
-                                ? cssClasses?.textSize
-                                : 'text-md'
-                        "
-                        :to="`/workflows/${item.metadata.name}/overview`"
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    <span
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate  text-primary overflow-ellipsis whitespace-nowrap"
+                        >{{ item.metadata.name }}</span
                     >
-                        {{ item.metadata.name }}
-                    </router-link>
                 </div>
             </div>
         </div>

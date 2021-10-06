@@ -29,6 +29,16 @@ const getWorkflowTemplates = (tenant, { immediate, options }) =>
         { immediate }
     )
 
+const getClusterWorkflowTemplates = ({ immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.CLUSTER_WORKFLOW_TEMPLATE,
+        'GET',
+        {
+            options,
+        },
+        { immediate }
+    )
+
 const getWorkflowTemplateByName = (tenant, name, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW_TEMPLATES_BY_NAME,
@@ -74,4 +84,5 @@ export const Workflows = {
     getWorkflowTemplateByName,
     getWorkflowTemplates,
     getArchivedWorkflowRun,
+    getClusterWorkflowTemplates
 }

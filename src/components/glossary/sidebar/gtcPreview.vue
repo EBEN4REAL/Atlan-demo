@@ -251,6 +251,27 @@
                     <Activity :selected-asset="entity" />
                 </div>
             </a-tab-pane>
+            <a-tab-pane key="metadata">
+                <template #tab>
+                    <SidePanelTabHeaders
+                        title="Custom metadata"
+                        icon="Metadata"
+                        :is-active="tabActiveKey === 'metadata'"
+                    />
+                </template>
+                <div
+                    class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                >
+                    Custom metadata
+                </div>
+                <div class="h-screen overflow-auto pb-52">
+                    <BusinessMetadataTab
+                        v-if="entity"
+                        :selected-asset="entity"
+                        :info-tab-data="entity"
+                    />
+                </div>
+            </a-tab-pane>
             <!-- TODO: introduce afer GA -->
             <!-- <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane> -->
             <!-- <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane> -->
@@ -308,6 +329,12 @@
             SidePanelTabHeaders,
             Properties: defineAsyncComponent(
                 () => import('@common/sidebar/properties.vue')
+            ),
+            BusinessMetadataTab: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/discovery/preview/tabs/businessMetadata/businessMetadataTab.vue'
+                    )
             ),
             Categories,
         },
@@ -397,7 +424,6 @@
             if (!isClassificationInitializedInStore()) {
                 initializeClassificationsInStore()
             }
-
             return {
                 shortDescription,
                 type,

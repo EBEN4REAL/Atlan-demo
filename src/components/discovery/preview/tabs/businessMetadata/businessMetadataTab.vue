@@ -11,7 +11,7 @@
                 <div class="">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="ml-1 transition-transform transform duration-300"
+                        class="ml-1 transition-transform duration-300 transform"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -71,7 +71,7 @@
             },
             page: {
                 type: String,
-                required: true,
+                required: false,
             },
         },
         setup(props) {

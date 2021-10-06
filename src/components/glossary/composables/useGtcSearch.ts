@@ -5,6 +5,7 @@ import { GTC_SEARCH } from '~/api/keyMaps/glossary'
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { useBusinessMetadataStore } from '~/store/businessMetadata';
 
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
@@ -48,6 +49,8 @@ export default function useGtcSearch(
         'seeAlso',
     ]
 
+    const bmProjection = computed(() => useBusinessMetadataStore().getBusinessMetadataListProjections);
+
     const refreshBody = () => {
         body.value = {
             // typeName: 'AtlasGlossaryTerm,AtlasGlossaryCategory',
@@ -70,6 +73,7 @@ export default function useGtcSearch(
                 'ownerUsers',
                 'ownerGroups',
                 'assignedEntities',
+                ...bmProjection.value,
                 ...relatedTerms,
                 ...BaseAttributes,
                 ...BasicSearchAttributes,
@@ -164,8 +168,8 @@ export default function useGtcSearch(
                 dependantFetchingKey && dependantFetchingKey.value
                     ? true
                     : qualifiedName.value
-                    ? true
-                    : false,
+                        ? true
+                        : false,
             revalidateOnFocus: false,
         },
     })

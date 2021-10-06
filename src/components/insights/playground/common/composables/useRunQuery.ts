@@ -59,6 +59,15 @@ export default function useProject() {
         getData: any,
         isQueryRunning: Ref<string>
     ) => {
+        const sq = getParsedQuery(
+            activeInlineTab.playground.editor.variables,
+            format(activeInlineTab.playground.editor.text)
+        )
+        console.log(
+            sq,
+            'formattedText',
+            format(activeInlineTab.playground.editor.text)
+        )
         const attributeValue =
             activeInlineTab.explorer.schema.connectors.attributeValue
         let queryText = getParsedQuery(

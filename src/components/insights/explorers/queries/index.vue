@@ -1,7 +1,11 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white border-r">
         <div class="w-full p-4 pb-0 rounded">
-            <Connector :connector="connector" @update:data="updateConnector" />
+            <Connector
+                :connector="connector"
+                @update:data="updateConnector"
+                :filterSourceIds="['tableau', 'athena']"
+            />
             <div class="flex flex-row space-x-2">
                 <a-input-search class="mt-2 rounded" placeholder="Search" />
                 <a-button class="flex items-center w-8 h-8 p-2 mt-2 rounded">
@@ -19,7 +23,7 @@
                             isSelectedType('personal') ? ' text-primary' : ''
                         "
                         @click="() => onSelectQueryType('personal')"
-                        >Personal</span
+                        >Private</span
                     >
                     <span
                         class="cursor-pointer hover:text-primary-400"

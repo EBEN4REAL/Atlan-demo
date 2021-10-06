@@ -2,6 +2,7 @@ import { Ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
+import { format, FormatOptions } from 'sql-formatter'
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
@@ -44,6 +45,11 @@ export function useEditor(
         }
         return query
     }
+    function removeMoustacheSpaces(text) {
+        let t = text.replace('{ ', '{')
+        t = t.replace(' }', '}')
+        return t
+    }
     function semicolonSeparateQuery(query: string) {
         // check if it have semicolon
         const queryTextValues = query.split(';')
@@ -68,6 +74,11 @@ export function useEditor(
         }
 
         return semicolonSeparateQuery(query)
+    }
+    function formatter(text: string, options: FormatOptions) {
+        /* It formats and changes {{abc}}-> { {abc} } */
+        const t = format(text, options)
+        return removeMoustacheSpaces(t)
     }
     function focusEditor(editorInstance) {
         editorInstance.focus()
@@ -99,6 +110,7 @@ export function useEditor(
     }
 
     return {
+        formatter,
         setSelection,
         focusEditor,
         modifyEditorContent,

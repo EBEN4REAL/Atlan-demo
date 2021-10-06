@@ -26,7 +26,7 @@
                             type="primary"
                             class="flex items-center py-0.5 shadow"
                             :class="
-                                isQueryRunning === 'loading' ? 'px-4.5' : 'px-2'
+                                isQueryRunning === 'loading' ? 'px-4.5' : 'px-3'
                             "
                             :loading="
                                 isQueryRunning === 'loading' ? true : false
@@ -35,7 +35,7 @@
                         >
                             <template #icon>
                                 <AtlanIcon
-                                    class="mr-1 text-white"
+                                    class="mr-0.5 text-white"
                                     icon="Play"
                                 />
                             </template>
@@ -52,7 +52,7 @@
                                 shadow
                             "
                             :loading="isUpdating"
-                            :class="isUpdating ? 'px-4.5' : 'px-2'"
+                            :class="isUpdating ? 'px-4.5' : 'px-3'"
                             :disabled="
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
@@ -60,7 +60,7 @@
                             @click="updateQuery"
                         >
                             <template #icon>
-                                <AtlanIcon class="mr-1" icon="Save" />
+                                <AtlanIcon class="mr-0.5" icon="Save" />
                             </template>
 
                             Update
@@ -78,16 +78,16 @@
                             @click="openSaveQueryModal"
                         >
                             <template #icon>
-                                <AtlanIcon class="mr-1" icon="Save" />
+                                <AtlanIcon class="" icon="Save" />
                             </template>
 
                             Save
                         </a-button>
                         <a-button
-                            class="flex items-center ml-2 py-0.5 px-2 shadow"
+                            class="flex items-center ml-2 py-0.5 px-3 shadow"
                             @click="copyURL"
                         >
-                            <AtlanIcon class="mr-1" icon="Share" /><span
+                            <AtlanIcon class="mr-0.5" icon="Share" /><span
                                 >Share</span
                             ></a-button
                         >

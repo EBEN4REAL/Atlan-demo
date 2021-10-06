@@ -5,7 +5,7 @@
             <PillGroup
                 :data="pillTerms"
                 label-key="displayText"
-                @add="toggleLinkClassificationPopover"
+                @add="toggleLinkTermPopover"
                 @delete="unLinkTerm"
                 @select="handleSelect"
             >
@@ -15,39 +15,15 @@
                         class="text-primary group-hover:text-white"
                     />
                 </template>
-                <template #popover="{ item }">
-                    <ClassificationInfoCard :classification="item"
-                /></template>
-                <template #suffix>
-                    <span
-                        v-if="splittedTerms.b.length > 0"
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            rounded
-                            text-primary
-                            mr-3
-                            cursor-pointer
-                        "
-                        @click="() => toggleAllClassifications()"
-                    >
-                        {{
-                            showAll
-                                ? 'Show less'
-                                : `and ${splittedTerms.b.length} more`
-                        }}
-                    </span>
-                </template>
             </PillGroup>
         </div>
         <a-popover
-            v-model:visible="linkClassificationPopover"
+            v-model:visible="linkTermPopover"
             placement="left"
             trigger="click"
         >
             <div v-if="pillTerms.length < 1">
-                <div @click.stop="toggleLinkClassificationPopover">
+                <div @click.stop="toggleLinkTermPopover">
                     <div
                         class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                     >
@@ -164,7 +140,7 @@
             const selectedAsset = computed(() => props.selectedAsset)
             const classificationsStore = useClassificationStore()
             const asset = computed(() => props.selectedAsset ?? {})
-            const linkClassificationPopover = ref(false)
+            const linkTermPopover = ref(false)
             const linkClassificationStatus = ref('')
             const linkClassificationStatusError = ref('')
             const showAll = ref(false)
@@ -329,7 +305,7 @@
             }
 
             const openLinkClassificationPopover = () => {
-                linkClassificationPopover.value = true
+                linkTermPopover.value = true
             }
 
             const linkClassificationData = ref({
@@ -377,7 +353,7 @@
                 watch([isLoading], () => {
                     if (isLoading.value == false && !error.value) {
                         linkClassificationStatus.value = 'success'
-                        linkClassificationPopover.value = false
+                        linkTermPopover.value = false
                         const classifications = payload.value
                         addClassificationToSelectedAsset({
                             classifications,
@@ -398,7 +374,7 @@
             }
 
             const handleLinkClassificationPopoverCancel = () => {
-                linkClassificationPopover.value = false
+                linkTermPopover.value = false
             }
 
             const handleSelectedClassificationForLink = (typeName: any) => {
@@ -474,9 +450,8 @@
                     : splittedTerms.value.a
             )
 
-            const toggleLinkClassificationPopover = () => {
-                if (!linkClassificationPopover.value)
-                    linkClassificationPopover.value = true
+            const toggleLinkTermPopover = () => {
+                if (!linkTermPopover.value) linkTermPopover.value = true
                 else {
                     showCreateClassificationPopover.value = false
                     selectedClassificationForLink.value = []
@@ -492,7 +467,7 @@
             }
             const handleCancel = () => {
                 showCreateClassificationPopover.value = false
-                linkClassificationPopover.value = false
+                linkTermPopover.value = false
             }
             const createTerm = () => {
                 const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
@@ -553,7 +528,7 @@
                 handleLinkClassificationPopoverSave,
                 openLinkClassificationPopover,
                 availableClassificationsForLink,
-                linkClassificationPopover,
+                linkTermPopover,
                 assetLinkedTerms,
                 splittedTerms,
                 unLinkClassification,
@@ -567,7 +542,7 @@
                 handlePopoverVisibleChange,
                 toggleAllClassifications,
                 classificationsList,
-                toggleLinkClassificationPopover,
+                toggleLinkTermPopover,
                 showAll,
                 isDrawerVisible,
                 handleSelect,

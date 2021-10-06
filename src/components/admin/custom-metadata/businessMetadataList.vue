@@ -1,40 +1,44 @@
 <template>
-    <div
-        v-for="item in finalList"
-        :key="item.guid"
-        class="p-3 rounded cursor-pointer"
-        :class="{ 'bg-gray-200': selectedBm?.guid === item.guid }"
-        @click="(e) => selectBm(item)"
-    >
-        <p
-            class="m-0 text-sm font-bold"
-            :class="
-                selectedBm?.guid === item.guid ? 'text-primary' : 'text-gray'
-            "
+    <div>
+        <div
+            v-for="item in finalList"
+            :key="item.guid"
+            class="p-3 rounded cursor-pointer"
+            :class="{ 'bg-gray-200': selectedBm?.guid === item.guid }"
+            @click="(e) => selectBm(item)"
         >
-            <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
-            {{
-                isUpdateBmSameAsCurrentBm(item)
-                    ? updatedBm.options && updatedBm.options.displayName
-                    : item.options.displayName || item.name
-            }}
-            <sup
-                v-if="
-                    isUpdateBmSameAsCurrentBm(item) ||
-                    (item && item.guid === 'new')
+            <p
+                class="m-0 overflow-hidden text-sm font-bold overflow-ellipsis"
+                :class="
+                    selectedBm?.guid === item.guid
+                        ? 'text-primary'
+                        : 'text-gray'
                 "
             >
-                *
-            </sup>
-        </p>
-        <span class="text-xs text-gray"
-            >{{
-                isUpdateBmSameAsCurrentBm(item)
-                    ? updatedBm.attributeDefs.length || 0
-                    : item.attributeDefs.length || 0
-            }}
-            attribute(s)</span
-        >
+                <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
+                {{
+                    isUpdateBmSameAsCurrentBm(item)
+                        ? updatedBm.options && updatedBm.options.displayName
+                        : item.options.displayName || item.name
+                }}
+                <sup
+                    v-if="
+                        isUpdateBmSameAsCurrentBm(item) ||
+                        (item && item.guid === 'new')
+                    "
+                >
+                    *
+                </sup>
+            </p>
+            <span class="text-xs text-gray"
+                >{{
+                    isUpdateBmSameAsCurrentBm(item)
+                        ? updatedBm.attributeDefs.length || 0
+                        : item.attributeDefs.length || 0
+                }}
+                attribute(s)</span
+            >
+        </div>
     </div>
 </template>
 <script lang="ts">

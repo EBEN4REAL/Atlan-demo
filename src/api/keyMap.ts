@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { getAPIPath, getHealthPath, PathParams } from '~/api'
 
 export const KeyMaps = {
@@ -13,6 +14,7 @@ export const KeyMaps = {
             getAPIPath('auth/atlas', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
+        BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -154,8 +156,6 @@ export const KeyMaps = {
 
         UPDATE_GLOSSARY_CATEGORY_FULL: ({ guid }: PathParams) =>
             getAPIPath('auth/atlas', `/glossary/category/${guid}`),
-        UPDATE_GLOSSARY_TERM_FULL: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/term/${guid}`),
 
         GET_GLOSSARY_CATEGORIES: ({
             guid,
@@ -165,15 +165,13 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
 
@@ -192,6 +190,21 @@ export const KeyMaps = {
     health: {
         PING_USER: () => getHealthPath('auth', '/debug/health'),
     },
+    credential: {
+        CREDENTIAL_TEST: () => getAPIPath('auth', `/credentials/test`),
+        CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) =>
+            getAPIPath('auth', `/credentials/${id}/test`),
+        UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) =>
+            getAPIPath('auth', `/credentials/${id}`),
+    },
+    connection: {
+        TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
+        SETUP: () => getAPIPath('auth', '/connections'),
+        CONNECTION_SETUP: () => getAPIPath('auth/atlas', `/connections/setup`),
+        CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
+        CONNECTION_ARCHIVE: ({ id }) =>
+            getAPIPath('auth', `/connections/${id}/archive`),
+    },
     query: {
         RUN_QUERY: ({
             query,
@@ -205,13 +218,30 @@ export const KeyMaps = {
             ),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
             ),
     },
-    schemaExplorer: {
+    insights: {
         BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
-    }
+        CREATE_SAVED_QUERY: () => getAPIPath('auth/atlas', '/entity'),
+    },
+    savedQueries: {
+        RELATIONSHIP: () => getAPIPath('auth/atlas', '/search/relationship'),
+        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
+    },
+    workflow: {
+        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}`),
+        ARCHIVED_WORKFLOW: () =>
+            getAPIPath('/auth/argo', `/archived-workflows`),
+        ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
+            getAPIPath('/auth/argo', `/archived-workflows/${guid}`),
+        CLUSTER_WORKFLOW_TEMPLATE: () =>
+            getAPIPath('/auth/argo', `/cluster-workflow-templates`),
+        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}/${name}`),
+    },
 }

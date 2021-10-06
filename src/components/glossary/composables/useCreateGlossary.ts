@@ -22,9 +22,9 @@ const useCreateGlossary = () => {
 
     const { username } = whoami()
 
-    const refetchGlossaryTree = inject<(guid: string | 'root') => void>(
-        'refetchGlossaryTree'
-    )
+    const refetchGlossaryTree = inject<
+        (guid: string | 'root', refetchEntityType?: 'category' | 'term') => void
+    >('refetchGlossaryTree')
 
     const redirectToProfile = (
         type: 'glossary' | 'category' | 'term',
@@ -44,14 +44,26 @@ const useCreateGlossary = () => {
         name: '',
     })
 
-    const createGlossary = () => {
+    const createGlossary = (
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
+    ) => {
         body.value = {
             qualifiedName: generateUUID(),
-            name: 'Untitled Glossary',
-            shortDescription: '',
+            name: title ?? 'Untitled Glossary',
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
         }
+        message.loading({
+            content: 'Creating new glossary...',
+            key: `${title}`,
+        })
 
         const {
             data,
@@ -64,6 +76,12 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
+                })
+
                 redirectToProfile('glossary', newData.guid)
             }
         })
@@ -71,6 +89,7 @@ const useCreateGlossary = () => {
             error.value = newError?.value
             isLoading.value = newValidating?.value
         })
+        return { data }
     }
 
     const createCategory = (
@@ -128,7 +147,8 @@ const useCreateGlossary = () => {
                     refetchGlossaryTree(
                         parentCategoryGuid || parentCategoryGuid !== ''
                             ? parentCategoryGuid
-                            : 'root'
+                            : 'root',
+                        'category'
                     )
                 }
             }
@@ -143,7 +163,7 @@ const useCreateGlossary = () => {
                     1
                 )}`,
                 key: `${title}`,
-                duration: 2,
+                duration: 5,
             })
 
             isLoading.value = newValidating?.value
@@ -157,7 +177,8 @@ const useCreateGlossary = () => {
         description?: string,
         status?: string,
         ownerUsers?: string,
-        ownerGroups?: string
+        ownerGroups?: string,
+        categories?: { categoryGuid: string }[]
     ) => {
         body.value = {
             name: title ?? generateUUID(),
@@ -177,6 +198,9 @@ const useCreateGlossary = () => {
                     categoryGuid: parentCategoryGuid,
                 },
             ]
+        }
+        if (categories && categories.length) {
+            body.value.categories = categories
         }
 
         const {
@@ -204,7 +228,8 @@ const useCreateGlossary = () => {
                     refetchGlossaryTree(
                         parentCategoryGuid || parentCategoryGuid !== ''
                             ? parentCategoryGuid
-                            : 'root'
+                            : 'root',
+                        'term'
                     )
                 }
             }
@@ -217,7 +242,7 @@ const useCreateGlossary = () => {
                     1
                 )}`,
                 key: `${title}`,
-                duration: 2,
+                duration: 5,
             })
 
             isLoading.value = newValidating?.value

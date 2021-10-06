@@ -3,27 +3,40 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
 
-export function useInlineTab() {
+export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     const {
         syncInlineTabsInLocalStorage,
         getInlineTabsFromLocalStorage,
         getActiveInlineTabKeyFromLocalStorage,
     } = useLocalStorageSync()
 
+    // initial sidebar will be not visible
+    const setInlineTabsVisibilityToNone = (
+        localStorageInlineTabs: activeInlineTabInterface[]
+    ) => {
+        const localStorageInlineTabsX = localStorageInlineTabs.map((tab) => {
+            tab.assetSidebar.isVisible = false
+            return tab
+        })
+        return localStorageInlineTabsX
+    }
     const setInlineTabsArray = () => {
         // checking if localstorage already have active tabs
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
-            console.log(localStorageInlineTabs, 'local')
-            return localStorageInlineTabs
+            return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
         return inlineTabsDemoData
     }
 
-    const isInlineTabAlreadyOpened = (inlineTab: activeInlineTabInterface) => {
+    const isInlineTabAlreadyOpened = (
+        inlineTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
         let bool = false
         tabsArray.value.forEach((tab) => {
-            if (tab.key === inlineTab.key) bool = true
+            if (tab.queryId === inlineTab.queryId) bool = true
+            else if (tab.key === inlineTab.key) bool = true
         })
         return bool
     }
@@ -45,7 +58,8 @@ export function useInlineTab() {
     const inlineTabRemove = (
         inlineTabKey: string,
         tabsArray: Ref<activeInlineTabInterface[]>,
-        activeInlineTabKey: Ref<string>
+        activeInlineTabKey: Ref<string>,
+        pushGuidToURL: Function
     ) => {
         let lastIndex = 0
         tabsArray.value.forEach((tab, i) => {
@@ -56,26 +70,49 @@ export function useInlineTab() {
         tabsArray.value = tabsArray.value.filter(
             (tab) => tab.key !== inlineTabKey
         )
-        if (
-            tabsArray.value.length &&
-            activeInlineTabKey.value === inlineTabKey
-        ) {
-            if (lastIndex >= 0) {
-                activeInlineTabKey.value = tabsArray.value[lastIndex].key
-            } else {
-                activeInlineTabKey.value = tabsArray.value[0].key
-            }
+        if (treeSelectedKeys)
+            treeSelectedKeys.value = treeSelectedKeys?.value.filter(
+                (key) => key !== inlineTabKey
+            )
+        if (lastIndex >= 0) {
+            activeInlineTabKey.value = tabsArray.value[lastIndex].key
+            if (tabsArray.value[lastIndex].queryId)
+                pushGuidToURL(tabsArray.value[lastIndex].key)
+            else pushGuidToURL()
         } else {
-            activeInlineTabKey.value = undefined
+            if (tabsArray.value.length > 0) {
+                activeInlineTabKey.value = tabsArray.value[0].key
+                if (tabsArray.value[lastIndex].queryId)
+                    pushGuidToURL(tabsArray.value[0].key)
+                else pushGuidToURL()
+            } else {
+                activeInlineTabKey.value = undefined
+                pushGuidToURL()
+            }
         }
+
+        console.log(activeInlineTabKey.value)
         // syncying inline tabarray in localstorage
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
 
     const modifyActiveInlineTab = (
         activeTab: activeInlineTabInterface,
-        tabsArray: Ref<activeInlineTabInterface[]>
+        tabsArray: Ref<activeInlineTabInterface[]>,
+        isSaved: boolean = false,
+        localStorageSync: boolean = true
     ) => {
+        /* There can be two case
+        1-> It's already saved and being modified so save-> unsave ( activeTab.save(true) && isSaved(false))
+        2-> It's unsaved and being saving into database so unsave-> save ( activeTab.save(true) && isSaved(true))
+         */
+        // saved query being modifed
+        if (activeTab.isSaved && !isSaved) {
+            activeTab.isSaved = false
+        }
+        if (activeTab.isSaved && isSaved) {
+            activeTab.isSaved = true
+        }
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
@@ -83,19 +120,34 @@ export function useInlineTab() {
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab
         }
-        // syncying inline tabarray in localstorage
-        syncInlineTabsInLocalStorage(tabsArray.value)
+        if (localStorageSync) {
+            console.log('localStorageSync')
+            // syncying inline tabarray in localstorage
+            syncInlineTabsInLocalStorage(tabsArray.value)
+        }
     }
+
     const modifyActiveInlineTabEditor = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,
-        queryDataStore?: boolean
+        isSaved: boolean = false,
+        queryDataStore: boolean = false
     ) => {
+        /* There can be two case
+        1-> It's already saved and being modified so save-> unsave ( activeTab.save(true) && isSaved(false))
+        2-> It's unsaved and being saving into database so unsave-> save ( activeTab.save(true) && isSaved(true))
+         */
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
-            console.log(index, activeTab, 'modifyTab')
+            // saved query being modifed
+            if (activeTab.isSaved && !isSaved) {
+                tabsArray.value[index].isSaved = false
+            }
+            if (activeTab.isSaved && isSaved) {
+                tabsArray.value[index].isSaved = true
+            }
             tabsArray.value[index].playground.editor =
                 activeTab.playground.editor
         }
@@ -117,6 +169,21 @@ export function useInlineTab() {
         tabsArray.value.push(inlineTab)
         activeInlineTabKey.value = inlineTab.key
     }
+    const isTwoInlineTabsEqual = (
+        obj1: activeInlineTabInterface,
+        obj2: activeInlineTabInterface
+    ) => {
+        console.log('run Equal')
+        const obj1Length = Object.keys(obj1).length
+        const obj2Length = Object.keys(obj2).length
+
+        if (obj1Length === obj2Length) {
+            return Object.keys(obj1).every(
+                (key) => obj2.hasOwnProperty(key) && obj2[key] === obj1[key]
+            )
+        }
+        return false
+    }
 
     const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
     const activeInlineTabKey = ref(setActiveInlineTabKey())
@@ -128,6 +195,7 @@ export function useInlineTab() {
         tabsArray,
         activeInlineTabKey,
         activeInlineTab,
+        isTwoInlineTabsEqual,
         isInlineTabAlreadyOpened,
         inlineTabRemove,
         inlineTabAdd,

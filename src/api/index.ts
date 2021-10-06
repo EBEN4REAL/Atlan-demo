@@ -12,6 +12,8 @@ export const getAPIPath = (serviceName: string, path = '') => {
 
 export const getHealthPath = (serviceName: string, path = '') =>
     `${serviceName}${path}`
+export const getSavedQueryPath = (serviceName: string, path = '') =>
+    `${serviceName}${path}`
 
 export const getAxiosClient = () => axiosClient
 

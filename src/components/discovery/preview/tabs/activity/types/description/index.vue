@@ -1,7 +1,10 @@
 <template>
-    <div><b>Description</b> updated</div>
-    <div class="my-3 text-sm text-gray-500">
-        {{ data.value }}
+    <div v-if="data.value === ''" class="mb-3"><b>Description</b> removed</div>
+    <div v-else>
+        <b>Description</b> updated
+        <div class="my-3 text-sm text-gray-500">
+            {{ data.value }}
+        </div>
     </div>
 </template>
 

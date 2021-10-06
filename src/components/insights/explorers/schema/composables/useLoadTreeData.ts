@@ -1,104 +1,128 @@
 import { Ref, ref } from 'vue'
 
-import { Database, Schema, Table, Column, BasicSearchResponse } from '~/types/insights/table.interface'
+import {
+    Database,
+    Schema,
+    Table,
+    Column,
+} from '~/types/insights/table.interface'
+import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
-
 const useLoadTreeData = () => {
     const body = ref({
-        typeName: "Schema",
+        typeName: 'Schema',
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
         includeSubTypes: true,
-        limit: 5,
+        limit: 15,
         offset: 0,
         attributes: [
-            "name",
-            "displayName",
-            "typeName",
-            "dataType",
-            "description",
-            "userDescription",
-            "assetStatus",
-            "ownerUsers",
-            "ownerGroups",
-            "classifications",
-            "tableCount",
-            "columnCount",
+            'name',
+            'displayName',
+            'typeName',
+            'dataType',
+            'description',
+            'userDescription',
+            'assetStatus',
+            'ownerUsers',
+            'ownerGroups',
+            'classifications',
+            'tableCount',
+            'columnCount',
             ...BaseAttributes,
-            ...BasicSearchAttributes
+            ...BasicSearchAttributes,
         ],
         entityFilters: {
-            condition: "AND",
+            condition: 'AND',
             criterion: [
                 {
-                    attributeName: "",
-                    attributeValue: "",
-                    operator: "eq"
-                }
-            ]
+                    attributeName: '',
+                    attributeValue: '',
+                    operator: 'eq',
+                },
+            ],
         },
-        sortBy: "Asset.name.keyword",
-        sortOrder: "ASCENDING",
-    });
+        sortBy: 'Asset.name.keyword',
+        sortOrder: 'ASCENDING',
+    })
 
-    const getDatabaseForConnection = async (connectionQualifiedName: string, offset?: number) => {
-        body.value.typeName = 'Database';
-        body.value.entityFilters.criterion = [{
-            attributeName: "connectionQualifiedName",
-            attributeValue: connectionQualifiedName,
-            operator: "eq"
-        }]
+    const getDatabaseForConnection = async (
+        connectionQualifiedName: string,
+        offset?: number
+    ) => {
+        body.value.typeName = 'Database'
+        body.value.entityFilters.criterion = [
+            {
+                attributeName: 'connectionQualifiedName',
+                attributeValue: connectionQualifiedName,
+                operator: 'eq',
+            },
+        ]
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.schemaExplorer.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
             body,
-        }) as Promise<BasicSearchResponse<Database>>;
+        }) as Promise<BasicSearchResponse<Database>>
     }
 
-    const getSchemaForDatabase = (databaseQualifiedName: string, offset?: number) => {
-        body.value.typeName = 'Schema';
-        body.value.entityFilters.criterion = [{
-            attributeName: "databaseQualifiedName",
-            attributeValue: databaseQualifiedName,
-            operator: "eq"
-        }]
+    const getSchemaForDatabase = (
+        databaseQualifiedName: string,
+        offset?: number
+    ) => {
+        body.value.typeName = 'Schema'
+        body.value.entityFilters.criterion = [
+            {
+                attributeName: 'databaseQualifiedName',
+                attributeValue: databaseQualifiedName,
+                operator: 'eq',
+            },
+        ]
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.schemaExplorer.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Schema>>
     }
 
-    const getTablesForSchema = (schemaQualifiedName: string, offset?: number) => {
-        body.value.typeName = 'Table';
-        body.value.entityFilters.criterion = [{
-            attributeName: "schemaQualifiedName",
-            attributeValue: schemaQualifiedName,
-            operator: "eq"
-        }]
+    const getTablesForSchema = (
+        schemaQualifiedName: string,
+        offset?: number
+    ) => {
+        body.value.typeName = 'Table'
+        body.value.entityFilters.criterion = [
+            {
+                attributeName: 'schemaQualifiedName',
+                attributeValue: schemaQualifiedName,
+                operator: 'eq',
+            },
+        ]
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.schemaExplorer.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
             body,
-        })  as Promise<BasicSearchResponse<Table>>
+        }) as Promise<BasicSearchResponse<Table>>
     }
 
-
-    const getColumnsForTable = (tableQualifiedName: string, offset?: number) => {
-        body.value.typeName = 'Column';
-        body.value.entityFilters.criterion = [{
-            attributeName: "tableQualifiedName",
-            attributeValue: tableQualifiedName,
-            operator: "eq"
-        }]
+    const getColumnsForTable = (
+        tableQualifiedName: string,
+        offset?: number
+    ) => {
+        body.value.typeName = 'Column'
+        body.value.entityFilters.criterion = [
+            {
+                attributeName: 'tableQualifiedName',
+                attributeValue: tableQualifiedName,
+                operator: 'eq',
+            },
+        ]
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.schemaExplorer.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Column>>
     }
@@ -111,4 +135,4 @@ const useLoadTreeData = () => {
     }
 }
 
-export default useLoadTreeData;
+export default useLoadTreeData

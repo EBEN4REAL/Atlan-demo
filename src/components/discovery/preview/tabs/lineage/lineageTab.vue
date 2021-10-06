@@ -1,24 +1,16 @@
 <template>
-    <div
-        v-if="loading"
-        class="flex items-center justify-center px-5 py-4 mt-4 text-sm leading-none "
-    >
-        <!-- <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>Getting lineage data</span> -->
-    </div>
-    <div v-else>
+    <div>
         <div class="flex items-center justify-between px-5 my-3 gap-x-2">
             <SearchAndFilter
                 class="flex-grow"
-                :value="query"
-                placeholder="Search assets"
-                @change="searchQuery"
+                v-model:value="query"
+                :placeholder="placeholderText"
                 :autofocus="true"
             >
                 <template #filter> <Preferences /> </template>
             </SearchAndFilter>
             <router-link
-                :to="`/assets/${id || guid}/lineage`"
+                :to="`/assets/${guid}/lineage`"
                 class="w-24 text-xs underline"
                 @click="$event.stopPropagation()"
                 >Graph view
@@ -36,7 +28,7 @@
                 <div class="">
                     <fa
                         icon="fas chevron-down"
-                        class="ml-1 transition-transform transform"
+                        class="ml-1 transition-transform duration-300 transform"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -53,13 +45,22 @@
                         {{ stream.name }}
 
                         <span class="chip">{{
-                            lineageList[stream.key]?.length || 0
+                            filteredLineageList[stream.key]?.length || 0
                         }}</span>
                     </div>
                 </template>
 
+                <div
+                    v-if="isLoading[stream.key]"
+                    class="flex items-center justify-center px-5 py-4 mt-4"
+                >
+                    <a-spin size="small" class="mr-2 leading-none" />
+                    <span class="text-sm leading-none">
+                        Getting lineage data
+                    </span>
+                </div>
                 <AssetList
-                    v-if="
+                    v-else-if="
                         filteredLineageList[stream.key] &&
                         filteredLineageList[stream.key].length > 0
                     "
@@ -87,14 +88,11 @@
         ref,
         Ref,
         toRefs,
-        ToRefs,
         watch,
         provide,
-        onMounted,
         computed,
         PropType,
     } from 'vue'
-    import { useRoute } from 'vue-router'
 
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -106,6 +104,8 @@
     // Assets
     import emptyScreen from '~/assets/images/empty_search.png'
 
+    // Services
+    import useLineageService from '~/services/atlas/composables/lineage'
     export default defineComponent({
         name: 'LineagePreviewTab',
         components: { AssetList, Preferences, SearchAndFilter },
@@ -117,16 +117,18 @@
         },
         setup(props) {
             /** DATA */
-            const { selectedAsset }: ToRefs = toRefs(props)
+            const { selectedAsset } = toRefs(props)
             const activeKeys = ref([])
-            const loading = ref(true)
-            const lineage: Ref<{}> = ref({})
-            const lineageList = ref({})
-            const filteredLineageList = ref({})
+
             const assetTypesLengthMap = ref({})
+
+            const { useFetchLineage } = useLineageService()
+
             const depth = ref(1)
             const query = ref('')
+
             const filters = ref(['Table', 'View', 'Column', 'Bi Dashboard'])
+
             const streams = [
                 {
                     key: 'upstream',
@@ -139,78 +141,101 @@
             ]
 
             /** COMPUTED */
-            const route = useRoute()
-            const id = computed(() => route?.params?.id || '')
             const guid = computed(() => selectedAsset.value.guid)
-            const filtersLength = computed(() => filters.value.length)
+
+            const UpStreamLineage = useFetchLineage(
+                computed(() => ({
+                    depth: depth.value,
+                    guid: guid.value,
+                    direction: 'INPUT',
+                }))
+            )
+            const DownStreamLineage = useFetchLineage(
+                computed(() => ({
+                    depth: depth.value,
+                    guid: guid.value,
+                    direction: 'OUTPUT',
+                }))
+            )
+
+            // useComputeGraph
+            const allEntities = computed(() => ({
+                upstream: Object.values(UpStreamLineage.guidEntityMap.value),
+                downstream: Object.values(
+                    DownStreamLineage.guidEntityMap.value
+                ),
+            }))
+
+            const filteredLineageList = computed(() => {
+                const lineageMap = {}
+                for (const [key, assetList] of Object.entries(
+                    allEntities.value
+                )) {
+                    lineageMap[key] = assetList.filter((et) =>
+                        et.displayText
+                            .toLowerCase()
+                            .includes(query.value.toLowerCase())
+                    )
+                }
+                return lineageMap
+            })
+
+            const totalCount = computed(() =>
+                Object.values(allEntities.value).reduce(
+                    (acc, assetList) => assetList.length + acc,
+                    0
+                )
+            )
+
+            const placeholderText = computed(() => {
+                if (
+                    UpStreamLineage.isLoading.value ||
+                    DownStreamLineage.isLoading.value
+                )
+                    return 'Loading lineage'
+                else {
+                    return totalCount.value
+                        ? `Search ${totalCount.value} assets`
+                        : 'No assets found'
+                }
+            })
+
+            const isLoading = computed(() => ({
+                upstream: UpStreamLineage.isLoading.value,
+                downstream: DownStreamLineage.isLoading.value,
+            }))
 
             /** METHODS */
-            const filter = () => {
-                // const { data, l } = useLineageFilters(
-                //     lineageList,
-                //     filters,
-                //     query
-                // )
-                // filteredLineageList.value = data
-                // assetTypesLengthMap.value = l
-                // loading.value = false
-            }
-            const searchQuery = (e) => {
-                query.value = e.target.value
-            }
             const updateDepth = (val: number) => {
                 depth.value = val
             }
             const updateFilters = (val: Ref<string[]>) => {
-                filters.value = val
-            }
-            const fetch = () => {
-                // loading.value = true
-                // const currGuid = id.value || guid.value
-                // const { data } = useLineage(currGuid, depth.value, 'BOTH')
-                // watch(data, () => {
-                //     lineage.value = data.value as object
-                //     lineageList.value = useLineageCompute.computeGraphRelations(
-                //         lineage,
-                //         'widget'
-                //     )
-                //     streams.forEach((i) => {
-                //         if (lineageList.value[i.key])
-                //             activeKeys.value.push(i.key)
-                //     })
-                //     filter()
-                // })
+                filters.value = val.value
             }
 
             /** PROVIDERS */
             provide('updateDepth', updateDepth)
             provide('updateFilters', updateFilters)
-            provide('searchQuery', searchQuery)
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
             /** WATCHERS */
-            watch(depth, () => fetch())
-            watch(guid, () => fetch())
-            watch(id, () => fetch())
-            watch(query, () => filter())
-            watch(filtersLength, () => filter())
+            watch([depth, guid], () => {
+                UpStreamLineage.reFetch()
+                DownStreamLineage.reFetch()
+            })
 
             /** LIFECYCLE */
-            onMounted(fetch)
-
             return {
-                id,
-                loading,
                 guid,
                 query,
-                lineage,
-                lineageList,
                 filteredLineageList,
                 assetTypesLengthMap,
                 activeKeys,
                 streams,
                 emptyScreen,
-                searchQuery,
+                totalCount,
+                placeholderText,
+                isLoading,
             }
         },
     })

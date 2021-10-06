@@ -71,10 +71,6 @@ export default function fetchConnectionList(cache?: string, dependentKey?: Ref<a
     const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
     const aggregations: ComputedRef<any[]> = computed(() => data?.value?.aggregations);
 
-
-
-
-
     const sourceList: ComputedRef<any[] | undefined> = computed(() => {
         const source: any[] = [];
         const allSourceList = list.value?.map((value) => value.attributes.integrationName);

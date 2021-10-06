@@ -1,11 +1,12 @@
 <template>
-    <div class="px-4 mt-1">
+    <div class="px-4 pb-6 mt-1">
         <div class="flex items-center justify-between mb-3">
             <SearchAndFilter
                 v-model:value="queryText"
                 placeholder="Search"
                 :autofocus="true"
                 @change="handleOwnerSearch"
+                size="minimal"
             >
             </SearchAndFilter>
             <a-button-group>
@@ -184,7 +185,6 @@
     import Users from '@common/selector/users/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { Collapse } from '~/types'
-    import { Components } from '~/api/atlas/client'
     import fetchUserList from '~/composables/user/fetchUserList'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import { userInterface } from '~/types/users/user.interface'
@@ -220,7 +220,6 @@
             // own info
             const { username: myUsername } = whoami()
 
-            const criterion: Ref<Components.Schemas.FilterCriteria[]> = ref([])
             console.log(
                 'propsValue',
                 data.value.userValue,
@@ -237,63 +236,14 @@
             const handleChange = () => {
                 // make no owners unchecked
                 data.value.noOwnerAssigned = false
-                data.value.userValue.forEach((name: string) => {
-                    criterion.value.push({
-                        attributeName: 'ownerUsers',
-                        attributeValue: name,
-                        operator: 'contains',
-                    })
-                })
-                data.value.groupValue.forEach((groupname: string) => {
-                    criterion.value.push({
-                        attributeName: 'ownerGroups',
-                        attributeValue: groupname,
-                        operator: 'contains',
-                    })
-                })
 
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'OR',
-                        criterion: criterion.value,
-                    } as Components.Schemas.FilterCriteria,
-                })
-                criterion.value = []
+                emit('change')
             }
             const noOwnersToggle = () => {
-                if (data.value.noOwnerAssigned) {
-                    data.value.userValue = []
-                    data.value.groupValue = []
-                    criterion.value = []
-                    criterion.value.push({
-                        condition: 'AND',
-                        criterion: [
-                            {
-                                attributeName: 'ownerUsers',
-                                attributeValue: '-',
-                                operator: 'is_null',
-                            },
-                            {
-                                attributeName: 'ownerGroups',
-                                attributeValue: '-',
-                                operator: 'is_null',
-                            },
-                        ],
-                    })
-                } else {
-                    data.value.userValue = []
-                    data.value.groupValue = []
-                    criterion.value = []
-                }
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'OR',
-                        criterion: criterion.value,
-                    } as Components.Schemas.FilterCriteria,
-                })
-                criterion.value = []
+                data.value.userValue = []
+                data.value.groupValue = []
+
+                emit('change')
             }
 
             const handleOwnerSearch = () => {

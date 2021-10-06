@@ -25,7 +25,7 @@
         <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Last updated</p>
             <p class="mb-0 text-gray-700">
-                {{ updatedAt(selectedAsset) }},       
+                {{ updatedAt(selectedAsset) }},
                 {{ modifiedBy(selectedAsset) }}
             </p>
         </div>
@@ -36,21 +36,29 @@
                 {{ createdBy(selectedAsset) }}
             </p>
         </div>
-        <div v-if="sourceCreatedAt(selectedAsset)" class="px-2">
-            <p class="mb-1 text-sm tracking-wide text-gray-500">Source created</p>
+        <div v-if="sourceCreatedAt(selectedAsset)">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">
+                Source created
+            </p>
             <p class="mb-0 text-gray-700">
                 {{ sourceCreatedAt(selectedAsset) }}
-                <span v-if="sourceCreatedBy(selectedAsset)">,&nbsp;{{ sourceCreatedBy(selectedAsset) }}</span>
+                <span v-if="sourceCreatedBy(selectedAsset)"
+                    >,&nbsp;{{ sourceCreatedBy(selectedAsset) }}</span
+                >
             </p>
         </div>
-         <div v-if="sourceUpdatedAt(selectedAsset)" class="px-2">
-            <p class="mb-1 text-sm tracking-wide text-gray-500">Source updated</p>
+        <div v-if="sourceUpdatedAt(selectedAsset)">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">
+                Source updated
+            </p>
             <p class="mb-0 text-gray-700">
                 {{ sourceUpdatedAt(selectedAsset) }}
-                <span v-if="sourceUpdatedBy(selectedAsset)">,&nbsp;{{ sourceUpdatedBy(selectedAsset) }}</span>
+                <span v-if="sourceUpdatedBy(selectedAsset)"
+                    >,&nbsp;{{ sourceUpdatedBy(selectedAsset) }}</span
+                >
             </p>
         </div>
-        <div class="px-2">
+        <div v-if="popularityScore(selectedAsset) !== undefined">
             <p class="mb-1 text-sm tracking-wide text-gray-500">
                 Popularity Score
             </p>
@@ -94,7 +102,7 @@
                 sourceUpdatedAt,
                 sourceCreatedAt,
                 sourceCreatedBy,
-                sourceUpdatedBy
+                sourceUpdatedBy,
             } = useAssetInfo()
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
@@ -113,7 +121,7 @@
                 sourceUpdatedAt,
                 sourceCreatedAt,
                 sourceCreatedBy,
-                sourceUpdatedBy
+                sourceUpdatedBy,
             }
         },
     })

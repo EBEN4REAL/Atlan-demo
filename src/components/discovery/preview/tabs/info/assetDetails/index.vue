@@ -1,8 +1,8 @@
 <template>
-    <div class="w-full px-5">
+    <div class="flex flex-col w-full px-5 gap-y-4">
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex items-center w-full gap-16 mb-3"
+            class="flex items-center w-full gap-16"
         >
             <Definition
                 :sql="displaySQL"
@@ -12,7 +12,7 @@
                 "
             >
                 <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-1 text-sm text-gray-500">Definition</span>
+                    <span class="mb-2 text-sm text-gray-500">Definition</span>
                     <span class="text-primary">SQL</span>
                 </div>
             </Definition>
@@ -29,13 +29,16 @@
                 :source-created-at-raw="sourceCreatedRaw"
             >
                 <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-1 text-sm text-gray-500">Rows</span>
+                    <span class="mb-2 text-sm text-gray-500">Rows</span>
                     <span class="text-gray-700">{{ rows }}</span>
                 </div>
             </RowInfoHoverCard>
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Columns</span>
-                <span class="text-gray-700">{{ cols }}</span>
+            <div
+                class="flex flex-col text-sm cursor-pointer"
+                @click="switchTab('Columns')"
+            >
+                <span class="mb-2 text-sm text-gray-500">Columns</span>
+                <span class="text-primary">{{ cols }}</span>
             </div>
         </div>
         <Description
@@ -95,6 +98,10 @@
             const { selectedAsset } = toRefs(props)
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset', () => {})
+            const switchTab: (tabName: string) => void = inject(
+                'switchTab',
+                () => {}
+            )
 
             const {
                 rowCount,
@@ -170,6 +177,7 @@
                 displaySQL,
                 isSelectedAssetHaveRowsAndColumns,
                 mutateSelectedAsset,
+                switchTab,
             }
         },
     })

@@ -2,7 +2,7 @@ import Vue, { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 import { setupLayouts } from 'virtual:generated-layouts'
-
+import { message } from 'ant-design-vue'
 import { createHead } from '@vueuse/head'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import App from './App.vue'
@@ -53,13 +53,9 @@ router.beforeEach(async (to, from, next) => {
                         true,
                         app.config.globalProperties.$keycloak.tokenParsed
                     )
+                    
                     next()
-                    if (app.config.globalProperties?.$posthog?.capture) {
-                        // Manually capturing pageview coz posthog does not capture pageviews if user changes tab/page in Atlan
-                        app.config.globalProperties.$posthog.capture(
-                            '$pageview'
-                        )
-                    }
+
                 } else {
                     tenantStore.setIsAuthenticated(false, null)
                     window.location.replace(
@@ -69,20 +65,17 @@ router.beforeEach(async (to, from, next) => {
             } catch (err) {
                 console.log('login', err)
                 console.dir('error in init', err)
-                app.config.globalProperties.$error(
-                    'Authentication Server is not available. Please try again'
-                )
+
+                message.error({
+                    content: `Authentication Server is not available. Please try again`,
+                    duration: 3,
+                })
 
                 // window.location.replace("/not-found");
             }
         } else if (app.config.globalProperties.$keycloak.authenticated) {
             // Manually capturing pageview coz posthog does not capture pageviews if user changes tab/page in Atlan
-            if (
-                Boolean(import.meta.env.VITE_ENABLE_EVENTS_TRACKING) &&
-                app.config.globalProperties?.$posthog?.capture
-            ) {
-                app.config.globalProperties.$posthog.capture('$pageview')
-            }
+            (window as any).analytics.page(to.name)
             next()
         } else {
             window.location.replace(
@@ -90,6 +83,11 @@ router.beforeEach(async (to, from, next) => {
             )
         }
     } else {
-        next()
+        return false;
     }
+})
+
+//After each success of route, track it
+router.afterEach((to, from) => {
+    (window as any).analytics.page(to.name)
 })

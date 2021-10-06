@@ -1,36 +1,35 @@
-
 import { computed, reactive, Ref, ref, watch } from 'vue';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import { IConfig } from 'swrv';
-import { Credential } from '~/api2/credential';
-import useSWRVState from '~/api2/useSWRVState';
+// import { IConfig } from 'swrv';
+import { Credential } from '~/api/auth/credential';
+// import useSWRVState from '~/api2/useSWRVState';
 
 
-export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
+export default function useCredentialTest(initialBody?: any, asyncOpts?: object) {
 
-    const asyncOptions = {
-        dedupingInterval: 0,
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-        revalidateDebounce: 0,
-
-    };
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     const body = ref({
         ...initialBody
     });
+    const options = ref({
+        // cancelToken: cancelTokenSource
+    })
 
-    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const { data, state, STATES,
-        mutate, error, isValidating } = Credential.TestCredential(body, asyncOptions, `${cacheSuffx}`, dependentKey);
+    const { data, mutate, error: isError, isReady } = Credential.TestCredential(body, options, asyncOpts);
 
+    const isSuccess = ref(null);
+    const isLoading = ref(null);
+    if (asyncOpts.hasOwnProperty('immediate'))
+        isLoading.value = asyncOpts.immediate
+    else isLoading.value = true;
 
-    const isLoading = computed(() => (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
-            || isValidating.value && dependentKey?.value);
-
-    const isSuccess = computed(() => ([STATES.SUCCESS].includes(state.value)));
-
-    const isError = computed(() => [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value));
-
+    watch([isError, data], (v) => {
+        isLoading.value = false;
+        if (v[1]?.message === "successful")
+            isSuccess.value = true;
+        else
+            isSuccess.value = false;
+    })
     const alertType = computed(() => {
         if (isSuccess.value) {
             return "success"
@@ -52,20 +51,21 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const errorMessage = computed(() => {
-        if (error.value?.message === "timeout") {
+        if (isError.value?.message === "timeout") {
             return "Request timed out. Please check your host/port"
         }
-        return error.value?.response?.data?.message;
+        return isError.value?.response?.data?.message;
     });
 
 
 
     const refresh = () => {
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
+        if (isLoading.value) {
             cancelTokenSource.value.cancel();
             cancelTokenSource.value = axios.CancelToken.source();
             asyncOptions.cancelToken = cancelTokenSource.value.token;
         }
+        isLoading.value = true;
         mutate();
     };
 
@@ -75,8 +75,6 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
     }
     return {
         data,
-        state,
-        STATES,
         isLoading,
         isError,
         isSuccess,
@@ -85,6 +83,5 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
         errorMessage,
         replaceBody,
         refresh,
-        error
     }
 };

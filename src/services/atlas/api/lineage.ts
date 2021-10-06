@@ -1,20 +1,23 @@
-import { useAPI as useAPIV2 } from "~/api/useAPI";
+import { useAPIAsyncState } from '~/api/useAPI'
+import { KeyMaps } from '~/api/keyMap'
+import { Ref } from 'vue'
+import { assetInterface } from '~/types/assets/asset.interface'
 
-const getLineageAPI = ({
-  cache,
-  guid,
-  depth,
-  direction,
-}: {
-  cache: string | undefined;
-  guid: string;
-  depth: number;
-  direction: string;
-}) => useAPIV2("GET_LINEAGE", "GET", {
-    cache,
-    pathVariables: { guid, depth, direction },
-  });
+export interface getLineageOptions {
+    guid: string
+    depth: number
+    direction: string
+}
 
-export const Lineage = {
-  getLineageAPI,
-};
+const getLineage = (options: getLineageOptions | Ref<getLineageOptions>) =>
+    useAPIAsyncState(KeyMaps.lineage.GET_LINEAGE, 'GET', {
+        pathVariables: options,
+        initialState: {
+            guidEntityMap: <Record<string, assetInterface>>{},
+            relations: [],
+        },
+    })
+
+export const lineageServiceAPI = {
+    getLineage,
+}

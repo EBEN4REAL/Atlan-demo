@@ -4,7 +4,7 @@
 
     <div v-if="data?.asset" class="w-full h-full">
         <div class="flex flex-col">
-            <Header class="px-5 pt-3 bg-white" />
+            <Header />
 
             <a-tabs
                 :active-key="activeKey"
@@ -69,7 +69,7 @@
         props: {
             updateProfile: { type: Boolean, required: true },
         },
-        emits: ['preview', 'updateAssetPreview'],
+        emits: ['preview'],
         setup(props, context) {
             /** DATA */
             const activeKey = ref(1)
@@ -87,11 +87,11 @@
                     name: 'Lineage',
                     component: 'lineage',
                 },
-                {
+                /*  {
                     id: 3,
                     name: 'Settings',
                     component: 'settings',
-                },
+                }, */
             ]
 
             /** UTILS */
@@ -116,6 +116,11 @@
                 () => store.getBusinessMetadataListLoaded
             )
 
+            // handlePreview
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
+
             // fetch
             const fetch = () => {
                 if (BMListLoaded.value) {
@@ -127,17 +132,9 @@
                         data.value.asset = response.value?.entities?.[0]
                         data.value.error = error.value
 
-                        context.emit(
-                            'updateAssetPreview',
-                            data.value.asset ?? []
-                        )
+                        handlePreview(data.value?.asset)
                     })
                 }
-            }
-
-            // handlePreview
-            const handlePreview = (item) => {
-                context.emit('preview', item)
             }
 
             /** LIFECYCLES */
@@ -153,7 +150,9 @@
             })
 
             /** WATCHERS */
-            watch(id, () => fetch())
+            watch(id, () => {
+                if (id.value) fetch()
+            })
             watch(updateProfile, () => fetch())
             watch(BMListLoaded, (v: boolean) => {
                 if (v) fetch()
@@ -188,7 +187,7 @@ meta:
             @apply pb-5 mr-5 text-gray-500 text-sm tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-5;
+            @apply ml-8;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;

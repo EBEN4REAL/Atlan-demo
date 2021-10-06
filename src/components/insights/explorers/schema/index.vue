@@ -1,9 +1,11 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white border-r">
-        <div class="w-full p-3 mb-3">
+        <div class="w-full p-4 pb-1">
             <Connector
                 class=""
-                :data="connectorsData"
+                :filterSourceIds="['tableau', 'athena']"
+                :isLeafNodeSelectable="false"
+                v-model:data="connectorsData"
                 :item="{
                     id: 'connector',
                     label: 'Connector',
@@ -25,7 +27,9 @@
                 @update:data="setConnector"
             ></Connector>
         </div>
-        <div class="w-full p-3 pt-0 overflow-y-auto scrollable-container">
+        <div
+            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto  scrollable-container"
+        >
             <schema-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
@@ -41,17 +45,25 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        ref,
+        watch,
+        computed,
+        ComputedRef,
+    } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import SchemaTree from './schemaTree.vue'
-    
+
     import useSchemaExplorerTree from './composables/useSchemaExplorerTree'
-    
+
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
-    import Connector from '~/components/insights/common/connector/connector.vue'
+    import Connector from '@common/facets/connector.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
@@ -61,14 +73,17 @@
             const tables: tableInterface[] = tablesData
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
 
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                tabs,
+                activeInlineTab
+            )
             const {
                 setConnectorsDataInInlineTab,
-                getConnectorsData,
                 getDatabaseQualifiedName,
+                getConnectionQualifiedName,
                 getSchemaQualifiedName,
             } = useConnector()
 
@@ -82,57 +97,59 @@
                 }
                 return false
             }
-            const selectedDataSourceName =
-                activeInlineTab.value.explorer.schema.connectors
-                    .selectedDataSourceName
-            const selectedDefaultSchema =
-                activeInlineTab.value.explorer.schema.connectors
-                    .selectedDefaultSchema
 
-            const connectorsData: Ref<connectorsWidgetInterface> = ref({
-                connection:
-                    activeInlineTab.value.explorer.schema.connectors.connection,
-                connector:
-                    activeInlineTab.value.explorer.schema.connectors.connector,
-                databaseQualifiedName: getDatabaseQualifiedName(
-                    selectedDataSourceName,
-                    selectedDefaultSchema
-                ),
-                schemaQualifiedName: getSchemaQualifiedName(
-                    selectedDataSourceName,
-                    selectedDefaultSchema
-                ),
+            const connectorsData: Ref<connectorsWidgetInterface> = ref(
+                activeInlineTab.value.explorer.schema.connectors
+            )
+
+            const handleChange = () => {
+                setConnectorsDataInInlineTab(
+                    activeInlineTab,
+                    tabs,
+                    connectorsData,
+                    'schema'
+                )
+            }
+
+            const setConnector = (payload: any) => {
+                connectorsData.value = payload
+            }
+
+            const connectionQualifiedName = computed(() =>
+                getConnectionQualifiedName(connectorsData.value.attributeValue)
+            )
+            const databaseQualifiedName = computed(() =>
+                getDatabaseQualifiedName(connectorsData.value.attributeValue)
+            )
+            const schemaQualifiedName = computed(() =>
+                getSchemaQualifiedName(connectorsData.value.attributeValue)
+            )
+            const initSelectedKeys = computed(() => {
+                /* KEY - SchemaqualifiedName/tableName */
+                let key = `${getSchemaQualifiedName(
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeValue
+                )}/${activeInlineTab.value.assetSidebar.assetInfo?.title}`
+                return key
             })
-            const handleChange = (data) => {
-                const len = data.payload.criterion.length
-                if (
-                    len > 0 &&
-                    data.payload.criterion[len - 1]?.attributeValue
-                ) {
-                    const { schema, sourceName, connector, connection } =
-                        getConnectorsData(
-                            data.payload.criterion[len - 1]?.attributeValue
-                        )
-                    setConnectorsDataInInlineTab(activeInlineTab, tabs, {
-                        schema,
-                        sourceName,
-                        connector,
-                        connection,
-                    })
-                }
-            }
-
-            const setConnector = (payload: {
-                connection: string | undefined
-                connector: string | undefined
-            }) => {
-                connectorsData.value.connector = payload.connector
-                connectorsData.value.connection = payload.connection
-            }
-
-            const connectionQualifiedName = ref(connectorsData.value.connection)
-            const databaseQualifiedName = ref(connectorsData.value.databaseQualifiedName)
-            const schemaQualifiedName = ref(connectorsData.value.schemaQualifiedName)
+            /* WE CAN USE THIS FXN LATER */
+            // const selectNodeAndToggleAssetSidebar = (selected, event) => {
+            //     if (event.selectedNodes?.length > 0) {
+            //         const item = event.selectedNodes[0]?.props
+            //         if (item.typeName === 'LoadMore') return
+            //         if (selected.length > 0) {
+            //             const activeInlineTabCopy: activeInlineTabInterface =
+            //                 Object.assign({}, activeInlineTab.value)
+            //             activeInlineTabCopy.assetSidebar.assetInfo = item
+            //             activeInlineTabCopy.assetSidebar.isVisible = true
+            //             openAssetSidebar(activeInlineTabCopy)
+            //         }
+            //     } else {
+            //         /* Close it if it is already opened */
+            //         closeAssetSidebar(activeInlineTab.value)
+            //     }
+            //     selectNode(selected, event)
+            // }
 
             const {
                 treeData,
@@ -148,45 +165,21 @@
                 // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
                 // databaseQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA'),
                 // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
+                initSelectedKeys,
                 connectionQualifiedName,
                 databaseQualifiedName,
                 schemaQualifiedName,
-            });
+            })
 
             /* Watchers for updating the connectors when activeinlab change */
             watch(activeInlineTab, () => {
                 if (activeInlineTab.value) {
-                    const selectedDataSourceName =
+                    connectorsData.value =
                         activeInlineTab.value.explorer.schema.connectors
-                            .selectedDataSourceName
-                    const selectedDefaultSchema =
-                        activeInlineTab.value.explorer.schema.connectors
-                            .selectedDefaultSchema
-
-                    connectorsData.value = {
-                        connection:
-                            activeInlineTab.value.explorer.schema.connectors
-                                .connection,
-                        connector:
-                            activeInlineTab.value.explorer.schema.connectors
-                                .connector,
-                        databaseQualifiedName: getDatabaseQualifiedName(
-                            selectedDataSourceName,
-                            selectedDefaultSchema
-                        ),
-                        schemaQualifiedName: getSchemaQualifiedName(
-                            selectedDataSourceName,
-                            selectedDefaultSchema
-                        ),
-                    }
                 }
             })
+            console.log(selectedKeys.value, 'out')
 
-            watch(connectorsData, (newConnectorsData) => {
-                connectionQualifiedName.value = !newConnectorsData.connection?.endsWith('undefined') ? newConnectorsData.connection : undefined
-                databaseQualifiedName.value = !newConnectorsData.databaseQualifiedName?.endsWith('undefined') ? newConnectorsData.databaseQualifiedName : undefined
-                schemaQualifiedName.value = !newConnectorsData.schemaQualifiedName?.endsWith('undefined') ? newConnectorsData.schemaQualifiedName : undefined
-            })
             return {
                 connectorsData,
                 setConnector,
@@ -194,7 +187,6 @@
                 openAssetSidebar,
                 handleChange,
                 tables,
-
                 treeData,
                 loadedKeys,
                 isInitingTree,

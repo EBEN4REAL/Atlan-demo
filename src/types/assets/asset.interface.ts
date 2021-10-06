@@ -8,6 +8,7 @@ export interface assetInterface {
         ownerUsers: string
         ownerGroups: string
         assetStatusUpdatedAt: number
+        order: number
         columnCount: number
         sizeBytes: number
         connectionLastSyncedAt: number
@@ -22,6 +23,7 @@ export interface assetInterface {
         name: string
         displayName: string
         popularityScore: number
+        isPrimary: boolean
         qualifiedName: string
         userDescription: string
         rowCount: number
@@ -29,6 +31,15 @@ export interface assetInterface {
         sourceUpdatedAt: string
         tenantId: string
         viewDefinition: string
+        banner?: {
+            message: string
+            username: string
+            timestamp: number
+        }
+        bannerMessage: string
+        bannerUpdatedAt: number
+        bannerUpdatedBy: string
+
         table?: {
             guid: string
             typeName: string

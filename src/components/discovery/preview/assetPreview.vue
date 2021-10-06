@@ -1,69 +1,55 @@
 <template>
     <div>
-        <div v-if="showCrossIcon" class="flex items-center ml-2 bg-white">
+        <div v-if="showCrossIcon">
             <a-button
-                class="px-1 border-0 outline-none"
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
                 @click="$emit('closeSidebar')"
             >
-                <AtlanIcon icon="Cancel" />
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="h-4 ml-1 transition-transform transform -rotate-90"
+                />
             </a-button>
         </div>
-        <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
+        <div v-if="page !== 'profile'" class="p-5 border-b">
             <div class="flex items-center justify-between mb-0 text-sm">
-                <div
-                    v-if="page === 'nonBiOverview'"
-                    class="text-gray-500 uppercase"
-                >
-                    {{ getDataType(selectedAsset?.attributes?.dataType) }}
-                </div>
-                <AssetLogo
-                    v-if="page === 'discovery' || page === 'biOverview'"
-                    :asset="selectedAsset"
-                    variant="md"
-                />
+                <AssetLogo :asset="selectedAsset" variant="md" />
 
                 <div class="flex space-x-2">
                     <a-button-group>
-                        <a-button size="small"
+                        <a-button class="w-8 h-8" size="small"
                             ><AtlanIcon icon="Share"
                         /></a-button>
-                        <a-button size="small">
+
+                        <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="External" />
                         </a-button>
-                        <a-button size="small">
+                        <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="Bookmark" />
                         </a-button>
                     </a-button-group>
-
-                    <!-- <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="Share" />
-                        </template>
-                    </AtlanButton>
-                    <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="External" />
-                        </template>
-                    </AtlanButton>
-                    <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="Bookmark" />
-                        </template>
-                    </AtlanButton> -->
                 </div>
             </div>
 
             <div class="flex items-center w-full">
-                <component
-                    v-if="page === 'nonBiOverview'"
-                    :is="
-                        images[getDataType(selectedAsset?.attributes?.dataType)]
-                    "
-                    class="w-4 h-4 mr-1.5"
-                ></component>
+                <a-tooltip
+                    placement="left"
+                    :mouse-enter-delay="0.5"
+                    :title="getDataType(selectedAsset?.attributes?.dataType)"
+                >
+                    <component
+                        :is="
+                            images[
+                                getDataType(selectedAsset?.attributes?.dataType)
+                            ]
+                        "
+                        v-if="isColumnAsset(selectedAsset)"
+                        class="w-4 h-4 mb-1 mr-1"
+                    ></component
+                ></a-tooltip>
 
                 <Tooltip
-                    :tooltip-text="selectedAsset?.attributes?.name"
+                    :tooltip-text="name"
                     classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
@@ -77,7 +63,7 @@
                     :key="selectedAsset.guid"
                     :show-no-status="false"
                     :status-id="selectedAsset?.attributes?.assetStatus"
-                    class="ml-1.5"
+                    class="ml-1.5 mb-1"
                 ></StatusBadge>
             </div>
         </div>
@@ -92,32 +78,10 @@
                 class="overflow-y-auto"
             >
                 <template #tab>
-                    <!-- <a-tooltip
-                        placement="left"
-                        :mouse-enter-delay="0.5"
-                        color="white"
-                    >
-                        <template #title>
-                            <span class="text-gray-500">
-                                {{ tab.tooltip }}
-                            </span>
-                        </template>
-                        <div
-                            class="flex items-center justify-center w-full h-full "
-                        >
-                            <AtlanIcon
-                                :icon="tab.icon"
-                                :class="
-                                    activeKey === index ? 'text-primary' : ''
-                                "
-                                class="h-5"
-                            />
-                        </div>
-                    </a-tooltip> -->
                     <SidePanelTabHeaders
                         :title="tab.tooltip"
                         :icon="tab.icon"
-                        :isAtive="activeKey === index"
+                        :isActive="activeKey === index"
                     />
                 </template>
 
@@ -127,7 +91,7 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
+                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -157,6 +121,7 @@
         Ref,
         toRefs,
         watch,
+        computed,
         provide,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
@@ -229,10 +194,10 @@
             const infoTabData: Ref<any> = ref({})
             // const {} =useMagicKeys();
             const tabHeights = {
-                discovery: 'calc(100vh - 7.8rem)',
+                discovery: 'calc(100vh - 9.2rem)',
                 profile: 'calc(100vh - 3rem)',
-                biOverview: 'calc(100vh - 8.06rem)',
-                nonBiOverview: 'calc(100vh - 8.3rem)',
+                biOverview: 'calc(100vh - 9.2rem)',
+                nonBiOverview: 'calc(100vh - 9.2rem)',
             }
 
             function getAssetEntitity(data: Ref): any {
@@ -251,12 +216,19 @@
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
 
             const getColumnUrl = (asset) => {
-                const tableGuid = asset.attributes?.table.guid
+                const tableGuid = asset.attributes?.table?.guid
                 return `/assets/${tableGuid}/overview?column=${asset?.guid}`
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
                 emit('assetMutation', updatedAsset)
+            })
+
+            provide('switchTab', (tabName: string) => {
+                const idx = filteredTabs.value.findIndex(
+                    (tl) => tl.name === tabName
+                )
+                if (idx > -1) activeKey.value = idx
             })
 
             watch(page, () => {
@@ -269,9 +241,11 @@
                 infoTabData.value = selectedAsset.value
             }
             watch(() => selectedAsset.value.guid, init)
+            const name = computed(() => selectedAsset.value.attributes?.name)
             onMounted(init)
 
             return {
+                name,
                 tabHeights,
                 isLoaded,
                 infoTabData,

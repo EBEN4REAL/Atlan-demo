@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <span class="pb-6">
         <div class="overflow-y-auto" style="max-height: 25rem">
             <div
                 v-for="(a, x) in finalAttributesList"
@@ -9,8 +9,8 @@
             >
                 <AttributeItem
                     :a="a"
-                    :applied="data.applied[a.value] || {}"
-                    :operators="operatorsMap[a.typeName]"
+                    :applied="data.applied?.[a.value] || {}"
+                    :operators="operatorsMap?.[a.typeName]"
                     @handleAttributeInput="setAdvancefilter"
                 />
             </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
     import AttributeItem from '../common/attributeItems.vue'
 
     import {
@@ -27,7 +27,6 @@
         operatorsMap,
     } from '~/constant/advancedAttributes'
     import { Collapse } from '~/types'
-    import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
         name: 'PropertiesFilterWrapper',
@@ -43,7 +42,7 @@
                 },
             },
             data: {
-                type: Object,
+                type: Object as PropType<any>,
                 required: false,
                 default() {
                     return {}
@@ -52,61 +51,27 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
+            const { data } = toRefs(props)
             const isEmptyObject = (obj: Object) =>
                 Object.keys(obj).length === 0 && obj.constructor === Object
 
             const setAdvancefilter = (
-                a: { name: string },
+                a: { label: string; typeName: string; value: string },
                 appliedValueMap: Object
             ) => {
+                debugger
                 // ? if appliedValueMap === {} i.e all applied filters removed, remove the entry
                 const newDataMap = {
-                    ...props.data,
+                    ...data.value,
                     applied: {
-                        ...props.data.applied,
+                        ...data.value.applied,
                         [a.value]: appliedValueMap,
                     },
                 }
                 if (isEmptyObject(appliedValueMap))
-                    delete newDataMap.applied[a.name]
+                    delete newDataMap.applied[a.value]
                 emit('update:data', newDataMap)
-
-                const criterion: Components.Schemas.FilterCriteria[] = []
-
-                // ? populate criterion object with filters previously applied
-                Object.entries(newDataMap.applied).forEach((attribute) => {
-                    Object.entries(attribute[1]).forEach((o) => {
-                        criterion.push({
-                            attributeName: attribute[0],
-                            operator: o[0],
-                            attributeValue: o[1],
-                        })
-                    })
-                })
-
-                // ? add new filter to criterion
-                Object.keys(appliedValueMap).forEach((key: string) => {
-                    const alreadyAppliedIndex = criterion.findIndex(
-                        (c) => c.attributeName === a.value && c.operator === key
-                    )
-
-                    const filter = {
-                        attributeName: a.value,
-                        operator: key,
-                        attributeValue: appliedValueMap[key],
-                    }
-                    if (alreadyAppliedIndex > -1)
-                        criterion[alreadyAppliedIndex] = filter
-                    else criterion.push(filter)
-                })
-
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'AND',
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
+                emit('change')
             }
             const finalAttributesList = computed(() =>
                 AdvancedAttributeList.filter((attribute) => !attribute.hide)

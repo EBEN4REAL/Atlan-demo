@@ -44,7 +44,7 @@
                 { path: 'assets', label: 'Discover' },
                 { path: 'glossary', label: 'Glossary' },
                 { path: 'insights', label: 'Insights' },
-                { path: 'connections', label: 'Connectors' },
+                { path: 'workflows', label: 'Workflows' },
             ]
 
             function handleClick(key: string) {

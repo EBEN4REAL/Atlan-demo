@@ -4,10 +4,10 @@
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
-            class="h-full overflow-auto"
-            :class="
-                currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
-            "
+            ref="scrollDiv"
+            class="w-2/3 h-full"
+            @scroll="handleScroll"
+            :class="{ 'overflow-y-auto': !headerReachedTop }"
         >
             <ProfileHeader
                 :title="title"
@@ -16,6 +16,7 @@
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
+                :headerReachedTop="headerReachedTop"
             />
             <div class="m-0">
                 <a-tabs
@@ -27,7 +28,13 @@
                         <div class="px-5 mt-4">
                             <div v-if="isNewTerm" class="mb-4">
                                 <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    class="
+                                        p-0
+                                        mb-1
+                                        text-sm
+                                        leading-5
+                                        text-gray-700
+                                    "
                                 >
                                     Name
                                 </p>
@@ -54,7 +61,9 @@
                                 :term-qualified-name="qualifiedName"
                                 :term-guid="id"
                                 :show-preview-panel="currentTab === '2'"
+                                :header-reached-top="headerReachedTop"
                                 @preview="handlePreview"
+                                @firstCardReachedTop="handleFirstCardReachedTop"
                             />
                         </div>
                     </a-tab-pane>
@@ -66,7 +75,7 @@
             </div>
         </div>
         <div id="sidePanel" class="relative w-1/3 h-full">
-            <CategoryTermPreview
+            <GtcPreview
                 :entity="term"
                 :preview="false"
                 @updateAsset="refetch"
@@ -76,150 +85,169 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
-    import { useRouter } from 'vue-router'
+import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-    // components
-    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import ProfileHeader from '@/glossary/common/profileHeader.vue'
-    import LoadingView from '@common/loaders/page.vue'
+// components
+import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
+import LinkedAssetsTab from '~/components/glossary/profile/linkedAssets/linkedAssets.vue'
+import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
+import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
+import LoadingView from '@common/loaders/page.vue'
 
-    // composables
-    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
+// composables
+import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
-    // assets
-    import { Term } from '~/types/glossary/glossary.interface'
+// assets
+import { Term } from '~/types/glossary/glossary.interface'
 
-    export default defineComponent({
-        components: {
-            GlossaryProfileOverview,
-            LinkedAssetsTab,
-            CategoryTermPreview,
-            ProfileHeader,
-            LoadingView,
+export default defineComponent({
+    components: {
+        GlossaryProfileOverview,
+        LinkedAssetsTab,
+        GtcPreview,
+        ProfileHeader,
+        LoadingView,
+    },
+    props: {
+        id: {
+            type: String,
+            required: true,
+            default: '',
         },
-        props: {
-            id: {
-                type: String,
-                required: true,
-                default: '',
-            },
-        },
-        setup(props) {
-            // data
-            const guid = toRef(props, 'id')
-            const currentTab = ref('1')
-            const previewEntity = ref()
-            const newName = ref('')
-            const router = useRouter()
+    },
+    setup(props) {
+        // data
+        const guid = toRef(props, 'id')
+        const currentTab = ref('1')
+        const previewEntity = ref()
+        const newName = ref('')
+        const router = useRouter()
+        const scrollDiv = ref(null)
+        const headerReachedTop = ref(false)
+        const temp = ref(false)
 
-            const {
-                entity: term,
-                title,
-                shortDescription,
-                qualifiedName,
-                statusObject,
-                error,
-                statusMessage,
-                isLoading,
-                refetch,
-            } = useGTCEntity<Term>('term', guid, guid.value)
+        const {
+            entity: term,
+            title,
+            shortDescription,
+            qualifiedName,
+            statusObject,
+            error,
+            statusMessage,
+            isLoading,
+            refetch,
+        } = useGTCEntity<Term>('term', guid, guid.value)
 
-            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
+        const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
-            // computed
-            const parentGlossaryName = computed(
-                () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
-            )
+        // computed
+        const parentGlossaryName = computed(
+            () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
+        )
 
-            const linkedAssetsCount = computed(
-                () => term.value?.attributes?.assignedEntities?.length ?? 0
-            )
+        const linkedAssetsCount = computed(
+            () => term.value?.attributes?.assignedEntities?.length ?? 0
+        )
 
-            const isNewTerm = computed(() => title.value === 'Untitled Term')
+        const isNewTerm = computed(() => title.value === 'Untitled Term')
 
-            // methods
-            const handlePreview = (entity: any) => {
-                previewEntity.value = entity
-            }
+        // methods
+        const handlePreview = (entity: any) => {
+            previewEntity.value = entity
+        }
 
-            const updateTitle = () => {
-                updateEntity('term', term.value?.guid ?? '', {
-                    name: newName.value,
-                })
-            }
-            const redirectToProfile = () => {
-                router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
-            }
-
-
-            watch(updatedEntity, () => {
-                refetch()
-                newName.value = ''
+        const updateTitle = () => {
+            updateEntity('term', term.value?.guid ?? '', {
+                name: newName.value,
             })
-
-            watch(guid, () => {
-                currentTab.value = '1'
-            })
-            // Providers
-            provide('refreshEntity', refetch)
-
-            return {
-                redirectToProfile,
-                term,
-                currentTab,
-                error,
-                isLoading,
-                guid,
-                title,
-                statusMessage,
-                shortDescription,
-                qualifiedName,
-                linkedAssetsCount,
-                parentGlossaryName,
-                previewEntity,
-                statusObject,
-                isNewTerm,
-                newName,
-                handlePreview,
-                refetch,
-                updateTitle,
+        }
+        const redirectToProfile = () => {
+            router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
+        }
+        const handleScroll = () => {
+            if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
+                headerReachedTop.value = true
+            } else if (scrollDiv.value?.scrollTop > 70 && temp.value) {
+                scrollDiv.value.scrollTop = 0
+                temp.value = !temp.value
             }
-        },
-    })
+        }
+        const handleFirstCardReachedTop = () => {
+            scrollDiv.value.scrollTop = 0
+            headerReachedTop.value = false
+            temp.value = true
+        }
+
+        watch(updatedEntity, () => {
+            refetch()
+            newName.value = ''
+        })
+
+        watch(guid, () => {
+            currentTab.value = '1'
+        })
+        // Providers
+        provide('refreshEntity', refetch)
+
+        return {
+            redirectToProfile,
+            term,
+            currentTab,
+            error,
+            isLoading,
+            guid,
+            title,
+            statusMessage,
+            shortDescription,
+            qualifiedName,
+            linkedAssetsCount,
+            parentGlossaryName,
+            previewEntity,
+            statusObject,
+            isNewTerm,
+            newName,
+            handlePreview,
+            refetch,
+            updateTitle,
+            scrollDiv,
+            headerReachedTop,
+            handleScroll,
+            handleFirstCardReachedTop,
+        }
+    },
+})
 </script>
 <style lang="less" module>
-    .termHome {
-        :global(.ant-tabs-bar) {
-            @apply mb-0;
-        }
-        :global(.ant-tabs-nav) {
-            @apply ml-8;
-        }
+.termHome {
+    :global(.ant-tabs-bar) {
+        @apply mb-0;
     }
-    .overviewTab {
-        :global(.ant-tabs-nav) {
-            @apply ml-0;
-        }
+    :global(.ant-tabs-nav) {
+        @apply ml-8;
     }
-    .tabClasses {
-        :global(.ant-tabs-tab) {
-            margin: 0px 32px 0px 0px;
-            padding: 0px 0px 18px 0px;
-        }
-        :global(.ant-tabs-nav) {
-            margin: 0px !important;
-        }
-        :global(.ant-tabs-tab-active) {
-            @apply text-gray-700 font-bold !important;
-        }
-        :global(.ant-tabs-bar) {
-            @apply px-5 mb-0;
-        }
+}
+.overviewTab {
+    :global(.ant-tabs-nav) {
+        @apply ml-0;
     }
+}
+.tabClasses {
+    :global(.ant-tabs-tab) {
+        margin: 0px 32px 0px 0px;
+        padding: 0px 0px 18px 0px;
+    }
+    :global(.ant-tabs-nav) {
+        margin: 0px !important;
+    }
+    :global(.ant-tabs-tab-active) {
+        @apply text-gray-700 font-bold !important;
+    }
+    :global(.ant-tabs-bar) {
+        @apply px-4 mb-0;
+    }
+}
 </style>
 
 <route lang="yaml">

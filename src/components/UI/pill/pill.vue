@@ -2,8 +2,9 @@
     <!-- TODO: Add disabled styles -->
     <button
         :tabindex="!disabled && $attrs.onClick ? 0 : undefined"
-        class="relative flex items-center px-3 text-gray-700 transition duration-300 border rounded-full cursor-pointer  gap-x-1 group border-gray-light hover:border-primary hover:bg-primary hover:text-white"
-        style="height: 30px"
+        class="relative flex items-center text-gray-700 transition duration-300 border border-gray-300 rounded-full cursor-pointer  gap-x-1 group hover:border-primary hover:bg-primary hover:text-white"
+        :class="size === 'sm' ? 'px-2' : 'px-3'"
+        :style="{ height: size === 'sm' ? '22px' : '30px' }"
     >
         <slot name="prefix"></slot>
         <span v-if="label">{{ label }}</span>
@@ -21,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
     export default defineComponent({
         name: 'Pill',
         props: {
@@ -36,6 +37,10 @@
             hasAction: {
                 type: Boolean,
                 default: () => false,
+            },
+            size: {
+                type: String as PropType<'md' | 'sm'>,
+                default: () => 'md',
             },
         },
         // Do not uncomment, else code will break

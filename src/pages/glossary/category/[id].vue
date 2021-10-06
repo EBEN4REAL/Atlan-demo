@@ -5,9 +5,12 @@
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
             class="w-2/3 h-full"
-            @scroll="handleScroll"
             ref="scrollDiv"
-            :class="{ 'overflow-y-auto': !headerReachedTop }"
+            :class="{
+                'overflow-y-auto': !headerReachedTop,
+                ' border-r': bulkSelectedAssets.length,
+            }"
+            @scroll="handleScroll"
         >
             <ProfileHeader
                 :title="title"
@@ -60,6 +63,7 @@
                             type="AtlasGlossaryCategory"
                             @entityPreview="handleCategoryOrTermPreview"
                             @firstCardReachedTop="handleFirstCardReachedTop"
+                            @bulkSelectChange="updateBulkSelection"
                         />
                     </a-tab-pane>
                     <!-- <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
@@ -69,9 +73,15 @@
                 </a-tabs>
             </div>
         </div>
-
         <div id="sidePanel" class="relative w-1/3 h-full">
-            <SidePanel :entity="category" :top-terms="categoryTerms" />
+            <SidePanel
+                v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
+                :entity="category"
+            />
+            <BulkSidebar
+                v-else
+                :bulk-selected-assets="bulkSelectedAssets"
+            ></BulkSidebar>
         </div>
     </div>
 </template>
@@ -86,18 +96,19 @@
         ref,
         provide,
     } from 'vue'
+    import { useRouter } from 'vue-router'
 
     // components
-    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
-    import { useRouter } from 'vue-router'
-    import SidePanel from '@/glossary/sidePanel/index.vue'
-    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-    import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
+    import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
+    import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
+    import GlossaryTermsAndCategoriesTab from '~/components/glossary/profile/termsAndCategories/glossaryTermsAndCategoriesTab.vue'
+    import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-    import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
+    // import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
@@ -110,6 +121,7 @@
             LoadingView,
             SidePanel,
             ProfileHeader,
+            BulkSidebar,
         },
         props: {
             id: {
@@ -127,7 +139,8 @@
             const newName = ref('')
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
-            const temp = ref(false)
+            const temp = ref(false) // Flag for sticky header
+            const bulkSelectedAssets = ref([])
 
             const router = useRouter()
 
@@ -143,12 +156,12 @@
                 refetch,
             } = useGTCEntity<Category>('category', guid, guid.value)
 
-            const {
-                data: categoryTerms,
-                error: termsError,
-                isLoading: termsLoading,
-                fetchCategoryTermsPaginated,
-            } = useCategoryTerms()
+            // const {
+            //     data: categoryTerms,
+            //     error: termsError,
+            //     isLoading: termsLoading,
+            //     fetchCategoryTermsPaginated,
+            // } = useCategoryTerms()
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
@@ -199,15 +212,15 @@
             }
 
             // lifecycle methods and watchers
-            onMounted(() => {
-                fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
-            })
+            // onMounted(() => {
+            //     fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
+            // })
 
             watch(guid, (newGuid) => {
-                fetchCategoryTermsPaginated({
-                    guid: newGuid,
-                    refreshSamePage: true,
-                })
+                // fetchCategoryTermsPaginated({
+                //     guid: newGuid,
+                //     refreshSamePage: true,
+                // })
                 newName.value = ''
             })
 
@@ -215,13 +228,18 @@
                 refetch()
                 newName.value = ''
             })
+            // upate bulk list for sidebar
+            const updateBulkSelection = (list) => {
+                bulkSelectedAssets.value = [...list.value]
+                console.log(bulkSelectedAssets.value)
+            }
 
             // Providers
             provide('refreshEntity', refetch)
 
             return {
                 category,
-                categoryTerms,
+                // categoryTerms,
                 currentTab,
                 previewEntity,
                 showPreviewPanel,
@@ -233,7 +251,7 @@
                 qualifiedName,
                 error,
                 isLoading,
-                termsLoading,
+                // termsLoading,
                 guid,
                 statusObject,
                 isNewCategory,
@@ -246,6 +264,8 @@
                 redirectToProfile,
                 handleScroll,
                 handleFirstCardReachedTop,
+                updateBulkSelection,
+                bulkSelectedAssets,
             }
         },
     })

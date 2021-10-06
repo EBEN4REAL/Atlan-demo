@@ -1,17 +1,10 @@
 <template>
     <a-checkbox-group
         v-model:value="data.checked"
-        class="w-full px-4 py-1 pb-3"
-        @change="handleChange"
+        class="w-full px-4 py-1 pb-6"
+        @change="$emit('change')"
     >
         <div class="flex flex-col w-full gap-y-3">
-            <!-- <div class="pb-2.5 mb-3 border-b" v-if="index == 0">
-                    <a-checkbox :value="item.id" class="w-full">
-                        <span class="mb-0 ml-1 text-gray">
-                            {{ item.label }}
-                        </span>
-                    </a-checkbox>
-                </div> -->
             <div
                 v-for="item in list"
                 :key="item.id"
@@ -41,7 +34,6 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/assetCategory'
     import { Collapse } from '~/types'
 
@@ -57,106 +49,13 @@
             },
         },
         emits: ['change'],
-        setup(props, { emit }) {
+        setup(props) {
             const list = computed(() => List)
-            const checkedValues = ref([])
             const { data } = toRefs(props)
-            const generateTabLists = (id: string, includedAssets: string[]) => {
-                let includedAssetsTypes = [...includedAssets]
-                switch (id) {
-                    case 'datasets': {
-                        includedAssetsTypes = [
-                            'View',
-                            'Table',
-                            'TablePartition',
-                            'MaterialisedView',
-                            ...includedAssetsTypes,
-                        ]
-                        break
-                    }
-                    case 'fields': {
-                        if (includedAssetsTypes.includes('View')) {
-                            includedAssetsTypes = [
-                                ...includedAssetsTypes,
-                                'Column',
-                            ]
-                        } else {
-                            includedAssetsTypes = [
-                                'Column',
-                                ...includedAssetsTypes,
-                            ]
-                        }
-                        break
-                    }
-                    case 'visualizations': {
-                        includedAssetsTypes = [
-                            ...includedAssetsTypes,
-                            'TableauSite',
-                            'TableauProject',
-                            'TableauWorkbook',
-                            'TableauWorksheet',
-                            'TableauDashboard',
-                            'TableauDatasource',
-                            'PowerBIWorkspace',
-                            'PowerBIDashboard',
-                            'PowerBIReport',
-                            'PowerBIDataset',
-                            'PowerBIDataflow',
-                            'PowerBITile',
-                            'PowerBIPage',
-                            'PowerBIDatasource'
-                        ]
-                        break
-                    }
-                }
-                return includedAssetsTypes
-            }
-            console.log(checkedValues.value, 'model')
-            const handleChange = () => {
-                const criterion: Components.Schemas.FilterCriteria[] = []
-                const selectedIds = []
-                let includedAssets = []
-                data.value.checked.forEach((assetTypeId) => {
-                    selectedIds.push(assetTypeId)
-                    const includedAsset = list.value.find(
-                        (asset) => asset.id === assetTypeId
-                    )
-                    includedAssets = generateTabLists(
-                        includedAsset.id,
-                        includedAssets
-                    )
-                    includedAsset.include.forEach((assetType) => {
-                        criterion.push({
-                            attributeName: '__typeName',
-                            attributeValue: assetType,
-                            operator: 'eq',
-                        })
-                    })
-                })
-                if (data.value.checked.length < 1) {
-                    includedAssets = undefined
-                }
-                console.log('includedAssets', includedAssets)
-
-                emit(
-                    'change',
-                    {
-                        id: props.item.id,
-                        selectedIds,
-                        payload: {
-                            condition: 'OR',
-                            criterion,
-                        } as Components.Schemas.FilterCriteria,
-                    },
-                    includedAssets
-                )
-            }
 
             return {
                 data,
-                handleChange,
                 list,
-                checkedValues,
             }
         },
     })

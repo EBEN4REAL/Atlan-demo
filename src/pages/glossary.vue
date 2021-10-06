@@ -17,9 +17,10 @@
             min-size="12"
             max-size="50"
             style="min-width: 264px"
-            class="bg-white"
+            class="z-20 bg-white"
+            id="filterPane"
         >
-            <div>
+            <div class="z-20">
                 <glossaryTree
                     :glossary-list="glossaryList"
                     :is-home="isHome"
@@ -57,7 +58,7 @@
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
-    import useTree from '~/components/glossary/composables/useTree'
+    import useTree from '~/components/glossary/tree/composables/useTree'
 
     // types
     import {
@@ -115,6 +116,7 @@
                 reInitTree,
                 refetchGlossaryList,
                 collapseAll,
+                reOrderNodes,
             } = useTree(emit, true, isHome)
 
             // methods
@@ -155,7 +157,8 @@
             provide('updateTreeNode', updateNode)
             provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
-
+            provide('refetchGlossaryList', refetchGlossaryList)
+            provide('reorderTreeNodes', reOrderNodes)
             return {
                 handleOpenModal,
                 handleCloseModal,

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full placeholder">
+    <!-- <div class="w-full h-full placeholder">
         <div class="flex items-center justify-between w-full p-3">
             <span
                 v-if="activeInlineTab && activeInlineTab?.assetSidebar"
@@ -18,24 +18,46 @@
             <p>Asset Sidebar</p>
             <p>Tab - {{ activeInlineTab.label }}</p>
         </div>
+    </div> -->
+    <div class="z-20 flex flex-col bg-white">
+        <AssetPreview
+            v-if="selectedAsset"
+            :selectedAsset="selectedAsset"
+            @asset-mutation="() => {}"
+            page="discovery"
+        ></AssetPreview>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject } from 'vue'
+    import { defineComponent, Ref, inject, ComputedRef, ref, watch } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     export default defineComponent({
-        components: {},
+        components: { AssetPreview },
         props: {},
         setup(props, { emit }) {
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { closeAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
+            const selectedAsset: Ref<any> = ref(undefined)
+
+            watch(
+                activeInlineTab,
+                () => {
+                    selectedAsset.value = {
+                        ...activeInlineTab.value?.assetSidebar?.assetInfo,
+                    }
+                },
+                { immediate: true }
+            )
+
             return {
+                selectedAsset,
                 tabs,
                 activeInlineTab,
                 closeAssetSidebar,

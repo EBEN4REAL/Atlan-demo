@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-4 w-100">
+    <div class="pb-6 mb-4 w-100">
         <a-input
             v-if="type === 'number'"
             v-model:value="value"

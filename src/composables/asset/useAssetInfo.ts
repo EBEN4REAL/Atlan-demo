@@ -14,7 +14,7 @@ export default function useAssetInfo() {
         return asset.attributes
     }
     const title = (asset: assetInterface) => {
-        return attributes(asset).name
+        return attributes(asset)?.name ?? ''
     }
     const status = (asset: assetInterface) => {
         return attributes(asset).assetStatus
@@ -34,12 +34,22 @@ export default function useAssetInfo() {
             attributes(asset).userDescription || attributes(asset).description
         )
     }
+    const isPrimary = (asset: assetInterface) => {
+        return attributes(asset).isPrimary
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
-        const found = SourceList.find(
-            (src) => src.id === attributes(asset)?.integrationName
-        )
+
+        const found = attributes(asset)?.integrationName
+            ? SourceList.find(
+                  (src) => src.id === attributes(asset)?.integrationName
+              )
+            : SourceList.find(
+                  (src) =>
+                      src.id === attributes(asset)?.qualifiedName.split('/')[1]
+              )
+
         if (found) img = found.image
 
         return img
@@ -87,36 +97,36 @@ export default function useAssetInfo() {
             : getCountString(attributes(asset).columnCount)
     }
     const sizeBytes = (asset: assetInterface, raw: boolean = false) => {
-
         return raw
             ? attributes(asset)?.sizeBytes?.toLocaleString() || 'N/A'
             : getSizeString(attributes(asset).sizeBytes)
     }
 
     const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
-        if(attributes(asset)?.sourceUpdatedAt){
+        if (attributes(asset)?.sourceUpdatedAt) {
             return raw
-            ? formatDateTime(attributes(asset)?.sourceUpdatedAt) || 'N/A'
-            : useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
+                ? formatDateTime(attributes(asset)?.sourceUpdatedAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
         }
         return ''
     }
     const sourceCreatedAt = (asset: assetInterface, raw: boolean = false) => {
-        if(attributes(asset)?.sourceCreatedAt){
+        if (attributes(asset)?.sourceCreatedAt) {
             return raw
-            ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
-            : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
+                ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
         }
         return ''
     }
 
-    const sourceUpdatedBy = (asset: assetInterface) => attributes(asset)?.sourceUpdatedBy || ''
-    
-    const sourceCreatedBy = (asset: assetInterface) => attributes(asset)?.sourceCreatedBy || ''
-    
+    const sourceUpdatedBy = (asset: assetInterface) =>
+        attributes(asset)?.sourceUpdatedBy || ''
 
-    const viewDefinition = (asset: assetInterface) => attributes(asset)?.viewDefinition || ''
-    
+    const sourceCreatedBy = (asset: assetInterface) =>
+        attributes(asset)?.sourceCreatedBy || ''
+
+    const viewDefinition = (asset: assetInterface) =>
+        attributes(asset)?.viewDefinition || ''
 
     const schemaName = (asset: assetInterface) => {
         return attributes(asset)?.schemaName
@@ -137,12 +147,12 @@ export default function useAssetInfo() {
         return useTimeAgo(attributes(asset)?.__modificationTimestamp).value
     }
     const previewURL = (asset: assetInterface) => {
-        const customAttributes = JSON.parse(attributes(asset).__customAttributes.split())
-        if (customAttributes.previewURL)
-            return customAttributes.previewURL
+        const customAttributes = JSON.parse(
+            attributes(asset).__customAttributes.split()
+        )
+        if (customAttributes.previewURL) return customAttributes.previewURL
         return null
     }
-
 
     const lastCrawled = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).connectionLastSyncedAt).value
@@ -155,9 +165,19 @@ export default function useAssetInfo() {
     const dataTypeImage = (asset: assetInterface) => {
         const found = dataTypeList.find((d) =>
             d.type.find(
-                (type) => type.toLowerCase() === dataType(asset).toLowerCase()
+                (type) => type.toLowerCase() === dataType(asset)?.toLowerCase()
             )
         )
+        return found?.image
+    }
+    /* Use this when attributes are spread out like in child tree in insights */
+    const dataTypeImageForColumn = (asset: any) => {
+        const found = dataTypeList.find((d) =>
+            d.type.find(
+                (type) => type.toLowerCase() === asset?.dataType?.toLowerCase()
+            )
+        )
+        console.log(found?.image, 'asset')
         return found?.image
     }
 
@@ -308,17 +328,17 @@ export default function useAssetInfo() {
             },
             attributes(asset)['isPublished']
                 ? {
-                    id: 'tableauPublishedDatasource',
-                    label: 'Published Datasource',
-                    value: attributes(asset)['datasourceName'],
-                    icon: 'TableauPublishedDatasource',
-                }
+                      id: 'tableauPublishedDatasource',
+                      label: 'Published Datasource',
+                      value: attributes(asset)['datasourceName'],
+                      icon: 'TableauPublishedDatasource',
+                  }
                 : {
-                    id: 'tableauEmbeddedDatasource',
-                    label: 'Embedded Datasource',
-                    value: attributes(asset)['datasourceName'],
-                    icon: 'TableauEmbeddedDatasource',
-                },
+                      id: 'tableauEmbeddedDatasource',
+                      label: 'Embedded Datasource',
+                      value: attributes(asset)['datasourceName'],
+                      icon: 'TableauEmbeddedDatasource',
+                  },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',
@@ -454,6 +474,8 @@ export default function useAssetInfo() {
     }
 
     return {
+        isPrimary,
+        dataTypeImageForColumn,
         popularityScore,
         createdBy,
         modifiedBy,
@@ -490,6 +512,6 @@ export default function useAssetInfo() {
         getTableauProperties,
         getTableauHierarchy,
         previewURL,
-        viewDefinition
+        viewDefinition,
     }
 }

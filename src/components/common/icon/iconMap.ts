@@ -42,6 +42,10 @@ import Approve from '~/assets/images/icons/approve.svg'
 import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
+import GlossaryDeprecated from '~/assets/images/icons/glossary-deprecated.svg'
+import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
+import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
+
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
@@ -51,16 +55,42 @@ import Relation from '~/assets/images/icons/relation.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
+import OpenCategoryProfile from '~/assets/images/icons/open-category-profile.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
 import Group from '~/assets/images/icons/group.svg'
 import GroupStatic from '~/assets/images/icons/group-static.svg'
 import External from '~/assets/images/icons/external.svg'
+import NewFolder from '~/assets/images/icons/new-folder.svg'
+import NewQuery from '~/assets/images/icons/new-query.svg'
+import PublicFolder from '~/assets/images/icons/public-folder.svg'
+import PrivateFolder from '~/assets/images/icons/private-folder.svg'
 import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
+import FilterFunnel from '~/assets/images/icons/filterFunnel.svg'
+import FolderOpen from '~/assets/images/icons/folder-open.svg'
+import FolderClosed from '~/assets/images/icons/folder-closed.svg'
+import Schema2 from '~/assets/images/icons/schema2.svg'
+import History from '~/assets/images/icons/history.svg'
+import Queries from '~/assets/images/icons/queries.svg'
+import Play from '~/assets/images/icons/play.svg'
+import Pin from '~/assets/images/icons/pin.svg'
+import Save from '~/assets/images/icons/save.svg'
+import Globe from '~/assets/images/icons/globe.svg'
+import Info from '~/assets/images/icons/info.svg'
+import AddAssetName from '~/assets/images/icons/add-table.svg'
+import Trash from '~/assets/images/icons/trash.svg'
+import Widgets from '~/assets/images/icons/widgets.svg'
+import Megaphone from '~/assets/images/icons/megaphone.svg'
+import Readme from '~/assets/images/icons/readme.svg'
+import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
+import Home from '~/assets/images/icons/home.svg'
+import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
+import Pencil from '~/assets/images/icons/pencil.svg'
 
 export default {
     Metadata,
     Relation,
     Overview,
+    Pin,
     Lineage,
     Activity,
     Columns,
@@ -115,5 +145,32 @@ export default {
     Group,
     GroupStatic,
     External,
+    NewFolder,
+    NewQuery,
+    PublicFolder,
+    PrivateFolder,
     TreeCollapseAll,
+    FilterFunnel,
+    FolderOpen,
+    FolderClosed,
+    Schema2,
+    History,
+    Queries,
+    Play,
+    Save,
+    Globe,
+    Info,
+    AddAssetName,
+    VariableTrigger,
+    OpenCategoryProfile,
+    Trash,
+    Widgets,
+    Megaphone,
+    Readme,
+    Home,
+    GlossaryDeprecated,
+    GlossaryVerified,
+    GlossaryDraft,
+    MultipleStatus,
+    Pencil,
 }

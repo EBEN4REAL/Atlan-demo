@@ -1,45 +1,75 @@
 <template>
-    <div class="flex items-center mb-1">
-        <component
-            :is="dataTypeImage(asset)"
-            class="flex-none w-auto h-4 mr-2 text-gray"
-        ></component>
-        <span
-            class="
-                flex-shrink
-                pt-0.5
-                mr-2
-                overflow-hidden
-                text-xs
-                font-bold
-                align-middle
-                text-gray
-                overflow-ellipsis
-                cursor-pointer
-            "
-            @click="() => (showColumnSidebar = true)"
-        >
-            {{ asset.displayText }}
-        </span>
-        <div v-if="asset.attributes?.isPrimary" class="chip">
-            <AtlanIcon icon="PrimaryKey" />
-        </div>
-        <!--  <div v-if="asset.attributes.isPrimary" class="chip">
+    <div
+        class="flex px-3 py-2 -mx-3 -my-2 rounded hover:bg-primary-light group"
+    >
+        <div class="flex-grow overflow-hidden">
+            <ColumnInfoCard :column-asset="asset">
+                <div class="flex items-center mb-1">
+                    <component
+                        :is="dataTypeImage(asset)"
+                        class="flex-none w-auto h-4 mr-2 text-gray-500"
+                    ></component>
+                    <span
+                        class="
+                            flex-shrink
+                            pt-0.5
+                            mr-2
+                            overflow-hidden
+                            text-sm
+                            font-bold
+                            align-middle
+                            text-primary
+                            overflow-ellipsis
+                            cursor-pointer
+                        "
+                        @click="() => (showColumnSidebar = true)"
+                    >
+                        {{ asset.displayText }}
+                    </span>
+                    <div v-if="asset.attributes?.isPrimary" class="chip">
+                        <AtlanIcon icon="PrimaryKey" />
+                    </div>
+                    <!--  <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="ForeignKey" />
         </div> -->
+                </div>
+            </ColumnInfoCard>
+            <Description :selected-asset="asset" :using-in-info="false" />
+            <ScrollStrip v-if="asset.classifications">
+                <Pill
+                    class="flex-none"
+                    v-for="clsf in asset.classifications"
+                    :label="clsf.typeName"
+                    :has-action="false"
+                    size="sm"
+                >
+                    <template #prefix>
+                        <AtlanIcon icon="Shield" class="h-3 text-pink-400" />
+                    </template>
+                </Pill>
+            </ScrollStrip>
+        </div>
+        <AtlanBtn
+            class="flex-none opacity-0 group-hover:opacity-100"
+            size="sm"
+            color="secondary"
+            padding="compact"
+        >
+            <AtlanIcon icon="KebabMenu" class="-mx-1"></AtlanIcon>
+        </AtlanBtn>
     </div>
-
-    <Description :selected-asset="asset" :using-in-info="false" />
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
-            :key="asset.guid"
+            v-if="showColumnSidebar"
             v-model:visible="showColumnSidebar"
             placement="right"
             :mask="false"
             :get-container="false"
+            :wrap-style="{ position: 'absolute', width: '100%' }"
             :keyboard="false"
             :destroy-on-close="true"
             :closable="false"
+            width="100%"
         >
             <AssetPreview
                 :selected-asset="asset"
@@ -58,12 +88,20 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import Description from '@common/sidebar/description.vue'
+    import ColumnInfoCard from './columnInfoCard.vue'
+    import AtlanBtn from '@/UI/button.vue'
+    import Pill from '~/components/UI/pill/pill.vue'
+    import ScrollStrip from '@/UI/scrollStrip.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
         components: {
             AssetPreview,
             Description,
+            ColumnInfoCard,
+            AtlanBtn,
+            Pill,
+            ScrollStrip,
         },
         props: {
             asset: {
@@ -96,10 +134,6 @@
 </script>
 
 <style scoped>
-    :global(.ant-drawer-content-wrapper) {
-        width: 420px !important;
-        background-color: white !important;
-    }
     .chip {
         @apply px-1 py-0.5 mr-1;
         @apply rounded;

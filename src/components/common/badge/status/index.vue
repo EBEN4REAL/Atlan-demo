@@ -18,7 +18,7 @@
                     <component class="w-auto h-4" :is="icon" />
                 </span>
 
-                <p v-if="showLabel" class="mb-0 ml-1">
+                <p v-if="showLabel" class="mb-0 ml-2">
                     {{ label }}
                 </p>
             </div>

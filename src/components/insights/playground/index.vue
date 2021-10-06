@@ -6,7 +6,7 @@
                 :class="$style.inline_tabs"
                 hide-add
                 type="editable-card"
-                class="w-full"
+                class="w-full insights-tabs"
                 @change="onTabClick"
                 @edit="onEdit"
             >
@@ -22,29 +22,52 @@
                 </template>
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
                     <template #tab>
-                        <div class="flex items-center justify-between">
-                            <img
-                                :src="tab.favico"
-                                class="w-4 h-4 mr-2 rounded"
-                                v-if="tab?.favico"
-                            />
-                            <span class="mr-2">{{ tab.label }}</span>
+                        <div
+                            class="flex items-center justify-between inline_tab"
+                        >
+                            <div class="flex items-center">
+                                <span
+                                    class="
+                                        text-sm
+                                        truncate
+                                        ...
+                                        inline_tab_label
+                                    "
+                                    >{{ tab.label }}</span
+                                >
+                            </div>
+                            <div
+                                v-if="!tab.isSaved"
+                                class="flex items-center mr-2 unsaved-dot"
+                            >
+                                <div
+                                    class="
+                                        w-1.5
+                                        h-1.5
+                                        rounded-full
+                                        bg-primary
+                                        -mt-0.5
+                                        absolute
+                                        right-2.5
+                                    "
+                                ></div>
+                            </div>
                         </div>
                     </template>
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <div class="w-full h-full" v-if="activeInlineTabKey">
+        <div v-if="activeInlineTabKey" class="w-full h-full">
             <splitpanes horizontal :push-other-panes="false">
                 <pane
                     :max-size="100"
-                    :size="100 - paneSize"
+                    :size="100 - outputPaneSize"
                     min-size="45"
                     class="overflow-x-hidden"
                 >
                     <Editor
                 /></pane>
-                <pane min-size="0" :size="paneSize" max-size="55">
+                <pane min-size="0" :size="outputPaneSize" max-size="55">
                     <ResultsPane
                 /></pane>
             </splitpanes>
@@ -54,15 +77,23 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, Ref, inject, ref } from 'vue'
+    import {
+        defineComponent,
+        toRefs,
+        computed,
+        Ref,
+        inject,
+        ref,
+        onMounted,
+        onUnmounted,
+    } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
-    import useRunQuery from './common/composables/useRunQuery'
+    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import { useProvide } from '~/components/insights/common/composables/useProvide'
-    import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
+    import { useRouter } from 'vue-router'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -75,42 +106,52 @@
             },
         },
         setup(props, { emit }) {
-            const { queryRun, isQueryRunning } = useRunQuery()
+            const router = useRouter()
+            const { queryRun } = useRunQuery()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
-            // const {resultsPaneSizeToggle} = useHotKeys()
-            const paneSize = ref(55)
+
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
-
+            const isQueryRunning = inject('isQueryRunning') as Ref<string>
+            const isActiveInlineTabSaved = computed(
+                () => activeInlineTab.value.isSaved
+            )
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'New Tab',
+                    label: 'untitled',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
+                    status: 'draft',
+                    connectionId: '',
+                    description: '',
+                    qualifiedName: '',
+                    isSQLSnippet: false,
                     explorer: {
                         schema: {
                             connectors: {
-                                connection:
+                                attributeName:
                                     activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.connection,
+                                        ?.connectors?.attributeName,
+                                attributeValue:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.attributeValue,
+                            },
+                        },
+                        queries: {
+                            connectors: {
                                 connector:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.connector,
-                                selectedDefaultSchema:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.selectedDefaultSchema,
-                                selectedDataSourceName:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.selectedDataSourceName,
+                                    activeInlineTab.value?.explorer?.queries
+                                        .connectors.connector,
                             },
                         },
                     },
@@ -154,38 +195,34 @@
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
             }
+            const pushGuidToURL = (guid: string | undefined) => {
+                if (guid) router.push(`/insights?id=${guid}`)
+                else router.push(`/insights`)
+            }
             const onTabClick = (activeKey) => {
                 setActiveTabKey(activeKey, activeInlineTabKey)
+                pushGuidToURL(activeInlineTab.value?.queryId)
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
                     handleAdd()
                 } else {
+                    console.log(targetKey)
                     inlineTabRemove(
                         targetKey as string,
                         tabs,
-                        activeInlineTabKey
+                        activeInlineTabKey,
+                        pushGuidToURL
                     )
                 }
             }
-
-            /*---------------------------------------------*/
-            /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
-            const provideData: provideDataInterface = {
-                isQueryRunning: isQueryRunning,
-            }
-            useProvide(provideData)
-
-            /*-------------------------------------*/
-
             return {
+                isActiveInlineTabSaved,
                 isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
-                paneSize,
+                outputPaneSize,
                 handleAdd,
                 onEdit,
                 onTabClick,
@@ -194,6 +231,46 @@
         },
     })
 </script>
+<style lang="less">
+    .insights-tabs {
+        .ant-tabs-nav-container {
+            height: 30px !important;
+        }
+        .ant-tabs-extra-content {
+            line-height: 30px !important;
+        }
+        .ant-tabs-tab {
+            height: 100%;
+            border-radius: 0px !important;
+            margin-right: 0px !important;
+            border-left: 0px !important;
+            border-right: 0px !important;
+            border-top: 0px !important;
+            padding: 0 12px !important;
+            height: 30px !important;
+
+            > div {
+                height: 100%;
+            }
+
+            &.ant-tabs-tab-active {
+                border-bottom: 1px solid !important;
+            }
+            .ant-tabs-close-x {
+                visibility: hidden;
+                transition: none !important;
+            }
+            &:hover {
+                .unsaved-dot {
+                    visibility: hidden;
+                }
+                .ant-tabs-close-x {
+                    visibility: visible !important;
+                }
+            }
+        }
+    }
+</style>
 <style lang="less" scoped>
     .btn {
         border: 1px solid #f06;
@@ -216,6 +293,15 @@
     }
     .children_spiltpanes {
         height: calc(100vh - 19rem);
+    }
+    // .inline_tab {
+    //     max-width: 4.2rem;
+    //     overflow: hidden;
+    //     // min-width: 3rem;
+    // }
+    .inline_tab_label {
+        max-width: 5.8rem;
+        overflow: hidden;
     }
 </style>
 <style lang="less" module>

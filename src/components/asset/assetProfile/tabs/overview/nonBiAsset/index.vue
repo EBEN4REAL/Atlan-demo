@@ -1,52 +1,126 @@
 <template>
-    <div class="p-6">
-        <!-- Overview Columns widget -->
-        <div class="px-3 pt-5 pb-4 mb-10 bg-white border rounded-md">
-            <h2 class="mb-3 text-xl text-gray">Columns preview</h2>
-            <overview-columns />
-        </div>
+    <div class="flex flex-col gap-y-10" style="padding: 2rem 3.75rem">
+        <!-- Announcements -->
+        <Announcements :asset="assetData" />
 
-        <!-- Overview Table widget -->
-        <div
-            v-if="showTablePreview"
-            class="px-3 pt-5 mb-10 bg-white border rounded-md"
-        >
-            <h2 class="mb-3 text-xl text-gray">Table preview</h2>
-            <overview-table />
+        <!-- Table Summary -->
+        <tableSummary />
+
+        <!-- Column and Table Preview-->
+        <div class="w-full">
+            <!-- Preview Selector-->
+            <a-button-group class="mb-4 rounded shadow">
+                <a-button
+                    :class="
+                        activePreviewTabKey === 'column-preview'
+                            ? 'text-primary font-bold'
+                            : 'text-gray-500'
+                    "
+                    @click="setActiveTab('column-preview')"
+                >
+                    Column Preview
+                </a-button>
+                <a-tooltip
+                    placement="right"
+                    :title="
+                        !showTablePreview &&
+                        'No sample data found for this asset'
+                    "
+                >
+                    <a-button
+                        :class="
+                            activePreviewTabKey === 'table-preview'
+                                ? 'text-primary font-bold'
+                                : 'text-gray-500'
+                        "
+                        :disabled="!showTablePreview"
+                        @click="setActiveTab('table-preview')"
+                        >Sample Data</a-button
+                    ></a-tooltip
+                >
+            </a-button-group>
+            <KeepAlive>
+                <overviewColumns
+                    v-if="activePreviewTabKey === 'column-preview'"
+                />
+                <overviewTable
+                    v-else-if="activePreviewTabKey === 'table-preview'"
+                />
+            </KeepAlive>
         </div>
 
         <!-- Readme widget -->
-        <div class="px-3 py-4 mb-10 bg-white border rounded-md">
-            <Readme
-                class="w-full"
-                :show-borders="false"
-                :show-padding-x="false"
-                :parent-asset-id="assetData"
-            />
-        </div>
+        <Readme
+            class="w-full"
+            :show-borders="false"
+            :show-padding-x="false"
+            :parent-asset-id="assetData"
+        />
+        <Resources :asset="assetData" />
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, computed } from 'vue'
+    import {
+        defineComponent,
+        inject,
+        computed,
+        ref,
+        defineAsyncComponent,
+        Ref,
+        ComputedRef,
+    } from 'vue'
 
     // Components
     import Readme from '@/common/readme/index.vue'
-    import overviewColumns from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewColumns.vue'
-    import overviewTable from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewTable.vue'
+    import Resources from '@/asset/assetProfile/widgets/resources/resources.vue'
+    import tableSummary from '@/asset/assetProfile/tabs/overview/nonBiAsset/tableSummary.vue'
+    import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { overviewColumns, overviewTable, Readme },
+        components: {
+            Readme,
+            Resources,
+            Announcements,
+            tableSummary,
+            overviewColumns: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewColumns.vue'
+                    )
+            ),
+            overviewTable: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewTable.vue'
+                    )
+            ),
+        },
         setup() {
+            const activePreviewTabKey: Ref<'column-preview' | 'table-preview'> =
+                ref('column-preview')
+
+            function setActiveTab(tabName: 'column-preview' | 'table-preview') {
+                activePreviewTabKey.value = tabName
+            }
+
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
+            const assetData: ComputedRef<assetInterface> = computed(
+                () => assetDataInjection?.asset
+            )
+
+            /** METHODS */
+            // useAssetInfo
+            const { assetType } = useAssetInfo()
+
             const showTablePreview = computed(
                 () =>
                     !['TablePartition', 'MaterialisedView'].includes(
@@ -54,11 +128,13 @@
                     )
             )
 
-            /** METHODS */
-            // useAssetInfo
-            const { assetType } = useAssetInfo()
-
-            return { assetData, showTablePreview, assetType }
+            return {
+                assetData,
+                showTablePreview,
+                assetType,
+                setActiveTab,
+                activePreviewTabKey,
+            }
         },
     })
 </script>

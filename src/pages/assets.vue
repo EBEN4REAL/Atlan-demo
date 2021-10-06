@@ -1,49 +1,53 @@
 <template>
     <div class="flex w-full h-full bg-white">
-        <div
-            class="flex-1 border-r border-gray-300 item-stretch"
-            style="max-width: calc(100vw - 420px)"
-        >
+        <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
-                <router-view
-                    v-show="isItem"
-                    :updateProfile="updateProfile"
-                    :selectedItem="selected"
-                    @updateAssetPreview="handlePreview"
-                    @preview="handlePreview"
-                ></router-view>
-
-                <AssetDiscovery
-                    :class="{ hidden: isItem }"
-                    :initial-filters="initialFilters"
-                    @preview="handlePreview"
-                    ref="assetDiscovery"
-                ></AssetDiscovery>
+                <KeepAlive>
+                    <component
+                        :is="isItem ? 'router-view' : 'AssetDiscovery'"
+                        ref="assetDiscovery"
+                        :initial-filters="initialFilters"
+                        :update-profile="updateProfile"
+                        @preview="handlePreview"
+                        @bulkSelectChange="updateBulkSelection"
+                    ></component>
+                </KeepAlive>
             </div>
         </div>
-
-        <div class="z-20 flex flex-col bg-white asset-preview-container">
+        <div
+            v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
+            id="overAssetPreviewSidebar"
+            class="relative bg-white asset-preview-container"
+        >
             <AssetPreview
                 v-if="selected"
-                :selectedAsset="selected"
-                @asset-mutation="propagateToAssetList"
+                :selected-asset="selected"
                 :page="page"
+                @asset-mutation="propagateToAssetList"
             ></AssetPreview>
         </div>
-
-        <div id="overAssetPreviewSidebar"></div>
+        <div
+            v-else
+            class="relative bg-white asset-preview-container overflow-y-auto"
+        >
+            <BulkSidebar
+                :bulk-selected-assets="bulkSelectedAssets"
+            ></BulkSidebar>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
-    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
-    import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
+    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
+    import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    import { decodeQuery } from '~/utils/helper/routerHelper'
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
@@ -55,6 +59,7 @@
         components: {
             AssetPreview,
             AssetDiscovery,
+            BulkSidebar,
         },
         setup() {
             useHead({
@@ -66,8 +71,21 @@
             const updateProfile = ref<boolean>(false)
 
             const assetDiscovery: Ref<Element | null> = ref(null)
-            const initialFilters: initialFiltersType =
-                getDecodedOptionsFromString(router)
+            // const initialFilters: initialFiltersType =
+            //     getDecodedOptionsFromString(router)
+
+            const initialFilters: Record<string, any> = {
+                facetsFilters: {},
+                searchText: '',
+                selectedTab: 'Catalog',
+                sortOrder: 'default',
+                state: 'active',
+                ...decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                ),
+            }
+
+            router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
@@ -93,12 +111,15 @@
             }
 
             function propagateToAssetList(updatedAsset: assetInterface) {
-                if (assetDiscovery.value)
+                if (page.value === 'discovery')
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
                 handlePreview(updatedAsset)
                 updateProfile.value = true
             }
-
+            const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
+            const updateBulkSelection = (list) => {
+                bulkSelectedAssets.value = [...list.value]
+            }
             return {
                 initialFilters,
                 selected,
@@ -107,6 +128,8 @@
                 page,
                 propagateToAssetList,
                 assetDiscovery,
+                updateBulkSelection,
+                bulkSelectedAssets
             }
         },
     })
@@ -116,8 +139,6 @@
         width: 420px !important;
         min-width: 420px !important;
         max-width: 420px !important;
-        position: absolute;
-        right: 0;
     }
 </style>
 <route lang="yaml">

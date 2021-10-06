@@ -5,9 +5,12 @@
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
             class="w-2/3 h-full"
-            @scroll="handleScroll"
             ref="scrollDiv"
-            :class="{ 'overflow-y-auto': !headerReachedTop }"
+            :class="{
+                'overflow-y-auto': !headerReachedTop,
+                ' border-r': bulkSelectedAssets.length,
+            }"
+            @scroll="handleScroll"
         >
             <!-- top section -->
             <ProfileHeader
@@ -61,6 +64,7 @@
                             :headerReachedTop="headerReachedTop"
                             @entityPreview="handleCategoryOrTermPreview"
                             @firstCardReachedTop="handleFirstCardReachedTop"
+                            @bulkSelectChange="updateBulkSelection"
                         />
                     </a-tab-pane>
                     <!-- Hide for GA -->
@@ -71,9 +75,15 @@
                 </a-tabs>
             </div>
         </div>
-
         <div id="sidePanel" class="relative w-1/3">
-            <SidePanel :entity="glossary" :top-terms="glossaryTerms" />
+            <SidePanel
+                v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
+                :entity="glossary"
+            />
+            <BulkSidebar
+                v-else
+                :bulk-selected-assets="bulkSelectedAssets"
+            ></BulkSidebar>
         </div>
     </div>
 </template>
@@ -82,27 +92,26 @@
     import {
         defineComponent,
         watch,
-        onMounted,
         toRef,
         ref,
         provide,
         computed,
         inject,
-        nextTick,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
     // components
     import LoadingView from '@common/loaders/page.vue'
-    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import SidePanel from '@/glossary/sidePanel/index.vue'
-    import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import GlossaryTermsAndCategoriesTab from '~/components/glossary/profile/termsAndCategories/glossaryTermsAndCategoriesTab.vue'
+    import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
+    import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
+    import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
+    import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-    import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
-    import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
+    // import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
+    // import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
@@ -119,6 +128,7 @@
             LoadingView,
             SidePanel,
             ProfileHeader,
+            BulkSidebar,
         },
         props: {
             id: {
@@ -136,7 +146,8 @@
             const newName = ref('')
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
-            const temp = ref(false)
+            const temp = ref(false) // flag for sticky header
+            const bulkSelectedAssets = ref([])
 
             const router = useRouter()
             const {
@@ -155,19 +166,19 @@
                 () => title.value === 'Untitled Glossary'
             )
 
-            const {
-                terms: glossaryTerms,
-                error: termsError,
-                isLoading: termsLoading,
-                fetchGlossaryTermsPaginated,
-            } = useGlossaryTerms()
+            // const {
+            //     terms: glossaryTerms,
+            //     error: termsError,
+            //     isLoading: termsLoading,
+            //     fetchGlossaryTermsPaginated,
+            // } = useGlossaryTerms()
 
-            const {
-                categories: glossaryCategories,
-                error: categoriesError,
-                isLoading: categoriesLoading,
-                fetchGlossaryCategoriesPaginated,
-            } = useGlossaryCategories()
+            // const {
+            //     categories: glossaryCategories,
+            //     error: categoriesError,
+            //     isLoading: categoriesLoading,
+            //     fetchGlossaryCategoriesPaginated,
+            // } = useGlossaryCategories()
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
@@ -176,25 +187,25 @@
             // methods
             const reInitTree = inject('reInitTree')
 
-            const refreshCategoryTermList = (type: string) => {
-                if (type === 'category') {
-                    fetchGlossaryCategoriesPaginated({
-                        refreshSamePage: true,
-                    })
-                } else if (type === 'term') {
-                    fetchGlossaryTermsPaginated({ refreshSamePage: true })
-                }
-            }
+            // const refreshCategoryTermList = (type: string) => {
+            //     if (type === 'category') {
+            //         fetchGlossaryCategoriesPaginated({
+            //             refreshSamePage: true,
+            //         })
+            //     } else if (type === 'term') {
+            //         fetchGlossaryTermsPaginated({ refreshSamePage: true })
+            //     }
+            // }
 
-            const fetchNextCategoryOrTermList = (type: string) => {
-                if (type === 'category') {
-                    fetchGlossaryCategoriesPaginated({
-                        limit: 5,
-                    })
-                } else if (type === 'term') {
-                    fetchGlossaryTermsPaginated({ limit: 5 })
-                }
-            }
+            // const fetchNextCategoryOrTermList = (type: string) => {
+            //     if (type === 'category') {
+            //         fetchGlossaryCategoriesPaginated({
+            //             limit: 5,
+            //         })
+            //     } else if (type === 'term') {
+            //         fetchGlossaryTermsPaginated({ limit: 5 })
+            //     }
+            // }
 
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
@@ -232,29 +243,34 @@
                 temp.value = true
             }
             // lifecycle methods and watchers
-            onMounted(() => {
-                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
-                fetchGlossaryCategoriesPaginated({
-                    guid: guid.value,
-                    offset: 0,
-                })
-            })
+            // onMounted(() => {
+            //     fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
+            //     fetchGlossaryCategoriesPaginated({
+            //         guid: guid.value,
+            //         offset: 0,
+            //     })
+            // })
 
-            watch(guid, (newGuid) => {
-                fetchGlossaryTermsPaginated({
-                    guid: newGuid,
-                    offset: 0,
-                })
-                fetchGlossaryCategoriesPaginated({
-                    guid: newGuid,
-                    offset: 0,
-                })
-            })
+            // watch(guid, (newGuid) => {
+            //     fetchGlossaryTermsPaginated({
+            //         guid: newGuid,
+            //         offset: 0,
+            //     })
+            //     fetchGlossaryCategoriesPaginated({
+            //         guid: newGuid,
+            //         offset: 0,
+            //     })
+            // })
 
             watch(updatedEntity, () => {
                 refetch()
                 newName.value = ''
             })
+            // upate bulk list for sidebar
+            const updateBulkSelection = (list) => {
+                bulkSelectedAssets.value = [...list.value]
+                console.log(bulkSelectedAssets.value)
+            }
 
             // Providers
             provide('refreshEntity', refetch)
@@ -266,11 +282,11 @@
                 shortDescription,
                 error,
                 isLoading,
-                termsLoading,
-                categoriesLoading,
+                // termsLoading,
+                // categoriesLoading,
                 guid,
-                glossaryTerms,
-                glossaryCategories,
+                // glossaryTerms,
+                // glossaryCategories,
                 qualifiedName,
                 currentTab,
                 previewEntity,
@@ -280,8 +296,8 @@
                 newName,
                 scrollDiv,
                 headerReachedTop,
-                refreshCategoryTermList,
-                fetchNextCategoryOrTermList,
+                // refreshCategoryTermList,
+                // fetchNextCategoryOrTermList,
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
@@ -289,6 +305,8 @@
                 updateTitle,
                 handleScroll,
                 handleFirstCardReachedTop,
+                updateBulkSelection,
+                bulkSelectedAssets,
             }
         },
     })

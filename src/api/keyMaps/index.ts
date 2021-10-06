@@ -1,10 +1,12 @@
+import { getAPIPath } from "~/api";
+
+import user from '@services/keycloak/users/users_keymap'
 import asset from '~/api/keyMaps/asset'
 
 import businessMetadata from '~/api/keyMaps/businessMetadata'
 
-import user from '~/api/keyMaps/auth/user'
 import tenant from '~/api/keyMaps/auth/tenant'
-import group from '~/api/keyMaps/auth/group'
+import group from '@services/keycloak/groups/groups_keymap'
 import avatar from '~/api/keyMaps/auth/avatar'
 import connection from '~/api/keyMaps/auth/connection'
 import glossary from '~/api/keyMaps/glossary'
@@ -17,6 +19,7 @@ import lineage from '~/api/keyMaps/atlas/lineage'
 import image from '~/api/keyMaps/auth/image'
 import policies from '~/api/keyMaps/auth/policies'
 import requests from '~/api/keyMaps/heracles/request'
+
 export default {
     ...asset,
     ...health,

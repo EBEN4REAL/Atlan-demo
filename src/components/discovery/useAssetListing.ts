@@ -109,15 +109,16 @@ export function useAssetAggregation(
     })
 
     function refreshAggregation(newBody: any) {
-        const newCriterion = [...newBody.entityFilters?.criterion].filter(
+        const newCriterion = newBody?.entityFilters?.criterion?.filter(
             (item) => item.attributeName !== '__typeName'
         )
         replaceBody({
             ...baseQuery,
             query: newBody.query,
             typeName: newBody.typeName,
+            termName: newBody.termName,
             entityFilters: {
-                condition: newBody.entityFilters?.condition,
+                condition: newBody?.entityFilters?.condition,
                 criterion: newCriterion,
             },
         })

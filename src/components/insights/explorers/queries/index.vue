@@ -47,18 +47,40 @@
             </div>
         </div>
         <div
-            class="w-full h-full p-3 pt-0 overflow-y-auto scrollable-container"
+            class="relative w-full h-full p-3 pt-0 overflow-y-auto  scrollable-container"
         >
-            <query-tree
-                :tree-data="treeData"
-                :on-load-data="onLoadData"
-                :select-node="selectNode"
-                :expand-node="expandNode"
-                :is-loading="isInitingTree"
-                :loaded-keys="loadedKeys"
-                :selected-keys="selectedKeys"
-                :expanded-keys="expandedKeys"
-            />
+            <!--explorer pane start -->
+            <div
+                class="absolute w-full h-full bg-white"
+                :class="savedQueryType === 'personal' ? 'z-2' : 'z-1'"
+            >
+                <query-tree
+                    :tree-data="per_treeData"
+                    :on-load-data="per_onLoadData"
+                    :select-node="per_selectNode"
+                    :expand-node="per_expandNode"
+                    :is-loading="per_isInitingTree"
+                    :loaded-keys="per_loadedKeys"
+                    :selected-keys="per_selectedKeys"
+                    :expanded-keys="per_expandedKeys"
+                />
+            </div>
+            <div
+                class="absolute w-full h-full bg-white"
+                :class="savedQueryType === 'all' ? 'z-2' : 'z-1'"
+            >
+                <query-tree
+                    :tree-data="all_treeData"
+                    :on-load-data="all_onLoadData"
+                    :select-node="all_selectNode"
+                    :expand-node="all_expandNode"
+                    :is-loading="all_isInitingTree"
+                    :loaded-keys="all_loadedKeys"
+                    :selected-keys="all_selectedKeys"
+                    :expanded-keys="all_expandedKeys"
+                />
+            </div>
+            <!--explorer pane end -->
         </div>
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
@@ -83,7 +105,7 @@
         watch,
         ref,
         toRaw,
-        onMounted
+        onMounted,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
@@ -140,7 +162,7 @@
             const {
                 openSavedQueryInNewTab,
                 saveQueryToDatabaseAndOpenInNewTab,
-                createFolder
+                createFolder,
             } = useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
                 let bool = false
@@ -151,7 +173,7 @@
             }
 
             const updateConnector = (value: string) => {
-                connector.value = value;
+                connector.value = value
                 setConnectorsDataInInlineTab(
                     activeInlineTab,
                     inlineTabs,
@@ -172,25 +194,43 @@
             }
 
             const {
-                treeData,
-                loadedKeys,
-                isInitingTree,
-                selectedKeys,
-                expandedKeys,
-                onLoadData,
-                expandNode,
-                selectNode,
-                refetchNode
+                treeData: per_treeData,
+                loadedKeys: per_loadedKeys,
+                isInitingTree: per_isInitingTree,
+                selectedKeys: per_selectedKeys,
+                expandedKeys: per_expandedKeys,
+                onLoadData: per_onLoadData,
+                expandNode: per_expandNode,
+                selectNode: per_selectNode,
+                refetchNode: per_refetchNode,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
                 pushGuidToURL,
                 connector,
-                savedQueryType
+                savedQueryType: ref('personal'),
+            })
+            const {
+                treeData: all_treeData,
+                loadedKeys: all_loadedKeys,
+                isInitingTree: all_isInitingTree,
+                selectedKeys: all_selectedKeys,
+                expandedKeys: all_expandedKeys,
+                onLoadData: all_onLoadData,
+                expandNode: all_expandNode,
+                selectNode: all_selectNode,
+                refetchNode: all_refetchNode,
+            } = useQueryTree({
+                emit,
+                openSavedQueryInNewTab,
+                pushGuidToURL,
+                connector,
+                savedQueryType: ref('all'),
             })
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {
-                selectedKeys.value = [newActiveInlineTab]
+                per_selectedKeys.value = [newActiveInlineTab]
+                all_selectedKeys.value = [newActiveInlineTab]
             })
 
             watch(activeInlineTab, (newActiveInlineTab) => {
@@ -200,8 +240,8 @@
                 }
             })
             const saveQuery = async (saveQueryData: any) => {
-                if(createEntityType.value === 'query') {
-                   const { data } = saveQueryToDatabaseAndOpenInNewTab(
+                if (createEntityType.value === 'query') {
+                    const { data } = saveQueryToDatabaseAndOpenInNewTab(
                         saveQueryData,
                         editorInstance,
                         saveQueryLoading,
@@ -212,18 +252,36 @@
                     focusEditor(toRaw(editorInstance.value))
 
                     watch(data, (newData) => {
-                        if(newData) refetchNode("4a6ccb76-02f0-4cc3-9550-24c46166a93d", createEntityType.value)
+                        if (newData) {
+                            per_refetchNode(
+                                '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                                createEntityType.value
+                            )
+                            all_refetchNode(
+                                '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                                createEntityType.value
+                            )
+                        }
                     })
-                } else if(createEntityType.value === 'queryFolder'){
-                    const { data } = createFolder(saveQueryData, saveQueryLoading, showSaveQueryModal, saveModalRef)
+                } else if (createEntityType.value === 'queryFolder') {
+                    const { data } = createFolder(
+                        saveQueryData,
+                        saveQueryLoading,
+                        showSaveQueryModal,
+                        saveModalRef
+                    )
                     watch(data, (newData) => {
-                        if(newData) refetchNode("root", createEntityType.value)
+                        if (newData) {
+                            per_refetchNode('root', createEntityType.value)
+                            all_refetchNode('root', createEntityType.value)
+                        }
                     })
                 }
             }
 
             onMounted(() => {
-                selectedKeys.value = [activeInlineTabKey.value]
+                per_selectedKeys.value = [activeInlineTabKey.value]
+                all_selectedKeys.value = [activeInlineTabKey.value]
             })
 
             return {
@@ -241,14 +299,22 @@
                 connector,
                 updateConnector,
                 savedQueryType,
-                treeData,
-                loadedKeys,
-                isInitingTree,
-                selectedKeys,
-                expandedKeys,
-                onLoadData,
-                expandNode,
-                selectNode,
+                per_treeData,
+                per_loadedKeys,
+                per_isInitingTree,
+                per_selectedKeys,
+                per_expandedKeys,
+                per_onLoadData,
+                per_expandNode,
+                per_selectNode,
+                all_treeData,
+                all_loadedKeys,
+                all_isInitingTree,
+                all_selectedKeys,
+                all_expandedKeys,
+                all_onLoadData,
+                all_expandNode,
+                all_selectNode,
             }
         },
     })
@@ -259,6 +325,9 @@
     }
     .active-placeholder {
         @apply bg-primary text-white;
+    }
+    .z-2 {
+        z-index: 2;
     }
 </style>
 

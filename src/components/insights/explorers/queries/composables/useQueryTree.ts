@@ -54,7 +54,7 @@ const useTree = ({
     isAccordion,
     pushGuidToURL,
     connector,
-    savedQueryType
+    savedQueryType,
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -73,7 +73,7 @@ const useTree = ({
     const expandedCache = store.get(expandedCacheKey)
 
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
-        useLoadQueryData({connector, savedQueryType})
+        useLoadQueryData({ connector, savedQueryType })
 
     /** *
      * @param targetGuid - guid / key of the node whose path needs to be found
@@ -111,7 +111,7 @@ const useTree = ({
     const initTreeData = async () => {
         treeData.value = []
         const queries = await getQueries()
-        const folders =  await getQueryFolders()
+        const folders = await getQueryFolders()
 
         folders.entities?.forEach((folder) => {
             if (!folder.attributes.parentFolder) {
@@ -148,24 +148,18 @@ const useTree = ({
             )
 
             subFoldersResponse.entities?.forEach((folder) => {
-                if (
-                    !loadedKeys.value.find(
-                        (key) => folder.guid === key
-                    )
-                ) {
+                if (!loadedKeys.value.find((key) => folder.guid === key)) {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(folder)
                     )
-                    nodeToParentKeyMap[folder.guid] =
-                        treeNode.dataRef.guid
+                    nodeToParentKeyMap[folder.guid] = treeNode.dataRef.guid
                 }
             })
             subQueriesResponse.entities?.forEach((query) => {
                 treeNode.dataRef.children?.push(
                     returnTreeDataItemAttributes(query)
                 )
-                nodeToParentKeyMap[query.guid] =
-                    treeNode.dataRef.guid
+                nodeToParentKeyMap[query.guid] = treeNode.dataRef.guid
             })
 
             if (
@@ -456,7 +450,7 @@ const useTree = ({
         }
     }
 
-    watch([connector,savedQueryType], () => {
+    watch([connector, savedQueryType], () => {
         isInitingTree.value = true
         loadedKeys.value = []
         expandedKeys.value = []

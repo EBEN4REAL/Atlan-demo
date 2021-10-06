@@ -116,7 +116,7 @@
                 required: false,
             },
         },
-        emits: ['assetMutation', 'closeSidebar'],
+        emits: ['assetMutation', 'closeSidebar', 'preview'],
         setup(props, { emit }) {
             const { selectedWorkflow } = toRefs(props)
 

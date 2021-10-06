@@ -1,4 +1,4 @@
-import { NodeView } from '@antv/x6'
+const { NodeView } = window.X6
 
 export class SimpleNodeView extends NodeView {
     renderMarkup() {

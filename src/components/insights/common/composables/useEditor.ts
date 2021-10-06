@@ -46,8 +46,8 @@ export function useEditor(
         return query
     }
     function removeMoustacheSpaces(text) {
-        let t = text.replace('{ ', '{')
-        t = t.replace(' }', '}')
+        let t = text.replace('{ { ', '{{')
+        t = t.replace(' } }', '}}')
         return t
     }
     function semicolonSeparateQuery(query: string) {
@@ -75,7 +75,7 @@ export function useEditor(
 
         return semicolonSeparateQuery(query)
     }
-    function formatter(text: string, options: FormatOptions) {
+    function formatter(text: string, options?: FormatOptions) {
         /* It formats and changes {{abc}}-> { {abc} } */
         const t = format(text, options)
         return removeMoustacheSpaces(t)

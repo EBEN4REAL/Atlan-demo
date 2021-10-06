@@ -1,0 +1,42 @@
+<template>
+    <div class="flex divide-x scroll-container">
+        <aside
+            class="flex flex-col w-1/4 h-full px-4 pt-6 overflow-y-hidden bg-gray-100 "
+        >
+            <div class="flex items-center justify-between">
+                <span class="mb-2 text-2xl">{{ title }}</span>
+                <slot name="action"></slot>
+            </div>
+            <span v-if="subTitle" class="mb-0 text-sm text-gray">{{
+                subTitle
+            }}</span>
+            <slot name="sidebar"></slot>
+        </aside>
+
+        <div class="flex flex-col w-3/4 h-full px-4 overflow-y-hidden">
+            <slot></slot>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { defineComponent } from 'vue'
+
+    /**
+     * Explorer Layout - Has a sidebar and a main view with overflow handled.
+     * Main content comes in the default slot.
+     * Sidebar comes in the `sidebar` slot.
+     * Use the `action` slot to add any optional button beside the title.
+     */
+    export default defineComponent({
+        name: 'ExplorerLayout',
+        props: { title: String, subTitle: String },
+    })
+</script>
+
+<style scoped>
+    .scroll-container {
+        @apply overflow-y-auto;
+        height: calc(100vh - 3rem);
+    }
+</style>

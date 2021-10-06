@@ -1,8 +1,34 @@
 <template>
-    <p class="mb-2 text-2xl">Personas</p>
-    <p class="mb-0 text-sm text-gray">Access controls for user personas</p>
+    <ExplorerLayout
+        title="Personas"
+        subTitle="Access controls for user personas"
+    >
+        <template #sidebar>
+            <SearchAndFilter
+                placeholder="Search for personas"
+                v-model:value="searchTerm"
+                class="pt-6 mb-4"
+                size="minimal"
+            />
+            <aside class="overflow-y-auto" style="height: calc(100% - 4.5rem)">
+                <a-menu
+                    v-model:selectedKeys="selectedPersonaId"
+                    mode="inline"
+                    :class="$style.sidebar"
+                >
+                    <a-menu-item
+                        v-for="persona in filteredPersonas"
+                        :key="persona.id"
+                    >
+                        {{ persona.personaName }}
+                    </a-menu-item>
+                </a-menu>
+            </aside>
+        </template>
 
-    <div class="flex scroll-container">
+        <PersonaScopes :selectedPersona="selectedPersona" />
+    </ExplorerLayout>
+    <!-- <div class="flex scroll-container">
         <div class="w-1/4 h-full overflow-y-hidden">
             <SearchAndFilter
                 placeholder="Search for personas"
@@ -24,18 +50,19 @@
         <div class="flex flex-col w-3/4 h-full px-4 overflow-y-hidden">
             <PersonaScopes :selectedPersona="selectedPersona" />
         </div>
-    </div>
+    </div> -->
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
     import usePersonaService from '~/services/heracles/composables/personas'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaScopes from './personaScopes.vue'
 
     export default defineComponent({
         name: 'PersonaView',
-        components: { SearchAndFilter, PersonaScopes },
+        components: { SearchAndFilter, PersonaScopes, ExplorerLayout },
         setup() {
             const selectedPersonaId = ref([])
             const searchTerm = ref('')
@@ -66,15 +93,43 @@
                 selectedPersona,
                 selectedPersonaId,
                 searchTerm,
-                personaList,
             }
         },
     })
 </script>
 
-<style scoped>
-    .scroll-container {
-        @apply overflow-y-auto;
-        height: calc(100vh - 8.5rem);
+<style lang="less" module>
+    .sidebar {
+        &:global(.ant-menu-root) {
+            @apply bg-transparent;
+        }
+
+        &:global(.ant-menu-inline) {
+            @apply border-none !important;
+        }
+
+        :global(.ant-menu-item-group-title) {
+            @apply px-0;
+        }
+
+        :global(.ant-menu-item) {
+            height: 32px;
+            line-height: 32px;
+            @apply my-1 text-gray !important;
+        }
+
+        :global(.ant-menu-item-active) {
+            @apply bg-gray-light !important;
+        }
+
+        :global(.ant-menu-item::after) {
+            @apply border-none !important;
+        }
+
+        :global(.ant-menu-item-selected) {
+            @apply rounded !important;
+            @apply bg-gray-200 !important;
+            @apply font-bold;
+        }
     }
 </style>

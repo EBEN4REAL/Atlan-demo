@@ -50,7 +50,7 @@
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen pt-6 pl-12 pr-6 overflow-y-auto">
+        <div class="w-4/5 max-h-screen overflow-y-auto">
             <router-view></router-view>
         </div>
     </div>

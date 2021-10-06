@@ -3,8 +3,8 @@
         <aside
             class="flex flex-col w-1/4 h-full px-4 pt-6 overflow-y-hidden bg-gray-100 "
         >
-            <div class="flex items-center justify-between">
-                <span class="mb-2 text-2xl">{{ title }}</span>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-2xl">{{ title }}</span>
                 <slot name="action"></slot>
             </div>
             <span v-if="subTitle" class="mb-0 text-sm text-gray">{{
@@ -13,7 +13,9 @@
             <slot name="sidebar"></slot>
         </aside>
 
-        <div class="flex flex-col w-3/4 h-full px-4 pb-4 overflow-y-hidden">
+        <div
+            class="flex flex-col w-3/4 h-full px-4 pt-6 pb-4 overflow-y-hidden"
+        >
             <slot></slot>
         </div>
     </div>

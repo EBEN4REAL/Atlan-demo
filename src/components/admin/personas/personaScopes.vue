@@ -1,6 +1,6 @@
 <template>
     <template v-if="selectedPersona">
-        <span class="pb-2 text-xl pt-7 text-gray">Scopes</span>
+        <span class="pb-2 text-xl text-gray">Scopes</span>
         <div class="py-2 overflow-y-auto">
             <div class="mb-3" v-for="scope in scopeList">
                 <span class="block mb-1 text-base text-gray-500 capitalize">{{

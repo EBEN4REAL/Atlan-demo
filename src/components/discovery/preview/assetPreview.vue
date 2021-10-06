@@ -33,7 +33,11 @@
                             :mouse-enter-delay="0.5"
                             title="Open profile"
                         >
-                            <a-button class="w-8 h-8" size="small">
+                            <a-button
+                                class="w-8 h-8"
+                                size="small"
+                                @click="handleOpenProfile"
+                            >
                                 <AtlanIcon icon="External" /> </a-button
                         ></a-tooltip>
                         <!-- <a-button class="w-8 h-8" size="small">
@@ -136,6 +140,8 @@
         computed,
         provide,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+
     import Tooltip from '@common/ellipsis/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
@@ -145,7 +151,6 @@
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
-    import { useMagicKeys } from '@vueuse/core'
     import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
@@ -201,6 +206,7 @@
                 useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
+            const router = useRouter()
 
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
@@ -245,6 +251,13 @@
                     copyToClipboard(text)
                 }
             }
+            const handleOpenProfile = () => {
+                if (isColumnAsset(selectedAsset.value)) {
+                    router.push(`/${getColumnUrl(selectedAsset.value)}`)
+                } else {
+                    router.push(`/assets/${selectedAsset.value.guid}/overview`)
+                }
+            }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
                 emit('assetMutation', updatedAsset)
@@ -287,6 +300,7 @@
                 isColumnAsset,
                 getColumnUrl,
                 handleCopyProfileLink,
+                handleOpenProfile,
             }
         },
     })

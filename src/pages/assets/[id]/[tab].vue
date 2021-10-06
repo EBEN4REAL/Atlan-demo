@@ -7,11 +7,36 @@
             <Header />
 
             <a-tabs
+                v-if="assetType(data.asset).includes('Tableau')"
                 :active-key="activeKey"
                 :class="$style.profiletab"
-                @change="selectTab($event)"
+                @change="selectBiTab($event)"
             >
-                <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
+                <a-tab-pane v-for="tab in biTabs" :key="tab.id" :tab="tab.name">
+                    <component
+                        class="bg-transparent"
+                        :is="tab.component"
+                        :key="activeKey || id"
+                        :ref="
+                            (el) => {
+                                refs[tab.id] = el
+                            }
+                        "
+                        @preview="handlePreview"
+                    ></component>
+                </a-tab-pane>
+            </a-tabs>
+            <a-tabs
+                v-else
+                :active-key="activeKey"
+                :class="$style.profiletab"
+                @change="selectNonBiTab($event)"
+            >
+                <a-tab-pane
+                    v-for="tab in nonBiTabs"
+                    :key="tab.id"
+                    :tab="tab.name"
+                >
                     <component
                         class="bg-transparent"
                         :is="tab.component"
@@ -50,6 +75,7 @@
     // Composables
     import useAsset from '~/composables/asset/useAsset'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -73,7 +99,7 @@
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
-            const tabs = [
+            const biTabs = [
                 {
                     id: 1,
                     name: 'Overview',
@@ -84,12 +110,32 @@
                     name: 'Lineage',
                     component: 'lineage',
                 },
-                /*  {
+                /* {
                     id: 3,
                     name: 'Settings',
                     component: 'settings',
                 }, */
             ]
+
+            const nonBiTabs = [
+                {
+                    id: 1,
+                    name: 'Overview',
+                    component: 'overview',
+                },
+                {
+                    id: 2,
+                    name: 'Lineage',
+                    component: 'lineage',
+                },
+                {
+                    id: 3,
+                    name: 'Columns',
+                    component: 'columns',
+                },
+            ]
+
+            const { assetType } = useAssetInfo()
 
             /** UTILS */
             const router = useRouter()
@@ -100,9 +146,16 @@
 
             /** METHODS */
             // selectTab
-            const selectTab = (val: number) => {
+            const selectBiTab = (val: number) => {
                 activeKey.value = val
-                const selectedTab = tabs.find((i) => i.id === val)
+                const selectedTab = biTabs.find((i) => i.id === val)
+                router.replace(
+                    `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
+                )
+            }
+            const selectNonBiTab = (val: number) => {
+                activeKey.value = val
+                const selectedTab = nonBiTabs.find((i) => i.id === val)
                 router.replace(
                     `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
@@ -140,7 +193,7 @@
 
                 const tab = route?.params?.tab
                 if (!tab) return
-                const currTab = tabs.find(
+                const currTab = nonBiTabs.find(
                     (i) => i.name.toLowerCase() === tab.toLowerCase()
                 )
                 activeKey.value = currTab.id
@@ -160,11 +213,14 @@
             return {
                 id,
                 activeKey,
-                tabs,
+                nonBiTabs,
+                biTabs,
                 handlePreview,
                 refs,
+                assetType,
                 data,
-                selectTab,
+                selectBiTab,
+                selectNonBiTab,
             }
         },
     })

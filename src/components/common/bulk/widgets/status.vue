@@ -157,7 +157,7 @@ export default defineComponent({
                     existingStatus.value[Object.keys(existingStatus.value)[0]]
             else assetStatus.value = ''
         }
-        // initialising assetStatus if status of all selected assets is same
+        // initialising assetStatus to find if status of all selected assets is same
         watch(existingStatus, initialiseAssetStatus, {
             immediate: true,
             deep: true,
@@ -177,7 +177,7 @@ export default defineComponent({
             showPopover.value = false
         }
         const handleCancel = () => {
-            assetStatus.value = ''
+            initialiseAssetStatus()
             statusMessage.value = ''
             showPopover.value = false
         }

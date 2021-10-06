@@ -16,8 +16,8 @@
             >
                 <template #pillPrefix="{ item }">
                     <avatar
-                        class="-ml-2.5"
                         v-if="item && item.type === 'user'"
+                        class="-ml-2.5"
                         :image-url="
                             KeyMaps.auth.avatar.GET_AVATAR({
                                 username: item.username,
@@ -60,7 +60,6 @@
                 </template>
             </PillGroup>
         </div>
-
         <a-popover
             v-model:visible="showOwnersDropdown"
             placement="left"
@@ -69,8 +68,8 @@
         >
             <span
                 v-if="ownerUsers.length < 1 && ownerGroups.length < 1"
-                @click.stop="toggleOwnerPopover"
                 class="text-xs cursor-pointer text-primary hover:underline"
+                @click.stop="toggleOwnerPopover"
                 >Add owners</span
             >
             <template #content>
@@ -96,24 +95,24 @@
                         </SearchAndFilter>
                         <a-button-group>
                             <a-button
-                                @click="setActiveTab('users')"
                                 :class="
                                     activeOwnerTabKey === 'users'
                                         ? 'text-primary'
                                         : ''
                                 "
+                                @click="setActiveTab('users')"
                             >
                                 <template #icon
                                     ><AtlanIcon icon="User" class="mx-auto"
                                 /></template>
                             </a-button>
                             <a-button
-                                @click="setActiveTab('groups')"
                                 :class="
                                     activeOwnerTabKey === 'groups'
                                         ? 'text-primary'
                                         : ''
                                 "
+                                @click="setActiveTab('groups')"
                                 ><template #icon
                                     ><AtlanIcon
                                         icon="GroupStatic"
@@ -137,12 +136,12 @@
                                             v-if="item.username"
                                             :value="item.username"
                                             class="w-full mb-3"
-                                            @change="onSelectUser"
                                             :checked="
                                                 selectedUsers.includes(
                                                     item.username
                                                 )
                                             "
+                                            @change="onSelectUser"
                                         >
                                             <div
                                                 v-if="
@@ -201,12 +200,12 @@
                                             :key="item.name"
                                             :value="item.name"
                                             class="mb-3 capitalize"
-                                            @change="onSelectGroup"
                                             :checked="
                                                 selectedGroups.includes(
                                                     item.name
                                                 )
                                             "
+                                            @change="onSelectGroup"
                                         >
                                             {{ item.name }}
                                         </a-checkbox>
@@ -266,7 +265,6 @@
                 </div>
             </template>
         </a-popover>
-
         <!-- <div
             v-else
             class="flex items-center justify-center mt-4 text-sm leading-none"
@@ -278,412 +276,408 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        toRefs,
-        watch,
-    } from 'vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
-    import updateOwners from '~/composables/asset/updateOwners'
-    import fetchGroupList from '~/composables/group/fetchGroupList'
-    import fetchUserList from '~/composables/user/fetchUserList'
-    import PillGroup from '~/components/UI/pill/pillGroup.vue'
+import {
+    computed,
+    defineComponent,
+    PropType,
+    ref,
+    Ref,
+    toRefs,
+    watch,
+} from 'vue'
+import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
+import updateOwners from '~/composables/asset/updateOwners'
+import fetchGroupList from '~/composables/group/fetchGroupList'
+import fetchUserList from '~/composables/user/fetchUserList'
+import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import { groupInterface } from '~/types/groups/group.interface'
-    import { userInterface } from '~/types/users/user.interface'
-    import emptyScreen from '~/assets/images/empty_search.png'
-    import whoami from '~/composables/user/whoami'
-    import Avatar from '~/components/common/avatar.vue'
-    import { KeyMaps } from '~/api/keyMap'
+import { useUserPreview } from '~/composables/user/showUserPreview'
+import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
+import { assetInterface } from '~/types/assets/asset.interface'
+import { groupInterface } from '~/types/groups/group.interface'
+import { userInterface } from '~/types/users/user.interface'
+import emptyScreen from '~/assets/images/empty_search.png'
+import whoami from '~/composables/user/whoami'
+import Avatar from '~/components/common/avatar.vue'
+import { KeyMaps } from '~/api/keyMap'
 
-    export default defineComponent({
-        components: { OwnerInfoCard, SearchAndFilter, PillGroup, Avatar },
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
+export default defineComponent({
+    components: { OwnerInfoCard, SearchAndFilter, PillGroup, Avatar },
+    props: {
+        selectedAsset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-        emits: ['update:selectedAsset'],
-        setup(props, { emit }) {
-            const { selectedAsset } = toRefs(props)
-            const { username: myUsername, name: myName } = whoami()
-            const showOwnersDropdown: Ref<boolean> = ref(false)
-            const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
-            const selectedUsers: Ref<string[]> = ref([])
-            const selectedGroups: Ref<string[]> = ref([])
-            const searchText: Ref<string> = ref('')
-            const showAll = ref(false)
-            const userList: Ref<userInterface[]> = ref([])
-            const groupList: Ref<groupInterface[]> = ref([])
-            const ownersFilterOptionsData = ref('asc')
+    },
+    emits: ['update:selectedAsset'],
+    setup(props, { emit }) {
+        const { selectedAsset } = toRefs(props)
+        const { username: myUsername, name: myName } = whoami()
+        const showOwnersDropdown: Ref<boolean> = ref(false)
+        const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
+        const selectedUsers: Ref<string[]> = ref([])
+        const selectedGroups: Ref<string[]> = ref([])
+        const searchText: Ref<string> = ref('')
+        const showAll = ref(false)
+        const userList: Ref<userInterface[]> = ref([])
+        const groupList: Ref<groupInterface[]> = ref([])
+        const ownersFilterOptionsData = ref('asc')
 
-            const {
-                list: listUsers,
-                state: userOwnerState,
-                STATES,
-                mutate: mutateUsers,
-                handleSearch: handleUserSearch,
-            } = fetchUserList(false)
+        const {
+            list: listUsers,
+            state: userOwnerState,
+            STATES,
+            mutate: mutateUsers,
+            handleSearch: handleUserSearch,
+        } = fetchUserList(false)
 
-            const {
-                list: listGroups,
-                handleSearch: handleGroupSearch,
-                state: groupOwnerState,
-                mutate: mutateGroups,
-            } = fetchGroupList(false)
+        const {
+            list: listGroups,
+            handleSearch: handleGroupSearch,
+            state: groupOwnerState,
+            mutate: mutateGroups,
+        } = fetchGroupList(false)
 
-            function sortClassificationsByOrder(
-                sortingOrder: string,
-                data: Ref<userInterface[] | groupInterface[]>,
-                key: string
-            ) {
-                switch (sortingOrder) {
-                    case 'asc': {
-                        let modifiedData: userInterface[] = []
-                        if (data?.value) {
-                            modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key].toLowerCase()
-                                const b = dataB[key].toLowerCase()
-                                if (a < b) {
-                                    return -1
-                                }
-                                if (a > b) {
-                                    return 1
-                                }
-                                return 0
-                            })
-                        }
-                        return modifiedData
+        function sortClassificationsByOrder(
+            sortingOrder: string,
+            data: Ref<userInterface[] | groupInterface[]>,
+            key: string
+        ) {
+            switch (sortingOrder) {
+                case 'asc': {
+                    let modifiedData: userInterface[] = []
+                    if (data?.value) {
+                        modifiedData = data.value.sort((dataA, dataB) => {
+                            const a = dataA[key].toLowerCase()
+                            const b = dataB[key].toLowerCase()
+                            if (a < b) {
+                                return -1
+                            }
+                            if (a > b) {
+                                return 1
+                            }
+                            return 0
+                        })
                     }
-                    case 'dsc': {
-                        let modifiedData: groupInterface[] = []
-                        if (data?.value) {
-                            modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key].toLowerCase()
-                                const b = dataB[key].toLowerCase()
-                                if (a < b) {
-                                    return 1
-                                }
-                                if (a > b) {
-                                    return -1
-                                }
-                                return 0
-                            })
-                        }
-
-                        return modifiedData
+                    return modifiedData
+                }
+                case 'dsc': {
+                    let modifiedData: groupInterface[] = []
+                    if (data?.value) {
+                        modifiedData = data.value.sort((dataA, dataB) => {
+                            const a = dataA[key].toLowerCase()
+                            const b = dataB[key].toLowerCase()
+                            if (a < b) {
+                                return 1
+                            }
+                            if (a > b) {
+                                return -1
+                            }
+                            return 0
+                        })
                     }
+
+                    return modifiedData
                 }
             }
+        }
 
-            watch(
-                [listUsers, listGroups],
-                () => {
-                    userList.value = sortClassificationsByOrder(
-                        ownersFilterOptionsData.value,
-                        listUsers,
-                        'username'
-                    )
-                    // removing own username from list
-                    let ownUserObj: userInterface = {}
-                    userList.value = userList.value.filter((user) => {
-                        if (user.username === myUsername.value) {
-                            ownUserObj = user
-                        }
-                        return user.username !== myUsername.value
-                    })
-                    if (Object.keys(ownUserObj).length > 0) {
-                        userList.value = [ownUserObj, ...userList.value]
-                    } else {
-                        userList.value = [...userList.value]
+        watch(
+            [listUsers, listGroups],
+            () => {
+                userList.value = sortClassificationsByOrder(
+                    ownersFilterOptionsData.value,
+                    listUsers,
+                    'username'
+                )
+                // removing own username from list
+                let ownUserObj: userInterface = {}
+                userList.value = userList.value.filter((user) => {
+                    if (user.username === myUsername.value) {
+                        ownUserObj = user
                     }
-                    groupList.value = sortClassificationsByOrder(
-                        ownersFilterOptionsData.value,
-                        listGroups,
-                        'name'
-                    )
-                },
-                {
-                    immediate: true,
-                }
-            )
-
-            const onSelectUser = (event) => {
-                if (
-                    event.target.checked &&
-                    !selectedUsers.value.includes(event.target.value)
-                ) {
-                    selectedUsers.value.push(event.target.value)
-                } else if (!event.target.checked) {
-                    const index = selectedUsers.value.indexOf(
-                        event.target.value
-                    )
-                    if (index > -1) {
-                        selectedUsers.value.splice(index, 1)
-                    }
-                }
-            }
-            const onSelectGroup = (event) => {
-                if (
-                    event.target.checked &&
-                    !selectedGroups.value.includes(event.target.value)
-                ) {
-                    selectedGroups.value.push(event.target.value)
-                } else if (!event.target.checked) {
-                    const index = selectedGroups.value.indexOf(
-                        event.target.value
-                    )
-                    if (index > -1) {
-                        selectedGroups.value.splice(index, 1)
-                    }
-                }
-            }
-
-            // user preview drawer
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const { showGroupPreview, setGroupUniqueAttribute } =
-                useGroupPreview()
-            const handleClickUser = (item) => {
-                if (item.type === 'user') {
-                    setUserUniqueAttribute(item.username, 'username')
-                    showUserPreview({ allowed: ['about'] })
-                }
-                if (item.type === 'group') {
-                    setGroupUniqueAttribute(item.name, 'groupAlias')
-                    showGroupPreview({ allowed: ['about'] })
-                }
-            }
-
-            const {
-                update,
-                ownerUsers,
-                isLoading: isOwnersLoading,
-                ownerGroups,
-            } = updateOwners(selectedAsset)
-
-            const handleUpdateOwners = () => {
-                console.log(selectedUsers.value, selectedGroups.value)
-                update(selectedUsers.value, selectedGroups.value)
-            }
-            const handleCancelUpdateOwnerPopover = () => {
-                showOwnersDropdown.value = false
-            }
-
-            function splitArray(sizeofSplit: number, arr: any[]) {
-                if (sizeofSplit >= arr.length) {
-                    return {
-                        a: [...arr],
-                        b: [],
-                    }
-                }
-                const a: any[] = arr.slice(0, sizeofSplit)
-                const b: any[] = arr.slice(sizeofSplit, arr.length)
-                return {
-                    a,
-                    b,
-                }
-            }
-            function isOwner(username: string, owners: string[]) {
-                return owners.includes(username)
-            }
-            function mappedSplittedOwners(ownerUsers, ownerGroups) {
-                let splittedOwners = []
-                let temp = ownerUsers.value.map((username: string) => ({
-                    type: 'user',
-                    username,
-                }))
-                splittedOwners = temp
-                temp = ownerGroups.value.map((name: string) => ({
-                    type: 'group',
-                    username: name,
-                }))
-                splittedOwners = [...splittedOwners, ...temp]
-                console.log(splittedOwners, 'spilltedOwners')
-                return splittedOwners
-            }
-
-            const splittedOwners = ref(
-                splitArray(5, mappedSplittedOwners(ownerUsers, ownerGroups))
-            )
-
-            const ownerList = computed(() =>
-                showAll.value
-                    ? [...splittedOwners.value.a, ...splittedOwners.value.b]
-                    : splittedOwners.value.a
-            )
-
-            const closePopover = () => {
-                showOwnersDropdown.value = false
-            }
-
-            const clearSelectedOwners = () => {
-                if (activeOwnerTabKey.value === 'users') {
-                    selectedUsers.value = []
-                } else if (activeOwnerTabKey.value === 'groups') {
-                    // for groups
-                    selectedGroups.value = []
-                }
-            }
-            console.log(ownerUsers, 'ownersUsers')
-            console.log(selectedGroups, 'selectedGroups')
-
-            watch(
-                [ownerUsers, ownerGroups],
-                () => {
-                    console.log('owners changed', ownerUsers.value)
-                    selectedUsers.value = [...ownerUsers.value]
-                    selectedGroups.value = [...ownerGroups.value]
-                    splittedOwners.value = splitArray(
-                        5,
-                        mappedSplittedOwners(ownerUsers, ownerGroups)
-                    )
-                    emit('update:selectedAsset', selectedAsset.value)
-                },
-                {
-                    immediate: true,
-                }
-            )
-
-            const handleOwnerSearch = (e: Event) => {
-                if (activeOwnerTabKey.value === 'users') {
-                    handleUserSearch(searchText.value)
-                } else if (activeOwnerTabKey.value === 'groups') {
-                    handleGroupSearch(searchText.value)
-                }
-            }
-            const toggleOwnerPopover = () => {
-                showOwnersDropdown.value = !showOwnersDropdown.value
-                if (
-                    !searchText.value &&
-                    (!listUsers.value.length || !listGroups.value.length)
-                ) {
-                    mutateUsers()
-                    mutateGroups()
-                }
-            }
-            const toggleAllOwners = () => {
-                showAll.value = !showAll.value
-            }
-
-            const handleRemoveOwner = (owner: {
-                username: string
-                type: string
-            }) => {
-                if (owner.type === 'user') {
-                    const filteredOwnerUsers = ownerUsers.value.filter(
-                        (username) => username !== owner.username
-                    )
-                    selectedUsers.value = filteredOwnerUsers
-                    console.log(ownerUsers.value, 'delete', filteredOwnerUsers)
+                    return user.username !== myUsername.value
+                })
+                if (Object.keys(ownUserObj).length > 0) {
+                    userList.value = [ownUserObj, ...userList.value]
                 } else {
-                    const filteredOwnerGroups = ownerGroups.value.filter(
-                        (name) => name !== owner.username
-                    )
-                    selectedGroups.value = filteredOwnerGroups
+                    userList.value = [...userList.value]
                 }
-                update(selectedUsers.value, selectedGroups.value)
+                groupList.value = sortClassificationsByOrder(
+                    ownersFilterOptionsData.value,
+                    listGroups,
+                    'name'
+                )
+            },
+            {
+                immediate: true,
             }
-            // closing the popover on making the req successfully
-            watch(isOwnersLoading, () => {
-                if (!isOwnersLoading.value) showOwnersDropdown.value = false
-            })
+        )
 
-            function setActiveTab(tabName: 'users' | 'groups') {
-                activeOwnerTabKey.value = tabName
+        const onSelectUser = (event) => {
+            if (
+                event.target.checked &&
+                !selectedUsers.value.includes(event.target.value)
+            ) {
+                selectedUsers.value.push(event.target.value)
+            } else if (!event.target.checked) {
+                const index = selectedUsers.value.indexOf(event.target.value)
+                if (index > -1) {
+                    selectedUsers.value.splice(index, 1)
+                }
             }
+        }
+        const onSelectGroup = (event) => {
+            if (
+                event.target.checked &&
+                !selectedGroups.value.includes(event.target.value)
+            ) {
+                selectedGroups.value.push(event.target.value)
+            } else if (!event.target.checked) {
+                const index = selectedGroups.value.indexOf(event.target.value)
+                if (index > -1) {
+                    selectedGroups.value.splice(index, 1)
+                }
+            }
+        }
 
+        // user preview drawer
+        const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+        const { showGroupPreview, setGroupUniqueAttribute } = useGroupPreview()
+        const handleClickUser = (item) => {
+            if (item.type === 'user') {
+                setUserUniqueAttribute(item.username, 'username')
+                showUserPreview({ allowed: ['about'] })
+            }
+            if (item.type === 'group') {
+                setGroupUniqueAttribute(item.name, 'groupAlias')
+                showGroupPreview({ allowed: ['about'] })
+            }
+        }
+
+        const {
+            update,
+            ownerUsers,
+            isLoading: isOwnersLoading,
+            ownerGroups,
+        } = updateOwners(selectedAsset)
+
+        const handleUpdateOwners = () => {
+            console.log(selectedUsers.value, selectedGroups.value)
+            update(selectedUsers.value, selectedGroups.value)
+        }
+        const handleCancelUpdateOwnerPopover = () => {
+            showOwnersDropdown.value = false
+        }
+
+        function splitArray(sizeofSplit: number, arr: any[]) {
+            if (sizeofSplit >= arr.length) {
+                return {
+                    a: [...arr],
+                    b: [],
+                }
+            }
+            const a: any[] = arr.slice(0, sizeofSplit)
+            const b: any[] = arr.slice(sizeofSplit, arr.length)
             return {
-                myUsername,
-                showAll,
-                toggleAllOwners,
-                userOwnerState,
-                searchText,
-                STATES,
-                groupOwnerState,
-                handleOwnerSearch,
-                handleUpdateOwners,
-                clearSelectedOwners,
-                selectedGroups,
-                selectedUsers,
-                isOwnersLoading,
-                closePopover,
-                activeOwnerTabKey,
-                isOwner,
-                splittedOwners,
-                ownerUsers,
-                ownerGroups,
-                handleClickUser,
-                onSelectGroup,
-                onSelectUser,
-                listUsers,
-                listGroups,
-                userList,
-                groupList,
-                showOwnersDropdown,
-                toggleOwnerPopover,
-                selectedAsset,
-                handleRemoveOwner,
-                handleCancelUpdateOwnerPopover,
-                ownerList,
-                KeyMaps,
-                setActiveTab,
+                a,
+                b,
             }
-        },
-    })
+        }
+        function isOwner(username: string, owners: string[]) {
+            return owners.includes(username)
+        }
+        function mappedSplittedOwners(ownerUsers, ownerGroups) {
+            let splittedOwners = []
+            let temp = ownerUsers.value.map((username: string) => ({
+                type: 'user',
+                username,
+            }))
+            splittedOwners = temp
+            temp = ownerGroups.value.map((name: string) => ({
+                type: 'group',
+                username: name,
+            }))
+            splittedOwners = [...splittedOwners, ...temp]
+            console.log(splittedOwners, 'spilltedOwners')
+            return splittedOwners
+        }
+
+        const splittedOwners = ref(
+            splitArray(5, mappedSplittedOwners(ownerUsers, ownerGroups))
+        )
+
+        const ownerList = computed(() =>
+            showAll.value
+                ? [...splittedOwners.value.a, ...splittedOwners.value.b]
+                : splittedOwners.value.a
+        )
+
+        const closePopover = () => {
+            showOwnersDropdown.value = false
+        }
+
+        const clearSelectedOwners = () => {
+            if (activeOwnerTabKey.value === 'users') {
+                selectedUsers.value = []
+            } else if (activeOwnerTabKey.value === 'groups') {
+                // for groups
+                selectedGroups.value = []
+            }
+        }
+        console.log(ownerUsers, 'ownersUsers')
+        console.log(selectedGroups, 'selectedGroups')
+
+        watch(
+            [ownerUsers, ownerGroups],
+            () => {
+                console.log('owners changed', ownerUsers.value)
+                selectedUsers.value = [...ownerUsers.value]
+                selectedGroups.value = [...ownerGroups.value]
+                splittedOwners.value = splitArray(
+                    5,
+                    mappedSplittedOwners(ownerUsers, ownerGroups)
+                )
+                emit('update:selectedAsset', selectedAsset.value)
+            },
+            {
+                immediate: true,
+            }
+        )
+
+        const handleOwnerSearch = (e: Event) => {
+            if (activeOwnerTabKey.value === 'users') {
+                handleUserSearch(searchText.value)
+            } else if (activeOwnerTabKey.value === 'groups') {
+                handleGroupSearch(searchText.value)
+            }
+        }
+        const toggleOwnerPopover = () => {
+            showOwnersDropdown.value = !showOwnersDropdown.value
+            if (
+                !searchText.value &&
+                (!listUsers?.value?.length || !listGroups?.value?.length)
+            ) {
+                mutateUsers()
+                mutateGroups()
+            }
+        }
+        const toggleAllOwners = () => {
+            showAll.value = !showAll.value
+        }
+
+        const handleRemoveOwner = (owner: {
+            username: string
+            type: string
+        }) => {
+            if (owner.type === 'user') {
+                const filteredOwnerUsers = ownerUsers.value.filter(
+                    (username) => username !== owner.username
+                )
+                selectedUsers.value = filteredOwnerUsers
+                console.log(ownerUsers.value, 'delete', filteredOwnerUsers)
+            } else {
+                const filteredOwnerGroups = ownerGroups.value.filter(
+                    (name) => name !== owner.username
+                )
+                selectedGroups.value = filteredOwnerGroups
+            }
+            update(selectedUsers.value, selectedGroups.value)
+        }
+        // closing the popover on making the req successfully
+        watch(isOwnersLoading, () => {
+            if (!isOwnersLoading.value) showOwnersDropdown.value = false
+        })
+
+        function setActiveTab(tabName: 'users' | 'groups') {
+            activeOwnerTabKey.value = tabName
+        }
+
+        return {
+            myUsername,
+            showAll,
+            toggleAllOwners,
+            userOwnerState,
+            searchText,
+            STATES,
+            groupOwnerState,
+            handleOwnerSearch,
+            handleUpdateOwners,
+            clearSelectedOwners,
+            selectedGroups,
+            selectedUsers,
+            isOwnersLoading,
+            closePopover,
+            activeOwnerTabKey,
+            isOwner,
+            splittedOwners,
+            ownerUsers,
+            ownerGroups,
+            handleClickUser,
+            onSelectGroup,
+            onSelectUser,
+            listUsers,
+            listGroups,
+            userList,
+            groupList,
+            showOwnersDropdown,
+            toggleOwnerPopover,
+            selectedAsset,
+            handleRemoveOwner,
+            handleCancelUpdateOwnerPopover,
+            ownerList,
+            KeyMaps,
+            setActiveTab,
+            emptyScreen,
+        }
+    },
+})
 </script>
 <style lang="less" scoped>
-    .bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .hoverbg-primary-light:hover {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .owners-cross-btn {
-        right: 6px;
-        height: 100%;
-        @apply -top-0;
-        background: linear-gradient(
-            -90deg,
-            rgba(82, 119, 215, 1) 60%,
-            rgba(0, 0, 0, 0) 100%
-        );
-    }
-    .owner-child {
-        margin-top: 0.3rem;
-        margin-bottom: 0.3rem;
-    }
-    .max-owner-name-width {
-        max-width: 10rem;
-    }
-    // .owner-child:nth-child(2) {
-    //     margin-top: 0.3rem;
-    //     margin-bottom: 0.3rem;
-    // }
-    .chip {
-        @apply px-1 pt-1 pb-1 mx-1;
-        @apply rounded;
-        @apply tracking-wide;
-        @apply text-xs;
-        @apply text-primary;
-        @apply bg-primary-light;
-    }
+.bg-primary-light {
+    background: rgba(34, 81, 204, 0.05);
+}
+.hoverbg-primary-light:hover {
+    background: rgba(34, 81, 204, 0.05);
+}
+.owners-cross-btn {
+    right: 6px;
+    height: 100%;
+    @apply -top-0;
+    background: linear-gradient(
+        -90deg,
+        rgba(82, 119, 215, 1) 60%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+.owner-child {
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+.max-owner-name-width {
+    max-width: 10rem;
+}
+// .owner-child:nth-child(2) {
+//     margin-top: 0.3rem;
+//     margin-bottom: 0.3rem;
+// }
+.chip {
+    @apply px-1 pt-1 pb-1 mx-1;
+    @apply rounded;
+    @apply tracking-wide;
+    @apply text-xs;
+    @apply text-primary;
+    @apply bg-primary-light;
+}
 </style>
 <style lang="less" module>
-    .previewtab {
-        :global(.ant-tabs-tab) {
-            @apply pb-3 px-1;
-            @apply mr-4;
-            @apply text-gray-500;
-            @apply text-xs;
-        }
+.previewtab {
+    :global(.ant-tabs-tab) {
+        @apply pb-3 px-1;
+        @apply mr-4;
+        @apply text-gray-500;
+        @apply text-xs;
     }
+}
 </style>

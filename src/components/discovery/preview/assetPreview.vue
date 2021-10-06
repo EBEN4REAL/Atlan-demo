@@ -17,16 +17,28 @@
 
                 <div class="flex space-x-2">
                     <a-button-group>
-                        <a-button class="w-8 h-8" size="small"
-                            ><AtlanIcon icon="Share"
-                        /></a-button>
-
-                        <a-button class="w-8 h-8" size="small">
-                            <AtlanIcon icon="External" />
-                        </a-button>
-                        <a-button class="w-8 h-8" size="small">
+                        <a-tooltip
+                            placement="left"
+                            :mouse-enter-delay="0.5"
+                            title="Copy asset profile link"
+                        >
+                            <a-button
+                                class="w-8 h-8"
+                                size="small"
+                                @click="handleCopyProfileLink"
+                                ><AtlanIcon icon="Share" /></a-button
+                        ></a-tooltip>
+                        <a-tooltip
+                            placement="bottom"
+                            :mouse-enter-delay="0.5"
+                            title="Open profile"
+                        >
+                            <a-button class="w-8 h-8" size="small">
+                                <AtlanIcon icon="External" /> </a-button
+                        ></a-tooltip>
+                        <!-- <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="Bookmark" />
-                        </a-button>
+                        </a-button> -->
                     </a-button-group>
                 </div>
             </div>
@@ -134,6 +146,7 @@
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
     import { useMagicKeys } from '@vueuse/core'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -217,7 +230,20 @@
 
             const getColumnUrl = (asset) => {
                 const tableGuid = asset.attributes?.table?.guid
-                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+                return `assets/${tableGuid}/overview?column=${asset?.guid}`
+            }
+
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                if (isColumnAsset(selectedAsset.value)) {
+                    const text = `${baseUrl}/${getColumnUrl(
+                        selectedAsset.value
+                    )}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/assets/${selectedAsset.value.guid}/overview`
+                    copyToClipboard(text)
+                }
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -260,6 +286,7 @@
                 getDataType,
                 isColumnAsset,
                 getColumnUrl,
+                handleCopyProfileLink,
             }
         },
     })

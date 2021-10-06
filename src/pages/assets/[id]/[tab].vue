@@ -66,16 +66,13 @@
                 () => import('@/asset/assetProfile/tabs/settings/index.vue')
             ),
         },
-        props: {
-            updateProfile: { type: Boolean, required: true },
-        },
+
         emits: ['preview'],
         setup(props, context) {
             /** DATA */
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
-            const { updateProfile } = toRefs(props)
             const tabs = [
                 {
                     id: 1,
@@ -153,7 +150,6 @@
             watch(id, () => {
                 if (id.value) fetch()
             })
-            watch(updateProfile, () => fetch())
             watch(BMListLoaded, (v: boolean) => {
                 if (v) fetch()
             })

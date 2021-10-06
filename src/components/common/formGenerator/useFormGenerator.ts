@@ -1,6 +1,5 @@
 /* eslint-disable no-prototype-builtins */
 import { ref, Ref, watch, computed } from 'vue'
-import dayjs from 'dayjs'
 
 
 export default function useFormGenerator(formConfig, formRef) {
@@ -19,13 +18,6 @@ export default function useFormGenerator(formConfig, formRef) {
       schema.isVisible = true
     if (!schema.hasOwnProperty('rules'))
       schema.rules = []
-    // if (schema.type === 'date') {
-    //   if (schema.hasOwnProperty('default')) {
-    //     schema.default = dayjs(schema.default, 'MM-DD-YYYY').toDate()
-    //     // schema.value = dayjs(schema.default, 'MM-DD-YYYY').toDate()
-    //     console.log("HASHHHHHHHH", schema.default);
-    //   }
-    // }
 
     falseDefault.forEach(d => {
       if (!s.hasOwnProperty(d))
@@ -155,7 +147,7 @@ export default function useFormGenerator(formConfig, formRef) {
         finalString += getValueFromSchemaData(pp[0]) + pp[1]
       }
     })
-    // console.log('generateSring', s, finalString)
+
     return finalString
   }
 
@@ -216,7 +208,6 @@ export default function useFormGenerator(formConfig, formRef) {
   // rules
   //* get rule object based on antDesign rules guide
   const getRule = (raw) => {
-    console.log({ raw })
     const r = {};
     // eslint-disable-next-line no-prototype-builtins
     if (!raw.enabled) return false;
@@ -248,7 +239,6 @@ export default function useFormGenerator(formConfig, formRef) {
         })
       }
     })
-    console.log(rulesObj)
     return rulesObj;
   }
 

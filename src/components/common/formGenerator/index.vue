@@ -112,12 +112,17 @@
     import { defineComponent, reactive, ref, watch, computed } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import useFormGenerator from './useFormGenerator'
-    import config from './config.json'
 
     export default defineComponent({
         name: 'FormBuilder',
         components: { DynamicInput, CustomRadioButton },
-
+        props: {
+            config: {
+                required: true,
+                type: Array,
+                default: () => [],
+            },
+        },
         setup() {
             const formRef = ref()
 

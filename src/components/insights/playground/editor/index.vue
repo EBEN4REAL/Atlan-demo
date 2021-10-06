@@ -12,48 +12,109 @@
                     </div>
                     <div class="flex items-center">
                         <div
-                            class="items-center justify-center px-1 mx-4 rounded cursor-pointer  hover:bg-gray-300"
+                            class="items-center justify-center px-1 ml-4 rounded cursor-pointer  hover:bg-gray-300"
                             :class="showcustomToolBar ? 'bg-gray-300' : ''"
                             @click="toggleCustomToolbar"
                         >
                             {&nbsp;}
                         </div>
+                        <div
+                            class="
+                                items-center
+                                justify-center
+                                px-1
+                                ml-2
+                                py-0.5
+                                -mt-0.5
+                                rounded
+                                cursor-pointer
+                                hover:bg-gray-300
+                                group
+                            "
+                            @click="formatDocument"
+                        >
+                            <AtlanIcon icon="Readme" class="w-5 h-5" />
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center">
                     <div class="flex mr-4 text-sm">
-                        <a-button @click="formatDocument">Format</a-button>
+                        <div class="flex">
+                            <a-button
+                                type="primary"
+                                class="
+                                    flex
+                                    items-center
+                                    py-0.5
+                                    h-6
+                                    rounded-none rounded-tl rounded-bl
+                                "
+                                :class="
+                                    isQueryRunning === 'loading'
+                                        ? 'px-4.5 pr-3.5'
+                                        : 'px-2 pr-1'
+                                "
+                                :loading="
+                                    isQueryRunning === 'loading' ? true : false
+                                "
+                                @click="run"
+                            >
+                                <template #icon>
+                                    <AtlanIcon
+                                        class="mr-1 text-white"
+                                        icon="Play"
+                                    />
+                                </template>
+                                Run</a-button
+                            >
+                            <a-dropdown :trigger="['click']">
+                                <a-button
+                                    type="primary"
+                                    class="
+                                        flex
+                                        w-5
+                                        items-center
+                                        bg-primary
+                                        justify-between
+                                        rounded-none rounded-tr rounded-br
+                                        h-6
+                                        py-0.5
+                                    "
+                                >
+                                    <template #icon>
+                                        <AtlanIcon
+                                            class="text-white"
+                                            icon="KebabMenu"
+                                        />
+                                    </template>
+                                </a-button>
+                                <template #overlay>
+                                    <a-menu>
+                                        <div class="p-2">
+                                            <a-checkbox
+                                                v-model:checked="limitRows"
+                                                >Limit to 100 rows</a-checkbox
+                                            >
+                                        </div>
+                                    </a-menu>
+                                </template>
+                            </a-dropdown>
+                        </div>
                         <a-button
-                            type="primary"
-                            class="flex items-center py-0.5 shadow"
-                            :class="
-                                isQueryRunning === 'loading' ? 'px-4.5' : 'px-3'
+                            v-if="
+                                activeInlineTab.queryId &&
+                                !activeInlineTab.isSaved
                             "
-                            :loading="
-                                isQueryRunning === 'loading' ? true : false
-                            "
-                            @click="run"
-                        >
-                            <template #icon>
-                                <AtlanIcon
-                                    class="mr-0.5 text-white"
-                                    icon="Play"
-                                />
-                            </template>
-                            Run</a-button
-                        >
-                        <a-button
-                            v-if="activeInlineTab.queryId"
                             class="
                                 flex
                                 items-center
                                 justify-between
                                 ml-2
+                                h-6
                                 py-0.5
-                                shadow
                             "
                             :loading="isUpdating"
-                            :class="isUpdating ? 'px-4.5' : 'px-3'"
+                            :class="isUpdating ? 'px-4.5' : 'px-2'"
                             :disabled="
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
@@ -61,11 +122,31 @@
                             @click="updateQuery"
                         >
                             <template #icon>
-                                <AtlanIcon class="mr-0.5" icon="Save" />
+                                <AtlanIcon class="mr-1" icon="Save" />
                             </template>
 
                             Update
                         </a-button>
+                        <div
+                            v-else-if="
+                                activeInlineTab.queryId &&
+                                activeInlineTab.isSaved
+                            "
+                            class="
+                                opacity-70
+                                flex
+                                px-2
+                                items-center
+                                justify-between
+                                ml-2
+                                h-6
+                                py-0.5
+                            "
+                        >
+                            <AtlanIcon class="mr-1 text-primary" icon="Check" />
+
+                            Saved
+                        </div>
                         <a-button
                             v-else
                             class="
@@ -73,22 +154,22 @@
                                 items-center
                                 justify-between
                                 ml-2
+                                h-6
                                 py-0.5
-                                shadow
                             "
                             @click="openSaveQueryModal"
                         >
                             <template #icon>
-                                <AtlanIcon class="" icon="Save" />
+                                <AtlanIcon class="mr-1" icon="Save" />
                             </template>
 
                             Save
                         </a-button>
                         <a-button
-                            class="flex items-center ml-2 py-0.5 px-3 shadow"
+                            class="flex items-center ml-2 h-6 py-0.5 px-2"
                             @click="copyURL"
                         >
-                            <AtlanIcon class="mr-0.5" icon="Share" /><span
+                            <AtlanIcon class="mr-1" icon="Share" /><span
                                 >Share</span
                             ></a-button
                         >
@@ -151,6 +232,7 @@
             const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
             const saveModalRef = ref()
+            const limitRows = ref(false)
             const showcustomToolBar = ref(false)
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -162,7 +244,6 @@
                 'activeInlineTabKey'
             ) as Ref<string>
             const editorInstance = inject('editorInstance') as Ref<any>
-            const monacoInstance = inject('monacoInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
             const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
@@ -236,6 +317,7 @@
                 )
             }
             return {
+                limitRows,
                 isUpdating,
                 showcustomToolBar,
                 saveModalRef,

@@ -375,7 +375,6 @@
                         guid: selectedAsset.guid,
                         entity: selectedAsset,
                     })
-                context.emit('updateAsset', selectedAsset)
             }
             const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin

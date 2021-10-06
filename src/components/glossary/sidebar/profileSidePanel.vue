@@ -204,7 +204,6 @@
             const updateEntityAndTree = (
                 selectedAsset: Glossary | Category | Term
             ) => {
-                if (refreshEntity) refreshEntity()
                 if (updateTreeNode) {
                     updateTreeNode({
                         guid: selectedAsset.guid,

@@ -1,13 +1,13 @@
 <template>
     <div class="flex scroll-container">
-        <div
-            class="flex flex-col w-full h-full px-4 pt-6 overflow-y-hidden bg-gray-100 "
-        >
+        <div class="flex flex-col w-full h-full px-4 pt-6 overflow-y-hidden">
             <span class="mb-2 text-2xl">{{ title }}</span>
-            <span v-if="subTitle" class="mb-0 text-sm text-gray">{{
+            <span v-if="subTitle" class="text-sm text-gray">{{
                 subTitle
             }}</span>
-            <slot name="header"></slot>
+            <div v-if="$slots.header" class="my-3">
+                <slot name="header"></slot>
+            </div>
             <slot></slot>
         </div>
     </div>

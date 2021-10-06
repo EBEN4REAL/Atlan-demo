@@ -8,7 +8,7 @@
             <div v-if="$slots.header" class="my-3">
                 <slot name="header"></slot>
             </div>
-            <slot></slot>
+            <div class="pb-4 overflow-y-auto"><slot /></div>
         </div>
     </div>
 </template>

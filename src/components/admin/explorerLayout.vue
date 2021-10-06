@@ -13,7 +13,7 @@
             <slot name="sidebar"></slot>
         </aside>
 
-        <div class="flex flex-col w-3/4 h-full px-4 overflow-y-hidden">
+        <div class="flex flex-col w-3/4 h-full px-4 pb-4 overflow-y-hidden">
             <slot></slot>
         </div>
     </div>

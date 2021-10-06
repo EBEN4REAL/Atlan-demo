@@ -319,16 +319,17 @@
                         const prevText =
                             activeInlineTabCopy.playground.editor.text
                         // new text
-                        const newQuery = `SELECT * FROM \"${item.value?.title}\" LIMIT 50;\n`
+                        const newQuery = `\/* {{${item.value?.title}}} preview *\/\nSELECT * FROM \"${item.value?.title}\" LIMIT 50;\n`
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
                         modifyActiveInlineTab(activeInlineTabCopy, inlineTabs)
-                        queryRun(activeInlineTabCopy, getData, isQueryRunning)
-                        selectionObject.value.startLineNumber = 1
+                        selectionObject.value.startLineNumber = 2
                         selectionObject.value.startColumnNumber = 1
-                        selectionObject.value.endLineNumber = 1
+                        selectionObject.value.endLineNumber = 2
                         selectionObject.value.endColumnNumber =
                             newQuery.length + 1 // +1 for semicolon
+                        queryRun(activeInlineTabCopy, getData, isQueryRunning)
+
                         break
                     }
                     case 'info': {

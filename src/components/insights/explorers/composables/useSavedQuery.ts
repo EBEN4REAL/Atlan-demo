@@ -262,6 +262,7 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
+                    parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
                 },
                 relationshipAttributes: {
                     folder: {
@@ -303,7 +304,7 @@ export function useSavedQuery(
             }
         })
     }
-    const saveQueryToDatabaseAndOpenInNewTab = async (
+    const saveQueryToDatabaseAndOpenInNewTab =  (
         saveQueryData: any,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
@@ -371,6 +372,7 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
+                    parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
                 },
                 relationshipAttributes: {
                     folder: {
@@ -430,6 +432,97 @@ export function useSavedQuery(
                 }
             }
         })
+
+        return { data, error, isLoading }
+    }
+
+    const createFolder =  (
+        saveFolderData: any,
+        saveFolderLoading: Ref<boolean>,
+        showSaveQueryModal: Ref<boolean>,
+        saveModalRef: Ref<any>,
+    ) => {
+        const attributeValue =
+            activeInlineTab.value.explorer.schema.connectors.attributeValue
+        const attributeName =
+            activeInlineTab.value.explorer.schema.connectors.attributeName
+        // const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+        //     {},
+        //     activeInlineTab.value
+        // )
+        // activeInlineTabCopy.isSaved = true
+        // activeInlineTabCopy.label = saveFolderData.title
+        // activeInlineTabCopy.status = saveFolderData.assetStatus
+
+        const uuidv4 = generateUUID()
+        const integrationName = getConnectorName(attributeValue) ?? ''
+        const connectionQualifiedName =
+            getConnectionQualifiedName(attributeValue)
+        const connectionGuid = ''
+        const connectionName = getConnectorName(attributeValue)
+
+        const name = saveFolderData.title
+        const description = saveFolderData.description
+        const assetStatus = saveFolderData.assetStatus
+
+        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const defaultSchemaQualifiedName =
+            `${attributeName}.${attributeValue}` ?? ''
+        
+
+        const body = ref({
+            entity: {
+                typeName: 'QueryFolder',
+                attributes: {
+                    integrationName,
+                    name,
+                    qualifiedName,
+                    connectionName,
+                    defaultSchemaQualifiedName,
+                    assetStatus,
+                    connectionQualifiedName,
+                    description,
+                    owner: username.value,
+                    tenantId: 'default',
+                    connectionId: connectionGuid,
+                    isPrivate: true,
+                    // parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
+                },
+                // relationshipAttributes: {
+                //     folder: {
+                //         guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                //         typeName: 'QueryFolder',
+                //     },
+                // },
+                /*TODO Created by will eventually change according to the owners*/
+                isIncomplete: false,
+                status: 'ACTIVE',
+                createdBy: username.value,
+            },
+        })
+        // chaing loading to true
+        saveFolderLoading.value = true
+        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
+
+        watch([data, error, isLoading], () => {
+            if (isLoading.value == false) {
+                saveFolderLoading.value = false
+                if (error.value === undefined) {
+                    showSaveQueryModal.value = false
+                    message.success({
+                        content: `Folder ${name} created!`,
+                    })
+                    saveModalRef.value?.clearData()
+                } else {
+                    console.log(error.value.toString())
+                    message.error({
+                        content: `Error in creating folder!`,
+                    })
+                }
+            }
+        })
+
+        return { data, error, isLoading } 
     }
 
     return {
@@ -437,5 +530,6 @@ export function useSavedQuery(
         saveQueryToDatabase,
         updateSavedQuery,
         openSavedQueryInNewTab,
+        createFolder
     }
 }

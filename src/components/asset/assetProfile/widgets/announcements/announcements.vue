@@ -5,7 +5,12 @@
     >
         <a-spin size="small"></a-spin>
     </div>
-    <div v-else class="w-full">
+    <div
+        v-else
+        class="w-full"
+        @mouseover="showKebabMenu = true"
+        @mouseleave="showKebabMenu = false"
+    >
         <div v-if="editable" class="py-2 shadow">
             <a-dropdown
                 placement="bottomLeft"
@@ -54,7 +59,7 @@
                 </div>
             </a-dropdown>
             <a-input
-                :ref="titleBar"
+                ref="titleBar"
                 v-model:value="announcementHeader"
                 placeholder="Add Announcement Header..."
                 class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
@@ -125,12 +130,17 @@
                 <div>
                     <a-dropdown trigger="click" placement="bottomRight">
                         <a-button
+                            v-show="showKebabMenu"
                             class="px-2 bg-transparent border-transparent shadow-none hover:border-current"
                         >
                             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                         </a-button>
                         <template #overlay>
-                            <a-menu mode="vertical">
+                            <a-menu
+                                mode="vertical"
+                                @mouseover="showKebabMenu = true"
+                                @mouseleave="showKebabMenu = false"
+                            >
                                 <a-menu-item key="edit" @click="startEdit">
                                     <div class="flex items-center">
                                         <AtlanIcon
@@ -217,12 +227,17 @@
                 <div>
                     <a-dropdown trigger="click" placement="bottomRight">
                         <a-button
+                            v-show="showKebabMenu"
                             class="px-2 ml-2 bg-transparent border-transparent shadow-none hover:border-current"
                         >
                             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                         </a-button>
                         <template #overlay>
-                            <a-menu mode="vertical">
+                            <a-menu
+                                mode="vertical"
+                                @mouseover="showKebabMenu = true"
+                                @mouseleave="showKebabMenu = false"
+                            >
                                 <a-menu-item key="edit" @click="startEdit">
                                     <div class="flex items-center">
                                         <AtlanIcon
@@ -264,6 +279,7 @@
             const editable = ref(false)
             const announcementHeader = ref('')
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            const showKebabMenu = ref(false)
 
             const { asset } = toRefs(props)
             const {
@@ -307,7 +323,7 @@
                 return found
             })
 
-            const startEdit = () => {
+            const startEdit = async () => {
                 editable.value = true
                 titleBar.value?.focus()
             }
@@ -336,7 +352,7 @@
                 timeAgo,
                 KeyMaps,
                 isCompleted,
-                titleBar,
+                showKebabMenu,
             }
         },
     })

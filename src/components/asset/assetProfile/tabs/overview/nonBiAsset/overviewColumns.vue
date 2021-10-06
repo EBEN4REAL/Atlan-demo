@@ -86,11 +86,11 @@
             >
                 <button
                     v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                     @click="loadMore"
                 >
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -175,7 +175,6 @@
             const certificationFilters: Ref<string[]> = ref([])
             const sortOrder = ref('Column.order|ascending')
             const clearAllFilters = ref<boolean>(false)
-            const urlColumnOrder = ref(0)
             const columnFromUrl: Ref<assetInterface[]> = ref([])
             const { columnCount } = useAssetInfo()
 

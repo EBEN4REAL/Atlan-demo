@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <span class="pb-6">
         <div v-if="list.attributeDefs.length > 10" class="px-4 mt-1 mb-2">
             <a-input-search
                 ref="searchText"
@@ -33,7 +33,7 @@
                 />
             </div>
         </div>
-        <div class="px-4 mb-2">
+        <div class="px-4 my-2">
             <div
                 v-if="
                     !showAll &&

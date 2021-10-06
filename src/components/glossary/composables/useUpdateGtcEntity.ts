@@ -1,9 +1,12 @@
-import { ref, watch, inject } from 'vue';
+import { ref, watch, inject } from 'vue'
 
-import { useAPI } from "~/api/useAPI"
-import { UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY, UPDATE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"
-import { Components } from "~/api/atlas/client";
-
+import { useAPI } from '~/api/useAPI'
+import {
+    UPDATE_GLOSSARY,
+    UPDATE_GLOSSARY_CATEGORY,
+    UPDATE_GLOSSARY_TERM,
+} from '~/api/keyMaps/glossary'
+import { Components } from '~/api/atlas/client'
 
 const useUpdateGtcEntity = () => {
     const keyMap = {
@@ -12,39 +15,62 @@ const useUpdateGtcEntity = () => {
         term: UPDATE_GLOSSARY_TERM,
     }
 
-    const data = ref<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm>()
+    const data = ref<
+        | Components.Schemas.AtlasGlossary
+        | Components.Schemas.AtlasGlossaryCategory
+        | Components.Schemas.AtlasGlossaryTerm
+    >()
     const error = ref<any>()
     const isUpdating = ref<boolean>()
-    
-    const updateTreeNode = inject<any>('updateTreeNode');
 
-    const updateEntity = (entityType: 'glossary' | 'category' | 'term', guid: string, body: any, updateTree?: boolean) => {
-        const { data: updateData, error: updateError, isLoading } = useAPI<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm>(keyMap[entityType], 'PUT', {
+    const updateTreeNode = inject<any>('updateTreeNode')
+
+    const updateEntity = (
+        entityType: 'glossary' | 'category' | 'term',
+        guid: string,
+        body: any,
+        updateTree?: boolean
+    ) => {
+        const {
+            data: updateData,
+            error: updateError,
+            isLoading,
+        } = useAPI<
+            | Components.Schemas.AtlasGlossary
+            | Components.Schemas.AtlasGlossaryCategory
+            | Components.Schemas.AtlasGlossaryTerm
+        >(keyMap[entityType], 'PUT', {
             cache: false,
             pathVariables: {
-                guid
+                guid,
             },
             body,
             options: {
-                revalidateOnFocus: false
-            }
-        });
+                revalidateOnFocus: false,
+            },
+        })
 
         watch(updateData, (newData) => {
-            data.value = newData;
-            if(newData) {
-                if(updateTreeNode && (updateTree ?? true)){
-                    updateTreeNode({guid: newData.guid, name: newData.name, assetStatus: newData.assetStatus ?? 'is_null'})
+            data.value = newData
+            if (newData) {
+                if (updateTreeNode && (updateTree ?? true)) {
+                    updateTreeNode({
+                        guid: newData.guid,
+                        name: newData.name,
+                        assetStatus: newData.assetStatus ?? 'is_null',
+                    })
                 }
             }
-            
-        });
-        watch(updateError, (newError) => {error.value = newError})
-        watch(isLoading, (loading) => {isUpdating.value = loading})
+        })
+        watch(updateError, (newError) => {
+            error.value = newError
+        })
+        watch(isLoading, (loading) => {
+            isUpdating.value = loading
+        })
     }
-
 
     return { data, error, isUpdating, updateEntity }
 }
 
-export default useUpdateGtcEntity;
+export default useUpdateGtcEntity

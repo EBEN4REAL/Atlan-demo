@@ -1,15 +1,15 @@
-<template>Setup</template>
+<template>
+    <div class="flex items-center justify-center w-full h-full text-2xl">
+        Workflow Setup Tab
+    </div>
+</template>
 
 <script lang="ts">
     // Vue
     import { defineComponent, inject, computed } from 'vue'
 
-    // Components
-
-    // Composables
-
     export default defineComponent({
-        name: 'WorkflowBuilder',
+        name: 'WorkflowSetup',
         components: {},
         setup() {
             /** INJECTIONS */

@@ -29,6 +29,11 @@
                     </div>
                     <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
                     <div class="flex items-center ml-1">
+                        <AtlanIcon
+                            v-if="createEntityType === 'queryFolder'"
+                            icon="FolderClosed"
+                            class="h-4 m-0 -ml-0.5 -mt-0.5 mr-2"
+                        />
                         <span>{{ title }}</span>
                     </div>
                 </div>
@@ -66,8 +71,8 @@
                     </a-dropdown>
                 </div>
             </div>
-            <div>
-                <div class="my-2">
+            <div class="my-2">
+                <div class="">
                     <a-input
                         :ref="titleBarRef"
                         v-model:value="title"
@@ -79,7 +84,9 @@
                     v-model:value="description"
                     placeholder="Add Description"
                     class="text-sm text-gray-500 border-0 shadow-none outline-none "
-                    :rows="4"
+                    :rows="3"
+                    show-count
+                    :maxlength="140"
                 />
             </div>
             <div class="flex items-center w-full">
@@ -166,6 +173,12 @@
                 type: Object as PropType<boolean>,
                 required: true,
             },
+            createEntityType: {
+                type: Object as PropType<'query' | 'queryFolder'>,
+                required: true,
+                default: 'query'
+            },
+
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {

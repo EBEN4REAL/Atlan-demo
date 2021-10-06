@@ -67,9 +67,7 @@ export default function useProject() {
         )
 
         // by default limiting query to 100 if limit is not there
-        queryText = queryText.includes('limit')
-            ? queryText
-            : `${queryText} limit 100`
+        queryText = queryText.includes('limit') ? queryText : `${queryText}`
 
         isQueryRunning.value = 'loading'
         dataList.value = []

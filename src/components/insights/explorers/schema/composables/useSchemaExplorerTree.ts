@@ -465,6 +465,9 @@ const useTree = ({
         // }
         // store.set(selectedCacheKey, selectedKeys.value)
         /* New Logic */
+        if (!event.node.isLeaf) {
+            expandNode([], event)
+        }
         if (selectedKeys.value.includes(selected)) {
             selectedKeys.value = []
         } else {

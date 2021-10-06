@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white">
+    <div class="flex flex-col items-center w-full h-full bg-white border-r">
         <div class="w-full p-4 pb-0 rounded">
             <Connector :connector="connector" @update:data="updateConnector" />
             <div class="flex flex-row space-x-2">
@@ -31,12 +31,14 @@
                 <div class="flex items-center">
                     <div class="">
                         <AtlanIcon
+                            @click="toggleCreateQueryModal"
                             icon="NewQuery"
                             class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary"
                         />
                     </div>
                     <div class="">
                         <AtlanIcon
+                            @click="toggleCreateQueryFolderModal"
                             icon="NewFolder"
                             class="h-4 m-0 -mt-0.5 hover:text-primary"
                         />
@@ -58,16 +60,38 @@
                 :expanded-keys="expandedKeys"
             />
         </div>
+        <SaveQueryModal
+            v-model:showSaveQueryModal="showSaveQueryModal"
+            :createEntityType="createEntityType"
+            :saveQueryLoading="saveQueryLoading"
+            :ref="
+                (el) => {
+                    saveModalRef = el
+                }
+            "
+            @onSaveQuery="saveQuery"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref, ComputedRef, watch, ref } from 'vue'
+    import {
+        defineComponent,
+        inject,
+        Ref,
+        ComputedRef,
+        watch,
+        ref,
+        toRaw,
+        onMounted
+    } from 'vue'
     import { useRouter } from 'vue-router'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
 
     import QueryTree from './queryTree.vue'
     import useQueryTree from './composables/useQueryTree'
@@ -75,17 +99,23 @@
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
 
     export default defineComponent({
-        components: { QueryTree, Connector },
+        components: { QueryTree, Connector, SaveQueryModal },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
+            const showSaveQueryModal: Ref<boolean> = ref(false)
+            const saveQueryLoading = ref(false)
+            const createEntityType = ref<'query' | 'queryFolder'>('query')
+
+            const saveModalRef = ref()
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const savedQueryType: Ref<string> = ref('personal')
+            const savedQueryType: Ref<'personal' | 'all'> = ref('personal')
+            const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
@@ -98,40 +128,20 @@
                         .attributeValue
                 )
             )
+            const { focusEditor } = useEditor()
 
-            const savedQueries: SavedQueryInterface[] = [
-                {
-                    id: '1x',
-                    label: ' Saved Query 1',
-                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                    result: 'Saved Query 1',
-                },
-
-                {
-                    id: '2x',
-                    label: 'Saved Query 2',
-                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                    result: 'Saved Query 2',
-                },
-                {
-                    id: '3x',
-                    label: 'Saved Query 3',
-                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                    result: 'Saved Query 3',
-                },
-            ]
             const isSelectedType = (type: string) => {
                 return savedQueryType.value === type
             }
-            const onSelectQueryType = (type: string) => {
+            const onSelectQueryType = (type: 'personal' | 'all') => {
                 savedQueryType.value = type
             }
 
-            const { openSavedQueryInNewTab } = useSavedQuery(
-                inlineTabs,
-                activeInlineTab,
-                activeInlineTabKey
-            )
+            const {
+                openSavedQueryInNewTab,
+                saveQueryToDatabaseAndOpenInNewTab,
+                createFolder
+            } = useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
                 let bool = false
                 inlineTabs.value.forEach((tab) => {
@@ -141,12 +151,21 @@
             }
 
             const updateConnector = (value: string) => {
+                connector.value = value;
                 setConnectorsDataInInlineTab(
                     activeInlineTab,
                     inlineTabs,
                     connector,
                     'queries'
                 )
+            }
+            const toggleCreateQueryModal = () => {
+                createEntityType.value = 'query'
+                showSaveQueryModal.value = !showSaveQueryModal.value
+            }
+            const toggleCreateQueryFolderModal = () => {
+                createEntityType.value = 'queryFolder'
+                showSaveQueryModal.value = !showSaveQueryModal.value
             }
             const pushGuidToURL = (guid: string) => {
                 router.push(`/insights?id=${guid}`)
@@ -161,10 +180,13 @@
                 onLoadData,
                 expandNode,
                 selectNode,
+                refetchNode
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
                 pushGuidToURL,
+                connector,
+                savedQueryType
             })
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {
@@ -177,8 +199,41 @@
                         newActiveInlineTab?.explorer?.queries?.connectors?.connector
                 }
             })
+            const saveQuery = async (saveQueryData: any) => {
+                if(createEntityType.value === 'query') {
+                   const { data } = saveQueryToDatabaseAndOpenInNewTab(
+                        saveQueryData,
+                        editorInstance,
+                        saveQueryLoading,
+                        showSaveQueryModal,
+                        saveModalRef,
+                        router
+                    )
+                    focusEditor(toRaw(editorInstance.value))
+
+                    watch(data, (newData) => {
+                        if(newData) refetchNode("4a6ccb76-02f0-4cc3-9550-24c46166a93d", createEntityType.value)
+                    })
+                } else if(createEntityType.value === 'queryFolder'){
+                    const { data } = createFolder(saveQueryData, saveQueryLoading, showSaveQueryModal, saveModalRef)
+                    watch(data, (newData) => {
+                        if(newData) refetchNode("root", createEntityType.value)
+                    })
+                }
+            }
+
+            onMounted(() => {
+                selectedKeys.value = [activeInlineTabKey.value]
+            })
 
             return {
+                saveModalRef,
+                saveQueryLoading,
+                showSaveQueryModal,
+                createEntityType,
+                saveQuery,
+                toggleCreateQueryModal,
+                toggleCreateQueryFolderModal,
                 onSelectQueryType,
                 isSelectedType,
                 isSavedQueryOpened,
@@ -186,7 +241,6 @@
                 connector,
                 updateConnector,
                 savedQueryType,
-                savedQueries,
                 treeData,
                 loadedKeys,
                 isInitingTree,

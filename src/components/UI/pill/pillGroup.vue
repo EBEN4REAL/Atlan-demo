@@ -27,7 +27,6 @@
                 v-else
                 :label="item[labelKey]"
                 :has-action="!readOnly"
-                :has-action="!readOnly"
                 @action="handleDelete(index)"
                 @click="handleClick(item, index)"
                 ><template #prefix>

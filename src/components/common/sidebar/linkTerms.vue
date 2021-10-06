@@ -95,6 +95,7 @@
         UnwrapRef,
         watch,
         onMounted,
+        toRefs,
     } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
@@ -111,7 +112,7 @@
 
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
-            const selectedAsset = computed(() => props.selectedAsset)
+            const { selectedAsset } = toRefs(props)
             const asset = computed(() => props.selectedAsset ?? {})
             const linkTermPopover = ref(false)
             const linkClassificationStatus = ref('')
@@ -173,6 +174,15 @@
                         )
                         handleCancel()
                         pillTerms.value = [...pillTerms.value, ...termToBeAdded]
+                        console.log(termToBeAdded[0])
+                        selectedAsset.value.meanings.push({
+                            displayText: termToBeAdded[0].displayText,
+                            termGuid:
+                                termToBeAdded[0].termGuid ||
+                                termToBeAdded[0].guid,
+                        })
+                        console.log(selectedAsset.value?.meanings)
+
                         emit('update:selectedAsset', props.selectedAsset)
                     })
                 })

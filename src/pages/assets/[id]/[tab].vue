@@ -91,6 +91,9 @@
             settings: defineAsyncComponent(
                 () => import('@/asset/assetProfile/tabs/settings/index.vue')
             ),
+            columns: defineAsyncComponent(
+                () => import('@/asset/assetProfile/tabs/columns/index.vue')
+            ),
         },
 
         emits: ['preview'],

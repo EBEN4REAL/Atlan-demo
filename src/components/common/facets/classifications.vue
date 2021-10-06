@@ -5,6 +5,7 @@
                 v-model:value="classificationSearchText"
                 :placeholder="`Search ${classificationsList.length} classifications`"
                 :autofocus="true"
+                size="minimal"
             >
                 <template #filter>
                     <div class="p-0">

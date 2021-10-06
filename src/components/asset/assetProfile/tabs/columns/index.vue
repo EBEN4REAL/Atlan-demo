@@ -3,47 +3,14 @@
         class="flex flex-col gap-y-10"
         style="padding: 2rem 1.25rem 2rem 3.75rem"
     >
-        <!-- Column and Table Preview-->
         <div class="w-full">
-            <!-- Preview Selector-->
-            <a-button-group class="mb-4 rounded shadow">
-                <a-button
-                    :class="
-                        activePreviewTabKey === 'column-preview'
-                            ? 'text-primary font-bold'
-                            : 'text-gray-500'
-                    "
-                    @click="setActiveTab('column-preview')"
-                >
-                    Column Preview
-                </a-button>
-                <a-tooltip
-                    placement="right"
-                    :title="
-                        !showTablePreview &&
-                        'No sample data found for this asset'
-                    "
-                >
-                    <a-button
-                        :class="
-                            activePreviewTabKey === 'table-preview'
-                                ? 'text-primary font-bold'
-                                : 'text-gray-500'
-                        "
-                        :disabled="!showTablePreview"
-                        @click="setActiveTab('table-preview')"
-                        >Sample Data</a-button
-                    ></a-tooltip
-                >
-            </a-button-group>
-            <KeepAlive>
-                <overviewColumns
-                    v-if="activePreviewTabKey === 'column-preview'"
-                />
-                <overviewTable
-                    v-else-if="activePreviewTabKey === 'table-preview'"
-                />
-            </KeepAlive>
+            <div
+                class="inline-block px-2 py-1 mb-4 font-bold rounded shadow  text-primary"
+            >
+                Column Preview
+            </div>
+
+            <overviewColumns />
         </div>
     </div>
 </template>
@@ -63,21 +30,11 @@
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import overviewColumns from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewColumns.vue'
 
     export default defineComponent({
         components: {
-            overviewColumns: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewColumns.vue'
-                    )
-            ),
-            overviewTable: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewTable.vue'
-                    )
-            ),
+            overviewColumns,
         },
         setup() {
             const activePreviewTabKey: Ref<'column-preview' | 'table-preview'> =

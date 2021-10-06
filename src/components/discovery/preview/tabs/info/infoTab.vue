@@ -216,6 +216,7 @@
             padding-left: 0px;
             padding-top: 0px !important;
             @apply pb-0 !important;
+            @apply mb-1 !important;
         }
     }
 </style>

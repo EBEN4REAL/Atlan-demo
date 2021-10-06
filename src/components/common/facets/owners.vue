@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 mt-1">
+    <div class="px-4 pb-6 mt-1">
         <div class="flex items-center justify-between mb-3">
             <SearchAndFilter
                 v-model:value="queryText"

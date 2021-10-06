@@ -31,11 +31,13 @@
                 <span class="mb-1 text-sm text-gray-500">Columns</span>
                 <span class="text-gray-700">{{ cols }}</span>
             </div>
-            <Description
-                v-if="assetData.guid"
-                :selected-asset="assetData"
-                @update:selected-asset="mutateAsset"
-            />
+            <div class="max-w-screen-md">
+                <Description
+                    v-if="assetData.guid"
+                    :selected-asset="assetData"
+                    @update:selected-asset="mutateAsset"
+                />
+            </div>
             <div
                 :class="
                     assetData.typeName == 'Table' ||

@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center flex-none">
-        <div v-if="imageRequired" class="">
+        <div v-if="imageRequired" class="mr-2">
             <img
                 :src="logoSrc"
                 class="flex-none w-auto"
@@ -8,7 +8,7 @@
             />
         </div>
 
-        <span class="pl-1 text-sm tracking-wider text-gray-700 uppercase">{{
+        <span class="pl-1 text-sm tracking-wider text-gray-500 uppercase">{{
             text
         }}</span>
     </div>

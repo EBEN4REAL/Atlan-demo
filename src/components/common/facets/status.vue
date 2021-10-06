@@ -1,7 +1,7 @@
 <template>
     <a-checkbox-group
         v-model:value="data.checked"
-        class="w-full px-4 py-1 pb-3"
+        class="w-full px-4 py-1 pb-6"
         @change="$emit('change', $event)"
     >
         <div class="flex flex-col w-full">

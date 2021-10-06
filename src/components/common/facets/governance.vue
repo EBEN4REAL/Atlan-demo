@@ -1,83 +1,74 @@
 <template>
-    <div v-if="isInitingTree">
-        <LoadingView
-            size="small"
-            class="w-1 h-1 mr-4 mt-4"
-        />
-    </div>
-    <div v-else class="max-h-64 overflow-y-auto ml-4" :class="$style.filterTree">
-        <a-tree
-            :expandedKeys="expandedKeys"
-            :selectedKeys="selectedKeys"
-            :loadedKeys="loadedKeys"
-            :tree-data="treeData"
-            :load-data="onLoadData"
-            :block-node="true"
-            :auto-expand-parent="false"
-            @select="selectNode"
-            @expand="expandNode"
-            class="h-full"
-            :checkable="true"
-            :checkStrictly="true"
-            @check="onCheck"
+    <div class="pb-6">
+        <div v-if="isInitingTree">
+            <LoadingView size="small" class="w-1 h-1 mt-4 mr-4" />
+        </div>
+        <div
+            v-else
+            class="ml-4 overflow-y-auto max-h-64"
+            :class="$style.filterTree"
         >
-            <template #title="entity">
-                <div
-                    v-if="entity.title === 'Load more'"
-                    class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
-                    @click="entity.click()"
-                >
-                    <span v-if="entity.isLoading">
-                        <LoadingView
-                            size="small"
-                            class="w-1 h-1 mr-4"
-                        />
-                    </span>
-                    <span v-else>{{ entity.title }}</span>
-                </div>
-                <div v-else>
+            <a-tree
+                :expandedKeys="expandedKeys"
+                :selectedKeys="selectedKeys"
+                :loadedKeys="loadedKeys"
+                :tree-data="treeData"
+                :load-data="onLoadData"
+                :block-node="true"
+                :auto-expand-parent="false"
+                @select="selectNode"
+                @expand="expandNode"
+                class="h-full"
+                :checkable="true"
+                :checkStrictly="true"
+                @check="onCheck"
+            >
+                <template #title="entity">
                     <div
-                        class="min-w-full"
+                        v-if="entity.title === 'Load more'"
+                        class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                        @click="entity.click()"
                     >
-                        <div
-                            class="flex justify-between mr-2 group"
-                        >
-                            <div class="flex m-0 pb-1">
-                                <span
-                                    v-if="
-                                        entity.type === 'glossary'
-                                    "
-                                    class="p-0 my-auto mr-2"
-                                >
-                                    <AtlanIcon
-                                        icon="Glossary"
-                                        class="h-5"
-                                    />
-                                </span>
-                                <span
-                                    v-else
-                                    class="p-0 my-auto mr-1.5"
-                                >
-                                    <AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                entity.type,
-                                                entity.assetStatus
-                                            )
-                                        "
-                                    />
-                                </span>
-                                <span
-                                    class="my-auto text-sm leading-5 text-gray-700 "
+                        <span v-if="entity.isLoading">
+                            <LoadingView size="small" class="w-1 h-1 mr-4" />
+                        </span>
+                        <span v-else>{{ entity.title }}</span>
+                    </div>
+                    <div v-else>
+                        <div class="min-w-full">
+                            <div class="flex justify-between mr-2 group">
+                                <div class="flex pb-1 m-0">
+                                    <span
+                                        v-if="entity.type === 'glossary'"
+                                        class="p-0 my-auto mr-2"
                                     >
-                                    {{ entity.title }}</span
-                                >
+                                        <AtlanIcon
+                                            icon="Glossary"
+                                            class="h-5"
+                                        />
+                                    </span>
+                                    <span v-else class="p-0 my-auto mr-1.5">
+                                        <AtlanIcon
+                                            :icon="
+                                                getEntityStatusIcon(
+                                                    entity.type,
+                                                    entity.assetStatus
+                                                )
+                                            "
+                                        />
+                                    </span>
+                                    <span
+                                        class="my-auto text-sm leading-5 text-gray-700 "
+                                    >
+                                        {{ entity.title }}</span
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </template>
-        </a-tree>
+                </template>
+            </a-tree>
+        </div>
     </div>
 </template>
 
@@ -89,7 +80,7 @@
     import useTree from '~/components/glossary/tree/composables/useTree'
 
     import LoadingView from '@common/loaders/section.vue'
-    import getEntityStatusIcon from '~/components/glossary/tree/utils/getIcon';
+    import getEntityStatusIcon from '~/components/glossary/tree/utils/getIcon'
 
     export default defineComponent({
         props: {
@@ -102,13 +93,13 @@
                 required: true,
             },
         },
-        components: {LoadingView},
+        components: { LoadingView },
         emits: ['change'],
         setup(props, { emit }) {
             const list = computed(() => List)
             const { data } = toRefs(props)
             const onCheck = (_, { checkedNodes }) => {
-                if(checkedNodes.length) {
+                if (checkedNodes.length) {
                     emit('change', checkedNodes[0].props.qualifiedName)
                 } else {
                     emit('change', undefined)
@@ -126,15 +117,19 @@
                 selectNode,
                 reInitTree,
                 collapseAll,
-            } = useTree(emit, true, computed(() => false), true)
-
+            } = useTree(
+                emit,
+                true,
+                computed(() => false),
+                true
+            )
 
             return {
                 data,
                 list,
 
                 getEntityStatusIcon,
-                onCheck, 
+                onCheck,
                 treeData,
                 loadedKeys,
                 onLoadData,

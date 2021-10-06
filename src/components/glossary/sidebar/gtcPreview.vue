@@ -119,7 +119,7 @@
                             />
                         </template>
                         <a-collapse-panel key="details" header="Details">
-                            <div class="flex flex-col pl-5 pr-2">
+                            <div class="flex flex-col pl-5 pr-2 gap-y-4">
                                 <!-- <div
                                     v-if="
                                         entity?.typeName ===

@@ -2,7 +2,7 @@
 <template>
     <div class="flex flex-col mx-3 my-1">
         <div
-            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border rounded  hover:shadow hover:border-none"
+            class="flex items-start flex-1 px-3 py-6 transition-all duration-300 border rounded  hover:shadow hover:border-none"
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
@@ -98,19 +98,29 @@
                                 )
                             "
                             class="mr-2 text-gray-500"
-                            ><span class="tracking-tighter text-gray">{{
+                            ><span class="tracking-wide text-gray">{{
                                 rowCount(item, false)
                             }}</span>
                             Rows</span
                         >
                         <span class="text-gray-500">
-                            <span class="tracking-tighter text-gray">{{
+                            <span class="tracking-wide text-gray">{{
                                 columnCount(item, false)
                             }}</span>
                             Cols</span
                         >
                     </div>
-
+                    <div
+                        v-if="
+                            getCombinedUsersAndGroups(item).length &&
+                            ['table', 'view', 'tablepartition'].includes(
+                                item.typeName.toLowerCase()
+                            )
+                        "
+                        style="color: #c4c4c4"
+                    >
+                        •
+                    </div>
                     <!-- Owner bar -->
                     <div
                         v-if="getCombinedUsersAndGroups(item).length"
@@ -130,7 +140,8 @@
                 <!-- Description -->
                 <div
                     v-if="projection?.includes('description')"
-                    class="max-w-lg text-sm text-gray-500 truncate-overflow"
+                    class="mt-2 mb-1 text-sm text-gray-500 truncate-overflow"
+                    style="max-width: 80%"
                 >
                     <span v-if="description(item)?.length">{{
                         description(item)
@@ -154,7 +165,12 @@
                             <template #prefix>
                                 <AtlanIcon
                                     icon="Shield"
-                                    class="text-pink-400 group-hover:text-white"
+                                    class="
+                                        text-pink-400
+                                        group-hover:text-white
+                                        h-3.5
+                                        w-auto
+                                    "
                                 />
                             </template>
                         </Pill>
@@ -168,7 +184,7 @@
                             <template #prefix>
                                 <AtlanIcon
                                     icon="Term"
-                                    class="text-gray group-hover:text-white"
+                                    class="text-gray h-3.5 w-auto"
                                 />
                             </template>
                         </Pill>

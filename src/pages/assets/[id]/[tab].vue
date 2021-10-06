@@ -2,7 +2,7 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full h-full">
+    <div v-if="data?.asset" class="w-full h-full max-profile-width">
         <div class="flex flex-col">
             <Header />
 
@@ -267,5 +267,10 @@ meta:
         :global(.ant-tabs-tabpane) {
             @apply px-0 pb-0 !important;
         }
+    }
+</style>
+<style lang="less" scoped>
+    .max-profile-width {
+        max-width: calc(100vw - 420px);
     }
 </style>

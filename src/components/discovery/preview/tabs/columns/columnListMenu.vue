@@ -68,20 +68,54 @@
                         />
                     </a-menu-item>
                 </a-sub-menu>
+                <!-- <a-sub-menu key="classification">
+                    <template #title>
+                        <div class="flex items-center">
+                            <AtlanIcon icon="AddUser" />
+                            <span class="pl-2 text-sm">Add Classification</span>
+                            <AtlanIcon
+                                class="flex-none ml-auto -mr-2"
+                                icon="ChevronRight"
+                            />
+                        </div>
+                    </template>
+                    <template #expandIcon />
+                    <a-menu-item class="m-0 bg-white">
+                        <Classification :selected-asset="asset" />
+                    </a-menu-item>
+                </a-sub-menu>
+                <a-sub-menu key="term">
+                    <template #title>
+                        <div class="flex items-center">
+                            <AtlanIcon icon="AddUser" />
+                            <span class="pl-2 text-sm">Add Term</span>
+                            <AtlanIcon
+                                class="flex-none ml-auto -mr-2"
+                                icon="ChevronRight"
+                            />
+                        </div>
+                    </template>
+                    <template #expandIcon />
+                    <a-menu-item class="m-0 bg-white">
+                        <LinkTerms
+                            :selected-asset="asset"
+                            @update:selected-asset="updateAsset"
+                        />
+                    </a-menu-item>
+                </a-sub-menu> -->
             </a-menu>
         </template>
     </a-dropdown>
 </template>
 <script lang="ts">
     import { defineComponent, ref, PropType, toRefs } from 'vue'
-    import { useRouter } from 'vue-router'
 
     // components
     import StatusBadge from '@common/badge/status/index.vue'
+    import Classification from '@common/sidebar/classifications.vue'
+    import LinkTerms from '@common/sidebar/linkTerms.vue'
     import Owners from '@/glossary/threeDotMenu/owners.vue'
     import Status from '@/glossary/threeDotMenu/status.vue'
-    import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
-    import Categories from '@/glossary/common/categories.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
@@ -91,7 +125,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { Status, Owners, StatusBadge, AddGtcModal, Categories },
+        components: { Status, Owners, StatusBadge, Classification, LinkTerms },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,

@@ -67,8 +67,8 @@
                 ref="animationPoint"
                 class="flex flex-col text-xs text-gray-500 cursor-pointer"
             >
-                <div class="mb-3">
-                    <p class="mb-1 text-sm">Certificate</p>
+                <div class="">
+                    <p class="mb-2 text-sm">Certificate</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"

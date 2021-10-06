@@ -1,31 +1,34 @@
 <template>
-    <PillGroup :data="data">
-        <template #header
-            ><p>
-                Say <span class="mr-2">👋</span>Hello, to the new
-                <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b>
-            </p></template
-        >
-        <template #pill-content="user">
-            <Pill
-                :label="user.item"
-                @click.stop="() => handleClickUser(user.item)"
-                ><template #prefix>
-                    <avatar
-                        v-if="user.item"
-                        class="-ml-2.5"
-                        :image-url="
-                            KeyMaps.auth.avatar.GET_AVATAR({
-                                username: user.item,
-                            })
-                        "
-                        :allow-upload="false"
-                        :avatar-name="user.item"
-                        avatar-size="small"
-                        :avatar-shape="'circle'"
-                    /> </template></Pill
-        ></template>
-    </PillGroup>
+    <div v-if="data.value.length < 1" class="mb-3">All Owners removed</div>
+    <div v-else>
+        <PillGroup :data="data">
+            <template #header
+                ><p>
+                    Say <span class="mr-2">👋</span>Hello, to the new
+                    <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b>
+                </p></template
+            >
+            <template #pill-content="user">
+                <Pill
+                    :label="user.item"
+                    @click.stop="() => handleClickUser(user.item)"
+                    ><template #prefix>
+                        <avatar
+                            v-if="user.item"
+                            class="-ml-2.5"
+                            :image-url="
+                                KeyMaps.auth.avatar.GET_AVATAR({
+                                    username: user.item,
+                                })
+                            "
+                            :allow-upload="false"
+                            :avatar-name="user.item"
+                            avatar-size="small"
+                            :avatar-shape="'circle'"
+                        /> </template></Pill
+            ></template>
+        </PillGroup>
+    </div>
 </template>
 
 <script lang="ts">

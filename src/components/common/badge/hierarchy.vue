@@ -2,11 +2,15 @@
     <div
         class="flex items-center overflow-hidden text-sm text-gray-500  flex-nowrap"
     >
-        <span class="mr-2"> • </span>
-        <template v-for="data in hierarchyInfo" :key="data.id">
-            <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">{{
-                data.text
-            }}</span>
+        <span class="mr-2" style="color: #c4c4c4"> • </span>
+        <template v-for="(data, index) in hierarchyInfo" :key="data.id">
+            <span
+                class="overflow-hidden overflow-ellipsis whitespace-nowrap"
+                :class="
+                    index == hierarchyInfo.length - 1 ? 'text-gray-700' : ''
+                "
+                >{{ data.text }}</span
+            >
             <span class="px-1 text-gray-300">/</span>
         </template>
     </div>

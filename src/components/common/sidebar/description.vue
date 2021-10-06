@@ -1,6 +1,6 @@
 <template>
-    <div class="text-xs text-gray-500" :class="usingInInfo ? 'mb-3' : ''">
-        <p v-if="usingInInfo" class="mb-1 text-sm">
+    <div class="text-xs text-gray-500">
+        <p v-if="usingInInfo" class="mb-2 text-sm">
             Description<span v-if="isLoading" class="ml-2">
                 <a-spin size="small" class="leading-none"></a-spin>
             </span>

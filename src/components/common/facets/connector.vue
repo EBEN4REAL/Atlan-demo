@@ -3,13 +3,14 @@
         <a-tree-select
             :value="selectedValue"
             style="width: 100%"
+            v-model:treeExpandedKeys="expandedKeys"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
             :allowClear="true"
-            @change="handleSelectChange"
+            @select="selectNode"
         >
             <template #title="node">
                 <div class="flex items-center" v-if="node?.img">
@@ -67,13 +68,24 @@
                 }>,
                 required: true,
             },
+            filterSourceIds: {
+                type: Object as PropType<string[]>,
+                required: false,
+                default: [],
+            },
+            isLeafNodeSelectable: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         components: {
             AssetDropdown,
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
-            const { data } = toRefs(props)
+            const { data, filterSourceIds, isLeafNodeSelectable } =
+                toRefs(props)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'integrationName')
@@ -96,10 +108,21 @@
             const selectedValue = computed(
                 () => connection.value || connector.value || undefined
             )
+            /* Remove the sources mentioned in filterIds array */
+            const filterSourceList = (filterSourceIds: string[]) => {
+                return store.getSourceList.filter(
+                    (item) => !filterSourceIds.includes(item.id)
+                )
+            }
 
             const store = useConnectionsStore()
-
-            const filteredList = computed(() => store.getSourceList)
+            /* Checking if filterSourceIds passed -> whitelist the sourcelist
+            else fetch all the sourcelist from store */
+            const filteredList = computed(() =>
+                filterSourceIds.value.length > 0
+                    ? filterSourceList(filterSourceIds.value)
+                    : store.getSourceList
+            )
             const getImage = (id: string) => store.getImage(id)
             const list = computed(() => List)
             const checkedValues = ref([])
@@ -189,7 +212,52 @@
                 emit('change')
             }
 
-            const handleSelectChange = (value: string) => {
+            const handleChange = ({
+                attributeName,
+                attributeValue,
+            }: Record<string, string>) => {
+                if (attributeName && attributeValue) {
+                    emit('update:data', { attributeName, attributeValue })
+                    emit('change')
+                } else {
+                    selectNode(data.value?.attributeValue)
+                    emitChangedFilters()
+                }
+            }
+
+            const filteredConnector = computed(() =>
+                store.getSourceList?.find((item) => item.id === connector.value)
+            )
+
+            function setPlaceholder(label: string, type: string) {
+                placeholderLabel.value[type] = label
+                if (type === 'connector') placeholderLabel.value.asset = ''
+            }
+            const expandedKeys = ref<string[]>([])
+            const expandNode = (expanded: string[], node: any) => {
+                console.log(node.isLeaf)
+                if (node?.children.length > 0) {
+                    const key: string = node.eventKey
+                    const isExpanded = expandedKeys.value?.includes(key)
+                    if (!isExpanded) {
+                        if (node.dataRef.isRoot) {
+                            expandedKeys.value = []
+                        }
+                        expandedKeys.value?.push(key)
+                    } else if (isExpanded) {
+                        const index = expandedKeys.value?.indexOf(key)
+                        expandedKeys.value?.splice(index, 1)
+                    }
+                    expandedKeys.value = [...expandedKeys.value]
+                }
+            }
+
+            const selectNode = (value, node?: any) => {
+                /* Checking if isLeafNodeSelectable by default it is selectable */
+                if (node?.children.length > 0 && !isLeafNodeSelectable.value) {
+                    expandNode([], node)
+                    return
+                }
                 const payload: Components.Schemas.FilterCriteria = {
                     attributeName: undefined,
                     attributeValue: undefined,
@@ -207,32 +275,11 @@
                 emit('update:data', payload)
             }
 
-            const handleChange = ({
-                attributeName,
-                attributeValue,
-            }: Record<string, string>) => {
-                if (attributeName && attributeValue) {
-                    emit('update:data', { attributeName, attributeValue })
-                    emit('change')
-                } else {
-                    handleSelectChange(data.value?.attributeValue)
-                    emitChangedFilters()
-                }
-            }
-
-            const filteredConnector = computed(() =>
-                store.getSourceList?.find((item) => item.id === connector.value)
-            )
-
-            function setPlaceholder(label: string, type: string) {
-                placeholderLabel.value[type] = label
-                if (type === 'connector') placeholderLabel.value.asset = ''
-            }
-
             return {
+                expandedKeys,
+                selectNode,
                 handleChange,
                 selectedValue,
-                handleSelectChange,
                 setPlaceholder,
                 filteredConnector,
                 data,

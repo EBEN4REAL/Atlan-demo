@@ -4,7 +4,7 @@
 
     <div v-if="data?.asset" class="w-full h-full">
         <div class="flex flex-col">
-            <Header class="px-5 pt-3 bg-white" />
+            <Header />
 
             <a-tabs
                 :active-key="activeKey"
@@ -87,11 +87,11 @@
                     name: 'Lineage',
                     component: 'lineage',
                 },
-                {
+                /*  {
                     id: 3,
                     name: 'Settings',
                     component: 'settings',
-                },
+                }, */
             ]
 
             /** UTILS */
@@ -187,7 +187,7 @@ meta:
             @apply pb-5 mr-5 text-gray-500 text-sm tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-5;
+            @apply ml-8;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;

@@ -170,15 +170,10 @@ export const KeyMaps = {
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
+
                 'metastore',
                 `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`),
-        GET_TERM_LINKED_ASSETS: () => getAPIPath('metastore', `/search/basic`),
-        ASSIGN_TERM_LINKED_ASSETS: ({ guid }: PathParams) =>
-            getAPIPath(
-                'metastore',
-                `/glossary/terms/${guid}/assignedEntities`
-            ),
         GTC_SEARCH: () => getAPIPath('metastore', `/search/basic`),
         GLOSSARY_LIST: () => getAPIPath('metastore', `/search/basic`),
     },
@@ -213,7 +208,7 @@ export const KeyMaps = {
             ),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
@@ -228,17 +223,15 @@ export const KeyMaps = {
         BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
     },
     workflow: {
-        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) => getAPIPath(
-            '/auth/argo',
-            `/workflow-templates/${tenant}`
-        ),
-        ARCHIVED_WORKFLOW: () => getAPIPath(
-            '/auth/argo',
-            `/archived-workflows`
-        ),
-        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) => getAPIPath(
-            '/auth/argo',
-            `/workflow-templates/${tenant}/${name}`
-        )
-    }
+        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}`),
+        ARCHIVED_WORKFLOW: () =>
+            getAPIPath('/auth/argo', `/archived-workflows`),
+        ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
+            getAPIPath('/auth/argo', `/archived-workflows/${guid}`),
+        CLUSTER_WORKFLOW_TEMPLATE: () =>
+            getAPIPath('/auth/argo', `/cluster-workflow-templates`),
+        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}/${name}`),
+    },
 }

@@ -1,0 +1,1 @@
+export const ATLAN_PUBLIC_QUERY_CLASSIFICATION = 'atlan_public_query'

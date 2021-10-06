@@ -3,7 +3,6 @@
         <a-popover
             v-model:visible="isVisible"
             title=""
-            class="mb-2"
             placement="right"
             trigger="click"
         >

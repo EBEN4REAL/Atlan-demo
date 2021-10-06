@@ -1,11 +1,12 @@
 <template>
-    <div class="px-4 mt-1">
+    <div class="px-4 pb-6 mt-1">
         <div class="flex items-center justify-between mb-3">
             <SearchAndFilter
                 v-model:value="queryText"
                 placeholder="Search"
                 :autofocus="true"
                 @change="handleOwnerSearch"
+                size="minimal"
             >
             </SearchAndFilter>
             <a-button-group>

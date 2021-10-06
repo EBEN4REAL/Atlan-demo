@@ -5,71 +5,90 @@
     >
         <a-spin size="small"></a-spin>
     </div>
-    <div v-else class="flex justify-between w-full">
-        <div class="flex-grow">
-            <div v-if="editable" class="p-2 shadow">
-                <a-dropdown
-                    placement="bottomLeft"
-                    :trigger="['click']"
-                    @click.stop="() => {}"
+    <div v-else class="w-full">
+        <div v-if="editable" class="py-2 shadow">
+            <a-dropdown
+                placement="bottomLeft"
+                :trigger="['click']"
+                @click.stop="() => {}"
+            >
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item
+                            v-for="item in AnnouncementList"
+                            :key="item"
+                            @click="handleMenuClick(item)"
+                        >
+                            <div class="flex items-center space-x-2">
+                                <component
+                                    :is="item.icon"
+                                    class="w-auto h-4 ml-1 mr-2 pushtop"
+                                />
+
+                                {{ item.label }}
+                            </div>
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+
+                <div
+                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer max-w-min"
+                    :class="
+                        announcementType === 'information'
+                            ? 'information-bg'
+                            : announcementType === 'issue'
+                            ? 'issue-bg'
+                            : announcementType === 'warning'
+                            ? 'warning-bg'
+                            : ''
+                    "
                 >
-                    <template #overlay>
-                        <a-menu>
-                            <a-menu-item
-                                v-for="item in AnnouncementList"
-                                :key="item"
-                                @click="handleMenuClick(item)"
-                            >
-                                <div class="flex items-center space-x-2">
-                                    <component
-                                        :is="item.icon"
-                                        class="w-auto h-4 ml-1 mr-2 pushtop"
-                                    />
+                    <component
+                        :is="announcementObject?.icon"
+                        class="w-auto h-4"
+                    />
 
-                                    {{ item.label }}
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
+                    <span class="mb-0 ml-2">
+                        {{ announcementObject?.label }}
+                    </span>
+                </div>
+            </a-dropdown>
+            <a-input
+                :ref="titleBar"
+                v-model:value="announcementHeader"
+                placeholder="Add Announcement Header..."
+                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+            />
+            <a-textarea
+                v-model:value="announcementDescription"
+                placeholder="Add description..."
+                class="text-gray-500 border-0 shadow-none outline-none"
+                :maxlength="280"
+                @change="handleTextAreaUpdate"
+            />
 
-                    <div
-                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
-                        :class="
-                            announcementType === 'information'
-                                ? 'information-bg'
-                                : announcementType === 'issue'
-                                ? 'issue-bg'
-                                : announcementType === 'warning'
-                                ? 'warning-bg'
-                                : ''
-                        "
-                    >
-                        <component
-                            :is="announcementObject?.icon"
-                            class="w-auto h-4"
-                        />
-
-                        <span class="mb-0 ml-2">
-                            {{ announcementObject?.label }}
-                        </span>
-                    </div>
-                </a-dropdown>
-                <a-input
-                    :ref="titleBar"
-                    v-model:value="announcementHeader"
-                    placeholder="Add Announcement Header..."
-                    class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-                />
-                <a-textarea
-                    v-model:value="announcementDescription"
-                    placeholder="Add description..."
-                    class="text-gray-500 border-0 shadow-none outline-none"
-                    :maxlength="280"
-                    @change="handleTextAreaUpdate"
-                />
+            <div class="flex items-center justify-end mt-2 mr-2">
+                <a-button
+                    class="mr-2"
+                    :loading="false"
+                    :loading-text="'Cancelling...'"
+                    @click="onCancel"
+                    >Cancel</a-button
+                >
+                <a-button
+                    type="primary"
+                    :loading="isLoading"
+                    @click="handleUpdate"
+                    >Update</a-button
+                >
             </div>
-            <div v-else>
-                <div v-if="!bannerMessage || bannerMessage === ''">
+        </div>
+        <div v-else>
+            <div
+                v-if="!bannerMessage || bannerMessage === ''"
+                class="flex justify-between"
+            >
+                <div>
                     <div
                         class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
                         :class="
@@ -93,29 +112,53 @@
                     </div>
 
                     <div
-                        class="px-3 py-1 text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
+                        class="py-1 mt-1 text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
                     >
                         Add Announcement Header...
                     </div>
                     <div
-                        class="px-3 py-1 text-gray-500 border-0 shadow-none outline-none "
+                        class="py-1 text-gray-500 border-0 shadow-none outline-none "
                     >
                         Add description...
                     </div>
                 </div>
-                <div
-                    v-else
-                    class="flex p-4 border rounded"
-                    :class="
-                        bannerType === 'information'
-                            ? 'information-bg information-border'
-                            : bannerType === 'issue'
-                            ? 'issue-bg issue-border'
-                            : bannerType === 'warning'
-                            ? 'warning-bg warning-border'
-                            : ''
-                    "
-                >
+                <div>
+                    <a-dropdown trigger="click" placement="bottomRight">
+                        <a-button
+                            class="px-2 bg-transparent border-transparent shadow-none hover:border-current"
+                        >
+                            <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
+                        </a-button>
+                        <template #overlay>
+                            <a-menu mode="vertical">
+                                <a-menu-item key="edit" @click="startEdit">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Edit"
+                                            class="h-4 mr-2"
+                                        />
+                                        Edit
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
+            </div>
+            <div
+                v-else
+                class="flex justify-between p-4 border rounded"
+                :class="
+                    bannerType === 'information'
+                        ? 'information-bg information-border'
+                        : bannerType === 'issue'
+                        ? 'issue-bg issue-border'
+                        : bannerType === 'warning'
+                        ? 'warning-bg warning-border'
+                        : ''
+                "
+            >
+                <div class="flex">
                     <div>
                         <component
                             :is="bannerObject?.icon"
@@ -171,41 +214,36 @@
                         </div>
                     </div>
                 </div>
+                <div>
+                    <a-dropdown trigger="click" placement="bottomRight">
+                        <a-button
+                            class="px-2 ml-2 bg-transparent border-transparent shadow-none hover:border-current"
+                        >
+                            <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
+                        </a-button>
+                        <template #overlay>
+                            <a-menu mode="vertical">
+                                <a-menu-item key="edit" @click="startEdit">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Edit"
+                                            class="h-4 mr-2"
+                                        />
+                                        Edit
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
             </div>
         </div>
-
-        <div v-if="editable" class="flex ml-2">
-            <a-button class="mr-2" :loading="isLoading" @click="handleUpdate"
-                >Update</a-button
-            >
-
-            <a-button
-                type="link"
-                :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
-                :loading="false"
-                :loading-text="'Cancelling...'"
-                @click="onCancel"
-                >Cancel</a-button
-            >
-        </div>
-        <a-button v-else type="link" class="ml-2 text-sm" @click="startEdit">
-            <fa icon="fa pencil" class="mx-2 text-xs" />
-            Edit
-        </a-button>
     </div>
 </template>
 
 <script lang="ts">
     import { useTimeAgo } from '@vueuse/core'
-    import {
-        defineComponent,
-        ref,
-        PropType,
-        Ref,
-        computed,
-        toRefs,
-        nextTick,
-    } from 'vue'
+    import { defineComponent, ref, PropType, Ref, computed, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AnnouncementList from '~/constant/announcement'
     import addAnnouncement from '~/composables/asset/addAnnouncement'
@@ -225,7 +263,6 @@
         setup(props) {
             const editable = ref(false)
             const announcementHeader = ref('')
-
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
             const { asset } = toRefs(props)

@@ -11,38 +11,23 @@
                 />
             </a-button>
         </div>
-        <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
+        <div v-if="page !== 'profile'" class="p-5 border-b">
             <div class="flex items-center justify-between mb-0 text-sm">
                 <AssetLogo :asset="selectedAsset" variant="md" />
 
                 <div class="flex space-x-2">
                     <a-button-group>
-                        <a-button size="small"
+                        <a-button class="w-8 h-8" size="small"
                             ><AtlanIcon icon="Share"
                         /></a-button>
-                        <a-button size="small">
+
+                        <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="External" />
                         </a-button>
-                        <a-button size="small">
+                        <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="Bookmark" />
                         </a-button>
                     </a-button-group>
-
-                    <!-- <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="Share" />
-                        </template>
-                    </AtlanButton>
-                    <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="External" />
-                        </template>
-                    </AtlanButton>
-                    <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="Bookmark" />
-                        </template>
-                    </AtlanButton> -->
                 </div>
             </div>
 
@@ -65,7 +50,7 @@
 
                 <Tooltip
                     :tooltip-text="name"
-                    classes="font-bold text-base cursor-pointer text-primary hover:underline w-full"
+                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
@@ -78,7 +63,7 @@
                     :key="selectedAsset.guid"
                     :show-no-status="false"
                     :status-id="selectedAsset?.attributes?.assetStatus"
-                    class="ml-1.5"
+                    class="ml-1.5 mb-1"
                 ></StatusBadge>
             </div>
         </div>
@@ -93,28 +78,6 @@
                 class="overflow-y-auto"
             >
                 <template #tab>
-                    <!-- <a-tooltip
-                        placement="left"
-                        :mouse-enter-delay="0.5"
-                        color="white"
-                    >
-                        <template #title>
-                            <span class="text-gray-500">
-                                {{ tab.tooltip }}
-                            </span>
-                        </template>
-                        <div
-                            class="flex items-center justify-center w-full h-full "
-                        >
-                            <AtlanIcon
-                                :icon="tab.icon"
-                                :class="
-                                    activeKey === index ? 'text-primary' : ''
-                                "
-                                class="h-5"
-                            />
-                        </div>
-                    </a-tooltip> -->
                     <SidePanelTabHeaders
                         :title="tab.tooltip"
                         :icon="tab.icon"
@@ -128,7 +91,7 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
+                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -231,10 +194,10 @@
             const infoTabData: Ref<any> = ref({})
             // const {} =useMagicKeys();
             const tabHeights = {
-                discovery: 'calc(100vh - 7.8rem)',
+                discovery: 'calc(100vh - 9.2rem)',
                 profile: 'calc(100vh - 3rem)',
-                biOverview: 'calc(100vh - 8.06rem)',
-                nonBiOverview: 'calc(100vh - 8.3rem)',
+                biOverview: 'calc(100vh - 9.2rem)',
+                nonBiOverview: 'calc(100vh - 9.2rem)',
             }
 
             function getAssetEntitity(data: Ref): any {

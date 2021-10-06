@@ -2,7 +2,7 @@ import Vue, { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 import { setupLayouts } from 'virtual:generated-layouts'
-
+import { message } from 'ant-design-vue'
 import { createHead } from '@vueuse/head'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import App from './App.vue'
@@ -53,10 +53,8 @@ router.beforeEach(async (to, from, next) => {
                         true,
                         app.config.globalProperties.$keycloak.tokenParsed
                     )
+                    
                     next()
-
-                    (window as any).analytics.page(to.name)
-
 
                 } else {
                     tenantStore.setIsAuthenticated(false, null)
@@ -67,9 +65,11 @@ router.beforeEach(async (to, from, next) => {
             } catch (err) {
                 console.log('login', err)
                 console.dir('error in init', err)
-                app.config.globalProperties.$error(
-                    'Authentication Server is not available. Please try again'
-                )
+
+                message.error({
+                    content: `Authentication Server is not available. Please try again`,
+                    duration: 3,
+                })
 
                 // window.location.replace("/not-found");
             }
@@ -83,6 +83,11 @@ router.beforeEach(async (to, from, next) => {
             )
         }
     } else {
-        next()
+        return false;
     }
+})
+
+//After each success of route, track it
+router.afterEach((to, from) => {
+    (window as any).analytics.page(to.name)
 })

@@ -65,12 +65,12 @@
                 ></a-tooltip>
 
                 <Tooltip
-                    :tooltip-text="name"
+                    :tooltip-text="selectedAsset.attributes?.name"
                     classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
-                            ? getColumnUrl(selectedAsset)
+                            ? `/${getColumnUrl(selectedAsset)}`
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />

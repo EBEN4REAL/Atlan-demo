@@ -9,6 +9,7 @@
         </div>
         <Status :existing-status="existingStatus"></Status>
         <Owners></Owners>
+        <Classifications />
         <a-button @click="updateAssets(selectedAssets)">Update</a-button>
     </div>
 </template>
@@ -18,12 +19,14 @@ import { provide, toRefs, watch } from 'vue'
 import useBulkSelect from '~/composables/asset/useBulkSelect'
 import Status from '@/common/bulk/widgets/status.vue'
 import Owners from '@/common/bulk/widgets/owners.vue'
+import Classifications from '@/common/bulk/widgets/classifications.vue'
 
 export default {
     name: 'BulkSidebar',
     components: {
         Status,
         Owners,
+        Classifications,
     },
     props: {
         bulkSelectedAssets: {
@@ -46,6 +49,9 @@ export default {
             existingOwnerUsers,
             existingOwnerGroups,
             updatedOwners,
+            classifications: classificationsRef,
+            originalClassifications: originalClassificationsRef,
+            classificationFrequencyMap,
         } = useBulkSelect()
         /** PROVIDERS */
         provide('selectedAssets', selectedAssets)
@@ -55,6 +61,9 @@ export default {
         provide('existingOwnerUsers', existingOwnerUsers)
         provide('existingOwnerGroups', existingOwnerGroups)
         provide('updatedOwners', updatedOwners)
+        provide('classificationsRef', classificationsRef)
+        provide('originalClassificationsRef', originalClassificationsRef)
+        provide('classificationFrequencyMap', classificationFrequencyMap)
 
         watch(
             selectedAssets,

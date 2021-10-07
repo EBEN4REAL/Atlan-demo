@@ -1,5 +1,5 @@
 import { ref, watch, toRaw, computed } from 'vue'
-import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from '~/constant/business_metadata'
+import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from '~/constant/business_metadata_template'
 // import { generateUUID } from '~/utils/helper/generator'
 import useBusinessMetadataStore from '~/store/businessMetadata'
 import { BusinessMetadataService } from '~/api/atlas/businessMetadata'

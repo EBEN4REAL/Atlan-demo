@@ -161,7 +161,7 @@
         <div class="flex">
             <div class="relative" style="width: 100%">
                 <a-form-item
-                    :name="['options', 'applicableEntityTypes']"
+                    :name="['options', 'customEntityTypes']"
                     class="mb-0"
                 >
                     <template #label>
@@ -183,7 +183,7 @@
                     </template>
                     <a-tree-select
                         v-model:value="
-                            attributeInput.data.options.applicableEntityTypes
+                            attributeInput.data.options.customEntityTypes
                         "
                         no-results-text="No entities found"
                         style="width: 100%"
@@ -228,14 +228,15 @@
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
-    } from '~/constant/business_metadata'
+        applicableEntityTypes,
+        customEntityTypes,
+    } from '~/constant/business_metadata_template'
     // * Plugins
 
     // * Utils
     // import { generateUUID } from "~/utils/helper/generator";
 
     // * Composables
-    import useAssetQualifiedName from '~/composables/asset/useAssetQualifiedName'
 
     export default defineComponent({
         components: {},
@@ -274,8 +275,6 @@
 
             // * Composables
             const { enumListData: enumsList } = useEnums()
-            const { getApplicableEntitiesForBmAttributes } =
-                useAssetQualifiedName()
 
             /** @return all enum list data formatted of the component */
             const finalEnumsList = computed(() => {
@@ -297,15 +296,12 @@
              * display already added attirbutes in tags
              */
             const finalApplicableTypeNamesOptions = computed(() => {
-                const options = getApplicableEntitiesForBmAttributes()
-                if (props.attribute?.options?.applicableEntityTypes)
-                    return options
-                        .filter((t) => !addedEntityTypes.value.includes(t.id))
-                        .map((o) => ({
-                            title: o.label,
-                            value: o.id,
-                            key: o.id,
-                        }))
+                const options = JSON.parse(JSON.stringify(customEntityTypes))
+                if (props.attribute?.options?.customEntityTypes)
+                    return options.filter(
+                        (t) => !addedEntityTypes.value.includes(t.key)
+                    )
+
                 return []
             })
             /**
@@ -346,9 +342,9 @@
             const normalize = (data: object): object => {
                 const temp = JSON.parse(JSON.stringify(data))
                 // ? stringify applicable type
-                temp.options.applicableEntityTypes = JSON.stringify([
+                temp.options.customEntityTypes = JSON.stringify([
                     ...addedEntityTypes.value,
-                    ...temp.options.applicableEntityTypes,
+                    ...temp.options.customEntityTypes,
                 ])
 
                 // ? add enum types as typeName
@@ -410,16 +406,16 @@
                 }
                 // ? By default append all applicable types if is new // also emit?
                 if (props.attribute.isNew) {
-                    attributeInput.data.options.applicableEntityTypes =
+                    attributeInput.data.options.customEntityTypes =
                         finalApplicableTypeNamesOptions.value.map(
                             (t) => t.value
                         )
                 } else {
                     // ? Display added entity types separately
                     addedEntityTypes.value = JSON.parse(
-                        attributeInput.data.options.applicableEntityTypes
+                        attributeInput.data.options.customEntityTypes
                     )
-                    attributeInput.data.options.applicableEntityTypes = []
+                    attributeInput.data.options.customEntityTypes = []
 
                     // ? parse the original type name if multivalued
                     if (attributeInput.data.options.isEnum) {

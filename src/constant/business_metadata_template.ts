@@ -1,3 +1,15 @@
+import { AssetTypeList } from '~/constant/assetType';
+
+const inApplicableTypeName = ['Connection']
+const otherTypes = [{ title: 'Glossary Term', value: 'AtlasGlossaryTerm', key: 'AtlasGlossaryTerm' }]
+
+
+export const customEntityTypes = [
+  ...otherTypes,
+  ...AssetTypeList.map(t => ({ title: t.label, value: t.id, key: t.id })).filter(type => !inApplicableTypeName.includes(type.key))
+]
+
+export const applicableEntityTypes = ['Catalog']
 
 /**
  * @desc default template for new BM attribute
@@ -11,12 +23,15 @@ export const DEFAULT_ATTRIBUTE = {
   name: "",
   options: {
     /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas */
-    applicableEntityTypes: [],
+    applicableEntityTypes: JSON.stringify(applicableEntityTypes),
+    customEntityTypes: [],
     maxStrLength: "50",
     displayName: "",
+    isFacet: true,
     isEnum: false,
-    isMultiValued: false,
-    enumType: ""
+    image: null,
+    enumType: "",
+
   },
   searchWeight: 3,
   typeName: "string",
@@ -180,3 +195,4 @@ export const operatorsMap = {
     { label: 'Is not Null', value: 'notNull' },
   ],
 };
+

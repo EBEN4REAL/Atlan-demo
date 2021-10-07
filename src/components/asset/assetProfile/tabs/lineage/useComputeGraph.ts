@@ -5,7 +5,11 @@ import useUpdateGraph from './useUpdateGraph'
 const { updateEdgesStroke } = useUpdateGraph()
 
 const getType = (entity) => getNodeTypeText[entity.typeName]
-const getSource = (entity) => entity.attributes.qualifiedName.split('/')[0]
+const getSource = (entity) => {
+    const item = entity.attributes.qualifiedName.split('/')
+    if (item[0] === 'default') return item[1]
+    return item[0]
+}
 
 export default function useComputeGraph(
     graph,
@@ -143,9 +147,12 @@ export default function useComputeGraph(
         true
     )
 
-    /* Center Base */
-    const cell = graph.value.getCellById(baseEntityGuid)
-    if (cell) graph.value.centerCell(cell)
+    if (!reload) {
+        /* Center Base */
+        const cell = graph.value.getCellById(baseEntityGuid)
+        if (cell) graph.value.centerCell(cell)
+        graph.value.centerPoint(null, 600, { padding: { right: 400 } })
+    }
 
     /* Zoom */
     graph.value.zoom(-0.4)

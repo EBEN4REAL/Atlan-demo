@@ -4,6 +4,8 @@ import { KeyMaps } from '~/api/keyMap'
 import whoami from '../user/whoami'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useBulkSelectOwners from '~/composables/asset/useBulkSelectOwners'
+import useBulkSelectClassifications from './useBulkSelectClassifications'
+import useBulkSelectTerms from './useBulkSelectTerms'
 
 export default function useBulkSelect() {
     const selectedAssets: Ref<assetInterface[]> = ref([])
@@ -57,6 +59,24 @@ export default function useBulkSelect() {
         handleUpdateOwners,
     } = useBulkSelectOwners(selectedAssets)
 
+    /** CLASSIFICATIONS */
+    const {
+        classifications,
+        resetClassifications,
+        initialiseLocalState,
+        originalClassifications,
+        updateClassifications,
+        classificationFrequencyMap,
+    } = useBulkSelectClassifications(selectedAssets)
+    /** TERMS */
+    const {
+        terms,
+        resetTerms,
+        initialiseLocalState: initialiseLocalStateTerms,
+        originalTerms,
+        updateTerms,
+        termFrequencyMap,
+    } = useBulkSelectTerms(selectedAssets)
     // Helper function
     const getBulkUpdateRequestPayload = (assetList) => {
         const requestPayloadSkeleton = assetList.map((asset) => {
@@ -129,6 +149,29 @@ export default function useBulkSelect() {
         // Add flow for updating asset status message
         return { entities: requestPayloadAssetList }
     }
+    const getBulkClassificationUpdateRequestPayload = (assetList) => {
+        const requestPayload = {}
+        assetList.forEach((asset) => {
+            // TODO:Add option for propagate and removePropagationsOnEntityDelete
+            const assetClassifications = classifications.value?.[
+                asset.guid
+            ].map((clsf) => ({
+                typeName: clsf.typeName,
+                attributes: {},
+                propagate: false,
+                removePropagationsOnEntityDelete: false,
+            }))
+
+            requestPayload[asset.guid] = {
+                typeName: asset.typeName,
+                attributes: {
+                    qualifiedName: asset?.attributes?.qualifiedName,
+                },
+                classifications: assetClassifications,
+            }
+        })
+        return { guidHeaderMap: requestPayload }
+    }
     const updateAssets = (assetList) => {
         // status and owners update can be done in a single call using bulk endpoint
         if (
@@ -170,10 +213,37 @@ export default function useBulkSelect() {
             // call to link terms endpoint
         }
         if (
-            updatedClassifications.value &&
-            Object.keys(updatedClassifications.value).length
+            classifications.value &&
+            Object.keys(classifications.value).length
         ) {
             // call to link classifications endpoint
+            const requestPayload =
+                getBulkClassificationUpdateRequestPayload(assetList)
+            const { data, error, isLoading } = useAPIAsyncState<any>(
+                KeyMaps.classification.BULK_LINK_CLASSIFICATION,
+                'POST',
+                { body: requestPayload },
+                { immediate: true, resetOnExecute: false }
+            )
+            watch([data, error, isLoading], () => {
+                if (isLoading.value === false) {
+                    if (error.value === undefined) {
+                        assetList.forEach((asset) => {
+                            const updatedClassificationsLocal =
+                                requestPayload.guidHeaderMap[asset.guid]
+                            // eslint-disable-next-line no-param-reassign
+                            asset.classifications = {
+                                ...updatedClassificationsLocal?.classifications,
+                            }
+                        })
+                        // } else {
+                        //     message.error({
+                        //         content: `Bulk update failed, please try again.`,
+                        //     })
+                        // }
+                    }
+                }
+            })
         }
     }
 
@@ -189,5 +259,17 @@ export default function useBulkSelect() {
         updatedOwners,
         handleUpdateOwners,
         updateAssets,
+        classifications,
+        resetClassifications,
+        initialiseLocalState,
+        originalClassifications,
+        updateClassifications,
+        classificationFrequencyMap,
+        terms,
+        resetTerms,
+        initialiseLocalStateTerms,
+        originalTerms,
+        updateTerms,
+        termFrequencyMap,
     }
 }

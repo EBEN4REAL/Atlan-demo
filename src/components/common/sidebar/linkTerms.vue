@@ -87,219 +87,211 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        watch,
-        toRefs,
-    } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
-    import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    export default defineComponent({
-        components: { PillGroup },
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
+import { computed, defineComponent, PropType, ref, watch, toRefs } from 'vue'
+import { assetInterface } from '~/types/assets/asset.interface'
+import PillGroup from '~/components/UI/pill/pillGroup.vue'
+import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
+
+export default defineComponent({
+    components: { PillGroup },
+    props: {
+        selectedAsset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-        emits: ['update:selectedAsset'],
-        setup(props, { emit }) {
-            // data
-            const { selectedAsset } = toRefs(props) // to update in cards
-            const asset = computed(() => props.selectedAsset ?? {})
-            const linkTermPopover = ref(false)
-            const showLinkTermPopover = ref(false)
+    },
+    emits: ['update:selectedAsset'],
+    setup(props, { emit }) {
+        // data
+        const { selectedAsset } = toRefs(props) // to update in cards
+        const asset = computed(() => props.selectedAsset ?? {})
+        const linkTermPopover = ref(false)
+        const showLinkTermPopover = ref(false)
 
-            const pillTerms = ref([...props.selectedAsset?.meanings]) // linked terms show in sidebar as pills
-            const { terms, isLoading: searchLoading } = useGtcSearch(
-                undefined,
-                ref(true),
-                'AtlasGlossaryTerm'
-            ) // gets all the terms using basic search
+        const pillTerms = ref([...props.selectedAsset?.meanings]) // linked terms show in sidebar as pills
+        const { terms, isLoading: searchLoading } = useGtcSearch(
+            undefined,
+            ref(true),
+            'AtlasGlossaryTerm'
+        ) // gets all the terms using basic search
 
-            const availableTerms = ref([]) // terms to show in popover
+        const availableTerms = ref([]) // terms to show in popover
 
-            const assetLinkedTerms = computed(
-                () => selectedAsset.value.meaningNames ?? []
+        const assetLinkedTerms = computed(
+            () => selectedAsset.value.meaningNames ?? []
+        )
+
+        const selectedTermForLink = ref([])
+        const createErrorText = ref('')
+        const createClassificationFormRef = ref()
+        // methods
+
+        // update avaible terms on link and unlink
+        const updateAvailableTerms = () => {
+            availableTerms.value = [...terms.value]
+            availableTerms.value = availableTerms.value.filter(
+                (el) =>
+                    !selectedAsset.value.meaningNames.includes(el.displayText)
             )
+        }
 
-            const selectedTermForLink = ref([])
-            const createErrorText = ref('')
-            const createClassificationFormRef = ref()
-            // methods
+        const handlePopoverVisibleChange = () => {
+            showLinkTermPopover.value = false
+            selectedTermForLink.value = []
+        }
 
-            // update avaible terms on link and unlink
-            const updateAvailableTerms = () => {
-                availableTerms.value = [...terms.value]
-                availableTerms.value = availableTerms.value.filter(
-                    (el) =>
-                        !selectedAsset.value.meaningNames.includes(
-                            el.displayText
-                        )
-                )
-            }
-
-            const handlePopoverVisibleChange = () => {
+        const toggleLinkTermPopover = () => {
+            if (!linkTermPopover.value) linkTermPopover.value = true
+            else {
                 showLinkTermPopover.value = false
                 selectedTermForLink.value = []
             }
+            updateAvailableTerms()
+        }
 
-            const toggleLinkTermPopover = () => {
-                if (!linkTermPopover.value) linkTermPopover.value = true
-                else {
-                    showLinkTermPopover.value = false
-                    selectedTermForLink.value = []
-                }
-                updateAvailableTerms()
-            }
+        const handleCancel = () => {
+            showLinkTermPopover.value = false
+            linkTermPopover.value = false
+        }
 
-            const handleCancel = () => {
-                showLinkTermPopover.value = false
-                linkTermPopover.value = false
-            }
+        // link term on click ok
+        const createTerm = () => {
+            const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
+            selectedTermForLink.value.map((el) => {
+                const { response, loading } = assignLinkedAssets(el, [
+                    props.selectedAsset,
+                ])
+                watch(response, (data) => {
+                    const termToBeAdded = terms.value.filter(
+                        (term) => term.guid === el
+                    )
+                    handleCancel()
+                    const obj = {
+                        displayText: termToBeAdded[0].displayText,
+                        termGuid:
+                            termToBeAdded[0].termGuid || termToBeAdded[0].guid,
+                    }
+                    pillTerms.value = [...pillTerms.value, obj]
+                    selectedAsset.value.meanings.push(obj)
+                    selectedAsset.value.meaningNames.push(obj.displayText)
 
-            // link term on click ok
-            const createTerm = () => {
-                const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
-                selectedTermForLink.value.map((el) => {
-                    const { response, loading } = assignLinkedAssets(el, [
-                        props.selectedAsset,
-                    ])
-                    watch(response, (data) => {
-                        const termToBeAdded = terms.value.filter(
-                            (term) => term.guid === el
-                        )
-                        handleCancel()
-                        const obj = {
-                            displayText: termToBeAdded[0].displayText,
-                            termGuid:
-                                termToBeAdded[0].termGuid ||
-                                termToBeAdded[0].guid,
-                        }
-                        pillTerms.value = [...pillTerms.value, obj]
-                        selectedAsset.value.meanings.push(obj)
-                        selectedAsset.value.meaningNames.push(obj.displayText)
-
-                        updateAvailableTerms()
-                        emit('update:selectedAsset', props.selectedAsset)
-                    })
+                    updateAvailableTerms()
+                    emit('update:selectedAsset', props.selectedAsset)
                 })
-            }
-            // unlink term on pill cross btn clicked
-            const unLinkTerm = (term: any) => {
-                const { unLinkAssets } = useLinkAssets()
-                const { response: unlinkResponse, loading } = unLinkAssets(
-                    term?.termGuid || term?.guid,
-                    [props.selectedAsset]
+            })
+        }
+        // unlink term on pill cross btn clicked
+        const unLinkTerm = (term: any) => {
+            const { unLinkAssets } = useLinkAssets()
+            const { response: unlinkResponse, loading } = unLinkAssets(
+                term?.termGuid || term?.guid,
+                [props.selectedAsset]
+            )
+            pillTerms.value = pillTerms.value.filter((el) => {
+                if (term?.termGuid) {
+                    return el?.termGuid !== term?.termGuid
+                }
+                if (el?.guid) return el?.guid !== term?.guid
+                return el?.termGuid !== term?.guid
+            })
+            selectedAsset.value.meaningNames =
+                selectedAsset.value?.meaningNames.filter(
+                    (el) => el !== term?.displayText
                 )
-                pillTerms.value = pillTerms.value.filter((el) => {
+            selectedAsset.value.meanings = selectedAsset.value.meanings.filter(
+                (el) => {
                     if (term?.termGuid) {
                         return el?.termGuid !== term?.termGuid
                     }
-                    if (el?.guid) return el?.guid !== term?.guid
                     return el?.termGuid !== term?.guid
-                })
-                selectedAsset.value.meaningNames =
-                    selectedAsset.value?.meaningNames.filter(
-                        (el) => el !== term?.displayText
-                    )
-                selectedAsset.value.meanings =
-                    selectedAsset.value.meanings.filter((el) => {
-                        if (term?.termGuid) {
-                            return el?.termGuid !== term?.termGuid
-                        }
-                        return el?.termGuid !== term?.guid
-                    })
-
-                watch(unlinkResponse, (data) => {
-                    // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
-                    emit('update:selectedAsset', props.selectedAsset)
-                    updateAvailableTerms()
-                })
-            }
-            //  watchers
-            watch(
-                terms,
-                () => {
-                    updateAvailableTerms()
-                },
-                { immediate: true }
+                }
             )
 
-            watch(selectedAsset, () => {
-                pillTerms.value = [...props.selectedAsset?.meanings]
+            watch(unlinkResponse, (data) => {
+                // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
+                emit('update:selectedAsset', props.selectedAsset)
                 updateAvailableTerms()
             })
+        }
+        //  watchers
+        watch(
+            terms,
+            () => {
+                updateAvailableTerms()
+            },
+            { immediate: true }
+        )
 
-            return {
-                asset,
-                selectedAsset,
-                createClassificationFormRef,
-                showLinkTermPopover,
-                selectedTermForLink,
-                linkTermPopover,
-                assetLinkedTerms,
-                createErrorText,
-                handlePopoverVisibleChange,
-                toggleLinkTermPopover,
-                terms,
-                availableTerms,
-                handleCancel,
-                searchLoading,
-                createTerm,
-                pillTerms,
-                unLinkTerm,
-            }
-        },
-    })
+        watch(selectedAsset, () => {
+            pillTerms.value = [...props.selectedAsset?.meanings]
+            updateAvailableTerms()
+        })
 
-    // typeName is name in classification
+        return {
+            asset,
+            selectedAsset,
+            createClassificationFormRef,
+            showLinkTermPopover,
+            selectedTermForLink,
+            linkTermPopover,
+            assetLinkedTerms,
+            createErrorText,
+            handlePopoverVisibleChange,
+            toggleLinkTermPopover,
+            terms,
+            availableTerms,
+            handleCancel,
+            searchLoading,
+            createTerm,
+            pillTerms,
+            unLinkTerm,
+        }
+    },
+})
+
+// typeName is name in classification
 </script>
 
 <style lang="less" module>
-    .borderless {
-        @apply border-none shadow-none px-4 !important;
+.borderless {
+    @apply border-none shadow-none px-4 !important;
 
-        &:global(.ant-input-affix-wrapper-focused) {
-            @apply border-none shadow-none;
-        }
+    &:global(.ant-input-affix-wrapper-focused) {
+        @apply border-none shadow-none;
     }
-    :global(.ant-form-item-label
-            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
-        @apply hidden;
-    }
-    // Aesterik in right side
-    :global(.ant-form-item-label
-            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
-        display: inline-block;
-        margin-left: 4px;
-        color: #ff4d4f;
-        font-size: 14px;
-        font-family: SimSun, sans-serif;
-        line-height: 1;
-        content: '*';
-    }
+}
+:global(.ant-form-item-label
+        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
+    @apply hidden;
+}
+// Aesterik in right side
+:global(.ant-form-item-label
+        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+    display: inline-block;
+    margin-left: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: '*';
+}
 </style>
 <style lang="less" scoped>
-    ._bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .classification-cross-btn {
-        height: 100%;
-        right: 6px;
-        @apply -top-0;
-        background: linear-gradient(
-            -90deg,
-            rgba(82, 119, 215, 1) 60%,
-            rgba(0, 0, 0, 0) 100%
-        );
-    }
-    .classification-name-width {
-        max-width: 12rem;
-    }
+._bg-primary-light {
+    background: rgba(34, 81, 204, 0.05);
+}
+.classification-cross-btn {
+    height: 100%;
+    right: 6px;
+    @apply -top-0;
+    background: linear-gradient(
+        -90deg,
+        rgba(82, 119, 215, 1) 60%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+.classification-name-width {
+    max-width: 12rem;
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
-    <div class="w-full h-full px-3 rounded">
-        <div class="w-full h-full overflow-x-hidden rounded">
+    <div class="relative w-full h-full rounded">
+        <div class="w-full h-full px-3 overflow-x-hidden rounded">
             <div class="flex items-center justify-between w-full my-2">
                 <div class="flex items-center text-base">
                     <span class="mr-1">{{ activeInlineTab.label }}</span>
@@ -189,18 +189,37 @@
                 @onSaveQuery="saveQuery"
             />
             <Monaco @editorInstance="setInstance" />
+
+            <div
+                class="absolute bottom-0 left-0 flex items-center justify-between w-full text-xs text-gray-500 bg-white "
+            >
+                <WarehouseConnector />
+                <div class="flex items-center">
+                    <div class="flex" v-if="editorFocused">
+                        <span class="mr-2">
+                            Ln:&nbsp;{{ editorPos.lineNumber }}
+                        </span>
+                        <span class="mr-2">
+                            Col:&nbsp; {{ editorPos.column }}
+                        </span>
+                    </div>
+                    <span class="mr-2"> Spaces:&nbsp;4 </span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         inject,
         Ref,
         defineAsyncComponent,
         ref,
         ComputedRef,
+        watch,
         toRaw,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -211,11 +230,18 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
+    // import ActionButtons from '~/components/insights/playground/editor/actionButtons/index.vue'
+    import WarehouseConnector from '~/components/insights/playground/editor/warehouse/index.vue'
+
     import AtlanBtn from '~/components/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRouter } from 'vue-router'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
@@ -224,6 +250,7 @@
             AtlanBtn,
             ThreeDotMenu,
             StatusBadge,
+            WarehouseConnector,
         },
         props: {},
         setup() {
@@ -231,6 +258,11 @@
 
             const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
+            const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
+                column: 0,
+                lineNumber: 0,
+            })
+            const editorFocused: Ref<boolean> = ref(false)
             const saveModalRef = ref()
             const limitRows = ref(false)
             const showcustomToolBar = ref(false)
@@ -316,7 +348,25 @@
                     'editor.action.formatDocument'
                 )
             }
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+            const provideData: provideDataInterface = {
+                editorPos: editorPos,
+                editorFocused: editorFocused,
+            }
+            useProvide(provideData)
+            /*-------------------------------------*/
+
+            watch(editorInstance, () => {
+                const pos = toRaw(editorInstance.value).getPosition()
+                editorPos.value.column = pos.column
+                editorPos.value.lineNumber = pos.lineNumber
+                console.log(pos)
+            })
             return {
+                editorFocused,
+                editorPos,
                 limitRows,
                 isUpdating,
                 showcustomToolBar,
@@ -341,6 +391,12 @@
 <style lang="less" scoped>
     .placeholder {
         background-color: #f4f4f4;
+    }
+    .footer {
+        height: 1rem;
+    }
+    .editor_height {
+        height: 95%;
     }
 </style>
 

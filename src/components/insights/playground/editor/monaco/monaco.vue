@@ -53,14 +53,22 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const editorFocused = inject('editorFocused') as Ref<boolean>
+            const editorPos = inject('editorPos') as Ref<{
+                column: number
+                lineNumber: number
+            }>
             const monacoRoot = ref<HTMLElement>()
             const disposable: Ref<monaco.IDisposable | undefined> = ref()
             const currentPosition: Ref<any> = ref({})
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
-            const { onEditorContentChange, formatter } = useEditor(
-                tabs,
-                activeInlineTab
-            )
+            const outputPaneSize = inject('outputPaneSize') as Ref<number>
+            const {
+                onEditorContentChange,
+                formatter,
+                setEditorPos,
+                setEditorFocusedState,
+            } = useEditor(tabs, activeInlineTab)
 
             const entityFilters = {
                 condition: 'OR',
@@ -226,11 +234,15 @@
                     const lastTypedCharacter = event?.changes[0]?.text
                     triggerAutoCompletion(lastTypedCharacter)
                 })
-                // saving current position
-                // editor?.onDidBlurEditorText(() => {
-                //     setCurrentPosition(editor?.getPosition())
-                //     console.log('currPositionSet', getCurrentPosition())
-                // })
+                editor?.onDidChangeCursorPosition(() => {
+                    setEditorPos(editor, editorPos)
+                    setEditorFocusedState(true, editorFocused)
+                })
+                editor?.onDidBlurEditorText(() => {
+                    setEditorFocusedState(false, editorFocused)
+                })
+                setEditorFocusedState(true, editorFocused)
+                editor?.focus()
                 // on mounting
             })
 
@@ -273,14 +285,26 @@
                         lineNumber: range.endLineNumber,
                     }
                     editor?.setPosition(position)
-                    // editor?.onDidBlurEditorText(() => {
-                    //     setCurrentPosition(editor?.getPosition())
-                    // })
-                    //on active inline tab change
+                    editor?.onDidChangeCursorPosition(() => {
+                        setEditorPos(editor, editorPos)
+                    })
+                    editor?.focus()
+                    editor?.onDidBlurEditorText(() => {
+                        setEditorFocusedState(false, editorFocused)
+                    })
                     emit('editorInstance', editor, monaco)
                 }
             })
+            watch(outputPaneSize, () => {
+                if (monacoRoot.value) {
+                    monacoRoot.value.style.height = `${
+                        100 - outputPaneSize.value
+                    }%`
+                }
+            })
+
             return {
+                outputPaneSize,
                 monacoRoot,
             }
         },
@@ -289,7 +313,7 @@
 
 <style scoped>
     .monacoeditor {
-        height: 90% !important;
+        min-height: 90%;
     }
     .editor_wrapper {
         overflow: hidden;

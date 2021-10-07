@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { Ref, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
@@ -8,6 +8,19 @@ export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
     activeInlineTab?: Ref<activeInlineTabInterface>
 ) {
+    function setEditorPos(
+        editorInstance: any,
+        editorPos: Ref<{ column: number; lineNumber: number }>
+    ) {
+        const pos = editorInstance.getPosition()
+        editorPos.value = pos
+    }
+    function setEditorFocusedState(
+        state: boolean,
+        editorFocused: Ref<boolean>
+    ) {
+        editorFocused.value = state
+    }
     const { modifyActiveInlineTabEditor } = useInlineTab()
     function onEditorContentChange(event: any, editorText: string) {
         if (activeInlineTab && tabs?.value) {
@@ -110,6 +123,8 @@ export function useEditor(
     }
 
     return {
+        setEditorFocusedState,
+        setEditorPos,
         formatter,
         setSelection,
         focusEditor,

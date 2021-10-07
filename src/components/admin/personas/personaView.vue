@@ -7,23 +7,24 @@
             <SearchAndFilter
                 placeholder="Search for personas"
                 v-model:value="searchTerm"
-                class="pt-6 mb-4"
+                class="mx-4 mt-6 mb-4 bg-white"
                 size="minimal"
             />
-            <aside class="overflow-y-auto" style="height: calc(100% - 4.5rem)">
-                <a-menu
-                    v-model:selectedKeys="selectedPersonaId"
-                    mode="inline"
-                    :class="$style.sidebar"
-                >
-                    <a-menu-item
-                        v-for="persona in filteredPersonas"
-                        :key="persona.id"
+
+            <ExplorerList
+                :list="filteredPersonas"
+                v-model:selected="selectedPersonaId"
+                dataKey="id"
+            >
+                <template #default="{ item, isSelected }">
+                    <span
+                        class="text-sm font-bold truncate"
+                        :class="isSelected ? 'text-primary' : 'text-gray'"
                     >
-                        {{ persona.personaName }}
-                    </a-menu-item>
-                </a-menu>
-            </aside>
+                        {{ item.personaName }}
+                    </span>
+                </template>
+            </ExplorerList>
         </template>
 
         <PersonaScopes :selectedPersona="selectedPersona" />
@@ -59,12 +60,18 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaScopes from './personaScopes.vue'
+    import ExplorerList from '../common/explorerlist.vue'
 
     export default defineComponent({
         name: 'PersonaView',
-        components: { SearchAndFilter, PersonaScopes, ExplorerLayout },
+        components: {
+            SearchAndFilter,
+            PersonaScopes,
+            ExplorerLayout,
+            ExplorerList,
+        },
         setup() {
-            const selectedPersonaId = ref([])
+            const selectedPersonaId = ref('')
             const searchTerm = ref('')
 
             const { listPersonas } = usePersonaService()
@@ -81,9 +88,9 @@
             })
 
             const selectedPersona = computed(() => {
-                if (selectedPersonaId.value[0])
+                if (selectedPersonaId.value)
                     return personaList.value.find(
-                        (ps) => ps.id === selectedPersonaId.value[0]
+                        (ps) => ps.id === selectedPersonaId.value
                     )
                 else return undefined
             })

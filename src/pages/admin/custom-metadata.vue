@@ -19,7 +19,7 @@
             <SearchAndFilter
                 placeholder="Search Custom Metadata"
                 v-model:value="searchText"
-                class="mt-6 mb-4 bg-white"
+                class="mx-4 mt-6 mb-4 bg-white"
             />
 
             <BusinessMetadataList

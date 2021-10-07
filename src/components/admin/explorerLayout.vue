@@ -1,13 +1,13 @@
 <template>
     <div class="flex divide-x scroll-container">
         <aside
-            class="flex flex-col w-1/4 h-full px-4 pt-6 overflow-y-hidden bg-gray-100 "
+            class="flex flex-col w-1/4 h-full pt-6 overflow-y-hidden bg-gray-100 "
         >
-            <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center justify-between px-4 mb-2">
                 <span class="text-2xl">{{ title }}</span>
                 <slot name="action"></slot>
             </div>
-            <span v-if="subTitle" class="mb-0 text-sm text-gray">{{
+            <span v-if="subTitle" class="px-4 mb-0 text-sm text-gray">{{
                 subTitle
             }}</span>
             <slot name="sidebar"></slot>

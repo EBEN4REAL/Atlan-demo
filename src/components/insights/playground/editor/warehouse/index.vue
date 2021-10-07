@@ -12,7 +12,7 @@
                 <img
                     src="/src/assets/images/source/snowflake.png"
                     class="w-3 h-3 mr-2"
-                /><span class="mr-1 text-gray-500">Snowflake</span>
+                /><span class="mr-1 text-gray-500 truncate ...">Snowflake</span>
             </div>
         </a-select-option>
         <a-select-option value="snowflake_mac1" class="text-sm"
@@ -21,7 +21,9 @@
                     src="/src/assets/images/source/snowflake.png"
                     class="w-auto h-3 mr-2"
                 />
-                <span class="mr-1 text-gray-500">Snowflake_mac1</span>
+                <span class="mr-1 text-gray-500 truncate ..."
+                    >Snowflake_mac1</span
+                >
             </div>
         </a-select-option>
         <a-select-option value="snowflake_mac2" class="text-sm"
@@ -30,7 +32,9 @@
                     src="/src/assets/images/source/snowflake.png"
                     class="w-auto h-3 mr-2"
                 />
-                <span class="mr-1 text-gray-500">Snowflake_mac2</span>
+                <span class="mr-1 text-gray-500 truncate ..."
+                    >Snowflake_mac2</span
+                >
             </div>
         </a-select-option>
     </a-select>

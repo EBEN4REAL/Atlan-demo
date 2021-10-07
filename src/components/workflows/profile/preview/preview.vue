@@ -66,8 +66,7 @@
                         :is="tab.component"
                         :selected-workflow="selectedWorkflow"
                         :is-loaded="isLoaded"
-                        @change="handleChange"
-                        @preview="emit('preview', $event)"
+                        @change="emit('change', $event)"
                     ></component>
                 </div>
             </a-tab-pane>
@@ -116,7 +115,7 @@
                 required: false,
             },
         },
-        emits: ['assetMutation', 'closeSidebar', 'preview'],
+        emits: ['assetMutation', 'closeSidebar', 'change'],
         setup(props, { emit }) {
             const { selectedWorkflow } = toRefs(props)
 
@@ -138,7 +137,6 @@
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
-            const handleChange = () => {}
             const tabHeights = {
                 discovery: 'calc(100vh - 7.8rem)',
                 profile: 'calc(100vh - 3rem)',
@@ -170,7 +168,6 @@
                 activeKey,
                 filteredTabs,
                 emit,
-                handleChange,
             }
         },
     })

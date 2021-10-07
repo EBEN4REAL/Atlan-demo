@@ -76,7 +76,7 @@
                 type: Boolean,
             },
         },
-        emits: ['change', 'preview'],
+        emits: ['change'],
         setup(props, { emit }) {
             const { selectedWorkflow: item } = toRefs(props)
 
@@ -98,7 +98,7 @@
                 if (currRunId.value === id) return
                 currRunId.value = id
                 isLoadingRunGraph.value = true
-                emit('preview', id)
+                emit('change', id)
                 setTimeout(() => {
                     isLoadingRunGraph.value = false
                 }, 2500)

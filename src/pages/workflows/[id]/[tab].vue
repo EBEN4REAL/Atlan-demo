@@ -22,7 +22,6 @@
                         "
                         :selected-run-id="selectedRunId"
                         class="bg-transparent"
-                        @preview="handlePreview()"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -198,7 +197,8 @@ meta:
         }
 
         :global(.ant-tabs-tabpane) {
-            height: calc(100vh - 170px) !important;
+            height: 100vh !important;
+            // height: calc(100vh - 170px) !important;
             overflow: auto !important;
             @apply pr-0;
         }

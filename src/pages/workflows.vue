@@ -22,6 +22,7 @@
                 :is="whichComponent.preview"
                 v-if="selected"
                 :selected-workflow="selected"
+                @change="selectedRunId = $event"
             ></component>
         </div>
     </div>

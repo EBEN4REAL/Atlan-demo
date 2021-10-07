@@ -468,10 +468,8 @@ export function useSavedQuery(
     }
 
     const createFolder =  (
-        saveFolderData: any,
+        folderName: string,
         saveFolderLoading: Ref<boolean>,
-        showSaveQueryModal: Ref<boolean>,
-        saveModalRef: Ref<any>,
         type: 'personal' | 'all',
         parentFolderQF: Ref<string>,
         parentFolderGuid: Ref<string>
@@ -495,9 +493,7 @@ export function useSavedQuery(
         const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
 
-        const name = saveFolderData.title
-        const description = saveFolderData.description
-        const assetStatus = saveFolderData.assetStatus
+        const name = folderName
 
         const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
@@ -513,9 +509,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
                     connectionQualifiedName,
-                    description,
                     owner: username.value,
                     tenantId: 'default',
                     connectionId: connectionGuid,
@@ -555,11 +549,9 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveFolderLoading.value = false
                 if (error.value === undefined) {
-                    showSaveQueryModal.value = false
                     message.success({
                         content: `Folder ${name} created!`,
                     })
-                    saveModalRef.value?.clearData()
                 } else {
                     console.log(error.value.toString())
                     message.error({

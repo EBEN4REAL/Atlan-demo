@@ -217,53 +217,79 @@
             }
             const newFolderName = ref('')
             const newFolderCreateable = ref(true)
-            watch(newFolderName, (nfn) => {
-                console.log(nfn)
-            } )
+
             const toggleCreateQueryFolderModal = () => {
-                // createEntityType.value = 'queryFolder'
-                // showSaveQueryModal.value = !showSaveQueryModal.value
-                
-                // not loaded
-                // loaded but not expanded
+                const inputClassName = `${per_immediateParentGuid.value}_folder_input`;
 
-                const inputClass = `${per_immediateParentGuid.value}_folder_input`;
+                const existingInputs = document.getElementsByClassName(inputClassName) 
 
-                const existingInputs = document.getElementsByClassName(inputClass)
-
+                // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
+                    // check if there are existing inputs to avoid duplication
                     if(!existingInputs.length && newFolderCreateable.value) {
                         const parentFolder = document.getElementsByClassName(getRelevantTreeData(savedQueryType.value).guid.value)[0]
                         let ul = parentFolder.getElementsByTagName('ul')[0]
 
                         if(!ul) {
+                            // if the parentFolder does not have any children, it won't contain a ul element either. So create one and append it
                             ul = document.createElement('ul')
                             parentFolder.appendChild(ul)
                         }
                         const li = document.createElement('li')
         
                         const input = document.createElement('input')
-                        input.setAttribute('class', `ant-input mx-4 my-2 w-auto ${inputClass}`)
+
+                        // helper function to make the api call and remove the input on completion
+                        const makeCreateFolderRequest = () => {
+                            const { data } = createFolder(
+                                newFolderName.value,
+                                saveQueryLoading,
+                                savedQueryType.value,
+                                getRelevantTreeData(savedQueryType.value).qualifiedName,
+                                getRelevantTreeData(savedQueryType.value).guid
+                            )
+                            watch(data, async (newData) => {
+                                if (newData) {
+                                    newFolderName.value = '';
+                                    await per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                    await all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                    ul.removeChild(li)
+                                }
+                            })
+                        }
+
+                        input.setAttribute('class', `ant-input mx-4 my-2 w-auto ${inputClassName}`)
                         input.addEventListener('input', (e) => {
                             newFolderName.value = e.target?.value
                         })
                         input.addEventListener('keydown' ,(e) => {
                             if(e.key === 'Escape') {
-                                ul.removeChild(li)
+                               newFolderName.value = ''
+                               ul.removeChild(li)
                             }
                             if(e.key === 'Enter') {
                                 // create folder request
-                                ul.removeChild(li)
+                                if(newFolderName.value.length) {
+                                    makeCreateFolderRequest()
+                                } else {
+                                    newFolderName.value = ''
+                                    ul.removeChild(li)
+                                }
                             }
                         }) 
                         input.addEventListener('blur',(e) => {
-                            li.removeChild(input)
-                            li.setAttribute('class', 'hidden')
-                            newFolderCreateable.value = false
-                            setTimeout(() => {
-                                newFolderCreateable.value = true
-                            }, 300)
-    
+                            if(newFolderName.value.length) {
+                                makeCreateFolderRequest()
+                            } else {
+                                li.removeChild(input)
+                                li.setAttribute('class', 'hidden')
+                                newFolderName.value = ''
+                                newFolderCreateable.value = false
+                                setTimeout(() => {
+                                    newFolderCreateable.value = true
+                                }, 300)
+                            }
+
                         })
     
                         li.setAttribute('role', 'treeitem')
@@ -277,14 +303,16 @@
                 let expanded = getRelevantTreeData(savedQueryType.value).expandedKeys.value.find((key) => key === getRelevantTreeData(savedQueryType.value).guid.value)
                 
                 if(loaded && !expanded) {
+                    // if the folder is loaded but not expanded, expand it then add input
                     getRelevantTreeData(savedQueryType.value).expandedKeys.value.push(getRelevantTreeData(savedQueryType.value).guid.value)
                     setTimeout(appendInput, 1000)
                 }
                 if(loaded && expanded) {
                     appendInput()
                 }
-
+                // if the folder is not loaded, don't do anything
             }
+
             const pushGuidToURL = (guid: string) => {
                 router.push(`/insights?id=${guid}`)
             }

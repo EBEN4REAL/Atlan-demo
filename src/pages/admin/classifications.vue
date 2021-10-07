@@ -28,12 +28,19 @@
                 dataKey="name"
             >
                 <template #default="{ item, isSelected }">
-                    <span
-                        class="text-sm font-bold truncate"
-                        :class="isSelected ? 'text-primary' : 'text-gray'"
-                    >
-                        {{ item.title }}
-                    </span>
+                    <div class="flex items-center gap-x-1">
+                        <AtlanIcon icon="Shield" class="text-pink-400" />
+                        <span
+                            class="text-sm truncate"
+                            :class="
+                                isSelected
+                                    ? 'text-primary font-bold'
+                                    : 'text-gray'
+                            "
+                        >
+                            {{ item.title }}
+                        </span>
+                    </div>
                 </template>
             </ExplorerList>
         </template>

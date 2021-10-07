@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-2">
+    <div class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-1">
         <div
-            class="px-3 py-1 rounded cursor-pointer"
+            class="px-3 py-2 rounded cursor-pointer"
             v-for="(item, index) in list"
             :class="
                 item[dataKey] === selected

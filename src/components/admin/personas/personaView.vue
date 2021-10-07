@@ -18,8 +18,10 @@
             >
                 <template #default="{ item, isSelected }">
                     <span
-                        class="text-sm font-bold truncate"
-                        :class="isSelected ? 'text-primary' : 'text-gray'"
+                        class="text-sm truncate"
+                        :class="
+                            isSelected ? 'text-primary font-bold' : 'text-gray'
+                        "
                     >
                         {{ item.personaName }}
                     </span>
@@ -60,7 +62,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaScopes from './personaScopes.vue'
-    import ExplorerList from '../common/explorerlist.vue'
+    import ExplorerList from '../common/explorerList.vue'
 
     export default defineComponent({
         name: 'PersonaView',

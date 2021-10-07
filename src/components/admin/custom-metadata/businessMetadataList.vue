@@ -7,8 +7,8 @@
     >
         <template #default="{ item, isSelected }">
             <p
-                class="m-0 overflow-hidden text-sm font-bold overflow-ellipsis"
-                :class="isSelected ? 'text-primary' : 'text-gray'"
+                class="m-0 overflow-hidden text-sm overflow-ellipsis"
+                :class="isSelected ? 'text-primary font-bold' : 'text-gray'"
             >
                 <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
                 {{

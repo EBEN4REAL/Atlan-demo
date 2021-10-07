@@ -215,9 +215,75 @@
                 createEntityType.value = 'query'
                 showSaveQueryModal.value = !showSaveQueryModal.value
             }
+            const newFolderName = ref('')
+            const newFolderCreateable = ref(true)
+            watch(newFolderName, (nfn) => {
+                console.log(nfn)
+            } )
             const toggleCreateQueryFolderModal = () => {
-                createEntityType.value = 'queryFolder'
-                showSaveQueryModal.value = !showSaveQueryModal.value
+                // createEntityType.value = 'queryFolder'
+                // showSaveQueryModal.value = !showSaveQueryModal.value
+                
+                // not loaded
+                // loaded but not expanded
+
+                const inputClass = `${per_immediateParentGuid.value}_folder_input`;
+
+                const existingInputs = document.getElementsByClassName(inputClass)
+
+                const appendInput = () => {
+                    if(!existingInputs.length && newFolderCreateable.value) {
+                        const parentFolder = document.getElementsByClassName(getRelevantTreeData(savedQueryType.value).guid.value)[0]
+                        let ul = parentFolder.getElementsByTagName('ul')[0]
+
+                        if(!ul) {
+                            ul = document.createElement('ul')
+                            parentFolder.appendChild(ul)
+                        }
+                        const li = document.createElement('li')
+        
+                        const input = document.createElement('input')
+                        input.setAttribute('class', `ant-input mx-4 my-2 w-auto ${inputClass}`)
+                        input.addEventListener('input', (e) => {
+                            newFolderName.value = e.target?.value
+                        })
+                        input.addEventListener('keydown' ,(e) => {
+                            if(e.key === 'Escape') {
+                                ul.removeChild(li)
+                            }
+                            if(e.key === 'Enter') {
+                                // create folder request
+                                ul.removeChild(li)
+                            }
+                        }) 
+                        input.addEventListener('blur',(e) => {
+                            li.removeChild(input)
+                            li.setAttribute('class', 'hidden')
+                            newFolderCreateable.value = false
+                            setTimeout(() => {
+                                newFolderCreateable.value = true
+                            }, 300)
+    
+                        })
+    
+                        li.setAttribute('role', 'treeitem')
+                        li.appendChild(input)
+                        ul.prepend(li)
+                        input.focus()
+                    } 
+                }
+
+                const loaded = getRelevantTreeData(savedQueryType.value).loadedKeys.value.find((key) => key === getRelevantTreeData(savedQueryType.value).guid.value)
+                let expanded = getRelevantTreeData(savedQueryType.value).expandedKeys.value.find((key) => key === getRelevantTreeData(savedQueryType.value).guid.value)
+                
+                if(loaded && !expanded) {
+                    getRelevantTreeData(savedQueryType.value).expandedKeys.value.push(getRelevantTreeData(savedQueryType.value).guid.value)
+                    setTimeout(appendInput, 1000)
+                }
+                if(loaded && expanded) {
+                    appendInput()
+                }
+
             }
             const pushGuidToURL = (guid: string) => {
                 router.push(`/insights?id=${guid}`)
@@ -263,14 +329,18 @@
             })
             const { data: searchResults, isLoading: searchLoading} = useSearchQueries(searchQuery, savedQueryType)
 
-            const getRelevantQFandGuid = (type: 'personal' | 'all') => {
+            const getRelevantTreeData = (type: 'personal' | 'all') => {
                 if(type === 'personal') return {
                     qualifiedName: per_immediateParentFolderQF,
-                    guid: per_immediateParentGuid
+                    guid: per_immediateParentGuid,
+                    loadedKeys: per_loadedKeys,
+                    expandedKeys: per_expandedKeys
                 };
                  else return {
                     qualifiedName: all_immediateParentFolderQF,
-                    guid: all_immediateParentGuid
+                    guid: all_immediateParentGuid,
+                    loadedKeys: per_loadedKeys,
+                    expandedKeys: per_expandedKeys
                 }
             }
 
@@ -295,19 +365,19 @@
                         saveModalRef,
                         router,
                         savedQueryType.value,
-                        getRelevantQFandGuid(savedQueryType.value).qualifiedName,
-                        getRelevantQFandGuid(savedQueryType.value).guid
+                        getRelevantTreeData(savedQueryType.value).qualifiedName,
+                        getRelevantTreeData(savedQueryType.value).guid
                     )
                     focusEditor(toRaw(editorInstance.value))
 
                     watch(data, (newData) => {
                         if (newData) {
                             per_refetchNode(
-                                getRelevantQFandGuid(savedQueryType.value).guid.value,
+                                getRelevantTreeData(savedQueryType.value).guid.value,
                                 createEntityType.value
                             )
                             all_refetchNode(
-                                getRelevantQFandGuid(savedQueryType.value).guid.value,
+                                getRelevantTreeData(savedQueryType.value).guid.value,
                                 createEntityType.value
                             )
                         }
@@ -319,13 +389,13 @@
                         showSaveQueryModal,
                         saveModalRef,
                         savedQueryType.value,
-                        getRelevantQFandGuid(savedQueryType.value).qualifiedName,
-                        getRelevantQFandGuid(savedQueryType.value).guid
+                        getRelevantTreeData(savedQueryType.value).qualifiedName,
+                        getRelevantTreeData(savedQueryType.value).guid
                     )
                     watch(data, (newData) => {
                         if (newData) {
-                            per_refetchNode(getRelevantQFandGuid(savedQueryType.value).guid.value, createEntityType.value)
-                            all_refetchNode(getRelevantQFandGuid(savedQueryType.value).guid.value, createEntityType.value)
+                            per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, createEntityType.value)
+                            all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, createEntityType.value)
                         }
                     })
                 }

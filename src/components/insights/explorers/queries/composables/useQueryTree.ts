@@ -165,11 +165,11 @@ const useTree = ({
                 nodeToParentKeyMap[query.guid] = treeNode.dataRef.guid
             })
 
-            if (
-                !subQueriesResponse.entities?.length &&
-                !subFoldersResponse.entities?.length
-            )
-                treeNode.dataRef.isLeaf = true
+            // if (
+            //     !subQueriesResponse.entities?.length &&
+            //     !subFoldersResponse.entities?.length
+            // )
+            //     treeNode.dataRef.isLeaf = true
 
             // checkAndAddLoadMoreNode(schemaResponse, 'Database', treeNode.dataRef.qualifiedName)
         }
@@ -383,6 +383,7 @@ const useTree = ({
             attributes: item.attributes,
             key: item.guid,
             qualifiedName: item.attributes.qualifiedName,
+            class: item.guid,
             guid: item.guid,
             title: item.attributes.name,
             typeName: item.typeName,

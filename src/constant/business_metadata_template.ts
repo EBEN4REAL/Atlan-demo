@@ -30,7 +30,6 @@ export const DEFAULT_ATTRIBUTE = {
     isBadge: false,
     isFacet: true,
     isEnum: false,
-    image: null,
     enumType: "",
 
   },
@@ -42,7 +41,7 @@ export const DEFAULT_ATTRIBUTE = {
 
 export const DEFAULT_BM = {
   name: "",
-  options: { displayName: "New Business Metadata" },
+  options: { displayName: "New Business Metadata", image: null, imageDetails: null },
   description: "",
   guid: "new",
   attributeDefs: [],

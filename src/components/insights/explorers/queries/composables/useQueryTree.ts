@@ -245,6 +245,10 @@ const useTree = ({
         } else {
             selectedKeys.value = [...selected]
         }
+        if(!selectedKeys.value.length){
+            immediateParentFolderQF.value = 'root'
+            immediateParentGuid.value = 'root'
+        }
         emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
     }

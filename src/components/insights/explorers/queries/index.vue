@@ -54,8 +54,7 @@
                 <!--explorer pane start -->
                 <div
                     v-if="savedQueryType === 'personal'"
-                    class="absolute w-full h-full bg-white"
-                    :class="savedQueryType === 'personal' ? 'z-2' : 'z-1'"
+                    class="w-full h-full bg-white"
                 >
                     <query-tree
                         :tree-data="per_treeData"
@@ -70,8 +69,7 @@
                 </div>
                 <div
                     v-if="savedQueryType === 'all'"
-                    class="absolute w-full h-full bg-white"
-                    :class="savedQueryType === 'all' ? 'z-2' : 'z-1'"
+                    class="w-full h-full bg-white"
                 >
                     <query-tree
                         :tree-data="all_treeData"
@@ -222,12 +220,20 @@
                 const inputClassName = `${per_immediateParentGuid.value}_folder_input`;
 
                 const existingInputs = document.getElementsByClassName(inputClassName) 
+                const guid = getRelevantTreeData(savedQueryType.value).guid.value;
 
                 // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
                     // check if there are existing inputs to avoid duplication
+                        console.log(guid, existingInputs)
                     if(!existingInputs.length && newFolderCreateable.value) {
-                        const parentFolder = document.getElementsByClassName(getRelevantTreeData(savedQueryType.value).guid.value)[0]
+
+                        let parentFolder;
+                        if(guid === 'root'){
+                            parentFolder = document.getElementsByClassName('ant-tree')[0]?.parentNode
+                        } else {
+                            parentFolder = document.getElementsByClassName(getRelevantTreeData(savedQueryType.value).guid.value)[0]
+                        }
                         let ul = parentFolder.getElementsByTagName('ul')[0]
 
                         if(!ul) {
@@ -251,14 +257,23 @@
                             watch(data, async (newData) => {
                                 if (newData) {
                                     newFolderName.value = '';
-                                    await per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
-                                    await all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
-                                    ul.removeChild(li)
+                                    if(savedQueryType.value === 'personal'){
+                                        await per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                        ul.removeChild(li)
+                                        await all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                    }
+                                    if(savedQueryType.value === 'all'){
+                                        await all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                        ul.removeChild(li)
+                                        await per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+
+                                    }
                                 }
                             })
                         }
 
-                        input.setAttribute('class', `ant-input mx-4 my-2 w-auto ${inputClassName}`)
+                        input.setAttribute('class', `outline-none border py-0 px-1 rounded mx-4 my-1 w-auto ${inputClassName}`)
+                        input.setAttribute('placeholder', 'Name your folder')
                         input.addEventListener('input', (e) => {
                             newFolderName.value = e.target?.value
                         })
@@ -271,6 +286,7 @@
                                 // create folder request
                                 if(newFolderName.value.length) {
                                     makeCreateFolderRequest()
+                                    newFolderName.value = ''
                                 } else {
                                     newFolderName.value = ''
                                     ul.removeChild(li)
@@ -289,10 +305,8 @@
                                     newFolderCreateable.value = true
                                 }, 300)
                             }
-
                         })
     
-                        li.setAttribute('role', 'treeitem')
                         li.appendChild(input)
                         ul.prepend(li)
                         input.focus()
@@ -307,7 +321,7 @@
                     getRelevantTreeData(savedQueryType.value).expandedKeys.value.push(getRelevantTreeData(savedQueryType.value).guid.value)
                     setTimeout(appendInput, 1000)
                 }
-                if(loaded && expanded) {
+                if((loaded && expanded) || guid === 'root') {
                     appendInput()
                 }
                 // if the folder is not loaded, don't do anything
@@ -367,8 +381,8 @@
                  else return {
                     qualifiedName: all_immediateParentFolderQF,
                     guid: all_immediateParentGuid,
-                    loadedKeys: per_loadedKeys,
-                    expandedKeys: per_expandedKeys
+                    loadedKeys: all_loadedKeys,
+                    expandedKeys: all_expandedKeys
                 }
             }
 
@@ -408,22 +422,6 @@
                                 getRelevantTreeData(savedQueryType.value).guid.value,
                                 createEntityType.value
                             )
-                        }
-                    })
-                } else if (createEntityType.value === 'queryFolder') {
-                    const { data } = createFolder(
-                        saveQueryData,
-                        saveQueryLoading,
-                        showSaveQueryModal,
-                        saveModalRef,
-                        savedQueryType.value,
-                        getRelevantTreeData(savedQueryType.value).qualifiedName,
-                        getRelevantTreeData(savedQueryType.value).guid
-                    )
-                    watch(data, (newData) => {
-                        if (newData) {
-                            per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, createEntityType.value)
-                            all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, createEntityType.value)
                         }
                     })
                 }
@@ -467,7 +465,9 @@
                 all_selectNode,
                 searchQuery,
                 searchResults,
-                searchLoading
+                searchLoading,
+                all_immediateParentGuid,
+                per_immediateParentGuid
             }
         },
     })

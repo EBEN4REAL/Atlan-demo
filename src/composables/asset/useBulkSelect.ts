@@ -5,6 +5,7 @@ import whoami from '../user/whoami'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useBulkSelectOwners from '~/composables/asset/useBulkSelectOwners'
 import useBulkSelectClassifications from './useBulkSelectClassifications'
+import useBulkSelectTerms from './useBulkSelectTerms'
 
 export default function useBulkSelect() {
     const selectedAssets: Ref<assetInterface[]> = ref([])
@@ -67,6 +68,15 @@ export default function useBulkSelect() {
         updateClassifications,
         classificationFrequencyMap,
     } = useBulkSelectClassifications(selectedAssets)
+    /** TERMS */
+    const {
+        terms,
+        resetTerms,
+        initialiseLocalState: initialiseLocalStateTerms,
+        originalTerms,
+        updateTerms,
+        termFrequencyMap,
+    } = useBulkSelectTerms(selectedAssets)
     // Helper function
     const getBulkUpdateRequestPayload = (assetList) => {
         const requestPayloadSkeleton = assetList.map((asset) => {
@@ -255,5 +265,11 @@ export default function useBulkSelect() {
         originalClassifications,
         updateClassifications,
         classificationFrequencyMap,
+        terms,
+        resetTerms,
+        initialiseLocalStateTerms,
+        originalTerms,
+        updateTerms,
+        termFrequencyMap,
     }
 }

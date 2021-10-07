@@ -1,4 +1,4 @@
-import { ref, Ref, computed, ComputedRef, watch } from 'vue'
+import { ref, Ref, computed, watch } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { Components } from '~/api/atlas/client'
 

@@ -29,6 +29,7 @@
                         >
                         <!-- <a-menu-item key="metadata_policies">Metadata Policies</a-menu-item>
             <a-menu-item key="data_policies">Data Policies</a-menu-item> -->
+                        <a-menu-item key="personas">Personas</a-menu-item>
                         <a-menu-item key="sso">SSO</a-menu-item>
                         <a-menu-item key="smtp">SMTP</a-menu-item>
                         <a-menu-item key="requests">Requests</a-menu-item>
@@ -49,7 +50,7 @@
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen pt-6 pl-12 pr-6 overflow-y-auto">
+        <div class="w-4/5 max-h-screen overflow-y-auto">
             <router-view></router-view>
         </div>
     </div>

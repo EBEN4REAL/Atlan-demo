@@ -1,53 +1,26 @@
 <template>
-    <div>
-        <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
-            Classification
-        </p>
-
-        <div class="relative flex items-center justify-between w-full">
-            <p class="mb-0 text-sm text-gray">
-                Manage classification tags to build access policies.
-                <!-- <span class="ml-2 text-primary">Documentation</span> -->
-            </p>
-            <a-button
-                type="primary"
-                class="absolute right-0 rounded add-classification-btn"
+    <ExplorerLayout
+        title="Classification"
+        sub-title="Manage classification tags to build access policies."
+    >
+        <template #action>
+            <AtlanBtn
+                class="flex-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
                 @click="toggleModal"
-                >+ Add Classification</a-button
             >
-        </div>
-    </div>
-
-    <splitpanes class="h-auto pt-6 default-theme">
-        <pane
-            min-size="25"
-            max-size="50"
-            size="25"
-            class="relative py-4 pl-4 pr-6 bg-white"
-        >
-            <a-input
-                ref="searchText"
-                v-model:value="treeFilterText"
-                type="text"
-                class="bg-white shadow-none form-control border-right-0"
+                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+            </AtlanBtn>
+        </template>
+        <template #sidebar>
+            <SearchAndFilter
                 placeholder="Search classifications"
-                @input="handleSearch"
-            >
-                <template #suffix>
-                    <fa
-                        v-if="treeFilterText"
-                        icon="fal times-circle"
-                        class="ml-2 mr-1 text-red-600"
-                        @click="clearSearchText"
-                    />
-                    <fa
-                        v-if="!treeFilterText"
-                        icon="fal search"
-                        class="ml-2 mr-1 text-gray-500"
-                    />
-                </template>
-            </a-input>
-            <div class="mt-2 overflow-y-auto treelist">
+                v-model:value="treeFilterText"
+                class="mt-6 mb-4 bg-white"
+            />
+            <div class="overflow-y-auto treelist">
                 <!-- <CreateClassificationTree
                     :treeData="treeFilterText !== '' ? filteredData : treeData"
                     @nodeEmit="nodeEmit"
@@ -68,10 +41,9 @@
                     <span class="truncate ...">{{ item.title }}</span>
                 </div>
             </div>
-        </pane>
-        <pane size="74" class="flex flex-col py-4 pl-6 pr-4 bg-white">
-            <router-view class="flex-grow" />
-        </pane>
+        </template>
+
+        <router-view />
 
         <a-modal
             :visible="modalVisible"
@@ -115,7 +87,7 @@
                 {{ createErrorText }}
             </p>
         </a-modal>
-    </splitpanes>
+    </ExplorerLayout>
 </template>
 
 <script lang="ts">
@@ -138,15 +110,18 @@
     import { Classification } from '~/api/atlas/classification'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
+    import AtlanBtn from '@/UI/button.vue'
+    import ExplorerLayout from '@/admin/explorerLayout.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
-        name: 'ClassificationProfileWrapper',
-
+        name: 'ClassificationProfile',
         props: {
             classificationName: {
                 type: String as PropType<String>,
             },
         },
+        components: { AtlanBtn, ExplorerLayout, SearchAndFilter },
         setup(props) {
             const store = useClassificationStore()
             const router = useRouter()
@@ -238,10 +213,6 @@
             const handleSearch = (e: Event) => {
                 treeFilterText.value = (<HTMLInputElement>e.target).value
                 store.filterClassificationTree(treeFilterText.value)
-            }
-
-            const clearSearchText = () => {
-                treeFilterText.value = ''
             }
 
             const closeModal = () => {
@@ -388,7 +359,6 @@
                 createErrorText,
                 filteredData,
                 treeData,
-                clearSearchText,
                 handleSearch,
                 treeFilterText,
                 modalVisible,
@@ -433,10 +403,6 @@
         font-family: SimSun, sans-serif;
         line-height: 1;
         content: '*';
-    }
-
-    .add-classification-btn {
-        top: -50%;
     }
 </style>
 <route lang="yaml">

@@ -53,6 +53,7 @@
             >
                 <!--explorer pane start -->
                 <div
+                    v-if="savedQueryType === 'personal'"
                     class="absolute w-full h-full bg-white"
                     :class="savedQueryType === 'personal' ? 'z-2' : 'z-1'"
                 >
@@ -68,6 +69,7 @@
                     />
                 </div>
                 <div
+                    v-if="savedQueryType === 'all'"
                     class="absolute w-full h-full bg-white"
                     :class="savedQueryType === 'all' ? 'z-2' : 'z-1'"
                 >
@@ -259,7 +261,7 @@
                 connector,
                 savedQueryType: ref('all'),
             })
-            const { data: searchResults, isLoading: searchLoading} = useSearchQueries(searchQuery)
+            const { data: searchResults, isLoading: searchLoading} = useSearchQueries(searchQuery, savedQueryType)
 
             const getRelevantQFandGuid = (type: 'personal' | 'all') => {
                 if(type === 'personal') return {
@@ -292,6 +294,7 @@
                         showSaveQueryModal,
                         saveModalRef,
                         router,
+                        savedQueryType.value,
                         getRelevantQFandGuid(savedQueryType.value).qualifiedName,
                         getRelevantQFandGuid(savedQueryType.value).guid
                     )
@@ -315,6 +318,7 @@
                         saveQueryLoading,
                         showSaveQueryModal,
                         saveModalRef,
+                        savedQueryType.value,
                         getRelevantQFandGuid(savedQueryType.value).qualifiedName,
                         getRelevantQFandGuid(savedQueryType.value).guid
                     )

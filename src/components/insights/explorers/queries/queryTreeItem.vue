@@ -173,7 +173,6 @@
                 inlineTabs,
                 activeInlineTab
             )
-            console.log(item.value, 'query')
 
             const actionClick = (action: string, t: assetInterface) => {
                 /* Here t->enity->assetInfo */

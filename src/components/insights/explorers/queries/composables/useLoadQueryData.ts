@@ -88,7 +88,22 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
                  ]
                })
         } 
-        else {
+        else if(savedQueryType?.value === 'personal') {
+            body.value.entityFilters.criterion.push({
+                condition: "AND",
+                criterion: [
+                   {
+                     attributeName: "__classificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "neq"
+                   },
+                   {
+                     attributeName: "__propagatedClassificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "neq"
+                   }
+                 ]
+               })
             body.value.entityFilters.criterion.push({
                 attributeName: "owner",
                 attributeValue: username.value,

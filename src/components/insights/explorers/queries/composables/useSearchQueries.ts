@@ -1,15 +1,19 @@
 import { ref, Ref, watch } from 'vue'
-import { KeyMaps } from '~/services/atlas/atlas_keyMpas'
+import { useDebounceFn } from '@vueuse/core'
+
 import { useAPIAsyncState } from '~/api/useAPI'
 import {
     SavedQueryResponse,
     SavedQuery,
 } from '~/types/insights/savedQuery.interface'
-import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
-import { useDebounceFn } from '@vueuse/core'
+import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
-const searchQueries = (query: Ref<string>, offset?: Ref<number>, limit?: Ref<number>) => {
-    const body = ref({})
+import { KeyMaps } from '~/services/atlas/atlas_keyMpas'
+import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
+
+const searchQueries = (query: Ref<string>, savedQueryType: Ref<'all' | 'personal'>, offset?: Ref<number>, limit?: Ref<number>) => {
+    const body = ref<Record<string, any>>({})
     const data = ref<BasicSearchResponse<SavedQuery>>();
     const isLoading = ref(true);
     const error = ref();
@@ -29,6 +33,45 @@ const searchQueries = (query: Ref<string>, offset?: Ref<number>, limit?: Ref<num
             offset: offset?.value ?? 0,
             limit: limit?.value ?? 50,
         }
+        if(savedQueryType?.value === 'all') {
+            body.value.entityFilters = {
+                condition: 'AND',
+                criterion: [{
+                    condition: "OR",
+                    criterion: [
+                       {
+                         attributeName: "__classificationNames",
+                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                         operator: "eq"
+                       },
+                       {
+                         attributeName: "__propagatedClassificationNames",
+                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                         operator: "eq"
+                       }
+                     ]
+                }]
+            }
+        }  else {
+            body.value.entityFilters = {
+                condition: 'AND',
+                criterion: [{
+                    condition: "AND",
+                    criterion: [
+                       {
+                         attributeName: "__classificationNames",
+                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                         operator: "neq"
+                       },
+                       {
+                         attributeName: "__propagatedClassificationNames",
+                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                         operator: "neq"
+                       }
+                     ]
+                }]
+            }
+        }
     }
     refreshBody();
 
@@ -37,7 +80,7 @@ const searchQueries = (query: Ref<string>, offset?: Ref<number>, limit?: Ref<num
         const { data:queries, error: searchError, isLoading:loading } = useAPIAsyncState<SavedQueryResponse>(
             KeyMaps.insights.BASIC_SEARCH,
             'POST',
-            {
+            {  
                 body,
             }
         )
@@ -50,8 +93,10 @@ const searchQueries = (query: Ref<string>, offset?: Ref<number>, limit?: Ref<num
     const onQueryChange = useDebounceFn((query: string) => {
         if(query.length) fetchQueries()
     })
-    
-    watch(query, (newQuery) => {
+
+    watch([query, savedQueryType], ([newQuery]) => {
+        isLoading.value = true
+
         onQueryChange(newQuery)
     })
     return { data, error, isLoading }

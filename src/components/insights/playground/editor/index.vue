@@ -224,6 +224,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
+                    'personal',
                     ref('root'), // Temp fix to save folder at root. Revisit when folder selection widget is ready
                     ref('root')
                 )

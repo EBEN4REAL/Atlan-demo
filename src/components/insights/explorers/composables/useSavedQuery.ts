@@ -12,6 +12,7 @@ import { message } from 'ant-design-vue'
 import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/atlas/api/insights'
 import { generateUUID } from '~/utils/helper/generator'
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -206,6 +207,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
+        type: 'personal' | 'all',
         parentFolderQF: Ref<string>,
         parentFolderGuid: Ref<string>
     ) => {
@@ -280,6 +282,17 @@ export function useSavedQuery(
                 },
             }
         }
+        if(type === 'all') {
+            body.value.entity.classifications =  [
+                {
+                    attributes: {},
+                    propagate: true,
+                    removePropagationsOnEntityDelete: true,
+                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    validityPeriods: []
+                }
+            ]
+        }
         // chaing loading to true
         saveQueryLoading.value = true
         const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
@@ -314,6 +327,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
+        type: 'personal' | 'all' ,
         parentFolderQF: Ref<string>,
         parentFolderGuid: Ref<string>
     ) => {
@@ -393,6 +407,17 @@ export function useSavedQuery(
                 },
             }
         }
+        if(type === 'all') {
+            body.value.entity.classifications =  [
+                {
+                    attributes: {},
+                    propagate: true,
+                    removePropagationsOnEntityDelete: true,
+                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    validityPeriods: []
+                }
+            ]
+        }
         // chaing loading to true
         saveQueryLoading.value = true
         const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
@@ -447,6 +472,7 @@ export function useSavedQuery(
         saveFolderLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
+        type: 'personal' | 'all',
         parentFolderQF: Ref<string>,
         parentFolderGuid: Ref<string>
     ) => {
@@ -509,6 +535,17 @@ export function useSavedQuery(
                     typeName: 'QueryFolder',
                 },
             }
+        }
+        if(type === 'all') {
+            body.value.entity.classifications =  [
+                {
+                    attributes: {},
+                    propagate: true,
+                    removePropagationsOnEntityDelete: true,
+                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    validityPeriods: []
+                }
+            ]
         }
         // chaing loading to true
         saveFolderLoading.value = true

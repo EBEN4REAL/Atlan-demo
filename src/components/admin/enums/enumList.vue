@@ -1,51 +1,49 @@
 <template>
-  <div class="border border-gray-200 divide-y divide-gray-100 rounded">
-    <div v-for="item in list" :key="item.guid" @click="select(item.guid)">
-      <div
-        class="p-3 text-gray-500"
-        :class="
-          item.guid === selected
-            ? 'border-l-4 border-primary bg-blue-100'
-            : 'bg-white'
-        "
-      >
-        <p class="mb-1 text-sm text-primary">{{ item.name }}</p>
-        <p class="mb-1 text-sm text-gray">
-          {{ item.elementDefs.length }} elements(s)
-        </p>
-        <p class="mb-0 text-sm text-gray">
-          Updated {{ updateTime(item.updateTime) }} by
-          {{ item.updatedBy }}
-        </p>
-      </div>
+    <div>
+        <div
+            class="p-3 rounded cursor-pointer"
+            :class="{ 'bg-gray-200': item.guid === selected }"
+            v-for="item in list"
+            :key="item.guid"
+            @click="select(item.guid)"
+        >
+            <p
+                class="m-0 overflow-hidden text-sm font-bold overflow-ellipsis"
+                :class="item.guid === selected ? 'text-primary' : 'text-gray'"
+            >
+                {{ item.name }}
+            </p>
+            <span class="m-0 text-sm text-gray">
+                {{ item.elementDefs.length }} elements(s)
+            </span>
+        </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useTimeAgo } from "@vueuse/core";
+    import { defineComponent } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
 
-export default defineComponent({
-  name: "EnumList",
-  props: {
-    list: Array,
-    selected: String,
-  },
-  emits: ["update:selected"],
-  setup(props, context) {
-    function select(id: string) {
-      context.emit("update:selected", id);
-    }
+    export default defineComponent({
+        name: 'EnumList',
+        props: {
+            list: Array,
+            selected: String,
+        },
+        emits: ['update:selected'],
+        setup(props, context) {
+            function select(id: string) {
+                context.emit('update:selected', id)
+            }
 
-    function updateTime(time: string) {
-      return useTimeAgo(time).value;
-    }
+            function updateTime(time: string) {
+                return useTimeAgo(time).value
+            }
 
-    return {
-      updateTime,
-      select,
-    };
-  },
-});
+            return {
+                updateTime,
+                select,
+            }
+        },
+    })
 </script>

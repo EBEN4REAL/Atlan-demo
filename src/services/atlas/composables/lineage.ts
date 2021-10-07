@@ -1,5 +1,5 @@
-import { getLineageOptions, lineageServiceAPI } from '../api/lineage'
 import { computed, Ref } from 'vue'
+import { getLineageOptions, lineageServiceAPI } from '../api/lineage'
 
 export default function useLineageService() {
     function useFetchLineage(

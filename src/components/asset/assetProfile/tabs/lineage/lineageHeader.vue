@@ -1,13 +1,13 @@
 <template>
     <div
         class="absolute flex flex-col justify-between"
-        style="top: 60px; left: 15px"
+        style="top: 15px; left: 15px"
     >
         <div class="flex items-start justify-end w-full">
             <slot name="left-header-item"></slot>
-            <div class="flex items-center justify-end my-1 mr-4 graph-controls">
+            <div class="flex items-center justify-end mr-4 graph-controls">
                 <!-- Reload Lineage -->
-                <button class="lineage-btn">
+                <button class="lineage-btn" @click="control('reload')">
                     <fa icon="fas sync"></fa>
                 </button>
                 <a-divider type="vertical" />
@@ -29,7 +29,15 @@
                         <a-menu slot="overlay">
                             <a-menu-item-group title="Direction">
                                 <a-menu-item>
-                                    <a-radio-group value="'BOTH'">
+                                    <a-radio-group
+                                        :value="direction"
+                                        @change="
+                                            control(
+                                                'direction',
+                                                $event.target.value
+                                            )
+                                        "
+                                    >
                                         <a-radio
                                             v-for="item in lineageDirections"
                                             :key="item.id"
@@ -59,7 +67,11 @@
                 </a-dropdown>
                 <a-divider type="vertical" />
                 <!-- Lineage Depth -->
-                <a-select :default-value="3" style="width: 110px">
+                <a-select
+                    :default-value="depth"
+                    style="width: 110px"
+                    @change="control('depth', $event)"
+                >
                     <a-select-option
                         v-for="item in lineageDepths"
                         :key="item.id"
@@ -75,12 +87,12 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, inject } from 'vue'
     // Components
     import LineageSearch from './lineageSearch.vue'
 
     export default defineComponent({
-        name: 'LineageV2Header',
+        name: 'LineageHeader',
         components: {
             LineageSearch,
         },
@@ -88,11 +100,18 @@
         setup(_, { emit }) {
             const showProcess = ref(false)
 
+            const depth = inject('depth')
+            const direction = inject('direction')
+            const control = inject('control')
+
             watch(showProcess, (val) => {
                 emit('showProcess', val)
             })
 
             return {
+                depth,
+                direction,
+                control,
                 showProcess,
                 lineageDirections: [
                     { id: 'BOTH', label: 'Both Direction' },

@@ -17,16 +17,32 @@
 
                 <div class="flex space-x-2">
                     <a-button-group>
-                        <a-button class="w-8 h-8" size="small"
-                            ><AtlanIcon icon="Share"
-                        /></a-button>
-
-                        <a-button class="w-8 h-8" size="small">
-                            <AtlanIcon icon="External" />
-                        </a-button>
-                        <a-button class="w-8 h-8" size="small">
+                        <a-tooltip
+                            placement="left"
+                            :mouse-enter-delay="0.5"
+                            title="Copy asset profile link"
+                        >
+                            <a-button
+                                class="w-8 h-8"
+                                size="small"
+                                @click="handleCopyProfileLink"
+                                ><AtlanIcon icon="Share" /></a-button
+                        ></a-tooltip>
+                        <a-tooltip
+                            placement="bottom"
+                            :mouse-enter-delay="0.5"
+                            title="Open profile"
+                        >
+                            <a-button
+                                class="w-8 h-8"
+                                size="small"
+                                @click="handleOpenProfile"
+                            >
+                                <AtlanIcon icon="External" /> </a-button
+                        ></a-tooltip>
+                        <!-- <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="Bookmark" />
-                        </a-button>
+                        </a-button> -->
                     </a-button-group>
                 </div>
             </div>
@@ -49,12 +65,12 @@
                 ></a-tooltip>
 
                 <Tooltip
-                    :tooltip-text="name"
+                    :tooltip-text="selectedAsset.attributes?.name"
                     classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
-                            ? getColumnUrl(selectedAsset)
+                            ? `/${getColumnUrl(selectedAsset)}`
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
@@ -124,6 +140,8 @@
         computed,
         provide,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+
     import Tooltip from '@common/ellipsis/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
@@ -133,7 +151,7 @@
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
-    import { useMagicKeys } from '@vueuse/core'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -188,6 +206,7 @@
                 useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
+            const router = useRouter()
 
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
@@ -217,7 +236,27 @@
 
             const getColumnUrl = (asset) => {
                 const tableGuid = asset.attributes?.table?.guid
-                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+                return `assets/${tableGuid}/overview?column=${asset?.guid}`
+            }
+
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                if (isColumnAsset(selectedAsset.value)) {
+                    const text = `${baseUrl}/${getColumnUrl(
+                        selectedAsset.value
+                    )}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/assets/${selectedAsset.value.guid}/overview`
+                    copyToClipboard(text)
+                }
+            }
+            const handleOpenProfile = () => {
+                if (isColumnAsset(selectedAsset.value)) {
+                    router.push(`/${getColumnUrl(selectedAsset.value)}`)
+                } else {
+                    router.push(`/assets/${selectedAsset.value.guid}/overview`)
+                }
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -260,6 +299,8 @@
                 getDataType,
                 isColumnAsset,
                 getColumnUrl,
+                handleCopyProfileLink,
+                handleOpenProfile,
             }
         },
     })

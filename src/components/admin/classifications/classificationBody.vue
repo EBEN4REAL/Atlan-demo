@@ -1,34 +1,24 @@
 <template>
-    <div class="">
-        <div class="flex w-full">
-            <a-tabs v-model:activeKey="activeTabKey" class="w-full">
-                <a-tab-pane key="1" tab="Linked Assets">
-                    <div class="w-full rounded asset-list">
-                        <AssetsWrapper
-                            v-if="selectedClassification?.name"
-                            :ref="
-                                (el) => {
-                                    assetWrapperRef = el
-                                }
-                            "
-                            :selected-classification="
-                                selectedClassification?.name
-                            "
-                        />
-                    </div>
-                </a-tab-pane>
-                <a-tab-pane key="2" tab="Linked Terms">
-                    <div class="w-full mt-1 rounded asset-list">
-                        <LinkedTerms
-                            :selected-classification="
-                                selectedClassification?.name
-                            "
-                        />
-                    </div>
-                </a-tab-pane>
-            </a-tabs>
-        </div>
-    </div>
+    <a-tabs v-model:activeKey="activeTabKey" class="flex-grow w-full">
+        <a-tab-pane key="1" tab="Linked Assets">
+            <AssetsWrapper
+                class="-mt-4"
+                v-if="selectedClassification?.name"
+                :ref="
+                    (el) => {
+                        assetWrapperRef = el
+                    }
+                "
+                :selected-classification="selectedClassification?.name"
+            />
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="Linked Terms">
+            <LinkedTerms
+                class="-mt-4"
+                :selected-classification="selectedClassification?.name"
+            />
+        </a-tab-pane>
+    </a-tabs>
 </template>
 
 <script lang="ts">
@@ -102,8 +92,5 @@
     .linked-btn-active {
         background-color: #e9eefa;
         color: #2251cc;
-    }
-    .asset-list {
-        height: calc(100vh - 23rem);
     }
 </style>

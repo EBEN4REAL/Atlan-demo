@@ -331,21 +331,21 @@
                 }
             }
 
-            watch(
-                [ownerUsers, ownerGroups],
-                () => {
-                    console.log('owners changed', ownerUsers.value)
-                    selectedUsers.value = [...ownerUsers.value]
-                    selectedGroups.value = [...ownerGroups.value]
-                    splittedOwners.value = splitArray(
-                        5,
-                        mappedSplittedOwners(ownerUsers, ownerGroups)
-                    )
-                },
-                {
-                    immediate: true,
-                }
-            )
+            // watch(
+            //     [ownerUsers, ownerGroups],
+            //     () => {
+            //         console.log('owners changed', ownerUsers.value)
+            //         selectedUsers.value = [...ownerUsers.value]
+            //         selectedGroups.value = [...ownerGroups.value]
+            //         splittedOwners.value = splitArray(
+            //             5,
+            //             mappedSplittedOwners(ownerUsers, ownerGroups)
+            //         )
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
 
             const handleOwnerSearch = (e: Event) => {
                 const queryText = (<HTMLInputElement>e.target).value

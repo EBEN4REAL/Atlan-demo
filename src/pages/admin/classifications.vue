@@ -19,6 +19,7 @@
                 placeholder="Search classifications"
                 v-model:value="treeFilterText"
                 @change="handleSearch"
+                :autofocus="true"
                 class="mx-4 mt-6 mb-4 bg-white"
             />
             <ExplorerList

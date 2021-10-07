@@ -1,5 +1,5 @@
 <template>
-    <a-tabs v-model:activeKey="activeTabKey" class="w-full typeTabs">
+    <a-tabs v-model:activeKey="activeTabKey" class="w-full mt-2 typeTabs">
         <a-tab-pane key="1" tab="Linked Assets" />
         <a-tab-pane key="2" tab="Linked Terms" />
     </a-tabs>
@@ -62,14 +62,14 @@
             padding-left: 2px !important;
             padding-right: 2px !important;
             padding-top: 8px !important;
-            padding-bottom: 8px !important;
+            padding-bottom: 16px !important;
             @apply mr-4 !important;
             @apply text-gray-500;
             @apply text-sm !important;
             @apply tracking-wide;
         }
         .ant-tabs-tab:first-child {
-            @apply ml-5 !important;
+            margin-left: 18px !important;
         }
         .ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child {
             @apply ml-0;

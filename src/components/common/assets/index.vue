@@ -1,30 +1,31 @@
 <template>
     <div class="flex flex-col w-full">
-        <SearchAndFilter
-            v-model:value="queryText"
-            class="mx-3 mt-2"
-            placeholder="Search"
-            :autofocus="true"
-            @change="handleSearchChange"
-        >
-            <template #filter>
-                <Preferences
-                    :default-projection="projection"
-                    @change="handleChangePreferences"
-                    @sort="handleChangeSort"
-                    @state="handleState"
-                />
-            </template>
-        </SearchAndFilter>
+        <div class="px-2 pt-5 pb-4 bg-gray-100">
+            <SearchAndFilter
+                v-model:value="queryText"
+                class="mx-3 mb-5 bg-white"
+                placeholder="Search"
+                @change="handleSearchChange"
+            >
+                <template #filter>
+                    <Preferences
+                        :default-projection="projection"
+                        @change="handleChangePreferences"
+                        @sort="handleChangeSort"
+                        @state="handleState"
+                    />
+                </template>
+            </SearchAndFilter>
 
-        <AssetTabs
-            v-model="selectedTab"
-            class="mt-1 mb-3"
-            @update:model-value="handleTabChange"
-            :asset-type-list="assetTypeList"
-            :asset-type-map="assetTypeMap"
-            :total="totalSum"
-        ></AssetTabs>
+            <AssetTabs
+                v-model="selectedTab"
+                class="mt-1"
+                @update:model-value="handleTabChange"
+                :asset-type-list="assetTypeList"
+                :asset-type-map="assetTypeMap"
+                :total="totalSum"
+            ></AssetTabs>
+        </div>
 
         <div v-if="list && list.length <= 0 && !isLoading" class="flex-grow">
             <EmptyView @event="handleClearFiltersFromList"></EmptyView>
@@ -364,6 +365,6 @@
 
 <style scoped>
     .asset-list-height {
-        max-height: calc(100vh - 20rem);
+        max-height: calc(100vh - 23rem);
     }
 </style>

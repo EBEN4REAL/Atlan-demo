@@ -13,6 +13,7 @@
                 <div class="text-2xl text-primary">
                     {{ localBm.options && localBm.options.displayName }}
                 </div>
+
                 <div>
                     <CreateUpdateInfo
                         :created-at="localBm.createTime"
@@ -46,7 +47,15 @@
                         ></fa>
                     </span>
                 </a-popover>
-
+                <span
+                    v-if="localBm.guid !== 'new'"
+                    class="mr-5 cursor-pointer hover-underline"
+                    @click.prevent.stop="copyAPI(localBm.name)"
+                >
+                    <span class="">
+                        <AtlanIcon icon="CopyOutlined" />
+                    </span>
+                </span>
                 <a-button
                     v-if="isUpdated"
                     class="mr-2 rounded-md ant-btn"
@@ -182,6 +191,15 @@
                         >
                             Remove
                         </span>
+                        <span
+                            v-else
+                            class="cursor-pointer hover-underline"
+                            @click.prevent.stop="copyAPI(attribute.name)"
+                        >
+                            <span class="">
+                                <AtlanIcon icon="CopyOutlined" />
+                            </span>
+                        </span>
                     </template>
                     <AddAttributeCard
                         :ref="`attribute-${index}`"
@@ -211,7 +229,8 @@
     // ? Store
     import useBusinessMetadataStore from '~/store/businessMetadata'
 
-    // ? composables
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
 
     interface attributeDefs {
         name: string
@@ -259,6 +278,13 @@
                 getUpdatePayload,
                 validatePayload,
             } = useBusinessMetadata()
+
+            const copyAPI = (text: string) => {
+                copyToClipboard(text)
+                message.success({
+                    content: 'GUID Copied!',
+                })
+            }
 
             const clearSearchText = () => {
                 attrsearchText.value = ''
@@ -477,6 +503,7 @@
                 onAttributeValuesChange,
                 onUpdate,
                 panelModel,
+                copyAPI,
                 searchedAttributes,
                 showArchiveMetadataModal,
             }

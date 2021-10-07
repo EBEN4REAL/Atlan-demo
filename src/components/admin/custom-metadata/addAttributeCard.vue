@@ -18,52 +18,6 @@
                     @change="handleFieldChange"
                 />
             </a-form-item>
-            <a-form-item class="" name="searchWeight">
-                <template #label>
-                    <span>Search Weight</span>
-                    <a-popover>
-                        <template #content>
-                            <div class="flex flex-col items-center">
-                                <div class="mb-2 text-center font-size-14">
-                                    <fa icon="fal arrow-up" class="mr-1"></fa>
-                                    the search weight for the attribute,
-                                    <br />
-                                    <fa icon="fal arrow-up" class="mx-1"></fa>
-                                    the entity in the topmost
-                                    <br />
-                                    search results when searched for by that
-                                    attribute
-                                </div>
-                                <div
-                                    class="mb-1 font-bold  font-size-14 text-underline"
-                                >
-                                    Applicable Ranges
-                                </div>
-                                <div class="font-size-14">
-                                    Quick search: <b>0 - 10</b>
-                                </div>
-                                <div class="font-size-14">
-                                    Suggestion: <b>8 - 10</b>
-                                </div>
-                            </div>
-                        </template>
-
-                        <fa
-                            icon="fal question-circle"
-                            class="ml-2 text-xs"
-                        ></fa>
-                    </a-popover>
-                </template>
-                <a-select
-                    v-model:value="attributeInput.data.searchWeight"
-                    class=""
-                    @change="handleFieldChange"
-                >
-                    <a-select-option v-for="n in 10" :key="n" :value="n">{{
-                        n
-                    }}</a-select-option>
-                </a-select>
-            </a-form-item>
         </div>
         <div class="flex items-center justify-around w-full gap-4">
             <a-form-item class="w-full" name="typeName" label="Type">
@@ -83,28 +37,47 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
-            <div
-                v-if="attributeInput.data.typeName !== 'boolean'"
-                class="w-full"
-            >
-                <a-form-item label="Multivalues">
+            <div class="w-full">
+                <a-form-item label="isFacet">
                     <div class="mb-1">
                         <a-switch
-                            :id="`${attributeInput.data.name}-isMultiValued`"
+                            :id="`${attributeInput.data.name}-isFacet`"
                             v-model:checked="
-                                attributeInput.data.options.isMultiValued
+                                attributeInput.data.options.isFacet
                             "
                             class=""
-                            :disabled="isEdit"
-                            :name="`${attributeInput.data.name}-isMultiValued`"
+                            :name="`${attributeInput.data.name}-isFacet`"
                             size="small"
                             @change="handleFieldChange"
                         />
                         <label
                             class="ml-1"
-                            :for="`${attributeInput.data.name}-isMultiValued`"
+                            :for="`${attributeInput.data.name}-isFacet`"
                             >{{
-                                attributeInput.data.options.isMultiValued
+                                attributeInput.data.options.isFacet
+                                    ? 'Enabled'
+                                    : 'Disabled'
+                            }}</label
+                        >
+                    </div>
+                </a-form-item>
+                <a-form-item label="isBadge">
+                    <div class="mb-1">
+                        <a-switch
+                            :id="`${attributeInput.data.name}-isBadge`"
+                            v-model:checked="
+                                attributeInput.data.options.isBadge
+                            "
+                            class=""
+                            :name="`${attributeInput.data.name}-isBadge`"
+                            size="small"
+                            @change="handleFieldChange"
+                        />
+                        <label
+                            class="ml-1"
+                            :for="`${attributeInput.data.name}-isBadge`"
+                            >{{
+                                attributeInput.data.options.isBadge
                                     ? 'Enabled'
                                     : 'Disabled'
                             }}</label
@@ -351,11 +324,6 @@
                 if (temp.typeName === 'enum')
                     temp.typeName = temp.options.enumType
 
-                // ? modify typeName for multivalued
-                if (temp.options.isMultiValued) {
-                    temp.typeName = `array<${temp.typeName}>`
-                }
-
                 // ? remove not-required data
                 if (!temp.typeName.toLowerCase().includes('string')) {
                     if (temp.options.maxStrLength)
@@ -396,12 +364,9 @@
                         attributeInput.data.options.isEnum = JSON.parse(
                             attributeInput.data.options.isEnum
                         )
-                    if (
-                        typeof attributeInput.data.options.isMultiValued ===
-                        'string'
-                    )
-                        attributeInput.data.options.isMultiValued = JSON.parse(
-                            attributeInput.data.options.isMultiValued
+                    if (typeof attributeInput.data.options.isFacet === 'string')
+                        attributeInput.data.options.isFacet = JSON.parse(
+                            attributeInput.data.options.isFacet
                         )
                 }
                 // ? By default append all applicable types if is new // also emit?
@@ -420,12 +385,6 @@
                     // ? parse the original type name if multivalued
                     if (attributeInput.data.options.isEnum) {
                         attributeInput.data.typeName = 'enum'
-                    } else if (attributeInput.data.options.isMultiValued) {
-                        // eslint-disable-next-line prefer-destructuring
-                        attributeInput.data.typeName =
-                            attributeInput.data.typeName
-                                .split('<')[1]
-                                .split('>')[0]
                     }
                 }
             }

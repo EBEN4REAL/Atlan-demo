@@ -27,13 +27,13 @@ export const DEFAULT_ATTRIBUTE = {
     customEntityTypes: [],
     maxStrLength: "50",
     displayName: "",
+    isBadge: false,
     isFacet: true,
     isEnum: false,
     image: null,
     enumType: "",
 
   },
-  searchWeight: 3,
   typeName: "string",
   valuesMaxCount: 1,
   valuesMinCount: 0,
@@ -96,16 +96,6 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
       trigger: "change"
     }
   ],
-
-  searchWeight: [
-    {
-      required: true,
-      type: 'integer',
-      message: "Please select search weight",
-      trigger: "change"
-    }
-  ],
-
 };
 
 /**

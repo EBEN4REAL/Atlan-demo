@@ -40,7 +40,7 @@
                 <div class="mt-1 border-t border-gray-100">
                     <a-textarea
                         v-model:value="message"
-                        placeholder="Add a status message"
+                        placeholder="Add a certification message"
                         show-count
                         :maxlength="180"
                         style="width: 280px"

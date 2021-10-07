@@ -1,75 +1,102 @@
 <template>
-    <div class="flex items-center w-full pl-12 mb-5">
-        <div class="grid h-full grid-cols-12 p-6 gap-x-12">
-            <div class="col-span-12 mt-10 sm:col-span-8">
-                <div class="relative text-white">
-                    <h3 class="text-xl font-bold text-gray">
-                        Recently accessed terms
-                    </h3>
-
-                    <div class="grid grid-cols-12">
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recently accessed terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recently accessed terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 mt-10 sm:col-span-8">
-                <div class="relative text-white">
-                    <h3 class="text-xl font-bold text-gray">
-                        Recommended terms
-                    </h3>
-
-                    <div class="grid grid-cols-12">
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recommended terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recommended terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div
+        class="flex flex-col items-center w-full pt-5 mb-5"
+        :class="$style.menuClasses"
+    >
+        <a-dropdown :trigger="['click']">
+            <a-input-search
+                v-model:value="searchQuery"
+                placeholder="Search across Glossaries"
+                class="w-1/2"
+                @change="onSearch"
+            />
+            <template #overlay>
+                <a-menu class="overflow-y-auto max-h-40">
+                    <template v-for="item in entities" :key="item.guid">
+                        <a-menu-item class="flex items-center py-2">
+                            <div class="flex flex-col py-1 ml-3">
+                                <span class="flex items-center space-x-2"
+                                    >{{ item.displayText }}
+                                    <StatusBadge
+                                        :key="item?.guid"
+                                        :status-id="
+                                            item?.attributes?.assetStatus
+                                        "
+                                        :show-chip-style-status="false"
+                                        :show-no-status="true"
+                                        :show-label="false"
+                                        class="p-0 ml-2"
+                                    ></StatusBadge>
+                                </span>
+                                <span class="text-xs text-gray-500">
+                                    Parent glossary name goes here
+                                </span>
+                            </div>
+                            <template #icon>
+                                <atlan-icon
+                                    v-if="
+                                        item?.typeName === 'AtlasGlossaryTerm'
+                                    "
+                                    icon="Term"
+                                    class="w-auto h-4"
+                                />
+                                <atlan-icon
+                                    v-if="
+                                        item?.typeName ===
+                                        'AtlasGlossaryCategory'
+                                    "
+                                    icon="Category"
+                                    class="w-auto h-4"
+                                />
+                            </template>
+                        </a-menu-item>
+                    </template>
+                </a-menu>
+            </template>
+        </a-dropdown>
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, ref } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
+    // components
+    import StatusBadge from '@common/badge/status/index.vue'
+    // composables
+    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
     export default defineComponent({
-        setup() {},
+        components: {
+            StatusBadge,
+        },
+        setup() {
+            const searchQuery = ref<string>()
+            const { entities, fetchAssetsPaginated } = useGtcSearch(
+                undefined,
+                ref(true),
+                'AtlasGlossaryTerm,AtlasGlossaryCategory'
+            )
+            const onSearch = useDebounceFn(() => {
+                fetchAssetsPaginated({
+                    query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
+                    offset: 0,
+                })
+            }, 400)
+
+            return {
+                entities,
+                onSearch,
+                searchQuery,
+            }
+        },
     })
 </script>
+<style lang="less" module>
+    .menuClasses {
+        :global(.ant-dropdown-menu-item) {
+            @apply bg-gray-100 !important;
+        }
+    }
+</style>
 
 <route lang="yaml">
 meta:

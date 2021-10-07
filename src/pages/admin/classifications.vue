@@ -141,9 +141,6 @@
             }
             const treeData = computed(() => store.classificationTree)
 
-            store.setSelectedClassification(
-                router?.currentRoute.value?.params?.classificationId as string
-            )
             const selectedClassificationNameFromRoute = computed(
                 () => store.selectedClassification
             )
@@ -175,12 +172,23 @@
                     store.initializeFilterTree()
                     store.setClassificationsStatus('success')
                     if (store.classificationTree.length > 0) {
-                        router.push(
-                            `/admin/classifications/${encodeURIComponent(
+                        if (
+                            router?.currentRoute.value?.params?.classificationId
+                        ) {
+                            store.setSelectedClassification(
+                                router?.currentRoute.value?.params
+                                    ?.classificationId as string
+                            )
+                        } else {
+                            router.push(
+                                `/admin/classifications/${encodeURIComponent(
+                                    store.classificationTree[0].name
+                                )}`
+                            )
+                            store.setSelectedClassification(
                                 store.classificationTree[0].name
-                            )}`
-                        )
-                        //                        //                        console.log(router, 'router1')
+                            )
+                        }
                     }
                 } else {
                     store.setClassificationsStatus('error')

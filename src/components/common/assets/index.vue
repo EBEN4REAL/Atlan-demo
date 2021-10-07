@@ -326,9 +326,13 @@
                 queryText.value = ''
             }
 
-            watch(dataMap, () => {
-                updateBody()
-            })
+            watch(
+                dataMap,
+                () => {
+                    updateBody()
+                },
+                { immediate: true }
+            )
             return {
                 autoSelect,
                 handleClearFiltersFromList,

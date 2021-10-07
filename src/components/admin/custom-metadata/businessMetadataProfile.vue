@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white border rounded">
+    <div>
         <!-- <ArchiveMetadataModal
       v-if="showArchiveMetadataModal"
       @close="showArchiveMetadataModal = false"

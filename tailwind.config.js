@@ -24,7 +24,7 @@ module.exports = {
                     focus: '#BDCDF4',
                     light: '#F4F6FD',
                 },
-                body: '#f8f8fd',
+                body: '#fff',
                 gray: {
                     DEFAULT: '#3E4359',
                     light: '#F3F3F3',

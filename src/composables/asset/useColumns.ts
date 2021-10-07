@@ -6,7 +6,7 @@ import keyMaps from '~/api/keyMaps'
 
 
 import { BaseAttributes } from '~/constant/projection'
-import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 
 function constructRequest(guid: string) {
     const finalParams = new URLSearchParams()

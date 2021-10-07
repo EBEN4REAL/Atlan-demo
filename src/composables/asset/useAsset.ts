@@ -1,7 +1,7 @@
 import { watch, ref } from 'vue'
 import { BasicSearchAttributes, tableauAttributes } from '~/constant/projection'
 import { SearchBasic } from '~/api/atlas/searchbasic'
-import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 
 export default function useAsset({
     entityId,

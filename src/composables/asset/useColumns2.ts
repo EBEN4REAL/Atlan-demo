@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { computed, ComputedRef, ref, Ref } from 'vue'
 import { BasicSearchAttributes, ColumnAttributes } from '~/constant/projection'
-import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 import useAssetSearchList from '~/components/discovery/useSearchList'
 import { dataTypeList } from '~/constant/datatype'
 

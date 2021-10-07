@@ -1,7 +1,7 @@
 import { ref, watch, toRaw, computed } from 'vue'
 import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from '~/constant/business_metadata'
-import { generateUUID } from '~/utils/helper/generator'
-import { useBusinessMetadataStore } from '~/store/businessMetadata'
+// import { generateUUID } from '~/utils/helper/generator'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
 
 interface attributeDefs {
@@ -17,12 +17,12 @@ interface BMObject {
 }
 
 export default function useBusinessMetadata() {
-    const getDefaultAttributeTemplate = () => {
-        const uuid4 = generateUUID()
+    const getDefaultAttributeTemplate = () =>
+        // const uuid4 = generateUUID()
         // TODO changes when UUID4 support
-        return { ...DEFAULT_ATTRIBUTE }
-        // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
-    }
+        ({ ...DEFAULT_ATTRIBUTE })
+    // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
+
 
     /**
      * @param {Object} BmObject - BM object to be edited
@@ -88,7 +88,7 @@ export default function useBusinessMetadata() {
 
         watch(
             () => BMResponse?.value?.businessMetadataDefs,
-            (n, o) => {
+            (n) => {
                 if (n) {
                     const list = n.map(
                         (bm: {
@@ -132,19 +132,32 @@ export default function useBusinessMetadata() {
     const searchText = ref('')
     const newBm = ref(null)
     const updatedBm = ref(null)
-    // * Methods
+
+    const businessMetadataList = computed(() => store.getBusinessMetadataList)
+
+    const businessMetadataListError = computed(
+        () => store.businessMetadataListError
+    )
+
+
+    const finalBusinessMetadataList = computed(() => [
+        ...(newBm.value ? [newBm.value] : []),
+        ...(businessMetadataList.value ? businessMetadataList.value : []),
+    ])
+
+
 
     const handleSelectBm = (item: any) => {
         selectedBm.value = item
         updatedBm.value = null
     }
 
-    const getNewBmTemplate = () => {
-        const uuid4 = generateUUID()
+    const getNewBmTemplate = () =>
+        // const uuid4 = generateUUID()
         // TODO changes when UUID4 support
         // return { ...DEFAULT_BM, name: uuid4 };
-        return { ...DEFAULT_BM }
-    }
+        ({ ...DEFAULT_BM })
+
     const clearSearchText = () => {
         searchText.value = ''
     }
@@ -184,21 +197,11 @@ export default function useBusinessMetadata() {
             )
         }
     }
-    // * Computed
-    const businessMetadataList = computed(() => store.getBusinessMetadataList)
 
-    const businessMetadataListError = computed(
-        () => store.businessMetadataListError
-    )
+
     const handleAfterArchive = () => {
         console.log('handleAfterArchive')
     }
-
-    const finalBusinessMetadataList = computed(() => [
-        ...(newBm.value ? [newBm.value] : []),
-        ...(businessMetadataList.value ? businessMetadataList.value : []),
-    ])
-
     const searchedBusinessMetadataList = computed(() => {
         if (searchText.value) {
             return finalBusinessMetadataList.value.filter((bm) =>
@@ -251,6 +254,7 @@ export default function useBusinessMetadata() {
                     temp.data.attributeDefs[i].name =
                         attribute.options.displayName
                 }
+                // eslint-disable-next-line no-prototype-builtins
                 if (temp.data.attributeDefs[i].hasOwnProperty('isNew')) {
                     delete temp.data.attributeDefs[i].isNew
                 }
@@ -264,7 +268,7 @@ export default function useBusinessMetadata() {
 
     //* Hooks
 
-    watch(finalBusinessMetadataList, (n, o) => {
+    watch(finalBusinessMetadataList, (n) => {
         if (n.length && !selectedBm.value) {
             selectedBm.value = JSON.parse(
                 JSON.stringify(finalBusinessMetadataList.value[0])

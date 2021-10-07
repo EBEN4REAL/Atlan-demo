@@ -205,12 +205,11 @@
     // ? Components
     import AddAttributeCard from '@/admin/custom-metadata/addAttributeCard.vue'
     import CreateUpdateInfo from '@/common/createUpdateInfo.vue'
-    import ArchiveMetadataModal from '@/admin/custom-metadata/archiveMetadataModal.vue'
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
 
     // ? Store
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
 
     // ? composables
 
@@ -223,7 +222,6 @@
         components: {
             AddAttributeCard,
             CreateUpdateInfo,
-            ArchiveMetadataModal,
         },
         props: {
             selectedBm: {
@@ -231,6 +229,13 @@
                 required: true,
             },
         },
+        emits: [
+            'update',
+            'removeNewBm',
+            'clearUpdatedBm',
+            'clearNewBm',
+            'selectBm',
+        ],
         setup(props, context) {
             const store = useBusinessMetadataStore()
             // * Data
@@ -302,40 +307,13 @@
             }
 
             /**
-             * @desc action for @save event, validates the data and/or makes the api call,
-             *       Also updates the BM Store with the updated data
-             */
-            const handleAddBusinessMetadata = async () => {
-                error.value = null
-                const validatedBm = validatePayload(localBm.value)
-
-                if (validatedBm.error) {
-                    error.value = validatedBm.error
-                    return
-                }
-                loading.value = true
-                const apiResponse = ref()
-                if (validatedBm.data?.guid === 'new')
-                    apiResponse.value =
-                        BusinessMetadataService.addNewBusinessMetadata(
-                            getUpdatePayload(validatedBm.data)
-                        )
-                else
-                    apiResponse.value =
-                        BusinessMetadataService.updateNewBusinessMetadata(
-                            getUpdatePayload(validatedBm.data)
-                        )
-
-                handleUpdateBMResponse(apiResponse)
-            }
-            /**
              * @param {Object} apiResponse - object return from update api call
              * @desc - handles success and error for update
              */
             const handleUpdateBMResponse = (apiResponse: Ref) => {
                 watch(
                     () => apiResponse.value.data,
-                    (n, o) => {
+                    () => {
                         if (
                             apiResponse.value?.data?.businessMetadataDefs.length
                         ) {
@@ -367,6 +345,34 @@
                         }
                     }
                 )
+            }
+
+            /**
+             * @desc action for @save event, validates the data and/or makes the api call,
+             *       Also updates the BM Store with the updated data
+             */
+            const handleAddBusinessMetadata = async () => {
+                error.value = null
+                const validatedBm = validatePayload(localBm.value)
+
+                if (validatedBm.error) {
+                    error.value = validatedBm.error
+                    return
+                }
+                loading.value = true
+                const apiResponse = ref()
+                if (validatedBm.data?.guid === 'new')
+                    apiResponse.value =
+                        BusinessMetadataService.addNewBusinessMetadata(
+                            getUpdatePayload(validatedBm.data)
+                        )
+                else
+                    apiResponse.value =
+                        BusinessMetadataService.updateNewBusinessMetadata(
+                            getUpdatePayload(validatedBm.data)
+                        )
+
+                handleUpdateBMResponse(apiResponse)
             }
 
             const handleAddNewAttribute = () => {

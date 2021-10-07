@@ -17,8 +17,8 @@
 
         <template #sidebar>
             <SearchAndFilter
-                placeholder="Search Custom Metadata"
                 v-model:value="searchText"
+                placeholder="Search Custom Metadata"
                 class="mt-6 mb-4 bg-white"
             />
 
@@ -51,6 +51,8 @@
 </template>
 <script lang="ts">
     // ? components
+    import { defineComponent, computed, onMounted } from 'vue'
+    import { useHead } from '@vueuse/head'
     import BusinessMetadataList from '@/admin/custom-metadata/businessMetadataList.vue'
     import BusinessMetadataProfile from '@/admin/custom-metadata/businessMetadataProfile.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -62,8 +64,6 @@
     // ? Composables
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
 
-    import { defineComponent, computed, onMounted } from 'vue'
-    import { useHead } from '@vueuse/head'
     import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
 
     export default defineComponent({

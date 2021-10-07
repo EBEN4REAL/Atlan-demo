@@ -88,7 +88,9 @@
                     v-model:autoSelect="autoSelect"
                     @preview="handlePreview"
                     @loadMore="loadMore"
-                    @bulkSelectChange="(list) => $emit('bulkSelectChange', list)"
+                    @bulkSelectChange="
+                        (list) => $emit('bulkSelectChange', list)
+                    "
                 ></AssetList>
             </div>
         </div>
@@ -135,7 +137,7 @@
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
@@ -433,7 +435,7 @@
                 setRouterOptions()
             }
             const termNameChange = (termQName: string) => {
-                termName.value = termQName;
+                termName.value = termQName
                 isAggregate.value = true
                 updateBody()
                 // setRouterOptions()

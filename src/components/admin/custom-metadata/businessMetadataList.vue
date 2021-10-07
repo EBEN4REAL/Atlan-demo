@@ -42,10 +42,15 @@
     </div>
 </template>
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { defineComponent } from 'vue'
 
     export default defineComponent({
-        props: ['finalList', 'selectedBm', 'updatedBm'],
+        props: {
+            finalList: { type: Object, required: true },
+            updatedBm: { type: Object, required: true },
+            selectedBm: { type: Object, required: true },
+        },
+        emits: ['selectBm'],
         setup(props, context) {
             /**
              *
@@ -65,14 +70,7 @@
             // * Methods
             const selectBm = (item: object) => context.emit('selectBm', item)
 
-            // * Computed
-            const finalList = computed(() => props.finalList)
-            const selectedBm = computed(() => props.selectedBm)
-            const updatedBm = computed(() => props.updatedBm)
             return {
-                finalList,
-                selectedBm,
-                updatedBm,
                 isUpdateBmSameAsCurrentBm,
                 selectBm,
             }

@@ -4,7 +4,7 @@ import { actions } from "./actions";
 import { getters } from "./getters";
 
 
-export const useBusinessMetadataStore = defineStore({
+export default defineStore({
   // name of the store
   // it is used in devtools and allows restoring state
   id: "businessMetadata",

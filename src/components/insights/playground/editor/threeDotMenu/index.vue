@@ -6,6 +6,7 @@
                 :class="isActive ? 'border-primary-light' : ''"
                 class="
                     flex
+                    h-6
                     items-center
                     justify-center
                     py-0.5
@@ -42,7 +43,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
     export default defineComponent({
         components: {},
         props: {},

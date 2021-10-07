@@ -38,18 +38,14 @@
         </div>
         <div class="flex items-center mb-2">
             <p class="text-base font-bold text-gray-700">
-                {{ item.title }}
+                {{ title(item) }}
             </p>
         </div>
         <p class="mb-2 text-sm text-gray-500">
-            {{
-                item.attributes.description === ''
-                    ? 'No description'
-                    : item.attributes.description
-            }}
+            {{ description(item) }}
         </p>
 
-        <div
+        <!-- <div
             class="flex flex-wrap items-center"
             :class="TAndCList.length > 0 ? 'mb-4' : ''"
         >
@@ -95,7 +91,7 @@
                     </span>
                 </template>
             </PillGroup>
-        </div>
+        </div> -->
 
         <div class="">
             <p class="mb-1 text-gray-700">Owned by</p>
@@ -198,6 +194,7 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -215,6 +212,7 @@
             },
         },
         setup(props) {
+            const { description, title } = useAssetInfo()
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -302,6 +300,8 @@
                 { immediate: true }
             )
             return {
+                title,
+                description,
                 sidebarDisabled,
                 activeInlineTab,
                 toggleAllTAndC,

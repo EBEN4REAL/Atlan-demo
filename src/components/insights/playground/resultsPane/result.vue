@@ -1,14 +1,30 @@
 <template>
-    <div class="flex-1 p-3 rounded">
-        <div class="flex justify-center w-full h-full overflow-x-auto rounded">
+    <div class="relative w-full h-full p-3 overflow-hidden rounded">
+        <div
+            class="relative flex justify-center overflow-x-auto rounded  table_height"
+        >
             <a-table
                 class="w-full overflow-x-auto"
                 :loading="isQueryRunning === 'loading' ? true : false"
                 :class="$style.result_tab"
                 :data-source="activeInlineTab.playground.editor.dataList"
+                :scroll="{ x: 500 }"
                 :columns="activeInlineTab.playground.editor.columnList"
-                :scroll="{ x: 500, y: 240 }"
             />
+        </div>
+        <div
+            class="absolute left-0 flex w-full bg-white border-t  bottom_footer h-7"
+            v-if="activeInlineTab.playground.editor.columnList.length > 0"
+        >
+            <div class="flex items-center px-3 text-gray-500">
+                <span class="mr-2">
+                    {{
+                        activeInlineTab.playground.editor.columnList.length
+                    }}&nbsp;Columns
+                </span>
+                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
+                <span class="mr-2"> Get rows count </span>
+            </div>
         </div>
     </div>
 </template>
@@ -44,6 +60,12 @@
 <style lang="less" scoped>
     .placeholder {
         background-color: #f4f4f4;
+    }
+    .table_height {
+        height: 85%;
+    }
+    .bottom_footer {
+        bottom: 10%;
     }
 </style>
 <style lang="less" module>

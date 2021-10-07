@@ -246,16 +246,15 @@
 
     :global(.splitpanes--vertical > .splitpanes__splitter) {
         position: relative;
-        margin-left: -1px;
         box-sizing: border-box;
         position: relative;
         touch-action: none;
         border-right: 0px !important;
-        @apply border-r !important;
+        // margin-right: -0.5px;
+        // @apply border-r !important;
         border-width: 1.5px !important;
         &:hover {
             @apply bg-primary !important;
-            // border-width: 1.5px !important;
             &:before {
                 content: '';
                 position: absolute;

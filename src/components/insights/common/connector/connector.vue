@@ -107,6 +107,7 @@
                             'TableauDashboard',
                             'TableauDatasource',
                             'TableauDatasourceField',
+                            'TableauCalculatedField',
                         ]
                     } else {
                         tabIds.value = [
@@ -137,6 +138,7 @@
                         'TableauDashboard',
                         'TableauDatasource',
                         'TableauDatasourceField',
+                        'TableauCalculatedField',
                     ]
                 }
             }

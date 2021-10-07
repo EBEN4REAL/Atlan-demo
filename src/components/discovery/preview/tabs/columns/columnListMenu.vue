@@ -68,11 +68,11 @@
                         />
                     </a-menu-item>
                 </a-sub-menu>
-                <a-sub-menu key="widgets">
+                <!-- <a-sub-menu key="classification">
                     <template #title>
                         <div class="flex items-center">
-                            <AtlanIcon icon="Widgets" />
-                            <span class="pl-2 text-sm">Widgets</span>
+                            <AtlanIcon icon="AddUser" />
+                            <span class="pl-2 text-sm">Add Classification</span>
                             <AtlanIcon
                                 class="flex-none ml-auto -mr-2"
                                 icon="ChevronRight"
@@ -80,57 +80,52 @@
                         </div>
                     </template>
                     <template #expandIcon />
-                    <a-menu-item key="copyLink">
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Readme" />
-                            <span class="pl-2 text-sm"> Readme </span>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item key="copyLink">
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Megaphone" />
-                            <span class="pl-2 text-sm"> Announcements </span>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item key="copyLink">
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Link" />
-                            <span class="pl-2 text-sm"> Resources </span>
-                        </div>
+                    <a-menu-item class="m-0 bg-white">
+                        <Classification :selected-asset="asset" />
                     </a-menu-item>
                 </a-sub-menu>
-                <a-menu-divider />
-                <a-menu-item
-                    key="archive"
-                    class="flex items-center text-red-700"
-                >
-                    <div class="flex items-center justify-between">
-                        <AtlanIcon icon="Trash" />
-                        <span class="pl-2 text-sm">Archive</span>
-                    </div>
-                </a-menu-item>
+                <a-sub-menu key="term">
+                    <template #title>
+                        <div class="flex items-center">
+                            <AtlanIcon icon="AddUser" />
+                            <span class="pl-2 text-sm">Add Term</span>
+                            <AtlanIcon
+                                class="flex-none ml-auto -mr-2"
+                                icon="ChevronRight"
+                            />
+                        </div>
+                    </template>
+                    <template #expandIcon />
+                    <a-menu-item class="m-0 bg-white">
+                        <LinkTerms
+                            :selected-asset="asset"
+                            @update:selected-asset="updateAsset"
+                        />
+                    </a-menu-item>
+                </a-sub-menu> -->
             </a-menu>
         </template>
     </a-dropdown>
 </template>
 <script lang="ts">
     import { defineComponent, ref, PropType, toRefs } from 'vue'
-    import { useRouter } from 'vue-router'
 
     // components
     import StatusBadge from '@common/badge/status/index.vue'
+    import Classification from '@common/sidebar/classifications.vue'
+    import LinkTerms from '@common/sidebar/linkTerms.vue'
     import Owners from '@/glossary/threeDotMenu/owners.vue'
     import Status from '@/glossary/threeDotMenu/status.vue'
-    import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
-    import Categories from '@/glossary/common/categories.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
 
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { Status, Owners, StatusBadge, AddGtcModal, Categories },
+        components: { Status, Owners, StatusBadge, Classification, LinkTerms },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -141,17 +136,30 @@
         setup(props, context) {
             // data
             const isVisible = ref(false)
-            const router = useRouter()
             const { asset } = toRefs(props)
 
             const closeMenu = () => {
                 isVisible.value = false
             }
+            const { assetType } = useAssetInfo()
 
-            function handleCopyProfileLink() {
+            const isColumnAsset = (paramAsset) =>
+                assetType(paramAsset) === 'Column'
+
+            const getColumnUrl = (paramAsset) => {
+                const tableGuid = paramAsset.attributes?.table?.guid
+                return `assets/${tableGuid}/overview?column=${paramAsset?.guid}`
+            }
+
+            const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin
-                const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
-                copyToClipboard(text)
+                if (isColumnAsset(asset.value)) {
+                    const text = `${baseUrl}/${getColumnUrl(asset.value)}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/assets/${asset.value.guid}/overview`
+                    copyToClipboard(text)
+                }
             }
 
             function updateAsset() {}

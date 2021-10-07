@@ -3,7 +3,7 @@
 export const List: any = [
     {
         id: 'datasets',
-        include: ['View', 'Table', 'TablePartition', 'MaterialisedView'],
+        include: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'TableauDatasource', 'PowerBIDataset'],
         label: 'Datasets',
         description: 'Datasets',
         popoverText: 'Tabular assets (Tables, Views, etc.)',
@@ -11,7 +11,7 @@ export const List: any = [
     {
         id: 'fields',
         label: 'Fields',
-        include: ['Column'],
+        include: ['Column', 'TableauDatasourceField', 'TableauCalculatedField'],
         popoverText: 'Column assets (Columns)',
         description: 'Fields',
     },
@@ -24,11 +24,9 @@ export const List: any = [
             'TableauWorkbook',
             'TableauWorksheet',
             'TableauDashboard',
-            'TableauDatasource',
             'PowerBIWorkspace',
             'PowerBIDashboard',
             'PowerBIReport',
-            'PowerBIDataset',
             'PowerBIDataflow',
             'PowerBITile',
             'PowerBIPage',

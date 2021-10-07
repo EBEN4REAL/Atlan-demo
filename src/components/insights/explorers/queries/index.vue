@@ -152,7 +152,7 @@
             )
             const { focusEditor } = useEditor()
 
-            const isSelectedType = (type: string) => {
+            const isSelectedType = (type: 'personal' | 'all') => {
                 return savedQueryType.value === type
             }
             const onSelectQueryType = (type: 'personal' | 'all') => {
@@ -203,6 +203,8 @@
                 expandNode: per_expandNode,
                 selectNode: per_selectNode,
                 refetchNode: per_refetchNode,
+                immediateParentFolderQF: per_immediateParentFolderQF,
+                immediateParentGuid: per_immediateParentGuid,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -216,10 +218,12 @@
                 isInitingTree: all_isInitingTree,
                 selectedKeys: all_selectedKeys,
                 expandedKeys: all_expandedKeys,
+                immediateParentFolderQF: all_immediateParentFolderQF,
                 onLoadData: all_onLoadData,
                 expandNode: all_expandNode,
                 selectNode: all_selectNode,
                 refetchNode: all_refetchNode,
+                immediateParentGuid: all_immediateParentGuid,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -227,6 +231,17 @@
                 connector,
                 savedQueryType: ref('all'),
             })
+
+            const getRelevantQFandGuid = (type: 'personal' | 'all') => {
+                if(type === 'personal') return {
+                    qualifiedName: per_immediateParentFolderQF,
+                    guid: per_immediateParentGuid
+                };
+                 else return {
+                    qualifiedName: all_immediateParentFolderQF,
+                    guid: all_immediateParentGuid
+                }
+            }
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {
                 per_selectedKeys.value = [newActiveInlineTab]
@@ -247,18 +262,20 @@
                         saveQueryLoading,
                         showSaveQueryModal,
                         saveModalRef,
-                        router
+                        router,
+                        getRelevantQFandGuid(savedQueryType.value).qualifiedName,
+                        getRelevantQFandGuid(savedQueryType.value).guid
                     )
                     focusEditor(toRaw(editorInstance.value))
 
                     watch(data, (newData) => {
                         if (newData) {
                             per_refetchNode(
-                                '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                                getRelevantQFandGuid(savedQueryType.value).guid.value,
                                 createEntityType.value
                             )
                             all_refetchNode(
-                                '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                                getRelevantQFandGuid(savedQueryType.value).guid.value,
                                 createEntityType.value
                             )
                         }
@@ -268,12 +285,14 @@
                         saveQueryData,
                         saveQueryLoading,
                         showSaveQueryModal,
-                        saveModalRef
+                        saveModalRef,
+                        getRelevantQFandGuid(savedQueryType.value).qualifiedName,
+                        getRelevantQFandGuid(savedQueryType.value).guid
                     )
                     watch(data, (newData) => {
                         if (newData) {
-                            per_refetchNode('root', createEntityType.value)
-                            all_refetchNode('root', createEntityType.value)
+                            per_refetchNode(getRelevantQFandGuid(savedQueryType.value).guid.value, createEntityType.value)
+                            all_refetchNode(getRelevantQFandGuid(savedQueryType.value).guid.value, createEntityType.value)
                         }
                     })
                 }

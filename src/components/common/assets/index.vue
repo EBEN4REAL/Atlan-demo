@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col w-full">
-        <div class="px-2 pt-5 pb-4 bg-gray-100">
+    <div class="flex flex-col overflow-hidden">
+        <div class="px-2 pt-5 pb-4 bg-gray-100 border-b">
             <SearchAndFilter
                 v-model:value="queryText"
                 class="mx-3 mb-5 bg-white"
@@ -32,7 +32,7 @@
         </div>
         <AssetList
             v-else
-            class="pt-2 bg-white asset-list-height"
+            class="pt-2 bg-white"
             :list="list"
             :score="searchScoreList"
             :projection="projection"
@@ -362,9 +362,3 @@
         },
     })
 </script>
-
-<style scoped>
-    .asset-list-height {
-        max-height: calc(100vh - 23rem);
-    }
-</style>

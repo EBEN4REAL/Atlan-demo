@@ -1,15 +1,18 @@
 <template>
-    <a-tabs v-model:activeKey="activeTabKey" class="w-full mt-2 typeTabs">
+    <a-tabs
+        v-model:activeKey="activeTabKey"
+        class="flex-none w-full mt-2 typeTabs"
+    >
         <a-tab-pane key="1" tab="Linked Assets" />
         <a-tab-pane key="2" tab="Linked Terms" />
     </a-tabs>
     <KeepAlive>
         <AssetsWrapper :dataMap="filterConfig" v-if="activeTabKey === '1'" />
-    </KeepAlive>
-    <!-- <LinkedTerms
+        <LinkedTerms
             v-else-if="activeTabKey === '2'"
             :selected-classification="selectedClassification?.name"
-        /> -->
+        />
+    </KeepAlive>
 </template>
 
 <script lang="ts">
@@ -81,6 +84,7 @@
         }
         .ant-tabs-bar {
             margin-bottom: 0px;
+            @apply border-gray-300 !important;
         }
         .ant-tabs-content {
             padding-right: 0px;

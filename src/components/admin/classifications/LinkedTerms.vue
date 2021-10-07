@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full rounded-lg">
+    <div class="flex flex-col overflow-hidden">
         <div class="flex items-center mx-3 mb-1">
             <a-input
                 v-model:value="queryText"
@@ -16,10 +16,7 @@
                         <template #content>
                             <div class="flex">
                                 <div
-                                    class="
-                                        px-3
-                                        border-r border-gray-200 border-dashed
-                                    "
+                                    class="px-3 border-r border-gray-200 border-dashed "
                                 >
                                     <p class="mb-1 text-gray-500">Show/Hide</p>
                                     <a-checkbox-group
@@ -75,8 +72,7 @@
         </div>
         <LinkedTermList
             v-else
-            ref="assetlist"
-            class="asset-list-height"
+            class="pt-2"
             :list="queryText == '' ? list : filteredList"
             :score="searchScoreList"
             :is-loading="isLoading || isValidating"

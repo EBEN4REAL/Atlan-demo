@@ -3,85 +3,109 @@
         <div class="w-full p-4 pb-0 rounded">
             <Connector :connector="connector" @update:data="updateConnector" />
             <div class="flex flex-row space-x-2">
-                <a-input-search class="mt-2 rounded" placeholder="Search" />
+                <a-input-search v-model:value="searchQuery" class="mt-2 rounded" placeholder="Search" />
                 <a-button class="flex items-center w-8 h-8 p-2 mt-2 rounded">
                     <AtlanIcon icon="Filter" />
                 </a-button>
             </div>
         </div>
         <div class="w-full my-4 border-b"></div>
-        <div class="w-full p-4 pt-0">
-            <div class="flex justify-between text-gray-500">
-                <div class="px-3 py-1 rounded shadow">
-                    <span
-                        class="mr-4 cursor-pointer hover:text-primary-400"
-                        :class="
-                            isSelectedType('personal') ? ' text-primary' : ''
-                        "
-                        @click="() => onSelectQueryType('personal')"
-                        >Personal</span
-                    >
-                    <span
-                        class="cursor-pointer hover:text-primary-400"
-                        :class="isSelectedType('all') ? ' text-primary' : ''"
-                        @click="() => onSelectQueryType('all')"
-                        >All</span
-                    >
-                </div>
-                <div class="flex items-center">
-                    <div class="">
-                        <AtlanIcon
-                            @click="toggleCreateQueryModal"
-                            icon="NewQuery"
-                            class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary"
-                        />
+        <div class="w-full h-full">
+            <div class="w-full p-4 pt-0">
+                <div class="flex justify-between text-gray-500">
+                    <div class="px-3 py-1 rounded shadow">
+                        <span
+                            class="mr-4 cursor-pointer hover:text-primary-400"
+                            :class="
+                                isSelectedType('personal') ? ' text-primary' : ''
+                            "
+                            @click="() => onSelectQueryType('personal')"
+                            >Personal</span
+                        >
+                        <span
+                            class="cursor-pointer hover:text-primary-400"
+                            :class="isSelectedType('all') ? ' text-primary' : ''"
+                            @click="() => onSelectQueryType('all')"
+                            >All</span
+                        >
                     </div>
-                    <div class="">
-                        <AtlanIcon
-                            @click="toggleCreateQueryFolderModal"
-                            icon="NewFolder"
-                            class="h-4 m-0 -mt-0.5 hover:text-primary"
-                        />
+                    <div v-if="!searchQuery?.length"  class="flex items-center">
+                        <div class="">
+                            <AtlanIcon
+                                @click="toggleCreateQueryModal"
+                                icon="NewQuery"
+                                class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary"
+                            />
+                        </div>
+                        <div class="">
+                            <AtlanIcon
+                                @click="toggleCreateQueryFolderModal"
+                                icon="NewFolder"
+                                class="h-4 m-0 -mt-0.5 hover:text-primary"
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div
-            class="relative w-full h-full p-3 pt-0 overflow-y-auto  scrollable-container"
-        >
-            <!--explorer pane start -->
-            <div
-                class="absolute w-full h-full bg-white"
-                :class="savedQueryType === 'personal' ? 'z-2' : 'z-1'"
-            >
-                <query-tree
-                    :tree-data="per_treeData"
-                    :on-load-data="per_onLoadData"
-                    :select-node="per_selectNode"
-                    :expand-node="per_expandNode"
-                    :is-loading="per_isInitingTree"
-                    :loaded-keys="per_loadedKeys"
-                    :selected-keys="per_selectedKeys"
-                    :expanded-keys="per_expandedKeys"
-                />
             </div>
             <div
-                class="absolute w-full h-full bg-white"
-                :class="savedQueryType === 'all' ? 'z-2' : 'z-1'"
+                v-if="!searchQuery?.length" 
+                class="relative w-full h-full p-3 pt-0 overflow-y-auto  scrollable-container"
             >
-                <query-tree
-                    :tree-data="all_treeData"
-                    :on-load-data="all_onLoadData"
-                    :select-node="all_selectNode"
-                    :expand-node="all_expandNode"
-                    :is-loading="all_isInitingTree"
-                    :loaded-keys="all_loadedKeys"
-                    :selected-keys="all_selectedKeys"
-                    :expanded-keys="all_expandedKeys"
-                />
+                <!--explorer pane start -->
+                <div
+                    class="absolute w-full h-full bg-white"
+                    :class="savedQueryType === 'personal' ? 'z-2' : 'z-1'"
+                >
+                    <query-tree
+                        :tree-data="per_treeData"
+                        :on-load-data="per_onLoadData"
+                        :select-node="per_selectNode"
+                        :expand-node="per_expandNode"
+                        :is-loading="per_isInitingTree"
+                        :loaded-keys="per_loadedKeys"
+                        :selected-keys="per_selectedKeys"
+                        :expanded-keys="per_expandedKeys"
+                    />
+                </div>
+                <div
+                    class="absolute w-full h-full bg-white"
+                    :class="savedQueryType === 'all' ? 'z-2' : 'z-1'"
+                >
+                    <query-tree
+                        :tree-data="all_treeData"
+                        :on-load-data="all_onLoadData"
+                        :select-node="all_selectNode"
+                        :expand-node="all_expandNode"
+                        :is-loading="all_isInitingTree"
+                        :loaded-keys="all_loadedKeys"
+                        :selected-keys="all_selectedKeys"
+                        :expanded-keys="all_expandedKeys"
+                    />
+                </div>
+                <!--explorer pane end -->
             </div>
-            <!--explorer pane end -->
+            <div v-else class="relative w-full h-full p-3 pl-6 pt-0 overflow-y-auto  scrollable-container">
+            <div v-if="searchLoading">
+                <LoadingView />
+            </div>
+            <div v-else-if="searchResults?.entities?.length">
+                <div v-for="query in searchResults?.entities" :key="query.guid" class="">
+                        <QueryTreeItem
+                            :item="{
+                                selected: false,
+                                title: query.displayText,
+                                attributes: query.attributes
+                            }"
+                            :expandedKeys="per_expandedKeys"
+                        />
+                </div>
+            </div>
+            <div v-else-if="!searchResults?.entities">
+                No results
+            </div>
         </div>
+    </div>
+
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
             :createEntityType="createEntityType"
@@ -113,21 +137,25 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
-    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
 
     import QueryTree from './queryTree.vue'
     import useQueryTree from './composables/useQueryTree'
+    import useSearchQueries from './composables/useSearchQueries'
 
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
+    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
+    import LoadingView from '@common/loaders/section.vue'
+    import QueryTreeItem from './queryTreeItem.vue'
 
     export default defineComponent({
-        components: { QueryTree, Connector, SaveQueryModal },
+        components: { QueryTree, Connector, SaveQueryModal, LoadingView, QueryTreeItem },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const saveQueryLoading = ref(false)
             const createEntityType = ref<'query' | 'queryFolder'>('query')
+            const searchQuery = ref('');
 
             const saveModalRef = ref()
             const inlineTabs = inject('inlineTabs') as Ref<
@@ -231,6 +259,7 @@
                 connector,
                 savedQueryType: ref('all'),
             })
+            const { data: searchResults, isLoading: searchLoading} = useSearchQueries(searchQuery)
 
             const getRelevantQFandGuid = (type: 'personal' | 'all') => {
                 if(type === 'personal') return {
@@ -334,6 +363,9 @@
                 all_onLoadData,
                 all_expandNode,
                 all_selectNode,
+                searchQuery,
+                searchResults,
+                searchLoading
             }
         },
     })

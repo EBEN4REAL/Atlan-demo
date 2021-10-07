@@ -222,7 +222,6 @@ const useTree = ({
             immediateParentFolderQF.value = item.attributes.qualifiedName
             immediateParentGuid.value = item.guid
         }
-        console.log('selected bruh', item, immediateParentFolderQF.value)
 
         // if (!event.node.isLeaf) {
         //     expandNode([], event)

@@ -3,7 +3,11 @@
         <div
             class="px-3 py-1 rounded cursor-pointer"
             v-for="(item, index) in list"
-            :class="{ 'bg-gray-200': item[dataKey] === selected }"
+            :class="
+                item[dataKey] === selected
+                    ? 'bg-gray-300'
+                    : 'hover:bg-gray-light'
+            "
             :key="item[dataKey]"
             @click="
                 () => {

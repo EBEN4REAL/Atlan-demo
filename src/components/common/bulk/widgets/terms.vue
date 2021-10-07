@@ -1,8 +1,31 @@
 <template>
     <div class="mb-3 text-xs text-gray-500" @click.stop="toggleLinkTermPopover">
         <p class="mb-1 text-sm">Terms</p>
-        <div>{{ termsRef }}</div>
-        <div>{{ localState }}</div>
+        <a-popover
+            v-model:visible="showLinkTermPopover"
+            placement="left"
+            trigger="click"
+        >
+            <template #content>
+                <LinkTermsDropdown
+                    ref="linkTermDropdownRef"
+                    @changeTerms="handleTermChange"
+                />
+                <div class="flex justify-end">
+                    <div class="space-x-4">
+                        <a-button class="px-4" @click="handleCancel"
+                            >Cancel</a-button
+                        >
+                        <a-button
+                            type="primary"
+                            class="px-4"
+                            @click="handleConfirm"
+                            >Link</a-button
+                        >
+                    </div>
+                </div>
+            </template>
+        </a-popover>
     </div>
 </template>
 
@@ -10,9 +33,8 @@
 import { defineComponent, Ref, ref, watch, inject, computed } from 'vue'
 import useBulkSelect from '~/composables/asset/useBulkSelect'
 import { Components } from '~/api/atlas/client'
-import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
-import PillGroup from '~/components/UI/pill/pillGroup.vue'
-import LinkClassificationsDropdown from '@/common/dropdown/linkClassificationsDropdown.vue'
+
+import LinkTermsDropdown from '~/components/common/dropdown/linkTermsDropdown.vue'
 
 interface LocalState {
     all:
@@ -28,9 +50,7 @@ interface LocalState {
 export default defineComponent({
     name: 'UpdateBulkTerms',
     components: {
-        ClassificationInfoCard,
-        PillGroup,
-        LinkClassificationsDropdown,
+        LinkTermsDropdown,
     },
     setup() {
         const localState: Ref<LocalState> = ref({

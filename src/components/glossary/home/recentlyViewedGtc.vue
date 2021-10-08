@@ -11,7 +11,8 @@
         >
             <template v-for="item in popularTerms" :key="item.guid">
                 <div
-                    class="flex items-center px-3 py-1 m-2 bg-white border  rounded-2xl"
+                    class="flex items-center px-3 py-1 m-2 bg-white border cursor-pointer  rounded-2xl"
+                    @click="redirectToProfile(item)"
                 >
                     <atlan-icon
                         :icon="

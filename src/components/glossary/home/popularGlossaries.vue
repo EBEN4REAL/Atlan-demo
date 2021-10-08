@@ -1,16 +1,23 @@
 <template>
     <div class="w-2/3 mt-5">
-        <span class="self-start text-lg font-bold">Popular Glossaries</span>
+        <div class="flex justify-between w-full -items-center">
+            <span class="self-start text-lg font-bold">Popular Glossaries</span>
+            <span
+                class="self-end cursor-pointer text-primary"
+                @click="redirectToProfile(entities[0])"
+                >View all
+            </span>
+        </div>
         <div v-if="isLoading" class="flex justify-center w-full">
             <a-spin size="small" class="mt-2 mr-2 leading-none"></a-spin>
         </div>
         <div
             v-else
-            class="flex flex-wrap items-center justify-center pt-4"
+            class="flex items-center justify-between pt-4 space-x-4"
             :class="$style.menuClasses"
         >
             <template v-for="item in entities" :key="item.guid">
-                <div class="px-3 py-4 mr-4 bg-white border w-60">
+                <div class="w-full px-3 py-4 bg-white border">
                     <div class="flex items-center mb-2 text-gray-500">
                         <atlan-icon
                             :icon="
@@ -25,7 +32,7 @@
                     </div>
                     <div class="flex items-center">
                         <span
-                            class="font-bold cursor-pointer"
+                            class="font-bold cursor-pointer hover:underline"
                             @click="redirectToProfile(item)"
                         >
                             {{ item.displayText }}

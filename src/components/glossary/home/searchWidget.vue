@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col items-center w-full pt-5 mb-5"
+        class="flex flex-col items-center w-1/2 pt-3"
         :class="$style.menuClasses"
     >
         <a-dropdown :trigger="['click']">
@@ -13,7 +13,7 @@
             <SearchAndFilter
                 v-model:value="searchQuery"
                 placeholder="Search terms, categories & glossaries"
-                class="w-1/2"
+                class="w-full"
                 @change="onSearch"
             />
             <template #overlay>
@@ -71,6 +71,12 @@
                 </a-menu>
             </template>
         </a-dropdown>
+        <span
+            class="flex items-center self-end mt-2 cursor-pointer text-primary"
+            @click="redirectToProfile(entities[0])"
+            >Browse all Glossaries
+            <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
+        </span>
     </div>
 </template>
 <script lang="ts">

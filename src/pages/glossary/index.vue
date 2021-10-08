@@ -1,9 +1,10 @@
 <template>
     <div class="flex flex-col items-center w-full pt-5 mb-5">
+        <span class="text-base">Business Glossary</span>
         <SearchWidget />
         <PopularTerms />
         <PopularGlossaries />
-        <RecentlyViewed />
+        <RecentlyViewed class="mt-12" />
     </div>
 </template>
 <script lang="ts">

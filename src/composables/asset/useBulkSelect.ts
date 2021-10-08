@@ -1,29 +1,32 @@
 import { ref, Ref, watch, computed, ComputedRef } from 'vue'
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIPromise, useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import whoami from '../user/whoami'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useBulkSelectOwners from '~/composables/asset/useBulkSelectOwners'
 import useBulkSelectClassifications from './useBulkSelectClassifications'
 import useBulkSelectTerms from './useBulkSelectTerms'
+import useBulkUpdateStore from '~/store/bulkUpdate'
 
 export default function useBulkSelect() {
     const selectedAssets: Ref<assetInterface[]> = ref([])
+    const state: Ref<Record<string, string>> = ref({
+        updateStatusOwners: '',
+        linkClassifications: '',
+        linkTerms: '',
+    })
     const { username } = whoami()
     // state of the composable
     // `Existing` properties are computed for all selected lists and passed to the component for initialisation of respective state of each component (ex- status, owners)
     // `Updated` properties are refs, used to maintain a local copy of what changed - instead of calculating diffs bw existing properties whenever it changes/ for storing existing state in case the user tries to reset, we simply store the changed value in updated properties and use that for constructing the payload and locally updating the assets once the call is successful
+    const store = useBulkUpdateStore()
     const updatedStatus: Ref<string> = ref('')
     const updatedStatusMessage: Ref<string> = ref('')
-    const updatedTerms: Ref<Record<string, string>> = ref({})
-    const updatedClassifications: Ref<Record<string, string>> = ref({})
+
     /** STATUS */
     const updateSelectedAssets = (list: Ref<assetInterface[]>) => {
         selectedAssets.value = [...list.value]
     }
-    watch(selectedAssets, () => {
-        console.log('OOO', selectedAssets.value)
-    })
     const existingStatus = computed(() => {
         if (selectedAssets.value.length) {
             const assetStatusMap: Record<string, string> = {}
@@ -77,7 +80,7 @@ export default function useBulkSelect() {
         updateTerms,
         termFrequencyMap,
     } = useBulkSelectTerms(selectedAssets)
-    // Helper function
+    // Helper functions
     const getBulkUpdateRequestPayload = (assetList) => {
         const requestPayloadSkeleton = assetList.map((asset) => {
             const payloadObj = {
@@ -172,6 +175,54 @@ export default function useBulkSelect() {
         })
         return { guidHeaderMap: requestPayload }
     }
+    const getBulkTermUpdateRequestPayload = (assetList) => {
+        // for removing, if assets.meanings don't have the term, skip remove API call for that -> to come later
+        const requestPayload = {}
+        const requestPayloadLocal = {}
+        // a local mapping for quick reference of termDisplayText as well as guid, because we only send guid in the API but we need displayText for updating the asset locally once the API call is successful
+        assetList.forEach((asset) => {
+            const termsList = terms?.value?.[asset.guid] ?? []
+            // if asset.meanings have term, don't add asset to payload
+            // because this is an add API and not update API, we need to send only newly added terms
+            const filteredTermsList = termsList?.filter(
+                (term) =>
+                    asset?.meanings.findIndex(
+                        (assetTerm) =>
+                            assetTerm.termGuid === (term.guid || term.termGuid)
+                    ) === -1
+            )
+            filteredTermsList.forEach((term) => {
+                if (requestPayload.hasOwnProperty(term.guid || term.termGuid)) {
+                    requestPayload[term.guid || term.termGuid].push({
+                        guid: asset.guid,
+                    })
+                    requestPayloadLocal[term.guid || term.termGuid].termInfo = {
+                        displayText: term.displayText,
+                    }
+                    requestPayloadLocal[
+                        term.guid || term.termGuid
+                    ].entities.push({
+                        guid: asset.guid,
+                    })
+                } else {
+                    requestPayload[term.guid || term.termGuid] = [
+                        { guid: asset.guid },
+                    ]
+                    requestPayloadLocal[term.guid || term.termGuid] = {
+                        termInfo: {},
+                        entities: [],
+                    }
+                    requestPayloadLocal[term.guid || term.termGuid].termInfo = {
+                        displayText: term.displayText,
+                    }
+                    requestPayloadLocal[term.guid || term.termGuid].entities = [
+                        { guid: asset.guid },
+                    ]
+                }
+            })
+        })
+        return { requestPayload, requestPayloadLocal }
+    }
     const updateAssets = (assetList) => {
         // status and owners update can be done in a single call using bulk endpoint
         if (
@@ -180,6 +231,8 @@ export default function useBulkSelect() {
         ) {
             // call to bulk endpoint
             const requestPayload = getBulkUpdateRequestPayload(assetList)
+            let updateStatusOwners = { status: 'loading', meta: {} }
+            store.setUpdateStatus({ ...store.updateStatus, updateStatusOwners })
             const { data, error, isLoading } = useAPIAsyncState<any>(
                 KeyMaps.asset.BULK_UPDATE_ASSETS,
                 'POST',
@@ -200,17 +253,96 @@ export default function useBulkSelect() {
                                 ...(updatedAttributes || {}),
                             }
                         })
-                        // } else {
-                        //     message.error({
-                        //         content: `Bulk update failed, please try again.`,
-                        //     })
-                        // }
+                        updateStatusOwners = { status: 'success', meta: {} }
+                        store.setUpdateStatus({
+                            ...store.updateStatus,
+                            updateStatusOwners,
+                        })
+                        // state.value.updateStatusOwners = 'success'
+                    } else {
+                        updateStatusOwners = { status: 'error', meta: {} }
+                        store.setUpdateStatus({
+                            ...store.updateStatus,
+                            updateStatusOwners,
+                        })
+                        // state.value.updateStatusOwners = 'error'
                     }
                 }
             })
         }
-        if (updatedTerms.value && Object.keys(updatedTerms.value).length) {
+        if (terms.value && Object.keys(terms.value).length) {
             // call to link terms endpoint
+            const { requestPayload, requestPayloadLocal } =
+                getBulkTermUpdateRequestPayload(assetList)
+            if (Object.keys(requestPayload).length) {
+                let linkTerms = { status: 'loading', meta: {} }
+                store.setUpdateStatus({ ...store.updateStatus, linkTerms })
+                const { data, error, isLoading } = useAPIAsyncState<any>(
+                    KeyMaps.glossary.BULK_LINK_TERMS,
+                    'POST',
+                    { body: requestPayload },
+                    { immediate: true, resetOnExecute: false }
+                )
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value === false) {
+                        if (error.value === undefined) {
+                            assetList.forEach((asset) => {
+                                const newTerms = []
+                                Object.keys(requestPayload).forEach(
+                                    (termGuid) => {
+                                        newTerms.push({
+                                            termGuid,
+                                            displayText:
+                                                requestPayloadLocal?.termGuid
+                                                    ?.termInfo?.displayText,
+                                        })
+                                    }
+                                )
+                                asset.meanings = [
+                                    ...asset?.meanings,
+                                    ...newTerms,
+                                ]
+                                linkTerms = { status: 'success', meta: {} }
+                                store.setUpdateStatus({
+                                    ...store.updateStatus,
+                                    linkTerms,
+                                })
+                            })
+                        } else {
+                            linkTerms = { status: 'error', meta: {} }
+                            store.setUpdateStatus({
+                                ...store.updateStatus,
+                                linkTerms,
+                            })
+                        }
+                    }
+                })
+            }
+
+            /** FOR ALPHA */
+            // const requests = []
+            // if (Object.keys(requestPayloadForEachTerm).length) {
+            //     Object.keys(requestPayloadForEachTerm).forEach((termGuid) => {
+            //         const linkTermPromise = useAPIPromise(
+            //             KeyMaps.glossary.ASSIGN_TERM_LINKED_ASSETS({
+            //                 termGuid,
+            //             }),
+            //             'POST',
+            //             {
+            //                 body: requestPayloadForEachTerm[termGuid],
+            //             }
+            //         )
+            //         requests.push(linkTermPromise)
+            //     })
+            // }
+            // if (requests.length) {
+            //     try{
+            //         // add loading state
+            //         await Promise.all(requests);
+            //     }
+            //     catch(e){
+            //         // handle error
+            //     }
         }
         if (
             classifications.value &&
@@ -219,6 +351,11 @@ export default function useBulkSelect() {
             // call to link classifications endpoint
             const requestPayload =
                 getBulkClassificationUpdateRequestPayload(assetList)
+            let linkClassifications = { status: 'loading', meta: {} }
+            store.setUpdateStatus({
+                ...store.updateStatus,
+                linkClassifications,
+            })
             const { data, error, isLoading } = useAPIAsyncState<any>(
                 KeyMaps.classification.BULK_LINK_CLASSIFICATION,
                 'POST',
@@ -236,15 +373,42 @@ export default function useBulkSelect() {
                                 ...updatedClassificationsLocal?.classifications,
                             }
                         })
-                        // } else {
-                        //     message.error({
-                        //         content: `Bulk update failed, please try again.`,
-                        //     })
-                        // }
+                        linkClassifications = { status: 'success', meta: {} }
+                        store.setUpdateStatus({
+                            ...store.updateStatus,
+                            linkClassifications,
+                        })
+                    } else {
+                        linkClassifications = { status: 'error', meta: {} }
+                        store.setUpdateStatus({
+                            ...store.updateStatus,
+                            linkClassifications,
+                        })
                     }
                 }
             })
         }
+
+        watch(
+            () => store.updateStatus,
+            () => {
+                if (store.getFinalStatus === 'loading')
+                    store.setShowNotifcation(true)
+                if (
+                    store.getFinalStatus === 'success' ||
+                    store.getFinalStatus === 'error'
+                )
+                    setTimeout(() => {
+                        store.setUpdateStatus({
+                            updateStatusOwners: { status: '', meta: {} },
+                            linkTerms: { status: '', meta: {} },
+                            linkClassifications: { status: '', meta: {} },
+                        })
+                        store.setBulkSelectedAssets([])
+                        store.setShowNotifcation(false)
+                    }, 4000)
+            }
+        )
     }
 
     return {
@@ -271,5 +435,6 @@ export default function useBulkSelect() {
         originalTerms,
         updateTerms,
         termFrequencyMap,
+        state,
     }
 }

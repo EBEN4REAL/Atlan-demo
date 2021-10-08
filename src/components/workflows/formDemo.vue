@@ -8,6 +8,7 @@
             <a-textarea
                 placeholder="Add Form Config"
                 :rows="29"
+                style="font-family: monospace"
                 @change="handleChange"
             />
         </div>

@@ -101,7 +101,7 @@ export default function useFormGenerator(formConfig, formRef) {
   const testModal = ref({});
   const getValueFromSchemaData = (id) => testModal.value[id]
 
-  formConfig.forEach((f) => {
+  formConfig.value.forEach((f) => {
 
     if (!privateTypes.includes(f.type)) {
       const o = preProcessSchema(f)

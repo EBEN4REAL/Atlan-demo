@@ -1,5 +1,11 @@
 <template>
-    <a-form :model="valueObject" ref="formRef" :rules="getRules(formModel)">
+    <div v-if="error">Error in form config.</div>
+    <a-form
+        v-else
+        :model="valueObject"
+        ref="formRef"
+        :rules="getRules(formModel)"
+    >
         <a-button @click="validate">Validate</a-button>
         <!-- <pre>{{ formModel }}</pre> -->
         <span class="grid grid-cols-2 gap-x-8">
@@ -10,7 +16,14 @@
             >
                 <template v-if="f.type === 'group'">
                     <div
-                        class="grid grid-cols-2 p-2 mb-5 bg-gray-100 border rounded "
+                        class="
+                            grid grid-cols-2
+                            p-2
+                            mb-5
+                            bg-gray-100
+                            border
+                            rounded
+                        "
                     >
                         <div class="m-3 font-bold col-span-full">
                             {{ f.groupTitle }}
@@ -109,7 +122,14 @@
 
 <script>
     import DynamicInput from '@common/input/dynamic.vue'
-    import { defineComponent, reactive, ref, watch, computed } from 'vue'
+    import {
+        defineComponent,
+        reactive,
+        ref,
+        watch,
+        computed,
+        toRefs,
+    } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import useFormGenerator from './useFormGenerator'
 
@@ -122,10 +142,13 @@
                 type: Array,
                 default: () => [],
             },
+            error: {
+                type: Boolean,
+            },
         },
-        setup() {
+        setup(props) {
             const formRef = ref()
-
+            const configX = computed(() => props.config)
             const {
                 processedSchema: formModel,
                 getGridClass,
@@ -134,7 +157,7 @@
                 validate,
                 testModal: valueObject,
                 isRequiredField,
-            } = useFormGenerator(config, formRef)
+            } = useFormGenerator(configX, formRef)
 
             // const test = computed(() => finalConfigObject(formModel.value))
 

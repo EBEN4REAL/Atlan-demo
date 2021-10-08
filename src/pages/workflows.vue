@@ -1,5 +1,9 @@
 <template>
-    <div class="flex w-full h-full bg-white">
+    <component
+        :is="whichComponent.main"
+        v-if="whichComponent.main === 'form'"
+    ></component>
+    <div v-else class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
                 <KeepAlive>
@@ -64,6 +68,9 @@
             setupPreview: defineAsyncComponent(
                 () => import('@/workflows/setup/preview/preview.vue')
             ),
+            form: defineAsyncComponent(
+                () => import('@/workflows/formDemo.vue')
+            ),
         },
         setup() {
             useHead({
@@ -73,6 +80,10 @@
             const route = useRoute()
             const isItem = computed(() => route.params.id)
             const whichComponent = computed(() => {
+                if (route.params.id === 'form')
+                    return {
+                        main: 'form',
+                    }
                 if (route.params.id === 'new')
                     return {
                         main: 'Setup',

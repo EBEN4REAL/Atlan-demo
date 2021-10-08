@@ -10,15 +10,18 @@
         <div class="flex items-center">
             <div
                 v-if="totalAppliedFiltersCount"
+                class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
+                @click="resetAllFilters"
+            >
+                Save
+            </div>
+            <div
+                v-if="totalAppliedFiltersCount"
                 class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
             </div>
-            <!-- <a-button
-                class="px-3 py-1 text-sm font-medium border-0 rounded bg-primary-light text-primary"
-                >Save</a-button
-            > -->
         </div>
     </div>
     <div class="h-full overflow-y-auto bg-gray-100">

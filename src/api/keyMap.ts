@@ -6,7 +6,7 @@ export const KeyMaps = {
         GET_ASSET_AUDIT: ({ guid }: PathParams) =>
             getAPIPath('meta', `/entity/${guid}/audit`),
         BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
-        SAVED_SEARCH: () => getAPIPath('meta', `/search/save`),
+        SAVED_SEARCH: () => getAPIPath('meta', `/search/saved`),
         GET_ASSET_RELATIONSHIP: () =>
             getAPIPath('meta', '/search/relationship'),
         PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
@@ -160,15 +160,18 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
+<<<<<<< HEAD
                 'meta',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+=======
+                'auth/atlas',
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+>>>>>>> 8fcd1fbf (basic structure for saved filters added)
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         health: {
@@ -193,7 +196,7 @@ export const KeyMaps = {
             getAPIPath('api/query', `/sql/stream?${params}`),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`

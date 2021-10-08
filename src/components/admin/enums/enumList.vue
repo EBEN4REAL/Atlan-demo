@@ -22,7 +22,7 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
-    import ExplorerList from '../common/explorerlist.vue'
+    import ExplorerList from '@/admin/common/explorerlist.vue'
 
     export default defineComponent({
         name: 'EnumList',

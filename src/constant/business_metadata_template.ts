@@ -9,7 +9,7 @@ export const customEntityTypes = [
   ...AssetTypeList.map(t => ({ title: t.label, value: t.id, key: t.id })).filter(type => !inApplicableTypeName.includes(type.key))
 ]
 
-export const applicableEntityTypes = ['Catalog']
+export const applicableEntityTypes = ['Catalog', 'AtlasGlossaryTerm']
 
 /**
  * @desc default template for new BM attribute

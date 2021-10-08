@@ -1,16 +1,25 @@
 <template>
     <div class="grid grid-cols-2">
-        <div class="p-1 border">
-            <a-button @click="() => (view = true)" class="m-2"
-                >Render Form</a-button
-            >
+        <div class="flex flex-col p-1 border">
+            <!-- <div class="">
+                <a-button class="m-2" @click="() => (view = true)"
+                    >Render Form</a-button
+                >
+            </div> -->
 
-            <a-textarea
-                placeholder="Add Form Config"
-                :rows="29"
-                style="font-family: monospace"
-                @change="handleChange"
-            />
+            <div class="relative">
+                <a-button
+                    class="absolute top-0 right-0 z-10 m-2"
+                    @click="() => (view = true)"
+                    >Render Form</a-button
+                >
+                <a-textarea
+                    placeholder="Add Form Config"
+                    style="height: calc(100vh - 3.5rem); font-family: monospace"
+                    class="z-1"
+                    @change="handleChange"
+                />
+            </div>
         </div>
         <div
             class="p-2 overflow-y-auto border"

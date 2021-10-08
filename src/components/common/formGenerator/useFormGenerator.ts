@@ -200,7 +200,8 @@ export default function useFormGenerator(formConfig, formRef) {
 
       }
     })
-    console.log({ temp })
+    console.log('FinalConfigGenerated: ')
+    console.table(temp)
     return temp
   }
 

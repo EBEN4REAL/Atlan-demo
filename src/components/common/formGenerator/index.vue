@@ -159,8 +159,6 @@
                 isRequiredField,
             } = useFormGenerator(configX, formRef)
 
-            // const test = computed(() => finalConfigObject(formModel.value))
-
             return {
                 valueObject,
                 getRules,

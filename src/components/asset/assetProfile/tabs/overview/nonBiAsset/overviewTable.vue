@@ -1,14 +1,14 @@
 <template>
     <div>
         <!-- Table -->
-        <div class="relative h-96">
+        <div class="flex justify-center w-full h-full overflow-x-auto rounded">
             <a-table
                 :columns="tableColumns"
                 :data-source="results"
                 :pagination="false"
-                :scroll="{ x: 'calc(700px + 50%)', y: 300 }"
+                :scroll="{ y: 300 }"
                 :loading="isLoading"
-                class="absolute left-0 w-full"
+                class="w-full overflow-x-auto"
                 size="small"
             >
             </a-table>
@@ -100,16 +100,19 @@
 </script>
 
 <style lang="less" scoped>
-    :global(.ant-table th) {
-        @apply whitespace-nowrap font-bold !important;
+    :global(.ant-table-thead tr th) {
+        @apply font-normal text-gray-700 !important;
     }
     :global(.ant-table) {
         @apply border border-gray-light !important;
     }
-    :global(.ant-table td) {
-        @apply max-w-xs !important;
+    :global(.ant-table-tbody tr td) {
+        @apply text-gray-500 !important;
     }
-    :global(.ant-progress-status-success .ant-progress-bg) {
-        background-color: #1890ff !important;
+    :global(.ant-table-thead) {
+        @apply bg-gray-100 !important;
+    }
+    :global(.ant-table-cell-fix-left) {
+        @apply bg-gray-100 border-r border-gray-light !important;
     }
 </style>

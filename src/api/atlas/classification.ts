@@ -27,7 +27,6 @@ const updateClassification = <T>({
     cache: boolean
     params: any
 }) => {
-    console.log(params, 'request')
     const payload = {
         classificationDefs: [{ ...params }],
     }

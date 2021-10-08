@@ -11,7 +11,6 @@ const Get = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get
   });
 
 const TestSmtpConfig = (body) => {
-  console.log(body, "test");
   return useAPI("TEST_SMTP_CONFIG", "POST", {
     cache: false,
     body,

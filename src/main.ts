@@ -89,5 +89,5 @@ router.beforeEach(async (to, from, next) => {
 
 //After each success of route, track it
 router.afterEach((to, from) => {
-    (window as any).analytics.page(to.name)
+    //(window as any).analytics.page(to.name)
 })

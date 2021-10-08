@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white border-r">
+    <div class="flex flex-col items-center w-full h-full bg-white">
         <div class="w-full p-4 pb-1">
             <Connector
                 class=""

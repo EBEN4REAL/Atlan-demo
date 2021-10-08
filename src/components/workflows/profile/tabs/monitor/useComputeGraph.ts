@@ -140,7 +140,7 @@ export default function useComputeGraph(
     const cell = graph.value.getCellById(baseEntity)
     if (cell) graph.value.centerCell(cell)
 
-    graph.value.centerPoint(900, 800)
+    graph.value.centerPoint(null, 900)
 
     /* Zoom */
     graph.value.zoom(-0.4)

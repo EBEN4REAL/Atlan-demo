@@ -11,36 +11,34 @@
             :showSearch="true"
             @select="handleNodeSelect"
         >
-            <a-select-option v-for="node in filteredList" :key="node.id" :value="node.id" >
+            <a-select-option
+                v-for="node in filteredList"
+                :key="node.id"
+                :value="node.id"
+            >
                 <div class="flex items-center">
-                    <img v-if="node?.image" :src="node.image" class="w-auto h-3 mr-2" />
-                    <span class="">{{
-                        capitalizeFirstLetter(node.label)
-                    }}
-                {{ node.img}}
-                    
+                    <img
+                        v-if="node?.image"
+                        :src="node.image"
+                        class="w-auto h-3 mr-2"
+                    />
+                    <span class=""
+                        >{{ capitalizeFirstLetter(node.label) }}
+                        {{ node.img }}
                     </span>
                 </div>
-
             </a-select-option>
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-select>
-
     </div>
 </template>
 
 <script lang="ts">
     import { capitalizeFirstLetter } from '~/utils/string'
-    import {
-        computed,
-        defineComponent,
-        ref,
-        Ref,
-        toRefs,
-    } from 'vue'
+    import { computed, defineComponent, ref, Ref, toRefs, PropType } from 'vue'
     import { List } from '~/constant/status'
     import { useConnectionsStore } from '~/store/connections'
     import AssetDropdown from './assetDropdown.vue'
@@ -51,23 +49,34 @@
                 type: String,
                 required: true,
             },
+            filterSourceIds: {
+                type: Object as PropType<string[]>,
+                required: false,
+                default: [],
+            },
         },
         components: {
             AssetDropdown,
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
-            
-            const { connector: selectedValue } = toRefs(props)
+            const { connector: selectedValue, filterSourceIds } = toRefs(props)
             const store = useConnectionsStore()
-
-            const filteredList = computed(() => store.getSourceList)
+            /* Remove the sources mentioned in filterIds array */
+            const filterSourceList = (filterSourceIds: string[]) => {
+                return store.getSourceList.filter(
+                    (item) => !filterSourceIds.includes(item.id)
+                )
+            }
+            const filteredList = computed(() =>
+                filterSourceIds.value.length > 0
+                    ? filterSourceList(filterSourceIds.value)
+                    : store.getSourceList
+            )
             const getImage = (id: string) => store.getImage(id)
-            
+
             const list = computed(() => List)
             const placeholderLabel: Ref<Record<string, string>> = ref({})
-
-
 
             const handleNodeSelect = (value) => {
                 emit('update:data', value)
@@ -77,7 +86,6 @@
                 placeholderLabel.value[type] = label
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
-
 
             return {
                 setPlaceholder,

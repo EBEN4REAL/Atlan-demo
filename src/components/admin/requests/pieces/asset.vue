@@ -1,10 +1,10 @@
 <template>
     <AssetLogo :selected="selected" :asset="assetWrappper" />
-    <span class="text-sm overflow-ellipsis text-gray">
+    <span class="overflow-hidden text-sm overflow-ellipsis text-gray">
         {{ assetText[0] }}
     </span>
-    <AtlanIcon icon="ChevronDown" class="transform rotate-90" />
-    <span class="text-sm text-gray-500 overflow-ellipsis">
+    <AtlanIcon icon="ChevronDown" class="flex-none transform rotate-90" />
+    <span class="overflow-hidden text-sm text-gray-500 overflow-ellipsis">
         {{ assetText[1] }}</span
     >
 </template>

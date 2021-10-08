@@ -249,28 +249,80 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
         ],
     },
-    PowerBIWorkspace:{
+    TableauDatasourceField: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            // tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    TableauCalculatedField: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            // tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    PowerBIWorkspace: {
         panels: [assetDetails, linkedAsset, properties]
     },
-    PowerBIDashboard:{
+    PowerBIDashboard: {
         panels: [assetDetails, linkedAsset, properties]
     },
-    PowerBIReport:{
+    PowerBIReport: {
         panels: [assetDetails, linkedAsset, properties]
     },
-    PowerBIDataset:{
+    PowerBIDataset: {
         panels: [assetDetails, linkedAsset, properties]
     },
-    PowerBIDataflow:{
+    PowerBIDataflow: {
         panels: [assetDetails, linkedAsset, properties]
     },
-    PowerBITile:{
+    PowerBITile: {
         panels: [assetDetails, linkedAsset, properties]
     },
-    PowerBIPage:{
+    PowerBIPage: {
         panels: [assetDetails, linkedAsset, properties]
     },
-    PowerBIDatasource:{
+    PowerBIDatasource: {
         panels: [assetDetails, linkedAsset, properties]
     },
 }
@@ -489,7 +541,7 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-        //  tableauHierarchy,
+            //  tableauHierarchy,
             properties,
         ],
         properties: [

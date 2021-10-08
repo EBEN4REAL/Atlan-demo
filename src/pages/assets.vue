@@ -7,14 +7,16 @@
                         :is="isItem ? 'router-view' : 'AssetDiscovery'"
                         ref="assetDiscovery"
                         :initial-filters="initialFilters"
-                        :update-profile="updateProfile"
                         @preview="handlePreview"
                     ></component>
                 </KeepAlive>
             </div>
         </div>
         <div
-            v-if="!store.bulkSelectedAssets || !store.bulkSelectedAssets.length"
+            v-if="
+                (page === 'discovery' && !store.bulkSelectedAssets) ||
+                !store.bulkSelectedAssets.length
+            "
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
@@ -109,7 +111,6 @@ export default defineComponent({
         if (!isClassificationInitializedInStore()) {
             initializeClassificationsInStore()
         }
-
         function propagateToAssetList(updatedAsset: assetInterface) {
             if (page.value === 'discovery')
                 assetDiscovery.value.mutateAssetInList(updatedAsset)
@@ -130,6 +131,7 @@ export default defineComponent({
             assetDiscovery,
             handleCloseBulk,
             store,
+            updateProfile,
         }
     },
 })

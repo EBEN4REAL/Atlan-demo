@@ -13,6 +13,7 @@ export const allTypeNames = [
     'TableauDashboard',
     'TableauDatasource',
     'TableauDatasourceField',
+    'TableauCalculatedField',
 ]
 
 const integrationTypeMapping = {
@@ -31,25 +32,24 @@ const integrationTypeMapping = {
         'TableauDashboard',
         'TableauDatasource',
         'TableauDatasourceField',
+        'TableauCalculatedField',
     ],
     athena: [],
     postgres: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'Column'],
 }
 
 const categoryTypeMapping = {
-    datasets: ['View', 'Table', 'TablePartition', 'MaterialisedView'],
-    fields: ['Column'],
+    datasets: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'TableauDatasource', 'PowerBIDataset'],
+    fields: ['Column', 'TableauDatasourceField', 'TableauCalculatedField'],
     visualizations: [
         'TableauSite',
         'TableauProject',
         'TableauWorkbook',
         'TableauWorksheet',
         'TableauDashboard',
-        'TableauDatasource',
         'PowerBIWorkspace',
         'PowerBIDashboard',
         'PowerBIReport',
-        'PowerBIDataset',
         'PowerBIDataflow',
         'PowerBITile',
         'PowerBIPage',

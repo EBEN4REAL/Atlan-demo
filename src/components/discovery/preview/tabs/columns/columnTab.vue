@@ -1,9 +1,10 @@
 <template>
-    <div class="flex flex-col px-5 py-4">
+    <div class="flex flex-col px-5 pb-4">
         <SearchAndFilter
             class="mb-4"
             v-model:value="queryText"
             @change="handleSearchChange"
+            size="minimal"
             :autofocus="true"
             :placeholder="`Search ${colCount} columns`"
         >

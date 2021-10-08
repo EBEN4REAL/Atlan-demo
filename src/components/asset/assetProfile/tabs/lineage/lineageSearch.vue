@@ -12,7 +12,7 @@
         />
         <!-- Search Results -->
         <div v-if="showResults" class="search-results">
-            <div class="search-results__count">
+            <div v-if="query" class="search-results__count">
                 {{ filteredItems.length }} results found
             </div>
             <div

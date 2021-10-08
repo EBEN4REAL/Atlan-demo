@@ -3,7 +3,7 @@
         <!-- Graph Container -->
         <div
             ref="graphContainer"
-            style="width: calc(100vw - 420px); height: 1000px"
+            style="width: calc(100vw - 420px); height: 1200px"
         ></div>
 
         <!-- Minimap Container -->

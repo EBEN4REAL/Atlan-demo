@@ -176,9 +176,8 @@
             createEntityType: {
                 type: Object as PropType<'query' | 'queryFolder'>,
                 required: true,
-                default: 'query'
+                default: 'query',
             },
-
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {

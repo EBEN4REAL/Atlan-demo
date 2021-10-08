@@ -21,7 +21,7 @@
         <!-- Graph Container -->
         <div
             ref="graphContainer"
-            style="width: calc(100vw - 1px); height: calc(100vh + 80px)"
+            style="width: calc(100vw - 1px); height: 1000px"
         ></div>
 
         <!-- Lineage Header -->
@@ -75,9 +75,14 @@
 
 <script lang="ts">
     /** PACKAGES */
-    import { defineComponent, ref, onMounted, watch, provide } from 'vue'
-    /** DATA */
-    import lineage from './lineageData.js'
+    import {
+        defineComponent,
+        ref,
+        onMounted,
+        watch,
+        provide,
+        toRefs,
+    } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     /** COMPOSABLES */
@@ -89,9 +94,16 @@
     export default defineComponent({
         name: 'LineageGraph',
         components: { LineageHeader },
-        setup() {
+        props: {
+            lineage: {
+                type: Object,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { lineage } = toRefs(props)
+
             /** DATA */
-            const lineageData = ref(lineage)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref(null)
@@ -102,11 +114,12 @@
             const useCyclic = ref(false)
             const isFullscreen = ref(false)
             const searchItems = ref([])
+            const selectedSearchItem = ref('')
 
             /** METHODS */
             // selectSearchItem
             const selectSearchItem = (guid) => {
-                //
+                selectedSearchItem.value = guid
             }
 
             // transform
@@ -132,7 +145,7 @@
                 const { model, edges, nodes, baseEntityGuid } = useComputeGraph(
                     graph,
                     graphLayout,
-                    lineageData,
+                    lineage,
                     showProcess,
                     searchItems,
                     reload
@@ -144,14 +157,15 @@
                 })
 
                 // useHighlight
-                useHighlight(
+                const { highlight } = useHighlight(
                     graph,
                     model,
                     edges,
                     nodes,
                     baseEntityGuid,
                     showProcess,
-                    highlightLoadingCords
+                    highlightLoadingCords,
+                    selectedSearchItem
                 )
 
                 graphLoading.value = false
@@ -167,17 +181,12 @@
             provide('searchItems', searchItems)
             provide('selectSearchItem', selectSearchItem)
 
-            /** WATCHERS */
-            watch(useCyclic, (val) => {
-                if (val) lineageData.value = lineageCyclic
-                else lineageData.value = lineage
-
-                initialize(true)
-            })
-
             /** LIFECYCLE */
             onMounted(() => {
-                initialize()
+                watch(lineage, () => {
+                    if (graph.value) graph.value.dispose()
+                    initialize()
+                })
             })
 
             return {
@@ -275,7 +284,7 @@
         // Minimap
         &-minimap {
             @apply absolute;
-            top: 65px;
+            top: 15px;
             right: 15px;
 
             & .x6-widget-minimap .x6-graph {
@@ -380,7 +389,7 @@
             font-weight: 700;
             color: white;
             top: -21px;
-            left: 45%;
+            left: 66%;
             font-size: 10px;
             position: fixed;
             z-index: 999;

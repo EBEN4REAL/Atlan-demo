@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 
@@ -17,7 +17,8 @@ export default function useHighlight(
     nodes,
     baseEntityGuid,
     showProcess,
-    highlightLoadingCords
+    highlightLoadingCords,
+    selectedSearchItem
 ) {
     const highlightedNode = ref(null)
 
@@ -77,10 +78,18 @@ export default function useHighlight(
         highlightLoadingCords.value = {}
     }
 
+    watch(selectedSearchItem, (newVal) => {
+        highlight(newVal)
+    })
+
     graph.value.on('cell:mouseup', ({ node }) => {
         highlight(node.id)
     })
     graph.value.on('blank:click', () => {
         highlight(null)
     })
+
+    return {
+        highlight,
+    }
 }

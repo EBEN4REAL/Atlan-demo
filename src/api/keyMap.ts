@@ -189,6 +189,8 @@ export const KeyMaps = {
                 'auth/atlas',
                 `/glossary/terms/${guid}/assignedEntities`
             ),
+        BULK_LINK_TERMS: () =>
+            getAPIPath('auth/atlas', `/glossary/terms/assignedEntities`),
         GTC_SEARCH: () => getAPIPath('auth/atlas', `/search/basic`),
         GLOSSARY_LIST: () => getAPIPath('auth/atlas', `/search/basic`),
     },

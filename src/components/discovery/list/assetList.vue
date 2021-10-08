@@ -85,6 +85,7 @@ import { defineComponent, SetupContext, ref, toRefs, watch, Ref } from 'vue'
 import ListItem from './listItem.vue'
 import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useBulkUpdateStore from '~/store/bulkUpdate'
 
 export default defineComponent({
     name: 'AssetList',
@@ -133,7 +134,7 @@ export default defineComponent({
             type: String,
         },
     },
-    emits: ['preview', 'loadMore', 'update:autoSelect', 'bulkSelectChange'],
+    emits: ['preview', 'loadMore', 'update:autoSelect'],
     setup(props, { emit }) {
         const { list, autoSelect, typename } = toRefs(props)
         const selectedAssetId = ref('')
@@ -142,6 +143,7 @@ export default defineComponent({
             selectedAssetId.value = item.guid
             emit('preview', item)
         }
+        const store = useBulkUpdateStore()
         const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
         const updateBulkSelectedAssets = (listItem) => {
             const itemIndex = bulkSelectedAssets?.value?.findIndex(
@@ -149,8 +151,15 @@ export default defineComponent({
             )
             if (itemIndex >= 0) bulkSelectedAssets.value.splice(itemIndex, 1)
             else bulkSelectedAssets.value.push(listItem)
-            emit('bulkSelectChange', bulkSelectedAssets)
+            store.setBulkSelectedAssets(bulkSelectedAssets.value)
         }
+        watch(
+            () => store.bulkSelectedAssets,
+            () => {
+                if (!store.bulkSelectedAssets?.length)
+                    bulkSelectedAssets.value = []
+            }
+        )
 
         // select first asset automatically conditionally acc to  autoSelect prop
         watch(

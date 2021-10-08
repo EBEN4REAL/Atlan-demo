@@ -46,7 +46,10 @@
                     class=""
                     :disabled="textAreaDisabled"
                 ></a-textarea>
-                <div class="flex justify-end w-full mt-4 space-x-4">
+                <div
+                    v-if="statusMessage"
+                    class="flex justify-end w-full mt-4 space-x-4"
+                >
                     <a-button class="px-4" @click="handleCancel"
                         >Cancel</a-button
                     >
@@ -92,15 +95,7 @@
                             assetStatusObject.icon &&
                             assetStatusObject.label
                         "
-                        class="
-                            inline-flex
-                            px-1
-                            py-1.5
-                            mr-5
-                            border
-                            rounded-md
-                            w-60
-                        "
+                        class="inline-flex px-2 py-1.5 mr-5 border rounded-md"
                     >
                         <component
                             :is="assetStatusObject.icon"
@@ -111,11 +106,16 @@
                         }}</span>
                     </div>
 
-                    <div class="text-gray-500">
+                    <div class="self-center text-gray-500">
                         Certifications will be overidden for all selected
                         assets.
                     </div>
                 </div>
+                <!-- <div class="mt-2.5">
+                    <div v-if="assetStatusObject.label">
+                        Certification changed to {{ assetStatusObject.label }}
+                    </div>
+                </div> -->
             </div>
         </div>
     </a-popover>

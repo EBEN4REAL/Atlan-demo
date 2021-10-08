@@ -1,31 +1,32 @@
 <template>
-    <div>
-        <div
-            class="p-3 rounded cursor-pointer"
-            :class="{ 'bg-gray-200': item.guid === selected }"
-            v-for="item in list"
-            :key="item.guid"
-            @click="select(item.guid)"
-        >
+    <ExplorerList
+        :list="list"
+        :selected="selected"
+        @update:selected="select"
+        dataKey="guid"
+    >
+        <template #default="{ item, isSelected }">
             <p
-                class="m-0 overflow-hidden text-sm font-bold overflow-ellipsis"
-                :class="item.guid === selected ? 'text-primary' : 'text-gray'"
+                class="m-0 text-sm font-bold truncate"
+                :class="isSelected ? 'text-primary' : 'text-gray'"
             >
                 {{ item.name }}
             </p>
-            <span class="m-0 text-sm text-gray">
+            <span class="m-0 text-sm truncate text-gray">
                 {{ item.elementDefs.length }} elements(s)
             </span>
-        </div>
-    </div>
+        </template>
+    </ExplorerList>
 </template>
 
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
+    import ExplorerList from '../common/explorerlist.vue'
 
     export default defineComponent({
         name: 'EnumList',
+        components: { ExplorerList },
         props: {
             list: Array,
             selected: String,

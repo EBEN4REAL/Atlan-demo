@@ -3,6 +3,16 @@
         title="Personas"
         subTitle="Access controls for user personas"
     >
+        <template #action>
+            <AtlanBtn
+                class="flex-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+            >
+                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+            </AtlanBtn>
+        </template>
         <template #sidebar>
             <SearchAndFilter
                 placeholder="Search for personas"
@@ -59,6 +69,7 @@
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
     import usePersonaService from '~/services/heracles/composables/personas'
+    import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaScopes from './personaScopes.vue'
@@ -71,6 +82,7 @@
             PersonaScopes,
             ExplorerLayout,
             ExplorerList,
+            AtlanBtn,
         },
         setup() {
             const selectedPersonaId = ref('')

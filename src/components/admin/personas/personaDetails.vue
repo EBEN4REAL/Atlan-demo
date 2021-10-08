@@ -1,7 +1,8 @@
 <template>
     <template v-if="selectedPersona">
-        <span class="pb-2 text-xl text-gray">Scopes</span>
-        <div class="py-2 overflow-y-auto">
+        <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+        <span class="px-5 pt-3 text-xl text-gray">Scopes</span>
+        <div class="px-5 py-2 overflow-y-auto">
             <div class="mb-3" v-for="scope in scopeList">
                 <span class="block mb-1 text-base text-gray-500 capitalize">{{
                     scope.type
@@ -22,11 +23,12 @@
     import { computed, defineComponent, PropType, ref } from 'vue'
     import useScopeService from '~/services/heracles/composables/scopes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import MinimalTab from '@/UI/minimalTab.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
 
     export default defineComponent({
         name: 'PersonaScopes',
-        components: { SearchAndFilter },
+        components: { SearchAndFilter, MinimalTab },
         props: {
             selectedPersona: {
                 type: Object as PropType<IPersona>,
@@ -34,15 +36,20 @@
             },
         },
         setup() {
-            const {
-                scopeList,
-                error,
-                isLoading: scopeListLoading,
-            } = useScopeService().listScopes()
+            const { scopeList, isLoading: scopeListLoading } =
+                useScopeService().listScopes()
+
+            const activeTabKey = ref('ov')
+            const tabConfig = [
+                { key: 'ov', label: 'Overview' },
+                { key: 'ug', label: 'Users & Groups' },
+            ]
 
             return {
                 scopeList,
                 scopeListLoading,
+                activeTabKey,
+                tabConfig,
             }
         },
     })

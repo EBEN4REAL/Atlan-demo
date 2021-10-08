@@ -1,9 +1,13 @@
 export interface IPersona {
     id: string
+    displayName: string
+    description?: string
+    personaName: string
     metadataPolicies: []
     orgPolicies: []
-    personaName: string
     roles: []
     updatedAt: string
     updatedBy: string
+    createdAt: string
+    createdBy: string
 }

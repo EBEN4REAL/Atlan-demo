@@ -50,10 +50,10 @@
                     <AssetTabs
                         v-model="selectedTab"
                         class="mt-1 mb-3"
-                        @update:model-value="handleTabChange"
                         :asset-type-list="assetTypeList"
                         :asset-type-map="assetTypeMap"
                         :total="totalSum"
+                        @update:model-value="handleTabChange"
                     ></AssetTabs>
                 </div>
                 <!-- <div
@@ -78,6 +78,7 @@
                 <AssetList
                     v-else
                     ref="assetlist"
+                    v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
                     :list="list"
                     :score="searchScoreList"
@@ -85,10 +86,8 @@
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     :typename="assetTypeListString"
-                    v-model:autoSelect="autoSelect"
                     @preview="handlePreview"
                     @loadMore="loadMore"
-                    @bulkSelectChange="(list) => $emit('bulkSelectChange', list)"
                 ></AssetList>
             </div>
         </div>
@@ -98,7 +97,6 @@
 <script lang="ts">
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
@@ -114,6 +112,7 @@
         Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import Preferences from '~/components/discovery/list/preference.vue'
     import AssetList from '~/components/discovery/list/assetList.vue'
@@ -135,7 +134,7 @@
 
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
@@ -172,7 +171,7 @@
                 default: true,
             },
         },
-        emits: ['preview', 'bulkSelectChange'],
+        emits: ['preview'],
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = toRefs(props)
@@ -293,9 +292,9 @@
             const dynamicSearchPlaceholder = computed(() => {
                 let placeholder = 'Search for assets'
                 if (placeholderLabel.value.asset) {
-                    placeholder += ' in ' + placeholderLabel.value.asset
+                    placeholder += ` in ${placeholderLabel.value.asset}`
                 } else if (placeholderLabel.value.connector) {
-                    placeholder += ' in ' + placeholderLabel.value.connector
+                    placeholder += ` in ${placeholderLabel.value.connector}`
                 }
                 return placeholder
             })
@@ -433,7 +432,7 @@
                 setRouterOptions()
             }
             const termNameChange = (termQName: string) => {
-                termName.value = termQName;
+                termName.value = termQName
                 isAggregate.value = true
                 updateBody()
                 // setRouterOptions()

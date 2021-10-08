@@ -10,3 +10,13 @@ export const debounce = (fn: any, delay: any) => {
         }, delay)
     }
 }
+
+export function createDebounce() {
+    let timeout = null
+    return function (fnc: () => void, delayMs: number) {
+        clearTimeout(timeout)
+        timeout = setTimeout(() => {
+            fnc()
+        }, delayMs || 500)
+    }
+}

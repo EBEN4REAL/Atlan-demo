@@ -103,7 +103,7 @@
                 <AtlanIcon icon="Pencil" />
             </div>
         </div>
-        <div class="mt-1">
+        <div class="mt-2.5">
             <div v-if="evaluateChangeLog().all.length">
                 {{ evaluateChangeLog().all.join(',') }}
                 <span class="text-success">added</span>
@@ -131,11 +131,12 @@
                         rounded
                     "
                 >
-                    <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center justify-between w-full mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
                             :autofocus="true"
                             placeholder="Search "
+                            :size="'minimal'"
                             @change="handleOwnerSearch"
                         >
                         </SearchAndFilter>

@@ -1,3 +1,15 @@
+import { AssetTypeList } from '~/constant/assetType';
+
+const inApplicableTypeName = ['Connection']
+const otherTypes = [{ title: 'Glossary Term', value: 'AtlasGlossaryTerm', key: 'AtlasGlossaryTerm' }]
+
+
+export const customEntityTypes = [
+  ...otherTypes,
+  ...AssetTypeList.map(t => ({ title: t.label, value: t.id, key: t.id })).filter(type => !inApplicableTypeName.includes(type.key))
+]
+
+export const applicableEntityTypes = ['Catalog', 'AtlasGlossaryTerm']
 
 /**
  * @desc default template for new BM attribute
@@ -11,14 +23,16 @@ export const DEFAULT_ATTRIBUTE = {
   name: "",
   options: {
     /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas */
-    applicableEntityTypes: [],
+    applicableEntityTypes: JSON.stringify(applicableEntityTypes),
+    customEntityTypes: [],
     maxStrLength: "50",
     displayName: "",
+    isBadge: false,
+    isFacet: true,
     isEnum: false,
-    isMultiValued: false,
-    enumType: ""
+    enumType: "",
+
   },
-  searchWeight: 3,
   typeName: "string",
   valuesMaxCount: 1,
   valuesMinCount: 0,
@@ -27,7 +41,7 @@ export const DEFAULT_ATTRIBUTE = {
 
 export const DEFAULT_BM = {
   name: "",
-  options: { displayName: "New Business Metadata" },
+  options: { displayName: "New Business Metadata", image: null, imageDetails: null },
   description: "",
   guid: "new",
   attributeDefs: [],
@@ -81,16 +95,6 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
       trigger: "change"
     }
   ],
-
-  searchWeight: [
-    {
-      required: true,
-      type: 'integer',
-      message: "Please select search weight",
-      trigger: "change"
-    }
-  ],
-
 };
 
 /**
@@ -180,3 +184,4 @@ export const operatorsMap = {
     { label: 'Is not Null', value: 'notNull' },
   ],
 };
+

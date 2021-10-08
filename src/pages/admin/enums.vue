@@ -16,11 +16,7 @@
         </template>
 
         <template #sidebar>
-            <EnumList
-                class="pt-4 overflow-y-auto"
-                v-model:selected="selectedId"
-                :list="enumListData"
-            />
+            <EnumList v-model:selected="selectedId" :list="enumListData" />
         </template>
 
         <AddEnumModal

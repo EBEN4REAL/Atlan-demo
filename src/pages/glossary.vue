@@ -65,7 +65,7 @@
     import useBusinessMetadata from '~/components/admin/custom-metadata/composables/useBusinessMetadata'
 
     // store
-    import { useBusinessMetadataStore } from '~/store/businessMetadata/index'
+    import useBusinessMetadataStore from '~/store/businessMetadata/index'
 
     // types
     import {

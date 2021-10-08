@@ -262,7 +262,8 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
-                    parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
+                    parentFolderQualifiedName: `folder/user/${username}/1b2f1031-7362-4393-9fe0-1670fdfff521`,
+                    sourceCreatedBy: username,
                 },
                 relationshipAttributes: {
                     folder: {
@@ -304,7 +305,7 @@ export function useSavedQuery(
             }
         })
     }
-    const saveQueryToDatabaseAndOpenInNewTab =  (
+    const saveQueryToDatabaseAndOpenInNewTab = (
         saveQueryData: any,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
@@ -372,7 +373,8 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
-                    parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
+                    parentFolderQualifiedName:
+                        'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521',
                 },
                 relationshipAttributes: {
                     folder: {
@@ -436,11 +438,11 @@ export function useSavedQuery(
         return { data, error, isLoading }
     }
 
-    const createFolder =  (
+    const createFolder = (
         saveFolderData: any,
         saveFolderLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
-        saveModalRef: Ref<any>,
+        saveModalRef: Ref<any>
     ) => {
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
@@ -468,7 +470,6 @@ export function useSavedQuery(
         const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
-        
 
         const body = ref({
             entity: {
@@ -522,7 +523,7 @@ export function useSavedQuery(
             }
         })
 
-        return { data, error, isLoading } 
+        return { data, error, isLoading }
     }
 
     return {
@@ -530,6 +531,6 @@ export function useSavedQuery(
         saveQueryToDatabase,
         updateSavedQuery,
         openSavedQueryInNewTab,
-        createFolder
+        createFolder,
     }
 }

@@ -64,7 +64,7 @@
                 if (Object.keys(pages).find((item) => item === page)) {
                     activeKey.value = [page]
                 }else {
-                    router.push(pages[404])
+                    router.push(pages['home'])
                 }
             })
             return {

@@ -1,6 +1,92 @@
 <template>
     <div class="mb-3 text-xs text-gray-500" @click.stop="toggleLinkTermPopover">
         <p class="mb-1 text-sm">Terms</p>
+        <div class="flex">
+            <!-- same terms for all selected assets -->
+            <div
+                v-if="termsList && termsList.length"
+                class="flex flex-grow mr-1 text-sm"
+            >
+                <PillGroup
+                    :class="termsList && termsList.length ? '' : 'hidden'"
+                    :data="termsList"
+                    label-key="displayText"
+                    :read-only="true"
+                >
+                    <template #pillPrefix>
+                        <AtlanIcon
+                            icon="Term"
+                            class="text-primary group-hover:text-white"
+                        />
+                    </template>
+                    <template #suffix>
+                        <div class="p-1.5 border rounded-full">
+                            <AtlanIcon icon="Pencil" />
+                        </div>
+                        <!-- <span
+                        v-if="splittedClassifications.b.length > 0"
+                        class="
+                            px-1
+                            py-0.5
+                            text-sm
+                            rounded
+                            text-primary
+                            mr-3
+                            cursor-pointer
+                        "
+                        @click="() => toggleAllClassifications()"
+                    >
+                        {{
+                            showAll
+                                ? 'Show less'
+                                : `and ${splittedClassifications.b.length} more`
+                        }}
+                    </span>-->
+                    </template>
+                </PillGroup>
+            </div>
+            <!-- Multiple terms -->
+            <div
+                v-else-if="
+                    termsList &&
+                    !termsList.length &&
+                    Object.keys(termFrequencyMap).length
+                "
+                class="flex"
+            >
+                <div
+                    class="
+                        p-1.5
+                        bg-secondary-light
+                        rounded-sm
+                        text-secondary
+                        mr-1
+                    "
+                >
+                    <span class="text-sm">Multiple terms</span>
+                </div>
+                <div class="p-1.5 border rounded-full">
+                    <AtlanIcon icon="Pencil" />
+                </div>
+            </div>
+            <!-- No terms present -->
+            <div
+                v-else-if="!Object.keys(termFrequencyMap).length"
+                class="p-1.5 border rounded-full"
+            >
+                <AtlanIcon icon="Pencil" />
+            </div>
+        </div>
+        <div class="mt-2.5">
+            <div v-if="changeLog.all.length">
+                {{ changeLog.all.join(', ') }}
+                <span class="text-success">added</span>
+            </div>
+            <div v-if="changeLog.removed.length">
+                {{ changeLog.removed.join(', ') }}
+                <span class="text-error">removed</span>
+            </div>
+        </div>
         <a-popover
             v-model:visible="showLinkTermPopover"
             placement="left"
@@ -11,7 +97,7 @@
                     ref="linkTermDropdownRef"
                     @changeTerms="handleTermChange"
                 />
-                <div class="flex justify-end">
+                <div class="flex justify-end mt-4">
                     <div class="space-x-4">
                         <a-button class="px-4" @click="handleCancel"
                             >Cancel</a-button
@@ -33,7 +119,7 @@
 import { defineComponent, Ref, ref, watch, inject, computed } from 'vue'
 import useBulkSelect from '~/composables/asset/useBulkSelect'
 import { Components } from '~/api/atlas/client'
-
+import PillGroup from '~/components/UI/pill/pillGroup.vue'
 import LinkTermsDropdown from '~/components/common/dropdown/linkTermsDropdown.vue'
 
 interface LocalState {
@@ -51,6 +137,7 @@ export default defineComponent({
     name: 'UpdateBulkTerms',
     components: {
         LinkTermsDropdown,
+        PillGroup,
     },
     setup() {
         const localState: Ref<LocalState> = ref({
@@ -64,6 +151,11 @@ export default defineComponent({
                 | Components.Schemas.AtlasGlossaryTerm[]
                 | Components.Schemas.AtlasTermAssignmentHeader[],
         })
+        const changeLog: Ref<Record<string, (string | undefined)[]>> = ref({
+            all: [],
+            partial: [],
+            removed: [],
+        })
         const {
             resetTerms,
             initialiseLocalStateTerms: initialiseLocalState,
@@ -74,7 +166,7 @@ export default defineComponent({
         const selectedAssets = inject('selectedAssets')
         const termFrequencyMap = inject('termFrequencyMap')
         const showLinkTermPopover = ref(false)
-        const linkClassificationDropdownRef = ref()
+        const linkTermDropdownRef = ref()
 
         watch(
             originalTermsRef,
@@ -84,27 +176,35 @@ export default defineComponent({
                     selectedAssets,
                     termFrequencyMap
                 )
-                linkClassificationDropdownRef?.value?.clearSelection()
+                changeLog.value = {
+                    all: [],
+                    removed: [],
+                }
+                linkTermDropdownRef?.value?.clearSelection()
             },
             { immediate: true }
         )
         const handleTermChange = (selectedTerms) => {
-            localState.value.all = [...selectedTerms]
+            localState.value.all = [...selectedTerms.value]
             console.log(localState.value)
         }
         const handleConfirm = () => {
+            changeLog.value.all = localState.value.all.map(
+                (term) => term.displayText
+            )
+            changeLog.value.removed = localState.value.removed.map(
+                (term) => term.displayText
+            )
+            changeLog.value.partial = localState.value.partial.map(
+                (term) => term.displayText
+            )
             updateTerms(termsRef, localState, originalTermsRef)
         }
+
         const toggleLinkTermPopover = () => {
             showLinkTermPopover.value = !showLinkTermPopover.value
         }
-        setTimeout(() => {
-            const test = localState.value.all[0]
-            test.termGuid = '90884386'
-            localState.value.all = [...localState.value.all, test]
 
-            handleConfirm()
-        }, 3000)
         // To show term tags if all assets have same terms
         const termsList = computed(() => {
             /** we can have 3 cases:
@@ -133,6 +233,20 @@ export default defineComponent({
             }
             return []
         })
+        const handleCancel = () => {
+            resetTerms(originalTermsRef, termsRef)
+            localState.value = initialiseLocalState(
+                selectedAssets,
+                termFrequencyMap
+            )
+            changeLog.value = {
+                all: [],
+                partial: [],
+                removed: [],
+            }
+            linkTermDropdownRef?.value?.clearSelection()
+            toggleLinkTermPopover()
+        }
 
         return {
             termsRef,
@@ -143,7 +257,9 @@ export default defineComponent({
             handleTermChange,
             showLinkTermPopover,
             toggleLinkTermPopover,
-            linkClassificationDropdownRef,
+            linkTermDropdownRef,
+            changeLog,
+            handleCancel,
         }
     },
 })

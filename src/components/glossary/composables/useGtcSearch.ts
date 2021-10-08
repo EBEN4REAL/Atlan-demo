@@ -5,7 +5,7 @@ import { GTC_SEARCH } from '~/api/keyMaps/glossary'
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
-import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'

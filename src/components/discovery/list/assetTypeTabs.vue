@@ -2,8 +2,7 @@
     <div class="w-full">
         <a-tabs
             v-model:activeKey="assetType"
-            class="w-full"
-            :class="$style.assetbar"
+            class="w-full assetbar"
             @change="handleChange"
         >
             <a-tab-pane
@@ -148,12 +147,12 @@
     })
 </script>
 
-<style lang="less" module>
+<style lang="less">
     .assetbar {
-        :global(.ant-tabs-bar) {
+        .ant-tabs-bar {
             @apply mb-0 border-0 !important;
         }
-        :global(.ant-tabs-tab) {
+        .ant-tabs-tab {
             @apply bg-white text-sm mr-1 !important;
             border: 1px solid #e6e6eb;
             border-radius: 24px !important;
@@ -164,20 +163,20 @@
 
             transition: all 0.8s ease-out;
         }
-        :global(.ant-tabs-tab:first-child) {
+        .ant-tabs-tab:first-child {
             @apply ml-3 !important;
         }
-        :global(.ant-tabs-tab-active) {
+        .ant-tabs-tab-active {
             @apply bg-primary-light !important;
             @apply text-primary !important;
             @apply border-primary !important;
         }
 
-        :global(.ant-tabs-ink-bar) {
+        .ant-tabs-ink-bar {
             @apply hidden !important;
         }
 
-        :global(.ant-tabs-nav-wrap) {
+        .ant-tabs-nav-wrap {
             margin-top: 4px !important;
             min-height: 30px !important;
         }

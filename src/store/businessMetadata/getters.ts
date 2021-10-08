@@ -1,12 +1,15 @@
-// eslint-disable-next-line import/no-cycle
 
 import { State } from './state';
 
 export type Getters = {
     getBusinessMetadataListProjections(): string[],
+    // eslint-disable-next-line no-unused-vars
     getBusinessMetadataList(state: State): object[] | null,
+    // eslint-disable-next-line no-unused-vars
     getBusinessMetadataListError(state: State): string | null,
+    // eslint-disable-next-line no-unused-vars
     getBusinessMetadataListLoading(state: State): boolean;
+    // eslint-disable-next-line no-unused-vars
     getBusinessMetadataListLoaded(state: State): boolean;
 };
 

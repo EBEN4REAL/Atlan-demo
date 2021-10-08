@@ -62,7 +62,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaScopes from './personaScopes.vue'
-    import ExplorerList from '@/admin/common/explorerlist.vue'
+    import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
         name: 'PersonaView',

@@ -38,7 +38,7 @@
 </template>
 <script lang="ts">
     import { defineComponent, toRefs } from 'vue'
-    import ExplorerList from '@/admin/common/explorerlist.vue'
+    import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
         props: ['finalList', 'selectedBm', 'updatedBm'],

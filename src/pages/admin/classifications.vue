@@ -116,7 +116,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import ExplorerList from '@/admin/common/explorerlist.vue'
+    import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
         name: 'ClassificationProfile',

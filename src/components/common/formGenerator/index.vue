@@ -16,14 +16,7 @@
             >
                 <template v-if="f.type === 'group'">
                     <div
-                        class="
-                            grid grid-cols-2
-                            p-2
-                            mb-5
-                            bg-gray-100
-                            border
-                            rounded
-                        "
+                        class="grid grid-cols-2 p-2 mb-5 bg-gray-100 border rounded "
                     >
                         <div class="m-3 font-bold col-span-full">
                             {{ f.groupTitle }}
@@ -41,9 +34,10 @@
 
                             <a-popover title="Help" v-if="c.helpText">
                                 <template #content>
-                                    <p class="text-gray-500">
-                                        {{ c.helpText }}
-                                    </p>
+                                    <div
+                                        class="text-gray-500"
+                                        v-html="c.helpText"
+                                    ></div>
                                 </template>
                                 <fa
                                     icon="fal info-circle"
@@ -88,9 +82,10 @@
                     <sup v-if="isRequiredField(f)" class="text-red-600">*</sup>
                     <a-popover title="Help" v-if="f.helpText">
                         <template #content>
-                            <p class="text-gray-500">
-                                {{ f.helpText }}
-                            </p>
+                            <div
+                                class="text-gray-500"
+                                v-html="f.helpText"
+                            ></div>
                         </template>
                         <fa icon="fal info-circle" class="ml-2 text-xs"></fa>
                     </a-popover>

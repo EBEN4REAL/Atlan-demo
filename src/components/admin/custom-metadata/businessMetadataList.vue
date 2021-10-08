@@ -2,8 +2,8 @@
     <ExplorerList
         :list="finalList"
         :selected="selectedBm?.guid"
+        data-key="guid"
         @update:selected="selectBm"
-        dataKey="guid"
     >
         <template #default="{ item, isSelected }">
             <p
@@ -41,8 +41,13 @@
     import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
-        props: ['finalList', 'selectedBm', 'updatedBm'],
         components: { ExplorerList },
+        props: {
+            finalList: { type: Object, required: true },
+            updatedBm: { type: Object, required: true },
+            selectedBm: { type: Object, required: true },
+        },
+        emits: ['selectBm'],
         setup(props, context) {
             const { finalList, selectedBm, updatedBm } = toRefs(props)
 
@@ -56,9 +61,6 @@
             }
 
             return {
-                finalList,
-                selectedBm,
-                updatedBm,
                 isUpdateBmSameAsCurrentBm,
                 selectBm,
             }

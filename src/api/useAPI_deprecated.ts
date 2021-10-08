@@ -129,17 +129,17 @@ export const useAPI = <T>(
     // console.log("HOHO", data, error, data.value?.records);
     const test = computed(() => !data.value && !error.value);
     const isLoading = ref(!data.value && !error.value);
-    console.log(isLoading, isLoading.value);
+    // console.log(isLoading, isLoading.value);
     // watch(test, () => console.log(test));
     // isLoading.value = !data.value && !error.value;
-    console.log(
-      "HOHO",
-      test,
-      data.value,
-      error.value,
-      !data.value && !error.value,
-      isLoading
-    );
+    // console.log(
+    //   "HOHO",
+    //   test,
+    //   data.value,
+    //   error.value,
+    //   !data.value && !error.value,
+    //   isLoading
+    // );
     return { data, error, isLoading };
   
 };

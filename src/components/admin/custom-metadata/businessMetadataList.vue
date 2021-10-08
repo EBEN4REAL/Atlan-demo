@@ -1,19 +1,14 @@
 <template>
-    <div>
-        <div
-            v-for="item in finalList"
-            :key="item.guid"
-            class="p-3 rounded cursor-pointer"
-            :class="{ 'bg-gray-200': selectedBm?.guid === item.guid }"
-            @click="(e) => selectBm(item)"
-        >
+    <ExplorerList
+        :list="finalList"
+        :selected="selectedBm?.guid"
+        data-key="guid"
+        @update:selected="selectBm"
+    >
+        <template #default="{ item, isSelected }">
             <p
-                class="m-0 overflow-hidden text-sm font-bold overflow-ellipsis"
-                :class="
-                    selectedBm?.guid === item.guid
-                        ? 'text-primary'
-                        : 'text-gray'
-                "
+                class="m-0 overflow-hidden text-sm overflow-ellipsis"
+                :class="isSelected ? 'text-primary font-bold' : 'text-gray'"
             >
                 <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
                 {{
@@ -38,13 +33,15 @@
                 }}
                 attribute(s)</span
             >
-        </div>
-    </div>
+        </template>
+    </ExplorerList>
 </template>
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
+    import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
+        components: { ExplorerList },
         props: {
             finalList: { type: Object, required: true },
             updatedBm: { type: Object, required: true },
@@ -52,23 +49,16 @@
         },
         emits: ['selectBm'],
         setup(props, context) {
-            /**
-             *
-             */
-            const isUpdateBmSameAsCurrentBm = (item: { guid: string }) => {
-                if (
-                    item &&
-                    props.updatedBm &&
-                    props.updatedBm.guid &&
-                    props.updatedBm.guid === item.guid
-                ) {
-                    return true
-                }
-                return false
-            }
+            const { finalList, selectedBm, updatedBm } = toRefs(props)
+
+            const isUpdateBmSameAsCurrentBm = (item: { guid: string }) =>
+                item.guid === updatedBm.value?.guid
 
             // * Methods
-            const selectBm = (item: object) => context.emit('selectBm', item)
+            const selectBm = (id: string) => {
+                const item = finalList.value.find((bm) => bm.guid === id)
+                context.emit('selectBm', item)
+            }
 
             return {
                 isUpdateBmSameAsCurrentBm,

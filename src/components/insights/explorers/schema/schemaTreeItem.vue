@@ -46,15 +46,20 @@
                                     class="pl-2 ml-20"
                                     @click="() => actionClick('add', item)"
                                 >
-                                    <AtlanIcon
-                                        icon="AddAssetName"
-                                        class="w-4 h-4 my-auto"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : 'bg-gray-light'
-                                        "
-                                    ></AtlanIcon>
+                                    <a-tooltip placement="top">
+                                        <template #title
+                                            >Place name in SQL</template
+                                        >
+                                        <AtlanIcon
+                                            icon="AddAssetName"
+                                            class="w-4 h-4 my-auto"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : 'bg-gray-light'
+                                            "
+                                        ></AtlanIcon>
+                                    </a-tooltip>
                                 </div>
                                 <div
                                     class="pl-2 pr-2"
@@ -67,15 +72,21 @@
                                         () => actionClick('info', item)
                                     "
                                 >
-                                    <AtlanIcon
-                                        icon="Info"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto"
-                                    ></AtlanIcon>
+                                    <a-tooltip placement="top">
+                                        <template #title
+                                            >Open preview sidebar</template
+                                        >
+
+                                        <AtlanIcon
+                                            icon="Info"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
                                 </div>
                                 <div
                                     class="bg-gray-light"
@@ -83,15 +94,19 @@
                                         () => actionClick('bookmark', item)
                                     "
                                 >
-                                    <AtlanIcon
-                                        icon="BookmarkOutlined"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto"
-                                    ></AtlanIcon>
+                                    <a-tooltip placement="top">
+                                        <template #title>Bookmark</template>
+
+                                        <AtlanIcon
+                                            icon="BookmarkOutlined"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
                                 </div>
                             </div>
                             <div
@@ -136,15 +151,20 @@
                                     class="pl-2 ml-24"
                                     @click="() => actionClick('add', item)"
                                 >
-                                    <AtlanIcon
-                                        icon="AddAssetName"
-                                        class="w-4 h-4 my-auto"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : 'bg-gray-light'
-                                        "
-                                    ></AtlanIcon>
+                                    <a-tooltip placement="top">
+                                        <template #title
+                                            >Place name in SQL</template
+                                        >
+                                        <AtlanIcon
+                                            icon="AddAssetName"
+                                            class="w-4 h-4 my-auto"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : 'bg-gray-light'
+                                            "
+                                        ></AtlanIcon>
+                                    </a-tooltip>
                                 </div>
                                 <div
                                     class="pl-2 pr-2"
@@ -157,15 +177,21 @@
                                         () => actionClick('info', item)
                                     "
                                 >
-                                    <AtlanIcon
-                                        icon="Info"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto"
-                                    ></AtlanIcon>
+                                    <a-tooltip placement="top">
+                                        <template #title
+                                            >Open preview sidebar</template
+                                        >
+
+                                        <AtlanIcon
+                                            icon="Info"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
                                 </div>
                                 <div
                                     class="pr-2"
@@ -173,15 +199,19 @@
                                         () => actionClick('play', item)
                                     "
                                 >
-                                    <AtlanIcon
-                                        icon="Play"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto"
-                                    ></AtlanIcon>
+                                    <a-tooltip placement="top">
+                                        <template #title>Preview data</template>
+
+                                        <AtlanIcon
+                                            icon="Play"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
                                 </div>
                                 <div
                                     class="bg-gray-light"
@@ -189,15 +219,19 @@
                                         () => actionClick('bookmark', item)
                                     "
                                 >
-                                    <AtlanIcon
-                                        icon="BookmarkOutlined"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto"
-                                    ></AtlanIcon>
+                                    <a-tooltip placement="top">
+                                        <template #title>Bookmark</template>
+
+                                        <AtlanIcon
+                                            icon="BookmarkOutlined"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
                                 </div>
                             </div>
                         </div>

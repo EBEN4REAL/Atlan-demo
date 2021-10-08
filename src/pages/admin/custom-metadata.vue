@@ -18,8 +18,7 @@
         <template #sidebar>
             <SearchAndFilter
                 v-model:value="searchText"
-                placeholder="Search Custom Metadata"
-                class="mt-6 mb-4 bg-white"
+                class="mx-4 mt-6 mb-4 bg-white"
             />
 
             <BusinessMetadataList

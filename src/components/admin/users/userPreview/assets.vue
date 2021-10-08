@@ -2,18 +2,20 @@
     <div>
         <div class="mb-2 text-base font-bold text-gray-500">Assets Owned</div>
         <div class="flex flex-col h-full border rounded-lg">
-            <AssetsWrapper
+            <!-- <AssetsWrapper
                 class-name="border"
                 :selected-user="props.selectedUser"
                 :selected-group="props.selectedGroup"
-            />
+            /> -->
+            <!-- TODO: Change it  -->
+            WIP
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue';
-    import AssetsWrapper from '@common/assets/index.vue';
+    import { defineComponent } from 'vue'
+    import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
         name: 'Assets',
@@ -33,9 +35,9 @@
         setup(props) {
             return {
                 props,
-            };
+            }
         },
-    });
+    })
 </script>
 
 <style lang="less" scoped>

@@ -88,6 +88,16 @@
                 <AtlanIcon icon="Pencil" />
             </div>
         </div>
+        <div class="mt-2.5">
+            <div v-if="changeLog.all.length">
+                {{ changeLog.all.join(', ') }}
+                <span class="text-success">added</span>
+            </div>
+            <div v-if="changeLog.removed.length">
+                {{ changeLog.removed.join(', ') }}
+                <span class="text-error">removed</span>
+            </div>
+        </div>
         <a-popover
             v-model:visible="showLinkClassificationPopover"
             placement="left"
@@ -130,6 +140,7 @@ interface LocalState {
     partial: Components.Schemas.AtlasClassification[]
     removed: Components.Schemas.AtlasClassification[]
 }
+
 export default defineComponent({
     name: 'UpdateBulkClassifications',
     components: {
@@ -149,6 +160,11 @@ export default defineComponent({
             all: [] as Components.Schemas.AtlasClassification[],
             partial: [] as Components.Schemas.AtlasClassification[],
             removed: [] as Components.Schemas.AtlasClassification[],
+        })
+        const changeLog: Ref<Record<string, (string | undefined)[]>> = ref({
+            all: [],
+            partial: [],
+            removed: [],
         })
         const {
             resetClassifications,
@@ -173,6 +189,11 @@ export default defineComponent({
                     selectedAssets,
                     classificationFrequencyMap
                 )
+                changeLog.value = {
+                    all: [],
+                    partial: [],
+                    removed: [],
+                }
                 linkClassificationDropdownRef?.value?.clearSelection()
             },
             { immediate: true }
@@ -188,10 +209,18 @@ export default defineComponent({
                     typeName: clsf.name,
                 }))
             localState.value.all = [...modifiedClassificationList]
-            console.log(localState.value)
             // TODO: handle linkClassificationsData
         }
         const handleConfirm = () => {
+            changeLog.value.all = localState.value.all.map(
+                (clsf) => clsf.typeName
+            )
+            changeLog.value.removed = localState.value.removed.map(
+                (clsf) => clsf.typeName
+            )
+            changeLog.value.partial = localState.value.partial.map(
+                (clsf) => clsf.typeName
+            )
             updateClassifications(
                 classificationsRef,
                 localState,
@@ -231,7 +260,20 @@ export default defineComponent({
             }
             return []
         })
-
+        const handleCancel = () => {
+            resetClassifications(originalClassificationsRef, classificationsRef)
+            localState.value = initialiseLocalState(
+                selectedAssets,
+                classificationFrequencyMap
+            )
+            changeLog.value = {
+                all: [],
+                partial: [],
+                removed: [],
+            }
+            linkClassificationDropdownRef?.value?.clearSelection()
+            toggleLinkClassificationPopover()
+        }
         return {
             classificationsRef,
             localState,
@@ -242,6 +284,8 @@ export default defineComponent({
             showLinkClassificationPopover,
             toggleLinkClassificationPopover,
             linkClassificationDropdownRef,
+            changeLog,
+            handleCancel,
         }
     },
 })

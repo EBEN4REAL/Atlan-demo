@@ -70,6 +70,7 @@ export default function useGtcSearch(
                 'shortDescription',
                 'parentCategory',
                 'categories',
+                'terms',
                 'childrenCategories',
                 'pageviewCount',
                 'anchor',

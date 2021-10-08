@@ -1,6 +1,6 @@
 <template>
     <div class="w-2/3 mt-5">
-        <span class="self-start text-lg font-bold">Popular terms</span>
+        <span class="self-start text-lg font-bold">Popular Terms</span>
         <div v-if="isLoading" class="flex justify-center w-full">
             <a-spin size="small" class="mt-2 mr-2 leading-none"></a-spin>
         </div>
@@ -48,10 +48,10 @@
                 undefined,
                 ref(true),
                 'AtlasGlossaryTerm',
-                20
+                15
             )
 
-            const popularTerms = computed(() => entities.value.slice(-12))
+            const popularTerms = computed(() => entities.value.slice(-10))
 
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({

@@ -52,7 +52,7 @@
                 20
             )
 
-            const popularTerms = computed(() => entities.value.slice(-12))
+            const popularTerms = computed(() => entities.value.slice(-10))
 
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({

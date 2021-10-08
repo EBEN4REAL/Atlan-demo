@@ -2,6 +2,7 @@
     <div class="flex flex-col items-center w-full pt-5 mb-5">
         <SearchWidget />
         <PopularTerms />
+        <PopularGlossaries />
         <RecentlyViewed />
     </div>
 </template>
@@ -10,6 +11,7 @@
     // components
     import SearchWidget from '@/glossary/home/searchWidget.vue'
     import PopularTerms from '@/glossary/home/popularTerms.vue'
+    import PopularGlossaries from '@/glossary/home/popularGlossaries.vue'
     import RecentlyViewed from '@/glossary/home/recentlyViewedGtc.vue'
     // composables
 
@@ -17,6 +19,7 @@
         components: {
             SearchWidget,
             PopularTerms,
+            PopularGlossaries,
             RecentlyViewed,
         },
         setup() {},

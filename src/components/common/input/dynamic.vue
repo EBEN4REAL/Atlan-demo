@@ -109,7 +109,7 @@
                 @change="handleChange"
             ></a-select>
             <a-button
-                v-if="enumAllowCustom"
+                v-if="allowCustom"
                 style="width: 10%"
                 class="px-1"
                 @click="handleToggleCustom"
@@ -183,7 +183,7 @@
             defaultValue: {
                 required: false,
             },
-            enumAllowCustom: {
+            allowCustom: {
                 type: Boolean,
                 required: false,
                 default(): boolean {

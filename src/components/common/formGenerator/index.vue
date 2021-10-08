@@ -59,6 +59,7 @@
                                     :response-config="f?.responseConfig"
                                     :limit-after="c.limitAfter"
                                     :limit-before="c.limitBefore"
+                                    :allow-custom="c.allowCustom"
                                     v-bind="
                                         c.type === 'asyncSelect'
                                             ? { valueObject }
@@ -104,6 +105,7 @@
                             :response-config="f?.responseConfig"
                             :limit-after="f.limitAfter"
                             :limit-before="f.limitBefore"
+                            :allow-custom="f.allowCustom"
                             v-bind="
                                 f.type === 'asyncSelect' ? { valueObject } : {}
                             "

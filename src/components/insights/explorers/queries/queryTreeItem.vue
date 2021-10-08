@@ -6,24 +6,36 @@
                     class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
                     <!--FOLDER NODE -->
-                    <div
-                        class="relative flex w-full z py-1.5"
-                        v-if="item.typeName === 'QueryFolder'"
-                    >
-                        <div class="flex w-full">
-                            <AtlanIcon
-                                :icon="
-                                    expandedKeys.find((key) => key === item.key)
-                                        ? 'FolderOpen'
-                                        : 'FolderClosed'
-                                "
-                                class="w-5 h-5 my-auto mr-1"
-                            ></AtlanIcon>
-                            <span class="text-sm leading-5 tracking-wide">{{
-                                item.title
-                            }}</span>
+                      <a-dropdown v-if="item.typeName === 'QueryFolder'" :trigger="['contextmenu']">
+
+                        <div
+                            class="relative flex w-full z py-1.5"
+                            
+                        >
+                            <div class="flex w-full">
+                                <AtlanIcon
+                                    :icon="
+                                        expandedKeys.find((key) => key === item.key)
+                                            ? 'FolderOpen'
+                                            : 'FolderClosed'
+                                    "
+                                    class="w-5 h-5 my-auto mr-1"
+                                ></AtlanIcon>
+                                <span class="text-sm leading-5 tracking-wide">{{
+                                    item.title
+                                }}</span>
+                            </div>
                         </div>
-                    </div>
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item key="rename">Rename Folder</a-menu-item>
+                                    <a-menu-item key="newQuery" @click="newQuery">New Query</a-menu-item>
+                                    <a-menu-item v-if="savedQueryType === 'personal'" key="public" @click="publishFolder">Make folder public</a-menu-item>
+                                    <a-menu-item key="deleteFolder" class="text-red-600">Delete Folder</a-menu-item>
+                                </a-menu>
+                            </template>
+                    </a-dropdown>
+
                     <!------------------------------->
                     <!--SAVED QUERY NODE -->
                     <a-popover placement="rightTop" v-else>
@@ -128,6 +140,7 @@
         inject,
         toRaw,
         watch,
+        ref
     } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
@@ -136,6 +149,9 @@
     import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import StatusBadge from '@common/badge/status/index.vue'
+    import { Classification } from '~/api/atlas/classification'
+    import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
+    import { message } from "ant-design-vue";
 
     export default defineComponent({
         components: { QueryItemPopover, StatusBadge },
@@ -159,6 +175,8 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
+            const toggleCreateQueryModal = inject<(guid: string) => void>('toggleCreateQueryModal')
+            const savedQueryType = inject('savedQueryType') as Ref<'all' | 'personal'>
             const editorInstance = toRaw(editorInstanceRef.value)
             const {
                 isPrimary,
@@ -198,7 +216,42 @@
                 }
             }
 
+            const newQuery = () => {
+                if(toggleCreateQueryModal) {
+                    toggleCreateQueryModal(props.item.guid)
+                }
+            }
+            const publishFolder = () => {
+                console.log(item)
+                const payload = ref([
+                    {
+                        entityGuid: props.item.guid as string,
+                        attributes: {},
+                        propagate: true,
+                        removePropagationsOnEntityDelete: true,
+                        typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                        validityPeriods: [],
+                    },
+                ])
+
+                const { error, isLoading } = Classification.linkClassification({
+                    cache: undefined,
+                    payload,
+                    entityGuid: props.item.guid,
+                })
+
+                watch([isLoading], () => {
+                    if (isLoading.value == false && !error.value) {
+                        message.success({
+                            content: `${item.attributes.name} was made public!`,
+                        });
+                    } 
+                })
+            }
             return {
+                publishFolder,
+                newQuery,
+                savedQueryType,
                 item,
                 expandedKeys,
                 activeInlineTab,

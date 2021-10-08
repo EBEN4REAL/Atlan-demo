@@ -39,7 +39,7 @@
                         </div>
                         <div class="">
                             <AtlanIcon
-                                @click="toggleCreateQueryFolderModal"
+                                @click="createFolderInput"
                                 icon="NewFolder"
                                 class="h-4 m-0 -mt-0.5 hover:text-primary"
                             />
@@ -130,6 +130,7 @@
         ref,
         toRaw,
         onMounted,
+        provide
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
@@ -209,14 +210,18 @@
                     'queries'
                 )
             }
-            const toggleCreateQueryModal = () => {
+            const toggleCreateQueryModal = (guid?: string) => {
                 createEntityType.value = 'query'
                 showSaveQueryModal.value = !showSaveQueryModal.value
+                if(guid) {
+                    getRelevantTreeData(savedQueryType.value).guid.value = guid
+                }
             }
+
             const newFolderName = ref('')
             const newFolderCreateable = ref(true)
 
-            const toggleCreateQueryFolderModal = () => {
+            const createFolderInput = () => {
                 const inputClassName = `${per_immediateParentGuid.value}_folder_input`;
 
                 const existingInputs = document.getElementsByClassName(inputClassName) 
@@ -432,6 +437,10 @@
                 all_selectedKeys.value = [activeInlineTabKey.value]
             })
 
+            // Providers
+            provide('toggleCreateQueryModal', toggleCreateQueryModal)
+            provide('savedQueryType', savedQueryType)
+            
             return {
                 saveModalRef,
                 saveQueryLoading,
@@ -439,7 +448,7 @@
                 createEntityType,
                 saveQuery,
                 toggleCreateQueryModal,
-                toggleCreateQueryFolderModal,
+                createFolderInput,
                 onSelectQueryType,
                 isSelectedType,
                 isSavedQueryOpened,

@@ -70,7 +70,6 @@ export default {
             classifications: classificationsRef,
             originalClassifications: originalClassificationsRef,
             publishedChangeLog: publishedChangeLogRef,
-            didClassificationsUpdate,
             classificationFrequencyMap,
             terms: termsRef,
             originalTerms: originalTermsRef,

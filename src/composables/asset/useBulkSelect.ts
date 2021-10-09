@@ -240,7 +240,11 @@ export default function useBulkSelect() {
         ) {
             // call to bulk endpoint
             const requestPayload = getBulkUpdateRequestPayload(assetList)
-            let updateStatusOwners = { status: 'loading', meta: {} }
+            let updateStatusOwners = {
+                status: 'loading',
+                changeLog: {},
+                didChange: true,
+            }
             store.setUpdateStatus({ ...store.updateStatus, updateStatusOwners })
             const { data, error, isLoading } = useAPIAsyncState<any>(
                 KeyMaps.asset.BULK_UPDATE_ASSETS,
@@ -262,14 +266,22 @@ export default function useBulkSelect() {
                                 ...(updatedAttributes || {}),
                             }
                         })
-                        updateStatusOwners = { status: 'success', meta: {} }
+                        updateStatusOwners = {
+                            status: 'success',
+                            changeLog: {},
+                            didChange: true,
+                        }
                         store.setUpdateStatus({
                             ...store.updateStatus,
                             updateStatusOwners,
                         })
                         // state.value.updateStatusOwners = 'success'
                     } else {
-                        updateStatusOwners = { status: 'error', meta: {} }
+                        updateStatusOwners = {
+                            status: 'error',
+                            changeLog: {},
+                            didChange: true,
+                        }
                         store.setUpdateStatus({
                             ...store.updateStatus,
                             updateStatusOwners,

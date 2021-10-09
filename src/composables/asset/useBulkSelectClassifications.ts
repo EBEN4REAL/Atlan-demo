@@ -1,4 +1,4 @@
-import { ref, Ref, computed, watch } from 'vue'
+import { ref, Ref, computed, watch, ComputedRef } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { Components } from '~/api/atlas/client'
 import { LocalState } from '~/composables/asset/useBulkSelect'
@@ -18,8 +18,10 @@ export default function useBulkSelectClassifications(selectedAssets) {
     })
     const didClassificationsUpdate: ComputedRef<boolean> = computed(
         () =>
-            publishedChangeLog.value.all.length ||
-            publishedChangeLog.value.removed.length
+            !!(
+                publishedChangeLog.value.all.length ||
+                publishedChangeLog.value.removed.length
+            )
     )
     watch(selectedAssets, () => {
         if (selectedAssets.value.length) {

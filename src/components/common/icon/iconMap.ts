@@ -175,6 +175,6 @@ export default {
     GlossaryDraft,
     MultipleStatus,
     Pencil,
-    Caret
+    Caret,
     Check,
 }

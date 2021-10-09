@@ -182,7 +182,7 @@
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const toggleCreateQueryModal = inject<(guid: string) => void>('toggleCreateQueryModal')
             const savedQueryType = inject('savedQueryType') as Ref<'all' | 'personal'>
-            const refetchParentNode = inject<(guid: string | 'root', type: 'query' | 'queryFolder') => void>('refetchParentNode', () => {})
+            const refetchParentNode = inject<(guid: string | 'root', type: 'query' | 'queryFolder', tree?: 'personal' | 'all') => void>('refetchParentNode', () => {})
             const editorInstance = toRaw(editorInstanceRef.value)
             const {
                 isPrimary,
@@ -263,7 +263,7 @@
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         });
-                        refetchParentNode(props.item.guid, 'queryFolder')
+                        refetchParentNode(props.item.guid, 'queryFolder', savedQueryType.value)
                     }
                 })
             }

@@ -435,18 +435,20 @@
                 }
             }
 
-            const refetchParentNode = (guid: string | 'root', type: 'query' | 'queryFolder') => {
+            const refetchParentNode = (guid: string | 'root', type: 'query' | 'queryFolder', tree?: 'personal' | 'all') => {
                 const per_guid = per_nodeToParentKeyMap[guid] ?? 'root';
                 const all_guid = all_nodeToParentKeyMap[guid] ?? 'root';
 
-                per_refetchNode(
-                    per_guid,
-                    type
-                )
-                all_refetchNode(
-                    all_guid,
-                    type
-                )
+                if(!tree || tree === 'personal')
+                    per_refetchNode(
+                        per_guid,
+                        type
+                    )
+                if(!tree || tree === 'all')
+                    all_refetchNode(
+                        all_guid,
+                        type
+                    )
              }
             onMounted(() => {
                 per_selectedKeys.value = [activeInlineTabKey.value]

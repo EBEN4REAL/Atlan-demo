@@ -3,7 +3,7 @@
         <img
             src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
             class="w-auto h-4 mr-6 cursor-pointer"
-            @click="handleClick('home')"
+            @click="$emit('toggleNavbar')"
         />
         <button
             v-for="nav in navKeys"
@@ -38,7 +38,7 @@
         props: {
             page: { type: String, required: true },
         },
-        emits: ['change'],
+        emits: ['change', 'toggleNavbar'],
         setup(props, { emit }) {
             const navKeys = [
                 { path: 'assets', label: 'Discover' },

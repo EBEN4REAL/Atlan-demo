@@ -208,8 +208,8 @@ export function useSavedQuery(
         saveModalRef: Ref<any>,
         router: any,
         type: 'personal' | 'all',
-        parentFolderQF: Ref<string>,
-        parentFolderGuid: Ref<string>
+        parentFolderQF: string,
+        parentFolderGuid: string
     ) => {
         const editorInstanceRaw = toRaw(editorInstance.value)
         const attributeValue =
@@ -273,11 +273,11 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF.value !== 'root' && parentFolderGuid.value !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF.value;
+        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
             body.value.entity.relationshipAttributes = {
                 folder: {
-                    guid: parentFolderGuid.value,
+                    guid: parentFolderGuid,
                     typeName: 'QueryFolder',
                 },
             }
@@ -328,8 +328,8 @@ export function useSavedQuery(
         saveModalRef: Ref<any>,
         router: any,
         type: 'personal' | 'all' ,
-        parentFolderQF: Ref<string>,
-        parentFolderGuid: Ref<string>
+        parentFolderQF: string,
+        parentFolderGuid: string
     ) => {
         const editorInstanceRaw = toRaw(editorInstance.value)
         const attributeValue =
@@ -398,11 +398,11 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF.value !== 'root' && parentFolderGuid.value !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF.value;
+        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
             body.value.entity.relationshipAttributes = {
                 folder: {
-                    guid: parentFolderGuid.value,
+                    guid: parentFolderGuid,
                     typeName: 'QueryFolder',
                 },
             }

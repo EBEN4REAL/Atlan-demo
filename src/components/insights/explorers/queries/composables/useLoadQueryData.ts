@@ -113,6 +113,17 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
     }
 
     refreshBody();
+    const getAllQueryFolders = () => {
+        refreshBody();
+
+        body.value.typeName = 'QueryFolder';
+        body.value.offset = 0
+        body.value.limit = 100;
+        
+        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+            body
+        }) as Promise<BasicSearchResponse<Folder>>
+    }
 
     const getQueryFolders = (offset?: number) => {
         refreshBody();
@@ -189,6 +200,7 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
         getQueries,
         getSubFolders,
         getFolderQueries,
+        getAllQueryFolders,
     }
 }
 

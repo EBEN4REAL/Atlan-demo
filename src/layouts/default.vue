@@ -24,11 +24,12 @@
                     :get-container="false"
                     :closable="false"
                     :wrap-style="{ position: 'absolute' }"
+                    :mask="false"
                     :class="$style.drawerStyles"
                 >
                     <SidePanel :page="activeKey[0]" @change="handleChange" />
                 </a-drawer>
-                <div v-else style="min-width: 264px h-full">
+                <div v-else style="min-width: 264px">
                     <SidePanel :page="activeKey[0]" @change="handleChange" />
                 </div>
                 <router-view class="flex-grow" />

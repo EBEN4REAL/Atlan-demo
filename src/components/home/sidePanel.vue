@@ -1,5 +1,6 @@
 <template>
     <div class="flex flex-col flex-grow h-full">
+        <!-- purpose  -->
         <span class="px-4 mt-5 mb-2 text-xs font-bold text-gray-500">
             PURPOSE</span
         >
@@ -21,9 +22,11 @@
                 </div>
             </a-button>
         </a-dropdown>
+        <!-- workspaces -->
         <span class="px-4 mt-8 mb-2 text-xs font-bold text-gray-500">
             WORKSPACE</span
         >
+        <!-- pages -->
         <button
             v-for="nav in navKeys"
             :key="nav.label"
@@ -36,16 +39,30 @@
             </span>
         </button>
         <div class="flex-grow"></div>
-        <div class="justify-self-end">
+        <div class="w-full justify-self-end">
             <button
-                class="mr-2 menu-item"
+                class="w-full mr-2 menu-item"
                 :class="{ active: 'admin' === page }"
                 @click="handleClick('admin')"
             >
-                Admin
+                Admin Center
             </button>
-            <UserPersonalAvatar class="self-center" />
+            <button
+                v-for="item in ['Notifications', 'Help', 'Feedback']"
+                :key="item"
+                class="mr-2 menu-item"
+            >
+                {{ item }}
+            </button>
         </div>
+        <span class="flex items-center px-4 mt-2 mb-4 text-sm text-gray-500"
+            >Built with 💙
+            <span class="ml-2">by</span>
+            <img
+                src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+                class="w-auto h-3 ml-2 mb-0.5"
+            />
+        </span>
     </div>
 </template>
 

@@ -1,30 +1,28 @@
 <template>
-    <div class="flex items-center flex-grow h-full">
-        <img
-            src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-            class="w-auto h-4 mr-6 cursor-pointer"
-            @click="$emit('toggleNavbar')"
-        />
-        <button
-            v-for="nav in navKeys"
-            @click="handleClick(nav.path)"
-            class="menu-item"
-            :class="{ active: nav.path === page }"
-        >
-            <span>
-                {{ nav.label }}
-            </span>
-        </button>
-        <div class="flex-grow"></div>
-        <button
-            @click="handleClick('admin')"
-            class="mr-2 menu-item"
-            :class="{ active: 'admin' === page }"
-        >
-            Admin
-        </button>
-        <AtlanIcon icon="Notification" class="h-5 mr-3" />
-        <UserPersonalAvatar class="self-center" />
+    <div class="flex items-center justify-between w-full h-full">
+        <div class="flex items-center">
+            <atlan-icon
+                icon="Readme"
+                class="h-4 mr-3 cursor-pointer"
+                @click="$emit('toggleNavbar')"
+            />
+            <img
+                src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+                class="w-auto h-4 mb-1"
+            />
+            <atlan-icon
+                v-if="page !== '/'"
+                icon="ChevronRight"
+                class="h-4 mx-3"
+            />
+            <span class="mt-0.5 text-xs font-bold text-gray-500 tracking-wider">
+                {{ navKeys[page]?.toUpperCase() }}</span
+            >
+        </div>
+        <div class="flex items-center justify-self-end">
+            <AtlanIcon icon="Notification" class="h-5 mr-3" />
+            <UserPersonalAvatar class="self-center" />
+        </div>
     </div>
 </template>
 
@@ -40,12 +38,12 @@
         },
         emits: ['change', 'toggleNavbar'],
         setup(props, { emit }) {
-            const navKeys = [
-                { path: 'assets', label: 'Discover' },
-                { path: 'glossary', label: 'Glossary' },
-                { path: 'insights', label: 'Insights' },
-                { path: 'workflows', label: 'Workflows' },
-            ]
+            const navKeys = {
+                assets: 'Discover',
+                glossary: 'Glossary',
+                insights: 'Insights',
+                workflows: 'Workflows',
+            }
 
             function handleClick(key: string) {
                 emit('change', key)

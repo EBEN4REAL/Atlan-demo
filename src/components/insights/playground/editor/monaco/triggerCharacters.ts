@@ -55,7 +55,7 @@ const alphabets_lowecase = [
     'z',
 ]
 const numbers = []
-const special_characters = [' ', '.', "'", '"']
+const special_characters = ["'", '"']
 export const triggerCharacters = [
     ...alphabets_uppercase,
     ...alphabets_lowecase,

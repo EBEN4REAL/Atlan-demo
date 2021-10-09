@@ -4,7 +4,7 @@ import getSqlKeywords from '~/components/insights/playground/editor/monaco/sqlKe
 import columnSuggestion from '~/components/insights/playground/editor/monaco/columnSuggestion'
 import fetchColumnList from '~/components/insights/playground/editor/monaco/fetchColumnList'
 import * as monaco from 'monaco-editor'
-import { useMapping } from './useMapping'
+import { useMapping, nextKeywords } from './useMapping'
 //https://gist.github.com/mwrouse/05d8c11cd3872c19c684bd1904a2202e
 const entityFilters = {
     condition: 'OR',
@@ -147,6 +147,29 @@ function getLastMappedKeyword(
     }
     return undefined
 }
+
+function getSuggestionsUsingType(type: string, token: string) {
+    switch (type) {
+        case 'TABLE': {
+            /* Make a network request  all tables starting with word/text for user typing right now */
+            // let len = tokens.length
+            // currentWord = tokens[len - 1]
+            // fetchTables(currentWord)
+            let suggestions = wordToEditorKeyword(tableNames, type)
+            return suggestions
+        }
+        case 'COLUMN': {
+            let suggestions = wordToEditorKeyword(columnNames, type)
+            return suggestions
+        }
+        case 'NEXT_KEYWORD': {
+            let suggestions = wordToEditorKeyword(nextKeywords[token], type)
+            return suggestions
+        }
+        default:
+            return []
+    }
+}
 export function useAutoCompletion(changes: any, editorInstance: any) {
     const { mappingKeywordsKeys, mappingKeywords } = useMapping()
     const startColumn = changes.range.startColumn
@@ -165,7 +188,7 @@ export function useAutoCompletion(changes: any, editorInstance: any) {
     })
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
-    currentWord = currentWord.toUpperCase()
+    currentWord = currentWord?.toUpperCase()
     /* If it is a first/nth character of first word */
     if (tokens.length < 1) {
         suggestions = sqlKeywords.filter((keyword) =>
@@ -183,24 +206,20 @@ export function useAutoCompletion(changes: any, editorInstance: any) {
     )
 
     if (lastMatchedKeyword) {
-        if (lastMatchedKeyword.type === 'TABLE') {
-            /* Make a network request  all tables starting with word/text for user typing right now */
-            let len = tokens.length
-            const currentWord = tokens[len - 1]
-            // fetchTables(currentWord)
-            const type = 'TABLE'
-            const s = wordToEditorKeyword(tableNames, type)
+        if (Array.isArray(lastMatchedKeyword.type)) {
+            lastMatchedKeyword.type.forEach((type) => {
+                let s = getSuggestionsUsingType(type, lastMatchedKeyword.token)
+                suggestions = [...suggestions, ...s]
+            })
+        } else {
+            const s = getSuggestionsUsingType(
+                lastMatchedKeyword.type,
+                lastMatchedKeyword.token
+            )
             suggestions = [...s, ...suggestions]
-        } else if (lastMatchedKeyword.type === 'COLUMN') {
-            /* Make a network request  all tables starting with word/text for user typing right now */
-            let len = tokens.length
-            const currentWord = tokens[len - 1]
-            // fetchTables(currentWord)
-            const type = 'COLUMN'
-            const c = wordToEditorKeyword(columnNames, type)
-            suggestions = [...c, ...suggestions]
         }
     }
+    console.log(suggestions, 'suggestions')
     let s = sqlKeywords.filter((keyword) => keyword.label.includes(currentWord))
     suggestions = [...suggestions, ...s]
     return suggestions

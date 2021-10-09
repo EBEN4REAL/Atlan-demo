@@ -116,7 +116,6 @@ export default function useProject() {
                         if (message?.rows)
                             setRows(dataList, columnList, message.rows)
                         if (message?.status === 'completed') {
-                            console.log(message, 'message')
                             getData(
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),

@@ -7,7 +7,6 @@
                         :is="isItem ? 'router-view' : 'AssetDiscovery'"
                         ref="assetDiscovery"
                         :initial-filters="initialFilters"
-                        :update-profile="updateProfile"
                         @preview="handlePreview"
                         @bulkSelectChange="updateBulkSelection"
                     ></component>
@@ -28,7 +27,7 @@
         </div>
         <div
             v-else
-            class="relative bg-white asset-preview-container overflow-y-auto"
+            class="relative overflow-y-auto bg-white asset-preview-container"
         >
             <BulkSidebar
                 :bulk-selected-assets="bulkSelectedAssets"
@@ -129,7 +128,8 @@
                 propagateToAssetList,
                 assetDiscovery,
                 updateBulkSelection,
-                bulkSelectedAssets
+                bulkSelectedAssets,
+                updateProfile,
             }
         },
     })

@@ -1,15 +1,13 @@
 <template>
-    <div>
-        <ClassificationHeader
-            v-if="selectedClassification"
-            :classification="selectedClassification"
-        />
+    <ClassificationHeader
+        v-if="selectedClassification"
+        :classification="selectedClassification"
+    />
 
-        <ClassificationBody
-            v-if="selectedClassification"
-            :classification="selectedClassification"
-        />
-    </div>
+    <ClassificationBody
+        v-if="selectedClassification"
+        :classification="selectedClassification"
+    />
 </template>
 
 <script lang="ts">

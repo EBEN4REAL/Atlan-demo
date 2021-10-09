@@ -1,13 +1,14 @@
-<script lang="ts">
-import { defineComponent } from "vue";
+<template></template>
 
-export default defineComponent({
-  setup() {},
-});
+<script lang="ts">
+    import { defineComponent } from 'vue'
+    export default defineComponent({
+        name: 'ClassificationProfileWrapper',
+    })
 </script>
 
 <route lang="yaml">
-  meta:
-    layout: default
-    requiresAuth: true
+meta:
+layout: default
+requiresAuth: true
 </route>

@@ -59,6 +59,10 @@
 
     // composables
     import useTree from '~/components/glossary/tree/composables/useTree'
+    import useBusinessMetadata from '~/components/admin/custom-metadata/composables/useBusinessMetadata'
+
+    // store
+    import { useBusinessMetadataStore } from '~/store/businessMetadata/index'
 
     // types
     import {
@@ -141,6 +145,11 @@
                     glossaryTreeRef.value.refreshTree()
                 }, 2000)
             }
+
+            // * Get all available BMs and save on storez
+            const store = useBusinessMetadataStore()
+            const { fetchBMonStore } = useBusinessMetadata()
+            if (!store.businessMetadataListLoaded) fetchBMonStore()
 
             // router updates
             const backToHome = () => router.push('/glossary')

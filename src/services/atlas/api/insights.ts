@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { KeyMaps } from '../atlas_keyMpas'
+import { KeyMaps } from '../atlas_keyMaps'
 import { useAPIAsyncState } from '~/api/useAPI'
 import {
     BasicSearchResponse,

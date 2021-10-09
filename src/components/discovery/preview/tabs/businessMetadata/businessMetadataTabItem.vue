@@ -1,5 +1,13 @@
 <template>
     <div class="px-5 py-2">
+        <div class="flex justify-end">
+            <span
+                class="text-sm font-bold cursor-pointer  ant-typography ant-typography-ellipsis ant-typography-single-line text-primary"
+                @click="() => (readOnly = !readOnly)"
+            >
+                {{ readOnly ? 'Edit' : 'Done' }}
+            </span>
+        </div>
         <div v-for="(a, x) in applicableList" :key="x">
             <div
                 class="gap-6 gap-y-0 group"
@@ -139,9 +147,11 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'BusinessMetadataListItem',
+        components: { AtlanButton },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -166,7 +176,7 @@
 
             const { enumListData: enumsList } = useEnums()
 
-            const readOnly = ref(false)
+            const readOnly = ref(true)
 
             const applicableList = ref(
                 getApplicableAttributes(

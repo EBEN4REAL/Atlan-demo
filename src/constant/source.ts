@@ -44,14 +44,14 @@ export const SourceList = [
                 level: 3,
             },
         ],
-        types:['Database','Schema','Table','Column','View','TablePartition','MaterialisedView']
+        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView']
     },
     {
         id: 'tableau',
         label: 'Tableau',
         image: tableau,
         hierarchy: [],
-        types:['TableauSite','TableauProject','TableauWorkbook','TableauWorksheet','TableauDashboard','TableauDatasource','TableauDatasourceField']
+        types: ['TableauSite', 'TableauProject', 'TableauWorkbook', 'TableauWorksheet', 'TableauDashboard', 'TableauDatasource', 'TableauDatasourceField', 'TableauCalculatedField']
     },
     {
         id: 'redshift',
@@ -64,20 +64,20 @@ export const SourceList = [
         label: 'Postgres',
         image: postgres,
         hierarchy: [],
-        types:['Database','Schema','Table','Column','View','TablePartition','MaterialisedView']
+        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView']
     },
     {
         id: 'athena',
         label: 'Athena',
         image: athena,
         hierarchy: [],
-        types:['Database','Schema','Table','Column','View','TablePartition','MaterialisedView']
+        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView']
     },
     {
         id: 'powerBI',
         label: 'PowerBI',
         image: tableau,
         hierarchy: [],
-        types:['PowerBIWorkspace','PowerBIDashboard','PowerBIReport','PowerBIDataset','PowerBIDataflow','PowerBITile','PowerBIPage','PowerBIDatasource']
+        types: ['PowerBIWorkspace', 'PowerBIDashboard', 'PowerBIReport', 'PowerBIDataset', 'PowerBIDataflow', 'PowerBITile', 'PowerBIPage', 'PowerBIDatasource']
     }
 ]

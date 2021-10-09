@@ -1,14 +1,14 @@
 <template>
     <a-popover :mouseEnterDelay="0.3" placement="leftTop" trigger="hover">
         <template #content>
-            <UserInfo :user="user" />
+            <UserInfo v-if="user" :user="user" />
         </template>
-        <Pill v-if="isPill" :label="user.username">
+        <Pill v-if="isPill" :label="user?.username || 'Bot'">
             <template #prefix>
                 <AtlanIcon icon="AddUser" />
             </template>
         </Pill>
-        <span v-else class="text-gray-500">{{ user.username }}</span>
+        <span v-else class="text-gray-500">{{ user?.username || 'Bot' }}</span>
     </a-popover>
 </template>
 

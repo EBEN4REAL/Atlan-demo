@@ -17,20 +17,45 @@
                 <a-button type="primary" @click="handleOk"> Save </a-button>
             </div>
         </template>
-        <a-input
-            ref="titleBar"
-            v-model:value="title"
-            placeholder="Saved filter name..."
-            class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-            :class="$style.titleInput"
-        />
-        <a-textarea
-            v-model:value="description"
-            placeholder="Add description..."
-            class="text-gray-500 border-0 shadow-none outline-none"
-            :maxlength="140"
-            :rows="2"
-        />
+        <a-button-group class="mb-2 text-xs rounded shadow">
+            <a-button
+                :class="
+                    activeTab === 'new'
+                        ? 'text-primary font-bold'
+                        : 'text-gray-500'
+                "
+                @click="setActiveTab('new')"
+            >
+                New saved filter
+            </a-button>
+
+            <a-button
+                :class="
+                    activeTab === 'replace'
+                        ? 'text-primary font-bold'
+                        : 'text-gray-500'
+                "
+                @click="setActiveTab('replace')"
+                >Replace existing</a-button
+            >
+        </a-button-group>
+        <div v-if="activeTab === 'new'">
+            <a-input
+                ref="titleBar"
+                v-model:value="title"
+                placeholder="Saved filter name..."
+                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                :class="$style.titleInput"
+            />
+            <a-textarea
+                v-model:value="description"
+                placeholder="Add description..."
+                class="text-gray-500 border-0 shadow-none outline-none"
+                :maxlength="140"
+                :rows="2"
+            />
+        </div>
+        <div v-if="activeTab === 'replace'"></div>
     </a-modal>
 </template>
 
@@ -64,6 +89,11 @@
 
             const visible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
+            const activeTab: Ref<'new' | 'replace'> = ref('new')
+
+            function setActiveTab(tabName: 'new' | 'replace') {
+                activeTab.value = tabName
+            }
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
@@ -107,6 +137,8 @@
                 handleMenuClick,
                 currentStatus,
                 myUsername,
+                activeTab,
+                setActiveTab,
             }
         },
     })

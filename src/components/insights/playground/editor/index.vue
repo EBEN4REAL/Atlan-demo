@@ -92,8 +92,12 @@
                                     <a-menu>
                                         <div class="p-2">
                                             <a-checkbox
-                                                v-model:checked="limitRows"
-                                                >Limit to 100 rows</a-checkbox
+                                                v-model:checked="
+                                                    limitRows.checked
+                                                "
+                                                >Limit to
+                                                {{ limitRows.rowsCount }}
+                                                rows</a-checkbox
                                             >
                                         </div>
                                     </a-menu>
@@ -256,7 +260,7 @@
         setup() {
             const router = useRouter()
 
-            const { queryRun } = useRunQuery()
+            const { queryRun, modifyQueryExecutionTime } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
                 column: 0,
@@ -264,7 +268,10 @@
             })
             const editorFocused: Ref<boolean> = ref(false)
             const saveModalRef = ref()
-            const limitRows = ref(false)
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 10,
+            })
             const showcustomToolBar = ref(false)
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -272,6 +279,9 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const queryExecutionTime = inject(
+                'queryExecutionTime'
+            ) as Ref<number>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
@@ -291,7 +301,9 @@
             }
 
             // callback fxn
-            const getData = (dataList, columnList) => {
+            const getData = (dataList, columnList, executionTime) => {
+                console.log(queryExecutionTime, executionTime, 'extime')
+                modifyQueryExecutionTime(queryExecutionTime, executionTime)
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
@@ -308,7 +320,12 @@
                 }
             }
             const run = () => {
-                queryRun(activeInlineTab.value, getData, isQueryRunning)
+                queryRun(
+                    activeInlineTab.value,
+                    getData,
+                    isQueryRunning,
+                    limitRows
+                )
             }
 
             const setInstance = (

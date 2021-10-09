@@ -148,7 +148,7 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
-            const { isQueryRunning } = useRunQuery()
+            const { isQueryRunning, queryExecutionTime } = useRunQuery()
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -181,6 +181,7 @@
                 editorInstance: editorInstance,
                 monacoInstance: monacoInstance,
                 outputPaneSize: outputPaneSize,
+                queryExecutionTime: queryExecutionTime,
                 setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)

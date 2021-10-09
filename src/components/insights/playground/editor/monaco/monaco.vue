@@ -31,6 +31,12 @@
     import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import {
+        useAutoCompletion,
+        suggestionKeywordInterface,
+    } from '~/components/insights/playground/editor/common/composables/useAutoCompletion'
+    import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
+    import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
 
     const turndownService = new TurndownService({})
 
@@ -143,32 +149,46 @@
                     })
                 return randomKeywords
             }
-            const triggerAutoCompletion = (lastTypedCharacter) => {
-                let randomKeywords = []
-                if (lastTypedCharacter !== '')
-                    randomKeywords =
-                        generateKeywordSuggestions(lastTypedCharacter)
+            const triggerAutoCompletion = (
+                suggestions: suggestionKeywordInterface[]
+            ) => {
                 // clearing previous popover register data
                 if (disposable) disposable.value?.dispose()
-                console.log(randomKeywords)
                 disposable.value =
                     monaco.languages.registerCompletionItemProvider(
                         'atlansql',
                         {
+                            triggerCharacters: triggerCharacters,
                             provideCompletionItems() {
                                 // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
                                 return {
-                                    suggestions: [
-                                        ...randomKeywords,
-                                        ...savedQuery(),
-                                        ...sqlKeywords(),
-                                        ...columnSuggestion(unref(list.value)),
-                                    ],
+                                    suggestions: [...suggestions],
                                 }
                             },
                         }
                     )
             }
+            // const triggerAutoCompletion = (suggestions:suggestionKeywordInterface[]) => {
+            //     // clearing previous popover register data
+            //     if (disposable) disposable.value?.dispose()
+            //     disposable.value =
+            //         monaco.languages.registerCompletionItemProvider(
+            //             'atlansql',
+            //             {
+            //                 provideCompletionItems() {
+            //                     // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
+            //                     return {
+            //                         suggestions: [
+            //                             ...suggestions,
+            //                             ...savedQuery(),
+            //                             ...sqlKeywords(),
+            //                             ...columnSuggestion(unref(list.value)),
+            //                         ],
+            //                     }
+            //                 },
+            //             }
+            //         )
+            // }
             try {
                 monaco.languages.registerHoverProvider('atlansql', {
                     provideHover(model, position, token) {
@@ -205,13 +225,19 @@
             } catch (e) {
                 console.error(e)
             }
-
+            /* ---------------- Autoclosing pairs ------------------*/
+            monaco.languages.setLanguageConfiguration(
+                'atlansql',
+                autoclosePairsConfig
+            )
+            /* ----------------------------------------------------- */
             onMounted(() => {
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
                     theme: 'vs',
+
                     minimap: {
                         enabled: false,
                     },
@@ -219,7 +245,7 @@
                     quickSuggestions: {
                         other: true,
                         comments: false,
-                        strings: false,
+                        strings: true,
                     },
                 })
                 emit('editorInstance', editor, monaco)
@@ -229,10 +255,11 @@
                 // emit('editorInstance', editor)
                 editor?.getModel().onDidChangeContent((event) => {
                     const text = editor?.getValue()
-                    console.log(event)
                     onEditorContentChange(event, text)
-                    const lastTypedCharacter = event?.changes[0]?.text
-                    triggerAutoCompletion(lastTypedCharacter)
+                    const changes = event?.changes[0]
+                    // const lastTypedCharacter = event?.changes[0]?.text
+                    const suggestions = useAutoCompletion(changes, editor)
+                    triggerAutoCompletion(suggestions)
                 })
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)
@@ -278,6 +305,10 @@
                     editor.getModel().onDidChangeContent((event) => {
                         const text = editor.getValue()
                         onEditorContentChange(event, text)
+                        const changes = event?.changes[0]
+                        // const lastTypedCharacter = event?.changes[0]?.text
+                        const suggestions = useAutoCompletion(changes, editor)
+                        triggerAutoCompletion(suggestions)
                     })
                     const range = editor?.getModel().getFullModelRange()
                     const position = {

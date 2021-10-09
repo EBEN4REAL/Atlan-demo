@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <div class="flex justify-between">
-            <a-tabs
+        <div class="flex justify-end">
+            <!-- <a-tabs
                 :activeKey="activeResultsPaneTabIndex"
                 :class="$style.result_pane"
                 @change="
@@ -18,7 +18,7 @@
                         {{ tab.name }}
                     </template>
                 </a-tab-pane>
-            </a-tabs>
+            </a-tabs> -->
             <div class="mt-2 mr-3">
                 <a-input
                     v-model:value="searchText"
@@ -35,7 +35,8 @@
             </div>
         </div>
 
-        <component :is="activeResultsPaneTab?.component"></component>
+        <!-- <component :is="activeResultsPaneTab?.component"></component> -->
+        <component :is="'result'"></component>
     </div>
 </template>
 

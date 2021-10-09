@@ -210,17 +210,10 @@ export const KeyMaps = {
         CONNECTION_ARCHIVE: ({ id }) =>
             getAPIPath('auth', `/connections/${id}/archive`),
     },
+    // `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
     query: {
-        RUN_QUERY: ({
-            query,
-            defaultSchema,
-            dataSourceName,
-            length,
-        }: PathParams) =>
-            getAPIPath(
-                'api/query',
-                `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
-            ),
+        RUN_QUERY: ({ params }: PathParams) =>
+            getAPIPath('api/query', `/sql/stream?${params}`),
     },
     bots: {
         WORKFLOW_LOG_STREAM: ({}: PathParams) =>

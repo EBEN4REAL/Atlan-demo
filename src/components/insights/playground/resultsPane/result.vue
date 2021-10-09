@@ -24,6 +24,15 @@
                 </span>
                 <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
                 <span class="mr-2"> Get rows count </span>
+                <!-- Execution Time will be shown when it is >0 -->
+                <div
+                    v-if="queryExecutionTime > 0"
+                    class="w-1 h-1 mx-2 bg-gray-500 rounded-full"
+                ></div>
+                <span v-if="queryExecutionTime > 0" class="mr-2">
+                    Execution Time: {{ queryExecutionTime }}ms
+                </span>
+                <!-- -------------------------------------------- -->
             </div>
         </div>
     </div>
@@ -49,8 +58,12 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const queryExecutionTime = inject(
+                'queryExecutionTime'
+            ) as Ref<number>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             return {
+                queryExecutionTime,
                 isQueryRunning,
                 activeInlineTab,
             }

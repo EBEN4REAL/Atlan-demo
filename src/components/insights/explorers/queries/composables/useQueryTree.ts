@@ -419,6 +419,7 @@ const useTree = ({
         expandedCache,
         immediateParentFolderQF,
         immediateParentGuid,
+        nodeToParentKeyMap,
         onLoadData,
         expandNode,
         selectNode,

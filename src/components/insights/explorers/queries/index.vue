@@ -214,7 +214,7 @@
                 createEntityType.value = 'query'
                 showSaveQueryModal.value = !showSaveQueryModal.value
                 if(guid) {
-                    getRelevantTreeData(savedQueryType.value).guid.value = guid
+                    getRelevantTreeData().parentGuid.value = guid
                 }
             }
 
@@ -225,19 +225,18 @@
                 const inputClassName = `${per_immediateParentGuid.value}_folder_input`;
 
                 const existingInputs = document.getElementsByClassName(inputClassName) 
-                const guid = getRelevantTreeData(savedQueryType.value).guid.value;
+                const guid = getRelevantTreeData().parentGuid.value;
 
                 // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
                     // check if there are existing inputs to avoid duplication
-                        console.log(guid, existingInputs)
                     if(!existingInputs.length && newFolderCreateable.value) {
 
                         let parentFolder;
                         if(guid === 'root'){
                             parentFolder = document.getElementsByClassName('ant-tree')[0]?.parentNode
                         } else {
-                            parentFolder = document.getElementsByClassName(getRelevantTreeData(savedQueryType.value).guid.value)[0]
+                            parentFolder = document.getElementsByClassName(getRelevantTreeData().parentGuid.value)[0]
                         }
                         let ul = parentFolder.getElementsByTagName('ul')[0]
 
@@ -256,21 +255,21 @@
                                 newFolderName.value,
                                 saveQueryLoading,
                                 savedQueryType.value,
-                                getRelevantTreeData(savedQueryType.value).qualifiedName,
-                                getRelevantTreeData(savedQueryType.value).guid
+                                getRelevantTreeData().parentQualifiedName,
+                                getRelevantTreeData().parentGuid
                             )
                             watch(data, async (newData) => {
                                 if (newData) {
                                     newFolderName.value = '';
                                     if(savedQueryType.value === 'personal'){
-                                        await per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                        await per_refetchNode(getRelevantTreeData().parentGuid.value, 'queryFolder')
                                         ul.removeChild(li)
-                                        await all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                        await all_refetchNode(getRelevantTreeData().parentGuid.value, 'queryFolder')
                                     }
                                     if(savedQueryType.value === 'all'){
-                                        await all_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                        await all_refetchNode(getRelevantTreeData().parentGuid.value, 'queryFolder')
                                         ul.removeChild(li)
-                                        await per_refetchNode(getRelevantTreeData(savedQueryType.value).guid.value, 'queryFolder')
+                                        await per_refetchNode(getRelevantTreeData().parentGuid.value, 'queryFolder')
 
                                     }
                                 }
@@ -318,12 +317,12 @@
                     } 
                 }
 
-                const loaded = getRelevantTreeData(savedQueryType.value).loadedKeys.value.find((key) => key === getRelevantTreeData(savedQueryType.value).guid.value)
-                let expanded = getRelevantTreeData(savedQueryType.value).expandedKeys.value.find((key) => key === getRelevantTreeData(savedQueryType.value).guid.value)
+                const loaded = getRelevantTreeData().loadedKeys.value.find((key) => key === getRelevantTreeData().parentGuid.value)
+                let expanded = getRelevantTreeData().expandedKeys.value.find((key) => key === getRelevantTreeData().parentGuid.value)
                 
                 if(loaded && !expanded) {
                     // if the folder is loaded but not expanded, expand it then add input
-                    getRelevantTreeData(savedQueryType.value).expandedKeys.value.push(getRelevantTreeData(savedQueryType.value).guid.value)
+                    getRelevantTreeData().expandedKeys.value.push(getRelevantTreeData().parentGuid.value)
                     setTimeout(appendInput, 1000)
                 }
                 if((loaded && expanded) || guid === 'root') {
@@ -348,6 +347,7 @@
                 refetchNode: per_refetchNode,
                 immediateParentFolderQF: per_immediateParentFolderQF,
                 immediateParentGuid: per_immediateParentGuid,
+                nodeToParentKeyMap: per_nodeToParentKeyMap,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -367,6 +367,7 @@
                 selectNode: all_selectNode,
                 refetchNode: all_refetchNode,
                 immediateParentGuid: all_immediateParentGuid,
+                nodeToParentKeyMap: all_nodeToParentKeyMap,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -376,16 +377,18 @@
             })
             const { data: searchResults, isLoading: searchLoading} = useSearchQueries(searchQuery, savedQueryType)
 
-            const getRelevantTreeData = (type: 'personal' | 'all') => {
-                if(type === 'personal') return {
-                    qualifiedName: per_immediateParentFolderQF,
-                    guid: per_immediateParentGuid,
+            const getRelevantTreeData = (type?: 'personal' | 'all') => {
+                const currentType = type ?? savedQueryType.value;
+
+                if(currentType === 'personal') return {
+                    parentQualifiedName: per_immediateParentFolderQF,
+                    parentGuid: per_immediateParentGuid,
                     loadedKeys: per_loadedKeys,
                     expandedKeys: per_expandedKeys
                 };
                  else return {
-                    qualifiedName: all_immediateParentFolderQF,
-                    guid: all_immediateParentGuid,
+                    parentQualifiedName: all_immediateParentFolderQF,
+                    parentGuid: all_immediateParentGuid,
                     loadedKeys: all_loadedKeys,
                     expandedKeys: all_expandedKeys
                 }
@@ -412,19 +415,19 @@
                         saveModalRef,
                         router,
                         savedQueryType.value,
-                        getRelevantTreeData(savedQueryType.value).qualifiedName,
-                        getRelevantTreeData(savedQueryType.value).guid
+                        getRelevantTreeData().parentQualifiedName,
+                        getRelevantTreeData().parentGuid
                     )
                     focusEditor(toRaw(editorInstance.value))
 
                     watch(data, (newData) => {
                         if (newData) {
                             per_refetchNode(
-                                getRelevantTreeData(savedQueryType.value).guid.value,
+                                getRelevantTreeData().parentGuid.value,
                                 createEntityType.value
                             )
                             all_refetchNode(
-                                getRelevantTreeData(savedQueryType.value).guid.value,
+                                getRelevantTreeData().parentGuid.value,
                                 createEntityType.value
                             )
                         }
@@ -432,6 +435,19 @@
                 }
             }
 
+            const refetchParentNode = (guid: string | 'root', type: 'query' | 'queryFolder') => {
+                const per_guid = per_nodeToParentKeyMap[guid] ?? 'root';
+                const all_guid = all_nodeToParentKeyMap[guid] ?? 'root';
+
+                per_refetchNode(
+                    per_guid,
+                    type
+                )
+                all_refetchNode(
+                    all_guid,
+                    type
+                )
+             }
             onMounted(() => {
                 per_selectedKeys.value = [activeInlineTabKey.value]
                 all_selectedKeys.value = [activeInlineTabKey.value]
@@ -440,7 +456,9 @@
             // Providers
             provide('toggleCreateQueryModal', toggleCreateQueryModal)
             provide('savedQueryType', savedQueryType)
-            
+            provide('savedQueryType', savedQueryType)
+            provide('refetchParentNode', refetchParentNode)
+
             return {
                 saveModalRef,
                 saveQueryLoading,

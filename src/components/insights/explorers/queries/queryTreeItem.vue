@@ -31,7 +31,7 @@
                                     <a-menu-item key="rename">Rename Folder</a-menu-item>
                                     <a-menu-item key="newQuery" @click="newQuery">New Query</a-menu-item>
                                     <a-menu-item v-if="savedQueryType === 'personal'" key="public" @click="publishFolder">Make folder public</a-menu-item>
-                                    <a-menu-item key="deleteFolder" class="text-red-600">Delete Folder</a-menu-item>
+                                    <a-menu-item key="deleteFolder" class="text-red-600" @click="deleteFolder">Delete Folder</a-menu-item>
                                 </a-menu>
                             </template>
                     </a-dropdown>
@@ -142,16 +142,21 @@
         watch,
         ref
     } from 'vue'
+    import { message } from "ant-design-vue";
+    
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
-    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
-    import StatusBadge from '@common/badge/status/index.vue'
+    
     import { Classification } from '~/api/atlas/classification'
     import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
-    import { message } from "ant-design-vue";
+    import { Insights } from '~/services/atlas/api/insights'
 
     export default defineComponent({
         components: { QueryItemPopover, StatusBadge },
@@ -177,6 +182,7 @@
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const toggleCreateQueryModal = inject<(guid: string) => void>('toggleCreateQueryModal')
             const savedQueryType = inject('savedQueryType') as Ref<'all' | 'personal'>
+            const refetchParentNode = inject<(guid: string | 'root', type: 'query' | 'queryFolder') => void>('refetchParentNode', () => {})
             const editorInstance = toRaw(editorInstanceRef.value)
             const {
                 isPrimary,
@@ -222,7 +228,6 @@
                 }
             }
             const publishFolder = () => {
-                console.log(item)
                 const payload = ref([
                     {
                         entityGuid: props.item.guid as string,
@@ -243,12 +248,27 @@
                 watch([isLoading], () => {
                     if (isLoading.value == false && !error.value) {
                         message.success({
-                            content: `${item.attributes.name} was made public!`,
+                            content: `${item.value?.attributes?.name} was made public!`,
                         });
+                        refetchParentNode(props.item.guid, 'queryFolder')
                     } 
                 })
             }
+
+            const deleteFolder = () => {
+                const { data, error } = Insights.DeleteEntity(item.value.guid)
+
+                watch([data, error], ([newData, newError]) => {
+                    if(newData && !newError) {
+                        message.success({
+                            content: `${item.value?.attributes?.name} deleted!`,
+                        });
+                        refetchParentNode(props.item.guid, 'queryFolder')
+                    }
+                })
+            }
             return {
+                deleteFolder,
                 publishFolder,
                 newQuery,
                 savedQueryType,

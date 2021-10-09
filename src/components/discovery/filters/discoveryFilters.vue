@@ -8,16 +8,20 @@
             applied
         </div>
         <div class="flex items-center">
-            <div
-                v-if="totalAppliedFiltersCount"
-                class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
-                @click="resetAllFilters"
-            >
-                Save
+            <div v-if="totalAppliedFiltersCount">
+                <SaveFilterModal>
+                    <template #trigger>
+                        <div
+                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
+                        >
+                            Save
+                        </div>
+                    </template>
+                </SaveFilterModal>
             </div>
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -70,7 +74,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -156,6 +160,9 @@
             ),
             businessMetadata: defineAsyncComponent(
                 () => import('@common/facets/businessMetadata/index.vue')
+            ),
+            SaveFilterModal: defineAsyncComponent(
+                () => import('./savedFilters/saveFilterModal.vue')
             ),
         },
         props: {
@@ -434,6 +441,8 @@
                     }
                 }
             }
+
+            const saveFiltersApplied = () => {}
 
             function resetAllFilters() {
                 dataMap.value.connector = {

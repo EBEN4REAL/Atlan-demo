@@ -1,6 +1,28 @@
 <template>
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
+        <div v-if="page === '/'" class="flex justify-between w-full mx-4 mt-4">
+            <div class="flex">
+                <a-avatar
+                    :size="30"
+                    class="mr-2"
+                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                />
+
+                <div class="flex flex-col">
+                    <span class="capitalize">{{ name }}</span>
+                    <span class="text-gray-500">@{{ username }}</span>
+                </div>
+            </div>
+            <div class="mr-10">
+                <UserPersonalAvatar>
+                    <template #dropdownIcon>
+                        <atlan-icon icon="KebabMenu" class="cursor-pointer" />
+                    </template>
+                </UserPersonalAvatar>
+            </div>
+        </div>
+        <a-divider v-if="page === '/'" class="mt-5 mb-0" />
         <span class="px-4 mt-5 mb-2 text-xs font-bold text-gray-500">
             PURPOSE</span
         >
@@ -88,6 +110,7 @@
     import { defineComponent, ref, watch } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import UserPersonalAvatar from '~/components/common/avatar/me.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'HomeSidePanel',
@@ -100,6 +123,7 @@
             const purpose = ref('Universe 1')
             const keys = useMagicKeys()
             const esc = keys.Escape
+            const { username, name } = whoami()
             const navKeys = [
                 { path: 'assets', label: 'Discover' },
                 { path: 'glossary', label: 'Glossary' },
@@ -116,7 +140,7 @@
                     emit('closeNavbar')
                 }
             })
-            return { handleClick, navKeys, purpose }
+            return { handleClick, navKeys, purpose, username, name }
         },
     })
 </script>

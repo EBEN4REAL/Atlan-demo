@@ -1,18 +1,35 @@
 <template>
-    <div class="flex w-full h-full bg-red-500">
-        <div class="items-stretch">
-            <div class="grid p-5 bg-primary-light justify-items-center">
-                <div class="flex items-center w-3/4 mb-5">
-                    <div class="flex flex-col w-full pt-5">
-                        <a-input-search
-                            class="p2"
-                            placeholder="Search assets across Atlan..."
-                            size="large"
-                        >
-                        </a-input-search>
+    <div class="flex flex-col items-center w-full h-full bg-white border-l">
+        <img
+            src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+            class="w-auto h-5 mt-8 mb-2"
+        />
+
+        <SearchAndFilter
+            placeholder="Search accross atlan..."
+            class="w-1/2 mt-2"
+        />
+        <div class="flex justify-end w-1/2">
+            <span
+                class="flex items-center self-end mt-2 font-bold cursor-pointer  text-primary"
+                @click="redirectToDiscover"
+                >Discover
+                <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
+            </span>
+        </div>
+        <div class="flex flex-col w-full ml-16">
+            <template v-for="item in [1, 2]" :key="item">
+                <div class="w-40 h-10 my-4 bg-gray-300"></div>
+                <div class="flex items-center space-x-20">
+                    <div
+                        v-for="item in [1, 2, 3]"
+                        :key="item"
+                        class="flex items-center justify-center h-32 my-4 bg-gray-300  w-72"
+                    >
+                        Placeholder
                     </div>
                 </div>
-            </div>
+            </template>
         </div>
     </div>
 </template>
@@ -24,11 +41,13 @@
 
     import { useHead } from '@vueuse/head'
 
+    import { useRouter } from 'vue-router'
     import { useUser } from '~/composables/user/useUsers'
 
     import Avatar from '~/components/common/avatar.vue'
 
     import Sidebar from '~/components/home/sidebar/index.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
@@ -42,6 +61,7 @@
             Avatar,
             UpdateSkills,
             UpdateDesignation,
+            SearchAndFilter,
         },
         props: {
             msg: {
@@ -52,6 +72,7 @@
         setup() {
             const keycloak = inject('$keycloak')
             const tenantStore = useTenantStore()
+            const router = useRouter()
 
             const username = keycloak.tokenParsed.preferred_username || ''
 
@@ -66,6 +87,10 @@
                     lastName.substr(1).toLowerCase()
                 }`
             })
+
+            const redirectToDiscover = () => {
+                router.push('/assets')
+            }
             useHead({
                 title: `Welcome - ${fullName.value} `,
             })
@@ -146,6 +171,7 @@
                 handleUpdateUser,
                 views,
                 dummyProjects,
+                redirectToDiscover,
             }
         },
     })

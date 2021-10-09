@@ -28,13 +28,25 @@
         >
         <!-- pages -->
         <button
+            class="menu-item"
+            :class="{ active: page === '/' }"
+            @click="handleClick('home')"
+        >
+            <span class="flex items-center">
+                <atlan-icon icon="Trash" class="h-4 mr-3 text-primary" />
+                Home
+            </span>
+        </button>
+
+        <button
             v-for="nav in navKeys"
             :key="nav.label"
             class="menu-item"
             :class="{ active: nav.path === page }"
             @click="handleClick(nav.path)"
         >
-            <span>
+            <span class="flex items-center">
+                <atlan-icon icon="Link" class="h-4 mr-3 text-primary" />
                 {{ nav.label }}
             </span>
         </button>
@@ -45,14 +57,20 @@
                 :class="{ active: 'admin' === page }"
                 @click="handleClick('admin')"
             >
-                Admin Center
+                <span class="flex items-center">
+                    <atlan-icon icon="Link" class="h-4 mr-3 text-primary" />
+                    Admin Center
+                </span>
             </button>
             <button
                 v-for="item in ['Notifications', 'Help', 'Feedback']"
                 :key="item"
                 class="mr-2 menu-item"
             >
-                {{ item }}
+                <span class="flex items-center">
+                    <atlan-icon icon="Link" class="h-4 mr-3 text-primary" />
+                    {{ item }}
+                </span>
             </button>
         </div>
         <span class="flex items-center px-4 mt-2 mb-4 text-sm text-gray-500"
@@ -67,7 +85,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
+    import { useMagicKeys } from '@vueuse/core'
     import UserPersonalAvatar from '~/components/common/avatar/me.vue'
 
     export default defineComponent({
@@ -76,9 +95,11 @@
         props: {
             page: { type: String, required: true },
         },
-        emits: ['change'],
+        emits: ['change', 'closeNavbar'],
         setup(props, { emit }) {
             const purpose = ref('Universe 1')
+            const keys = useMagicKeys()
+            const esc = keys.Escape
             const navKeys = [
                 { path: 'assets', label: 'Discover' },
                 { path: 'glossary', label: 'Glossary' },
@@ -89,7 +110,12 @@
             function handleClick(key: string) {
                 emit('change', key)
             }
-
+            watch(esc, (v) => {
+                if (v) {
+                    console.log('close')
+                    emit('closeNavbar')
+                }
+            })
             return { handleClick, navKeys, purpose }
         },
     })

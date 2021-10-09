@@ -15,7 +15,7 @@
                 icon="ChevronRight"
                 class="h-4 mx-3"
             />
-            <span class="mt-0.5 text-xs font-bold text-gray-500 tracking-wider">
+            <span class="mt-1 text-xs font-bold tracking-wider text-gray-500">
                 {{ navKeys[page]?.toUpperCase() }}</span
             >
         </div>

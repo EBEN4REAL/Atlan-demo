@@ -2,12 +2,6 @@
     <div  v-if="mode !== 'threeDotMenu'" :class="$style.categories">
         <p v-if="mode === 'edit'" class="mb-1 text-sm text-gray-500">Categories</p>
         <div class="flex flex-wrap items-center" >
-
-            <a-popover
-                v-model:visible="showAddCategoriesTree"
-                :placement="mode === 'create' ? 'bottom' : 'left'"
-                trigger=""
-            >
                 <div v-if="mode === 'edit' && existingCategories.length < 1">
                     <div @click.stop="toggleCategoriesTree">
                         <div
@@ -40,34 +34,41 @@
                         {{ existingCategories.length > 0 ? existingCategories.length : '' }} {{ existingCategories.length === 1 ? 'Category' : 'Categories'}}
                     </span>
                 </a-button>
-                <template #content :class="$style.popover">
-                    <div class="flex flex-col overflow-y-auto w-64" :class="$style.treeSelect">
-                        <a-tree-select
-                            v-model:value="selectedCategories"
-                            tree-data-simple-mode
-                            tree-checkable
-                            placeholder="Search categories"
-                            :tree-data="treeData"
-                            :treeCheckStrictly="true"
-                            :maxTagCount="2"
-                            :dropdown-style="{ overflow: 'auto', maxHeight: '256px', maxWidth: '220px', position: 'relative', boxShadow: 'none' }"
-                            :getPopupContainer="getPopupContainer"
-                            size="small"
-                        />
-                        <div class="">
-                            <div id="renderDropdown" class="mt-4 max-h-64 z-10"></div>
-
-                            <div class="z-30 space-x-4 mt-4 absolute flex justify-around mx-auto">
-                                <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
-                                <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
-                            </div>
-
-                        </div>
-                    </div>
-                </template>
-            </a-popover>            
+         
         </div>
     </div>
+    <a-popover
+        v-model:visible="showAddCategoriesTree"
+        :placement="mode === 'create' ? 'bottom' : 'left'"  
+        trigger="click"              
+    >
+            <template #content :class="$style.popover" >
+            <div class="flex flex-col overflow-y-auto w-64" :class="$style.treeSelect">
+                <a-tree-select
+                    v-model:value="selectedCategories"
+                    tree-data-simple-mode
+                    tree-checkable
+                    placeholder="Search categories"
+                    :tree-data="treeData"
+                    :treeCheckStrictly="true"
+                    :maxTagCount="2"
+                    :dropdown-style="{ overflow: 'auto', maxHeight: '256px', maxWidth: '220px', position: 'relative', boxShadow: 'none' }"
+                    :getPopupContainer="getPopupContainer"
+                    size="small"
+                />
+                <div class="">
+                    <div id="renderDropdown" class="mt-4 max-h-64 z-10"></div>
+
+                    <div class="z-30 space-x-4 mt-4 absolute flex justify-around mx-auto">
+                        <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
+                        <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
+                    </div>
+
+                </div>
+            </div>
+        </template>
+    </a-popover>   
+
     <div v-if="mode === 'threeDotMenu'" :class="$style.popover">
         <div class="flex flex-col overflow-y-auto w-64" :class="$style.treeSelect">
             <a-tree-select
@@ -168,11 +169,7 @@ export default defineComponent({
         const reorderTreeNodes = inject<(guid: string, fromGuid?: string, toGuid?: string, categories?: {categoryGuid: string}[]) => void>('reorderTreeNodes')
 
         const toggleCategoriesTree = () => {
-            if(!showAddCategoriesTree.value) {
-                showAddCategoriesTree.value = true
-            } else {
-                showAddCategoriesTree.value = false
-            }
+            showAddCategoriesTree.value = !showAddCategoriesTree.value
         }
         const {
             categories,
@@ -310,7 +307,7 @@ export default defineComponent({
            cancelCategoriesUpdate,
            handleUpdate,
            isUpdateButtonLoading,
-           TreeSelect
+           TreeSelect,
         }
     },
 })

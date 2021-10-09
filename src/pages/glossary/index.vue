@@ -1,76 +1,31 @@
 <template>
-    <div class="flex items-center w-full pl-12 mb-5">
-        <div class="grid h-full grid-cols-12 p-6 gap-x-12">
-            <div class="col-span-12 mt-10 sm:col-span-8">
-                <div class="relative text-white">
-                    <h3 class="text-xl font-bold text-gray">
-                        Recently accessed terms
-                    </h3>
-
-                    <div class="grid grid-cols-12">
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recently accessed terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recently accessed terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 mt-10 sm:col-span-8">
-                <div class="relative text-white">
-                    <h3 class="text-xl font-bold text-gray">
-                        Recommended terms
-                    </h3>
-
-                    <div class="grid grid-cols-12">
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recommended terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-
-                        <div class="col-span-4 p-5 mr-5 border rounded-md">
-                            <p class="font-bold text-gray">
-                                Sample recommended terms
-                            </p>
-                            <p class="text-gray-500">
-                                set of all Tableau sales dashboards, reports and
-                                data sources from 2020
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="flex flex-col items-center w-full pt-5 mb-5">
+        <span class="text-base">Business Glossary</span>
+        <SearchWidget />
+        <PopularTerms />
+        <PopularGlossaries />
+        <RecentlyViewed class="mt-12" />
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, ref } from 'vue'
+    // components
+    import SearchWidget from '@/glossary/home/searchWidget.vue'
+    import PopularTerms from '@/glossary/home/popularTerms.vue'
+    import PopularGlossaries from '@/glossary/home/popularGlossaries.vue'
+    import RecentlyViewed from '@/glossary/home/recentlyViewedGtc.vue'
+    // composables
 
     export default defineComponent({
+        components: {
+            SearchWidget,
+            PopularTerms,
+            PopularGlossaries,
+            RecentlyViewed,
+        },
         setup() {},
     })
 </script>
-
 <route lang="yaml">
 meta:
     layout: default

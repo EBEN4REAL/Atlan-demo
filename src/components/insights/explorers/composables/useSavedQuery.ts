@@ -320,7 +320,7 @@ export function useSavedQuery(
             }
         })
     }
-    const saveQueryToDatabaseAndOpenInNewTab =  (
+    const saveQueryToDatabaseAndOpenInNewTab = (
         saveQueryData: any,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
@@ -498,7 +498,6 @@ export function useSavedQuery(
         const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
-        
 
         const body = ref<Record<string, any>>({
             entity: {
@@ -561,7 +560,7 @@ export function useSavedQuery(
             }
         })
 
-        return { data, error, isLoading } 
+        return { data, error, isLoading }
     }
 
     return {
@@ -569,6 +568,6 @@ export function useSavedQuery(
         saveQueryToDatabase,
         updateSavedQuery,
         openSavedQueryInNewTab,
-        createFolder
+        createFolder,
     }
 }

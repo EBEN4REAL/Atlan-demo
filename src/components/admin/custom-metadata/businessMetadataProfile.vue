@@ -10,8 +10,16 @@
     /> -->
         <div class="flex items-center justify-between px-4 py-3 border-b">
             <div>
-                <div class="text-2xl text-primary">
-                    {{ localBm.options && localBm.options.displayName }}
+                <div class="flex items-center gap-2">
+                    <img
+                        v-if="localBm?.options?.image"
+                        :src="localBm.options.image"
+                        alt=""
+                        class="w-auto h-7"
+                    />
+                    <div class="text-2xl text-primary">
+                        {{ localBm.options && localBm.options.displayName }}
+                    </div>
                 </div>
                 <div>
                     <CreateUpdateInfo
@@ -46,7 +54,15 @@
                         ></fa>
                     </span>
                 </a-popover>
-
+                <span
+                    v-if="localBm.guid !== 'new'"
+                    class="mr-5 cursor-pointer hover-underline"
+                    @click.prevent.stop="copyAPI(localBm.name)"
+                >
+                    <span class="">
+                        <AtlanIcon icon="CopyOutlined" />
+                    </span>
+                </span>
                 <a-button
                     v-if="isUpdated"
                     class="mr-2 rounded-md ant-btn"
@@ -119,6 +135,31 @@
                         @input="onUpdate"
                     ></textarea>
                 </div>
+                <div class="mt-4">
+                    <label for="description" class="block mb-1"
+                        >Metadata Image</label
+                    >
+                    <div class="flex gap-3">
+                        <span v-if="localBm.options.imageDetails">{{
+                            JSON.parse(localBm.options.imageDetails).fileName
+                        }}</span>
+                        <span
+                            v-if="localBm.options.imageDetails"
+                            class="text-red-600 cursor-pointer"
+                            @click="handleRemoveImage"
+                            >Remove
+                        </span>
+                        <a-upload
+                            name="image"
+                            accept="image/*"
+                            :multiple="false"
+                            :custom-request="handleUploadImage"
+                            :show-upload-list="false"
+                        >
+                            <span class="text-primary">Upload</span>
+                        </a-upload>
+                    </div>
+                </div>
             </div>
             <label class="block mb-2"
                 >Attributes ({{ localBm.attributeDefs.length }})</label
@@ -182,6 +223,15 @@
                         >
                             Remove
                         </span>
+                        <span
+                            v-else
+                            class="cursor-pointer hover-underline"
+                            @click.prevent.stop="copyAPI(attribute.name)"
+                        >
+                            <span class="">
+                                <AtlanIcon icon="CopyOutlined" />
+                            </span>
+                        </span>
                     </template>
                     <AddAttributeCard
                         :ref="`attribute-${index}`"
@@ -203,16 +253,16 @@
     import { defineComponent, ref, computed, onMounted, watch, Ref } from 'vue'
 
     // ? Components
+    import { message } from 'ant-design-vue'
     import AddAttributeCard from '@/admin/custom-metadata/addAttributeCard.vue'
     import CreateUpdateInfo from '@/common/createUpdateInfo.vue'
-    import ArchiveMetadataModal from '@/admin/custom-metadata/archiveMetadataModal.vue'
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
 
     // ? Store
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
 
-    // ? composables
+    import { copyToClipboard } from '~/utils/clipboard'
 
     interface attributeDefs {
         name: string
@@ -223,7 +273,6 @@
         components: {
             AddAttributeCard,
             CreateUpdateInfo,
-            ArchiveMetadataModal,
         },
         props: {
             selectedBm: {
@@ -231,6 +280,13 @@
                 required: true,
             },
         },
+        emits: [
+            'update',
+            'removeNewBm',
+            'clearUpdatedBm',
+            'clearNewBm',
+            'selectBm',
+        ],
         setup(props, context) {
             const store = useBusinessMetadataStore()
             // * Data
@@ -254,6 +310,13 @@
                 getUpdatePayload,
                 validatePayload,
             } = useBusinessMetadata()
+
+            const copyAPI = (text: string) => {
+                copyToClipboard(text)
+                message.success({
+                    content: 'GUID Copied!',
+                })
+            }
 
             const clearSearchText = () => {
                 attrsearchText.value = ''
@@ -302,40 +365,13 @@
             }
 
             /**
-             * @desc action for @save event, validates the data and/or makes the api call,
-             *       Also updates the BM Store with the updated data
-             */
-            const handleAddBusinessMetadata = async () => {
-                error.value = null
-                const validatedBm = validatePayload(localBm.value)
-
-                if (validatedBm.error) {
-                    error.value = validatedBm.error
-                    return
-                }
-                loading.value = true
-                const apiResponse = ref()
-                if (validatedBm.data?.guid === 'new')
-                    apiResponse.value =
-                        BusinessMetadataService.addNewBusinessMetadata(
-                            getUpdatePayload(validatedBm.data)
-                        )
-                else
-                    apiResponse.value =
-                        BusinessMetadataService.updateNewBusinessMetadata(
-                            getUpdatePayload(validatedBm.data)
-                        )
-
-                handleUpdateBMResponse(apiResponse)
-            }
-            /**
              * @param {Object} apiResponse - object return from update api call
              * @desc - handles success and error for update
              */
             const handleUpdateBMResponse = (apiResponse: Ref) => {
                 watch(
                     () => apiResponse.value.data,
-                    (n, o) => {
+                    () => {
                         if (
                             apiResponse.value?.data?.businessMetadataDefs.length
                         ) {
@@ -367,6 +403,34 @@
                         }
                     }
                 )
+            }
+
+            /**
+             * @desc action for @save event, validates the data and/or makes the api call,
+             *       Also updates the BM Store with the updated data
+             */
+            const handleAddBusinessMetadata = async () => {
+                error.value = null
+                const validatedBm = validatePayload(localBm.value)
+
+                if (validatedBm.error) {
+                    error.value = validatedBm.error
+                    return
+                }
+                loading.value = true
+                const apiResponse = ref()
+                if (validatedBm.data?.guid === 'new')
+                    apiResponse.value =
+                        BusinessMetadataService.addNewBusinessMetadata(
+                            getUpdatePayload(validatedBm.data)
+                        )
+                else
+                    apiResponse.value =
+                        BusinessMetadataService.updateNewBusinessMetadata(
+                            getUpdatePayload(validatedBm.data)
+                        )
+
+                handleUpdateBMResponse(apiResponse)
             }
 
             const handleAddNewAttribute = () => {
@@ -456,7 +520,57 @@
                     }
                 }
             })
+
+            const imageFile = ref()
+
+            const handleUploadImage = (image) => {
+                imageFile.value = image.file
+                const reader = new FileReader()
+
+                reader.addEventListener(
+                    'load',
+                    () => {
+                        // convert image file to base64 string
+                        const img = new Image()
+                        img.src = reader.result
+
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas')
+                            canvas.width = 200
+                            canvas.height = 200
+                            const ctx = canvas.getContext('2d')
+                            ctx.drawImage(img, 0, 0, 200, 200)
+                            localBm.value.options.image = canvas.toDataURL(
+                                imageFile.value.type
+                            )
+                            localBm.value.options.imageDetails = JSON.stringify(
+                                {
+                                    ...(localBm.value?.options?.imageDetails ||
+                                        {}),
+                                    uploadAt: Date.now().toString(),
+                                    fileName: imageFile.value.name,
+                                }
+                            )
+                        }
+                    },
+                    false
+                )
+                reader.readAsDataURL(imageFile.value)
+                onUpdate()
+                return true
+            }
+
+            const handleRemoveImage = () => {
+                imageFile.value = null
+                localBm.value.options.image = null
+                localBm.value.options.imageDetails = null
+                onUpdate()
+            }
+
             return {
+                handleUploadImage,
+                handleRemoveImage,
+                imageFile,
                 attrsearchText,
                 clearSearchText,
                 dropdownOptions,
@@ -471,6 +585,7 @@
                 onAttributeValuesChange,
                 onUpdate,
                 panelModel,
+                copyAPI,
                 searchedAttributes,
                 showArchiveMetadataModal,
             }

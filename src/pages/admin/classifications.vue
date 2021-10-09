@@ -18,29 +18,32 @@
             <SearchAndFilter
                 placeholder="Search classifications"
                 v-model:value="treeFilterText"
-                class="mt-6 mb-4 bg-white"
+                @change="handleSearch"
+                :autofocus="true"
+                class="mx-4 mt-6 mb-4 bg-white"
             />
-            <div class="overflow-y-auto treelist">
-                <!-- <CreateClassificationTree
-                    :treeData="treeFilterText !== '' ? filteredData : treeData"
-                    @nodeEmit="nodeEmit"
-                /> -->
-                <div
-                    v-for="item in treeFilterText !== ''
-                        ? filteredData
-                        : treeData"
-                    :key="item.guid"
-                    class="flex px-4 py-2 mb-1 rounded cursor-pointer tree-item"
-                    :class="
-                        selectedClassificationNameFromRoute === item.name
-                            ? 'tree-item-active'
-                            : ''
-                    "
-                    @click="() => nodeEmit(item)"
-                >
-                    <span class="truncate ...">{{ item.title }}</span>
-                </div>
-            </div>
+            <ExplorerList
+                :list="filteredData"
+                :selected="selectedClassificationNameFromRoute"
+                @select="nodeEmit"
+                dataKey="name"
+            >
+                <template #default="{ item, isSelected }">
+                    <div class="flex items-center gap-x-1">
+                        <AtlanIcon icon="Shield" class="text-pink-400" />
+                        <span
+                            class="text-sm truncate"
+                            :class="
+                                isSelected
+                                    ? 'text-primary font-bold'
+                                    : 'text-gray'
+                            "
+                        >
+                            {{ item.title }}
+                        </span>
+                    </div>
+                </template>
+            </ExplorerList>
         </template>
 
         <router-view />
@@ -113,6 +116,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
         name: 'ClassificationProfile',
@@ -121,7 +125,7 @@
                 type: String as PropType<String>,
             },
         },
-        components: { AtlanBtn, ExplorerLayout, SearchAndFilter },
+        components: { AtlanBtn, ExplorerLayout, SearchAndFilter, ExplorerList },
         setup(props) {
             const store = useClassificationStore()
             const router = useRouter()
@@ -137,20 +141,20 @@
             }
             const treeData = computed(() => store.classificationTree)
 
-            store.setSelectedClassification(
-                router?.currentRoute.value?.params?.classificationId as string
-            )
             const selectedClassificationNameFromRoute = computed(
                 () => store.selectedClassification
             )
+
             console.log(
                 router?.currentRoute.value?.params?.classificationId,
                 'route',
                 router
             )
 
-            const filteredData = computed(
-                () => store.filteredClassificationTree
+            const filteredData = computed(() =>
+                treeFilterText.value
+                    ? store.filteredClassificationTree
+                    : treeData.value
             )
 
             // get classifications
@@ -168,34 +172,46 @@
                     store.initializeFilterTree()
                     store.setClassificationsStatus('success')
                     if (store.classificationTree.length > 0) {
-                        router.push(
-                            `/admin/classifications/${encodeURIComponent(
+                        if (
+                            router?.currentRoute.value?.params?.classificationId
+                        ) {
+                            store.setSelectedClassification(
+                                router?.currentRoute.value?.params
+                                    ?.classificationId as string
+                            )
+                        } else {
+                            router.push(
+                                `/admin/classifications/${encodeURIComponent(
+                                    store.classificationTree[0].name
+                                )}`
+                            )
+                            store.setSelectedClassification(
                                 store.classificationTree[0].name
-                            )}`
-                        )
-                        //                        //                        console.log(router, 'router1')
+                            )
+                        }
                     }
                 } else {
                     store.setClassificationsStatus('error')
                 }
             })
 
-            const nodeEmit = (node: classificationInterface) => {
+            function nodeEmit(node: classificationInterface) {
                 router.push(
                     `/admin/classifications/${encodeURIComponent(node.name)}`
                 )
                 store.setSelectedClassification(node.name)
-
-                //                //                console.log(node.name)
             }
+
             const formState: UnwrapRef<FormState> = reactive({
                 name: '',
                 description: '',
             })
+
             const urlValidationRegex = new RegExp(
                 '^[a-zA-Z][a-zA-Z0-9\s_]*',
                 'g'
             )
+
             const rules = {
                 name: [
                     {
@@ -210,8 +226,7 @@
                 ],
             }
 
-            const handleSearch = (e: Event) => {
-                treeFilterText.value = (<HTMLInputElement>e.target).value
+            const handleSearch = () => {
                 store.filterClassificationTree(treeFilterText.value)
             }
 
@@ -378,17 +393,6 @@
     })
 </script>
 <style lang="less" scoped>
-    .treelist {
-        height: calc(100vh - 14rem);
-    }
-    .tree-item:hover {
-        background-color: #e9eefa;
-        color: #2251cc;
-    }
-    .tree-item-active {
-        background-color: #e9eefa;
-        color: #2251cc;
-    }
     :global(.ant-form-item-label
             > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
         @apply hidden;

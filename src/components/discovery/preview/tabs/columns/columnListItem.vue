@@ -1,5 +1,5 @@
 <template>
-    <div class="flex px-3 py-2 -mx-3 -my-2 rounded group">
+    <div class="flex px-3 py-2 -mx-3 -my-1 rounded group">
         <div class="flex-grow overflow-hidden">
             <ColumnInfoCard :column-asset="asset">
                 <div class="flex items-center mb-1">

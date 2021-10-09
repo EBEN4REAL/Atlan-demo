@@ -178,7 +178,7 @@
             parentFolderQF: {
                 type: String,
                 required: true,
-                default: 'query'
+                default: 'query',
             },
             connector: {
                 type: String as PropType<string | undefined>,

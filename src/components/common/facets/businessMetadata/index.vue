@@ -66,7 +66,7 @@
     import { Collapse } from '~/types'
     import AttributeItem from '../common/attributeItems.vue'
     import { Components } from '~/api/atlas/client'
-    import { operatorsMap as map } from '~/constant/business_metadata'
+    import { operatorsMap as map } from '~/constant/business_metadata_template'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({

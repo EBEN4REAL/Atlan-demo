@@ -147,11 +147,10 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
-    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'BusinessMetadataListItem',
-        components: { AtlanButton },
+        components: {},
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -171,6 +170,7 @@
                 isLink,
             } = useBusinessMetadataHelper()
 
+            // eslint-disable-next-line no-unused-vars
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset', () => {})
 
@@ -267,6 +267,7 @@
                     const newAttributes = {}
                     Object.keys(payload.value).forEach((p) => {
                         Object.entries(payload.value[p]).forEach((e) => {
+                            // eslint-disable-next-line prefer-destructuring
                             newAttributes[`${p}.${e[0]}`] = e[1]
                         })
                     })
@@ -333,7 +334,7 @@
 
             watch(
                 () => props.selectedAsset.guid,
-                (val) => {
+                () => {
                     applicableList.value = getApplicableAttributes(
                         props.item.id,
                         props.selectedAsset.typeName
@@ -367,8 +368,4 @@
     })
 </script>
 
-<style>
-    .ant-calendar-picker-input {
-        /* width: 170px; */
-    }
-</style>
+<style></style>

@@ -69,12 +69,8 @@
             isLoaded: {
                 type: Boolean,
             },
-            page: {
-                type: String,
-                required: false,
-            },
         },
-        setup(props) {
+        setup() {
             const activeKey = ref()
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()

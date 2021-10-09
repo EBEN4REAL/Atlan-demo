@@ -77,13 +77,13 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         if (lastIndex >= 0) {
             activeInlineTabKey.value = tabsArray.value[lastIndex].key
             if (tabsArray.value[lastIndex].queryId)
-                pushGuidToURL(tabsArray.value[lastIndex].key)
+                pushGuidToURL(tabsArray.value[lastIndex].queryId)
             else pushGuidToURL()
         } else {
             if (tabsArray.value.length > 0) {
                 activeInlineTabKey.value = tabsArray.value[0].key
                 if (tabsArray.value[lastIndex].queryId)
-                    pushGuidToURL(tabsArray.value[0].key)
+                    pushGuidToURL(tabsArray.value[0].queryId)
                 else pushGuidToURL()
             } else {
                 activeInlineTabKey.value = undefined
@@ -116,6 +116,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
+        console.log(index, activeTab, 'dds')
         if (index !== -1) {
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab
@@ -160,6 +161,17 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     ) => {
         activeInlineTabKey.value = selectedKey
     }
+    const overwriteInlineTab = (
+        activeTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
+        const index = tabsArray.value.findIndex(
+            (tab) => tab.key === activeTab.key
+        )
+        tabsArray.value[index] = activeTab
+        // syncying inline tabarray in localstorage
+        syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
+    }
 
     const inlineTabAdd = (
         inlineTab: activeInlineTabInterface,
@@ -184,6 +196,20 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         }
         return false
     }
+    const changeInlineTabeKey = (
+        currKey: string,
+        newKey: string,
+        activeTab: activeInlineTabInterface,
+        activeInlineTabKey: Ref<activeInlineTabKey>
+    ) => {
+        const index = tabsArray.value.findIndex((tab) => tab.key === currKey)
+        tabsArray.value[index] = activeTab
+        tabsArray.value[index].key = newKey
+        activeInlineTabKey.value = newKey
+        // syncying inline tabarray in localstorage
+        debugger
+        syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
+    }
 
     const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
     const activeInlineTabKey = ref(setActiveInlineTabKey())
@@ -202,5 +228,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         modifyActiveInlineTab,
         modifyActiveInlineTabEditor,
         setActiveTabKey,
+        overwriteInlineTab,
+        changeInlineTabeKey,
     }
 }

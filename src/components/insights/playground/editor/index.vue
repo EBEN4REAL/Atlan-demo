@@ -3,7 +3,7 @@
         <div class="w-full h-full px-3 overflow-x-hidden rounded">
             <div class="flex items-center justify-between w-full my-2">
                 <div class="flex items-center text-base">
-                    <span class="mr-1">{{ activeInlineTab.label }}</span>
+                    <span class="mr-1">{{ activeInlineTab?.label }}</span>
                     <div class="-mt-0.5">
                         <StatusBadge
                             :status-id="activeInlineTab.status"
@@ -136,20 +136,33 @@
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
                             "
-                            class="
-                                opacity-70
-                                flex
-                                px-2
-                                items-center
-                                justify-between
-                                ml-2
-                                h-6
-                                py-0.5
-                            "
                         >
-                            <AtlanIcon class="mr-1 text-primary" icon="Check" />
+                            <a-tooltip
+                                class="
+                                    opacity-70
+                                    flex
+                                    px-2
+                                    items-center
+                                    justify-between
+                                    cursor-pointer
+                                    ml-2
+                                    h-6
+                                    py-0.5
+                                "
+                            >
+                                <template #title
+                                    >{{
+                                        useTimeAgo(activeInlineTab?.updateTime)
+                                    }}
+                                    by {{ activeInlineTab.updatedBy }}</template
+                                >
+                                <AtlanIcon
+                                    class="mr-1 text-primary"
+                                    icon="Check"
+                                />
 
-                            Saved
+                                Saved
+                            </a-tooltip>
                         </div>
                         <a-button
                             v-else
@@ -246,6 +259,7 @@
         useProvide,
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
+    import { useTimeAgo } from '@vueuse/core'
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
@@ -382,6 +396,7 @@
                 console.log(pos)
             })
             return {
+                useTimeAgo,
                 editorFocused,
                 editorPos,
                 limitRows,

@@ -228,7 +228,7 @@
 
             const newQuery = () => {
                 if(toggleCreateQueryModal) {
-                    toggleCreateQueryModal(props.item.guid)
+                    toggleCreateQueryModal(props.item.guid, props.item.qualifiedName)
                 }
             }
             const publishFolder = () => {

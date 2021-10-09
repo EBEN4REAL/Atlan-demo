@@ -244,10 +244,13 @@ export default defineComponent({
                 'queries'
             )
         }
-        const toggleCreateQueryModal = (guid?: string) => {
+        const toggleCreateQueryModal = (guid?: string, qualifiedName?: string) => {
             showSaveQueryModal.value = !showSaveQueryModal.value
             if (guid) {
                 getRelevantTreeData().parentGuid.value = guid
+            }
+            if(qualifiedName) {
+                getRelevantTreeData().parentQualifiedName.value = qualifiedName
             }
         }
 

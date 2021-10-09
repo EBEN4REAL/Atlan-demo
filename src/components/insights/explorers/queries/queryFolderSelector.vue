@@ -1,6 +1,7 @@
 <template>
     <a-tree-select
         tree-data-simple-mode
+        :show-search="true"
         placeholder="Select folder"
         v-model:value="selectedFolder"
         :tree-data="treeData"
@@ -8,7 +9,8 @@
         :dropdown-style="{ overflow: 'auto', maxHeight: '256px', maxWidth: '220px', position: 'relative', boxShadow: 'none' }"
         size="small"
         @select="onSelect"
-    />
+    >
+    </a-tree-select>
 </template>
 
 <script lang="ts">
@@ -49,6 +51,12 @@ export default defineComponent({
         pId: 0,
         value: 'root',
         title: 'Root Level',
+        item: {
+            attributes: {
+                qualifiedName: 'root'
+            },
+            guid: 'root'
+        }
     }]);
     const selectedFolder = ref('root')
 
@@ -79,8 +87,14 @@ export default defineComponent({
             pId: 0,
             value: 'root',
             title: 'Root Level',
+            item: {
+                attributes: {
+                    qualifiedName: 'root'
+                },
+                guid: 'root'
+            }
         }]
-        newAllFolders.map((folder) => {
+        newAllFolders.forEach((folder) => {
             treeData.value.push({
                 id: folder.attributes.qualifiedName ?? '',
                 pId: folder.attributes.parentFolderQualifiedName ?? 0,

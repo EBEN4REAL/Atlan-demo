@@ -32,7 +32,7 @@
                     <div v-if="!searchQuery?.length"  class="flex items-center">
                         <div class="">
                             <AtlanIcon
-                                @click="toggleCreateQueryModal"
+                                @click="() => toggleCreateQueryModal()"
                                 icon="NewQuery"
                                 class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary"
                             />
@@ -216,6 +216,7 @@
                 if(guid) {
                     getRelevantTreeData().parentGuid.value = guid
                 }
+                console.log(getRelevantTreeData().parentGuid.value, guid, 'bruh')
             }
 
             const newFolderName = ref('')

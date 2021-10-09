@@ -8,7 +8,7 @@ import {
 } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
-import { KeyMaps } from '~/services/atlas/atlas_keyMpas'
+import { KeyMaps } from '~/services/atlas/atlas_keyMaps'
 import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
 

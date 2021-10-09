@@ -38,7 +38,7 @@
 
                     <!------------------------------->
                     <!--SAVED QUERY NODE -->
-                    <a-popover placement="rightTop" v-else>
+                    <a-popover v-else-if="item.typeName === 'Query'" placement="rightTop">
                         <template #content>
                             <div>
                                 <QueryItemPopover :item="item" />
@@ -124,6 +124,10 @@
                         </div>
                     </a-popover>
                     <!------------------------------->
+                    <!--Empty NODE -->
+                    <div v-else-if="item.typeName === 'Empty'" class="text-sm text-gray-500 font-bold" >
+                        {{ item.title }}
+                    </div>
                 </div>
             </div>
         </div>

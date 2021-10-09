@@ -128,18 +128,12 @@
 
 <script lang="ts">
 import { defineComponent, Ref, ref, watch, inject, computed } from 'vue'
-import useBulkSelect from '~/composables/asset/useBulkSelect'
+import useBulkSelect, { LocalState } from '~/composables/asset/useBulkSelect'
 import { Components } from '~/api/atlas/client'
 import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
 import PillGroup from '~/components/UI/pill/pillGroup.vue'
 import LinkClassificationsDropdown from '@/common/dropdown/linkClassificationsDropdown.vue'
 import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
-
-interface LocalState {
-    all: Components.Schemas.AtlasClassification[]
-    partial: Components.Schemas.AtlasClassification[]
-    removed: Components.Schemas.AtlasClassification[]
-}
 
 export default defineComponent({
     name: 'UpdateBulkClassifications',
@@ -175,6 +169,7 @@ export default defineComponent({
         const originalClassificationsRef = inject('originalClassificationsRef')
         const selectedAssets = inject('selectedAssets')
         const classificationFrequencyMap = inject('classificationFrequencyMap')
+        const publishedChangeLogRef = inject('publishedChangeLogRef')
         const showLinkClassificationPopover = ref(false)
         const linkClassificationDropdownRef = ref()
 
@@ -183,7 +178,8 @@ export default defineComponent({
             () => {
                 resetClassifications(
                     originalClassificationsRef,
-                    classificationsRef
+                    classificationsRef,
+                    publishedChangeLogRef
                 )
                 localState.value = initialiseLocalState(
                     selectedAssets,
@@ -224,7 +220,8 @@ export default defineComponent({
             updateClassifications(
                 classificationsRef,
                 localState,
-                originalClassificationsRef
+                originalClassificationsRef,
+                publishedChangeLogRef
             )
         }
         const toggleLinkClassificationPopover = () => {
@@ -261,7 +258,11 @@ export default defineComponent({
             return []
         })
         const handleCancel = () => {
-            resetClassifications(originalClassificationsRef, classificationsRef)
+            resetClassifications(
+                originalClassificationsRef,
+                classificationsRef,
+                publishedChangeLogRef
+            )
             localState.value = initialiseLocalState(
                 selectedAssets,
                 classificationFrequencyMap

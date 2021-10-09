@@ -69,6 +69,8 @@ export default {
             updatedOwners,
             classifications: classificationsRef,
             originalClassifications: originalClassificationsRef,
+            publishedChangeLog: publishedChangeLogRef,
+            didClassificationsUpdate,
             classificationFrequencyMap,
             terms: termsRef,
             originalTerms: originalTermsRef,
@@ -86,6 +88,7 @@ export default {
         provide('classificationsRef', classificationsRef)
         provide('originalClassificationsRef', originalClassificationsRef)
         provide('classificationFrequencyMap', classificationFrequencyMap)
+        provide('publishedChangeLogRef', publishedChangeLogRef)
         provide('termsRef', termsRef)
         provide('originalTermsRef', originalTermsRef)
         provide('termFrequencyMap', termFrequencyMap)

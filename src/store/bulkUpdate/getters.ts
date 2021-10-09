@@ -1,4 +1,12 @@
 const getters = {
+    getChangedState(state) {
+        const changedState = { ...state.updateStatus }
+        if (state.updateStatus && Object.keys(state.updateStatus).length)
+            Object.keys(state.updateStatus).forEach((key) => {
+                if (!state.updateStatus[key].didChange) delete changedState[key]
+            })
+        return changedState
+    },
     getShowNotification(state) {
         return state.showNotification
     },
@@ -27,35 +35,30 @@ const getters = {
         return state.updateStatus.linkTerms.status
     },
     getFinalStatus(state) {
-        // TODO: there has to be a better way to do this
-        if (
-            state.getStatusOwnersStatus === 'loading' ||
-            state.getLinkClassificationsStatus === 'loading' ||
-            state.updateStatus.linkClassifications.status === 'loading'
-        )
-            return 'loading'
-        if (
-            state.getStatusOwnersStatus === 'error' ||
-            state.getLinkClassificationsStatus === 'error' ||
-            state.updateStatus.linkClassifications.status === 'error'
-        )
-            return 'error'
-        if (
-            state.getStatusOwnersStatus === 'success' &&
-            state.getLinkClassificationsStatus === 'success' &&
-            state.updateStatus.linkClassifications.status === 'success'
-        )
-            return 'success'
-        return ''
-    },
-    getChangedStatus(state) {
-        return state.updateStatus.updateStatusOwners.meta.changedStatus
-    },
-    getAddedOwners(state) {
-        return state.updateStatus.updateStatusOwners.meta.addedOwners
-    },
-    getRemovedOwners(state) {
-        return state.updateStatus.updateStatusOwners.meta.removedOwners
+        let calculatedStatus = ''
+        const changedState = { ...state.getChangedState }
+        if (changedState && Object.keys(changedState).length) {
+            Object.keys(changedState).forEach((key) => {
+                const statusObject = changedState[key]
+                if (!calculatedStatus) calculatedStatus = statusObject.status
+                else if (
+                    calculatedStatus === 'loading' ||
+                    statusObject.status === 'loading'
+                )
+                    calculatedStatus = 'loading'
+                else if (
+                    calculatedStatus === 'error' ||
+                    statusObject.status === 'error'
+                )
+                    calculatedStatus = 'error'
+                else if (
+                    calculatedStatus === 'success' &&
+                    statusObject.status === 'success'
+                )
+                    calculatedStatus = 'success'
+            })
+        }
+        return calculatedStatus
     },
     getStatusLabel(state) {
         if (state.getStatusOwnersStatus === 'loading')

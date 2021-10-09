@@ -7,6 +7,13 @@ import useBulkSelectOwners from '~/composables/asset/useBulkSelectOwners'
 import useBulkSelectClassifications from './useBulkSelectClassifications'
 import useBulkSelectTerms from './useBulkSelectTerms'
 import useBulkUpdateStore from '~/store/bulkUpdate'
+import { Components } from '~/api/atlas/client'
+
+export interface LocalState {
+    all: Components.Schemas.AtlasClassification[]
+    partial: Components.Schemas.AtlasClassification[]
+    removed: Components.Schemas.AtlasClassification[]
+}
 
 export default function useBulkSelect() {
     const selectedAssets: Ref<assetInterface[]> = ref([])
@@ -70,6 +77,8 @@ export default function useBulkSelect() {
         originalClassifications,
         updateClassifications,
         classificationFrequencyMap,
+        publishedChangeLog,
+        didClassificationsUpdate,
     } = useBulkSelectClassifications(selectedAssets)
     /** TERMS */
     const {
@@ -274,8 +283,14 @@ export default function useBulkSelect() {
             // call to link terms endpoint
             const { requestPayload, requestPayloadLocal } =
                 getBulkTermUpdateRequestPayload(assetList)
+            // below is the check to see if terms changed, if requestPayload has no keys that means there are no NEW terms to link and we need not make the request
             if (Object.keys(requestPayload).length) {
-                let linkTerms = { status: 'loading', meta: {} }
+                // TOFO: add changelog
+                const linkTerms = {
+                    status: 'loading',
+                    didChange: true,
+                    changeLog: {},
+                }
                 store.setUpdateStatus({ ...store.updateStatus, linkTerms })
                 const { data, error, isLoading } = useAPIAsyncState<any>(
                     KeyMaps.glossary.BULK_LINK_TERMS,
@@ -302,14 +317,22 @@ export default function useBulkSelect() {
                                     ...asset?.meanings,
                                     ...newTerms,
                                 ]
-                                linkTerms = { status: 'success', meta: {} }
+                                const linkTerms = {
+                                    status: 'success',
+                                    didChange: true,
+                                    changeLog: {},
+                                }
                                 store.setUpdateStatus({
                                     ...store.updateStatus,
                                     linkTerms,
                                 })
                             })
                         } else {
-                            linkTerms = { status: 'error', meta: {} }
+                            const linkTerms = {
+                                status: 'error',
+                                didChange: true,
+                                changeLog: {},
+                            }
                             store.setUpdateStatus({
                                 ...store.updateStatus,
                                 linkTerms,
@@ -318,40 +341,20 @@ export default function useBulkSelect() {
                     }
                 })
             }
-
-            /** FOR ALPHA */
-            // const requests = []
-            // if (Object.keys(requestPayloadForEachTerm).length) {
-            //     Object.keys(requestPayloadForEachTerm).forEach((termGuid) => {
-            //         const linkTermPromise = useAPIPromise(
-            //             KeyMaps.glossary.ASSIGN_TERM_LINKED_ASSETS({
-            //                 termGuid,
-            //             }),
-            //             'POST',
-            //             {
-            //                 body: requestPayloadForEachTerm[termGuid],
-            //             }
-            //         )
-            //         requests.push(linkTermPromise)
-            //     })
-            // }
-            // if (requests.length) {
-            //     try{
-            //         // add loading state
-            //         await Promise.all(requests);
-            //     }
-            //     catch(e){
-            //         // handle error
-            //     }
         }
         if (
+            didClassificationsUpdate.value &&
             classifications.value &&
             Object.keys(classifications.value).length
         ) {
             // call to link classifications endpoint
             const requestPayload =
                 getBulkClassificationUpdateRequestPayload(assetList)
-            let linkClassifications = { status: 'loading', meta: {} }
+            let linkClassifications = {
+                status: 'loading',
+                didChange: didClassificationsUpdate.value,
+                changeLog: { ...publishedChangeLog.value },
+            }
             store.setUpdateStatus({
                 ...store.updateStatus,
                 linkClassifications,
@@ -373,13 +376,21 @@ export default function useBulkSelect() {
                                 ...updatedClassificationsLocal?.classifications,
                             }
                         })
-                        linkClassifications = { status: 'success', meta: {} }
+                        linkClassifications = {
+                            status: 'success',
+                            didChange: didClassificationsUpdate.value,
+                            changeLog: { ...publishedChangeLog.value },
+                        }
                         store.setUpdateStatus({
                             ...store.updateStatus,
                             linkClassifications,
                         })
                     } else {
-                        linkClassifications = { status: 'error', meta: {} }
+                        linkClassifications = {
+                            status: 'error',
+                            didChange: didClassificationsUpdate.value,
+                            changeLog: { ...publishedChangeLog.value },
+                        }
                         store.setUpdateStatus({
                             ...store.updateStatus,
                             linkClassifications,
@@ -388,12 +399,15 @@ export default function useBulkSelect() {
                 }
             })
         }
-
+        // Handles notification toast
         watch(
             () => store.updateStatus,
             () => {
-                if (store.getFinalStatus === 'loading')
+                if (store.getFinalStatus === 'loading') {
                     store.setShowNotifcation(true)
+                    // to get out of the bulk mode once user clicks on make changes
+                    store.setBulkMode(false)
+                }
                 if (
                     store.getFinalStatus === 'success' ||
                     store.getFinalStatus === 'error'
@@ -406,7 +420,7 @@ export default function useBulkSelect() {
                         })
                         store.setBulkSelectedAssets([])
                         store.setShowNotifcation(false)
-                    }, 4000)
+                    }, 3000)
             }
         )
     }
@@ -429,6 +443,8 @@ export default function useBulkSelect() {
         originalClassifications,
         updateClassifications,
         classificationFrequencyMap,
+        publishedChangeLog,
+        didClassificationsUpdate,
         terms,
         resetTerms,
         initialiseLocalStateTerms,

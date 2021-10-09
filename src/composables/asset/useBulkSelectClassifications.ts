@@ -1,6 +1,7 @@
 import { ref, Ref, computed, watch } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { Components } from '~/api/atlas/client'
+import { LocalState } from '~/composables/asset/useBulkSelect'
 
 export default function useBulkSelectClassifications(selectedAssets) {
     const originalClassifications: Ref<
@@ -9,6 +10,17 @@ export default function useBulkSelectClassifications(selectedAssets) {
     const classifications: Ref<
         Record<string, Components.Schemas.AtlasClassification[]>
     > = ref({})
+    // diff bw original and latest published changes (published changes are the ones that get saved after someone clicks on done)
+    const publishedChangeLog: Ref<LocalState> = ref({
+        all: [] as Components.Schemas.AtlasClassification[],
+        partial: [] as Components.Schemas.AtlasClassification[],
+        removed: [] as Components.Schemas.AtlasClassification[],
+    })
+    const didClassificationsUpdate: ComputedRef<boolean> = computed(
+        () =>
+            publishedChangeLog.value.all.length ||
+            publishedChangeLog.value.removed.length
+    )
     watch(selectedAssets, () => {
         if (selectedAssets.value.length) {
             // update existing owners and groups
@@ -56,9 +68,15 @@ export default function useBulkSelectClassifications(selectedAssets) {
     })
     const resetClassifications = (
         originalClassificationsRef,
-        classificationsRef
+        classificationsRef,
+        publishedChangeLogRef
     ) => {
         classificationsRef.value = { ...originalClassificationsRef.value }
+        publishedChangeLogRef.value = {
+            all: [],
+            partial: [],
+            removed: [],
+        }
     }
     const initialiseLocalState = (
         selectedAssets,
@@ -91,7 +109,8 @@ export default function useBulkSelectClassifications(selectedAssets) {
     const updateClassifications = (
         classificationsRef,
         localState,
-        originalClassificationsRef
+        originalClassificationsRef,
+        publishedChangeLogRef
     ) => {
         const updatedObj = {}
         Object.keys(originalClassificationsRef.value).map((assetGuid) => {
@@ -113,6 +132,7 @@ export default function useBulkSelectClassifications(selectedAssets) {
             )
         })
         classificationsRef.value = { ...updatedObj }
+        publishedChangeLogRef.value = { ...localState.value }
     }
 
     return {
@@ -122,5 +142,7 @@ export default function useBulkSelectClassifications(selectedAssets) {
         initialiseLocalState,
         updateClassifications,
         classificationFrequencyMap,
+        publishedChangeLog,
+        didClassificationsUpdate,
     }
 }

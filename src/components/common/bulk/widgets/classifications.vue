@@ -169,7 +169,9 @@ export default defineComponent({
         const originalClassificationsRef = inject('originalClassificationsRef')
         const selectedAssets = inject('selectedAssets')
         const classificationFrequencyMap = inject('classificationFrequencyMap')
-        const publishedChangeLogRef = inject('publishedChangeLogRef')
+        const publishedClassificationChangeLogRef = inject(
+            'publishedClassificationChangeLogRef'
+        )
         const showLinkClassificationPopover = ref(false)
         const linkClassificationDropdownRef = ref()
 
@@ -179,7 +181,7 @@ export default defineComponent({
                 resetClassifications(
                     originalClassificationsRef,
                     classificationsRef,
-                    publishedChangeLogRef
+                    publishedClassificationChangeLogRef
                 )
                 localState.value = initialiseLocalState(
                     selectedAssets,
@@ -221,7 +223,7 @@ export default defineComponent({
                 classificationsRef,
                 localState,
                 originalClassificationsRef,
-                publishedChangeLogRef
+                publishedClassificationChangeLogRef
             )
         }
         const toggleLinkClassificationPopover = () => {
@@ -261,7 +263,7 @@ export default defineComponent({
             resetClassifications(
                 originalClassificationsRef,
                 classificationsRef,
-                publishedChangeLogRef
+                publishedClassificationChangeLogRef
             )
             localState.value = initialiseLocalState(
                 selectedAssets,

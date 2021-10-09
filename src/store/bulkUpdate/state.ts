@@ -8,9 +8,17 @@ export interface State {
 export const state: State = {
     bulkSelectedAssets: [],
     updateStatus: {
-        updateStatusOwners: { status: '', didChange: false, changeLog: {} },
+        updateStatusOwners: {
+            status: '',
+            didChange: false,
+            changeLog: {},
+        },
         linkTerms: { status: '', didChange: false, changeLog: {} },
-        linkClassifications: { status: '', didChange: false, changeLog: {} },
+        linkClassifications: {
+            status: '',
+            didChange: false,
+            changeLog: {},
+        },
     },
     showNotification: false,
     isBulkMode: false,

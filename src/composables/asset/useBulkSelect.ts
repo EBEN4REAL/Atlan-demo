@@ -1,8 +1,9 @@
-import { ref, Ref, watch, computed, ComputedRef } from 'vue'
-import { useAPIPromise, useAPIAsyncState } from '~/api/useAPI'
+import { ref, Ref, watch } from 'vue'
+import { useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import whoami from '../user/whoami'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useBulkSelectStatus from '~/composables/asset/useBulkSelectStatus'
 import useBulkSelectOwners from '~/composables/asset/useBulkSelectOwners'
 import useBulkSelectClassifications from './useBulkSelectClassifications'
 import useBulkSelectTerms from './useBulkSelectTerms'
@@ -23,42 +24,22 @@ export default function useBulkSelect() {
         linkTerms: '',
     })
     const { username } = whoami()
-    // state of the composable
-    // `Existing` properties are computed for all selected lists and passed to the component for initialisation of respective state of each component (ex- status, owners)
-    // `Updated` properties are refs, used to maintain a local copy of what changed - instead of calculating diffs bw existing properties whenever it changes/ for storing existing state in case the user tries to reset, we simply store the changed value in updated properties and use that for constructing the payload and locally updating the assets once the call is successful
     const store = useBulkUpdateStore()
-    const updatedStatus: Ref<string> = ref('')
-    const updatedStatusMessage: Ref<string> = ref('')
 
     /** STATUS */
+    const {
+        updatedStatus,
+        updatedStatusMessage,
+        publishedChangeLog: publishedStatusChangeLog,
+        didStatusUpdate,
+        existingStatus,
+        handleUpdateStatus,
+    } = useBulkSelectStatus(selectedAssets)
+
     const updateSelectedAssets = (list: Ref<assetInterface[]>) => {
         selectedAssets.value = [...list.value]
     }
-    const existingStatus = computed(() => {
-        if (selectedAssets.value.length) {
-            const assetStatusMap: Record<string, string> = {}
-            selectedAssets.value.forEach((asset: assetInterface) => {
-                assetStatusMap[asset.guid] = asset?.attributes?.assetStatus
-                    ? asset.attributes.assetStatus
-                    : 'is_null'
-            })
-            return assetStatusMap
-        }
-        return {}
-    })
-    const handleUpdateStatus = (
-        { status, statusMessage },
-        statusRef,
-        existingStatusRef
-    ) => {
-        Object.keys(existingStatusRef.value).forEach((assetKey) => {
-            // eslint-disable-next-line no-param-reassign
-            existingStatusRef.value[assetKey] = status
-        })
-        // eslint-disable-next-line no-param-reassign
-        statusRef.value = status
-        updatedStatusMessage.value = statusMessage
-    }
+
     /** OWNERS */
     const {
         updatedOwners,
@@ -77,9 +58,10 @@ export default function useBulkSelect() {
         originalClassifications,
         updateClassifications,
         classificationFrequencyMap,
-        publishedChangeLog,
+        publishedChangeLog: publishedClassificationChangeLog,
         didClassificationsUpdate,
     } = useBulkSelectClassifications(selectedAssets)
+
     /** TERMS */
     const {
         terms,
@@ -89,7 +71,8 @@ export default function useBulkSelect() {
         updateTerms,
         termFrequencyMap,
     } = useBulkSelectTerms(selectedAssets)
-    // Helper functions
+
+    /**  HELPER FUNCTIONS */
     const getBulkUpdateRequestPayload = (assetList) => {
         const requestPayloadSkeleton = assetList.map((asset) => {
             const payloadObj = {
@@ -120,12 +103,15 @@ export default function useBulkSelect() {
         requestPayloadAssetList = requestPayloadSkeleton.map((asset) => {
             const updatedAsset = { ...asset }
             // Update status
-            if (updatedStatus.value || updatedStatusMessage.value) {
-                updatedAsset.attributes.assetStatus =
-                    updatedStatus.value || updatedAsset.attributes.assetStatus
-                updatedAsset.attributes.assetStatusMessage =
-                    updatedStatus.value ||
-                    updatedAsset.attributes.assetStatusMessage
+            if (didStatusUpdate.value) {
+                if (updatedStatus && updatedStatus.value)
+                    updatedAsset.attributes.assetStatus =
+                        updatedStatus.value ||
+                        updatedAsset.attributes.assetStatus
+                if (updatedStatusMessage && updatedStatusMessage.value)
+                    updatedAsset.attributes.assetStatusMessage =
+                        updatedStatusMessage.value ||
+                        updatedAsset.attributes.assetStatusMessage
                 updatedAsset.attributes.assetStatusUpdatedAt = Date.now()
                 updatedAsset.attributes.assetStatusUpdatedBy = username.value
             }
@@ -148,16 +134,6 @@ export default function useBulkSelect() {
             }
             return updatedAsset
         })
-
-        // if (didOwnerUsersChange || didOwnerGroupsChange) {
-        //     requestPayloadAssetList = requestPayloadSkeleton.map((asset) => {
-        //         const updatedAsset = { ...asset }
-
-        //         updatedAsset.attributes.ownerUsers =
-        //             existingOwnerUsers.value[asset.guid]
-        //         return updatedAsset
-        //     })
-        // }
         // Add flow for updating asset status message
         return { entities: requestPayloadAssetList }
     }
@@ -232,10 +208,11 @@ export default function useBulkSelect() {
         })
         return { requestPayload, requestPayloadLocal }
     }
+    /**  MAIN UPDATE FUNCTION */
     const updateAssets = (assetList) => {
         // status and owners update can be done in a single call using bulk endpoint
         if (
-            updatedStatus.value ||
+            didStatusUpdate ||
             (updatedOwners.value && Object.keys(updatedOwners.value).length)
         ) {
             // call to bulk endpoint
@@ -365,7 +342,7 @@ export default function useBulkSelect() {
             let linkClassifications = {
                 status: 'loading',
                 didChange: didClassificationsUpdate.value,
-                changeLog: { ...publishedChangeLog.value },
+                changeLog: { ...publishedClassificationChangeLog.value },
             }
             store.setUpdateStatus({
                 ...store.updateStatus,
@@ -391,7 +368,9 @@ export default function useBulkSelect() {
                         linkClassifications = {
                             status: 'success',
                             didChange: didClassificationsUpdate.value,
-                            changeLog: { ...publishedChangeLog.value },
+                            changeLog: {
+                                ...publishedClassificationChangeLog.value,
+                            },
                         }
                         store.setUpdateStatus({
                             ...store.updateStatus,
@@ -401,7 +380,9 @@ export default function useBulkSelect() {
                         linkClassifications = {
                             status: 'error',
                             didChange: didClassificationsUpdate.value,
-                            changeLog: { ...publishedChangeLog.value },
+                            changeLog: {
+                                ...publishedClassificationChangeLog.value,
+                            },
                         }
                         store.setUpdateStatus({
                             ...store.updateStatus,
@@ -410,38 +391,32 @@ export default function useBulkSelect() {
                     }
                 }
             })
+            // store.setBulkMode(false)
+            // store.setShowNotifcation(true)
         }
-        // Handles notification toast
-        watch(
-            () => store.updateStatus,
-            () => {
-                if (store.getFinalStatus === 'loading') {
-                    store.setShowNotifcation(true)
-                    // to get out of the bulk mode once user clicks on make changes
-                    store.setBulkMode(false)
-                }
-                if (
-                    store.getFinalStatus === 'success' ||
-                    store.getFinalStatus === 'error'
-                )
-                    setTimeout(() => {
-                        store.setUpdateStatus({
-                            updateStatusOwners: { status: '', meta: {} },
-                            linkTerms: { status: '', meta: {} },
-                            linkClassifications: { status: '', meta: {} },
-                        })
-                        store.setBulkSelectedAssets([])
-                        store.setShowNotifcation(false)
-                    }, 3000)
-            }
-        )
     }
+    /** WATCHERS */
+
+    // Handles making notification toast visible; other part i.e to make it go away is handled in bulkNotification component itself
+    // This logic is split because the watcher below hides the bulkSidebar component and hence this composable instance is destroyed - so the part of watcher that listens to success/error state of the API call doesn't execute - hence we have moved that part to the notification component which takes care of hiding itself once the api calls are completed
+    watch(
+        () => store.updateStatus,
+        () => {
+            if (store.getFinalStatus === 'loading') {
+                store.setShowNotifcation(true)
+                // to get out of the bulk mode once user clicks on make changes
+                store.setBulkMode(false)
+            }
+        }
+    )
 
     return {
         updateSelectedAssets,
         existingStatus,
         updatedStatus,
+        updatedStatusMessage,
         handleUpdateStatus,
+        publishedStatusChangeLog,
         ownerUsersFrequencyMap,
         ownerGroupsFrequencyMap,
         existingOwnerUsers,
@@ -455,8 +430,7 @@ export default function useBulkSelect() {
         originalClassifications,
         updateClassifications,
         classificationFrequencyMap,
-        publishedChangeLog,
-        didClassificationsUpdate,
+        publishedClassificationChangeLog,
         terms,
         resetTerms,
         initialiseLocalStateTerms,

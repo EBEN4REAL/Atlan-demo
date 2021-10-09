@@ -60,6 +60,8 @@ export default {
             existingClassifications,
             existingTerms,
             updatedStatus,
+            updatedStatusMessage,
+            publishedStatusChangeLog: publishedStatusChangeLogRef,
             updateAssets,
             updateSelectedAssets,
             ownerUsersFrequencyMap,
@@ -69,7 +71,8 @@ export default {
             updatedOwners,
             classifications: classificationsRef,
             originalClassifications: originalClassificationsRef,
-            publishedChangeLog: publishedChangeLogRef,
+            publishedClassificationChangeLog:
+                publishedClassificationChangeLogRef,
             classificationFrequencyMap,
             terms: termsRef,
             originalTerms: originalTermsRef,
@@ -79,6 +82,8 @@ export default {
         /** PROVIDERS */
         provide('selectedAssets', selectedAssets)
         provide('updatedStatus', updatedStatus)
+        provide('updatedStatusMessage', updatedStatusMessage)
+        provide('publishedStatusChangeLogRef', publishedStatusChangeLogRef)
         provide('ownerUsersFrequencyMap', ownerUsersFrequencyMap)
         provide('ownerGroupsFrequencyMap', ownerGroupsFrequencyMap)
         provide('existingOwnerUsers', existingOwnerUsers)
@@ -87,7 +92,10 @@ export default {
         provide('classificationsRef', classificationsRef)
         provide('originalClassificationsRef', originalClassificationsRef)
         provide('classificationFrequencyMap', classificationFrequencyMap)
-        provide('publishedChangeLogRef', publishedChangeLogRef)
+        provide(
+            'publishedClassificationChangeLogRef',
+            publishedClassificationChangeLogRef
+        )
         provide('termsRef', termsRef)
         provide('originalTermsRef', originalTermsRef)
         provide('termFrequencyMap', termFrequencyMap)

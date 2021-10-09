@@ -85,6 +85,7 @@
 </template>
 
 <script lang="ts">
+import { watch } from 'vue'
 import useBulkUpdateStore from '~/store/bulkUpdate'
 
 export default {
@@ -104,6 +105,25 @@ export default {
             if (state === 'success') return 'text-success'
             return ''
         }
+        watch(
+            () => store.updateStatus,
+            () => {
+                if (
+                    store.getFinalStatus === 'success' ||
+                    store.getFinalStatus === 'error'
+                )
+                    setTimeout(() => {
+                        store.setBulkMode(false)
+                        store.setBulkSelectedAssets([])
+                        store.setShowNotifcation(false)
+                        store.setUpdateStatus({
+                            updateStatusOwners: { status: '', meta: {} },
+                            linkTerms: { status: '', meta: {} },
+                            linkClassifications: { status: '', meta: {} },
+                        })
+                    }, 3000)
+            }
+        )
         return {
             store,
             getStatusIcon,

@@ -11,7 +11,7 @@
         @success="handleSuccess"
         @closeModal="handleCloseModal"
     />
-    <splitpanes class="h-full default-theme">
+    <splitpanes class="h-full default-theme" v-if="!isHome">
         <!-- glossary sidebar -->
         <pane
             min-size="12"
@@ -44,6 +44,9 @@
             <router-view />
         </pane>
     </splitpanes>
+    <div v-else>
+        <router-view />
+    </div>
 </template>
 
 <script lang="ts">

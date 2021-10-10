@@ -21,10 +21,6 @@
         toRaw,
     } from 'vue'
 
-    import savedQuery from './savedQuery'
-    import sqlKeywords from './sqlKeywords'
-    import columnSuggestion from './columnSuggestion'
-
     import { languageTokens } from './sqlTokens'
     import TurndownService from 'turndown'
     import * as monaco from 'monaco-editor'
@@ -33,9 +29,9 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import {
-        useAutoCompletion,
+        useAutoSuggestions,
         suggestionKeywordInterface,
-    } from '~/components/insights/playground/editor/common/composables/useAutoCompletion'
+    } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
 
@@ -132,26 +128,14 @@
                         .substr(2, len - s.length)
                 return s
             }
-            const generateKeywordSuggestions = (lastTypedCharacter) => {
-                const randomKeywords = []
-                Array(8)
-                    .fill('')
-                    .forEach(() => {
-                        const randomString = randStr()
-                        const keyword = {
-                            label: lastTypedCharacter + randomString,
-                            kind: monaco.languages.CompletionItemKind.Keyword,
-                            insertText: lastTypedCharacter + randomString,
-                        }
-                        randomKeywords.push(keyword)
-                    })
-                return randomKeywords
-            }
+
             const triggerAutoCompletion = (
                 suggestions: suggestionKeywordInterface[]
             ) => {
+                console.log('called', suggestions)
                 // clearing previous popover register data
                 if (disposable) disposable.value?.dispose()
+                console.log(suggestions, 'thenable')
                 disposable.value =
                     monaco.languages.registerCompletionItemProvider(
                         'atlansql',
@@ -159,34 +143,13 @@
                             triggerCharacters: triggerCharacters,
                             provideCompletionItems() {
                                 // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
-                                return {
-                                    suggestions: [...suggestions],
-                                }
+                                return suggestions
                             },
                         }
                     )
+                // editor.trigger('', 'showSuggestWidget', suggestions)
             }
-            // const triggerAutoCompletion = (suggestions:suggestionKeywordInterface[]) => {
-            //     // clearing previous popover register data
-            //     if (disposable) disposable.value?.dispose()
-            //     disposable.value =
-            //         monaco.languages.registerCompletionItemProvider(
-            //             'atlansql',
-            //             {
-            //                 provideCompletionItems() {
-            //                     // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
-            //                     return {
-            //                         suggestions: [
-            //                             ...suggestions,
-            //                             ...savedQuery(),
-            //                             ...sqlKeywords(),
-            //                             ...columnSuggestion(unref(list.value)),
-            //                         ],
-            //                     }
-            //                 },
-            //             }
-            //         )
-            // }
+
             try {
                 monaco.languages.registerHoverProvider('atlansql', {
                     provideHover(model, position, token) {
@@ -251,12 +214,16 @@
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
-                editor?.getModel().onDidChangeContent((event) => {
+                editor?.getModel().onDidChangeContent(async (event) => {
                     const text = editor?.getValue()
                     onEditorContentChange(event, text)
                     const changes = event?.changes[0]
                     // const lastTypedCharacter = event?.changes[0]?.text
-                    const suggestions = useAutoCompletion(changes, editor)
+                    const suggestions = await useAutoSuggestions(
+                        changes,
+                        editor,
+                        activeInlineTab
+                    )
                     triggerAutoCompletion(suggestions)
                 })
                 editor?.onDidChangeCursorPosition(() => {
@@ -300,12 +267,16 @@
                     )
 
                     editor?.setModel(model)
-                    editor.getModel().onDidChangeContent((event) => {
+                    editor.getModel().onDidChangeContent(async (event) => {
                         const text = editor.getValue()
                         onEditorContentChange(event, text)
                         const changes = event?.changes[0]
                         // const lastTypedCharacter = event?.changes[0]?.text
-                        const suggestions = useAutoCompletion(changes, editor)
+                        const suggestions = useAutoSuggestions(
+                            changes,
+                            editor,
+                            activeInlineTab
+                        )
                         triggerAutoCompletion(suggestions)
                     })
                     const range = editor?.getModel().getFullModelRange()

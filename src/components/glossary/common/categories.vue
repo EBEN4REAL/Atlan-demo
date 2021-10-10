@@ -316,7 +316,7 @@ export default defineComponent({
  .categories {
  }
  .popover {
-     max-height: 348px;
+     max-height: 600px;
      padding: 1rem;
 }
 .treeSelect {

@@ -162,7 +162,15 @@
 
                     <a-menu-item v-if="showUnlinkAsset" key="unkink">
                         <a-button
-                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
+                            class="
+                                w-full
+                                p-0
+                                m-0
+                                bg-transparent
+                                border-0
+                                shadow-none
+                                outline-none
+                            "
                             @click="$emit('unlinkAsset', entity)"
                         >
                             <div class="flex items-center text-red-700">
@@ -231,15 +239,15 @@
                             />
                         </a-menu-item>
                     </a-sub-menu>
-                    <a-sub-menu
+                    <a-menu-item
                         v-if="
                             showGtcCrud &&
                             entity?.typeName === 'AtlasGlossaryTerm'
                         "
                         key="categories"
                     >
-                        <template #title>
-                            <div class="flex items-center justify-between">
+                        <a-popover :trigger="['click']" placement="right">
+                            <div class="flex items-center justify-between mr-3">
                                 <div class="flex items-center justify-between">
                                     <AtlanIcon
                                         icon="Category"
@@ -248,28 +256,32 @@
                                     <p class="p-0 m-0">Categories</p>
                                 </div>
                                 <AtlanIcon
-                                    class="pt-1 ml-4 transform -rotate-90"
+                                    class="pt-1 transform -rotate-90"
                                     icon="ChevronDown"
                                 />
                             </div>
+                            <template
+                                #content
+                                class="p-0 pb-8 hover:bg-white"
+                                style="max-height: 416px"
+                            >
+                                <Categories
+                                    :glossaryQualifiedName="
+                                        entity.attributes?.anchor
+                                            ?.uniqueAttributes?.qualifiedName
+                                    "
+                                    :categories="entity.attributes.categories"
+                                    :termGuid="entity.guid"
+                                    :term="entity"
+                                    mode="threeDotMenu"
+                                />
+                            </template>
+                        </a-popover>
+                        <!-- <template #title>
+                        
                         </template>
-                        <template #expandIcon><div></div> </template>
-                        <a-menu-item
-                            class="p-0 pb-8 hover:bg-white"
-                            style="max-height: 416px"
-                        >
-                            <Categories
-                                :glossaryQualifiedName="
-                                    entity.attributes?.anchor?.uniqueAttributes
-                                        ?.qualifiedName
-                                "
-                                :categories="entity.attributes.categories"
-                                :termGuid="entity.guid"
-                                :term="entity"
-                                mode="threeDotMenu"
-                            />
-                        </a-menu-item>
-                    </a-sub-menu>
+                        <template #expandIcon><div></div> </template> -->
+                    </a-menu-item>
                     <a-menu-divider v-if="showGtcCrud" />
                     <a-menu-item
                         v-if="showGtcCrud"
@@ -277,7 +289,15 @@
                         class="text-red-700"
                     >
                         <a-button
-                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
+                            class="
+                                w-full
+                                p-0
+                                m-0
+                                bg-transparent
+                                border-0
+                                shadow-none
+                                outline-none
+                            "
                             @click="showModal"
                         >
                             <div class="flex items-center text-red-700">
@@ -328,240 +348,224 @@
     </div>
 </template>
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        PropType,
-        inject,
-        onMounted,
-        watch,
-        computed,
-    } from 'vue'
-    import { useRouter } from 'vue-router'
+import {
+    defineComponent,
+    ref,
+    PropType,
+    inject,
+    onMounted,
+    watch,
+    computed,
+} from 'vue'
+import { useRouter } from 'vue-router'
 
-    // components
-    import StatusBadge from '@common/badge/status/index.vue'
-    import Owners from './owners.vue'
-    import Status from './status.vue'
-    import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
-    import Categories from '@/glossary/common/categories.vue'
-    import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
+// components
+import StatusBadge from '@common/badge/status/index.vue'
+import Owners from './owners.vue'
+import Status from './status.vue'
+import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
+import Categories from '@/glossary/common/categories.vue'
+import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
-    // utils
-    import { copyToClipboard } from '~/utils/clipboard'
-    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
-    // composables
-    import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
-    import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
-    import {
-        Glossary,
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
+// utils
+import { copyToClipboard } from '~/utils/clipboard'
+import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+// composables
+import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
+import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
-    export default defineComponent({
-        components: {
-            Status,
-            Owners,
-            StatusBadge,
-            AddGtcModal,
-            Categories,
-            ModalHeader,
+export default defineComponent({
+    components: {
+        Status,
+        Owners,
+        StatusBadge,
+        AddGtcModal,
+        Categories,
+        ModalHeader,
+    },
+    props: {
+        entity: {
+            type: Object as PropType<Glossary | Category | Term>,
+            required: true,
+            default: () => {},
         },
-        props: {
-            entity: {
-                type: Object as PropType<Glossary | Category | Term>,
-                required: true,
-                default: () => {},
-            },
-            showLinks: {
-                type: Boolean,
-                required: false,
-                default: () => true,
-            },
-            showGtcCrud: {
-                type: Boolean,
-                required: false,
-                default: () => true,
-            },
-            showUnlinkAsset: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-
-            treeMode: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            visible: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
+        showLinks: {
+            type: Boolean,
+            required: false,
+            default: () => true,
         },
-        emits: ['unlinkAsset'],
-        setup(props, context) {
-            // data
-            const isVisible = ref(false)
-            const isModalVisible = ref<boolean>(false)
-            const router = useRouter()
+        showGtcCrud: {
+            type: Boolean,
+            required: false,
+            default: () => true,
+        },
+        showUnlinkAsset: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
 
-            const handleFetchListInj: Function | undefined = inject(
-                'handleFetchList',
-                () => null
+        treeMode: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+        visible: {
+            type: Boolean,
+            required: false,
+            default: true,
+        },
+    },
+    emits: ['unlinkAsset'],
+    setup(props, context) {
+        // data
+        const isVisible = ref(false)
+        const isModalVisible = ref<boolean>(false)
+        const router = useRouter()
+
+        const handleFetchListInj: Function | undefined = inject(
+            'handleFetchList',
+            () => null
+        )
+        const updateTreeNode: Function | undefined =
+            inject<any>('updateTreeNode')
+        const refetchGlossaryTree = inject<
+            (
+                guid: string | 'root',
+                refreshEntityType?: 'term' | 'category'
+            ) => void
+        >('refetchGlossaryTree')
+        const glossaryId = computed(() => {
+            if (props.entity?.typeName === 'AtlasGlossary')
+                return props.entity?.guid ?? ''
+            return props.entity?.attributes?.anchor?.guid ?? ''
+        })
+        const categoryId = computed(() => {
+            if (props.entity?.typeName === 'AtlasGlossaryCategory')
+                return props.entity?.guid
+            return ''
+        })
+
+        const { deleteGlossary, deleteCategory, deleteTerm, error, isLoading } =
+            useDeleteGlossary()
+
+        const { createTerm, createCategory } = useCreateGlossary()
+        const serviceMap = {
+            AtlasGlossaryTerm: deleteTerm,
+            AtlasGlossaryCategory: deleteCategory,
+            AtlasGlossary: deleteGlossary,
+        }
+        const closeMenu = () => {
+            isVisible.value = false
+        }
+        const showModal = () => {
+            isModalVisible.value = true
+            isVisible.value = false
+        }
+        const handleOk = () => {
+            const { data } = serviceMap[props.entity?.typeName](
+                props.entity?.guid,
+                !props.showLinks,
+                props.entity?.attributes?.anchor?.guid
             )
-            const updateTreeNode: Function | undefined =
-                inject<any>('updateTreeNode')
-            const refetchGlossaryTree = inject<
-                (
-                    guid: string | 'root',
-                    refreshEntityType?: 'term' | 'category'
-                ) => void
-            >('refetchGlossaryTree')
-            const glossaryId = computed(() => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    return props.entity?.guid ?? ''
-                return props.entity?.attributes?.anchor?.guid ?? ''
-            })
-            const categoryId = computed(() => {
-                if (props.entity?.typeName === 'AtlasGlossaryCategory')
-                    return props.entity?.guid
-                return ''
-            })
-
-            const {
-                deleteGlossary,
-                deleteCategory,
-                deleteTerm,
-                error,
-                isLoading,
-            } = useDeleteGlossary()
-
-            const { createTerm, createCategory } = useCreateGlossary()
-            const serviceMap = {
-                AtlasGlossaryTerm: deleteTerm,
-                AtlasGlossaryCategory: deleteCategory,
-                AtlasGlossary: deleteGlossary,
-            }
-            const closeMenu = () => {
-                isVisible.value = false
-            }
-            const showModal = () => {
-                isModalVisible.value = true
-                isVisible.value = false
-            }
-            const handleOk = () => {
-                const { data } = serviceMap[props.entity?.typeName](
-                    props.entity?.guid,
-                    !props.showLinks,
-                    props.entity?.attributes?.anchor?.guid
-                )
-                if (handleFetchListInj) handleFetchListInj(props.entity)
-                watch(data, () => {
-                    if (refetchGlossaryTree) {
-                        if (
-                            props.entity?.typeName === 'AtlasGlossaryCategory'
-                        ) {
-                            refetchGlossaryTree(
-                                props.entity?.attributes?.parentCategory
-                                    ?.guid ?? 'root',
-                                'category'
+            if (handleFetchListInj) handleFetchListInj(props.entity)
+            watch(data, () => {
+                if (refetchGlossaryTree) {
+                    if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                        refetchGlossaryTree(
+                            props.entity?.attributes?.parentCategory?.guid ??
+                                'root',
+                            'category'
+                        )
+                    } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
+                        if (props.entity?.attributes?.categories?.length) {
+                            props.entity?.attributes?.categories?.forEach(
+                                (category) => {
+                                    refetchGlossaryTree(category.guid, 'term')
+                                }
                             )
-                        } else if (
-                            props.entity?.typeName === 'AtlasGlossaryTerm'
-                        ) {
-                            if (props.entity?.attributes?.categories?.length) {
-                                props.entity?.attributes?.categories?.forEach(
-                                    (category) => {
-                                        refetchGlossaryTree(
-                                            category.guid,
-                                            'term'
-                                        )
-                                    }
-                                )
-                            } else {
-                                refetchGlossaryTree('root', 'term')
-                            }
+                        } else {
+                            refetchGlossaryTree('root', 'term')
                         }
                     }
-                })
-
-                isModalVisible.value = false
-            }
-
-            const handleCancel = () => {
-                isModalVisible.value = false
-            }
-
-            // copy profile link
-            const handleCopyProfileLink = () => {
-                const baseUrl = window.location.origin
-                const text = `${baseUrl}/glossary/${
-                    assetTypeLabel[props.entity?.typeName]
-                }/${props?.entity?.guid}`
-                copyToClipboard(text)
-            }
-            // create new term
-            const createNewTerm = () => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    createTerm(props.entity?.guid ?? '')
-                else
-                    createTerm(
-                        props.entity?.attributes?.anchor?.guid ?? '',
-                        props.entity.guid
-                    )
-            }
-            // create new category
-            const createNewCategory = () => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    createCategory(props.entity?.guid ?? '')
-                else
-                    createCategory(
-                        props.entity?.attributes?.anchor?.guid ?? '',
-                        props.entity.guid
-                    )
-            }
-            const redirectToProfile = () => {
-                if (props.entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryCategory')
-                    router.push(`/glossary/category/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${props.entity.guid}`)
-            }
-
-            // update tree on archive or create new entity
-            const updateTree = (selectedAsset: Glossary | Category | Term) => {
-                if (updateTreeNode) {
-                    updateTreeNode({
-                        guid: selectedAsset.guid,
-                        entity: selectedAsset,
-                    })
                 }
+            })
+
+            isModalVisible.value = false
+        }
+
+        const handleCancel = () => {
+            isModalVisible.value = false
+        }
+
+        // copy profile link
+        const handleCopyProfileLink = () => {
+            const baseUrl = window.location.origin
+            const text = `${baseUrl}/glossary/${
+                assetTypeLabel[props.entity?.typeName]
+            }/${props?.entity?.guid}`
+            copyToClipboard(text)
+        }
+        // create new term
+        const createNewTerm = () => {
+            if (props.entity?.typeName === 'AtlasGlossary')
+                createTerm(props.entity?.guid ?? '')
+            else
+                createTerm(
+                    props.entity?.attributes?.anchor?.guid ?? '',
+                    props.entity.guid
+                )
+        }
+        // create new category
+        const createNewCategory = () => {
+            if (props.entity?.typeName === 'AtlasGlossary')
+                createCategory(props.entity?.guid ?? '')
+            else
+                createCategory(
+                    props.entity?.attributes?.anchor?.guid ?? '',
+                    props.entity.guid
+                )
+        }
+        const redirectToProfile = () => {
+            if (props.entity.typeName === 'AtlasGlossary')
+                router.push(`/glossary/${props.entity.guid}`)
+            else if (props.entity.typeName === 'AtlasGlossaryCategory')
+                router.push(`/glossary/category/${props.entity.guid}`)
+            else if (props.entity.typeName === 'AtlasGlossaryTerm')
+                router.push(`/glossary/term/${props.entity.guid}`)
+        }
+
+        // update tree on archive or create new entity
+        const updateTree = (selectedAsset: Glossary | Category | Term) => {
+            if (updateTreeNode) {
+                updateTreeNode({
+                    guid: selectedAsset.guid,
+                    entity: selectedAsset,
+                })
             }
-            return {
-                handleCopyProfileLink,
-                assetTypeLabel,
-                isVisible,
-                isModalVisible,
-                updateTree,
-                handleOk,
-                handleCancel,
-                showModal,
-                createNewTerm,
-                createNewCategory,
-                closeMenu,
-                redirectToProfile,
-                glossaryId,
-                categoryId,
-            }
-        },
-    })
+        }
+        return {
+            handleCopyProfileLink,
+            assetTypeLabel,
+            isVisible,
+            isModalVisible,
+            updateTree,
+            handleOk,
+            handleCancel,
+            showModal,
+            createNewTerm,
+            createNewCategory,
+            closeMenu,
+            redirectToProfile,
+            glossaryId,
+            categoryId,
+        }
+    },
+})
 </script>
 <style lang="less" module>
-    .treeMode {
-        @apply bg-black bg-opacity-0 !important;
-    }
+.treeMode {
+    @apply bg-black bg-opacity-0 !important;
+}
 </style>

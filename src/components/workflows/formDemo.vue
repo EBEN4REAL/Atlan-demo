@@ -1,0 +1,62 @@
+<template>
+    <div class="grid grid-cols-2">
+        <div class="flex flex-col p-1 border">
+            <!-- <div class="">
+                <a-button class="m-2" @click="() => (view = true)"
+                    >Render Form</a-button
+                >
+            </div> -->
+
+            <div class="relative">
+                <a-button
+                    class="absolute top-0 right-0 z-10 m-2"
+                    @click="() => (view = true)"
+                    >Render Form</a-button
+                >
+                <a-textarea
+                    placeholder="Add Form Config"
+                    style="height: calc(100vh - 3.5rem); font-family: monospace"
+                    class="z-1"
+                    @change="handleChange"
+                />
+            </div>
+        </div>
+        <div
+            class="p-2 overflow-y-auto border"
+            style="height: calc(100vh - 3.5rem)"
+        >
+            <formGen v-if="view" :config="data" :error="error" />
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { defineComponent, ref } from 'vue'
+    import formGen from '@/common/formGenerator/index.vue'
+
+    export default defineComponent({
+        components: {
+            formGen,
+        },
+        setup() {
+            const data = ref()
+            const view = ref()
+            const error = ref(false)
+            const handleChange = (e) => {
+                view.value = false
+                try {
+                    data.value = JSON.parse(e.target.value)
+                    console.log(e, JSON.parse(e.target.value))
+                    error.value = false
+                } catch (e) {
+                    console.log(e)
+                    data.value = []
+                    error.value = true
+                }
+            }
+            return { handleChange, data, error, view }
+        },
+    })
+</script>
+
+<style scoped></style>

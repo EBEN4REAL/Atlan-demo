@@ -6,6 +6,7 @@
                 :class="isActive ? 'border-primary-light' : ''"
                 class="
                     flex
+                    h-6
                     items-center
                     justify-center
                     py-0.5
@@ -18,6 +19,7 @@
                 <AtlanIcon class="" icon="KebabMenu"
             /></a-button>
             <template #overlay>
+                <!-- w-64 -->
                 <a-menu>
                     <a-menu-item>Themes</a-menu-item>
                     <a-menu-item>Tab Spacing</a-menu-item>
@@ -27,6 +29,13 @@
                         <a-menu-item>Fira code</a-menu-item>
                         <a-menu-item>Sans serif</a-menu-item>
                     </a-sub-menu>
+                    <a-menu-item>Font size</a-menu-item>
+                    <hr />
+                    <a-menu-item>Duplicate query</a-menu-item>
+                    <a-menu-item>Edit saved query</a-menu-item>
+                    <a-menu-item>Delete</a-menu-item>
+                    <hr />
+                    <a-menu-item>keyboard shortcuts</a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
@@ -34,7 +43,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
     export default defineComponent({
         components: {},
         props: {},

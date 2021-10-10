@@ -4,7 +4,9 @@
         trigger="click"
         placement="bottomRight"
     >
-        <a-button class="px-2">
+        <a-button
+            class="px-2 text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+        >
             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
         </a-button>
         <template #overlay>
@@ -112,7 +114,7 @@
     </a-dropdown>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, computed } from 'vue'
+    import { defineComponent, ref, PropType, toRefs } from 'vue'
     import { useRouter } from 'vue-router'
 
     // components
@@ -140,18 +142,16 @@
             // data
             const isVisible = ref(false)
             const router = useRouter()
+            const { asset } = toRefs(props)
 
             const closeMenu = () => {
                 isVisible.value = false
             }
 
             function handleCopyProfileLink() {
-                // FIXME:
-                // const baseUrl = window.location.origin
-                // const text = `${baseUrl}/glossary/${
-                //     assetTypeLabel[props.asset?.typeName]
-                // }/${props?.asset?.guid}`
-                // copyToClipboard(text)
+                const baseUrl = window.location.origin
+                const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
+                copyToClipboard(text)
             }
 
             function updateAsset() {}

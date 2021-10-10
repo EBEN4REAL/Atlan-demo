@@ -1,5 +1,8 @@
 <template>
-    <div class="flex flex-col p-8 gap-y-10">
+    <div
+        class="flex flex-col gap-y-10"
+        style="padding: 2rem 1.25rem 2rem 3.75rem"
+    >
         <!-- Announcements -->
         <Announcements :asset="assetData" />
 
@@ -39,12 +42,14 @@
                     ></a-tooltip
                 >
             </a-button-group>
-            <template v-if="activePreviewTabKey === 'column-preview'">
-                <overviewColumns />
-            </template>
-            <template v-if="activePreviewTabKey === 'table-preview'">
-                <overviewTable />
-            </template>
+            <KeepAlive>
+                <overviewColumns
+                    v-if="activePreviewTabKey === 'column-preview'"
+                />
+                <overviewTable
+                    v-else-if="activePreviewTabKey === 'table-preview'"
+                />
+            </KeepAlive>
         </div>
 
         <!-- Readme widget -->

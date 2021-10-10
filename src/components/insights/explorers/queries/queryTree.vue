@@ -1,5 +1,5 @@
 <template>
-    <div class="max-h-screen">
+    <div class="max-h-screen" :class="$style.queryTreeStyles">
         <div class="h-full">
             <div v-if="treeData.length">
                 <a-tree
@@ -14,48 +14,16 @@
                     @select="selectNode"
                     @expand="expandNode"
                 >
+                    <template #switcherIcon>
+                        <AtlanIcon icon="Caret" />
+                    </template>
+
                     <template #title="item">
-                        <div v-if="item.title !== 'Load more'">
-                            <div class="min-w-full py-1.5">
-                                <div class="flex justify-between mr-2 group">
-                                    <div class="flex m-0">
-                                        <div
-                                            class="flex content-center my-auto text-sm leading-5 text-gray-700 "
-                                        >
-                                            <AtlanIcon
-                                                v-if="
-                                                    item.typeName ===
-                                                    'QueryFolder'
-                                                "
-                                                :icon="
-                                                    expandedKeys.find(
-                                                        (key) =>
-                                                            key === item.key
-                                                    )
-                                                        ? 'FolderOpen'
-                                                        : 'FolderClosed'
-                                                "
-                                                class="w-5 h-5 my-auto mr-1"
-                                            ></AtlanIcon>
-                                            {{ item.isOpen }}
-                                            <span
-                                                class="text-sm leading-5 tracking-wide "
-                                                >{{ item.title }}</span
-                                            >
-                                            <StatusBadge
-                                                :key="item.guid"
-                                                :show-no-status="false"
-                                                :status-id="
-                                                    item.entity?.attributes
-                                                        ?.assetStatus
-                                                "
-                                                class="flex-none ml-1"
-                                            ></StatusBadge>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <QueryTreeItem
+                            :item="item"
+                            v-if="item.title !== 'Load more'"
+                            :expandedKeys="expandedKeys"
+                        />
                         <div
                             v-else
                             class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
@@ -92,6 +60,7 @@
     // components
     import LoadingView from '@common/loaders/section.vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import QueryTreeItem from './queryTreeItem.vue'
 
     // composables
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
@@ -111,6 +80,7 @@
             AtlanIcon,
             AtlanBtn,
             StatusBadge,
+            QueryTreeItem,
         },
         props: {
             treeData: {
@@ -192,3 +162,10 @@
         },
     })
 </script>
+<style lang="less" module>
+    .queryTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg)
+        }
+    }
+</style>

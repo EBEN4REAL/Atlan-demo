@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <span class="pb-6">
         <div v-if="list.attributeDefs.length > 10" class="px-4 mt-1 mb-2">
             <a-input-search
                 ref="searchText"
@@ -33,7 +33,7 @@
                 />
             </div>
         </div>
-        <div class="px-4 mb-2">
+        <div class="px-4 my-2">
             <div
                 v-if="
                     !showAll &&
@@ -66,7 +66,7 @@
     import { Collapse } from '~/types'
     import AttributeItem from '../common/attributeItems.vue'
     import { Components } from '~/api/atlas/client'
-    import { operatorsMap as map } from '~/constant/business_metadata'
+    import { operatorsMap as map } from '~/constant/business_metadata_template'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({

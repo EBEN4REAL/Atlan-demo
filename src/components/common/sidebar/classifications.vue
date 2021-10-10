@@ -477,7 +477,6 @@
                         linkClassificationStatus.value = 'success'
                         linkClassificationPopover.value = false
                         const classifications = payload.value
-                        console.log(payload.value, 'payloaddddd')
                         addClassificationToSelectedAsset({
                             classifications,
                             multiple: classifications.length > 1,

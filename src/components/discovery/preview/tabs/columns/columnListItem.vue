@@ -1,8 +1,6 @@
 <template>
-    <div
-        class="flex px-3 py-2 -mx-3 -my-2 rounded hover:bg-primary-light group"
-    >
-        <div class="flex-grow">
+    <div class="flex px-3 py-2 -mx-3 -my-1 rounded group">
+        <div class="flex-grow overflow-hidden">
             <ColumnInfoCard :column-asset="asset">
                 <div class="flex items-center mb-1">
                     <component
@@ -35,13 +33,11 @@
                 </div>
             </ColumnInfoCard>
             <Description :selected-asset="asset" :using-in-info="false" />
-            <div
-                v-if="asset.classifications"
-                class="flex items-center py-1 overflow-x-auto  flex-nowrap gap-x-2"
-            >
+            <ScrollStrip v-if="asset.classifications">
                 <Pill
-                    class="flex-none"
                     v-for="clsf in asset.classifications"
+                    :key="clsf.typeName"
+                    class="flex-none"
                     :label="clsf.typeName"
                     :has-action="false"
                     size="sm"
@@ -50,16 +46,17 @@
                         <AtlanIcon icon="Shield" class="h-3 text-pink-400" />
                     </template>
                 </Pill>
-            </div>
+            </ScrollStrip>
         </div>
-        <AtlanBtn
+        <!-- <AtlanBtn
             class="flex-none opacity-0 group-hover:opacity-100"
             size="sm"
             color="secondary"
             padding="compact"
         >
             <AtlanIcon icon="KebabMenu" class="-mx-1"></AtlanIcon>
-        </AtlanBtn>
+        </AtlanBtn> -->
+        <ColumnListMenu :asset="asset" />
     </div>
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
@@ -87,13 +84,15 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
+    import Description from '@common/sidebar/description.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
-    import Description from '@common/sidebar/description.vue'
     import ColumnInfoCard from './columnInfoCard.vue'
+    import ColumnListMenu from './columnListMenu.vue'
     import AtlanBtn from '@/UI/button.vue'
     import Pill from '~/components/UI/pill/pill.vue'
+    import ScrollStrip from '@/UI/scrollStrip.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -101,8 +100,10 @@
             AssetPreview,
             Description,
             ColumnInfoCard,
+            ColumnListMenu,
             AtlanBtn,
             Pill,
+            ScrollStrip,
         },
         props: {
             asset: {

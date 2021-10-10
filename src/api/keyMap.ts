@@ -34,6 +34,9 @@ export const KeyMaps = {
                 'auth/atlas',
                 `/entity/guid/${entityGuid}/classifications`
             ),
+        // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
+        BULK_LINK_CLASSIFICATION: () =>
+            getAPIPath('auth/atlas', `/entity/bulk/setClassifications`),
     },
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
@@ -186,6 +189,8 @@ export const KeyMaps = {
                 'auth/atlas',
                 `/glossary/terms/${guid}/assignedEntities`
             ),
+        BULK_LINK_TERMS: () =>
+            getAPIPath('auth/atlas', `/glossary/terms/assignedEntities`),
         GTC_SEARCH: () => getAPIPath('auth/atlas', `/search/basic`),
         GLOSSARY_LIST: () => getAPIPath('auth/atlas', `/search/basic`),
     },
@@ -235,17 +240,15 @@ export const KeyMaps = {
         BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
     },
     workflow: {
-        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) => getAPIPath(
-            '/auth/argo',
-            `/workflow-templates/${tenant}`
-        ),
-        ARCHIVED_WORKFLOW: () => getAPIPath(
-            '/auth/argo',
-            `/archived-workflows`
-        ),
-        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) => getAPIPath(
-            '/auth/argo',
-            `/workflow-templates/${tenant}/${name}`
-        )
-    }
+        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}`),
+        ARCHIVED_WORKFLOW: () =>
+            getAPIPath('/auth/argo', `/archived-workflows`),
+        ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
+            getAPIPath('/auth/argo', `/archived-workflows/${guid}`),
+        CLUSTER_WORKFLOW_TEMPLATE: () =>
+            getAPIPath('/auth/argo', `/cluster-workflow-templates`),
+        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) =>
+            getAPIPath('/auth/argo', `/workflow-templates/${tenant}/${name}`),
+    },
 }

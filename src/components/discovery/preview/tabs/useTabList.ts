@@ -45,6 +45,8 @@ export default function useAssetDetailsTabList(
                 'TableauProject',
                 'TableauDashboard',
                 'TableauDatasource',
+                'TableauDatasourceField',
+                'TableauCalculatedField',
                 'PowerBIWorkspace',
                 'PowerBIDashboard',
                 'PowerBITile',
@@ -53,6 +55,7 @@ export default function useAssetDetailsTabList(
                 'PowerBIDataset',
                 'PowerBIDatasource',
                 'PowerBIDataflow',
+
             ],
             visibleOn: ['discovery', 'profile'],
             icon: 'Columns',

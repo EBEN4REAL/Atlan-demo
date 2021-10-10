@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <div class="pb-6">
         <div class="overflow-y-auto" style="max-height: 25rem">
             <div
                 v-for="(a, x) in finalAttributesList"
@@ -15,7 +15,7 @@
                 />
             </div>
         </div>
-    </span>
+    </div>
 </template>
 
 <script lang="ts">
@@ -59,7 +59,6 @@
                 a: { label: string; typeName: string; value: string },
                 appliedValueMap: Object
             ) => {
-                debugger
                 // ? if appliedValueMap === {} i.e all applied filters removed, remove the entry
                 const newDataMap = {
                     ...data.value,

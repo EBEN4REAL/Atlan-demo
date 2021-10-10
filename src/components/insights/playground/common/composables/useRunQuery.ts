@@ -7,7 +7,7 @@ import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default function useProject() {
-    const { getParsedQuery } = useEditor()
+    const { getParsedQuery, formatter } = useEditor()
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const columnList: Ref<
@@ -59,6 +59,15 @@ export default function useProject() {
         getData: any,
         isQueryRunning: Ref<string>
     ) => {
+        const sq = getParsedQuery(
+            activeInlineTab.playground.editor.variables,
+            formatter(activeInlineTab.playground.editor.text)
+        )
+        console.log(
+            sq,
+            'formattedText',
+            formatter(activeInlineTab.playground.editor.text)
+        )
         const attributeValue =
             activeInlineTab.explorer.schema.connectors.attributeValue
         let queryText = getParsedQuery(
@@ -67,9 +76,7 @@ export default function useProject() {
         )
 
         // by default limiting query to 100 if limit is not there
-        queryText = queryText.includes('limit')
-            ? queryText
-            : `${queryText} limit 100`
+        queryText = queryText.includes('limit') ? queryText : `${queryText}`
 
         isQueryRunning.value = 'loading'
         dataList.value = []

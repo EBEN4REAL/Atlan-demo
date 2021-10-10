@@ -10,6 +10,7 @@
                         : `Search ${groupList?.length} groups`
                 "
                 @change="handleOwnerSearch"
+                size="minimal"
             >
             </SearchAndFilter>
             <div class="relative w-full">

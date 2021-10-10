@@ -1,77 +1,52 @@
 <template>
-    <div>
-        <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
-            Classification
-        </p>
-
-        <div class="relative flex items-center justify-between w-full">
-            <p class="mb-0 text-sm text-gray">
-                Manage classification tags to build access policies.
-                <!-- <span class="ml-2 text-primary">Documentation</span> -->
-            </p>
-            <a-button
-                type="primary"
-                class="absolute right-0 rounded add-classification-btn"
+    <ExplorerLayout
+        title="Classification"
+        sub-title="Manage classification tags to build access policies."
+    >
+        <template #action>
+            <AtlanBtn
+                class="flex-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
                 @click="toggleModal"
-                >+ Add Classification</a-button
             >
-        </div>
-    </div>
-
-    <splitpanes class="h-auto pt-6 default-theme">
-        <pane
-            min-size="25"
-            max-size="50"
-            size="25"
-            class="relative py-4 pl-4 pr-6 bg-white"
-        >
-            <a-input
-                ref="searchText"
-                v-model:value="treeFilterText"
-                type="text"
-                class="bg-white shadow-none form-control border-right-0"
+                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+            </AtlanBtn>
+        </template>
+        <template #sidebar>
+            <SearchAndFilter
                 placeholder="Search classifications"
-                @input="handleSearch"
+                v-model:value="treeFilterText"
+                @change="handleSearch"
+                :autofocus="true"
+                class="mx-4 mt-6 mb-4 bg-white"
+            />
+            <ExplorerList
+                :list="filteredData"
+                :selected="selectedClassificationNameFromRoute"
+                @select="nodeEmit"
+                dataKey="name"
             >
-                <template #suffix>
-                    <fa
-                        v-if="treeFilterText"
-                        icon="fal times-circle"
-                        class="ml-2 mr-1 text-red-600"
-                        @click="clearSearchText"
-                    />
-                    <fa
-                        v-if="!treeFilterText"
-                        icon="fal search"
-                        class="ml-2 mr-1 text-gray-500"
-                    />
+                <template #default="{ item, isSelected }">
+                    <div class="flex items-center gap-x-1">
+                        <AtlanIcon icon="Shield" class="text-pink-400" />
+                        <span
+                            class="text-sm truncate"
+                            :class="
+                                isSelected
+                                    ? 'text-primary font-bold'
+                                    : 'text-gray'
+                            "
+                        >
+                            {{ item.title }}
+                        </span>
+                    </div>
                 </template>
-            </a-input>
-            <div class="mt-2 overflow-y-auto treelist">
-                <!-- <CreateClassificationTree
-                    :treeData="treeFilterText !== '' ? filteredData : treeData"
-                    @nodeEmit="nodeEmit"
-                /> -->
-                <div
-                    v-for="item in treeFilterText !== ''
-                        ? filteredData
-                        : treeData"
-                    :key="item.guid"
-                    class="flex px-4 py-2 mb-1 rounded cursor-pointer tree-item"
-                    :class="
-                        selectedClassificationNameFromRoute === item.name
-                            ? 'tree-item-active'
-                            : ''
-                    "
-                    @click="() => nodeEmit(item)"
-                >
-                    <span class="truncate ...">{{ item.title }}</span>
-                </div>
-            </div>
-        </pane>
-        <pane size="74" class="flex flex-col py-4 pl-6 pr-4 bg-white">
-            <router-view class="flex-grow" />
-        </pane>
+            </ExplorerList>
+        </template>
+
+        <router-view />
 
         <a-modal
             :visible="modalVisible"
@@ -115,7 +90,7 @@
                 {{ createErrorText }}
             </p>
         </a-modal>
-    </splitpanes>
+    </ExplorerLayout>
 </template>
 
 <script lang="ts">
@@ -138,15 +113,19 @@
     import { Classification } from '~/api/atlas/classification'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
+    import AtlanBtn from '@/UI/button.vue'
+    import ExplorerLayout from '@/admin/explorerLayout.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
-        name: 'ClassificationProfileWrapper',
-
+        name: 'ClassificationProfile',
         props: {
             classificationName: {
                 type: String as PropType<String>,
             },
         },
+        components: { AtlanBtn, ExplorerLayout, SearchAndFilter, ExplorerList },
         setup(props) {
             const store = useClassificationStore()
             const router = useRouter()
@@ -162,20 +141,20 @@
             }
             const treeData = computed(() => store.classificationTree)
 
-            store.setSelectedClassification(
-                router?.currentRoute.value?.params?.classificationId as string
-            )
             const selectedClassificationNameFromRoute = computed(
                 () => store.selectedClassification
             )
+
             console.log(
                 router?.currentRoute.value?.params?.classificationId,
                 'route',
                 router
             )
 
-            const filteredData = computed(
-                () => store.filteredClassificationTree
+            const filteredData = computed(() =>
+                treeFilterText.value
+                    ? store.filteredClassificationTree
+                    : treeData.value
             )
 
             // get classifications
@@ -193,34 +172,46 @@
                     store.initializeFilterTree()
                     store.setClassificationsStatus('success')
                     if (store.classificationTree.length > 0) {
-                        router.push(
-                            `/admin/classifications/${encodeURIComponent(
+                        if (
+                            router?.currentRoute.value?.params?.classificationId
+                        ) {
+                            store.setSelectedClassification(
+                                router?.currentRoute.value?.params
+                                    ?.classificationId as string
+                            )
+                        } else {
+                            router.push(
+                                `/admin/classifications/${encodeURIComponent(
+                                    store.classificationTree[0].name
+                                )}`
+                            )
+                            store.setSelectedClassification(
                                 store.classificationTree[0].name
-                            )}`
-                        )
-                        //                        //                        console.log(router, 'router1')
+                            )
+                        }
                     }
                 } else {
                     store.setClassificationsStatus('error')
                 }
             })
 
-            const nodeEmit = (node: classificationInterface) => {
+            function nodeEmit(node: classificationInterface) {
                 router.push(
                     `/admin/classifications/${encodeURIComponent(node.name)}`
                 )
                 store.setSelectedClassification(node.name)
-
-                //                //                console.log(node.name)
             }
+
             const formState: UnwrapRef<FormState> = reactive({
                 name: '',
                 description: '',
             })
+
             const urlValidationRegex = new RegExp(
                 '^[a-zA-Z][a-zA-Z0-9\s_]*',
                 'g'
             )
+
             const rules = {
                 name: [
                     {
@@ -235,13 +226,8 @@
                 ],
             }
 
-            const handleSearch = (e: Event) => {
-                treeFilterText.value = (<HTMLInputElement>e.target).value
+            const handleSearch = () => {
                 store.filterClassificationTree(treeFilterText.value)
-            }
-
-            const clearSearchText = () => {
-                treeFilterText.value = ''
             }
 
             const closeModal = () => {
@@ -388,7 +374,6 @@
                 createErrorText,
                 filteredData,
                 treeData,
-                clearSearchText,
                 handleSearch,
                 treeFilterText,
                 modalVisible,
@@ -408,17 +393,6 @@
     })
 </script>
 <style lang="less" scoped>
-    .treelist {
-        height: calc(100vh - 14rem);
-    }
-    .tree-item:hover {
-        background-color: #e9eefa;
-        color: #2251cc;
-    }
-    .tree-item-active {
-        background-color: #e9eefa;
-        color: #2251cc;
-    }
     :global(.ant-form-item-label
             > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
         @apply hidden;
@@ -433,10 +407,6 @@
         font-family: SimSun, sans-serif;
         line-height: 1;
         content: '*';
-    }
-
-    .add-classification-btn {
-        top: -50%;
     }
 </style>
 <route lang="yaml">

@@ -13,15 +13,7 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="
-                                inline-flex
-                                items-center
-                                justify-center
-                                p-2
-                                rounded-full
-                                btn-add
-                                hover:bg-gray-300
-                            "
+                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -69,13 +61,13 @@
             <splitpanes horizontal :push-other-panes="false">
                 <pane
                     :max-size="100"
-                    :size="100 - paneSize"
+                    :size="100 - outputPaneSize"
                     min-size="45"
                     class="overflow-x-hidden"
                 >
                     <Editor
                 /></pane>
-                <pane min-size="0" :size="paneSize" max-size="55">
+                <pane min-size="0" :size="outputPaneSize" max-size="45">
                     <ResultsPane
                 /></pane>
             </splitpanes>
@@ -85,7 +77,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, computed, Ref, inject, ref } from 'vue'
+    import {
+        defineComponent,
+        toRefs,
+        computed,
+        Ref,
+        inject,
+        ref,
+        onMounted,
+        onUnmounted,
+    } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -110,9 +111,8 @@
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
-            // const {resultsPaneSizeToggle} = useHotKeys()
-            const paneSize = ref(55)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -211,18 +211,18 @@
                     inlineTabRemove(
                         targetKey as string,
                         tabs,
-                        activeInlineTabKey
+                        activeInlineTabKey,
+                        pushGuidToURL
                     )
                 }
             }
-
             return {
                 isActiveInlineTabSaved,
                 isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
-                paneSize,
+                outputPaneSize,
                 handleAdd,
                 onEdit,
                 onTabClick,

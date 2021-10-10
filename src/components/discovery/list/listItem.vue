@@ -1,22 +1,19 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div
-        class="flex mx-3 border group"
-        :class="[
-            !bulkSelectMode && isSelected
-                ? 'border-primary rounded bg-primary-light'
-                : 'bg-white border-transparent',
-            bulkSelectMode && isChecked ? 'bg-primary-light' : '',
-        ]"
-    >
+    <div class="flex flex-col mx-3 my-1">
         <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent rounded  w-96 group-hover:shadow"
-            :class="{ ' border-gray-200': bulkSelectMode ? true : !isSelected }"
+            class="flex items-start flex-1 px-3 py-6 transition-all duration-300 border rounded  hover:shadow hover:border-none"
+            :class="[
+                !bulkSelectMode && isSelected
+                    ? 'border-primary bg-primary-light'
+                    : 'bg-white border-transparent',
+                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+            ]"
         >
             <a-checkbox
                 v-if="showCheckBox"
                 :checked="isChecked"
-                class="ml-2 mr-3 opacity-0 group-hover:opacity-100"
+                class="ml-2 mr-3 opacity-60 hover:opacity-100"
                 :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
                 @click.stop
                 @change="(e) => $emit('listItem:check', e, item)"
@@ -101,19 +98,29 @@
                                 )
                             "
                             class="mr-2 text-gray-500"
-                            ><span class="tracking-tighter text-gray">{{
+                            ><span class="tracking-wide text-gray">{{
                                 rowCount(item, false)
                             }}</span>
                             Rows</span
                         >
                         <span class="text-gray-500">
-                            <span class="tracking-tighter text-gray">{{
+                            <span class="tracking-wide text-gray">{{
                                 columnCount(item, false)
                             }}</span>
                             Cols</span
                         >
                     </div>
-
+                    <div
+                        v-if="
+                            getCombinedUsersAndGroups(item).length &&
+                            ['table', 'view', 'tablepartition'].includes(
+                                item.typeName.toLowerCase()
+                            )
+                        "
+                        style="color: #c4c4c4"
+                    >
+                        •
+                    </div>
                     <!-- Owner bar -->
                     <div
                         v-if="getCombinedUsersAndGroups(item).length"
@@ -133,257 +140,241 @@
                 <!-- Description -->
                 <div
                     v-if="projection?.includes('description')"
-                    class="max-w-lg text-sm text-gray-500 truncate-overflow"
+                    class="mt-2 mb-1 text-sm text-gray-500 truncate-overflow"
+                    style="max-width: 80%"
                 >
                     <span v-if="description(item)?.length">{{
                         description(item)
                     }}</span>
                 </div>
                 <!-- Classification and terms -->
-                <div
-                    v-if="projection?.includes('classifications')"
-                    class="flex items-center"
+                <template
+                    v-if="
+                        projection?.includes('classifications') ||
+                        projection?.includes('terms')
+                    "
                 >
-                    <button
-                        v-if="isOverflowing"
-                        class="w-8 h-8 p-2 group"
-                        @click="() => chipScrollWrapper?.scrollBy(-200, 0)"
-                    >
-                        <AtlanIcon
-                            icon="ChevronRight"
-                            class="text-gray-500 transform rotate-180  opacity-70 group-hover:opacity-100"
-                        />
-                    </button>
-                    <div
-                        ref="chipScrollWrapper"
-                        class="flex items-center overflow-x-auto  flex-nowrap gap-x-2 hidden-scroll"
-                        style="scroll-behavior: smooth"
-                    >
+                    <ScrollStrip>
                         <Pill
                             v-for="clsf in item.classifications"
+                            v-if="projection?.includes('classifications')"
                             class="flex-none"
                             :label="clsf.typeName"
                             :has-action="false"
+                            :class="isSelected ? 'bg-white' : ''"
                         >
                             <template #prefix>
                                 <AtlanIcon
                                     icon="Shield"
-                                    class="text-pink-400 group-hover:text-white"
+                                    class="
+                                        text-pink-400
+                                        group-hover:text-white
+                                        h-3.5
+                                        w-auto
+                                    "
                                 />
                             </template>
                         </Pill>
-                    </div>
-                    <button
-                        v-if="isOverflowing"
-                        class="w-8 h-8 p-2 group"
-                        @click="() => chipScrollWrapper?.scrollBy(200, 0)"
-                    >
-                        <AtlanIcon
-                            icon="ChevronRight"
-                            class="text-gray-500  opacity-70 group-hover:opacity-100"
-                        />
-                    </button>
-                </div>
+                        <Pill
+                            v-for="clsf in item.meanings"
+                            v-if="projection?.includes('terms')"
+                            class="flex-none"
+                            :label="clsf.displayText"
+                            :has-action="false"
+                            :class="isSelected ? 'bg-white' : ''"
+                        >
+                            <template #prefix>
+                                <AtlanIcon
+                                    icon="Term"
+                                    class="text-gray h-3.5 w-auto"
+                                />
+                            </template>
+                        </Pill>
+                    </ScrollStrip>
+                </template>
             </div>
             <ThreeDotMenu
                 v-if="showThreeDotMenu"
                 :entity="item"
                 class="opacity-0"
                 :visible="false"
-                :showGtcCrud="false"
-                :showLinks="false"
-                :showUnlinkAsset="true"
+                :show-gtc-crud="false"
+                :show-links="false"
+                :show-unlink-asset="true"
                 @unlinkAsset="$emit('unlinkAsset', item)"
             />
         </div>
+        <hr class="mx-4" />
     </div>
 </template>
 
 <script lang="ts">
-    import HierarchyBar from '@common/badge/hierarchy.vue'
-    import StatusBadge from '@common/badge/status/index.vue'
-    import { computed, defineComponent, PropType, Ref, ref } from 'vue'
-    import Pill from '~/components/UI/pill/pill.vue'
-    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+import HierarchyBar from '@common/badge/hierarchy.vue'
+import StatusBadge from '@common/badge/status/index.vue'
+import { computed, defineComponent, PropType, Ref, ref } from 'vue'
+import Pill from '@/UI/pill/pill.vue'
+import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
 
-    import AssetLogo from '@/common/icon/assetIcon.vue'
-    import { Components } from '~/api/atlas/client'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
+import AssetLogo from '@/common/icon/assetIcon.vue'
+import { Components } from '~/api/atlas/client'
+import useAssetInfo from '~/composables/asset/useAssetInfo'
+import { assetInterface } from '~/types/assets/asset.interface'
+import ScrollStrip from '@/UI/scrollStrip.vue'
 
-    export default defineComponent({
-        name: 'AssetListItem',
-        components: {
-            StatusBadge,
-            HierarchyBar,
-            AssetLogo,
-            Pill,
-            ThreeDotMenu,
-        },
-        props: {
-            item: {
-                type: Object as PropType<Components.Schemas.AtlasEntityHeader>,
-                required: false,
-                default(): Components.Schemas.AtlasEntityHeader {
-                    return {}
-                },
-            },
-            score: {
-                type: Number,
-                required: false,
-                default() {
-                    return 0
-                },
-            },
-            projection: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
-            },
-            isSelected: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            isChecked: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            cssClasses: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            showAssetTypeIcon: {
-                type: Boolean,
-                required: false,
-                default: () => true,
-            },
-            // If the list items are selectable or not
-            showCheckBox: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
-            bulkSelectMode: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            // for unlinking asset in glossary
-            showThreeDotMenu: {
-                type: Boolean,
-                required: false,
-                default: false,
+export default defineComponent({
+    name: 'AssetListItem',
+    components: {
+        StatusBadge,
+        HierarchyBar,
+        AssetLogo,
+        Pill,
+        ThreeDotMenu,
+        ScrollStrip,
+    },
+    props: {
+        item: {
+            type: Object as PropType<Components.Schemas.AtlasEntityHeader>,
+            required: false,
+            default(): Components.Schemas.AtlasEntityHeader {
+                return {}
             },
         },
-        emits: ['listItem:check', 'unlinkAsset'],
-        setup() {
-            const {
-                description,
-                logo,
-                dataTypeImage,
-                dataType,
-                assetType,
-                title,
-                status,
-                rowCount,
-                columnCount,
-                ownerGroups,
-                ownerUsers,
-            } = useAssetInfo()
+        score: {
+            type: Number,
+            required: false,
+            default() {
+                return 0
+            },
+        },
+        projection: {
+            type: Array,
+            required: false,
+            default() {
+                return []
+            },
+        },
+        isSelected: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+        isChecked: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+        cssClasses: {
+            type: String,
+            required: false,
+            default: () => '',
+        },
+        showAssetTypeIcon: {
+            type: Boolean,
+            required: false,
+            default: () => true,
+        },
+        // If the list items are selectable or not
+        showCheckBox: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+        // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
+        bulkSelectMode: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        // for unlinking asset in glossary
+        showThreeDotMenu: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+    },
+    emits: ['listItem:check', 'unlinkAsset'],
+    setup() {
+        const {
+            description,
+            logo,
+            dataTypeImage,
+            dataType,
+            assetType,
+            title,
+            status,
+            rowCount,
+            columnCount,
+            ownerGroups,
+            ownerUsers,
+        } = useAssetInfo()
 
-            function getTruncatedUsers(arr: string[], wordCount: number = 30) {
-                const strSize: number[] = [0]
-                let idx = 0
-                arr.forEach((name) => {
-                    strSize.push(strSize[strSize.length - 1] + name.length)
-                })
+        function getTruncatedUsers(arr: string[], wordCount: number = 30) {
+            const strSize: number[] = [0]
+            let idx = 0
+            arr.forEach((name) => {
+                strSize.push(strSize[strSize.length - 1] + name.length)
+            })
 
-                // Check upto how long it is possible to display
-                while (strSize[idx] < wordCount && idx < strSize.length) {
-                    idx += 1
-                }
-                // // Compenstion for the initial 0 in strSize
-                idx -= 1
-
-                /** The elements that would be displayed */
-                const displayArray = arr.slice(0, idx)
-                /** The elements that would be truncated as x other(s) */
-                const truncated = arr.slice(idx)
-
-                // Check if something needs to be truncated
-                if (truncated.length) {
-                    // If there is only 1 element to be truncated then compare the
-                    // length of name and 'x others(s)'
-                    const lastElm =
-                        truncated.length === 1 &&
-                        truncated[0].length <
-                            `${truncated.length} other(s)`.length
-                            ? `${truncated[0]}`
-                            : `${truncated.length} other(s)`
-
-                    return `${displayArray.join(', ')} and ${lastElm}`
-                }
-                // Check if everything can be directly displayed
-                // If so then take the last element from array, append it with 'and'
-                const lastElm = displayArray.pop()
-                return displayArray.length
-                    ? `${displayArray.join(', ')} and ${lastElm}`
-                    : `${lastElm}`
+            // Check upto how long it is possible to display
+            while (strSize[idx] < wordCount && idx < strSize.length) {
+                idx += 1
             }
+            // // Compenstion for the initial 0 in strSize
+            idx -= 1
 
-            function getCombinedUsersAndGroups(item: assetInterface) {
-                return [...ownerUsers(item), ...ownerGroups(item)].filter(
-                    (name) => name.length
-                )
+            /** The elements that would be displayed */
+            const displayArray = arr.slice(0, idx)
+            /** The elements that would be truncated as x other(s) */
+            const truncated = arr.slice(idx)
+
+            // Check if something needs to be truncated
+            if (truncated.length) {
+                // If there is only 1 element to be truncated then compare the
+                // length of name and 'x others(s)'
+                const lastElm =
+                    truncated.length === 1 &&
+                    truncated[0].length < `${truncated.length} other(s)`.length
+                        ? `${truncated[0]}`
+                        : `${truncated.length} other(s)`
+
+                return `${displayArray.join(', ')} and ${lastElm}`
             }
+            // Check if everything can be directly displayed
+            // If so then take the last element from array, append it with 'and'
+            const lastElm = displayArray.pop()
+            return displayArray.length
+                ? `${displayArray.join(', ')} and ${lastElm}`
+                : `${lastElm}`
+        }
 
-            const isColumnAsset = (asset) => assetType(asset) === 'Column'
-
-            const getColumnUrl = (asset) => {
-                const tableGuid = asset?.attributes?.table?.guid
-                return `/assets/${tableGuid}/overview?column=${asset.guid}`
-            }
-
-            const chipScrollWrapper: Ref<HTMLElement | null> = ref(null)
-
-            const isOverflowing = computed(
-                () =>
-                    (chipScrollWrapper.value?.scrollWidth || 0) >
-                    (chipScrollWrapper.value?.clientWidth || 0)
+        function getCombinedUsersAndGroups(item: assetInterface) {
+            return [...ownerUsers(item), ...ownerGroups(item)].filter(
+                (name) => name.length
             )
-            return {
-                chipScrollWrapper,
-                isOverflowing,
-                isColumnAsset,
-                getColumnUrl,
-                description,
-                logo,
-                dataTypeImage,
-                dataType,
-                assetType,
-                title,
-                status,
-                rowCount,
-                columnCount,
-                getTruncatedUsers,
-                getCombinedUsersAndGroups,
-            }
-        },
-    })
+        }
+
+        const isColumnAsset = (asset) => assetType(asset) === 'Column'
+
+        const getColumnUrl = (asset) => {
+            const tableGuid = asset?.attributes?.table?.guid
+            return `/assets/${tableGuid}/overview?column=${asset.guid}`
+        }
+
+        return {
+            isColumnAsset,
+            getColumnUrl,
+            description,
+            logo,
+            dataTypeImage,
+            dataType,
+            assetType,
+            title,
+            status,
+            rowCount,
+            columnCount,
+            getTruncatedUsers,
+            getCombinedUsersAndGroups,
+        }
+    },
+})
 </script>
-<style scoped>
-    .hidden-scroll::-webkit-scrollbar {
-        height: 0 !important;
-        width: 0 !important;
-    }
-    .hidden-scroll {
-        overflow: -moz-scrollbars-none;
-        scrollbar-width: none;
-    }
-</style>

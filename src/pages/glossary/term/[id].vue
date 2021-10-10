@@ -85,169 +85,190 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
-import { useRouter } from 'vue-router'
+    import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
+    import { useRouter } from 'vue-router'
 
-// components
-import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
-import LinkedAssetsTab from '~/components/glossary/profile/linkedAssets/linkedAssets.vue'
-import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
-import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
-import LoadingView from '@common/loaders/page.vue'
+    // components
+    import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
+    import LinkedAssetsTab from '~/components/glossary/profile/linkedAssets/linkedAssets.vue'
+    import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
+    import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
+    import LoadingView from '@common/loaders/page.vue'
 
-// composables
-import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
+    // composables
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
-// assets
-import { Term } from '~/types/glossary/glossary.interface'
+    // assets
+    import { Term } from '~/types/glossary/glossary.interface'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
 
-export default defineComponent({
-    components: {
-        GlossaryProfileOverview,
-        LinkedAssetsTab,
-        GtcPreview,
-        ProfileHeader,
-        LoadingView,
-    },
-    props: {
-        id: {
-            type: String,
-            required: true,
-            default: '',
+    export default defineComponent({
+        components: {
+            GlossaryProfileOverview,
+            LinkedAssetsTab,
+            GtcPreview,
+            ProfileHeader,
+            LoadingView,
         },
-    },
-    setup(props) {
-        // data
-        const guid = toRef(props, 'id')
-        const currentTab = ref('1')
-        const previewEntity = ref()
-        const newName = ref('')
-        const router = useRouter()
-        const scrollDiv = ref(null)
-        const headerReachedTop = ref(false)
-        const temp = ref(false)
+        props: {
+            id: {
+                type: String,
+                required: true,
+                default: '',
+            },
+        },
+        setup(props) {
+            // data
+            const guid = toRef(props, 'id')
+            const currentTab = ref('1')
+            const previewEntity = ref()
+            const newName = ref('')
+            const router = useRouter()
+            const scrollDiv = ref(null)
+            const headerReachedTop = ref(false)
+            const temp = ref(false)
 
-        const {
-            entity: term,
-            title,
-            shortDescription,
-            qualifiedName,
-            statusObject,
-            error,
-            statusMessage,
-            isLoading,
-            refetch,
-        } = useGTCEntity<Term>('term', guid, guid.value)
+            const {
+                entity: term,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                statusMessage,
+                isLoading,
+                refetch,
+            } = useGTCEntity<Term>('term', guid, guid.value)
 
-        const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
+            const store = useBusinessMetadataStore()
+            const BMListLoaded = computed(
+                () => store.getBusinessMetadataListLoaded
+            )
 
-        // computed
-        const parentGlossaryName = computed(
-            () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
-        )
+            // ? Re fetch after bm projection loads or first fetch after  bm projection loads ?
+            watch(
+                BMListLoaded,
+                (v) => {
+                    if (v) {
+                        try {
+                            refetch()
+                        } catch (e) {
+                            console.error(e)
+                        }
+                    }
+                },
+                { immediate: true }
+            )
 
-        const linkedAssetsCount = computed(
-            () => term.value?.attributes?.assignedEntities?.length ?? 0
-        )
+            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
-        const isNewTerm = computed(() => title.value === 'Untitled Term')
+            // computed
+            const parentGlossaryName = computed(
+                () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
+            )
 
-        // methods
-        const handlePreview = (entity: any) => {
-            previewEntity.value = entity
-        }
+            const linkedAssetsCount = computed(
+                () => term.value?.attributes?.assignedEntities?.length ?? 0
+            )
 
-        const updateTitle = () => {
-            updateEntity('term', term.value?.guid ?? '', {
-                name: newName.value,
-            })
-        }
-        const redirectToProfile = () => {
-            router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
-        }
-        const handleScroll = () => {
-            if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
-                headerReachedTop.value = true
-            } else if (scrollDiv.value?.scrollTop > 70 && temp.value) {
-                scrollDiv.value.scrollTop = 0
-                temp.value = !temp.value
+            const isNewTerm = computed(() => title.value === 'Untitled Term')
+
+            // methods
+            const handlePreview = (entity: any) => {
+                previewEntity.value = entity
             }
-        }
-        const handleFirstCardReachedTop = () => {
-            scrollDiv.value.scrollTop = 0
-            headerReachedTop.value = false
-            temp.value = true
-        }
 
-        watch(updatedEntity, () => {
-            refetch()
-            newName.value = ''
-        })
+            const updateTitle = () => {
+                updateEntity('term', term.value?.guid ?? '', {
+                    name: newName.value,
+                })
+            }
+            const redirectToProfile = () => {
+                router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
+            }
+            const handleScroll = () => {
+                if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
+                    headerReachedTop.value = true
+                } else if (scrollDiv.value?.scrollTop > 70 && temp.value) {
+                    scrollDiv.value.scrollTop = 0
+                    temp.value = !temp.value
+                }
+            }
+            const handleFirstCardReachedTop = () => {
+                scrollDiv.value.scrollTop = 0
+                headerReachedTop.value = false
+                temp.value = true
+            }
 
-        watch(guid, () => {
-            currentTab.value = '1'
-        })
-        // Providers
-        provide('refreshEntity', refetch)
+            watch(updatedEntity, () => {
+                refetch()
+                newName.value = ''
+            })
 
-        return {
-            redirectToProfile,
-            term,
-            currentTab,
-            error,
-            isLoading,
-            guid,
-            title,
-            statusMessage,
-            shortDescription,
-            qualifiedName,
-            linkedAssetsCount,
-            parentGlossaryName,
-            previewEntity,
-            statusObject,
-            isNewTerm,
-            newName,
-            handlePreview,
-            refetch,
-            updateTitle,
-            scrollDiv,
-            headerReachedTop,
-            handleScroll,
-            handleFirstCardReachedTop,
-        }
-    },
-})
+            watch(guid, () => {
+                currentTab.value = '1'
+            })
+            // Providers
+            provide('refreshEntity', refetch)
+
+            return {
+                redirectToProfile,
+                term,
+                currentTab,
+                error,
+                isLoading,
+                guid,
+                title,
+                statusMessage,
+                shortDescription,
+                qualifiedName,
+                linkedAssetsCount,
+                parentGlossaryName,
+                previewEntity,
+                statusObject,
+                isNewTerm,
+                newName,
+                handlePreview,
+                refetch,
+                updateTitle,
+                scrollDiv,
+                headerReachedTop,
+                handleScroll,
+                handleFirstCardReachedTop,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.termHome {
-    :global(.ant-tabs-bar) {
-        @apply mb-0;
+    .termHome {
+        :global(.ant-tabs-bar) {
+            @apply mb-0;
+        }
+        :global(.ant-tabs-nav) {
+            @apply ml-8;
+        }
     }
-    :global(.ant-tabs-nav) {
-        @apply ml-8;
+    .overviewTab {
+        :global(.ant-tabs-nav) {
+            @apply ml-0;
+        }
     }
-}
-.overviewTab {
-    :global(.ant-tabs-nav) {
-        @apply ml-0;
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px;
+            padding: 0px 0px 18px 0px;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-4 mb-0;
+        }
     }
-}
-.tabClasses {
-    :global(.ant-tabs-tab) {
-        margin: 0px 32px 0px 0px;
-        padding: 0px 0px 18px 0px;
-    }
-    :global(.ant-tabs-nav) {
-        margin: 0px !important;
-    }
-    :global(.ant-tabs-tab-active) {
-        @apply text-gray-700 font-bold !important;
-    }
-    :global(.ant-tabs-bar) {
-        @apply px-4 mb-0;
-    }
-}
 </style>
 
 <route lang="yaml">

@@ -1,45 +1,28 @@
 <template>
-    <div class="">
-        <div class="flex w-full">
-            <a-tabs v-model:activeKey="activeTabKey" class="w-full">
-                <a-tab-pane key="1" tab="Linked Assets">
-                    <div class="w-full rounded asset-list">
-                        <AssetsWrapper
-                            v-if="selectedClassification?.name"
-                            :ref="
-                                (el) => {
-                                    assetWrapperRef = el
-                                }
-                            "
-                            :selected-classification="
-                                selectedClassification?.name
-                            "
-                        />
-                    </div>
-                </a-tab-pane>
-                <a-tab-pane key="2" tab="Linked Terms">
-                    <div class="w-full mt-1 rounded asset-list">
-                        <LinkedTerms
-                            :selected-classification="
-                                selectedClassification?.name
-                            "
-                        />
-                    </div>
-                </a-tab-pane>
-            </a-tabs>
-        </div>
-    </div>
+    <a-tabs
+        v-model:activeKey="activeTabKey"
+        class="flex-none w-full mt-2 typeTabs"
+    >
+        <a-tab-pane key="1" tab="Linked Assets" />
+        <a-tab-pane key="2" tab="Linked Terms" />
+    </a-tabs>
+    <KeepAlive>
+        <AssetsWrapper :dataMap="filterConfig" v-if="activeTabKey === '1'" />
+        <LinkedTerms
+            v-else-if="activeTabKey === '2'"
+            :selected-classification="selectedClassification?.name"
+        />
+    </KeepAlive>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, PropType, Ref, watch } from 'vue'
+    import { defineComponent, computed, ref, PropType, toRefs } from 'vue'
     import AssetsWrapper from '@common/assets/index.vue'
-    import { Components } from '~/api/atlas/client'
     import LinkedTerms from './LinkedTerms.vue'
     import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
-        name: 'ClassificationHeader',
+        name: 'ClassificationBody',
         components: {
             AssetsWrapper,
             LinkedTerms,
@@ -52,38 +35,22 @@
         },
         setup(props) {
             const assetSearchText = ref('')
-            const assetWrapperRef: Ref<any> = ref(null)
-            const selectedClassification = computed(() => props.classification)
+            const { classification: selectedClassification } = toRefs(props)
             const handleAssetSearch = (e: any) => {
                 assetSearchText.value = e.target.value
             }
             const activeTabKey = ref('1')
-            watch(selectedClassification, () => {
-                if (selectedClassification.value) {
-                    const criterion: Components.Schemas.FilterCriteria[] = []
-                    const entityFilterPayload = [
-                        {
-                            condition: 'OR',
-                            criterion,
-                        } as Components.Schemas.FilterCriteria,
-                    ]
-                    criterion.push({
-                        attributeName: '__classificationNames',
-                        attributeValue: selectedClassification.value.name,
-                        operator: 'eq',
-                    })
-                    criterion.push({
-                        attributeName: '__propagatedClassificationNames',
-                        attributeValue: selectedClassification.value.name,
-                        operator: 'eq',
-                    })
 
-                    assetWrapperRef.value?.updateBody(entityFilterPayload)
-                }
-            })
+            const filterConfig = computed(() => ({
+                classifications: {
+                    checked: [selectedClassification.value?.name],
+                    operator: 'OR',
+                    addedBy: 'all',
+                },
+            }))
             return {
-                assetWrapperRef,
                 selectedClassification,
+                filterConfig,
                 activeTabKey,
                 assetSearchText,
                 handleAssetSearch,
@@ -91,19 +58,40 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .three-dots {
-        height: fit-content;
-        cursor: pointer;
-    }
-    .search-input {
-        max-width: 30%;
-    }
-    .linked-btn-active {
-        background-color: #e9eefa;
-        color: #2251cc;
-    }
-    .asset-list {
-        height: calc(100vh - 23rem);
+
+<style lang="less">
+    .typeTabs {
+        .ant-tabs-tab {
+            padding-left: 2px !important;
+            padding-right: 2px !important;
+            padding-top: 8px !important;
+            padding-bottom: 16px !important;
+            @apply mr-4 !important;
+            @apply text-gray-500;
+            @apply text-sm !important;
+            @apply tracking-wide;
+        }
+        .ant-tabs-tab:first-child {
+            margin-left: 18px !important;
+        }
+        .ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child {
+            @apply ml-0;
+        }
+        .ant-tabs-tab-active {
+            @apply text-gray !important;
+            @apply font-bold !important;
+            @apply tracking-normal;
+        }
+        .ant-tabs-bar {
+            margin-bottom: 0px;
+            @apply border-gray-300 !important;
+        }
+        .ant-tabs-content {
+            padding-right: 0px;
+        }
+        .ant-tabs-ink-bar {
+            @apply rounded-t-sm;
+            margin-bottom: 1px;
+        }
     }
 </style>

@@ -32,13 +32,21 @@
                 :max-size="24.5"
                 :size="explorerPaneSize"
                 :min-size="0"
-                class="explorer_splitpane"
+                class="relative explorer_splitpane"
             >
                 <!--explorer pane start -->
-                <component
-                    v-if="activeTab && activeTab.component"
-                    :is="activeTab.component"
-                ></component>
+                <div
+                    v-if="activeTab.component === 'schema'"
+                    class="absolute h-full full-width"
+                >
+                    <Schema />
+                </div>
+                <div
+                    v-if="activeTab.component === 'queries'"
+                    class="absolute h-full full-width"
+                >
+                    <Queries />
+                </div>
                 <!--explorer pane end -->
             </pane>
             <pane
@@ -49,7 +57,7 @@
                         : 100 - explorerPaneSize
                 "
                 :min-size="
-                    activeInlineTab?.assetSidebar?.isVisible ? 55.5 : 75.5
+                    activeInlineTab?.assetSidebar?.isVisible ? 50.5 : 75.5
                 "
             >
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
@@ -70,7 +78,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch, inject, Ref } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        watch,
+        inject,
+        Ref,
+        onUnmounted,
+        onMounted,
+    } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
@@ -88,7 +105,7 @@
     import { useInlineTab } from './common/composables/useInlineTab'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     // import { useConnector } from './common/composables/useConnector'
-    // import { useHotKeys } from './common/composables/useHotKeys'
+    import { useHotKeys } from './common/composables/useHotKeys'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
@@ -98,20 +115,24 @@
         components: {
             Playground,
             AssetSidebar,
-            schema: Schema,
-            queries: Queries,
-            history: History,
-            schedule: Schedule,
+            Schema,
+            Queries,
+            History,
+            Schedule,
         },
         props: {},
         setup(props) {
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
             >
-            const { explorerPaneSize, assetSidebarPaneSize, paneResize } =
-                useSpiltPanes()
+            const {
+                explorerPaneSize,
+                assetSidebarPaneSize,
+                outputPaneSize,
+                paneResize,
+            } = useSpiltPanes()
             // TODO: will be used for HOTKEYs
-            // const {explorerPaneToggle,assetSidebarToggle} =useHotKeys();
+            const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
 
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
@@ -159,6 +180,7 @@
                 isQueryRunning: isQueryRunning,
                 editorInstance: editorInstance,
                 monacoInstance: monacoInstance,
+                outputPaneSize: outputPaneSize,
                 setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
@@ -177,6 +199,24 @@
                     //     )
                     openSavedQueryInNewTab(savedQueryInfo.value)
                 }
+            })
+            const _keyListener = (e) => {
+                if (e.key === 'b' && e.ctrlKey) {
+                    e.preventDefault()
+                    explorerPaneToggle(explorerPaneSize)
+                    //prevent the default action
+                }
+                if (e.key === 'j' && e.ctrlKey) {
+                    e.preventDefault()
+                    resultsPaneSizeToggle(outputPaneSize)
+                    //prevent the default action
+                }
+            }
+            onMounted(() => {
+                window.addEventListener('keypress', _keyListener)
+            })
+            onUnmounted(() => {
+                window.removeEventListener('keypress', _keyListener)
             })
             return {
                 activeTab,
@@ -206,16 +246,42 @@
 
     :global(.splitpanes--vertical > .splitpanes__splitter) {
         position: relative;
-        margin-left: -1px;
         box-sizing: border-box;
         position: relative;
         touch-action: none;
-        border-width: 1.5px !important;
         border-right: 0px !important;
-        @apply border-r !important;
+        // margin-right: -0.5px;
+        // @apply border-r !important;
+        border-width: 1.5px !important;
         &:hover {
-            @apply border-primary;
-            border-width: 2px !important;
+            @apply bg-primary !important;
+            &:before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                @apply bg-primary;
+                -webkit-transition: background-color 0.3s;
+                transition: background-color 0.3s;
+                margin-left: 0px;
+                transform: translateY(-50%);
+                width: 2px;
+                height: 100%;
+                @apply z-50 !important;
+            }
+            &:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                @apply bg-transparent;
+                -webkit-transition: background-color 0.3s;
+                transition: background-color 0.3s;
+                transform: translateY(-50%);
+                width: 5px;
+                height: 100%;
+                margin-left: 0px;
+            }
         }
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter) {
@@ -224,84 +290,86 @@
         box-sizing: border-box;
         position: relative;
         touch-action: none;
-        border-width: 1.5px !important;
-        border-top: 0px !important;
         @apply border-t !important;
         &:hover {
-            @apply border-primary;
-            border-width: 2px !important;
+            // border-width: 1.5px !important;
+            @apply bg-primary !important;
+            &:before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                -webkit-transition: background-color 0.3s;
+                transition: background-color 0.3s;
+                margin-top: -2px;
+                transform: translateX(-50%);
+                width: 100%;
+                height: 2px;
+                @apply z-50 bg-primary !important;
+            }
+            &:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                @apply z-50 bg-transparent !important;
+                -webkit-transition: background-color 0.3s;
+                transition: background-color 0.3s;
+                margin-top: -2px;
+                transform: translateX(-50%);
+                width: 100%;
+                height: 8px;
+            }
         }
     }
-    :global(.splitpanes--vertical > .splitpanes__splitter):before {
-        // content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        background-color: rgba(0, 0, 0, 0.15);
-        -webkit-transition: background-color 0.3s;
-        transition: background-color 0.3s;
+    // :global(.splitpanes--horizontal > .splitpanes__splitter) {
+    //     position: relative;
+    //     margin-top: -1px;
+    //     box-sizing: border-box;
+    //     position: relative;
+    //     touch-action: none;
+    //     border-width: 1.5px !important;
+    //     @apply border-t !important;
+    //     &:hover {
+    //         // @apply border-primary;
+    //         // border-width: 2px !important;
+    //     }
+    // }
 
-        margin-left: -2px;
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):before {
+    //     content: '';
+    //     position: absolute;
+    //     top: 50%;
+    //     left: 50%;
+    //     background-color: rgba(0, 0, 0, 0.15);
+    //     -webkit-transition: background-color 0.3s;
+    //     transition: background-color 0.3s;
+    //     margin-top: -2px;
+    //     transform: translateX(-50%);
+    //     width: 30px;
+    //     height: 1px;
+    // }
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):after {
+    //     // content: '';
+    //     position: absolute;
+    //     top: 50%;
+    //     left: 50%;
+    //     background-color: rgba(0, 0, 0, 0.15);
+    //     -webkit-transition: background-color 0.3s;
+    //     transition: background-color 0.3s;
 
-        transform: translateY(-50%);
-        width: 1px;
-        height: 30px;
-    }
-    :global(.splitpanes--vertical > .splitpanes__splitter):hover:before {
-        @apply bg-primary !important;
-    }
-    :global(.splitpanes--vertical > .splitpanes__splitter):hover:after {
-        @apply bg-primary !important;
-    }
-    :global(.splitpanes--vertical > .splitpanes__splitter):after {
-        // content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        background-color: rgba(0, 0, 0, 0.15);
-        -webkit-transition: background-color 0.3s;
-        transition: background-color 0.3s;
+    //     transform: translateX(-50%);
+    //     width: 30px;
+    //     height: 1px;
 
-        transform: translateY(-50%);
-        width: 1px;
-        height: 30px;
-
-        margin-left: 1px;
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-        // content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        background-color: rgba(0, 0, 0, 0.15);
-        -webkit-transition: background-color 0.3s;
-        transition: background-color 0.3s;
-        margin-top: -2px;
-        transform: translateX(-50%);
-        width: 30px;
-        height: 1px;
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):after {
-        // content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        background-color: rgba(0, 0, 0, 0.15);
-        -webkit-transition: background-color 0.3s;
-        transition: background-color 0.3s;
-
-        transform: translateX(-50%);
-        width: 30px;
-        height: 1px;
-
-        margin-top: 1px;
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
-        @apply bg-primary !important;
-    }
-    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
-        @apply bg-primary !important;
-    }
+    //     margin-top: 1px;
+    // }
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
+    //     @apply bg-primary !important;
+    // }
+    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
+    //     @apply bg-primary !important;
+    // }
 </style>
 <style lang="less" scoped>
     .placeholder {
@@ -325,6 +393,9 @@
     .sidebar-nav {
         /* 60px */
         width: 3.75rem;
+    }
+    .full-width {
+        width: 99.9%;
     }
 </style>
 

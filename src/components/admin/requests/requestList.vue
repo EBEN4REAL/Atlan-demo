@@ -1,34 +1,38 @@
 <template>
-    <p class="mb-2 text-2xl">Requests</p>
-    <p class="mb-0 text-sm text-gray">Manage org-wide requests</p>
-    <SearchAndFilter v-model:value="searchTerm" class="max-w-xl pt-6 mb-4">
-        <template #filter>
-            <RequestFilters v-model:filters="filters" />
+    <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
+        <template #header>
+            <SearchAndFilter v-model:value="searchTerm" class="max-w-xl mb-4">
+                <template #filter>
+                    <RequestFilters v-model:filters="filters" />
+                </template>
+            </SearchAndFilter>
+            <RequestTypeTabs v-model:tab="filters.request_type" />
         </template>
-    </SearchAndFilter>
-    <RequestTypeTabs v-model:tab="filters.request_type" />
-    <div v-if="listLoading">Loading</div>
-    <template v-else-if="requestList.length && !listLoading">
-        <RequestModal
-            :request="requestList[selectedIndex]"
-            v-model:visible="isDetailsVisible"
-            @up="traverseUp"
-            @down="traverseDown"
-        ></RequestModal>
-        <VirtualList :data="requestList" data-key="id">
-            <template #default="{ item, index }">
-                <RequestListItem
-                    :request="item"
-                    :selected="isSelected(item.id)"
-                    :active="index === selectedIndex"
-                    @select="selectRequest(item.id, index)"
-                    @action="handleRequestAction($event, index)"
-                />
-            </template>
-        </VirtualList>
-    </template>
 
-    <div v-else>Empty state</div>
+        <div v-if="listLoading" class="flex items-center justify-center h-64">
+            <a-spin size="large" />
+        </div>
+        <template v-else-if="requestList.length && !listLoading">
+            <RequestModal
+                :request="requestList[selectedIndex]"
+                v-model:visible="isDetailsVisible"
+                @up="traverseUp"
+                @down="traverseDown"
+            ></RequestModal>
+            <VirtualList :data="requestList" data-key="id">
+                <template #default="{ item, index }">
+                    <RequestListItem
+                        :request="item"
+                        :selected="isSelected(item.id)"
+                        :active="index === selectedIndex"
+                        @select="selectRequest(item.id, index)"
+                        @action="handleRequestAction($event, index)"
+                    />
+                </template>
+            </VirtualList>
+        </template>
+        <div v-else>Empty state</div>
+    </DefaultLayout>
 </template>
 
 <script lang="ts">
@@ -36,6 +40,7 @@
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { useRequestList } from '~/composables/requests/useRequests'
 
+    import DefaultLayout from '@/admin/defaultLayout.vue'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestTypeTabs from './requestTypeTabs.vue'
@@ -55,6 +60,7 @@
             RequestFilters,
             RequestModal,
             RequestTypeTabs,
+            DefaultLayout,
         },
         setup() {
             // keyboard navigation stuff

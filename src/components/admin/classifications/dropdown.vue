@@ -1,28 +1,27 @@
 <template>
-    <a-dropdown>
-        <fa
-            icon="fal ellipsis-v"
-            class="text-3xl ant-dropdown-link text-grey-600"
+    <a-dropdown trigger="click">
+        <AtlanBtn
+            class="flex-none"
+            size="sm"
+            color="secondary"
+            padding="compact"
             @click.prevent
-        />
+        >
+            <AtlanIcon icon="KebabMenu" class="-mx-1 text-gray" />
+        </AtlanBtn>
 
         <template #overlay>
             <a-menu>
                 <a-menu-item
                     v-for="(option, index) in options"
                     :key="index"
-                    class="flex items-center"
+                    @click="() => handleMenuItemClick({ index, ...option })"
                 >
-                    <div
-                        class="flex justify-between item-center"
-                        @click="() => handleMenuItemClick({ index, ...option })"
-                    >
-                        <fa
-                            v-if="option.icon"
-                            :icon="getIconClass(option)"
-                            class="mr-2 text-left"
-                        />
-                        <span class="text-left">{{ option.title }}</span>
+                    <div class="flex items-center" :class="option.class">
+                        <AtlanIcon v-if="option.icon" :icon="option.icon" />
+                        <span class="pl-2 text-sm">
+                            {{ option.title }}
+                        </span>
                     </div>
                 </a-menu-item>
             </a-menu>
@@ -31,17 +30,20 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, PropType } from 'vue'
+    import { defineComponent, ref, PropType } from 'vue'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     type option = {
         title: string
         icon: string
         iconType: string
         handleClick: Function
+        class?: string
     }
 
     export default defineComponent({
         name: 'Dropdown',
+        components: { AtlanBtn },
         props: {
             /**
              * Options - List of all the items in the dropdown
@@ -51,98 +53,13 @@
                 type: Array as PropType<option[]>,
                 default: () => [],
             },
-            /**
-             * Should the dropdown be aligned to the right
-             */
-            right: {
-                type: Boolean,
-                default: false,
-            },
-            /**
-             * Should the dropdown arrow be shown
-             */
-            isArrow: {
-                type: Boolean,
-                default: true,
-            },
-            split: {
-                type: Boolean,
-                default: false,
-            },
-            dropup: {
-                type: Boolean,
-                default: false,
-            },
-            toggleText: {
-                type: String,
-                default: 'Toggle Dropdown',
-            },
-            size: {
-                type: String,
-                default: null,
-            },
-            variant: {
-                type: String,
-                default: null,
-            },
-            menuClass: {
-                type: [String, Array],
-                default: null,
-            },
-            toggleTag: {
-                type: String,
-                default: 'button',
-            },
-            toggleClass: {
-                type: [String, Array],
-                default: null,
-            },
-            offset: {
-                type: [String, Number],
-                default: null,
-            },
-            noCaret: {
-                type: Boolean,
-                default: false,
-            },
-            role: {
-                type: String,
-                default: 'menu',
-            },
-            optionValue: {
-                type: Object,
-                default: () => {},
-            },
-            boundary: {
-                // String: `scrollParent`, `window` or `viewport`
-                // Object: HTML Element reference
-                type: [String, Object],
-                default: 'scrollParent',
-            },
-            isShownEventToBeHandled: {
-                type: Boolean,
-                default: false,
-            },
-            isHiddenEventToBeHandled: {
-                type: Boolean,
-                default: false,
-            },
         },
         setup(props, context) {
             const open = ref(false)
-            console.log('dropdwon')
-
-            const isShownEventToBeHandled = computed(
-                () => props.isShownEventToBeHandled
-            )
-            const isHiddenEventToBeHandled = computed(
-                () => props.isHiddenEventToBeHandled
-            )
-            const {options} = props
+            const { options } = props
 
             const handleMenuItemClick = (option: any) => {
                 option.handleClick()
-                console.log(option)
             }
 
             /**
@@ -151,16 +68,7 @@
             const toggleDropdown = () => {
                 open.value = !open.value
             }
-            const handleDropdownShown = () => {
-                if (isShownEventToBeHandled.value) {
-                    context.emit('handleDropdownShown')
-                }
-            }
-            const handleDropdownHidden = () => {
-                if (isHiddenEventToBeHandled.value) {
-                    context.emit('handleDropdownHidden')
-                }
-            }
+
             /**
              * Closes the dropdown
              */
@@ -201,8 +109,6 @@
             return {
                 options,
                 toggleDropdown,
-                handleDropdownShown,
-                handleDropdownHidden,
                 closeDropdown,
                 getIconClass,
                 handleMenuItemClick,

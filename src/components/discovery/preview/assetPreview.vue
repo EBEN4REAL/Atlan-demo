@@ -11,38 +11,39 @@
                 />
             </a-button>
         </div>
-        <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
+        <div v-if="page !== 'profile'" class="p-5 border-b">
             <div class="flex items-center justify-between mb-0 text-sm">
                 <AssetLogo :asset="selectedAsset" variant="md" />
 
                 <div class="flex space-x-2">
                     <a-button-group>
-                        <a-button size="small"
-                            ><AtlanIcon icon="Share"
-                        /></a-button>
-                        <a-button size="small">
-                            <AtlanIcon icon="External" />
-                        </a-button>
-                        <a-button size="small">
+                        <a-tooltip
+                            placement="left"
+                            :mouse-enter-delay="0.5"
+                            title="Copy asset profile link"
+                        >
+                            <a-button
+                                class="w-8 h-8"
+                                size="small"
+                                @click="handleCopyProfileLink"
+                                ><AtlanIcon icon="Share" /></a-button
+                        ></a-tooltip>
+                        <a-tooltip
+                            placement="bottom"
+                            :mouse-enter-delay="0.5"
+                            title="Open profile"
+                        >
+                            <a-button
+                                class="w-8 h-8"
+                                size="small"
+                                @click="handleOpenProfile"
+                            >
+                                <AtlanIcon icon="External" /> </a-button
+                        ></a-tooltip>
+                        <!-- <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="Bookmark" />
-                        </a-button>
+                        </a-button> -->
                     </a-button-group>
-
-                    <!-- <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="Share" />
-                        </template>
-                    </AtlanButton>
-                    <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="External" />
-                        </template>
-                    </AtlanButton>
-                    <AtlanButton color="secondary" size="sm" class="px-2">
-                        <template #label>
-                            <AtlanIcon icon="Bookmark" />
-                        </template>
-                    </AtlanButton> -->
                 </div>
             </div>
 
@@ -64,12 +65,12 @@
                 ></a-tooltip>
 
                 <Tooltip
-                    :tooltip-text="name"
-                    classes="font-bold text-base cursor-pointer text-primary hover:underline w-full"
+                    :tooltip-text="selectedAsset.attributes?.name"
+                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
-                            ? getColumnUrl(selectedAsset)
+                            ? `/${getColumnUrl(selectedAsset)}`
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
@@ -78,7 +79,7 @@
                     :key="selectedAsset.guid"
                     :show-no-status="false"
                     :status-id="selectedAsset?.attributes?.assetStatus"
-                    class="ml-1.5"
+                    class="ml-1.5 mb-1"
                 ></StatusBadge>
             </div>
         </div>
@@ -93,28 +94,6 @@
                 class="overflow-y-auto"
             >
                 <template #tab>
-                    <!-- <a-tooltip
-                        placement="left"
-                        :mouse-enter-delay="0.5"
-                        color="white"
-                    >
-                        <template #title>
-                            <span class="text-gray-500">
-                                {{ tab.tooltip }}
-                            </span>
-                        </template>
-                        <div
-                            class="flex items-center justify-center w-full h-full "
-                        >
-                            <AtlanIcon
-                                :icon="tab.icon"
-                                :class="
-                                    activeKey === index ? 'text-primary' : ''
-                                "
-                                class="h-5"
-                            />
-                        </div>
-                    </a-tooltip> -->
                     <SidePanelTabHeaders
                         :title="tab.tooltip"
                         :icon="tab.icon"
@@ -128,7 +107,7 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
+                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -161,6 +140,8 @@
         computed,
         provide,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+
     import Tooltip from '@common/ellipsis/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
@@ -170,7 +151,7 @@
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
-    import { useMagicKeys } from '@vueuse/core'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -225,16 +206,17 @@
                 useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
+            const router = useRouter()
 
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
             const infoTabData: Ref<any> = ref({})
             // const {} =useMagicKeys();
             const tabHeights = {
-                discovery: 'calc(100vh - 7.8rem)',
+                discovery: 'calc(100vh - 9.2rem)',
                 profile: 'calc(100vh - 3rem)',
-                biOverview: 'calc(100vh - 8.06rem)',
-                nonBiOverview: 'calc(100vh - 8.3rem)',
+                biOverview: 'calc(100vh - 9.2rem)',
+                nonBiOverview: 'calc(100vh - 9.2rem)',
             }
 
             function getAssetEntitity(data: Ref): any {
@@ -254,7 +236,27 @@
 
             const getColumnUrl = (asset) => {
                 const tableGuid = asset.attributes?.table?.guid
-                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+                return `assets/${tableGuid}/overview?column=${asset?.guid}`
+            }
+
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                if (isColumnAsset(selectedAsset.value)) {
+                    const text = `${baseUrl}/${getColumnUrl(
+                        selectedAsset.value
+                    )}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/assets/${selectedAsset.value.guid}/overview`
+                    copyToClipboard(text)
+                }
+            }
+            const handleOpenProfile = () => {
+                if (isColumnAsset(selectedAsset.value)) {
+                    router.push(`/${getColumnUrl(selectedAsset.value)}`)
+                } else {
+                    router.push(`/assets/${selectedAsset.value.guid}/overview`)
+                }
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -297,6 +299,8 @@
                 getDataType,
                 isColumnAsset,
                 getColumnUrl,
+                handleCopyProfileLink,
+                handleOpenProfile,
             }
         },
     })

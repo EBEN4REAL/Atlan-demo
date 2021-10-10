@@ -1,5 +1,13 @@
 <template>
     <div class="px-5 py-2">
+        <div class="flex justify-end">
+            <span
+                class="text-sm font-bold cursor-pointer  ant-typography ant-typography-ellipsis ant-typography-single-line text-primary"
+                @click="() => (readOnly = !readOnly)"
+            >
+                {{ readOnly ? 'Edit' : 'Done' }}
+            </span>
+        </div>
         <div v-for="(a, x) in applicableList" :key="x">
             <div
                 class="gap-6 gap-y-0 group"
@@ -142,6 +150,7 @@
 
     export default defineComponent({
         name: 'BusinessMetadataListItem',
+        components: {},
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -161,12 +170,13 @@
                 isLink,
             } = useBusinessMetadataHelper()
 
+            // eslint-disable-next-line no-unused-vars
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset', () => {})
 
             const { enumListData: enumsList } = useEnums()
 
-            const readOnly = ref(false)
+            const readOnly = ref(true)
 
             const applicableList = ref(
                 getApplicableAttributes(
@@ -257,6 +267,7 @@
                     const newAttributes = {}
                     Object.keys(payload.value).forEach((p) => {
                         Object.entries(payload.value[p]).forEach((e) => {
+                            // eslint-disable-next-line prefer-destructuring
                             newAttributes[`${p}.${e[0]}`] = e[1]
                         })
                     })
@@ -323,7 +334,7 @@
 
             watch(
                 () => props.selectedAsset.guid,
-                (val) => {
+                () => {
                     applicableList.value = getApplicableAttributes(
                         props.item.id,
                         props.selectedAsset.typeName
@@ -357,8 +368,4 @@
     })
 </script>
 
-<style>
-    .ant-calendar-picker-input {
-        /* width: 170px; */
-    }
-</style>
+<style></style>

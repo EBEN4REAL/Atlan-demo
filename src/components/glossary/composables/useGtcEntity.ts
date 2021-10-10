@@ -8,6 +8,7 @@ import { Components } from "~/api/atlas/client";
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 import { List as StatusList } from '~/constant/status'
+import useBusinessMetadataStore from '~/store/businessMetadata';
 
 /*
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on
@@ -47,6 +48,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         'validValuesFor',
         'seeAlso',
     ]
+    const bmProjection = computed(() => useBusinessMetadataStore().getBusinessMetadataListProjections);
 
     const getBody = () => ({
         typeName: keyMap[isRef(type) ? type.value : type],
@@ -68,6 +70,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             'tenantId',
             'anchor',
             'linkedAssets',
+            ...bmProjection.value,
             ...relatedTerms,
             ...BaseAttributes,
             ...BasicSearchAttributes,
@@ -85,7 +88,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     })
 
     body.value = getBody()
-    const { data, error, isValidating:isLoading, mutate } = useAPI<any>(
+    const { data, error, isValidating: isLoading, mutate } = useAPI<any>(
         GET_GTC_ENTITY,
         'POST',
         {
@@ -102,7 +105,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         data.value?.entities ? (data.value?.entities[0] as T) : undefined
     )
 
-    const referredEntities = computed(() => data.value?.referredEntities as Record<string, Components.Schemas.AtlasEntityHeader> )
+    const referredEntities = computed(() => data.value?.referredEntities as Record<string, Components.Schemas.AtlasEntityHeader>)
     const title: WritableComputedRef<string | undefined> = computed({
         get: () => entity.value?.attributes?.name ?? '',
         set: (val: string) => {
@@ -126,7 +129,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     )
 
     watch(entityGuid, (newGuid) => {
-        if(watchForGuidChange) {
+        if (watchForGuidChange) {
             body.value = getBody()
             mutate()
         }

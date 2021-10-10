@@ -7,8 +7,21 @@ import { useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
+import whoami from '~/composables/user/whoami'
 
-const useLoadQueryData = () => {
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
+
+interface useLoadQueryDataProps {
+    connector: Ref<string | undefined>
+    savedQueryType?: Ref<'personal' | 'all'>
+
+}
+
+const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) => {
+    const { username } = whoami()
+
+    const defaultLimit = 50;
+
     const attributes = [
         "name",
         "displayName",
@@ -23,6 +36,7 @@ const useLoadQueryData = () => {
 
         "integrationName",
         "connectionQualifiedName",
+        "parentFolderQualifiedName",
         "parentFolder",
         "columns", //TODO: queries
         "folder",
@@ -31,100 +45,151 @@ const useLoadQueryData = () => {
         ...BaseAttributes,
         ...BasicSearchAttributes
     ];
-    const body = ref({
-        typeName: "QueryFolder",
-        excludeDeletedEntities: true,
-        includeClassificationAttributes: true,
-        includeSubClassifications: true,
-        includeSubTypes: true,
-        limit: 50,
-        offset: 0,
-        attributes,
-        entityFilters: {
-            condition: "AND",
-            criterion: [
-                {
-                    attributeName: "",
-                    attributeValue: "",
-                    operator: "eq"
-                }
-            ]
-        },
-        sortBy: "Asset.name.keyword",
-        sortOrder: "ASCENDING",
-    });
+    const body = ref();
 
-    const getQueryFolders = (offset?: number) => {
+    const refreshBody = () => {
+        body.value = {
+            typeName: "QueryFolder",
+            excludeDeletedEntities: true,
+            includeClassificationAttributes: true,
+            includeSubClassifications: true,
+            includeSubTypes: true,
+            limit: defaultLimit,
+            offset: 0,
+            attributes,
+            entityFilters: {
+                condition: "AND",
+                criterion: []
+            },
+            sortBy: "Asset.name.keyword",
+            sortOrder: "ASCENDING",
+        }
+        if(connector.value) {
+            body.value.entityFilters.criterion.push({
+                attributeName: "integrationName",
+                attributeValue: connector.value,
+                operator: "eq"
+            })
+        }
+        if(savedQueryType?.value === 'all') {
+            body.value.entityFilters.criterion.push({
+                condition: "OR",
+                criterion: [
+                   {
+                     attributeName: "__classificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "eq"
+                   },
+                   {
+                     attributeName: "__propagatedClassificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "eq"
+                   }
+                 ]
+               })
+        } 
+        else if(savedQueryType?.value === 'personal') {
+            body.value.entityFilters.criterion.push({
+                condition: "AND",
+                criterion: [
+                   {
+                     attributeName: "__classificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "neq"
+                   },
+                   {
+                     attributeName: "__propagatedClassificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "neq"
+                   }
+                 ]
+               })
+            body.value.entityFilters.criterion.push({
+                attributeName: "owner",
+                attributeValue: username.value,
+                operator: "eq"
+              })
+        }
+    }
+
+    refreshBody();
+    const getAllQueryFolders = () => {
+        refreshBody();
+
         body.value.typeName = 'QueryFolder';
-        // body.value.entityFilters.criterion = [{
-        //     attributeName: "parentFolderQualifiedName",
-        //     operator: "is_null"
-        // }]
-        body.value.offset = offset ?? 0
-
+        body.value.offset = 0
+        body.value.limit = 100;
+        
         return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
-            body,
+            body
         }) as Promise<BasicSearchResponse<Folder>>
     }
 
-    const getQueries = (offset?: number) => {
-        body.value.typeName = 'Query';
-        // body.value.entityFilters.criterion = [{
-        //     attributeName: "parentFolderQualifiedName",
-        //     operator: "is_null"
-        // }]
+    const getQueryFolders = (offset?: number) => {
+        refreshBody();
+
+        body.value.typeName = 'QueryFolder';
+        body.value.entityFilters.criterion.push({
+            attributeName: "parentFolderQualifiedName",
+            operator: "is_null",
+            attributeValue: ''
+        })
         body.value.offset = offset ?? 0
 
         return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
-            body,
-        }) as Promise<BasicSearchResponse<SavedQuery>>
+            body
+        }) as Promise<BasicSearchResponse<Folder>>
+
+    }
+
+    const getQueries = (offset?: number) => {
+        refreshBody();
+
+        body.value.typeName = 'Query';
+        body.value.entityFilters.criterion.push({
+            attributeName: "parentFolderQualifiedName",
+            operator: "is_null",
+            attributeValue: ''
+        })
+        body.value.offset = offset ?? 0
+
+        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+            body
+        }) as Promise<RelationshipSearchResponse<SavedQuery>>
     }
 
     const getSubFolders = (folderGuid: string, offset?: number, limit?: number) => {
-        const params = new URLSearchParams();
+        refreshBody();
 
-        attributes.forEach((param: string) => {
-            params.append('attributes', param)
+        body.value.typeName = 'QueryFolder';
+        body.value.entityFilters.criterion.push({
+            attributeName: "parentFolderQualifiedName",
+            operator: "eq",
+            attributeValue: folderGuid
         })
+        body.value.offset = offset ?? 0
+        body.value.limit = limit ?? defaultLimit
 
-        const paramsObj: any = {
-            limit: limit ?? 50,
-            offset: 0,
-            relation: 'childFolders',
-            includeClassificationAttributes: true,
-            guid: folderGuid,
-            excludeDeletedEntities: true,
-        }
-        Object.keys(paramsObj).forEach((key) => {
-            params.append(key, paramsObj[key])
-        })
-
-        return useAPIPromise(KeyMaps.savedQueries.RELATIONSHIP(), 'GET', {
-            params
-        }) as Promise<RelationshipSearchResponse<Folder>>
+        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+            body
+        }) as Promise<BasicSearchResponse<Folder>>
     }
 
     const getFolderQueries = (folderGuid: string, offset?: number, limit?: number) => {
-        const params = new URLSearchParams();
+        refreshBody();
 
-        attributes.forEach((param: string) => {
-            params.append('attributes', param)
+        body.value.typeName = 'Query';
+        body.value.entityFilters.criterion.push({
+            attributeName: "parentFolderQualifiedName",
+            operator: "eq",
+            attributeValue: folderGuid
         })
 
-        const paramsObj: any = {
-            limit: limit ?? 50,
-            offset: 0,
-            relation: 'columns', //TODO: replace with queries on atlas reset
-            includeClassificationAttributes: true,
-            guid: folderGuid,
-            excludeDeletedEntities: true,
-        }
-        Object.keys(paramsObj).forEach((key) => {
-            params.append(key, paramsObj[key])
-        })
+        body.value.offset = offset ?? 0
+        body.value.limit = limit ?? defaultLimit
 
-        return useAPIPromise(KeyMaps.savedQueries.RELATIONSHIP(), 'GET', {
-            params
+        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+            body
         }) as Promise<RelationshipSearchResponse<SavedQuery>>
     }
 
@@ -135,6 +200,7 @@ const useLoadQueryData = () => {
         getQueries,
         getSubFolders,
         getFolderQueries,
+        getAllQueryFolders,
     }
 }
 

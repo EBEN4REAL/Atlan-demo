@@ -20,8 +20,8 @@
                                 refs[tab.id] = el
                             }
                         "
+                        :selected-run-id="selectedRunId"
                         class="bg-transparent"
-                        @preview="handlePreview"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -55,8 +55,8 @@
             Header,
             LoadingView,
             ErrorView,
-            builder: defineAsyncComponent(
-                () => import('@/workflows/profile/tabs/builder/index.vue')
+            setup: defineAsyncComponent(
+                () => import('@/workflows/profile/tabs/setup/index.vue')
             ),
             monitor: defineAsyncComponent(
                 () => import('@/workflows/profile/tabs/monitor/index.vue')
@@ -68,19 +68,23 @@
         },
         props: {
             updateProfile: { type: Boolean, required: true },
+            selectedRunId: {
+                type: String,
+                required: true,
+            },
         },
         emits: ['preview'],
         setup(props, context) {
             /** DATA */
-            const activeKey = ref(1)
+            const activeKey = ref(2)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
             const { updateProfile } = toRefs(props)
             const tabs = [
                 {
                     id: 1,
-                    name: 'Builder',
-                    component: 'builder',
+                    name: 'Setup',
+                    component: 'setup',
                 },
                 {
                     id: 2,
@@ -193,7 +197,8 @@ meta:
         }
 
         :global(.ant-tabs-tabpane) {
-            height: calc(100vh - 170px) !important;
+            height: 100vh !important;
+            // height: calc(100vh - 170px) !important;
             overflow: auto !important;
             @apply pr-0;
         }

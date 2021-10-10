@@ -1,25 +1,17 @@
-<template>
-  <Users></Users>
-</template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import Users from "@/admin/users/index.vue";
-import { useHead } from "@vueuse/head";
+    import { defineComponent } from 'vue'
+    import { useRouter } from 'vue-router'
 
-export default defineComponent({
-  components: {
-    Users,
-  },
-  setup() {
-    useHead({
-      title: "Members",
-    });
-  },
-});
+    export default defineComponent({
+        setup() {
+            const router = useRouter()
+            router.replace(`/admin/members`)
+        },
+    })
 </script>
-<style lang="less" module></style>
+
 <route lang="yaml">
-  meta:
-  layout: default
-  requiresAuth: true
-  </route>
+meta:
+layout: default
+requiresAuth: true
+</route>

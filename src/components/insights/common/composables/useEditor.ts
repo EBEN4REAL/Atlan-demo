@@ -1,12 +1,26 @@
-import { Ref } from 'vue'
+import { Ref, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
+import { format, FormatOptions } from 'sql-formatter'
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
     activeInlineTab?: Ref<activeInlineTabInterface>
 ) {
+    function setEditorPos(
+        editorInstance: any,
+        editorPos: Ref<{ column: number; lineNumber: number }>
+    ) {
+        const pos = editorInstance.getPosition()
+        editorPos.value = pos
+    }
+    function setEditorFocusedState(
+        state: boolean,
+        editorFocused: Ref<boolean>
+    ) {
+        editorFocused.value = state
+    }
     const { modifyActiveInlineTabEditor } = useInlineTab()
     function onEditorContentChange(event: any, editorText: string) {
         if (activeInlineTab && tabs?.value) {
@@ -44,7 +58,18 @@ export function useEditor(
         }
         return query
     }
-
+    function removeMoustacheSpaces(text) {
+        let t = text.replace('{ { ', '{{')
+        t = t.replace(' } }', '}}')
+        return t
+    }
+    function semicolonSeparateQuery(query: string) {
+        // check if it have semicolon
+        const queryTextValues = query.split(';')
+        // always select the first one for now
+        let queryText = queryTextValues[0]
+        return queryText
+    }
     function getParsedQuery(
         variables: CustomVaribaleInterface[],
         query: string
@@ -53,17 +78,56 @@ export function useEditor(
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
         ) {
+            const queryText = semicolonSeparateQuery(query)
             const parseVariables: { [key: string]: string } = {}
             variables.forEach((v) => {
                 parseVariables[v.name] = v.value
             })
-            return moustacheInterpolator(query, parseVariables)
+            return moustacheInterpolator(queryText, parseVariables)
         }
 
-        return query
+        return semicolonSeparateQuery(query)
+    }
+    function formatter(text: string, options?: FormatOptions) {
+        /* It formats and changes {{abc}}-> { {abc} } */
+        const t = format(text, options)
+        return removeMoustacheSpaces(t)
+    }
+    function focusEditor(editorInstance) {
+        editorInstance.focus()
+    }
+    function setSelection(
+        editorInstance,
+        monacoInstance,
+        selectionObject: {
+            startLineNumber: number
+            startColumnNumber: number
+            endLineNumber: number
+            endColumnNumber: number
+        }
+    ) {
+        const {
+            startLineNumber,
+            startColumnNumber,
+            endLineNumber,
+            endColumnNumber,
+        } = selectionObject
+        editorInstance.setSelection(
+            new monacoInstance.Selection(
+                startLineNumber,
+                startColumnNumber,
+                endLineNumber,
+                endColumnNumber
+            )
+        )
     }
 
     return {
+        setEditorFocusedState,
+        setEditorPos,
+        formatter,
+        setSelection,
+        focusEditor,
         modifyEditorContent,
         onEditorContentChange,
         getParsedQuery,

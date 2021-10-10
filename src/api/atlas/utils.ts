@@ -98,7 +98,6 @@ export const getFormattedSearchQuery = (originalQuery) => {
 };
 
 export const getBasicQuery = (params, savingFilter = false) => {
-  console.log("getBasicQuery -> params", params);
   const isAtlasUseLegacySearch =
     typeof window !== "undefined" &&
     window.ATLAS_USE_LEGACY_SEARCH &&
@@ -214,7 +213,6 @@ export const getBasicQuery = (params, savingFilter = false) => {
   if (filterKeys.indexOf("savedFilters") >= 0) {
     const savedFiltersValues = filterObject.savedFilters || [];
     savedFiltersValues.forEach((savedFilter) => {
-      console.log("savedFiltersValues -> savedFilter", savedFilter);
       const savedEntityFilters = savedFilter
         ? savedFilter.entityFilters || {}
         : {};
@@ -252,7 +250,6 @@ export const getBasicQuery = (params, savingFilter = false) => {
       filterKey !== "classification" &&
       filterKey !== "termName"
     ) {
-      console.log("getBasicQuery -> filterKey", filterKey);
       const filterValues = filterObject[filterKey] || [];
       const filterValuesObj = {
         condition: "OR",

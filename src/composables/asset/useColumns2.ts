@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { computed, ComputedRef, ref, Ref } from 'vue'
 import { BasicSearchAttributes, ColumnAttributes } from '~/constant/projection'
-import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 import useAssetSearchList from '~/components/discovery/useSearchList'
 import { dataTypeList } from '~/constant/datatype'
 
@@ -143,18 +143,10 @@ export function useColumnsList(
     }: ColumnListConfig,
     immediate = true
 ) {
-
-
     const offset = ref(0)
-    const sortBy = ref("")
-    const sortOrder = ref("")
 
+    const split = computed(() => sort.value.split('|'))
 
-    const split = sort.value.split('|')
-    if (split.length > 1) {
-        sortBy.value = split[0]
-        sortOrder.value = split[1].toUpperCase()
-    }
 
     const payload = computed(() => ({
         typeName: 'Column',
@@ -164,8 +156,8 @@ export function useColumnsList(
         includeSubTypes: false,
         limit: pinned ? 100 : listLimit,
         query: query.value,
-        sortBy: sortBy.value,
-        sortOrder: sortOrder.value,
+        sortBy: split.value[0],
+        sortOrder: split.value[1].toUpperCase(),
         offset: offset.value,
         attributes: staticColumnAttributes,
         entityFilters: getEntityFilters({

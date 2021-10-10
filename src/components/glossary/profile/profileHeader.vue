@@ -97,10 +97,11 @@
                     </a-menu>
                 </template>
                 <a-button
-                    class="flex items-center border-0 shadow-none outline-none"
-                    ><atlan-icon icon="Share" class="w-auto h-4 mr-1" />
-                    <span class="text-sm">Share</span>
-                </a-button>
+                    class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                    ><div class="flex">
+                        <AtlanIcon icon="Share" class="mt-0.5 mr-2" /> Share
+                    </div></a-button
+                >
             </a-dropdown>
             <ThreeDotMenu :entity="entity" :showLinks="false" />
         </div>

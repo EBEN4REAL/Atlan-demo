@@ -1,4 +1,7 @@
 const actions = {
+    setBulkMode(value) {
+        this.isBulkMode = value
+    },
     setUpdateStatus(status) {
         this.updateStatus = { ...status }
     },

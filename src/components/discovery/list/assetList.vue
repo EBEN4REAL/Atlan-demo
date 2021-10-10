@@ -151,15 +151,13 @@ export default defineComponent({
             )
             if (itemIndex >= 0) bulkSelectedAssets.value.splice(itemIndex, 1)
             else bulkSelectedAssets.value.push(listItem)
+            store.setBulkMode(!!bulkSelectedAssets.value.length)
             store.setBulkSelectedAssets(bulkSelectedAssets.value)
         }
-        watch(
-            () => store.bulkSelectedAssets,
-            () => {
-                if (!store.bulkSelectedAssets?.length)
-                    bulkSelectedAssets.value = []
-            }
-        )
+        watch(store, () => {
+            if (!store.bulkSelectedAssets?.length || !store.isBulkMode)
+                bulkSelectedAssets.value = []
+        })
 
         // select first asset automatically conditionally acc to  autoSelect prop
         watch(

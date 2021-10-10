@@ -22,6 +22,14 @@
             <a-button
                 type="primary"
                 class="flex-1 border-0"
+                :disabled="
+                    !(
+                        didOwnersUpdate ||
+                        didStatusUpdate ||
+                        didClassificationsUpdate ||
+                        (termsRef && Object.keys(termsRef).length)
+                    )
+                "
                 @click="updateAssets(selectedAssets)"
                 >Make Changes</a-button
             >
@@ -60,35 +68,50 @@ export default {
             existingClassifications,
             existingTerms,
             updatedStatus,
+            updatedStatusMessage,
+            publishedStatusChangeLog: publishedStatusChangeLogRef,
             updateAssets,
             updateSelectedAssets,
-            ownerUsersFrequencyMap,
-            ownerGroupsFrequencyMap,
-            existingOwnerUsers,
-            existingOwnerGroups,
-            updatedOwners,
             classifications: classificationsRef,
             originalClassifications: originalClassificationsRef,
+            publishedClassificationChangeLog:
+                publishedClassificationChangeLogRef,
             classificationFrequencyMap,
             terms: termsRef,
             originalTerms: originalTermsRef,
             termFrequencyMap,
             state,
+            owners: ownersRef,
+            originalOwners: originalOwnersRef,
+            ownerFrequencyMap,
+            publishedChangeLog: publishedOwnerChangeLogRef,
+            didOwnersUpdate,
+            didStatusUpdate,
+            didClassificationsUpdate,
         } = useBulkSelect()
         /** PROVIDERS */
         provide('selectedAssets', selectedAssets)
+        /** STATUS PROVIDERS */
         provide('updatedStatus', updatedStatus)
-        provide('ownerUsersFrequencyMap', ownerUsersFrequencyMap)
-        provide('ownerGroupsFrequencyMap', ownerGroupsFrequencyMap)
-        provide('existingOwnerUsers', existingOwnerUsers)
-        provide('existingOwnerGroups', existingOwnerGroups)
-        provide('updatedOwners', updatedOwners)
+        provide('updatedStatusMessage', updatedStatusMessage)
+        provide('publishedStatusChangeLogRef', publishedStatusChangeLogRef)
+        /** CLASSIFICATION PROVIDERS */
         provide('classificationsRef', classificationsRef)
         provide('originalClassificationsRef', originalClassificationsRef)
         provide('classificationFrequencyMap', classificationFrequencyMap)
+        provide(
+            'publishedClassificationChangeLogRef',
+            publishedClassificationChangeLogRef
+        )
+        /** TERMS PROVIDERS */
         provide('termsRef', termsRef)
         provide('originalTermsRef', originalTermsRef)
         provide('termFrequencyMap', termFrequencyMap)
+        /** OWNERS PROVIDERS */
+        provide('ownersRef', ownersRef)
+        provide('originalOwnersRef', originalOwnersRef)
+        provide('ownerFrequencyMap', ownerFrequencyMap)
+        provide('publishedOwnerChangeLogRef', publishedOwnerChangeLogRef)
         watch(
             selectedAssets,
             () => {
@@ -110,7 +133,10 @@ export default {
             updateAssets,
             handeCancel,
             state,
-            // mutateSelectedAsset,
+            termsRef,
+            didOwnersUpdate,
+            didStatusUpdate,
+            didClassificationsUpdate,
         }
     },
 }

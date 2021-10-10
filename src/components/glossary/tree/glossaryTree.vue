@@ -307,6 +307,10 @@
                         @drop="dragAndDrop"
                         class="h-full"
                     >
+                        <template #switcherIcon>
+                            <AtlanIcon icon="Caret" />
+!                       </template>
+
                         <template #title="entity">
                             <div
                                 v-if="entity.title === 'Load more'"
@@ -792,10 +796,9 @@
         .treeStyles {
             max-height: calc(100vh - 11rem) !important;
 
-            :global(.ant-tree-switcher) {
-                @apply pt-1;
+            :global(.ant-tree-switcher_open) {
+                transform: rotate(90deg)
             }
-
             :global(.ant-tree-node-selected) {
                 @apply bg-black bg-opacity-5 text-primary font-bold !important;
                 color: blue !important;
@@ -821,11 +824,6 @@
             // }
             :global(.ant-tree-node-content-wrapper) {
                 @apply mb-2 border-0;
-            }
-            :global(.ant-tree-switcher) {
-                @apply p-0 h-2 w-2 !important;
-                margin-right: 6px;
-                // margin-top: -2px;
             }
         }
 

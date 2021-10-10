@@ -6,7 +6,8 @@ export const KeyMaps = {
         CREATE_SAVED_QUERY: () => getAPIPath('auth/atlas', '/entity'),
         CREATE_QUERY_FOLDER: () => getAPIPath('auth/atlas', '/entity'),
         GET_SAVED_QUERY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/entity/guid/${guid}`),
+        getAPIPath('auth/atlas', `/entity/guid/${guid}`),
         UPDATE_SAVED_QUERY: () => getAPIPath('auth/atlas', `/entity`),
+        DELETE_ENTITY: ({ guid }: Record<string, any>) => getAPIPath('auth/atlas', `/entity/bulk?guid=${guid}`),
     },
 }

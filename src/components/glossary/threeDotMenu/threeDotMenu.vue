@@ -245,9 +245,10 @@
                             entity?.typeName === 'AtlasGlossaryTerm'
                         "
                         key="categories"
+                        class="pr-0"
                     >
-                        <a-popover :trigger="['click']" placement="right">
-                            <div class="flex items-center justify-between mr-3">
+                        <a-popover :trigger="['hover']"  placement="right">
+                            <div class="flex items-center justify-between mr-2 pr-4">
                                 <div class="flex items-center justify-between">
                                     <AtlanIcon
                                         icon="Category"
@@ -262,7 +263,7 @@
                             </div>
                             <template
                                 #content
-                                class="p-0 pb-8 hover:bg-white"
+                                class="p-0 pb-8 hover:bg-white absolute left-8"
                                 style="max-height: 416px"
                             >
                                 <Categories
@@ -430,6 +431,7 @@ export default defineComponent({
         )
         const updateTreeNode: Function | undefined =
             inject<any>('updateTreeNode')
+            const showCategories = ref(false)
         const refetchGlossaryTree = inject<
             (
                 guid: string | 'root',
@@ -560,6 +562,7 @@ export default defineComponent({
             redirectToProfile,
             glossaryId,
             categoryId,
+            showCategories,
         }
     },
 })

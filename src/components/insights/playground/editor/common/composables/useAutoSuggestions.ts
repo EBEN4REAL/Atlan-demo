@@ -195,12 +195,13 @@ export async function useAutoSuggestions(
     /* Connectors Info */
     const attributeValue =
         activeInlineTab.value.explorer.schema.connectors.attributeValue
-    // const connectionQualifiedName = getConnectionQualifiedName(attributeValue)
-    // const databaseName = getDatabaseName(attributeValue)
-    // const schemaName = getSchemaName(attributeValue)
-    const connectionQualifiedName = 'default/snowflake/lxebesm9y5'
-    const databaseName = 'SNOWFLAKE_SAMPLE_DATA'
-    const schemaName = 'TPCDS_SF10TCL'
+    const connectionQualifiedName = getConnectionQualifiedName(attributeValue)
+    const databaseName = getDatabaseName(attributeValue)
+    const schemaName = getSchemaName(attributeValue)
+    // const connectionQualifiedName =
+    //     'default/snowflake/atlan-snowflake-crawler-wpwvc'
+    // const databaseName = 'SNOWFLAKE_SAMPLE_DATA'
+    // const schemaName = 'TPCDS_SF10TCL'
     const connectorsInfo = {
         connectionQualifiedName,
         databaseName,
@@ -247,12 +248,13 @@ export async function useAutoSuggestions(
                 )
             }
         }
+    } else {
+        let s = sqlKeywords.filter((keyword) =>
+            keyword.label.includes(currentWord.toUpperCase())
+        )
+        suggestions = [...suggestions, ...s]
     }
 
-    // suggestions =
-    //     sqlKeywords.filter((keyword) =>
-    //         keyword.label.includes(currentWord.toUpperCase())
-    //     ) ?? []
     // console.log(suggestions, 'suggestions')
     console.log(changedText, 'changesTExt')
     return Promise.resolve({

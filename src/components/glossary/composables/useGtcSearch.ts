@@ -5,6 +5,7 @@ import { GTC_SEARCH } from '~/api/keyMaps/glossary'
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
@@ -22,11 +23,12 @@ type Filters = {
 export default function useGtcSearch(
     qualifiedName?: ComputedRef<string>,
     dependantFetchingKey?: Ref<any>,
-    type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm'
+    type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm',
+    limit?: number
 ) {
     const requestQuery = ref<string>()
     const offsetLocal = ref(0)
-    const defaultLimit = 50
+    const defaultLimit = limit || 50
     const limitLocal = ref<number>(defaultLimit)
     const localFilters = ref<Filters>()
 
@@ -48,6 +50,10 @@ export default function useGtcSearch(
         'seeAlso',
     ]
 
+    const bmProjection = computed(
+        () => useBusinessMetadataStore().getBusinessMetadataListProjections
+    )
+
     const refreshBody = () => {
         body.value = {
             // typeName: 'AtlasGlossaryTerm,AtlasGlossaryCategory',
@@ -64,12 +70,14 @@ export default function useGtcSearch(
                 'shortDescription',
                 'parentCategory',
                 'categories',
+                'terms',
                 'childrenCategories',
                 'pageviewCount',
                 'anchor',
                 'ownerUsers',
                 'ownerGroups',
                 'assignedEntities',
+                ...bmProjection.value,
                 ...relatedTerms,
                 ...BaseAttributes,
                 ...BasicSearchAttributes,

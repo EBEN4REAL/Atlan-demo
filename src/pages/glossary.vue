@@ -11,7 +11,7 @@
         @success="handleSuccess"
         @closeModal="handleCloseModal"
     />
-    <splitpanes class="h-full default-theme">
+    <splitpanes class="h-full default-theme" v-if="!isHome">
         <!-- glossary sidebar -->
         <pane
             min-size="12"
@@ -44,6 +44,9 @@
             <router-view />
         </pane>
     </splitpanes>
+    <div v-else>
+        <router-view />
+    </div>
 </template>
 
 <script lang="ts">
@@ -59,6 +62,10 @@
 
     // composables
     import useTree from '~/components/glossary/tree/composables/useTree'
+    import useBusinessMetadata from '~/components/admin/custom-metadata/composables/useBusinessMetadata'
+
+    // store
+    import useBusinessMetadataStore from '~/store/businessMetadata/index'
 
     // types
     import {
@@ -141,6 +148,11 @@
                     glossaryTreeRef.value.refreshTree()
                 }, 2000)
             }
+
+            // * Get all available BMs and save on storez
+            const store = useBusinessMetadataStore()
+            const { fetchBMonStore } = useBusinessMetadata()
+            if (!store.businessMetadataListLoaded) fetchBMonStore()
 
             // router updates
             const backToHome = () => router.push('/glossary')

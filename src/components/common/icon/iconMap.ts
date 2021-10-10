@@ -85,6 +85,8 @@ import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
 import Pencil from '~/assets/images/icons/pencil.svg'
+import Caret from '~/assets/images/icons/caret.svg'
+import Check from '~/assets/images/icons/check.svg'
 
 export default {
     Metadata,
@@ -173,4 +175,6 @@ export default {
     GlossaryDraft,
     MultipleStatus,
     Pencil,
+    Caret,
+    Check,
 }

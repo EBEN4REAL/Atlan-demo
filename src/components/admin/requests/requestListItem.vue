@@ -11,7 +11,7 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
             <AtlanIcon
-                class="mr-4 text-gray-500"
+                class="flex-none mr-4 text-gray-500"
                 :icon="requestTypeIcon[request.request_type]"
             />
             <AssetPiece

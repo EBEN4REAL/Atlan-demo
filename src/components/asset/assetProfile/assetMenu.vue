@@ -114,7 +114,7 @@
     </a-dropdown>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, computed } from 'vue'
+    import { defineComponent, ref, PropType, toRefs } from 'vue'
     import { useRouter } from 'vue-router'
 
     // components
@@ -142,18 +142,16 @@
             // data
             const isVisible = ref(false)
             const router = useRouter()
+            const { asset } = toRefs(props)
 
             const closeMenu = () => {
                 isVisible.value = false
             }
 
             function handleCopyProfileLink() {
-                // FIXME:
-                // const baseUrl = window.location.origin
-                // const text = `${baseUrl}/glossary/${
-                //     assetTypeLabel[props.asset?.typeName]
-                // }/${props?.asset?.guid}`
-                // copyToClipboard(text)
+                const baseUrl = window.location.origin
+                const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
+                copyToClipboard(text)
             }
 
             function updateAsset() {}

@@ -2,7 +2,7 @@ import { useAPI as useAPIV2 } from '~/api/useAPI'
 
 /**
  * @deprecated
- * @see /src/services/atlas/api/lineage.ts
+ * @see /src/services/atlas/lineage/lineage_api.ts
  */
 const getLineageAPI = ({
     cache,

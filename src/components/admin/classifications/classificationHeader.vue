@@ -1,70 +1,45 @@
 <template>
-    <div class="grid grid-cols-11 bg-white classification-header">
-        <div class="col-start-1 col-end-9 pr-4 border-right">
-            <div class="flex">
-                <!-- Shield Icon-->
-                <!-- <div class="mr-4">
-                    <span
-                        class="flex items-center justify-center p-1 text-xl border rounded"
-                    >
-                        <fa icon="fal shield text-gray-500  " class="" />
-                    </span>
-                </div> -->
-                <div>
-                    <div
-                        class="flex items-center mb-2 text-xl font-black  max-text-width"
-                    >
-                        <span class="truncate ...">{{ displayName }}</span>
-                    </div>
-                    <div class="mb-1 text-sm text-gray">
-                        <span v-if="createdAt">
-                            Created {{ createdAt }} by
-                            <span
-                                class="text-gray border-b border-dotted cursor-pointer "
-                                @click="() => handleClickUser(createdBy)"
-                                >{{ createdBy }}</span
-                            >
-                        </span>
-                        <span v-if="updatedAt">
-                            <span class="px-1">·</span>
-                            Updated {{ updatedAt }} by
-                            <span
-                                class="text-gray border-b border-dotted cursor-pointer "
-                                @click="() => handleClickUser(updatedBy)"
-                            >
-                                {{ updatedBy }}</span
-                            >
-                        </span>
-                    </div>
-                    <div class="mt-3">
-                        <p class="mb-1 text-sm text-gray">Description</p>
-                        <div class="flex mb-0 text-sm text-gray">
-                            <span v-if="!selectedClassification.description"
-                                >Click to add description</span
-                            >
-                            <span
-                                v-else-if="selectedClassification.description"
-                                class="break-words"
-                                >{{ selectedClassification.description }}</span
-                            >
-                            <span v-else>No description added</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="flex flex-col px-5">
+        <div class="flex items-center mb-2 gap-x-2">
+            <AtlanIcon icon="Shield" class="text-pink-400" />
+            <span class="text-sm tracking-wide text-gray-500 uppercase"
+                >Classification</span
+            >
+            <Dropdown
+                class="ml-auto"
+                :options="classificationDropdownOption"
+            ></Dropdown>
+        </div>
+        <span class="mb-1 text-xl truncate text-gray">{{ displayName }}</span>
+        <!-- 
+        <span v-if="createdAt">
+            Created {{ createdAt }} by
+            <span
+                class="border-b border-dotted cursor-pointer text-gray"
+                @click="() => handleClickUser(createdBy)"
+                >{{ createdBy }}</span
+            >
+        </span>
+        <span v-if="updatedAt">
+            <span class="px-1">·</span>
+            Updated {{ updatedAt }} by
+            <span
+                class="border-b border-dotted cursor-pointer text-gray"
+                @click="() => handleClickUser(updatedBy)"
+            >
+                {{ updatedBy }}</span
+            >
+        </span> -->
+
+        <div class="flex mb-0 text-sm text-gray-500">
+            <span v-if="!selectedClassification.description"
+                >Click to add description</span
+            >
+            <span v-else class="break-words">{{
+                selectedClassification.description
+            }}</span>
         </div>
 
-        <div class="flex justify-end col-start-9 col-end-12">
-            <div class="flex items-start border rounded three-dots">
-                <Dropdown
-                    :options="classificationDropdownOption"
-                    :is-arrow="false"
-                    :variant="'link btn-no-focus text-gray p-0 border-0'"
-                    :no-caret="true"
-                    right
-                ></Dropdown>
-            </div>
-        </div>
         <UpdateClassificationModal
             :classification="{ ...selectedClassification }"
             :open="isEditClassificationModalOpen"
@@ -127,7 +102,9 @@
             const selectedClassification = computed(
                 (): classificationInterface => props.classification
             )
-            const displayName = computed(() => selectedClassification.value.displayName)
+            const displayName = computed(
+                () => selectedClassification.value.displayName
+            )
             const createdAt = computed(() => {
                 const timestamp = selectedClassification.value.createTime
                 return useTimeAgo(timestamp).value || ''
@@ -143,18 +120,16 @@
                 () => selectedClassification.value.updatedBy
             )
             const classificationDropdownOption = computed(() => {
-                const dpOpArray = []
+                const dpOpArray: any[] = []
                 dpOpArray.push({
-                    title: `Edit`,
-                    icon: 'pencil',
-                    iconType: 'fal',
+                    title: 'Edit',
+                    icon: 'Edit',
                     handleClick: editClassification,
                 })
                 dpOpArray.push({
-                    title: `Delete`,
-                    icon: 'trash-alt',
-                    iconType: 'fal',
-                    class: ['text-danger'],
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
                     handleClick: deleteClassification,
                 })
                 return dpOpArray

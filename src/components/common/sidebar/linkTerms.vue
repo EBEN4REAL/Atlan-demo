@@ -1,13 +1,13 @@
 <template>
     <div class="text-sm text-gray-500">
         <p class="mb-1 text-sm">Terms</p>
+        <!-- shown in side bar  -->
         <div v-if="pillTerms.length > 0" class="flex flex-wrap items-center">
             <PillGroup
                 :data="pillTerms"
                 label-key="displayText"
-                @add="toggleLinkClassificationPopover"
+                @add="toggleLinkTermPopover"
                 @delete="unLinkTerm"
-                @select="handleSelect"
             >
                 <template #pillPrefix>
                     <AtlanIcon
@@ -15,39 +15,15 @@
                         class="text-primary group-hover:text-white"
                     />
                 </template>
-                <template #popover="{ item }">
-                    <ClassificationInfoCard :classification="item"
-                /></template>
-                <template #suffix>
-                    <span
-                        v-if="splittedTerms.b.length > 0"
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            rounded
-                            text-primary
-                            mr-3
-                            cursor-pointer
-                        "
-                        @click="() => toggleAllClassifications()"
-                    >
-                        {{
-                            showAll
-                                ? 'Show less'
-                                : `and ${splittedTerms.b.length} more`
-                        }}
-                    </span>
-                </template>
             </PillGroup>
         </div>
         <a-popover
-            v-model:visible="linkClassificationPopover"
+            v-model:visible="linkTermPopover"
             placement="left"
             trigger="click"
         >
             <div v-if="pillTerms.length < 1">
-                <div @click.stop="toggleLinkClassificationPopover">
+                <div @click.stop="toggleLinkTermPopover">
                     <div
                         class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                     >
@@ -55,20 +31,21 @@
                     </div>
                 </div>
             </div>
+            <!-- popover content  -->
             <template #content>
                 <div class="flex flex-col overflow-y-auto w-72">
-                    <template v-if="!showCreateClassificationPopover">
+                    <template v-if="!showLinkTermPopover">
                         <p class="mb-2 text-sm text-gray-700">Link Terms</p>
                         <a-select
-                            v-model:value="selectedClassificationForLink"
+                            v-model:value="selectedTermForLink"
                             mode="multiple"
                             :allow-clear="true"
                             :autofocus="true"
                             :show-search="true"
                             placeholder="Search for terms"
                             :loading="searchLoading"
-                            @change="handleSelectedClassificationForLink"
                         >
+                            <!-- term list -->
                             <template
                                 v-for="term in availableTerms"
                                 :key="term.guid"
@@ -98,13 +75,8 @@
                             <a-button
                                 type="primary"
                                 class="px-4"
-                                :loading="
-                                    createClassificationStatus === 'loading'
-                                        ? true
-                                        : false
-                                "
                                 @click="createTerm"
-                                >Create</a-button
+                                >Link</a-button
                             >
                         </div>
                     </div>
@@ -112,519 +84,214 @@
             </template>
         </a-popover>
     </div>
-
-    <teleport to="#overAssetPreviewSidebar">
-        <a-drawer
-            v-model:visible="isDrawerVisible"
-            placement="right"
-            :mask="true"
-            :keyboard="false"
-            :destroy-on-close="false"
-            :closable="true"
-        >
-            {{ JSON.stringify(previewClassification) }}
-        </a-drawer>
-    </teleport>
 </template>
 
 <script lang="ts">
-    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        reactive,
-        ref,
-        Ref,
-        toRaw,
-        UnwrapRef,
-        watch,
-        onMounted,
-    } from 'vue'
-    import { Classification } from '~/api/atlas/classification'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import { classificationInterface } from '~/types/classifications/classification.interface'
-    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
-    import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
-    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
-    import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    export default defineComponent({
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
+import { computed, defineComponent, PropType, ref, watch, toRefs } from 'vue'
+import { assetInterface } from '~/types/assets/asset.interface'
+import PillGroup from '~/components/UI/pill/pillGroup.vue'
+import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
+
+export default defineComponent({
+    components: { PillGroup },
+    props: {
+        selectedAsset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-        components: { PillGroup, ClassificationInfoCard },
+    },
+    emits: ['update:selectedAsset'],
+    setup(props, { emit }) {
+        // data
+        const { selectedAsset } = toRefs(props) // to update in cards
+        const asset = computed(() => props.selectedAsset ?? {})
+        const linkTermPopover = ref(false)
+        const showLinkTermPopover = ref(false)
 
-        emits: ['update:selectedAsset'],
-        setup(props, { emit }) {
-            const selectedAsset = computed(() => props.selectedAsset)
-            const classificationsStore = useClassificationStore()
-            const asset = computed(() => props.selectedAsset ?? {})
-            const linkClassificationPopover = ref(false)
-            const linkClassificationStatus = ref('')
-            const linkClassificationStatusError = ref('')
-            const showAll = ref(false)
-            const unlinkClassificationStatus = ref({
-                status: '',
-                typeName: null,
-            })
-            const unlinkClassificationStatusErrorText = ref('')
-            const showCreateClassificationPopover = ref(false)
+        const pillTerms = ref([...props.selectedAsset?.meanings]) // linked terms show in sidebar as pills
+        const { terms, isLoading: searchLoading } = useGtcSearch(
+            undefined,
+            ref(true),
+            'AtlasGlossaryTerm'
+        ) // gets all the terms using basic search
 
-            const createClassificationRef = ref(null)
-            const showAddClassificationBtn = ref(false)
-            const pillTerms = ref([...props.selectedAsset?.meanings])
-            console.log(pillTerms)
-            const isDrawerVisible = ref(false)
-            const {
-                terms,
-                isLoading: searchLoading,
-                fetchAssets: fetchCategories,
-            } = useGtcSearch(undefined, ref(true), 'AtlasGlossaryTerm')
-            const availableTerms = ref([])
-            watch(
-                terms,
-                () => {
-                    availableTerms.value = [...terms.value]
-                },
-                { immediate: true }
+        const availableTerms = ref([]) // terms to show in popover
+
+        const assetLinkedTerms = computed(
+            () => selectedAsset.value.meaningNames ?? []
+        )
+
+        const selectedTermForLink = ref([])
+        const createErrorText = ref('')
+        const createClassificationFormRef = ref()
+        // methods
+
+        // update avaible terms on link and unlink
+        const updateAvailableTerms = () => {
+            availableTerms.value = [...terms.value]
+            availableTerms.value = availableTerms.value.filter(
+                (el) =>
+                    !selectedAsset.value.meaningNames.includes(el.displayText)
             )
-            /* classifications fxns */
-            function getAvailableClassificationsForLink(
-                selectedAssetClassifications: classificationInterface[],
-                classifications: classificationInterface[]
-            ) {
-                const availableClassifications: Array<any> = []
-                classifications.forEach((classification) => {
-                    let index = -1
-                    if (selectedAssetClassifications?.length > 0) {
-                        index = selectedAssetClassifications?.findIndex(
-                            (cl) => cl.typeName === classification.name
-                        )
-                    }
-                    if (index === -1)
-                        availableClassifications.push(classification)
-                })
+        }
 
-                return availableClassifications
+        const handlePopoverVisibleChange = () => {
+            showLinkTermPopover.value = false
+            selectedTermForLink.value = []
+        }
+
+        const toggleLinkTermPopover = () => {
+            if (!linkTermPopover.value) linkTermPopover.value = true
+            else {
+                showLinkTermPopover.value = false
+                selectedTermForLink.value = []
             }
-            const availableClassificationsForLink = ref(
-                getAvailableClassificationsForLink(
-                    selectedAsset.value.classifications,
-                    classificationsStore.classifications
-                )
-            )
-            function removeClassificationFromSelectedAsset(
-                selectedClassification: any
-            ) {
-                const { typeName } = selectedClassification
-                const { classifications } = selectedAsset.value
-                selectedAsset.value.classifications = classifications.filter(
-                    (classification) => classification.typeName !== typeName
-                )
-                availableClassificationsForLink.value =
-                    getAvailableClassificationsForLink(
-                        selectedAsset.value.classifications,
-                        classificationsStore.classifications
+            updateAvailableTerms()
+        }
+
+        const handleCancel = () => {
+            showLinkTermPopover.value = false
+            linkTermPopover.value = false
+        }
+
+        // link term on click ok
+        const createTerm = () => {
+            const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
+            selectedTermForLink.value.map((el) => {
+                const { response, loading } = assignLinkedAssets(el, [
+                    props.selectedAsset,
+                ])
+                watch(response, (data) => {
+                    const termToBeAdded = terms.value.filter(
+                        (term) => term.guid === el
                     )
-            }
-
-            function formattedLinkedClassifications(
-                classifications: classificationInterface[]
-            ): Array<classificationInterface & { hideRemoveButton: boolean }> {
-                return classifications.map((classification) => {
-                    if (
-                        classification &&
-                        classification.hasOwnProperty('isAutoClassification') &&
-                        classification.isAutoClassification
-                    ) {
-                        return {
-                            ...classification,
-                            hideRemoveButton: false,
-                        }
+                    handleCancel()
+                    const obj = {
+                        displayText: termToBeAdded[0].displayText,
+                        termGuid:
+                            termToBeAdded[0].termGuid || termToBeAdded[0].guid,
                     }
-                    if (
-                        classification.propagate &&
-                        classification.entityGuid &&
-                        selectedAsset.value.guid !== classification.entityGuid
-                    ) {
-                        return {
-                            ...classification,
-                            hideRemoveButton: true,
-                        }
-                    }
-                    return {
-                        ...classification,
-                        hideRemoveButton: false,
-                    }
-                })
-            }
-            function addClassificationToSelectedAsset({
-                classifications: selectedClassificationsForLink,
-            }: {
-                classifications: classificationInterface[]
-                multiple: boolean
-            }) {
-                let { classifications } = selectedAsset.value
-                if (classifications?.length > 0) {
-                    classifications = [
-                        ...classifications,
-                        ...selectedClassificationsForLink,
-                    ]
-                } else {
-                    classifications = [...selectedClassificationsForLink]
-                }
-                selectedAsset.value.classifications =
-                    formattedLinkedClassifications(classifications)
-                availableClassificationsForLink.value =
-                    getAvailableClassificationsForLink(
-                        selectedAsset.value.classifications,
-                        classificationsStore.classifications
-                    )
-            }
-            function updateAvailableClassificationsForLink() {
-                availableClassificationsForLink.value =
-                    getAvailableClassificationsForLink(
-                        selectedAsset.value.classifications,
-                        classificationsStore.classifications
-                    )
-            }
-            /* ------------------------------- */
+                    pillTerms.value = [...pillTerms.value, obj]
+                    selectedAsset.value.meanings.push(obj)
+                    selectedAsset.value.meaningNames.push(obj.displayText)
 
-            const assetLinkedTerms = computed(
-                () => selectedAsset.value.meaningNames ?? []
-            )
-
-            const unLinkClassification = (classification: any) => {
-                unlinkClassificationStatus.value.status = 'loading'
-                unlinkClassificationStatus.value.typeName =
-                    classification.typeName
-
-                const { typeName, entityGuid } = classification
-                // No content response
-                const { data, error, isReady } =
-                    Classification.archiveClassification({
-                        cache: '',
-                        typeName,
-                        entityGuid,
-                    })
-
-                /* Todo show loader during unlinking of classification from asset */
-                watch([data, error, isReady], () => {
-                    if (isReady && !error.value) {
-                        unlinkClassificationStatus.value.status = 'success'
-                        unlinkClassificationStatus.value.typeName = null
-                        removeClassificationFromSelectedAsset(classification)
-                    } else {
-                        unlinkClassificationStatus.value.status = 'failed'
-                        unlinkClassificationStatus.value.typeName = null
-                        unlinkClassificationStatusErrorText.value =
-                            'something went wrong'
-                    }
-                })
-            }
-
-            const openLinkClassificationPopover = () => {
-                linkClassificationPopover.value = true
-            }
-
-            const linkClassificationData = ref({
-                propagate: false,
-                removePropagationsOnEntityDelete: false,
-                typeName: '',
-            })
-            const selectedClassificationForLink = ref([])
-
-            const handleLinkClassificationPopoverSave = () => {
-                const payload = ref([]) as Ref<any>
-                if (selectedClassificationForLink.value.length > 1) {
-                    payload.value = selectedClassificationForLink.value.map(
-                        (classificationName) => ({
-                            entityGuid: selectedAsset.value.guid,
-                            attributes: {},
-                            propagate: false,
-                            removePropagationsOnEntityDelete: true,
-                            typeName: classificationName,
-                            validityPeriods: [],
-                        })
-                    )
-                } else {
-                    payload.value = [
-                        {
-                            entityGuid: selectedAsset.value.guid,
-                            attributes: {},
-                            propagate: linkClassificationData.value.propagate,
-                            removePropagationsOnEntityDelete:
-                                linkClassificationData.value
-                                    .removePropagationsOnEntityDelete,
-                            typeName: linkClassificationData.value.typeName,
-                            validityPeriods: [],
-                        },
-                    ]
-                }
-
-                linkClassificationStatus.value = 'loading'
-                const { error, isLoading } = Classification.linkClassification({
-                    cache: undefined,
-                    payload,
-                    entityGuid: selectedAsset.value.guid,
-                })
-
-                watch([isLoading], () => {
-                    if (isLoading.value == false && !error.value) {
-                        linkClassificationStatus.value = 'success'
-                        linkClassificationPopover.value = false
-                        const classifications = payload.value
-                        addClassificationToSelectedAsset({
-                            classifications,
-                            multiple: classifications.length > 1,
-                        })
-                        selectedClassificationForLink.value = []
-                        linkClassificationData.value = {
-                            propagate: false,
-                            removePropagationsOnEntityDelete: true,
-                            typeName: '',
-                        }
-                    } else {
-                        linkClassificationStatus.value = 'error'
-                        linkClassificationStatusError.value =
-                            'Something went wrong!'
-                    }
-                })
-            }
-
-            const handleLinkClassificationPopoverCancel = () => {
-                linkClassificationPopover.value = false
-            }
-
-            const handleSelectedClassificationForLink = (typeName: any) => {
-                const data = [...typeName]
-                linkClassificationData.value.typeName = data.pop()
-            }
-            const showCreateClassificationForm = () => {
-                showCreateClassificationPopover.value = true
-            }
-
-            const hideCreateClassificationWindow = () => {
-                showCreateClassificationPopover.value = false
-            }
-
-            interface FormState {
-                name: string
-                description: string
-            }
-            const createClassificationStatus = ref('')
-            const createErrorText = ref('')
-            const createClassificationFormRef = ref()
-
-            const formState: UnwrapRef<FormState> = reactive({
-                name: '',
-                description: '',
-            })
-            const rules = {
-                name: [
-                    {
-                        required: true,
-                        message: 'Please input Classification name',
-                        trigger: 'blur',
-                    },
-                ],
-            }
-
-            const resetRef = (passedRef: Ref, time: number) => {
-                setTimeout(() => {
-                    passedRef.value = ''
-                }, time)
-            }
-
-            const handleClassificationClick = () => {}
-            const handlePopoverVisibleChange = () => {
-                showCreateClassificationPopover.value = false
-                selectedClassificationForLink.value = []
-            }
-
-            function splitArray(sizeofSplit: number, arr: any[]) {
-                if (sizeofSplit >= arr?.length) {
-                    return {
-                        a: [...arr],
-                        b: [],
-                    }
-                }
-                const a: any[] = arr.slice(0, sizeofSplit)
-                const b: any[] = arr.slice(sizeofSplit, arr.length)
-                return {
-                    a,
-                    b,
-                }
-            }
-            const splittedTerms = ref(splitArray(5, assetLinkedTerms.value))
-            watch(assetLinkedTerms, () => {
-                splittedTerms.value = splitArray(5, assetLinkedTerms.value)
-            })
-            const toggleAllClassifications = () => {
-                showAll.value = !showAll.value
-            }
-            const classificationsList = computed(() =>
-                showAll.value
-                    ? [...splittedTerms.value.a, ...splittedTerms.value.b]
-                    : splittedTerms.value.a
-            )
-
-            const toggleLinkClassificationPopover = () => {
-                if (!linkClassificationPopover.value)
-                    linkClassificationPopover.value = true
-                else {
-                    showCreateClassificationPopover.value = false
-                    selectedClassificationForLink.value = []
-                }
-            }
-
-            const previewClassification: Ref<any> = ref({})
-
-            function handleSelect(elm: any, idx: number) {
-                // TODO: Uncomment this line when implementing the classification drawer
-                // isDrawerVisible.value = true
-                previewClassification.value = elm
-            }
-            const handleCancel = () => {
-                showCreateClassificationPopover.value = false
-                linkClassificationPopover.value = false
-            }
-            const createTerm = () => {
-                const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
-                selectedClassificationForLink.value.map((el) => {
-                    const { response, loading } = assignLinkedAssets(el, [
-                        props.selectedAsset,
-                    ])
-                    watch(response, (data) => {
-                        console.log(response, loading)
-                        const termToBeAdded = terms.value.filter(
-                            (term) => term.guid === el
-                        )
-                        handleCancel()
-                        pillTerms.value = [...pillTerms.value, ...termToBeAdded]
-                        emit('update:selectedAsset', props.selectedAsset)
-                    })
-                })
-            }
-            const unLinkTerm = (term: any) => {
-                console.log(term?.termGuid)
-                console.log(term?.guid)
-                const { unLinkAssets } = useLinkAssets()
-                const { response: unlinkResponse, loading } = unLinkAssets(
-                    term?.termGuid || term?.guid,
-                    [props.selectedAsset]
-                )
-                pillTerms.value = pillTerms.value.filter((el) => {
-                    if (term?.termGuid) {
-                        console.log('termGuid called')
-                        return el?.termGuid !== term?.termGuid
-                    }
-                    if (el?.guid) return el?.guid !== term?.guid
-                    return el?.termGuid !== term?.guid
-                })
-
-                watch(unlinkResponse, (data) => {
-                    // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
+                    updateAvailableTerms()
                     emit('update:selectedAsset', props.selectedAsset)
                 })
-            }
-
-            watch(asset, () => {
-                pillTerms.value = [...props.selectedAsset?.meanings]
             })
+        }
+        // unlink term on pill cross btn clicked
+        const unLinkTerm = (term: any) => {
+            const { unLinkAssets } = useLinkAssets()
+            const { response: unlinkResponse, loading } = unLinkAssets(
+                term?.termGuid || term?.guid,
+                [props.selectedAsset]
+            )
+            pillTerms.value = pillTerms.value.filter((el) => {
+                if (term?.termGuid) {
+                    return el?.termGuid !== term?.termGuid
+                }
+                if (el?.guid) return el?.guid !== term?.guid
+                return el?.termGuid !== term?.guid
+            })
+            selectedAsset.value.meaningNames =
+                selectedAsset.value?.meaningNames.filter(
+                    (el) => el !== term?.displayText
+                )
+            selectedAsset.value.meanings = selectedAsset.value.meanings.filter(
+                (el) => {
+                    if (term?.termGuid) {
+                        return el?.termGuid !== term?.termGuid
+                    }
+                    return el?.termGuid !== term?.guid
+                }
+            )
 
-            return {
-                asset,
-                selectedAsset,
-                unlinkClassificationStatus,
-                handleSelectedClassificationForLink,
-                createClassificationStatus,
-                createClassificationFormRef,
-                showCreateClassificationPopover,
-                linkClassificationData,
-                linkClassificationStatus,
-                selectedClassificationForLink,
-                handleLinkClassificationPopoverCancel,
-                handleLinkClassificationPopoverSave,
-                openLinkClassificationPopover,
-                availableClassificationsForLink,
-                linkClassificationPopover,
-                assetLinkedTerms,
-                splittedTerms,
-                unLinkClassification,
-                handleClassificationClick,
-                createClassificationRef,
-                showCreateClassificationForm,
-                formState,
-                rules,
-                createErrorText,
-                showAddClassificationBtn,
-                handlePopoverVisibleChange,
-                toggleAllClassifications,
-                classificationsList,
-                toggleLinkClassificationPopover,
-                showAll,
-                isDrawerVisible,
-                handleSelect,
-                previewClassification,
-                terms,
-                availableTerms,
-                handleCancel,
-                searchLoading,
-                createTerm,
-                pillTerms,
-                unLinkTerm,
-            }
-        },
-    })
+            watch(unlinkResponse, (data) => {
+                // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
+                emit('update:selectedAsset', props.selectedAsset)
+                updateAvailableTerms()
+            })
+        }
+        //  watchers
+        watch(
+            terms,
+            () => {
+                updateAvailableTerms()
+            },
+            { immediate: true }
+        )
 
-    // typeName is name in classification
+        watch(selectedAsset, () => {
+            pillTerms.value = [...props.selectedAsset?.meanings]
+            updateAvailableTerms()
+        })
+
+        return {
+            asset,
+            selectedAsset,
+            createClassificationFormRef,
+            showLinkTermPopover,
+            selectedTermForLink,
+            linkTermPopover,
+            assetLinkedTerms,
+            createErrorText,
+            handlePopoverVisibleChange,
+            toggleLinkTermPopover,
+            terms,
+            availableTerms,
+            handleCancel,
+            searchLoading,
+            createTerm,
+            pillTerms,
+            unLinkTerm,
+        }
+    },
+})
+
+// typeName is name in classification
 </script>
 
 <style lang="less" module>
-    .borderless {
-        @apply border-none shadow-none px-4 !important;
+.borderless {
+    @apply border-none shadow-none px-4 !important;
 
-        &:global(.ant-input-affix-wrapper-focused) {
-            @apply border-none shadow-none;
-        }
+    &:global(.ant-input-affix-wrapper-focused) {
+        @apply border-none shadow-none;
     }
-    :global(.ant-form-item-label
-            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
-        @apply hidden;
-    }
-    // Aesterik in right side
-    :global(.ant-form-item-label
-            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
-        display: inline-block;
-        margin-left: 4px;
-        color: #ff4d4f;
-        font-size: 14px;
-        font-family: SimSun, sans-serif;
-        line-height: 1;
-        content: '*';
-    }
+}
+:global(.ant-form-item-label
+        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
+    @apply hidden;
+}
+// Aesterik in right side
+:global(.ant-form-item-label
+        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+    display: inline-block;
+    margin-left: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: '*';
+}
 </style>
 <style lang="less" scoped>
-    ._bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .classification-cross-btn {
-        height: 100%;
-        right: 6px;
-        @apply -top-0;
-        background: linear-gradient(
-            -90deg,
-            rgba(82, 119, 215, 1) 60%,
-            rgba(0, 0, 0, 0) 100%
-        );
-    }
-    .classification-name-width {
-        max-width: 12rem;
-    }
+._bg-primary-light {
+    background: rgba(34, 81, 204, 0.05);
+}
+.classification-cross-btn {
+    height: 100%;
+    right: 6px;
+    @apply -top-0;
+    background: linear-gradient(
+        -90deg,
+        rgba(82, 119, 215, 1) 60%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+.classification-name-width {
+    max-width: 12rem;
+}
 </style>

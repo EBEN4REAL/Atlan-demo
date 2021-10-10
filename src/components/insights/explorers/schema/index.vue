@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white border-r">
+    <div class="flex flex-col items-center w-full h-full bg-white">
         <div class="w-full p-4 pb-1">
             <Connector
                 class=""
@@ -116,13 +116,13 @@
             }
 
             const connectionQualifiedName = computed(() =>
-                getConnectionQualifiedName(connectorsData.value.attributeValue)
+                !getConnectionQualifiedName(connectorsData.value.attributeValue)?.endsWith('undefined') ? getConnectionQualifiedName(connectorsData.value.attributeValue) : undefined
             )
             const databaseQualifiedName = computed(() =>
-                getDatabaseQualifiedName(connectorsData.value.attributeValue)
+                !getDatabaseQualifiedName(connectorsData.value.attributeValue)?.endsWith('undefined') ? getDatabaseQualifiedName(connectorsData.value.attributeValue) : undefined
             )
             const schemaQualifiedName = computed(() =>
-                getSchemaQualifiedName(connectorsData.value.attributeValue)
+                !getSchemaQualifiedName(connectorsData.value.attributeValue)?.endsWith('undefined') ? getSchemaQualifiedName(connectorsData.value.attributeValue) : undefined
             )
             const initSelectedKeys = computed(() => {
                 /* KEY - SchemaqualifiedName/tableName */

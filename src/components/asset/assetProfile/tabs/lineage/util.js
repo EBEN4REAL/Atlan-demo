@@ -26,6 +26,8 @@ export const getNodeTypeText = {
     AtlanBIExplore: 'BI Explore',
     AtlanProcess: 'Process',
     AtlanIntegration: 'Integration',
+    TableauCalculatedField: 'Calculated Field',
+    TableauDatasourceField: 'Datasource Field',
 }
 
 /**

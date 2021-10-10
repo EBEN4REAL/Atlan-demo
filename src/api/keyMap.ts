@@ -34,6 +34,9 @@ export const KeyMaps = {
                 'metastore',
                 `/entity/guid/${entityGuid}/classifications`
             ),
+        // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
+        BULK_LINK_CLASSIFICATION: () =>
+            getAPIPath('auth/atlas', `/entity/bulk/setClassifications`),
     },
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
@@ -164,23 +167,19 @@ export const KeyMaps = {
             searchText,
         }: Record<string, any>) =>
             getAPIPath(
-                'metastore',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+                'auth/atlas',
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
-
                 'metastore',
                 `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`),
-        GTC_SEARCH: () => getAPIPath('metastore', `/search/basic`),
-        GLOSSARY_LIST: () => getAPIPath('metastore', `/search/basic`),
-    },
     health: {
         PING_USER: () => getHealthPath('auth', '/debug/health'),
     },
-    credential: {
         CREDENTIAL_TEST: () => getAPIPath('auth', `/credentials/test`),
         CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) =>
             getAPIPath('auth', `/credentials/${id}/test`),
@@ -189,7 +188,6 @@ export const KeyMaps = {
     },
     connection: {
         TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
-        SETUP: () => getAPIPath('auth', "/connections"),
         CONNECTION_SETUP: () => getAPIPath('metastore', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
         CONNECTION_ARCHIVE: ({ id }) =>
@@ -198,7 +196,6 @@ export const KeyMaps = {
     query: {
         RUN_QUERY: ({
             query,
-            defaultSchema,
             dataSourceName,
             length,
         }: PathParams) =>
@@ -208,7 +205,7 @@ export const KeyMaps = {
             ),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`

@@ -23,7 +23,7 @@ export const getEnv = function (): any {
 
     DEV_API_BASE_URL: parse(
       import.meta.env.VITE_DEV_API_BASE_URL,
-      "https://alpha.atlan.com"
+      "default"
     ),
     DEFAULT_REALM: parse(import.meta.env.VITE_DEFAULT_REALM, "default"),
     DEFAULT_CLIENT_ID: parse(import.meta.env.VITE_HOME_CLIENT_ID, "atlan-frontend"),

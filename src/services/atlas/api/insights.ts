@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { KeyMaps } from '../atlas_keyMpas'
+import { KeyMaps } from '../atlas_keyMaps'
 import { useAPIAsyncState } from '~/api/useAPI'
 import {
     BasicSearchResponse,
@@ -56,10 +56,22 @@ const UpdateSavedQuery = (body: Record<string, any>) => {
     )
     return { data, error, isLoading }
 }
-
+const DeleteEntity = (guid: string) => {
+    const { data, error, isLoading } = useAPIAsyncState<SavedQueryResponse>(
+        KeyMaps.insights.DELETE_ENTITY,
+        'DELETE',
+        {
+            pathVariables: {
+                guid
+            },
+        }
+    )
+    return { data, error, isLoading }
+}
 export const Insights = {
     UpdateSavedQuery,
     CreateSavedQuery,
     GetSavedQuery,
-    CreateQueryFolder
+    CreateQueryFolder,
+    DeleteEntity
 }

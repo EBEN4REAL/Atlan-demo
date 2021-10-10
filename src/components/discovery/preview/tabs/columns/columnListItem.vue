@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="flex px-3 py-2 -mx-3 -my-2 rounded hover:bg-primary-light group"
-    >
+    <div class="flex px-3 py-2 -mx-3 -my-1 rounded group">
         <div class="flex-grow overflow-hidden">
             <ColumnInfoCard :column-asset="asset">
                 <div class="flex items-center mb-1">
@@ -37,8 +35,9 @@
             <Description :selected-asset="asset" :using-in-info="false" />
             <ScrollStrip v-if="asset.classifications">
                 <Pill
-                    class="flex-none"
                     v-for="clsf in asset.classifications"
+                    :key="clsf.typeName"
+                    class="flex-none"
                     :label="clsf.typeName"
                     :has-action="false"
                     size="sm"
@@ -49,14 +48,15 @@
                 </Pill>
             </ScrollStrip>
         </div>
-        <AtlanBtn
+        <!-- <AtlanBtn
             class="flex-none opacity-0 group-hover:opacity-100"
             size="sm"
             color="secondary"
             padding="compact"
         >
             <AtlanIcon icon="KebabMenu" class="-mx-1"></AtlanIcon>
-        </AtlanBtn>
+        </AtlanBtn> -->
+        <ColumnListMenu :asset="asset" />
     </div>
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
@@ -84,11 +84,12 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
+    import Description from '@common/sidebar/description.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
-    import Description from '@common/sidebar/description.vue'
     import ColumnInfoCard from './columnInfoCard.vue'
+    import ColumnListMenu from './columnListMenu.vue'
     import AtlanBtn from '@/UI/button.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import ScrollStrip from '@/UI/scrollStrip.vue'
@@ -99,6 +100,7 @@
             AssetPreview,
             Description,
             ColumnInfoCard,
+            ColumnListMenu,
             AtlanBtn,
             Pill,
             ScrollStrip,

@@ -3,11 +3,13 @@ import { computed, getCurrentInstance } from "vue";
 export default function whoami() {
   const app = getCurrentInstance();
   const name = computed(() => app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
-      ?.name);
+    ?.name);
   const username = computed(() => app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
-      ?.username);
+    ?.username);
+  const email = computed(() => app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
+    ?.email);
   const role = computed(() => app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
-      ?.role);
+    ?.role);
   const user =
     app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed;
   return {
@@ -15,5 +17,6 @@ export default function whoami() {
     username,
     role,
     user,
+    email,
   };
 }

@@ -9,25 +9,27 @@
                 size="minimal"
             >
             </SearchAndFilter>
-            <a-button-group>
+            <a-button-group class="mb-2 text-xs rounded shadow">
                 <a-button
-                    @click="setActiveTab('users')"
-                    :class="activeOwnerTabKey === 'users' ? 'text-primary' : ''"
-                >
-                    <template #icon
-                        ><AtlanIcon icon="User" class="mx-auto"
-                    /></template>
-                </a-button>
-                <a-button
-                    @click="setActiveTab('groups')"
                     :class="
-                        activeOwnerTabKey === 'groups' ? 'text-primary' : ''
+                        activeTab === 'new'
+                            ? 'text-primary font-bold'
+                            : 'text-gray-500'
                     "
-                    ><template #icon
-                        ><AtlanIcon
-                            icon="GroupStatic"
-                            class="mx-auto" /></template
-                ></a-button>
+                    @click="setActiveTab('new')"
+                >
+                    New saved filter
+                </a-button>
+
+                <a-button
+                    :class="
+                        activeTab === 'replace'
+                            ? 'text-primary font-bold'
+                            : 'text-gray-500'
+                    "
+                    @click="setActiveTab('replace')"
+                    >Replace existing</a-button
+                >
             </a-button-group>
         </div>
         <div class="relative w-full">
@@ -100,7 +102,7 @@
                         v-if="
                             STATES.SUCCESS === userOwnerState && showMoreUsers
                         "
-                        class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                        class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none outlined text-primary"
                         @click="toggleShowMore"
                     >
                         {{ `Show ${totalUsersCount - userList.length} more` }}
@@ -158,7 +160,7 @@
                             GROUPSTATES.SUCCESS === groupOwnerState &&
                             showMoreGroups
                         "
-                        class="flex items-center w-auto mb-3 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                        class="flex items-center w-auto mb-3 font-bold text-center cursor-pointer select-none outlined text-primary"
                         @click="toggleShowMoreGroups"
                     >
                         {{ `Show ${totalGroupCount - groupList.length} more` }}
@@ -203,6 +205,8 @@
         setup(props, { emit }) {
             const { data } = toRefs(props)
             const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
+            const activeTab: Ref<'new' | 'replace'> = ref('new')
+
             const showMoreUsers = ref(true)
             const showMoreGroups = ref(true)
             const queryText = ref('')
@@ -245,7 +249,7 @@
                 }
             }
 
-            function setActiveTab(tabName: 'users' | 'groups') {
+            function setActiveTab(tabName: 'new' | 'replace') {
                 activeOwnerTabKey.value = tabName
                 if (queryText.value !== '') handleOwnerSearch()
             }

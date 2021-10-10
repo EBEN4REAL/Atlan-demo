@@ -87,7 +87,7 @@
         },
         emits: [''],
         setup(props, { emit }) {
-            const { username: myUsername, name: myName } = whoami()
+            const { username: myUsername, name: myName, email } = whoami()
             const { appliedFilters } = toRefs(props)
             const title = ref<string | undefined>('')
             const description = ref<string | undefined>('')
@@ -116,14 +116,19 @@
             }
 
             const handleOk = () => {
-                const { data, error, isLoading, isReady } = addSavedFilter(
+                /* const { data, error, isLoading, isReady } = addSavedFilter(
                     title,
                     description,
                     myUsername,
                     appliedFilters
-                )
+                ) */
 
-                console.log(data.value)
+                console.log(
+                    title.value,
+                    description.value,
+                    email.value,
+                    appliedFilters.value
+                )
             }
 
             const handleCancel = () => {

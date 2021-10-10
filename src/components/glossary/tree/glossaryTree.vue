@@ -428,10 +428,10 @@
             </div>
             <div
                 v-else-if="searchResults?.length && searchQuery?.length"
-                class="h-full px-4 overflow-y-auto"
+                class="h-full p-4 overflow-y-auto"
             >
                 <div v-if="searchTerms?.length">
-                    <div class="mb-2 text-gray-500">Terms</div>
+                    <div class="mb-0 text-gray-500">Terms</div>
                     <div
                         v-for="term in searchTerms"
                         :key="term.guid"
@@ -466,7 +466,7 @@
                     </div>
                 </div>
                 <div v-if="searchCategories?.length" class="mt-4">
-                    <div class="mb-2 text-gray-500">Categories</div>
+                    <div class="mb-0 text-gray-500">Categories</div>
                     <div
                         v-for="category in searchCategories"
                         :key="category.guid"
@@ -507,7 +507,7 @@
                     !searchResults?.length &&
                     !searchLoading
                 "
-                class="px-4"
+                class="p-4 text-gray-500 font-bold"
             >
                 No results
             </div>

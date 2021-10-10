@@ -96,6 +96,14 @@ export function entitiesToEditorKeyword(
                             }
                             words.push(keyword)
                         }
+                        // keyword = {
+                        //     label: entities[i].name,
+                        //     detail: `${type}: ${entities[i].type}`, // COLUMN,
+                        //     kind: monaco.languages.CompletionItemKind.Field,
+                        //     documentation: `Some descripiton for ${type}`,
+                        //     insertText: `${entities[i].name}`,
+                        // }
+                        // words.push(keyword)
                     }
                 }
             }
@@ -229,10 +237,12 @@ export async function useAutoSuggestions(
     const connectionQualifiedName = getConnectionQualifiedName(attributeValue)
     const databaseName = getDatabaseName(attributeValue)
     const schemaName = getSchemaName(attributeValue)
+    /* ------------For BETA----------- */
     // const connectionQualifiedName =
     //     'default/snowflake/atlan-snowflake-crawler-wpwvc'
     // const databaseName = 'SNOWFLAKE_SAMPLE_DATA'
     // const schemaName = 'TPCDS_SF10TCL'
+    /* ------------------- */
     const connectorsInfo = {
         connectionQualifiedName,
         databaseName,

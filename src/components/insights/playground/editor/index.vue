@@ -211,7 +211,7 @@
                 class="absolute bottom-0 left-0 flex items-center justify-between w-full text-xs text-gray-500 bg-white "
             >
                 <WarehouseConnector />
-                <div class="flex items-center">
+                <div class="flex items-center mr-2">
                     <div class="flex" v-if="editorFocused">
                         <span class="mr-2">
                             Ln:&nbsp;{{ editorPos.lineNumber }}
@@ -220,7 +220,37 @@
                             Col:&nbsp; {{ editorPos.column }}
                         </span>
                     </div>
-                    <span class="mr-2"> Spaces:&nbsp;4 </span>
+                    <span class="ml-2 mr-4"> Spaces:&nbsp;4 </span>
+                    <div class="mr-2 group" @click="togglePane">
+                        <div
+                            class="
+                                flex
+                                items-end
+                                justify-center
+                                w-4
+                                h-3.5
+                                border
+                                rounded-sm
+                                group-hover:border-primary
+                            "
+                            :class="
+                                outputPaneSize > 0
+                                    ? 'border-primary'
+                                    : 'border-gray-500'
+                            "
+                            style="padding: 0px 1px"
+                        >
+                            <div
+                                class="w-full h-1 rounded-sm  group-hover:bg-primary"
+                                :class="
+                                    outputPaneSize > 0
+                                        ? 'bg-primary'
+                                        : 'bg-gray-500'
+                                "
+                                style="margin-bottom: 1px"
+                            ></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -249,7 +279,7 @@
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     // import ActionButtons from '~/components/insights/playground/editor/actionButtons/index.vue'
     import WarehouseConnector from '~/components/insights/playground/editor/warehouse/index.vue'
-
+    import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
     import AtlanBtn from '~/components/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
@@ -273,7 +303,8 @@
         props: {},
         setup() {
             const router = useRouter()
-
+            // TODO: will be used for HOTKEYs
+            const { resultsPaneSizeToggle } = useHotKeys()
             const { queryRun, modifyQueryExecutionTime } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
@@ -296,6 +327,7 @@
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
+            const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
@@ -379,6 +411,10 @@
                     'editor.action.formatDocument'
                 )
             }
+            const togglePane = () => {
+                console.log('called')
+                resultsPaneSizeToggle(outputPaneSize)
+            }
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -396,6 +432,8 @@
                 console.log(pos)
             })
             return {
+                togglePane,
+                outputPaneSize,
                 useTimeAgo,
                 editorFocused,
                 editorPos,

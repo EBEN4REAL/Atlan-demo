@@ -137,7 +137,6 @@
             ) => {
                 // clearing previous popover register data
                 if (disposable) disposable.value?.dispose()
-                console.log(suggestions, 'thenable')
                 disposable.value =
                     monaco.languages.registerCompletionItemProvider(
                         'atlansql',

@@ -130,7 +130,10 @@
             }
 
             const triggerAutoCompletion = (
-                suggestions: suggestionKeywordInterface[]
+                suggestions: Promise<{
+                    suggestions: suggestionKeywordInterface[]
+                    incomplete: boolean
+                }>
             ) => {
                 console.log('called', suggestions)
                 // clearing previous popover register data
@@ -224,7 +227,10 @@
                             changes,
                             editor,
                             activeInlineTab
-                        )
+                        ) as Promise<{
+                            suggestions: suggestionKeywordInterface[]
+                            incomplete: boolean
+                        }>
                         triggerAutoCompletion(suggestions)
                     }
                 })
@@ -278,7 +284,10 @@
                             changes,
                             editor,
                             activeInlineTab
-                        )
+                        ) as Promise<{
+                            suggestions: suggestionKeywordInterface[]
+                            incomplete: boolean
+                        }>
                         triggerAutoCompletion(suggestions)
                     })
                     const range = editor?.getModel().getFullModelRange()

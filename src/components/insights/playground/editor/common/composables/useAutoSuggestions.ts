@@ -8,6 +8,7 @@ import { useConnector } from '~/components/insights/common/composables/useConnec
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
 import { HEKA_SERVICE_API } from '~/services/heka/index'
 import {
+    autosuggestionEntityColumn,
     autosuggestionEntity,
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
@@ -67,6 +68,7 @@ export function wordToEditorKeyword(
         })
     })
 }
+
 export function entitiesToEditorKeyword(
     response: Promise<autosuggestionResponse>,
     type: string,
@@ -79,17 +81,33 @@ export function entitiesToEditorKeyword(
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
             for (let i = 0; i < len; i++) {
-                let keyword = {
-                    label: entities[i].name,
-                    detail:
-                        type === 'TABLE'
-                            ? 'TABLE'
-                            : `${type}: ${entities[i].type}`, // COLUMN - NUMBER, TABLE
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    documentation: `Some descripiton for ${type}`,
-                    insertText: `${entities[i].name}`,
+                let keyword
+                switch (type) {
+                    case 'TABLE': {
+                        keyword = {
+                            label: entities[i].name,
+                            detail: `${type}`, // TABLE,
+                            kind: monaco.languages.CompletionItemKind.Field,
+                            documentation: `Some descripiton for ${type}`,
+                            insertText: `${entities[i].name}`,
+                        }
+                        words.push(keyword)
+                    }
+                    case 'COLUMN': {
+                        let cols: autosuggestionEntityColumn[] =
+                            entities[i]?.columns
+                        for (let j = 0; j < cols?.length; j++) {
+                            keyword = {
+                                label: cols[j].name,
+                                detail: `${type}: ${entities[i].name}`, // COLUMN - TABLE_NAME,
+                                kind: monaco.languages.CompletionItemKind.Field,
+                                documentation: `Some descripiton for ${type}`,
+                                insertText: `${cols[j].name}`,
+                            }
+                            words.push(keyword)
+                        }
+                    }
                 }
-                words.push(keyword)
             }
             const s = sqlKeywords.filter((keyword) =>
                 keyword.label.includes(currentWord.toUpperCase())
@@ -102,6 +120,16 @@ export function entitiesToEditorKeyword(
     })
 }
 
+function getLocalSQLSugggestions(currentWord: string) {
+    const sqlKeywords = getSqlKeywords()
+    let suggestions = sqlKeywords.filter((keyword) =>
+        keyword.label.includes(currentWord.toUpperCase())
+    )
+    return Promise.resolve({
+        suggestions: suggestions,
+        incomplete: true,
+    })
+}
 function getLastMappedKeyword(
     tokens: string[],
     mappingKeywords,
@@ -146,24 +174,32 @@ async function getSuggestionsUsingType(
             // currentWord = tokens[len - 1]
             // fetchTables(currentWord)
 
-            const entitiesResponsPromise =
-                HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
-            let suggestionsPromise = entitiesToEditorKeyword(
-                entitiesResponsPromise,
-                type,
-                currentWord
-            )
-            return suggestionsPromise
+            /* Current Word Should be greater than 1char */
+            if (currentWord.length > 1) {
+                const entitiesResponsPromise =
+                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
+                let suggestionsPromise = entitiesToEditorKeyword(
+                    entitiesResponsPromise,
+                    type,
+                    currentWord
+                )
+                return suggestionsPromise
+            }
+
+            return getLocalSQLSugggestions(currentWord)
         }
         case 'COLUMN': {
-            const entitiesResponsPromise =
-                HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
-            let suggestionsPromise = entitiesToEditorKeyword(
-                entitiesResponsPromise,
-                type,
-                currentWord
-            )
-            return suggestionsPromise
+            if (currentWord.length > 1) {
+                const entitiesResponsPromise =
+                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
+                let suggestionsPromise = entitiesToEditorKeyword(
+                    entitiesResponsPromise,
+                    type,
+                    currentWord
+                )
+                return suggestionsPromise
+            }
+            return getLocalSQLSugggestions(currentWord)
         }
         case 'NEXT_KEYWORD': {
             let suggestionsPromise = wordToEditorKeyword(
@@ -177,19 +213,20 @@ async function getSuggestionsUsingType(
             return []
     }
 }
+
 export async function useAutoSuggestions(
     changes: any,
     editorInstance: any,
     activeInlineTab: Ref<activeInlineTabInterface>
 ) {
+    console.log(changes, 'changes')
     const changedText = changes.text
     if (!triggerCharacters.includes(changedText)) return []
     const { getConnectionQualifiedName, getDatabaseName, getSchemaName } =
         useConnector()
     const { mappingKeywordsKeys, mappingKeywords } = useMapping()
-    const startColumn = changes.range.startColumn
-    const startLineNumber = changes.range.startLineNumber
-    const sqlKeywords = getSqlKeywords()
+    const endColumn = changes.range.endColumn
+    const endLineNumber = changes.range.endLineNumber
     let suggestions: suggestionKeywordInterface[] = []
 
     /* Connectors Info */
@@ -209,17 +246,29 @@ export async function useAutoSuggestions(
     }
 
     const editorText: string = editorInstance?.getValue()
-    let tokens = editorText.split(/\s/gm)
+    /* Getting the text till cursor pos because we hav to generate the tokens */
+    const textTillChangedIndex = editorInstance
+        ?.getModel()
+        .getOffsetAt({ lineNumber: endLineNumber, column: endColumn })
+    const editorTextTillCursorPos = editorText.slice(
+        0,
+        textTillChangedIndex + 1
+    )
+
+    let tokens = editorTextTillCursorPos.split(/[ ,]+/gm)
     /* Remove tokens which are special characters */
     tokens = tokens.filter((token) => {
         let t = true
-        t = !token.match(/[-[\]{}()*+?'.,"\\/^$|#\s]/g) && token !== ''
+        t = !token.match(/[-[\]{}()*+?'."\\/^$|#\s]/g) && token !== ''
         return t
     })
     // tokens.push(' ')
+    console.log(tokens, 'tokens')
     let currentWord = tokens[tokens.length - 1]
     /* If it is a first/nth character of first word */
-    if (tokens.length > 1) {
+    if (tokens.length < 2) {
+        return getLocalSQLSugggestions(currentWord)
+    } else {
         const lastMatchedKeyword:
             | undefined
             | { token: string; index: number; type: string } =
@@ -248,17 +297,8 @@ export async function useAutoSuggestions(
                 )
             }
         }
-    } else {
-        let s = sqlKeywords.filter((keyword) =>
-            keyword.label.includes(currentWord.toUpperCase())
-        )
-        suggestions = [...suggestions, ...s]
     }
 
     // console.log(suggestions, 'suggestions')
     console.log(changedText, 'changesTExt')
-    return Promise.resolve({
-        suggestions: suggestions,
-        incomplete: true,
-    })
 }

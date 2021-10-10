@@ -1,3 +1,5 @@
+import { pluralizeString } from '~/utils/string'
+
 const getters = {
     getChangedState(state) {
         const changedState = { ...state.updateStatus }
@@ -18,11 +20,27 @@ const getters = {
     },
     getFinalStatusLabel(state) {
         if (state.getFinalStatus === 'loading')
-            return `Updating ${state.bulkSelectedAssets.length} assets`
+            return `Updating ${
+                state.bulkSelectedAssets.length
+            } ${pluralizeString(
+                'asset',
+                state.bulkSelectedAssets.length,
+                false
+            )}`
         if (state.getFinalStatus === 'success')
-            return `${state.bulkSelectedAssets.length} assets updated`
+            return `${state.bulkSelectedAssets.length} ${pluralizeString(
+                'asset',
+                state.bulkSelectedAssets.length,
+                false
+            )} updated`
         if (state.getFinalStatus === 'error')
-            return `Failed to update ${state.bulkSelectedAssets.length} assets`
+            return `Failed to update ${
+                state.bulkSelectedAssets.length
+            } ${pluralizeString(
+                'asset',
+                state.bulkSelectedAssets.length,
+                false
+            )}`
         return ''
     },
     getCertificationStatus(state) {

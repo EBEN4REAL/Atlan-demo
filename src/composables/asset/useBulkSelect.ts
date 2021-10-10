@@ -3,10 +3,10 @@ import { useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import whoami from '../user/whoami'
 import { assetInterface } from '~/types/assets/asset.interface'
-import useBulkSelectStatus from '~/composables/asset/useBulkSelectStatus'
-import useBulkSelectOwners from '~/composables/asset/useBulkSelectOwners'
-import useBulkSelectClassifications from './useBulkSelectClassifications'
-import useBulkSelectTerms from './useBulkSelectTerms'
+import useBulkSelectStatus from '~/composables/asset/bulk/useBulkSelectStatus'
+import useBulkSelectOwners from '~/composables/asset/bulk/useBulkSelectOwners'
+import useBulkSelectClassifications from '~/composables/asset/bulk/useBulkSelectClassifications'
+import useBulkSelectTerms from '~/composables/asset/bulk/useBulkSelectTerms'
 import useBulkUpdateStore from '~/store/bulkUpdate'
 import { Components } from '~/api/atlas/client'
 
@@ -19,7 +19,8 @@ export interface LocalState {
 export default function useBulkSelect() {
     const selectedAssets: Ref<assetInterface[]> = ref([])
     const state: Ref<Record<string, string>> = ref({
-        updateStatusOwners: '',
+        updateStatus: '',
+        updateOwners: '',
         linkClassifications: '',
         linkTerms: '',
     })
@@ -39,15 +40,17 @@ export default function useBulkSelect() {
     const updateSelectedAssets = (list: Ref<assetInterface[]>) => {
         selectedAssets.value = [...list.value]
     }
-
     /** OWNERS */
     const {
-        updatedOwners,
-        ownerUsersFrequencyMap,
-        ownerGroupsFrequencyMap,
-        existingOwnerUsers,
-        existingOwnerGroups,
-        handleUpdateOwners,
+        owners,
+        resetOwners,
+        initialiseLocalState: initialiseLocalStateOwners,
+        originalOwners,
+        updateOwners,
+        ownerFrequencyMap,
+        publishedChangeLog: publishedOwnerChangeLog,
+        didOwnersUpdate,
+        getInitialLocalState,
     } = useBulkSelectOwners(selectedAssets)
 
     /** CLASSIFICATIONS */
@@ -115,22 +118,21 @@ export default function useBulkSelect() {
                 updatedAsset.attributes.assetStatusUpdatedAt = Date.now()
                 updatedAsset.attributes.assetStatusUpdatedBy = username.value
             }
-            // Update owners
-            const didOwnerUsersChange =
-                updatedOwners.value?.addedOwnerUsers?.length ||
-                updatedOwners.value?.removedOwnerUsers?.length
 
-            // if updated properties are empty, it means that attribute didn't change
-            const didOwnerGroupsChange =
-                updatedOwners.value?.addedOwnerGroups?.length ||
-                updatedOwners.value?.removedOwnerGroups?.length
-            if (didOwnerUsersChange || didOwnerGroupsChange) {
-                if (didOwnerUsersChange)
-                    updatedAsset.attributes.ownerUsers =
-                        existingOwnerUsers.value[asset.guid]
-                if (didOwnerGroupsChange)
-                    updatedAsset.attributes.ownerGroups =
-                        existingOwnerGroups.value[asset.guid]
+            // Update owners
+            if (didOwnersUpdate.value) {
+                // separate users from groups
+                const allOwners = owners.value[asset.guid]
+                const users = allOwners.filter((o) => o.type === 'user')
+                const groups = allOwners.filter((o) => o.type === 'group')
+
+                updatedAsset.attributes.ownerUsers = users
+                    .map((o) => o.nameOrUsername)
+                    .join(',')
+
+                updatedAsset.attributes.ownerGroups = groups
+                    .map((o) => o.nameOrUsername)
+                    .join(',')
             }
             return updatedAsset
         })
@@ -211,18 +213,29 @@ export default function useBulkSelect() {
     /**  MAIN UPDATE FUNCTION */
     const updateAssets = (assetList) => {
         // status and owners update can be done in a single call using bulk endpoint
-        if (
-            didStatusUpdate ||
-            (updatedOwners.value && Object.keys(updatedOwners.value).length)
-        ) {
+        if (didStatusUpdate.value || didOwnersUpdate.value) {
             // call to bulk endpoint
             const requestPayload = getBulkUpdateRequestPayload(assetList)
-            let updateStatusOwners = {
-                status: 'loading',
-                changeLog: {},
-                didChange: true,
-            }
-            store.setUpdateStatus({ ...store.updateStatus, updateStatusOwners })
+            let updatedState = { ...store.updateStatus }
+            if (didOwnersUpdate.value)
+                updatedState = {
+                    ...updatedState,
+                    updateOwners: {
+                        status: 'loading',
+                        changeLog: {},
+                        didChange: didOwnersUpdate.value,
+                    },
+                }
+            if (didStatusUpdate.value)
+                updatedState = {
+                    ...updatedState,
+                    updateCertification: {
+                        status: 'loading',
+                        changeLog: {},
+                        didChange: didStatusUpdate.value,
+                    },
+                }
+            store.setUpdateStatus({ ...store.updateStatus, ...updatedState })
             const { data, error, isLoading } = useAPIAsyncState<any>(
                 KeyMaps.asset.BULK_UPDATE_ASSETS,
                 'POST',
@@ -243,27 +256,56 @@ export default function useBulkSelect() {
                                 ...(updatedAttributes || {}),
                             }
                         })
-                        updateStatusOwners = {
-                            status: 'success',
-                            changeLog: {},
-                            didChange: true,
-                        }
+                        updatedState = { ...store.updateStatus }
+                        if (didOwnersUpdate.value)
+                            updatedState = {
+                                ...updatedState,
+                                updateOwners: {
+                                    status: 'success',
+                                    changeLog: {},
+                                    didChange: didOwnersUpdate.value,
+                                },
+                            }
+                        if (didStatusUpdate.value)
+                            updatedState = {
+                                ...updatedState,
+                                updateCertification: {
+                                    status: 'success',
+                                    changeLog: {},
+                                    didChange: didStatusUpdate.value,
+                                },
+                            }
+
                         store.setUpdateStatus({
                             ...store.updateStatus,
-                            updateStatusOwners,
+                            ...updatedState,
                         })
                         // state.value.updateStatusOwners = 'success'
                     } else {
-                        updateStatusOwners = {
-                            status: 'error',
-                            changeLog: {},
-                            didChange: true,
-                        }
+                        updatedState = { ...store.updateStatus }
+                        if (didOwnersUpdate.value)
+                            updatedState = {
+                                ...updatedState,
+                                updateOwners: {
+                                    status: 'error',
+                                    changeLog: {},
+                                    didChange: didOwnersUpdate.value,
+                                },
+                            }
+                        if (didStatusUpdate.value)
+                            updatedState = {
+                                ...updatedState,
+                                updateCertification: {
+                                    status: 'error',
+                                    changeLog: {},
+                                    didChange: didStatusUpdate.value,
+                                },
+                            }
+
                         store.setUpdateStatus({
                             ...store.updateStatus,
-                            updateStatusOwners,
+                            ...updatedState,
                         })
-                        // state.value.updateStatusOwners = 'error'
                     }
                 }
             })
@@ -274,7 +316,7 @@ export default function useBulkSelect() {
                 getBulkTermUpdateRequestPayload(assetList)
             // below is the check to see if terms changed, if requestPayload has no keys that means there are no NEW terms to link and we need not make the request
             if (Object.keys(requestPayload).length) {
-                // TOFO: add changelog
+                // TODO: add changelog
                 const linkTerms = {
                     status: 'loading',
                     didChange: true,
@@ -331,11 +373,7 @@ export default function useBulkSelect() {
                 })
             }
         }
-        if (
-            didClassificationsUpdate.value &&
-            classifications.value &&
-            Object.keys(classifications.value).length
-        ) {
+        if (didClassificationsUpdate.value) {
             // call to link classifications endpoint
             const requestPayload =
                 getBulkClassificationUpdateRequestPayload(assetList)
@@ -361,9 +399,9 @@ export default function useBulkSelect() {
                             const updatedClassificationsLocal =
                                 requestPayload.guidHeaderMap[asset.guid]
                             // eslint-disable-next-line no-param-reassign
-                            asset.classifications = {
+                            asset.classifications = [
                                 ...updatedClassificationsLocal?.classifications,
-                            }
+                            ]
                         })
                         linkClassifications = {
                             status: 'success',
@@ -391,8 +429,6 @@ export default function useBulkSelect() {
                     }
                 }
             })
-            // store.setBulkMode(false)
-            // store.setShowNotifcation(true)
         }
     }
     /** WATCHERS */
@@ -417,12 +453,6 @@ export default function useBulkSelect() {
         updatedStatusMessage,
         handleUpdateStatus,
         publishedStatusChangeLog,
-        ownerUsersFrequencyMap,
-        ownerGroupsFrequencyMap,
-        existingOwnerUsers,
-        existingOwnerGroups,
-        updatedOwners,
-        handleUpdateOwners,
         updateAssets,
         classifications,
         resetClassifications,
@@ -438,5 +468,16 @@ export default function useBulkSelect() {
         updateTerms,
         termFrequencyMap,
         state,
+        owners,
+        resetOwners,
+        initialiseLocalStateOwners,
+        originalOwners,
+        updateOwners,
+        ownerFrequencyMap,
+        publishedChangeLog: publishedOwnerChangeLog,
+        getInitialLocalState,
+        didOwnersUpdate,
+        didStatusUpdate,
+        didClassificationsUpdate,
     }
 }

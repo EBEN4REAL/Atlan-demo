@@ -7,16 +7,16 @@
             {{ store.getFinalStatusLabel }}
         </div>
         <div
-            v-if="store.updateStatus.updateStatusOwners.didChange"
+            v-if="store.updateStatus.updateCertification.didChange"
             class="mb-1 ml-1"
         >
             <div class="flex">
-                <div :class="getIconClass(store.getStatusOwnersStatus)">
+                <div :class="getIconClass(store.getCertificationStatus)">
                     <AtlanIcon
-                        :icon="getStatusIcon(store.getStatusOwnersStatus)"
+                        :icon="getStatusIcon(store.getCertificationStatus)"
                         class="mr-1 mt-0.5"
                         :class="
-                            store.getStatusOwnersStatus === 'loading'
+                            store.getCertificationStatus === 'loading'
                                 ? 'animate-spin'
                                 : ''
                         "
@@ -25,17 +25,14 @@
                 {{ store.getStatusLabel }}
             </div>
         </div>
-        <div
-            v-if="store.updateStatus.updateStatusOwners.didChange"
-            class="mb-1 ml-1"
-        >
+        <div v-if="store.updateStatus.updateOwners.didChange" class="mb-1 ml-1">
             <div class="flex">
-                <div :class="getIconClass(store.getStatusOwnersStatus)">
+                <div :class="getIconClass(store.getOwnersStatus)">
                     <AtlanIcon
-                        :icon="getStatusIcon(store.getStatusOwnersStatus)"
+                        :icon="getStatusIcon(store.getOwnersStatus)"
                         class="mr-1 mt-0.5"
                         :class="
-                            store.getStatusOwnersStatus === 'loading'
+                            store.getOwnersStatus === 'loading'
                                 ? 'animate-spin'
                                 : ''
                         "
@@ -117,9 +114,26 @@ export default {
                         store.setBulkSelectedAssets([])
                         store.setShowNotifcation(false)
                         store.setUpdateStatus({
-                            updateStatusOwners: { status: '', meta: {} },
-                            linkTerms: { status: '', meta: {} },
-                            linkClassifications: { status: '', meta: {} },
+                            updateCertification: {
+                                status: '',
+                                didChange: false,
+                                changeLog: {},
+                            },
+                            updateOwners: {
+                                status: '',
+                                didChange: false,
+                                changeLog: {},
+                            },
+                            linkTerms: {
+                                status: '',
+                                didChange: false,
+                                changeLog: {},
+                            },
+                            linkClassifications: {
+                                status: '',
+                                didChange: false,
+                                changeLog: {},
+                            },
                         })
                     }, 3000)
             }

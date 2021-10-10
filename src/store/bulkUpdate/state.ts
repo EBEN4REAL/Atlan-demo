@@ -8,7 +8,12 @@ export interface State {
 export const state: State = {
     bulkSelectedAssets: [],
     updateStatus: {
-        updateStatusOwners: {
+        updateCertification: {
+            status: '',
+            didChange: false,
+            changeLog: {},
+        },
+        updateOwners: {
             status: '',
             didChange: false,
             changeLog: {},

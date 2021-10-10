@@ -25,8 +25,11 @@ const getters = {
             return `Failed to update ${state.bulkSelectedAssets.length} assets`
         return ''
     },
-    getStatusOwnersStatus(state) {
-        return state.updateStatus.updateStatusOwners.status
+    getCertificationStatus(state) {
+        return state.updateStatus.updateCertification.status
+    },
+    getOwnersStatus(state) {
+        return state.updateStatus.updateOwners.status
     },
     getLinkClassificationsStatus(state) {
         return state.updateStatus.linkClassifications.status
@@ -61,19 +64,18 @@ const getters = {
         return calculatedStatus
     },
     getStatusLabel(state) {
-        if (state.getStatusOwnersStatus === 'loading')
+        if (state.getCertificationStatus === 'loading')
             return `Updating certification`
-        if (state.getStatusOwnersStatus === 'success')
+        if (state.getCertificationStatus === 'success')
             return `Updated certification`
-        if (state.getStatusOwnersStatus === 'error')
+        if (state.getCertificationStatus === 'error')
             return `Failed to update certification`
         return ''
     },
     getOwnersLabel(state) {
-        if (state.getStatusOwnersStatus === 'loading') return `Updating owners`
-        if (state.getStatusOwnersStatus === 'success') return `Updated owners`
-        if (state.getStatusOwnersStatus === 'error')
-            return `Failed to update owners`
+        if (state.getOwnersStatus === 'loading') return `Updating owners`
+        if (state.getOwnersStatus === 'success') return `Updated owners`
+        if (state.getOwnersStatus === 'error') return `Failed to update owners`
         return ''
     },
     getClassificationsLabel(state) {

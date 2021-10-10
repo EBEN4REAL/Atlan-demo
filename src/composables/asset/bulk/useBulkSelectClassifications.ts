@@ -36,11 +36,6 @@ export default function useBulkSelectClassifications(selectedAssets) {
                     asset?.classifications ?? []
             })
             originalClassifications.value = { ...assetClassificationMap }
-            console.log(
-                originalClassifications,
-                originalClassifications.value,
-                assetClassificationMap
-            )
         }
     })
     const classificationFrequencyMap = computed(() => {

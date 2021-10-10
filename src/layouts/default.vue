@@ -10,9 +10,9 @@
             </div>
         </a-layout-header>
 
-        <a-layout class="h-full">
+        <a-layout class="w-full h-full">
             <a-layout-content
-                class="relative flex overflow-hidden"
+                class="relative flex w-full overflow-hidden"
                 style="height: calc(100vh - 48px) !important"
             >
                 <a-drawer
@@ -35,7 +35,9 @@
                 <div v-else style="min-width: 264px">
                     <SidePanel :page="activeKey[0]" @change="handleChange" />
                 </div>
-                <router-view class="flex-grow" />
+                <div class="w-full">
+                    <router-view />
+                </div>
             </a-layout-content>
         </a-layout>
     </a-layout>

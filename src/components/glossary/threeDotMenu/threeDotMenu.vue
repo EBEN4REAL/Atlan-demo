@@ -82,7 +82,7 @@
                             <template #trigger>
                                 <div class="flex items-center">
                                     <AtlanIcon icon="Link" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">
+                                    <p class="p-0 m-0 capitalize">
                                         Edit
                                         {{ assetTypeLabel[entity?.typeName] }}
                                     </p>
@@ -119,7 +119,7 @@
                             <template #trigger>
                                 <div class="flex items-center">
                                     <AtlanIcon icon="Term" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Add New Term</p>
+                                    <p class="p-0 m-0">Create New Term</p>
                                 </div>
                             </template>
                         </AddGtcModal>
@@ -154,7 +154,7 @@
                                         icon="Category"
                                         class="m-0 mr-2"
                                     />
-                                    <p class="p-0 m-0">Add New Category</p>
+                                    <p class="p-0 m-0">Create New Category</p>
                                 </div>
                             </template>
                         </AddGtcModal>
@@ -340,6 +340,7 @@
     import { useRouter } from 'vue-router'
 
     // components
+    import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import Owners from './owners.vue'
     import Status from './status.vue'
@@ -502,6 +503,9 @@
                     assetTypeLabel[props.entity?.typeName]
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
+                message.info({
+                    content: 'Copied!',
+                })
             }
             // create new term
             const createNewTerm = () => {

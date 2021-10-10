@@ -105,12 +105,20 @@
                     {{ entity?.attributes?.shortDescription }}
                 </div>
                 <!-- classification and categories -->
-                <ScrollStrip>
+                <ScrollStrip
+                    v-if="
+                        (projection?.includes('classifications') &&
+                            entity?.classifications?.length > 0) ||
+                        (projection?.includes('categories') &&
+                            parentCategories.length > 0)
+                    "
+                    class="mt-3"
+                >
                     <template v-if="projection?.includes('classifications')">
                         <Pill
                             v-for="clsf in entity.classifications"
                             :key="clsf.typeName"
-                            class="flex-none mt-2"
+                            class="flex-none"
                             :label="clsf.typeName"
                             :has-action="false"
                         >
@@ -126,7 +134,7 @@
                         <Pill
                             v-for="cat in parentCategories"
                             :key="cat"
-                            class="flex-none mt-2"
+                            class="flex-none"
                             :label="cat"
                             :has-action="false"
                         >

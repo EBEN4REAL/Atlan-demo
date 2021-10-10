@@ -1,6 +1,6 @@
 <template>
     <!-- filters -->
-    <div class="h-full mt-12">
+    <div class="h-full">
         <div
             class="flex items-center justify-between px-4 py-2 mb-2 text-sm bg-gray-100 border-b border-gray-300 "
         >

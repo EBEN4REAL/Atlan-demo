@@ -1,6 +1,6 @@
 // * Composables
 import { computed } from 'vue'
-import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import useBusinessMetadataStore from '~/store/businessMetadata'
 import { formatDate } from '../../utils/date'
 
 const numberTypes = ['int', 'double', 'float', 'byte', 'short', 'long']

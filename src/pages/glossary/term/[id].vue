@@ -28,7 +28,13 @@
                         <div class="px-5 mt-4">
                             <div v-if="isNewTerm" class="mb-4">
                                 <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    class="
+                                        p-0
+                                        mb-1
+                                        text-sm
+                                        leading-5
+                                        text-gray-700
+                                    "
                                 >
                                     Name
                                 </p>
@@ -95,7 +101,7 @@
 
     // assets
     import { Term } from '~/types/glossary/glossary.interface'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
 
     export default defineComponent({
         components: {

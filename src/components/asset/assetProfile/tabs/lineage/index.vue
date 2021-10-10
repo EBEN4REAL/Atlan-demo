@@ -31,7 +31,7 @@
     // Components
     import LineageGraph from './lineageGraph.vue'
 
-    import useLineageService from '~/services/atlas/composables/lineage'
+    import useLineageService from '~/services/atlas/lineage/lineage_service'
 
     export default defineComponent({
         name: 'Lineage',

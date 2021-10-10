@@ -1,6 +1,11 @@
 <template>
     <a-dropdown>
+        <div v-if="$slots?.dropdownIcon" class="footer">
+            <slot name="dropdownIcon" />
+        </div>
+
         <div
+            v-else
             class="flex items-center px-2 py-1 transition-colors duration-300 border border-transparent rounded-full  hover:border-gray-300"
         >
             <a-avatar
@@ -18,7 +23,7 @@
     </a>-->
         <template #overlay>
             <a-menu>
-                <a-menu-item>
+                <a-menu-item v-if="!$slots?.dropdownIcon">
                     <div class="flex items-center">
                         <a-avatar
                             :size="42"
@@ -34,7 +39,7 @@
                         </div>
                     </div>
                 </a-menu-item>
-                <a-menu-divider />
+                <a-menu-divider v-if="!$slots?.dropdownIcon" />
                 <a-menu-item>
                     <a @click="() => handleClickUser(username)">View Profile</a>
                 </a-menu-item>

@@ -4,12 +4,28 @@
             <div class="flex flex-col h-full">
                 <div v-if="checkedAssetList.length" class="flex">
                     <div
-                        class="fixed left-0 z-10 flex justify-between w-full  bottom-8"
+                        class="
+                            fixed
+                            left-0
+                            z-10
+                            flex
+                            justify-between
+                            w-full
+                            bottom-8
+                        "
                     >
                         <div style="width: 264px"></div>
                         <div
                             v-if="showCheckBox"
-                            class="flex items-center justify-between px-5 py-3 bg-gray-100 shadow-lg "
+                            class="
+                                flex
+                                items-center
+                                justify-between
+                                px-5
+                                py-3
+                                bg-gray-100
+                                shadow-lg
+                            "
                             style="width: 545px"
                         >
                             <p class="p-0 m-0">
@@ -20,12 +36,23 @@
                             </p>
                             <div class="flex items-center">
                                 <a-button
-                                    class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
+                                    class="
+                                        px-3
+                                        mx-2
+                                        text-gray-700
+                                        bg-transparent
+                                        outline-none
+                                    "
                                     @click="handleCancelLinkAssets"
                                     >Cancel</a-button
                                 >
                                 <a-button
-                                    class="px-6 text-white outline-none  bg-primary"
+                                    class="
+                                        px-6
+                                        text-white
+                                        outline-none
+                                        bg-primary
+                                    "
                                     @click="handleConfirmLinkAssets"
                                     >Link</a-button
                                 >
@@ -57,17 +84,39 @@
                     Link Assets
                 </div> -->
                 <div
-                    class="flex items-center justify-between w-full px-3 mt-3 mb-2 "
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        w-full
+                        px-3
+                        mt-3
+                        mb-2
+                    "
                 >
                     <!-- close filtersPane -->
                     <a-button
                         v-if="showFiltersPane"
-                        class="absolute z-30 px-0 border-l-0 rounded-none rounded-r shadow-md  -left-1"
+                        class="
+                            absolute
+                            z-30
+                            px-0
+                            border-l-0
+                            rounded-none rounded-r
+                            shadow-md
+                            -left-1
+                        "
                         @click="showFiltersPane = !showFiltersPane"
                     >
                         <AtlanIcon
                             icon="ChevronDown"
-                            class="h-4 ml-1 transition-transform transform rotate-90 "
+                            class="
+                                h-4
+                                ml-1
+                                transition-transform
+                                transform
+                                rotate-90
+                            "
                         />
                     </a-button>
 
@@ -217,7 +266,7 @@
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
     import { Components } from '~/api/atlas/client'
     import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
 

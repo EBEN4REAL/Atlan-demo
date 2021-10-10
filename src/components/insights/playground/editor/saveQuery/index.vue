@@ -24,16 +24,15 @@
                                 />
                             </div> -->
                         </div>
-
-                        <span>Sub folder 1</span>
+                        <QueryFolderSelector 
+                            :connector="currentConnector" 
+                            :savedQueryType="queryType" 
+                            :selectedFolderQF="parentFolderQF"
+                            @folderChange="selectFolder" 
+                        />
                     </div>
                     <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
                     <div class="flex items-center ml-1">
-                        <AtlanIcon
-                            v-if="createEntityType === 'queryFolder'"
-                            icon="FolderClosed"
-                            class="h-4 m-0 -ml-0.5 -mt-0.5 mr-2"
-                        />
                         <span>{{ title }}</span>
                     </div>
                 </div>
@@ -158,12 +157,15 @@
         nextTick,
         PropType,
         toRefs,
+        watch
     } from 'vue'
     import { List } from '~/constant/status'
     import StatusBadge from '@common/badge/status/index.vue'
+    import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
+    import { Folder } from "~/types/insights/savedQuery.interface";
 
     export default defineComponent({
-        components: { StatusBadge },
+        components: { StatusBadge, QueryFolderSelector },
         props: {
             showSaveQueryModal: {
                 type: Object as PropType<boolean>,
@@ -173,12 +175,21 @@
                 type: Object as PropType<boolean>,
                 required: true,
             },
-            createEntityType: {
-                type: Object as PropType<'query' | 'queryFolder'>,
+            parentFolderQF: {
+                type: String,
                 required: true,
-                default: 'query'
+                default: 'query',
             },
-
+            connector: {
+                type: String as PropType<string | undefined>,
+                required: true,
+                default: '',
+            },
+            savedQueryType: {
+                type: String as PropType<'personal' | 'all'>,
+                required: true,
+                default: 'personal'
+            }
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
@@ -188,6 +199,9 @@
             const description: Ref<string | undefined> = ref('')
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
+            const selectedParentFolder = ref<Folder | null>(null)
+            const { savedQueryType: queryType, connector:currentConnector, parentFolderQF } = toRefs(props)
+
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id
                 console.log(currentStatus.value)
@@ -207,6 +221,8 @@
                     description: description.value,
                     isSQLSnippet: isSQLSnippet.value,
                     assetStatus: currentStatus.value,
+                    parentQF: selectedParentFolder.value?.attributes?.qualifiedName,
+                    parentGuid: selectedParentFolder.value?.guid
                 }
                 emit('onSaveQuery', saveQueryData)
             }
@@ -215,9 +231,13 @@
                 await nextTick()
                 titleBarRef.value?.focus()
             })
-
+            const selectFolder = (folder: Folder) => {
+                selectedParentFolder.value = folder
+            }
             return {
                 title,
+                queryType, 
+                currentConnector,
                 description,
                 isSQLSnippet,
                 titleBarRef,
@@ -229,6 +249,7 @@
                 closeModal,
                 createSaveQuery,
                 handleMenuClick,
+                selectFolder,
             }
         },
     })

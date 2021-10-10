@@ -10,6 +10,7 @@
                 :show-search="true"
                 placeholder="Search for terms"
                 :loading="searchLoading"
+                class="w-full"
                 @change="emitTermsData"
             >
                 <!-- term list -->
@@ -46,7 +47,7 @@ import { Components } from '~/api/atlas/client'
 export default defineComponent({
     name: 'LinkTermsDropdown',
     props: {
-        // if not provided it shows all the classifications in the store
+        // if not provided it shows all the terms
         availableTermsList: {
             type: Array as unknown as PropType<
                 | Components.Schemas.AtlasGlossaryTerm[]
@@ -161,20 +162,4 @@ export default defineComponent({
 }
 </style>
 <style lang="less" scoped>
-._bg-primary-light {
-    background: rgba(34, 81, 204, 0.05);
-}
-.classification-cross-btn {
-    height: 100%;
-    right: 6px;
-    @apply -top-0;
-    background: linear-gradient(
-        -90deg,
-        rgba(82, 119, 215, 1) 60%,
-        rgba(0, 0, 0, 0) 100%
-    );
-}
-.classification-name-width {
-    max-width: 12rem;
-}
 </style>

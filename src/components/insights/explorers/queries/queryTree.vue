@@ -1,5 +1,5 @@
 <template>
-    <div class="max-h-screen">
+    <div class="max-h-screen" :class="$style.queryTreeStyles">
         <div class="h-full">
             <div v-if="treeData.length">
                 <a-tree
@@ -14,6 +14,10 @@
                     @select="selectNode"
                     @expand="expandNode"
                 >
+                    <template #switcherIcon>
+                        <AtlanIcon icon="Caret" />
+                    </template>
+
                     <template #title="item">
                         <QueryTreeItem
                             :item="item"
@@ -158,3 +162,10 @@
         },
     })
 </script>
+<style lang="less" module>
+    .queryTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg)
+        }
+    }
+</style>

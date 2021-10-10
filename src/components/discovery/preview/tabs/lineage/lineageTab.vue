@@ -105,7 +105,8 @@
     import emptyScreen from '~/assets/images/empty_search.png'
 
     // Services
-    import useLineageService from '~/services/atlas/composables/lineage'
+    import useLineageService from '~/services/atlas/lineage/lineage_service'
+    
     export default defineComponent({
         name: 'LineagePreviewTab',
         components: { AssetList, Preferences, SearchAndFilter },

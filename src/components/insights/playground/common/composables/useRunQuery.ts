@@ -7,7 +7,7 @@ import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default function useProject() {
-    const { getParsedQuery } = useEditor()
+    const { getParsedQuery, formatter } = useEditor()
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const columnList: Ref<
@@ -59,6 +59,15 @@ export default function useProject() {
         getData: any,
         isQueryRunning: Ref<string>
     ) => {
+        const sq = getParsedQuery(
+            activeInlineTab.playground.editor.variables,
+            formatter(activeInlineTab.playground.editor.text)
+        )
+        console.log(
+            sq,
+            'formattedText',
+            formatter(activeInlineTab.playground.editor.text)
+        )
         const attributeValue =
             activeInlineTab.explorer.schema.connectors.attributeValue
         let queryText = getParsedQuery(

@@ -146,7 +146,16 @@
         </div>
 
         <div
-            class="grid grid-cols-12 gap-2 px-3 pt-3 bg-gray-100 border border-gray-200 rounded  flex-nowrap"
+            class="
+                grid grid-cols-12
+                gap-2
+                px-3
+                pt-3
+                bg-gray-100
+                border border-gray-200
+                rounded
+                flex-nowrap
+            "
         >
             <div class="col-span-12">
                 <p class="mb-2 text-sm font-normal text-gray">Advanced</p>
@@ -299,7 +308,6 @@
 
     import RadioButton from '@common/radio/button.vue'
     import DynamicInput from '@common/input/dynamic.vue'
-
     import { BotsType } from '~/types/atlas/bots'
     import useBotModel from '~/composables/connection/useBotModel'
     import useConnectionTest from '~/composables/bots/useConnectionTest'

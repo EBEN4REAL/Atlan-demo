@@ -36,14 +36,14 @@
             >
                 <!--explorer pane start -->
                 <div
+                    v-if="activeTab.component === 'schema'"
                     class="absolute h-full full-width"
-                    :class="activeTab.component === 'schema' ? 'z-10' : 'z-1'"
                 >
                     <Schema />
                 </div>
                 <div
+                    v-if="activeTab.component === 'queries'"
                     class="absolute h-full full-width"
-                    :class="activeTab.component === 'queries' ? 'z-10' : 'z-1'"
                 >
                     <Queries />
                 </div>
@@ -246,16 +246,15 @@
 
     :global(.splitpanes--vertical > .splitpanes__splitter) {
         position: relative;
-        margin-left: -1px;
         box-sizing: border-box;
         position: relative;
         touch-action: none;
         border-right: 0px !important;
-        @apply border-r !important;
+        // margin-right: -0.5px;
+        // @apply border-r !important;
         border-width: 1.5px !important;
         &:hover {
             @apply bg-primary !important;
-            // border-width: 1.5px !important;
             &:before {
                 content: '';
                 position: absolute;

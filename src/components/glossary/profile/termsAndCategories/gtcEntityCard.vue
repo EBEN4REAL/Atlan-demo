@@ -4,6 +4,7 @@
         :class="[bulkSelectMode && isChecked ? 'bg-primary-light' : '']"
         @click="$emit('gtcCardClicked', entity)"
     >
+        <!-- checkbox for bulk -->
         <a-checkbox
             :checked="isChecked"
             class="mt-1 ml-2 mr-3 opacity-0 group-hover:opacity-100"
@@ -14,6 +15,7 @@
 
         <div class="flex flex-row w-full">
             <div class="flex flex-col justify-center w-full max-w-2xl ml-1">
+                <!-- display name and status -->
                 <span class="flex items-center mb-1 cursor-pointer">
                     <AtlanIcon
                         v-if="entity.typeName === 'AtlasGlossary'"
@@ -33,11 +35,6 @@
                         class="h-5"
                     />
 
-                    <!-- <Tooltip
-                        :tooltip-text="entity.displayText"
-                        class="ml-2 text-lg leading-7 text-primary hover:underline"
-                        @click="redirectToProfile"
-                    /> -->
                     <span
                         class="
                             ml-2
@@ -61,6 +58,7 @@
                     />
                 </span>
 
+                <!-- linked assets count  -->
                 <div class="flex items-center w-full text-sm">
                     <div
                         v-if="
@@ -95,6 +93,7 @@
                         />
                     </div>
                 </div>
+                <!-- description -->
                 <div
                     v-if="
                         projection.includes('description') &&
@@ -105,80 +104,45 @@
                 >
                     {{ entity?.attributes?.shortDescription }}
                 </div>
-
-                <!-- <div
-                    v-if="
-                        entity.typeName === 'AtlasGlossaryCategory' &&
-                        projection.includes('heirarchy') &&
-                        parentCategory
-                    "
-                    class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
-                >
-                    <div
-                        v-for="category in parentCategory"
-                        :key="category"
-                        class="px-3 py-1 mr-2 bg-white border rounded-3xl"
-                    >
-                        {{ category }}
-                    </div>
-                </div> -->
-                <div class="flex items-center w-full">
-                    <div
-                        v-if="
-                            entity.typeName === 'AtlasGlossaryTerm' &&
-                            projection.includes('classifications') &&
-                            entity?.classificationNames?.length > 0
-                        "
-                        class="flex items-center mt-2 text-sm leading-5 text-gray-700  max-w-max"
-                    >
-                        <div
-                            v-for="item in entity?.classificationNames?.slice(
-                                0,
-                                2
-                            )"
-                            :key="item"
-                            class="flex items-center px-3 py-1 mr-2 truncate bg-white border  rounded-3xl overflow-ellipsis"
+                <!-- classification and categories -->
+                <ScrollStrip>
+                    <template v-if="projection?.includes('classifications')">
+                        <Pill
+                            v-for="clsf in entity.classifications"
+                            :key="clsf.typeName"
+                            class="flex-none mt-2"
+                            :label="clsf.typeName"
+                            :has-action="false"
                         >
-                            <AtlanIcon
-                                icon="Shield"
-                                class="mr-1 text-pink-500 mb-0.5"
-                            ></AtlanIcon>
-                            {{ item }}
-                        </div>
-                        <div
-                            v-if="entity?.classificationNames?.length > 2"
-                            class="flex items-center px-3 py-1 mr-2 truncate bg-transparent border-0  overflow-ellipsis"
+                            <template #prefix>
+                                <AtlanIcon
+                                    icon="Shield"
+                                    class="text-pink-400 h-3.5 w-auto"
+                                />
+                            </template>
+                        </Pill>
+                    </template>
+                    <template v-if="projection?.includes('categories')">
+                        <Pill
+                            v-for="cat in parentCategories"
+                            :key="cat"
+                            class="flex-none mt-2"
+                            :label="cat"
+                            :has-action="false"
                         >
-                            + {{ entity?.classificationNames?.length - 2 }} more
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="
-                            entity.typeName === 'AtlasGlossaryTerm' &&
-                            projection.includes('categories') &&
-                            parentCategories
-                        "
-                        class="flex items-center max-w-full mt-2 text-sm leading-5 text-gray-700 "
-                    >
-                        <div
-                            v-for="category in parentCategories?.slice(0, 2)"
-                            :key="category"
-                            class="px-3 py-1 mr-2 truncate bg-white border  rounded-3xl overflow-ellipsis"
-                        >
-                            {{ category }}
-                        </div>
-                    </div>
-                    <div
-                        v-if="parentCategories > 2"
-                        class="flex items-center px-3 py-1 mr-2 truncate bg-white border  rounded-3xl overflow-ellipsis"
-                    >
-                        + {{ parentCategories?.length - 2 }} more
-                    </div>
-                </div>
+                            <template #prefix>
+                                <AtlanIcon
+                                    icon="Category"
+                                    class="text-gray h-3.5 w-auto"
+                                />
+                            </template>
+                        </Pill>
+                    </template>
+                </ScrollStrip>
             </div>
         </div>
 
+        <!-- three dot menu -->
         <ThreeDotMenu
             :entity="entity"
             :redirectToProfile="redirectToProfile"
@@ -200,6 +164,8 @@
     // components
     import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     import Tooltip from '@common/ellipsis/index.vue'
+    import Pill from '@/UI/pill/pill.vue'
+    import ScrollStrip from '@/UI/scrollStrip.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -215,7 +181,7 @@
     import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
-        components: { ThreeDotMenu, Tooltip },
+        components: { ThreeDotMenu, Tooltip, ScrollStrip, Pill },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
@@ -252,11 +218,7 @@
                 )
             )
 
-            const termName = computed(() =>
-                props.entity.typeName === 'AtlasGlossaryTerm'
-                    ? props.entity?.attributes?.qualifiedName
-                    : undefined
-            )
+            // get linked assets count
             const assetCount = computed(() => {
                 if (props.entity.typeName === 'AtlasGlossaryTerm')
                     return (
@@ -265,21 +227,13 @@
                 return 0
             })
 
-            const parentCategory = computed(() => {
-                if (props.entity?.typeName === 'AtlasGlossaryCategory') {
-                    const catQualifiedName =
-                        props.entity?.attributes?.parentCategory
-                            ?.uniqueAttributes?.qualifiedName
-                    return catQualifiedName?.split(/[@.]/)
-                }
-                return ''
-            })
-
+            // get parent categories for a term
             const parentCategories = computed(() => {
                 if (props.entity?.typeName === 'AtlasGlossaryTerm') {
                     const catQualifiedName =
                         props.entity?.attributes?.categories?.map(
-                            (category) => category?.guid
+                            (category) =>
+                                category?.displayText ?? category?.guid
                         )
                     return catQualifiedName
                 }
@@ -350,7 +304,6 @@
                 getTruncatedUsers,
                 getCombinedUsersAndGroups,
                 assetCount,
-                parentCategory,
                 parentCategories,
                 referredEntities,
             }

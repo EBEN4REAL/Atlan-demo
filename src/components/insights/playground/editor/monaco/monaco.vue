@@ -219,12 +219,14 @@
                     onEditorContentChange(event, text)
                     const changes = event?.changes[0]
                     // const lastTypedCharacter = event?.changes[0]?.text
-                    const suggestions = await useAutoSuggestions(
-                        changes,
-                        editor,
-                        activeInlineTab
-                    )
-                    triggerAutoCompletion(suggestions)
+                    if (changes?.text.length < 2) {
+                        const suggestions = useAutoSuggestions(
+                            changes,
+                            editor,
+                            activeInlineTab
+                        )
+                        triggerAutoCompletion(suggestions)
+                    }
                 })
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)

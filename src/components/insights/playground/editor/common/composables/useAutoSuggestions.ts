@@ -27,36 +27,52 @@ const tableNames = [
 ]
 const columnNames = ['indians', 'insights_india', 'inr_rupee', 'inventors']
 
-export function wordToEditorKeyword(word: string | string[], type: string) {
-    if (Array.isArray(word)) {
+export function wordToEditorKeyword(
+    word: string | string[],
+    type: string,
+    currentWord: string
+) {
+    const sqlKeywords = getSqlKeywords()
+    return new Promise((resolve) => {
         let words: suggestionKeywordInterface[] = []
-        let len = word.length
-        for (let i = 0; i < len; i++) {
-            let keyword = {
-                label: word[i],
+        if (Array.isArray(word)) {
+            let len = word.length
+            for (let i = 0; i < len; i++) {
+                let keyword = {
+                    label: word[i],
+                    detail: type,
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    documentation: `Some descripiton for ${type}`,
+                    insertText: `${word[i]}`,
+                }
+                words.push(keyword)
+            }
+            return words
+        } else {
+            const keyword = {
+                label: word,
                 detail: type,
                 kind: monaco.languages.CompletionItemKind.Keyword,
                 documentation: `Some descripiton for ${type}`,
-                insertText: `${word[i]}`,
+                insertText: `'${word}'`,
             }
             words.push(keyword)
         }
-        return words
-    } else {
-        const keyword = {
-            label: word,
-            detail: type,
-            kind: monaco.languages.CompletionItemKind.Keyword,
-            documentation: `Some descripiton for ${type}`,
-            insertText: `'${word}'`,
-        }
-        return keyword
-    }
+        const s = sqlKeywords.filter((keyword) =>
+            keyword.label.includes(currentWord.toUpperCase())
+        )
+        resolve({
+            suggestions: [...words, ...s],
+            incomplete: true,
+        })
+    })
 }
 export function entitiesToEditorKeyword(
     response: Promise<autosuggestionResponse>,
-    type: string
+    type: string,
+    currentWord: string
 ) {
+    const sqlKeywords = getSqlKeywords()
     return new Promise((resolve) => {
         response.then((res) => {
             const entities = res.entities
@@ -75,7 +91,13 @@ export function entitiesToEditorKeyword(
                 }
                 words.push(keyword)
             }
-            resolve(words)
+            const s = sqlKeywords.filter((keyword) =>
+                keyword.label.includes(currentWord.toUpperCase())
+            )
+            resolve({
+                suggestions: [...words, ...s],
+                incomplete: true,
+            })
         })
     })
 }
@@ -128,7 +150,8 @@ async function getSuggestionsUsingType(
                 HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
             let suggestionsPromise = entitiesToEditorKeyword(
                 entitiesResponsPromise,
-                type
+                type,
+                currentWord
             )
             return suggestionsPromise
         }
@@ -137,13 +160,18 @@ async function getSuggestionsUsingType(
                 HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
             let suggestionsPromise = entitiesToEditorKeyword(
                 entitiesResponsPromise,
-                type
+                type,
+                currentWord
             )
             return suggestionsPromise
         }
         case 'NEXT_KEYWORD': {
-            let suggestions = wordToEditorKeyword(nextKeywords[token], type)
-            return suggestions
+            let suggestionsPromise = wordToEditorKeyword(
+                nextKeywords[token],
+                type,
+                currentWord
+            )
+            return suggestionsPromise
         }
         default:
             return []
@@ -190,47 +218,45 @@ export async function useAutoSuggestions(
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
     /* If it is a first/nth character of first word */
-    if (tokens.length < 1) {
-        suggestions = sqlKeywords.filter((keyword) =>
-            keyword.label.includes(currentWord)
-        )
-        return suggestions
-    }
-    console.log(currentWord, 'CurrentWord')
+    if (tokens.length > 1) {
+        const lastMatchedKeyword:
+            | undefined
+            | { token: string; index: number; type: string } =
+            getLastMappedKeyword(tokens, mappingKeywords, mappingKeywordsKeys)
+        console.log('inside', lastMatchedKeyword, tokens)
 
-    const lastMatchedKeyword:
-        | undefined
-        | { token: string; index: number; type: string } = getLastMappedKeyword(
-        tokens,
-        mappingKeywords,
-        mappingKeywordsKeys
-    )
-
-    if (lastMatchedKeyword) {
-        if (Array.isArray(lastMatchedKeyword.type)) {
-            lastMatchedKeyword.type.forEach(async (type) => {
-                let s =
-                    (await getSuggestionsUsingType(
-                        type,
-                        lastMatchedKeyword.token,
-                        currentWord,
-                        connectorsInfo
-                    )) ?? []
-                suggestions = [...suggestions, ...s]
-            })
-        } else {
-            const s =
-                (await getSuggestionsUsingType(
+        if (lastMatchedKeyword) {
+            if (Array.isArray(lastMatchedKeyword.type)) {
+                lastMatchedKeyword.type.forEach(async (type) => {
+                    let s =
+                        (await getSuggestionsUsingType(
+                            type,
+                            lastMatchedKeyword.token,
+                            currentWord,
+                            connectorsInfo
+                        )) ?? []
+                    suggestions = [...suggestions, ...s]
+                })
+            } else {
+                console.log('else')
+                return getSuggestionsUsingType(
                     lastMatchedKeyword.type,
                     lastMatchedKeyword.token,
                     currentWord,
                     connectorsInfo
-                )) ?? []
-            suggestions = [...s, ...suggestions]
+                )
+            }
         }
     }
-    console.log(suggestions, 'suggestions')
-    let s = sqlKeywords.filter((keyword) => keyword.label.includes(currentWord))
-    suggestions = [...suggestions, ...s]
-    return suggestions
+
+    // suggestions =
+    //     sqlKeywords.filter((keyword) =>
+    //         keyword.label.includes(currentWord.toUpperCase())
+    //     ) ?? []
+    // console.log(suggestions, 'suggestions')
+    console.log(changedText, 'changesTExt')
+    return Promise.resolve({
+        suggestions: suggestions,
+        incomplete: true,
+    })
 }

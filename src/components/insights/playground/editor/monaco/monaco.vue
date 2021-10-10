@@ -130,12 +130,11 @@
             }
 
             const triggerAutoCompletion = (
-                suggestions: Promise<{
+                promise: Promise<{
                     suggestions: suggestionKeywordInterface[]
                     incomplete: boolean
                 }>
             ) => {
-                console.log('called', suggestions)
                 // clearing previous popover register data
                 if (disposable) disposable.value?.dispose()
                 console.log(suggestions, 'thenable')
@@ -146,7 +145,7 @@
                             triggerCharacters: triggerCharacters,
                             provideCompletionItems() {
                                 // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
-                                return suggestions
+                                return promise
                             },
                         }
                     )
@@ -222,17 +221,15 @@
                     onEditorContentChange(event, text)
                     const changes = event?.changes[0]
                     // const lastTypedCharacter = event?.changes[0]?.text
-                    if (changes?.text.length < 2) {
-                        const suggestions = useAutoSuggestions(
-                            changes,
-                            editor,
-                            activeInlineTab
-                        ) as Promise<{
-                            suggestions: suggestionKeywordInterface[]
-                            incomplete: boolean
-                        }>
-                        triggerAutoCompletion(suggestions)
-                    }
+                    const suggestions = useAutoSuggestions(
+                        changes,
+                        editor,
+                        activeInlineTab
+                    ) as Promise<{
+                        suggestions: suggestionKeywordInterface[]
+                        incomplete: boolean
+                    }>
+                    triggerAutoCompletion(suggestions)
                 })
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)

@@ -2,14 +2,12 @@ import { unref, ref, Ref } from 'vue'
 import getSqlKeywords from '~/components/insights/playground/editor/monaco/sqlKeywords'
 import * as monaco from 'monaco-editor'
 import { useMapping, nextKeywords } from './useMapping'
-import { KeyMaps } from '~/services/atlas/atlas_keyMaps'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
 import { HEKA_SERVICE_API } from '~/services/heka/index'
 import {
     autosuggestionEntityColumn,
-    autosuggestionEntity,
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
 
@@ -20,13 +18,6 @@ export interface suggestionKeywordInterface {
     documentation: string
     insertText: string
 }
-const tableNames = [
-    'instacart',
-    'instacart_alcohol',
-    'instacart_atlan',
-    'instacart_insights',
-]
-const columnNames = ['indians', 'insights_india', 'inr_rupee', 'inventors']
 
 export function wordToEditorKeyword(
     word: string | string[],
@@ -48,7 +39,6 @@ export function wordToEditorKeyword(
                 }
                 words.push(keyword)
             }
-            return words
         } else {
             const keyword = {
                 label: word,
@@ -135,7 +125,7 @@ function getLastMappedKeyword(
     mappingKeywords,
     mappingKeywordsKeys
 ) {
-    console.log(tokens)
+    // console.log(tokens)
     for (let i = tokens.length - 1; i >= 0; i--) {
         /* type- TABLE/COLUMN/SQL keyword */
         if (mappingKeywordsKeys.includes(tokens[i])) {
@@ -221,13 +211,17 @@ export async function useAutoSuggestions(
 ) {
     console.log(changes, 'changes')
     const changedText = changes.text
-    if (!triggerCharacters.includes(changedText)) return []
+    /* -------_EXITING CONDITIONS-------------- */
+    if (!triggerCharacters.includes(changedText))
+        return Promise.resolve({ suggestions: [], incomplete: true })
+    if (changedText.length > 2)
+        return Promise.resolve({ suggestions: [], incomplete: true })
+    /* ------------------------------------------------------------- */
     const { getConnectionQualifiedName, getDatabaseName, getSchemaName } =
         useConnector()
     const { mappingKeywordsKeys, mappingKeywords } = useMapping()
     const endColumn = changes.range.endColumn
     const endLineNumber = changes.range.endLineNumber
-    let suggestions: suggestionKeywordInterface[] = []
 
     /* Connectors Info */
     const attributeValue =
@@ -276,29 +270,15 @@ export async function useAutoSuggestions(
         console.log('inside', lastMatchedKeyword, tokens)
 
         if (lastMatchedKeyword) {
-            if (Array.isArray(lastMatchedKeyword.type)) {
-                lastMatchedKeyword.type.forEach(async (type) => {
-                    let s =
-                        (await getSuggestionsUsingType(
-                            type,
-                            lastMatchedKeyword.token,
-                            currentWord,
-                            connectorsInfo
-                        )) ?? []
-                    suggestions = [...suggestions, ...s]
-                })
-            } else {
-                console.log('else')
-                return getSuggestionsUsingType(
-                    lastMatchedKeyword.type,
-                    lastMatchedKeyword.token,
-                    currentWord,
-                    connectorsInfo
-                )
-            }
+            return getSuggestionsUsingType(
+                lastMatchedKeyword.type,
+                lastMatchedKeyword.token,
+                currentWord,
+                connectorsInfo
+            )
         }
     }
 
     // console.log(suggestions, 'suggestions')
-    console.log(changedText, 'changesTExt')
+    // console.log(changedText, 'changesTExt')
 }

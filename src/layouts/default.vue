@@ -2,15 +2,39 @@
     <a-layout class="min-h-full">
         <a-layout-header class="z-30 h-12 p-0 m-0">
             <div class="h-full px-5 bg-white border-b">
-                <NavMenu :page="activeKey[0]" @change="handleChange" />
+                <NavMenu
+                    :page="activeKey[0]"
+                    @change="handleChange"
+                    @toggleNavbar="handleToggleNavbar"
+                />
             </div>
         </a-layout-header>
 
         <a-layout class="h-full">
             <a-layout-content
-                class="overflow-hidden"
+                class="relative flex overflow-hidden"
                 style="height: calc(100vh - 48px) !important"
             >
+                <a-drawer
+                    v-if="currentRoute.path !== '/'"
+                    placement="left"
+                    :destroyOnClose="true"
+                    :visible="showNavbar"
+                    :get-container="false"
+                    :closable="false"
+                    :wrap-style="{ position: 'absolute' }"
+                    :mask="false"
+                    :class="$style.drawerStyles"
+                >
+                    <SidePanel
+                        :page="activeKey[0]"
+                        @change="handleChange"
+                        @closeNavbar="closeNavbar"
+                    />
+                </a-drawer>
+                <div v-else style="min-width: 264px">
+                    <SidePanel :page="activeKey[0]" @change="handleChange" />
+                </div>
                 <router-view class="flex-grow" />
             </a-layout-content>
         </a-layout>
@@ -20,23 +44,30 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onMounted } from 'vue'
+    import { defineComponent, ref, onMounted, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
+    import { useMagicKeys } from '@vueuse/core'
 
     import KeycloakMixin from '~/mixins/keycloak'
     import PreviewDrawer from '~/components/common/previewDrawer.vue'
     import NavMenu from '~/components/common/navMenu.vue'
+    import SidePanel from '~/components/home/sidePanel.vue'
 
     export default defineComponent({
         name: 'Default Layout',
         components: {
             PreviewDrawer,
             NavMenu,
+            SidePanel,
         },
         mixins: [KeycloakMixin],
         setup() {
             const router = useRouter()
+            const showNavbar = ref(false)
+            const { currentRoute } = router
 
+            const keys = useMagicKeys()
+            const esc = keys.Escape
             const activeKey = ref(['/'])
             const pages: Record<string, string> = {
                 home: '/',
@@ -48,29 +79,60 @@
                 admin: '/admin',
                 404: '/404',
             }
+            const curPath = computed(() => currentRoute.value.path)
 
             const handleChange = (key: string) => {
                 if (key && Object.keys(pages).find((page) => page === key)) {
-                    activeKey.value = [key]
+                    activeKey.value = key === 'home' ? ['/'] : [key]
                     router.push(pages[key])
-                }else {
+                } else {
                     router.push(pages[404])
                 }
+                showNavbar.value = false
+            }
+            const handleToggleNavbar = () => {
+                showNavbar.value = !showNavbar.value
+            }
+            const closeNavbar = () => {
+                showNavbar.value = false
             }
 
-            onMounted(() => {
-                const { currentRoute } = router
+            const updatePaths = () => {
                 const page = currentRoute.value.path.split('/')[1]
                 if (Object.keys(pages).find((item) => item === page)) {
                     activeKey.value = [page]
-                }else {
+                } else {
                     router.push(pages['home'])
                 }
+            }
+            watch(esc, (v) => {
+                if (v) {
+                    closeNavbar()
+                }
+            })
+
+            watch(curPath, () => {
+                updatePaths()
+            })
+
+            onMounted(() => {
+                updatePaths()
             })
             return {
                 handleChange,
                 activeKey,
+                handleToggleNavbar,
+                showNavbar,
+                currentRoute,
+                closeNavbar,
             }
         },
     })
 </script>
+<style lang="less" module>
+    .drawerStyles {
+        :global(.ant-drawer-body) {
+            @apply h-full !important;
+        }
+    }
+</style>

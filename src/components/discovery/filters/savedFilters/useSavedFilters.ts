@@ -4,25 +4,54 @@ import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
 import { useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { assetInterface } from '~/types/assets/asset.interface'
+import { Components } from '~/api/atlas/client'
+
+interface SavedFilterConfig {
+    savedFilterName: Ref<string>
+    savedFilterDescription?: Ref<string>
+    ownerName: Ref<string>
+    appliedFilters: Ref<Components.Schemas.FilterCriteria[]>
+
+}
 
 export function addSavedFilter(
+    immediate: boolean = true,
 
-    immediate?: boolean,
-    cancelTokenSource?: CancelTokenSource
+    savedFilterName: Ref<string>,
+    savedFilterDescription = ref<string>(''),
+    ownerName: Ref<string>,
+    appliedFilters: Ref<Components.Schemas.FilterCriteria[]>,
+
 ) {
+    console.log(appliedFilters)
+
+    const cancelTokenSource = axios.CancelToken.source()
 
     const axiosOpts: AxiosRequestConfig = {
         cancelToken: cancelTokenSource?.token,
     }
 
     const body = computed(() => ({
-        typeName: 'Column',
-        excludeDeletedEntities: true,
-        includeClassificationAttributes: true,
-        includeSubClassifications: false,
-        includeSubTypes: false,
+        name: savedFilterName.value,
+        ownerName: ownerName.value,
+        searchParameters: {
+            attributes: {
+                description: savedFilterDescription.value
+            },
+            entityFilters: {
+                condition: "AND",
+                criterion: [...appliedFilters.value],
+            },
+            excludeDeletedEntities: true,
+            includeClassificationAttributes: true,
+            includeSubClassifications: true,
+            includeSubTypes: true,
+            typeName: "AtlanAsset"
+        },
+        searchType: "BASIC",
+    }
 
-    }))
+    ))
 
     const { data, mutate, error, isLoading, isReady } = useAPIAsyncState<any>(
         KeyMaps.asset.SAVED_SEARCH,
@@ -37,10 +66,8 @@ export function addSavedFilter(
 
     return {
         data,
-
         isLoading,
         error,
-
         body,
         mutate,
         isReady,

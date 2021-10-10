@@ -74,17 +74,23 @@
     } from 'vue'
 
     import whoami from '~/composables/user/whoami'
+    import { addSavedFilter } from './useSavedFilters'
+    import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
         components: {},
-        props: {},
-        emits: ['onAddGlossary'],
+        props: {
+            appliedFilters: {
+                type: Object as PropType<Components.Schemas.FilterCriteria[]>,
+                required: true,
+            },
+        },
+        emits: [''],
         setup(props, { emit }) {
             const { username: myUsername, name: myName } = whoami()
-
+            const { appliedFilters } = toRefs(props)
             const title = ref<string | undefined>('')
             const description = ref<string | undefined>('')
-            const currentStatus = ref<string | undefined>('draft')
             const selectedCategories = ref<{ categoryGuid: string }[]>([])
 
             const visible = ref<boolean>(false)
@@ -100,7 +106,6 @@
             const resetInput = () => {
                 title.value = ''
                 description.value = ''
-                currentStatus.value = 'draft'
             }
 
             const showModal = async () => {
@@ -110,10 +115,17 @@
                 titleBar.value?.focus()
             }
 
-            const handleOk = () => {}
-            const handleMenuClick = (status) => {
-                currentStatus.value = status.id
+            const handleOk = () => {
+                const { data, error, isLoading, isReady } = addSavedFilter(
+                    title,
+                    description,
+                    myUsername,
+                    appliedFilters
+                )
+
+                console.log(data.value)
             }
+
             const handleCancel = () => {
                 resetInput()
                 visible.value = false
@@ -134,8 +146,6 @@
                 visible,
                 isCreateMore,
                 titleBar,
-                handleMenuClick,
-                currentStatus,
                 myUsername,
                 activeTab,
                 setActiveTab,

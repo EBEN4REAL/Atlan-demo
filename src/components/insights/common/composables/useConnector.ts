@@ -72,6 +72,17 @@ export function useConnector() {
         }
         return databaseQualifiedName
     }
+    const getDatabaseName = (attributeValue) => {
+        let attributeValues: string[]
+        let databaseQualifiedName: string | undefined
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 2) {
+                databaseQualifiedName = `${attributeValues[3]}`
+            }
+        }
+        return databaseQualifiedName
+    }
 
     const getSchemaQualifiedName = (attributeValue) => {
         let attributeValues: string[]
@@ -80,6 +91,18 @@ export function useConnector() {
             attributeValues = attributeValue?.split('/')
             if (attributeValues.length > 3) {
                 schemaQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}/${attributeValues[3]}/${attributeValues[4]}`
+            }
+        }
+
+        return schemaQualifiedName
+    }
+    const getSchemaName = (attributeValue) => {
+        let attributeValues: string[]
+        let schemaQualifiedName: string | undefined
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 3) {
+                schemaQualifiedName = `${attributeValues[4]}`
             }
         }
 
@@ -100,6 +123,8 @@ export function useConnector() {
     }
 
     return {
+        getSchemaName,
+        getDatabaseName,
         getSchemaWithDataSourceName,
         getConnectionQualifiedName,
         getConnectorName,

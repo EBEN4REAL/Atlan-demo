@@ -5,6 +5,7 @@ import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
+import { generateQueryStringParamsFromObj } from '~/utils/queryString'
 
 export default function useProject() {
     const { getParsedQuery, formatter } = useEditor()
@@ -22,6 +23,7 @@ export default function useProject() {
     > = ref([])
     const dataList = ref([])
     const isQueryRunning = ref('')
+    const queryExecutionTime = ref(-1)
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         if (columns.length > 0) {
@@ -56,18 +58,10 @@ export default function useProject() {
 
     const queryRun = (
         activeInlineTab: activeInlineTabInterface,
-        getData: any,
-        isQueryRunning: Ref<string>
+        getData: (rows: any[], columns: any[], executionTime: number) => void,
+        isQueryRunning: Ref<string>,
+        limitRows: Ref<{ checked: boolean; rowsCount: number }>
     ) => {
-        const sq = getParsedQuery(
-            activeInlineTab.playground.editor.variables,
-            formatter(activeInlineTab.playground.editor.text)
-        )
-        console.log(
-            sq,
-            'formattedText',
-            formatter(activeInlineTab.playground.editor.text)
-        )
         const attributeValue =
             activeInlineTab.explorer.schema.connectors.attributeValue
         let queryText = getParsedQuery(
@@ -75,24 +69,29 @@ export default function useProject() {
             activeInlineTab.playground.editor.text
         )
 
-        // by default limiting query to 100 if limit is not there
-        queryText = queryText.includes('limit') ? queryText : `${queryText}`
-
         isQueryRunning.value = 'loading'
         dataList.value = []
-        console.log(queryText)
         const query = encodeURIComponent(btoa(queryText))
         /* -------- NOTE -----------
         Here defaultSchema -  'ATLAN_TRIAL.PUBLIC' instead of 'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC'
         dataSourceName -  connectionQualifiedName
         */
-        const pathVariables = {
-            query,
+
+        const params = {
+            sql: query,
             defaultSchema: getSchemaWithDataSourceName(attributeValue),
             dataSourceName: encodeURIComponent(
                 getConnectionQualifiedName(attributeValue) as string
             ),
             length: 10,
+        }
+        /* Adding a limit param if limit rows is checked */
+        if (limitRows.value.checked) params['limit'] = limitRows.value.rowsCount
+
+        let search_prms = generateQueryStringParamsFromObj(params)
+
+        const pathVariables = {
+            params: search_prms,
         }
 
         const {
@@ -119,7 +118,8 @@ export default function useProject() {
                         if (message?.status === 'completed') {
                             getData(
                                 toRaw(dataList.value),
-                                toRaw(columnList.value)
+                                toRaw(columnList.value),
+                                message?.executionTime
                             )
                             close()
                         }
@@ -145,7 +145,7 @@ export default function useProject() {
                     }
                     setColumns(columnList, [])
                     setRows(dataList, columnList, [])
-                    getData([], [])
+                    getData([], [], -1)
                     isQueryRunning.value = 'error'
                 }
             } catch (e) {
@@ -156,8 +156,16 @@ export default function useProject() {
             }
         })
     }
+    const modifyQueryExecutionTime = (
+        queryExecutionTime: Ref<number>,
+        exTime: number
+    ) => {
+        queryExecutionTime.value = exTime
+    }
 
     return {
+        modifyQueryExecutionTime,
+        queryExecutionTime,
         isQueryRunning,
         queryRun,
         dataList,

@@ -1,11 +1,13 @@
 import { ref } from 'vue'
 import { KeyMaps } from '../atlas_keyMaps'
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState, useAPIPromise } from '~/api/useAPI'
+
 import {
     BasicSearchResponse,
     SavedQueryResponse,
     Query,
 } from '~/types/insights/savedQuery.interface'
+import { autosuggestionResponse } from '~/types/insights/autosuggestionEntity.interface'
 import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
 
 const serviceAlias = 'meta'
@@ -56,6 +58,12 @@ const UpdateSavedQuery = (body: Record<string, any>) => {
     )
     return { data, error, isLoading }
 }
+const GetAutoSuggestions = (body: Record<string, any>) => {
+    return useAPIPromise(KeyMaps.insights.GET_AUTO_SUGGESTIONS(), 'POST', {
+        body,
+    }) as Promise<autosuggestionResponse>
+}
+
 const DeleteEntity = (guid: string) => {
     const { data, error, isLoading } = useAPIAsyncState<SavedQueryResponse>(
         KeyMaps.insights.DELETE_ENTITY,
@@ -69,6 +77,7 @@ const DeleteEntity = (guid: string) => {
     return { data, error, isLoading }
 }
 export const Insights = {
+    GetAutoSuggestions,
     UpdateSavedQuery,
     CreateSavedQuery,
     GetSavedQuery,

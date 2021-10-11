@@ -19,21 +19,16 @@ export const KeyMaps = {
     classification: {
         GET_CLASSIFICATION_LIST: () =>
             getAPIPath('meta', '/types/typedefs?type=classification'),
-        CREATE_CLASSIFICATION: () =>
-            getAPIPath('meta', '/types/typedefs'),
+        CREATE_CLASSIFICATION: () => getAPIPath('meta', '/types/typedefs'),
         BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
-        UPDATE_CLASSIFICATION: () =>
-            getAPIPath('meta', '/types/typedefs'),
+        UPDATE_CLASSIFICATION: () => getAPIPath('meta', '/types/typedefs'),
         ARCHIVE_CLASSIFICATION: ({ typeName, entityGuid }: PathParams) =>
             getAPIPath(
                 'meta',
                 `/entity/guid/${entityGuid}/classification/${typeName}`
             ),
         LINK_CLASSIFICATION: ({ entityGuid }: PathParams) =>
-            getAPIPath(
-                'meta',
-                `/entity/guid/${entityGuid}/classifications`
-            ),
+            getAPIPath('meta', `/entity/guid/${entityGuid}/classifications`),
         // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
         BULK_LINK_CLASSIFICATION: () =>
             getAPIPath('auth/atlas', `/entity/bulk/setClassifications`),
@@ -120,12 +115,9 @@ export const KeyMaps = {
         },
     },
     BM: {
-        GET_BUSINESS_METADATA: () =>
-            getAPIPath('meta', `/types/typedefs`),
-        ADD_BUSINESS_METADATA: () =>
-            getAPIPath('meta', `/types/typedefs`),
-        UPDATE_BUSINESS_METADATA: () =>
-            getAPIPath('meta', `/types/typedefs`),
+        GET_BUSINESS_METADATA: () => getAPIPath('meta', `/types/typedefs`),
+        ADD_BUSINESS_METADATA: () => getAPIPath('meta', `/types/typedefs`),
+        UPDATE_BUSINESS_METADATA: () => getAPIPath('meta', `/types/typedefs`),
         UPDATE_ASSET_BUSINESS_METADATA: ({ guid }: PathParams) =>
             getAPIPath('meta', `/entity/guid/${guid}/businessmetadata`),
     },
@@ -175,11 +167,13 @@ export const KeyMaps = {
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'meta',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
-                }${searchText ? `&searchText=${searchText}` : ''}`),
-    health: {
-        PING_USER: () => getHealthPath('auth', '/debug/health'),
-    },
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
+                }${searchText ? `&searchText=${searchText}` : ''}`
+            ),
+        health: {
+            PING_USER: () => getHealthPath('auth', '/debug/health'),
+        },
         CREDENTIAL_TEST: () => getAPIPath('auth', `/credentials/test`),
         CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) =>
             getAPIPath('auth', `/credentials/${id}/test`),
@@ -187,22 +181,16 @@ export const KeyMaps = {
             getAPIPath('auth', `/credentials/${id}`),
     },
     connection: {
-        TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
+        TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
         CONNECTION_SETUP: () => getAPIPath('meta', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
         CONNECTION_ARCHIVE: ({ id }) =>
             getAPIPath('auth', `/connections/${id}/archive`),
     },
+    // `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
     query: {
-        RUN_QUERY: ({
-            query,
-            dataSourceName,
-            length,
-        }: PathParams) =>
-            getAPIPath(
-                'api/query',
-                `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
-            ),
+        RUN_QUERY: ({ params }: PathParams) =>
+            getAPIPath('api/query', `/sql/stream?${params}`),
     },
     bots: {
         WORKFLOW_LOG_STREAM: ({}: PathParams) =>

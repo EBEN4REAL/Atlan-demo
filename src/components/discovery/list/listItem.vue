@@ -204,7 +204,7 @@
                 @unlinkAsset="$emit('unlinkAsset', item)"
             />
         </div>
-        <hr class="mx-4" />
+        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
     </div>
 </template>
 

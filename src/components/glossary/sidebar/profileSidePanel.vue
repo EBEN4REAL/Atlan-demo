@@ -21,12 +21,17 @@
                         expand-icon-position="right"
                     >
                         <template #expandIcon="{ isActive }">
-                            <AtlanIcon
-                                icon="ChevronDown"
-                                class="ml-1 transition-transform duration-300 transform "
-                                :class="isActive ? '-rotate-180' : 'rotate-0'"
-                            />
+                            <div class="">
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    class="ml-1 transition-transform duration-300 transform "
+                                    :class="
+                                        isActive ? '-rotate-180' : 'rotate-0'
+                                    "
+                                />
+                            </div>
                         </template>
+
                         <a-collapse-panel key="1" header="Details">
                             <div class="flex flex-col pl-5 pr-2 gap-y-4">
                                 <div class="flex space-x-16">
@@ -108,7 +113,8 @@
                     <Activity :selectedAsset="entity" />
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="chat">
+            <!-- hidden for GA -->
+            <!-- <a-tab-pane key="chat">
                 <template #tab>
                     <SidePanelTabHeaders
                         title="Chat"
@@ -117,7 +123,7 @@
                     />
                 </template>
                 Chat
-            </a-tab-pane>
+            </a-tab-pane> -->
         </a-tabs>
     </div>
 </template>

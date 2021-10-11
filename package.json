@@ -14,7 +14,6 @@
         "@fortawesome/fontawesome-svg-core": "^1.2.36",
         "@fortawesome/pro-light-svg-icons": "^5.15.3",
         "@fortawesome/pro-solid-svg-icons": "^5.15.3",
-        "@fortawesome/vue-fontawesome": "^2.0.2",
         "@tailwindcss/typography": "^0.4.1",
         "@tiptap/core": "^2.0.0-beta.120",
         "@tiptap/extension-code": "^2.0.0-beta.17",

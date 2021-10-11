@@ -64,8 +64,8 @@
             ref="animationPoint"
             class="flex flex-col text-xs text-gray-500 cursor-pointer"
         >
-            <div class="mb-3">
-                <p class="mb-1 text-sm">Certification</p>
+            <div>
+                <p class="mb-1 text-sm text-gray mb-2.5">Certification</p>
                 <div class="flex">
                     <div
                         v-if="!publishedAssetStatus && !originalAssetStatus"
@@ -116,7 +116,15 @@
                         assets.
                     </div>
                 </div>
-                <div class="mt-2.5">
+                <div
+                    v-if="
+                        (changeLog &&
+                            changeLog.to &&
+                            changeLog.from !== changeLog.to) ||
+                        changeLog.updatedStatusMessage
+                    "
+                    class="mt-2.5"
+                >
                     <div
                         v-if="
                             changeLog &&

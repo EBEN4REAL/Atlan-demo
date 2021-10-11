@@ -41,6 +41,7 @@
         defineAsyncComponent,
         ref,
         Ref,
+        provide,
     } from 'vue'
     import WorkflowDiscovery from '~/components/workflows/discovery/workflowDiscovery.vue'
     import Setup from '@/workflows/setup/index.vue'
@@ -135,6 +136,8 @@
                 handlePreview(updatedAsset)
                 updateProfile.value = true
             }
+
+            provide('selectedAsset', selected)
 
             return {
                 initialFilters,

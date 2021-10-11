@@ -37,8 +37,8 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        provide,
         toRefs,
+        inject,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -78,6 +78,9 @@
             /** DATA */
             const activeKey = ref(2)
             const data = ref({})
+            const selectedAsset = inject('selectedAsset')
+            if (selectedAsset) data.value.asset = selectedAsset.value
+
             const refs: { [key: string]: any } = ref({})
             const { updateProfile } = toRefs(props)
             const tabs = [
@@ -123,6 +126,7 @@
 
             // fetch
             const fetch = () => {
+                if (selectedAsset.value) return
                 const {
                     workflow: response,
                     error,
@@ -153,9 +157,6 @@
                 if (id.value) fetch()
             })
             watch(updateProfile, () => fetch())
-
-            /** PROVIDER */
-            provide('assetData', data.value)
 
             return {
                 id,

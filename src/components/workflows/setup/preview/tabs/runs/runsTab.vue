@@ -9,9 +9,20 @@
     <template v-else-if="workflowList?.length">
         <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
             <div
-                class="text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                class="
+                    text-base
+                    font-bold
+                    truncate
+                    cursor-pointer
+                    text-primary
+                    hover:underline
+                    overflow-ellipsis
+                    whitespace-nowrap
+                "
             >
-                <router-link :to="`/workflows/${item.metadata.name}/overview`">
+                <router-link
+                    :to="`/workflows/${item.workflowtemplate.metadata.name}/overview`"
+                >
                     {{ r.metadata.name }}
                 </router-link>
             </div>

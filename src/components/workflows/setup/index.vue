@@ -1,7 +1,13 @@
 <template>
     <div class="flex w-full">
         <div
-            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AtlanBtn
                 class="m-2"
@@ -140,7 +146,7 @@
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import useFilterUtils from '@/workflows/setup/filters/useFilterUtils'
-    import { useClusterWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/setup/cards.vue'
 
@@ -200,7 +206,7 @@
             // Get All Disoverable Asset Types
 
             const { workflowList, isLoading, filterList, mutate } =
-                useClusterWorkflowTemplates('default', false)
+                useWorkflowTemplates('default', false)
 
             if (!workflowList.value.length) mutate()
 
@@ -244,7 +250,7 @@
             }, 150)
 
             const handlePreview = (item) => {
-                selectedItemId.value = item.metadata.uid
+                selectedItemId.value = item.workflowtemplate.metadata.uid
                 emit('preview', item)
             }
             const loadMore = () => {

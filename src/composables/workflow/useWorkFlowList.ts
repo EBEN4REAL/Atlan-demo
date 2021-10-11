@@ -2,23 +2,21 @@
 import { watch, ref, computed } from 'vue'
 import { Workflows } from '~/services/argo/api/workflow'
 
-export function useWorkflowTemplateSearchList(
-    tenant,
+export function useWorkflowSearchList(
     immediate: boolean = true
 ) {
-    const { data, error, isLoading, mutate } = Workflows.getWorkflowTemplates(
-        tenant,
+    const { data, error, isLoading, mutate } = Workflows.getWorkflows(
         { immediate, options: {} }
     )
 
     const workflowList = ref([])
     watch(data, () => {
-        console.log('useWorkflowTemplateSearchList', data.value.items)
-        workflowList.value = data.value?.items
+        console.log('useWorkflowSearchList', data.value.records)
+        workflowList.value = data.value?.records
     })
 
     const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.metadata.name.includes(text))
+        workflowList.value.filter((wf) => wf.name.includes(text))
 
     return { workflowList, error, isLoading, filterList, mutate }
 }
@@ -47,20 +45,20 @@ export function useArchivedWorkflowList(
     return { workflowList, error, isLoading, filterList, mutate }
 }
 
-export function useClusterWorkflowTemplates(
+export function useWorkflowTemplates(
     immediate: boolean = true
 ) {
     const { data, error, isLoading, mutate } =
-        Workflows.getClusterWorkflowTemplates({ immediate, options: {} })
+        Workflows.getWorkflowTemplates({ immediate, options: {} })
 
     const workflowList = ref([])
     watch(data, () => {
-        console.log('useClusterWorkflowTemplates', data.value.items)
-        workflowList.value = data.value?.items
+        console.log('useWorkflowTemplates', data.value.records)
+        workflowList.value = data.value?.records
     })
 
     const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.metadata.name.includes(text))
+        workflowList.value.filter((wf) => wf.name.includes(text))
 
     return { workflowList, error, isLoading, filterList, mutate }
 }
@@ -80,9 +78,9 @@ export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
     return { runDeets, error, isLoading, mutate }
 }
 
-export function useWorkflowTemplate(tenant, name, immediate: boolean = true) {
+export function useWorkflowByName(name, immediate: boolean = true) {
     const { data, error, isLoading, mutate } =
-        Workflows.getWorkflowTemplateByName(tenant, name, {
+        Workflows.getWorkflowByName(name, {
             immediate,
             options: {},
         })

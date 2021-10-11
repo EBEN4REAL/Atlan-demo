@@ -16,22 +16,20 @@ const List = (params?: any, options?: AxiosRequestConfig) =>
         ...options,
     })
 
-const getWorkflowTemplates = (tenant, { immediate, options }) =>
+const getWorkflows = ({ immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.WORKFLOW_TEMPLATES,
+        KeyMaps.workflow.WORKFLOW,
         'GET',
         {
             options,
-            pathVariables: {
-                tenant,
-            },
+            pathVariables: {},
         },
         { immediate }
     )
 
-const getClusterWorkflowTemplates = ({ immediate, options }) =>
+const getWorkflowTemplates = ({ immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.CLUSTER_WORKFLOW_TEMPLATE,
+        KeyMaps.workflow.WORKFLOW_TEMPLATE,
         'GET',
         {
             options,
@@ -39,14 +37,13 @@ const getClusterWorkflowTemplates = ({ immediate, options }) =>
         { immediate }
     )
 
-const getWorkflowTemplateByName = (tenant, name, { immediate, options }) =>
+const getWorkflowByName = (name, { immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.WORKFLOW_TEMPLATES_BY_NAME,
+        KeyMaps.workflow.WORKFLOW_BY_NAME,
         'GET',
         {
             options,
             pathVariables: {
-                tenant,
                 name,
             },
         },
@@ -81,8 +78,8 @@ export const Workflows = {
     URL,
     List,
     getArchivedWorkflowList,
-    getWorkflowTemplateByName,
-    getWorkflowTemplates,
+    getWorkflowByName,
+    getWorkflows,
     getArchivedWorkflowRun,
-    getClusterWorkflowTemplates
+    getWorkflowTemplates
 }

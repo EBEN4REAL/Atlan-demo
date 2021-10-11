@@ -48,7 +48,7 @@
     import Header from '@/workflows/profile/header.vue'
 
     // Composables
-    import { useWorkflowTemplate } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowByName } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {
@@ -127,7 +127,7 @@
                     workflow: response,
                     error,
                     isLoading,
-                } = useWorkflowTemplate('default', id.value)
+                } = useWorkflowByName(id.value)
 
                 watch(response, (v) => {
                     data.value.asset = v

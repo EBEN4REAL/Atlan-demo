@@ -1,17 +1,26 @@
 <template>
-    <div class="flex justify-between gap-y-5">
+    <div class="flex gap-y-5 gap-x-8">
         <div
             v-for="(i, x) in list"
             :key="x"
-            class="flex items-center justify-center w-40 h-24 border rounded cursor-pointer "
+            class="
+                flex
+                items-center
+                justify-center
+                w-40
+                h-24
+                border
+                rounded
+                cursor-pointer
+            "
             :class="
-                selectedItemId === i.metadata.uid
+                selectedItemId === i.workflowtemplate.metadata.uid
                     ? 'border-primary  bg-primary-light'
                     : 'bg-white'
             "
             @click="handlePreview(i)"
         >
-            {{ i.metadata.name }}
+            {{ i.name }}
         </div>
     </div>
 </template>

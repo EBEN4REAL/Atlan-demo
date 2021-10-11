@@ -256,8 +256,9 @@ export default function useFormGenerator(formConfig, formRef) {
         )
 
         const reqVal = f.conditional.refValue
-        processedSchema.value[x].isVisible =
-          curVal === reqVal
+        if (f.type !== 'template')
+          processedSchema.value[x].isVisible =
+            curVal === reqVal
       }
     })
   }

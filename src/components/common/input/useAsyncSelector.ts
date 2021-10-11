@@ -59,6 +59,7 @@ export default function useAsyncSelector(
 
     const loadDataError = ref(false);
     const loadData = async () => {
+        asyncData.value = [];
         const { url, method, params, addFormValues } = reqConfig
         loadingData.value = true
         loadDataError.value = false
@@ -75,6 +76,7 @@ export default function useAsyncSelector(
     }
 
     const letAsyncSelectDisabled = computed(() => {
+        if (!reqConfig) return false;
         const { addFormValues } = reqConfig;
         getParsedBody(addFormValues)
         const valueMissing = addFormValues.some((e: string) => (valueObject[e] == null) || (valueObject[e] === ""))
@@ -94,7 +96,6 @@ export default function useAsyncSelector(
         addFormValues.forEach(element => {
             temp.push(valueObject[element])
         });
-        console.log('temp', temp)
         return temp
     })
     const debouncer = createDebounce()
@@ -106,6 +107,7 @@ export default function useAsyncSelector(
                 debouncer(() => loadData(), 500)
 
     }, { deep: true })
+
 
     return {
         loadData,

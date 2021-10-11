@@ -136,21 +136,26 @@ export default function useFormGenerator(formConfig, formRef) {
 
 
 
-  const generateSring = (s) => {
+  const generateTemplateValue = (s, id, isStringfied) => {
     if (!processedSchema.value.length) return s
     const templatePartsf = s.split('{{')
     let finalString = ''
     // ? ->
+    let missingValue = false;
     templatePartsf.forEach((p, i) => {
       if (i === 0) {
         finalString += p
       } else {
         const pp = p.split('}}')
+        if (typeof getValueFromSchemaData(pp[0]) === 'undefined') {
+          missingValue = true
+        }
         finalString += getValueFromSchemaData(pp[0]) + pp[1]
       }
     })
-
-    return finalString
+    if (missingValue) return null;
+    testModal.value[id] = isStringfied ? JSON.parse(finalString) : finalString
+    return testModal.value[id]
   }
 
   // FIXME enhance,DRY
@@ -164,7 +169,7 @@ export default function useFormGenerator(formConfig, formRef) {
         // ? if conditional field is hidden dont add
         if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
 
-        const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+        const val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
         if (typeof val === 'undefined' || val === null) return;
         // ? no groups
         if (f.parent) {
@@ -184,7 +189,7 @@ export default function useFormGenerator(formConfig, formRef) {
         f.children.forEach(f => {
           if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
 
-          const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+          const val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
           if (typeof val === 'undefined' || val === null) return;
           // ? no groups
           if (f.parent) {
@@ -256,8 +261,9 @@ export default function useFormGenerator(formConfig, formRef) {
         )
 
         const reqVal = f.conditional.refValue
-        processedSchema.value[x].isVisible =
-          curVal === reqVal
+        if (f.type !== 'template')
+          processedSchema.value[x].isVisible =
+            curVal === reqVal
       }
     })
   }
@@ -318,21 +324,16 @@ export default function useFormGenerator(formConfig, formRef) {
 
   }
 
-  watch(
-    testModal.value,
-    () => {
-      // improve this -- handle @change
-      handleConditional()
-      finalConfigObject(processedSchema.value)
-    },
-    { immediate: true, deep: true }
-  )
-
+  const handleInputChange = () => {
+    handleConditional()
+    finalConfigObject(processedSchema.value)
+  }
 
   return {
     validate,
     getRules,
     testModal,
+    handleInputChange,
     getGridClass,
     handleConditional,
     handleFormSubmit,

@@ -1,0 +1,9 @@
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+
+# Branch Deploy context: all deploys that are not from a pull/merge request or
+# from the Production branch will inherit these settings.
+[context.branch-deploy]
+  command = "echo branch"
+[context.branch-deploy.environment]
+  NPM_FLAGS = "--legacy-peer-deps"

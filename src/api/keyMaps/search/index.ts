@@ -5,7 +5,7 @@ export const SAVED_SEARCH = 'SAVED_SEARCH';
 
 const searchMap: Record<string, (...params: any) => string> = {
     [BASIC_SEARCH]: () => getAPIPath('meta', `/search/basic`),
-    [SAVED_SEARCH]: () => getAPIPath('meta', `/search/save`),
+    [SAVED_SEARCH]: () => getAPIPath('meta', `/search/saved`),
 }
 
 export default searchMap;

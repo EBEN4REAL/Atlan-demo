@@ -8,7 +8,6 @@ import { Components } from '~/api/atlas/client'
 
 interface SavedFilterConfig {
     savedFilterName: Ref<string>
-
     ownerName: Ref<string>
     appliedFilters: Ref<Components.Schemas.FilterCriteria[]>
 }
@@ -40,7 +39,6 @@ export function addSavedFilter(
         },
         searchType: "BASIC",
     }
-
     ))
 
     const { data, mutate, error, isLoading, isReady } = useAPIAsyncState<any>(
@@ -65,43 +63,24 @@ export function addSavedFilter(
 }
 
 export function getSavedFilters(
-    initialBody?: any,
-    cacheSuffx?: string | '',
-    immediate?: boolean,
-    cancelTokenSource?: CancelTokenSource
 ) {
     const list: Ref<assetInterface[]> = ref([])
-    const searchScoreList = ref({})
+
+    let cancelTokenSource = axios.CancelToken.source()
 
     const axiosOpts: AxiosRequestConfig = {
         cancelToken: cancelTokenSource?.token,
     }
 
-    const body = ref(initialBody)
-
     const { data, mutate, error, isLoading, isReady } = useAPIAsyncState<any>(
         KeyMaps.asset.SAVED_SEARCH,
-        'POST',
-        { body, options: axiosOpts },
-        { immediate, resetOnExecute: false }
+        'GET',
+        { options: axiosOpts },
+        { resetOnExecute: false }
     )
 
     watch(data, () => {
-        if (body?.value?.offset > 0) {
-            list.value = list.value.concat(data?.value?.entities)
-            searchScoreList.value = {
-                ...searchScoreList.value,
-                ...data?.value?.searchScore,
-            }
-        } else if (data.value?.entities) {
-            list.value = data.value?.entities
-            searchScoreList.value = {
-                ...data?.value?.searchScore,
-            }
-        } else {
-            list.value = []
-            searchScoreList.value = {}
-        }
+
     })
 
     const refresh = () => {
@@ -116,27 +95,12 @@ export function getSavedFilters(
         mutate()
     }
 
-    const query = (queryText: string) => {
-        body.value.query = queryText
-        body.value.offset = 0
-        refresh()
-    }
-
-    const replaceBody = (payload: any) => {
-        body.value = payload
-        refresh()
-    }
-
     return {
         data,
-        searchScoreList,
         list,
         isLoading,
         error,
-        query,
         refresh,
-        replaceBody,
-        body,
         mutate,
         isReady,
     }

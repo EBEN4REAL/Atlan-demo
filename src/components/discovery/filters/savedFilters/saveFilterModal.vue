@@ -76,6 +76,7 @@
     import whoami from '~/composables/user/whoami'
     import { addSavedFilter } from './useSavedFilters'
     import { Components } from '~/api/atlas/client'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {},
@@ -118,9 +119,18 @@
             const handleOk = () => {
                 const { data, error, isLoading, isReady } = addSavedFilter(
                     title,
-                    email,
+                    myUsername,
                     appliedFilters
                 )
+                watch([data, isReady, error, isLoading], () => {
+                    if (isReady && !error.value && !isLoading.value) {
+                        message.success('Saved filter added')
+                    } else if (error && error.value) {
+                        message.error(
+                            'Failed to add the saved filter, try again later'
+                        )
+                    }
+                })
                 resetInput()
                 visible.value = false
             }

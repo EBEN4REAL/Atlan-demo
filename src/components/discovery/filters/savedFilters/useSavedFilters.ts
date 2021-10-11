@@ -8,23 +8,16 @@ import { Components } from '~/api/atlas/client'
 
 interface SavedFilterConfig {
     savedFilterName: Ref<string>
-    savedFilterDescription?: Ref<string>
+
     ownerName: Ref<string>
     appliedFilters: Ref<Components.Schemas.FilterCriteria[]>
-
 }
 
 export function addSavedFilter(
-    immediate: boolean = true,
-
     savedFilterName: Ref<string>,
-    savedFilterDescription = ref<string>(''),
     ownerName: Ref<string>,
     appliedFilters: Ref<Components.Schemas.FilterCriteria[]>,
-
 ) {
-    console.log(appliedFilters)
-
     const cancelTokenSource = axios.CancelToken.source()
 
     const axiosOpts: AxiosRequestConfig = {
@@ -35,9 +28,6 @@ export function addSavedFilter(
         name: savedFilterName.value,
         ownerName: ownerName.value,
         searchParameters: {
-            attributes: {
-                description: savedFilterDescription.value
-            },
             entityFilters: {
                 condition: "AND",
                 criterion: [...appliedFilters.value],
@@ -57,7 +47,7 @@ export function addSavedFilter(
         KeyMaps.asset.SAVED_SEARCH,
         'POST',
         { body, options: axiosOpts },
-        { immediate, resetOnExecute: false }
+        { resetOnExecute: false }
     )
 
     watch(data, () => {

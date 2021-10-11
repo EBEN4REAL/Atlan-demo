@@ -89,7 +89,7 @@
         setup(props, { emit }) {
             const { username: myUsername, name: myName, email } = whoami()
             const { appliedFilters } = toRefs(props)
-            const title = ref<string | undefined>('')
+            const title = ref<string>('')
             const description = ref<string | undefined>('')
             const selectedCategories = ref<{ categoryGuid: string }[]>([])
 
@@ -116,19 +116,13 @@
             }
 
             const handleOk = () => {
-                /* const { data, error, isLoading, isReady } = addSavedFilter(
+                const { data, error, isLoading, isReady } = addSavedFilter(
                     title,
-                    description,
-                    myUsername,
+                    email,
                     appliedFilters
-                ) */
-
-                console.log(
-                    title.value,
-                    description.value,
-                    email.value,
-                    appliedFilters.value
                 )
+                resetInput()
+                visible.value = false
             }
 
             const handleCancel = () => {

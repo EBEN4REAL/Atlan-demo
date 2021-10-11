@@ -15,60 +15,63 @@
                 :class="!f.isVisible ? 'hidden' : `${getGridClass(f.type)}`"
             >
                 <template v-if="f.type === 'group'">
-                    <div
-                        class="grid grid-cols-2 p-2 mb-5 bg-gray-100 border rounded "
-                    >
-                        <div class="m-3 font-bold col-span-full">
-                            {{ f.groupTitle }}
-                        </div>
-                        <div
-                            v-for="(c, i) in f.children"
-                            :key="c.id"
-                            :class="c.isVisible ? '' : 'hidden'"
-                            class="p-1 px-4 my-2 rounded"
-                        >
-                            {{ c.label }}
-                            <sup v-if="isRequiredField(c)" class="text-red-600"
-                                >*</sup
+                    <a-collapse default-active-key="1">
+                        <a-collapse-panel key="1" :header="f.groupTitle">
+                            <div class="m-3 font-bold col-span-full">
+                                {{ f.groupTitle }}
+                            </div>
+                            <div
+                                v-for="(c, i) in f.children"
+                                :key="c.id"
+                                :class="c.isVisible ? '' : 'hidden'"
+                                class="p-1 px-4 mt-2"
                             >
+                                {{ c.label }}
+                                <sup
+                                    v-if="isRequiredField(c)"
+                                    class="text-red-600"
+                                    >*</sup
+                                >
 
-                            <a-popover title="Help" v-if="c.helpText">
-                                <template #content>
-                                    <div
-                                        class="text-gray-500"
-                                        v-html="c.helpText"
-                                    ></div>
-                                </template>
-                                <fa
-                                    icon="fal info-circle"
-                                    class="ml-2 text-xs"
-                                ></fa>
-                            </a-popover>
-                            <a-form-item :name="c.id">
-                                <DynamicInput
-                                    v-model="valueObject[c.id]"
-                                    :data-type="c.type"
-                                    :date-time-type="c.dateTimeType"
-                                    :placeholder="c.placeholder"
-                                    :default-value="c.default"
-                                    :prefix="c.prefix"
-                                    :suffix="c.suffix"
-                                    :enum-list="c?.options"
-                                    :multiple="c?.isMultivalued"
-                                    :request-config="f?.requestConfig"
-                                    :response-config="f?.responseConfig"
-                                    :limit-after="c.limitAfter"
-                                    :limit-before="c.limitBefore"
-                                    :allow-custom="c.allowCustom"
-                                    v-bind="
-                                        c.type === 'asyncSelect'
-                                            ? { valueObject }
-                                            : {}
-                                    "
-                                ></DynamicInput>
-                            </a-form-item>
-                        </div>
-                    </div>
+                                <a-popover title="Help" v-if="c.helpText">
+                                    <template #content>
+                                        <div
+                                            class="text-gray-500"
+                                            v-html="c.helpText"
+                                        ></div>
+                                    </template>
+                                    <fa
+                                        icon="fal info-circle"
+                                        class="ml-2 text-xs"
+                                    ></fa>
+                                </a-popover>
+                                <a-form-item :name="c.id">
+                                    <DynamicInput
+                                        v-model="valueObject[c.id]"
+                                        :data-type="c.type"
+                                        :date-time-type="c.dateTimeType"
+                                        :placeholder="c.placeholder"
+                                        :default-value="c.default"
+                                        :prefix="c.prefix"
+                                        :suffix="c.suffix"
+                                        :enum-list="c?.options"
+                                        :options="c?.options"
+                                        :multiple="c?.isMultivalued"
+                                        :request-config="f?.requestConfig"
+                                        :response-config="f?.responseConfig"
+                                        :limit-after="c.limitAfter"
+                                        :limit-before="c.limitBefore"
+                                        :allow-custom="c.allowCustom"
+                                        v-bind="
+                                            c.type === 'asyncSelect'
+                                                ? { valueObject }
+                                                : {}
+                                        "
+                                    ></DynamicInput>
+                                </a-form-item>
+                            </div>
+                        </a-collapse-panel>
+                    </a-collapse>
                 </template>
                 <div v-else-if="f.type === 'toggle'" class="mb-5">
                     <div class="my-2">{{ f.label }}</div>
@@ -100,6 +103,7 @@
                             :prefix="f.prefix"
                             :suffix="f.suffix"
                             :enum-list="f?.options"
+                            :options="f?.options"
                             :multiple="f?.isMultivalued"
                             :request-config="f?.requestConfig"
                             :response-config="f?.responseConfig"

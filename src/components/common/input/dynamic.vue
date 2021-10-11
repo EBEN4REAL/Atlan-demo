@@ -34,26 +34,14 @@
             v-if="dataType === 'checkbox'"
             :checked="modelValue"
             @change="handleChange"
-            :options="idToVal"
+            :options="options"
         ></a-checkbox-group>
         <a-radio-group
             v-if="dataType === 'radioButton'"
             :value="modelValue"
             @change="handleChange"
-            :options="idToVal"
+            :options="options"
         ></a-radio-group>
-        <a-select
-            v-if="dataType === 'select'"
-            :default-value="modelValue"
-            @change="handleChange"
-        >
-            <a-select-option
-                v-for="(o, index) in idToVal"
-                :key="index"
-                :value="o.value"
-                >{{ o.label }}</a-select-option
-            >
-        </a-select>
         <!-- End of Coninuted types -->
         <a-select
             v-if="dataType === 'asyncSelect'"
@@ -180,6 +168,13 @@
                     return []
                 },
             },
+            options: {
+                type: Array,
+                required: false,
+                default(): any {
+                    return []
+                },
+            },
             defaultValue: {
                 required: false,
             },
@@ -263,12 +258,6 @@
                     default:
                         return 'a-date-picker'
                 }
-            },
-            idToVal() {
-                return this.enumList.map((x) => ({
-                    value: x.id,
-                    label: x.label,
-                }))
             },
         },
         mounted() {

@@ -59,9 +59,14 @@
                     </div>
 
                     <div v-else class="flex flex-col w-full">
-                        <template v-for="(filter, index) in list" :key="index">
-                            <div>{{ filter.name }}</div>
-                        </template>
+                        <a-radio-group
+                            v-model:value="data.checked"
+                            v-for="(filter, index) in list"
+                            :key="index"
+                            @change="handleChange"
+                        >
+                            <a-radio :value="filter">{{ filter.name }}</a-radio>
+                        </a-radio-group>
                     </div>
                 </div>
             </template>
@@ -115,6 +120,7 @@
             const { data } = toRefs(props)
             const activeTab: Ref<'personal' | 'all'> = ref('personal')
             const queryText = ref('')
+            const selectedSavedFilter = ref({})
 
             // own info
             const { username: myUsername } = whoami()
@@ -123,6 +129,10 @@
                 if (activeTab.value === 'personal') {
                 } else if (activeTab.value === 'all') {
                 }
+            }
+
+            const handleChange = () => {
+                emit('change')
             }
 
             const { data: list, error, isLoading, isReady } = getSavedFilters()
@@ -141,8 +151,9 @@
                 setActiveTab,
                 isLoading,
                 list,
+                selectedSavedFilter,
+                handleChange,
             }
         },
-        mounted() {},
     })
 </script>

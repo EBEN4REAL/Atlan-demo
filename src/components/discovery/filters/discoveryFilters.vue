@@ -161,6 +161,9 @@
             businessMetadata: defineAsyncComponent(
                 () => import('@common/facets/businessMetadata/index.vue')
             ),
+            SavedFilter: defineAsyncComponent(
+                () => import('./savedFilters/viewSavedFilters.vue')
+            ),
             SaveFilterModal: defineAsyncComponent(
                 () => import('./savedFilters/saveFilterModal.vue')
             ),
@@ -203,6 +206,9 @@
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({
                 connector: props.initialFilters?.facetsFilters?.connector || {},
+                saved: props.initialFilters?.facetsFilters?.saved || {
+                    checked: undefined,
+                },
                 assetCategory: props.initialFilters?.facetsFilters
                     ?.assetCategory || { checked: undefined },
                 status: props.initialFilters?.facetsFilters?.status || {
@@ -298,6 +304,10 @@
                             attributeName: undefined,
                             attributeValue: undefined,
                         }
+                        break
+                    }
+                    case 'saved': {
+                        dataMap.value[filterId].checked = []
                         break
                     }
                     case 'assetCategory': {
@@ -447,6 +457,8 @@
                     attributeName: undefined,
                     attributeValue: undefined,
                 }
+                dataMap.value.saved.checked = []
+
                 dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []

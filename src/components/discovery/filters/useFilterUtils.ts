@@ -8,7 +8,8 @@ export default function useFilterUtils(filters: Ref<Record<string, any>>) {
                 filters.value[id]?.attributeValue &&
                 filters.value[id]?.attributeName
             )
-        } else if (id === 'owners') {
+        }
+        else if (id === 'owners') {
             const onrFltr = filters.value[id]
             return (
                 onrFltr?.noOwnerAssigned ||
@@ -16,7 +17,7 @@ export default function useFilterUtils(filters: Ref<Record<string, any>>) {
                 onrFltr?.userValue?.length
             )
         } else if (
-            ['classifications', 'status', 'assetCategory'].includes(id)
+            ['saved', 'classifications', 'status', 'assetCategory'].includes(id)
         ) {
             if (filters.value[id]?.checked?.length) return true
         } else if (filters.value[id]?.applied) {

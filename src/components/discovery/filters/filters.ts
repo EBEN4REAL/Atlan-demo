@@ -19,6 +19,18 @@ export const List: CollapseArray = [
     //     exclude: false,
     // },
     {
+        id: 'saved',
+        label: 'Saved Filter',
+        component: 'SavedFilter',
+        overallCondition: 'AND',
+        filters: [
+
+        ],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
         id: 'assetCategory',
         label: 'Category',
         component: 'assetCategory',
@@ -58,7 +70,7 @@ export const List: CollapseArray = [
         component: 'governance',
         overallCondition: 'OR',
         filters: [
-            
+
         ],
         isDeleted: false,
         isDisabled: false,

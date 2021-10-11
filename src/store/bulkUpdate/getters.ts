@@ -1,4 +1,14 @@
+import { pluralizeString } from '~/utils/string'
+
 const getters = {
+    getChangedState(state) {
+        const changedState = { ...state.updateStatus }
+        if (state.updateStatus && Object.keys(state.updateStatus).length)
+            Object.keys(state.updateStatus).forEach((key) => {
+                if (!state.updateStatus[key].didChange) delete changedState[key]
+            })
+        return changedState
+    },
     getShowNotification(state) {
         return state.showNotification
     },
@@ -10,15 +20,34 @@ const getters = {
     },
     getFinalStatusLabel(state) {
         if (state.getFinalStatus === 'loading')
-            return `Updating ${state.bulkSelectedAssets.length} assets`
+            return `Updating ${
+                state.bulkSelectedAssets.length
+            } ${pluralizeString(
+                'asset',
+                state.bulkSelectedAssets.length,
+                false
+            )}`
         if (state.getFinalStatus === 'success')
-            return `${state.bulkSelectedAssets.length} assets updated`
+            return `${state.bulkSelectedAssets.length} ${pluralizeString(
+                'asset',
+                state.bulkSelectedAssets.length,
+                false
+            )} updated`
         if (state.getFinalStatus === 'error')
-            return `Failed to update ${state.bulkSelectedAssets.length} assets`
+            return `Failed to update ${
+                state.bulkSelectedAssets.length
+            } ${pluralizeString(
+                'asset',
+                state.bulkSelectedAssets.length,
+                false
+            )}`
         return ''
     },
-    getStatusOwnersStatus(state) {
-        return state.updateStatus.updateStatusOwners.status
+    getCertificationStatus(state) {
+        return state.updateStatus.updateCertification.status
+    },
+    getOwnersStatus(state) {
+        return state.updateStatus.updateOwners.status
     },
     getLinkClassificationsStatus(state) {
         return state.updateStatus.linkClassifications.status
@@ -27,50 +56,44 @@ const getters = {
         return state.updateStatus.linkTerms.status
     },
     getFinalStatus(state) {
-        // TODO: there has to be a better way to do this
-        if (
-            state.getStatusOwnersStatus === 'loading' ||
-            state.getLinkClassificationsStatus === 'loading' ||
-            state.updateStatus.linkClassifications.status === 'loading'
-        )
-            return 'loading'
-        if (
-            state.getStatusOwnersStatus === 'error' ||
-            state.getLinkClassificationsStatus === 'error' ||
-            state.updateStatus.linkClassifications.status === 'error'
-        )
-            return 'error'
-        if (
-            state.getStatusOwnersStatus === 'success' &&
-            state.getLinkClassificationsStatus === 'success' &&
-            state.updateStatus.linkClassifications.status === 'success'
-        )
-            return 'success'
-        return ''
-    },
-    getChangedStatus(state) {
-        return state.updateStatus.updateStatusOwners.meta.changedStatus
-    },
-    getAddedOwners(state) {
-        return state.updateStatus.updateStatusOwners.meta.addedOwners
-    },
-    getRemovedOwners(state) {
-        return state.updateStatus.updateStatusOwners.meta.removedOwners
+        let calculatedStatus = ''
+        const changedState = { ...state.getChangedState }
+        if (changedState && Object.keys(changedState).length) {
+            Object.keys(changedState).forEach((key) => {
+                const statusObject = changedState[key]
+                if (!calculatedStatus) calculatedStatus = statusObject.status
+                else if (
+                    calculatedStatus === 'loading' ||
+                    statusObject.status === 'loading'
+                )
+                    calculatedStatus = 'loading'
+                else if (
+                    calculatedStatus === 'error' ||
+                    statusObject.status === 'error'
+                )
+                    calculatedStatus = 'error'
+                else if (
+                    calculatedStatus === 'success' &&
+                    statusObject.status === 'success'
+                )
+                    calculatedStatus = 'success'
+            })
+        }
+        return calculatedStatus
     },
     getStatusLabel(state) {
-        if (state.getStatusOwnersStatus === 'loading')
+        if (state.getCertificationStatus === 'loading')
             return `Updating certification`
-        if (state.getStatusOwnersStatus === 'success')
+        if (state.getCertificationStatus === 'success')
             return `Updated certification`
-        if (state.getStatusOwnersStatus === 'error')
+        if (state.getCertificationStatus === 'error')
             return `Failed to update certification`
         return ''
     },
     getOwnersLabel(state) {
-        if (state.getStatusOwnersStatus === 'loading') return `Updating owners`
-        if (state.getStatusOwnersStatus === 'success') return `Updated owners`
-        if (state.getStatusOwnersStatus === 'error')
-            return `Failed to update owners`
+        if (state.getOwnersStatus === 'loading') return `Updating owners`
+        if (state.getOwnersStatus === 'success') return `Updated owners`
+        if (state.getOwnersStatus === 'error') return `Failed to update owners`
         return ''
     },
     getClassificationsLabel(state) {

@@ -12,6 +12,7 @@ import { message } from 'ant-design-vue'
 import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/atlas/api/insights'
 import { generateUUID } from '~/utils/helper/generator'
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -205,7 +206,10 @@ export function useSavedQuery(
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
-        router: any
+        router: any,
+        type: 'personal' | 'all',
+        parentFolderQF: string,
+        parentFolderGuid: string
     ) => {
         const editorInstanceRaw = toRaw(editorInstance.value)
         const attributeValue =
@@ -242,7 +246,7 @@ export function useSavedQuery(
             activeInlineTab.value.playground.editor.variables
         )
 
-        const body = ref({
+        const body = ref<Record<string, any>>({
             entity: {
                 typeName: 'Query',
                 attributes: {
@@ -262,14 +266,6 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
-                    parentFolderQualifiedName: `folder/user/${username}/1b2f1031-7362-4393-9fe0-1670fdfff521`,
-                    sourceCreatedBy: username,
-                },
-                relationshipAttributes: {
-                    folder: {
-                        guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
-                        typeName: 'QueryFolder',
-                    },
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -277,7 +273,26 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        console.log(body.value, 'hola')
+        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
+            body.value.entity.relationshipAttributes = {
+                folder: {
+                    guid: parentFolderGuid,
+                    typeName: 'QueryFolder',
+                },
+            }
+        }
+        if(type === 'all') {
+            body.value.entity.classifications =  [
+                {
+                    attributes: {},
+                    propagate: true,
+                    removePropagationsOnEntityDelete: true,
+                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    validityPeriods: []
+                }
+            ]
+        }
         // chaing loading to true
         saveQueryLoading.value = true
         const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
@@ -311,7 +326,10 @@ export function useSavedQuery(
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
-        router: any
+        router: any,
+        type: 'personal' | 'all' ,
+        parentFolderQF: string,
+        parentFolderGuid: string
     ) => {
         const editorInstanceRaw = toRaw(editorInstance.value)
         const attributeValue =
@@ -353,7 +371,7 @@ export function useSavedQuery(
         )
         // const variablesSchemaBase64 = []
 
-        const body = ref({
+        const body = ref<Record<string, any>>({
             entity: {
                 typeName: 'Query',
                 attributes: {
@@ -373,14 +391,6 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
-                    parentFolderQualifiedName:
-                        'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521',
-                },
-                relationshipAttributes: {
-                    folder: {
-                        guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
-                        typeName: 'QueryFolder',
-                    },
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -388,7 +398,26 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        console.log(body.value, 'hola')
+        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
+            body.value.entity.relationshipAttributes = {
+                folder: {
+                    guid: parentFolderGuid,
+                    typeName: 'QueryFolder',
+                },
+            }
+        }
+        if(type === 'all') {
+            body.value.entity.classifications =  [
+                {
+                    attributes: {},
+                    propagate: true,
+                    removePropagationsOnEntityDelete: true,
+                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    validityPeriods: []
+                }
+            ]
+        }
         // chaing loading to true
         saveQueryLoading.value = true
         const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
@@ -438,11 +467,12 @@ export function useSavedQuery(
         return { data, error, isLoading }
     }
 
-    const createFolder = (
-        saveFolderData: any,
+    const createFolder =  (
+        folderName: string,
         saveFolderLoading: Ref<boolean>,
-        showSaveQueryModal: Ref<boolean>,
-        saveModalRef: Ref<any>
+        type: 'personal' | 'all',
+        parentFolderQF: Ref<string>,
+        parentFolderGuid: Ref<string>
     ) => {
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
@@ -463,15 +493,13 @@ export function useSavedQuery(
         const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
 
-        const name = saveFolderData.title
-        const description = saveFolderData.description
-        const assetStatus = saveFolderData.assetStatus
+        const name = folderName
 
         const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
 
-        const body = ref({
+        const body = ref<Record<string, any>>({
             entity: {
                 typeName: 'QueryFolder',
                 attributes: {
@@ -480,27 +508,38 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
                     connectionQualifiedName,
-                    description,
                     owner: username.value,
                     tenantId: 'default',
                     connectionId: connectionGuid,
                     isPrivate: true,
-                    // parentFolderQualifiedName: 'folder/user/nitya/1b2f1031-7362-4393-9fe0-1670fdfff521'
                 },
-                // relationshipAttributes: {
-                //     folder: {
-                //         guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
-                //         typeName: 'QueryFolder',
-                //     },
-                // },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
                 status: 'ACTIVE',
                 createdBy: username.value,
             },
         })
+        if(parentFolderQF.value !== 'root' && parentFolderGuid.value !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF.value;
+            body.value.entity.relationshipAttributes = {
+                folder: {
+                    guid: parentFolderGuid.value,
+                    typeName: 'QueryFolder',
+                },
+            }
+        }
+        if(type === 'all') {
+            body.value.entity.classifications =  [
+                {
+                    attributes: {},
+                    propagate: true,
+                    removePropagationsOnEntityDelete: true,
+                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    validityPeriods: []
+                }
+            ]
+        }
         // chaing loading to true
         saveFolderLoading.value = true
         const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
@@ -509,11 +548,9 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveFolderLoading.value = false
                 if (error.value === undefined) {
-                    showSaveQueryModal.value = false
                     message.success({
                         content: `Folder ${name} created!`,
                     })
-                    saveModalRef.value?.clearData()
                 } else {
                     console.log(error.value.toString())
                     message.error({

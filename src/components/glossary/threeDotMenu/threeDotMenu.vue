@@ -82,7 +82,7 @@
                             <template #trigger>
                                 <div class="flex items-center">
                                     <AtlanIcon icon="Link" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">
+                                    <p class="p-0 m-0 capitalize">
                                         Edit
                                         {{ assetTypeLabel[entity?.typeName] }}
                                     </p>
@@ -119,7 +119,7 @@
                             <template #trigger>
                                 <div class="flex items-center">
                                     <AtlanIcon icon="Term" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Add New Term</p>
+                                    <p class="p-0 m-0">Create New Term</p>
                                 </div>
                             </template>
                         </AddGtcModal>
@@ -154,7 +154,7 @@
                                         icon="Category"
                                         class="m-0 mr-2"
                                     />
-                                    <p class="p-0 m-0">Add New Category</p>
+                                    <p class="p-0 m-0">Create New Category</p>
                                 </div>
                             </template>
                         </AddGtcModal>
@@ -231,15 +231,18 @@
                             />
                         </a-menu-item>
                     </a-sub-menu>
-                    <a-sub-menu
+                    <a-menu-item
                         v-if="
                             showGtcCrud &&
                             entity?.typeName === 'AtlasGlossaryTerm'
                         "
                         key="categories"
+                        class="pr-0"
                     >
-                        <template #title>
-                            <div class="flex items-center justify-between">
+                        <a-popover :trigger="['hover']" placement="right">
+                            <div
+                                class="flex items-center justify-between pr-4 mr-2 "
+                            >
                                 <div class="flex items-center justify-between">
                                     <AtlanIcon
                                         icon="Category"
@@ -248,28 +251,32 @@
                                     <p class="p-0 m-0">Categories</p>
                                 </div>
                                 <AtlanIcon
-                                    class="pt-1 ml-4 transform -rotate-90"
+                                    class="pt-1 transform -rotate-90"
                                     icon="ChevronDown"
                                 />
                             </div>
+                            <template
+                                #content
+                                class="absolute p-0 pb-8 hover:bg-white left-8"
+                                style="max-height: 416px"
+                            >
+                                <Categories
+                                    :glossaryQualifiedName="
+                                        entity.attributes?.anchor
+                                            ?.uniqueAttributes?.qualifiedName
+                                    "
+                                    :categories="entity.attributes.categories"
+                                    :termGuid="entity.guid"
+                                    :term="entity"
+                                    mode="threeDotMenu"
+                                />
+                            </template>
+                        </a-popover>
+                        <!-- <template #title>
+                        
                         </template>
-                        <template #expandIcon><div></div> </template>
-                        <a-menu-item
-                            class="p-0 pb-8 hover:bg-white"
-                            style="max-height: 416px"
-                        >
-                            <Categories
-                                :glossaryQualifiedName="
-                                    entity.attributes?.anchor?.uniqueAttributes
-                                        ?.qualifiedName
-                                "
-                                :categories="entity.attributes.categories"
-                                :termGuid="entity.guid"
-                                :term="entity"
-                                mode="threeDotMenu"
-                            />
-                        </a-menu-item>
-                    </a-sub-menu>
+                        <template #expandIcon><div></div> </template> -->
+                    </a-menu-item>
                     <a-menu-divider v-if="showGtcCrud" />
                     <a-menu-item
                         v-if="showGtcCrud"
@@ -340,6 +347,7 @@
     import { useRouter } from 'vue-router'
 
     // components
+    import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import Owners from './owners.vue'
     import Status from './status.vue'
@@ -414,6 +422,7 @@
             )
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
+            const showCategories = ref(false)
             const refetchGlossaryTree = inject<
                 (
                     guid: string | 'root',
@@ -502,6 +511,9 @@
                     assetTypeLabel[props.entity?.typeName]
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
+                message.info({
+                    content: 'Copied!',
+                })
             }
             // create new term
             const createNewTerm = () => {
@@ -556,6 +568,7 @@
                 redirectToProfile,
                 glossaryId,
                 categoryId,
+                showCategories,
             }
         },
     })

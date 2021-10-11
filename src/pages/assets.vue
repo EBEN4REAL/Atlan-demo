@@ -13,10 +13,16 @@
             </div>
         </div>
         <div
-            v-if="
-                (page === 'discovery' && !store.bulkSelectedAssets) ||
-                !store.bulkSelectedAssets.length
-            "
+            v-if="page === 'discovery' && store.isBulkMode"
+            class="relative overflow-y-auto bg-white asset-preview-container"
+        >
+            <BulkSidebar
+                :bulk-selected-assets="store.bulkSelectedAssets"
+                @closeBulkMode="handleCloseBulk"
+            ></BulkSidebar>
+        </div>
+        <div
+            v-else
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
@@ -26,15 +32,6 @@
                 :page="page"
                 @asset-mutation="propagateToAssetList"
             ></AssetPreview>
-        </div>
-        <div
-            v-else-if="page === 'discovery'"
-            class="relative overflow-y-auto bg-white asset-preview-container"
-        >
-            <BulkSidebar
-                :bulk-selected-assets="store.bulkSelectedAssets"
-                @closeBulkMode="handleCloseBulk"
-            ></BulkSidebar>
         </div>
         <BulkNotification class="fixed bottom-0 right-0" />
     </div>
@@ -120,6 +117,7 @@ export default defineComponent({
         const store = useBulkUpdateStore()
         const handleCloseBulk = () => {
             store.setBulkSelectedAssets([])
+            store.setBulkMode(false)
         }
         return {
             initialFilters,

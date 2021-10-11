@@ -36,14 +36,14 @@
             >
                 <!--explorer pane start -->
                 <div
+                    v-if="activeTab.component === 'schema'"
                     class="absolute h-full full-width"
-                    :class="activeTab.component === 'schema' ? 'z-10' : 'z-1'"
                 >
                     <Schema />
                 </div>
                 <div
+                    v-if="activeTab.component === 'queries'"
                     class="absolute h-full full-width"
-                    :class="activeTab.component === 'queries' ? 'z-10' : 'z-1'"
                 >
                     <Queries />
                 </div>

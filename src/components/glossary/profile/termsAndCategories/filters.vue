@@ -1,6 +1,6 @@
 <template>
     <!-- filters -->
-    <div class="h-full mt-12">
+    <div class="h-full">
         <div
             class="flex items-center justify-between px-4 py-2 mb-2 text-sm bg-gray-100 border-b border-gray-300 "
         >
@@ -31,30 +31,40 @@
             :class="$style.filter"
             :accordion="true"
         >
-            <template #expandIcon="{ isActive }">
-                <div class="h-full">
-                    <AtlanIcon
-                        icon="ChevronDown"
-                        class="mb-3 text-gray-500 transition-transform transform "
-                        :class="isActive ? '-rotate-180' : 'rotate-0'"
-                    />
-                </div>
-            </template>
             <a-collapse-panel
-                class="relative group"
                 v-for="item in filtersList"
                 :key="item.id"
+                :show-arrow="false"
+                class="relative group"
             >
                 <template #header>
-                    <div class="mr-10 select-none">
+                    <div class="select-none">
                         <div
                             class="flex justify-between align-middle  align-items"
                         >
                             <div class="flex flex-col flex-1">
-                                <div class="tracking-wide">
+                                <div class="flex items-center">
                                     <span class="text-gray">
                                         {{ item.label }}</span
                                     >
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                                        :class="
+                                            activeKey?.includes(item.id)
+                                                ? '-rotate-180'
+                                                : 'rotate-0'
+                                        "
+                                    />
+                                    <div
+                                        v-if="isFilterApplied(item.id)"
+                                        class="flex items-center ml-auto text-xs text-gray-500  hover:text-primary"
+                                        @click.stop.prevent="
+                                            handleClear(item.id)
+                                        "
+                                    >
+                                        Clear
+                                    </div>
                                 </div>
                                 <div
                                     class="text-gray-500"
@@ -67,13 +77,6 @@
                                         )
                                     }}
                                 </div>
-                            </div>
-                            <div
-                                v-if="isFilterApplied(item.id)"
-                                class="flex items-center text-xs text-gray-500  hover:text-primary"
-                                @click.stop.prevent="handleClear(item.id)"
-                            >
-                                Clear
                             </div>
                         </div>
                     </div>

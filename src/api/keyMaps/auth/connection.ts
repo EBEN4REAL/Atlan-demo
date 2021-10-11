@@ -11,7 +11,7 @@ export const CONNECTION_ARCHIVE = "CONNECTION_ARCHIVE";
 const groupsMap: Record<string, (...params: any) => string> = {
     [TEST_NETWORK]: () => getAPIPath('auth', "/connections/test"),
     [Setup]: () => getAPIPath('auth', "/connections"),
-    [CONNECTION_SETUP]: () => getAPIPath('metastore', `/connections/setup`),
+    [CONNECTION_SETUP]: () => getAPIPath('meta', `/connections/setup`),
     [CONNECTION_TEST_NETWORK]: () => getAPIPath('auth', `/connections/test`),
     [CONNECTION_ARCHIVE]: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),
 }

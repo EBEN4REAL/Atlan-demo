@@ -30,7 +30,7 @@ export default {
     ...connection,
     ...businessMetadata,
     ...apiKeys,
-    BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
+    BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
     ...classification,
     ...lineage,
     ...role,

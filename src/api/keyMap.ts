@@ -4,34 +4,34 @@ import { getAPIPath, getHealthPath, PathParams } from '~/api'
 export const KeyMaps = {
     asset: {
         GET_ASSET_AUDIT: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/entity/${guid}/audit`),
-        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
-        SAVED_SEARCH: () => getAPIPath('metastore', `/search/save`),
+            getAPIPath('meta', `/entity/${guid}/audit`),
+        BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
+        SAVED_SEARCH: () => getAPIPath('meta', `/search/save`),
         GET_ASSET_RELATIONSHIP: () =>
-            getAPIPath('metastore', '/search/relationship'),
+            getAPIPath('meta', '/search/relationship'),
         PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
         GET_ENTITY: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/entity/guid/${guid}`),
+            getAPIPath('meta', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
         BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
-            getAPIPath('metastore', '/types/typedefs?type=classification'),
+            getAPIPath('meta', '/types/typedefs?type=classification'),
         CREATE_CLASSIFICATION: () =>
-            getAPIPath('metastore', '/types/typedefs'),
-        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
+            getAPIPath('meta', '/types/typedefs'),
+        BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
         UPDATE_CLASSIFICATION: () =>
-            getAPIPath('metastore', '/types/typedefs'),
+            getAPIPath('meta', '/types/typedefs'),
         ARCHIVE_CLASSIFICATION: ({ typeName, entityGuid }: PathParams) =>
             getAPIPath(
-                'metastore',
+                'meta',
                 `/entity/guid/${entityGuid}/classification/${typeName}`
             ),
         LINK_CLASSIFICATION: ({ entityGuid }: PathParams) =>
             getAPIPath(
-                'metastore',
+                'meta',
                 `/entity/guid/${entityGuid}/classifications`
             ),
         // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
@@ -41,7 +41,7 @@ export const KeyMaps = {
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
             getAPIPath(
-                'metastore',
+                'meta',
                 `/lineage/${guid}?depth=${depth}&direction=${direction}`
             ),
     },
@@ -121,44 +121,44 @@ export const KeyMaps = {
     },
     BM: {
         GET_BUSINESS_METADATA: () =>
-            getAPIPath('metastore', `/types/typedefs`),
+            getAPIPath('meta', `/types/typedefs`),
         ADD_BUSINESS_METADATA: () =>
-            getAPIPath('metastore', `/types/typedefs`),
+            getAPIPath('meta', `/types/typedefs`),
         UPDATE_BUSINESS_METADATA: () =>
-            getAPIPath('metastore', `/types/typedefs`),
+            getAPIPath('meta', `/types/typedefs`),
         UPDATE_ASSET_BUSINESS_METADATA: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/entity/guid/${guid}/businessmetadata`),
+            getAPIPath('meta', `/entity/guid/${guid}/businessmetadata`),
     },
     glossary: {
-        CREATE_GLOSSARY: () => getAPIPath('metastore', '/glossary'),
+        CREATE_GLOSSARY: () => getAPIPath('meta', '/glossary'),
         CREATE_GLOSSARY_CATEGORY: () =>
-            getAPIPath('metastore', '/glossary/category'),
-        CREATE_GLOSSARY_TERM: () => getAPIPath('metastore', '/glossary/term'),
+            getAPIPath('meta', '/glossary/category'),
+        CREATE_GLOSSARY_TERM: () => getAPIPath('meta', '/glossary/term'),
 
-        GET_GTC_ENTITY: () => getAPIPath('metastore', `/search/basic`),
+        GET_GTC_ENTITY: () => getAPIPath('meta', `/search/basic`),
         GET_GLOSSARY: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/${guid}`),
+            getAPIPath('meta', `/glossary/${guid}`),
         GET_CATEGORY: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/category/${guid}`),
+            getAPIPath('meta', `/glossary/category/${guid}`),
         GET_TERM: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/term/${guid}`),
+            getAPIPath('meta', `/glossary/term/${guid}`),
 
         DELETE_GLOSSARY: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/${guid}`),
+            getAPIPath('meta', `/glossary/${guid}`),
         DELETE_GLOSSARY_CATEGORY: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/category/${guid}`),
+            getAPIPath('meta', `/glossary/category/${guid}`),
         DELETE_GLOSSARY_TERM: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/term/${guid}`),
+            getAPIPath('meta', `/glossary/term/${guid}`),
 
         UPDATE_GLOSSARY: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/${guid}`),
+            getAPIPath('meta', `/glossary/${guid}`),
         UPDATE_GLOSSARY_CATEGORY: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/category/${guid}/partial`),
+            getAPIPath('meta', `/glossary/category/${guid}/partial`),
         UPDATE_GLOSSARY_TERM: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/term/${guid}/partial`),
+            getAPIPath('meta', `/glossary/term/${guid}/partial`),
 
         UPDATE_GLOSSARY_CATEGORY_FULL: ({ guid }: PathParams) =>
-            getAPIPath('metastore', `/glossary/category/${guid}`),
+            getAPIPath('meta', `/glossary/category/${guid}`),
 
         GET_GLOSSARY_CATEGORIES: ({
             guid,
@@ -174,7 +174,7 @@ export const KeyMaps = {
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
-                'metastore',
+                'meta',
                 `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`),
     health: {
@@ -188,7 +188,7 @@ export const KeyMaps = {
     },
     connection: {
         TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
-        CONNECTION_SETUP: () => getAPIPath('metastore', `/connections/setup`),
+        CONNECTION_SETUP: () => getAPIPath('meta', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
         CONNECTION_ARCHIVE: ({ id }) =>
             getAPIPath('auth', `/connections/${id}/archive`),
@@ -212,12 +212,12 @@ export const KeyMaps = {
             ),
     },
     insights: {
-        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
-        CREATE_SAVED_QUERY: () => getAPIPath('metastore', '/entity'),
+        BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
+        CREATE_SAVED_QUERY: () => getAPIPath('meta', '/entity'),
     },
     savedQueries: {
-        RELATIONSHIP: () => getAPIPath('metastore', '/search/relationship'),
-        BASIC_SEARCH: () => getAPIPath('metastore', '/search/basic'),
+        RELATIONSHIP: () => getAPIPath('meta', '/search/relationship'),
+        BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
     },
     workflow: {
         WORKFLOW_TEMPLATES: ({ tenant }: PathParams) =>

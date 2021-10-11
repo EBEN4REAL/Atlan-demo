@@ -9,20 +9,20 @@ export const LINK_CLASSIFICATION = 'LINK_CLASSIFICATION'
 
 const classificationMap: Record<string, (...params: any) => string> = {
     [GET_CLASSIFICATION_LIST]: () =>
-        getAPIPath('metastore', '/types/typedefs?type=classification'),
-    [CREATE_CLASSIFICATION]: () => getAPIPath('metastore', '/types/typedefs'),
-    [BASIC_SEARCH]: () => getAPIPath('metastore', '/search/basic'),
-    [UPDATE_CLASSIFICATION]: () => getAPIPath('metastore', '/types/typedefs'),
+        getAPIPath('meta', '/types/typedefs?type=classification'),
+    [CREATE_CLASSIFICATION]: () => getAPIPath('meta', '/types/typedefs'),
+    [BASIC_SEARCH]: () => getAPIPath('meta', '/search/basic'),
+    [UPDATE_CLASSIFICATION]: () => getAPIPath('meta', '/types/typedefs'),
     [ARCHIVE_CLASSIFICATION]: ({
         typeName,
         entityGuid,
     }: Record<string, string>) =>
         getAPIPath(
-            'metastore',
+            'meta',
             `/entity/guid/${entityGuid}/classification/${typeName}`
         ),
     [LINK_CLASSIFICATION]: ({ entityGuid }: Record<string, string>) =>
-        getAPIPath('metastore', `/entity/guid/${entityGuid}/classifications`),
+        getAPIPath('meta', `/entity/guid/${entityGuid}/classifications`),
 }
 
 export default classificationMap

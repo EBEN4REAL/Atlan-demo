@@ -14,8 +14,8 @@ export const REVOKE_INVITATION = 'REVOKE_INVITATION'
 export const INVITE_USERS = 'INVITE_USERS'
 
 const userMap: Record<string, (...params: any) => string> = {
-    [LIST_USERS]: () => getAPIPath('auth/tenants/default', '/users'),
-    [GET_USER]: () => getAPIPath('auth/tenants/default', '/users'),
+    [LIST_USERS]: () => getAPIPath('service', '/users'),
+    [GET_USER]: () => getAPIPath('service', '/users'),
     [UPDATE_USER]: ({ id }) => getAPIPath('auth/tenants/default', `/users/${id}`),
     [GET_USER_SESSIONS]: ({ id }) =>
         getAPIPath('auth/tenants/default', `/users/${id}/sessions`),

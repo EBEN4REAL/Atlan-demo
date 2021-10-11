@@ -32,37 +32,37 @@ export const GTC_SEARCH = 'GTC_SEARCH';
 export const GLOSSARY_LIST = 'GLOSSARY_LIST';
 
 const groupsMap: Record<string, (...params:any) => string> = {
-    [CREATE_GLOSSARY]: () => getAPIPath('metastore', "/glossary"),
-    [CREATE_GLOSSARY_CATEGORY]: () => getAPIPath('metastore', "/glossary/category"),
-    [CREATE_GLOSSARY_TERM]: () => getAPIPath('metastore', "/glossary/term"),
+    [CREATE_GLOSSARY]: () => getAPIPath('meta', "/glossary"),
+    [CREATE_GLOSSARY_CATEGORY]: () => getAPIPath('meta', "/glossary/category"),
+    [CREATE_GLOSSARY_TERM]: () => getAPIPath('meta', "/glossary/term"),
     
-    [GET_GTC_ENTITY]: () => getAPIPath('metastore', `/search/basic`),
-    [GET_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/${guid}`),
-    [GET_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/category/${guid}`),
-    [GET_TERM]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/term/${guid}`),
+    [GET_GTC_ENTITY]: () => getAPIPath('meta', `/search/basic`),
+    [GET_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/${guid}`),
+    [GET_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}`),
+    [GET_TERM]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/term/${guid}`),
   
-    [DELETE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/${guid}`),
-    [DELETE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/category/${guid}`),
-    [DELETE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/term/${guid}`),
+    [DELETE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/${guid}`),
+    [DELETE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}`),
+    [DELETE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/term/${guid}`),
 
-    [UPDATE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/${guid}`),
-    [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/category/${guid}/partial`),
-    [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/term/${guid}/partial`),
+    [UPDATE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/${guid}`),
+    [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}/partial`),
+    [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/term/${guid}/partial`),
 
-    [UPDATE_GLOSSARY_CATEGORY_FULL]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/category/${guid}`),
-    [UPDATE_GLOSSARY_TERM_FULL]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/term/${guid}`),
+    [UPDATE_GLOSSARY_CATEGORY_FULL]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}`),
+    [UPDATE_GLOSSARY_TERM_FULL]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/term/${guid}`),
 
 
-    [GET_GLOSSARY_CATEGORIES]: ({ guid, limit, offset, searchText }: Record<string, any>) => getAPIPath('metastore', `/glossary/${guid}/categories?limit=${limit ?? -1}${offset  ? `&offset=${offset}` : ''}${searchText ? `&searchText=${searchText}` : ''}`),
-    [GET_GLOSSARY_TERMS]: ({ guid, limit, offset, searchText }: Record<string, string>) => getAPIPath('metastore', `/glossary/${guid}/terms?limit=${limit ?? -1}${offset  ? `&offset=${offset}` : ''}${searchText ? `&searchText=${searchText}` : ''}`),
+    [GET_GLOSSARY_CATEGORIES]: ({ guid, limit, offset, searchText }: Record<string, any>) => getAPIPath('meta', `/glossary/${guid}/categories?limit=${limit ?? -1}${offset  ? `&offset=${offset}` : ''}${searchText ? `&searchText=${searchText}` : ''}`),
+    [GET_GLOSSARY_TERMS]: ({ guid, limit, offset, searchText }: Record<string, string>) => getAPIPath('meta', `/glossary/${guid}/terms?limit=${limit ?? -1}${offset  ? `&offset=${offset}` : ''}${searchText ? `&searchText=${searchText}` : ''}`),
 
-    [GET_CATEGORY_TERMS]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/category/${guid}/terms`),
+    [GET_CATEGORY_TERMS]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}/terms`),
 
-    [GET_TERM_LINKED_ASSETS]: () => getAPIPath('metastore', `/search/basic`),
-    [ASSIGN_TERM_LINKED_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/terms/${guid}/assignedEntities`),
-    [UNLINK_TERM_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('metastore', `/glossary/terms/${guid}/assignedEntities`),
-    [GTC_SEARCH]: () => getAPIPath('metastore', `/search/basic`),
-    [GLOSSARY_LIST]: () => getAPIPath('metastore', `/search/basic`),
+    [GET_TERM_LINKED_ASSETS]: () => getAPIPath('meta', `/search/basic`),
+    [ASSIGN_TERM_LINKED_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),
+    [UNLINK_TERM_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),
+    [GTC_SEARCH]: () => getAPIPath('meta', `/search/basic`),
+    [GLOSSARY_LIST]: () => getAPIPath('meta', `/search/basic`),
 
 }
 

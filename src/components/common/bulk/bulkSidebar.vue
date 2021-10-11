@@ -8,10 +8,10 @@
                 {{ selectedAssets.length }}
                 {{ selectedAssets.length === 1 ? `Asset` : `Assets` }} Selected
             </div>
-            <Status :existing-status="existingStatus" class="mb-2"></Status>
-            <Owners class="mb-2"></Owners>
-            <Classifications class="mb-2" />
-            <Terms class="mb-2" />
+            <Status :existing-status="existingStatus" class="mb-5"></Status>
+            <Owners class="mb-5"></Owners>
+            <Classifications class="mb-5" />
+            <Terms class="mb-5" />
         </div>
         <div class="flex gap-x-4">
             <a-button

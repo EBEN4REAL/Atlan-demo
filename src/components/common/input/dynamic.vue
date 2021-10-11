@@ -66,6 +66,7 @@
             :placeholder="placeholder"
             v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
+            @dropdownVisibleChange="handleDropdownVisibleChange"
         />
         <a-input-number
             v-if="dataType === 'number'"
@@ -229,6 +230,7 @@
                 asyncData,
                 loadingData: loading,
                 letAsyncSelectDisabled,
+                shouldRefetch,
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
@@ -240,8 +242,17 @@
             //         if (!v) loadData()
             //     })
             // }
+            const handleDropdownVisibleChange = (open) => {
+                if (open && shouldRefetch.value) loadData()
+            }
 
-            return { loadData, asyncData, loading, letAsyncSelectDisabled }
+            return {
+                loadData,
+                handleDropdownVisibleChange,
+                asyncData,
+                loading,
+                letAsyncSelectDisabled,
+            }
         },
         data() {
             return {

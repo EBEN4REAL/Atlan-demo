@@ -7,7 +7,7 @@ import { Components } from "./client";
 import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY, UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY_FULL, UPDATE_GLOSSARY_TERM_FULL } from "~/api/keyMaps/glossary"
 import { useAPI } from "../useAPI";
 
-const serviceAlias = "auth/atlas";
+const serviceAlias = "metastore";
 
 const GetGlossary = (guid: string, params?: any, options?: AxiosRequestConfig) => {
     const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/${guid}`), {

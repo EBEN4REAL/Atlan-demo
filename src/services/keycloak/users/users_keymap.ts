@@ -16,24 +16,22 @@ export const INVITE_USERS = 'INVITE_USERS'
 const userMap: Record<string, (...params: any) => string> = {
     [LIST_USERS]: () => getAPIPath('service', '/users'),
     [GET_USER]: () => getAPIPath('service', '/users'),
-    [UPDATE_USER]: ({ id }) => getAPIPath('service', `/users/${id}`),
+    [UPDATE_USER]: ({ id }) => getAPIPath('auth/tenants/default', `/users/${id}`),
     [GET_USER_SESSIONS]: ({ id }) =>
-        getAPIPath('service', `/users/${id}/sessions`),
+        getAPIPath('auth/tenants/default', `/users/${id}/sessions`),
     [SIGN_OUT_ALL_SESSIONS]: ({ id }) =>
-        getAPIPath('service', `/users/${id}/sessions/delete`),
+        getAPIPath('auth/tenants/default', `/users/${id}/sessions/delete`),
     [SIGN_OUT_SESSION_BY_ID]: ({ id }) =>
-        getAPIPath('service', `/users/sessions/${id}/delete`),
+        getAPIPath('auth/tenants/default', `/users/sessions/${id}/delete`),
     [GET_USER_ACCESS_LOGS]: ({ id }) =>
-        getAPIPath('service', `/users/${id}/events`),
+        getAPIPath('auth/tenants/default', `/users/${id}/events`),
     [UPDATE_USER_ROLE]: ({ id }) =>
-        getAPIPath('service', `/users/${id}/roles/update`),
-    [ADD_USER_TO_GROUPS]: ({ id }) =>
-        getAPIPath('service', `/users/${id}/groups`),
+        getAPIPath('auth/tenants/default', `/users/${id}/roles/update`),
+    [ADD_USER_TO_GROUPS]: ({ id }) => getAPIPath('auth/tenants/default', `/users/${id}/groups`),
     [RESEND_INVITATION_EMAIL]: ({ id }) =>
-        getAPIPath('service', `/users/${id}/resendinvite`),
-    [REVOKE_INVITATION]: ({ id }) =>
-        getAPIPath('service', `/users/${id}/delete`),
-    [INVITE_USERS]: () => getAPIPath('service', `/users`),
+        getAPIPath('auth/tenants/default', `/users/${id}/resendinvite`),
+    [REVOKE_INVITATION]: ({ id }) => getAPIPath('auth/tenants/default', `/users/${id}/delete`),
+    [INVITE_USERS]: () => getAPIPath('auth/tenants/default', `/users`),
 }
 
 export default userMap

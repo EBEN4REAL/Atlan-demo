@@ -9,7 +9,7 @@ import {
 import { getAPIPath, getAxiosClient } from '~/api'
 import { useAPI } from '~/api/useAPI'
 
-const serviceAlias = 'service'
+const serviceAlias = 'auth/tenants/default'
 
 export const URL = {
     GroupList: '/groups',

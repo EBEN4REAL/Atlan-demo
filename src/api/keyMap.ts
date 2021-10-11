@@ -14,7 +14,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
-        BULK_UPDATE_ASSETS: () => getAPIPath('meta', '/entity/bulk'),
+        BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -31,7 +31,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${entityGuid}/classifications`),
         // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
         BULK_LINK_CLASSIFICATION: () =>
-            getAPIPath('meta', `/entity/bulk/setClassifications`),
+            getAPIPath('auth/atlas', `/entity/bulk/setClassifications`),
     },
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
@@ -42,77 +42,76 @@ export const KeyMaps = {
     },
     auth: {
         apiKeys: {
-            GET_API_KEYS: () => getAPIPath('service', '/accesstokens'),
+            GET_API_KEYS: () => getAPIPath('auth', '/accesstokens'),
             DELETE_API_KEY: ({ id }: PathParams) =>
-                getAPIPath('service', `/accesstokens/${id}/delete`),
+                getAPIPath('auth', `/accesstokens/${id}/delete`),
         },
         avatar: {
-            UPLOAD_AVATAR: () => getAPIPath('service', '/avatars'),
+            UPLOAD_AVATAR: () => getAPIPath('auth', '/avatars'),
             GET_AVATAR: ({ username }: PathParams) =>
-                `/api/${getAPIPath('service', `/avatars/${username}`)}`,
+                `/api/${getAPIPath('auth', `/avatars/${username}`)}`,
         },
         connection: {
-            TEST_NETWORK: () => getAPIPath('service', '/connections/test'),
-            Setup: () => getAPIPath('service', '/connections'),
+            TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
+            Setup: () => getAPIPath('auth', '/connections'),
         },
         group: {
-            LIST_GROUPS: () => getAPIPath('service', '/groups'),
-            GET_GROUP: () => getAPIPath('service', `/groups`),
+            LIST_GROUPS: () => getAPIPath('auth', '/groups'),
+            GET_GROUP: () => getAPIPath('auth', `/groups`),
             UPDATE_GROUP: ({ id }: PathParams) =>
-                getAPIPath('service', `/groups/${id}`),
+                getAPIPath('auth', `/groups/${id}`),
             DELETE_GROUP: ({ id }: PathParams) =>
-                getAPIPath('service', `/groups/${id}/delete`),
-            CREATE_GROUP: () => getAPIPath('service', `/groups`),
+                getAPIPath('auth', `/groups/${id}/delete`),
+            CREATE_GROUP: () => getAPIPath('auth', `/groups`),
             REMOVE_MEMBERS_FROM_GROUP: ({ id }: PathParams) =>
-                getAPIPath('service', `/groups/${id}/members/remove`),
+                getAPIPath('auth', `/groups/${id}/members/remove`),
             ADD_MEMBERS_TO_GROUP: ({ id }: PathParams) =>
-                getAPIPath('service', `/groups/${id}/members`),
+                getAPIPath('auth', `/groups/${id}/members`),
         },
         image: {
-            UPLOAD_IMAGE: () => getAPIPath('service', '/images'),
+            UPLOAD_IMAGE: () => getAPIPath('auth', '/images'),
             GET_IMAGE: ({ id }: PathParams) =>
-                getAPIPath('service', `/images/${id}`),
+                getAPIPath('auth', `/images/${id}`),
         },
         policies: {
-            ASSET_ACCESS: () => getAPIPath('service', '/access/evaluate'),
+            ASSET_ACCESS: () => getAPIPath('auth', '/access/evaluate'),
         },
         role: {
-            LIST_ROLES: () => getAPIPath('service', '/roles'),
+            LIST_ROLES: () => getAPIPath('auth', '/roles'),
         },
         tenant: {
-            GET_TENANT: () => getAPIPath('service', '/tenants/default'),
-            TEST_SMTP_CONFIG: () => getAPIPath('service', '/smtp/test'),
-            UPDATE_SMTP: () => getAPIPath('service', ''),
+            GET_TENANT: () => getAPIPath('auth', ''),
+            TEST_SMTP_CONFIG: () => getAPIPath('auth', '/smtp/test'),
+            UPDATE_SMTP: () => getAPIPath('auth', ''),
         },
         user: {
-            LIST_USERS: () => getAPIPath('service', '/users'),
-            GET_USER: () => getAPIPath('service', '/users'),
+            LIST_USERS: () => getAPIPath('auth', '/users'),
+            GET_USER: () => getAPIPath('auth', '/users'),
             UPDATE_USER: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}`),
+                getAPIPath('auth', `/users/${id}`),
             GET_USER_SESSIONS: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}/sessions`),
+                getAPIPath('auth', `/users/${id}/sessions`),
             SIGN_OUT_ALL_SESSIONS: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}/sessions/delete`),
+                getAPIPath('auth', `/users/${id}/sessions/delete`),
             SIGN_OUT_SESSION_BY_ID: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/sessions/${id}/delete`),
+                getAPIPath('auth', `/users/sessions/${id}/delete`),
             GET_USER_ACCESS_LOGS: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}/events`),
+                getAPIPath('auth', `/users/${id}/events`),
             UPDATE_USER_ROLE: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}/roles/update`),
+                getAPIPath('auth', `/users/${id}/roles/update`),
             ADD_USER_TO_GROUPS: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}/groups`),
+                getAPIPath('auth', `/users/${id}/groups`),
             RESEND_INVITATION_EMAIL: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}/resendinvite`),
+                getAPIPath('auth', `/users/${id}/resendinvite`),
             REVOKE_INVITATION: ({ id }: PathParams) =>
-                getAPIPath('service', `/users/${id}/delete`),
+                getAPIPath('auth', `/users/${id}/delete`),
             /** FIXME: Not implemented properly */
-            INVITE_USERS: ({ id }: PathParams) =>
-                getAPIPath('service', `/users`),
+            INVITE_USERS: ({ id }: PathParams) => getAPIPath('auth', `/users`),
         },
         requests: {
-            LIST_REQUESTS: () => getAPIPath('service', '/requests'),
+            LIST_REQUESTS: () => getAPIPath('auth', '/requests'),
             ACT_ON_REQUEST: ({ id }: PathParams) =>
-                getAPIPath('service', `/requests/${id}/action`),
+                getAPIPath('auth', `/requests/${id}/action`),
         },
     },
     BM: {
@@ -160,7 +159,7 @@ export const KeyMaps = {
             searchText,
         }: Record<string, any>) =>
             getAPIPath(
-                'meta',
+                'auth/atlas',
                 `/glossary/${guid}/categories?limit=${limit ?? -1}${
                     offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
@@ -172,36 +171,21 @@ export const KeyMaps = {
                     offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
-
-        GET_CATEGORY_TERMS: ({ guid }: PathParams) =>
-            getAPIPath('meta', `/glossary/category/${guid}/terms`),
-
-        GET_TERM_LINKED_ASSETS: () => getAPIPath('meta', `/search/basic`),
-        ASSIGN_TERM_LINKED_ASSETS: ({ guid }: PathParams) =>
-            getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),
-        BULK_LINK_TERMS: () =>
-            getAPIPath('meta', `/glossary/terms/assignedEntities`),
-        GTC_SEARCH: () => getAPIPath('meta', `/search/basic`),
-        GLOSSARY_LIST: () => getAPIPath('meta', `/search/basic`),
-    },
-    health: {
-        PING_USER: () => getHealthPath('service', '/debug/health'),
-    },
-    credential: {
-        CREDENTIAL_TEST: () => getAPIPath('service', `/credentials/test`),
+        health: {
+            PING_USER: () => getHealthPath('auth', '/debug/health'),
+        },
+        CREDENTIAL_TEST: () => getAPIPath('auth', `/credentials/test`),
         CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) =>
-            getAPIPath('service', `/credentials/${id}/test`),
+            getAPIPath('auth', `/credentials/${id}/test`),
         UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) =>
-            getAPIPath('service', `/credentials/${id}`),
+            getAPIPath('auth', `/credentials/${id}`),
     },
     connection: {
-        TEST_NETWORK: () => getAPIPath('service', '/connections/test'),
-        SETUP: () => getAPIPath('service', '/connections'),
+        TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
         CONNECTION_SETUP: () => getAPIPath('meta', `/connections/setup`),
-        CONNECTION_TEST_NETWORK: () =>
-            getAPIPath('service', `/connections/test`),
+        CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
         CONNECTION_ARCHIVE: ({ id }) =>
-            getAPIPath('service', `/connections/${id}/archive`),
+            getAPIPath('auth', `/connections/${id}/archive`),
     },
     // `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
     query: {

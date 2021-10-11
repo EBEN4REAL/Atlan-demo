@@ -10,9 +10,11 @@ const groupsMap: Record<string, (...params: any) => string> = {
     [GET_ASSET_AUDIT]: ({ guid }: Record<string, string>) =>
         getAPIPath('meta', `/entity/${guid}/audit`),
     [BASIC_SEARCH]: () => getAPIPath('meta', '/search/basic'),
-    [GET_ASSET_RELATIONSHIP]: () => getAPIPath('meta', '/search/relationship'),
+    [GET_ASSET_RELATIONSHIP]: () =>
+        getAPIPath('meta', '/search/relationship'),
     [PREVIEW_TABLE]: () => getAPIPath('query', '/preview'),
-    [GET_ENTITY]: ({ guid }) => getAPIPath('meta', `/entity/guid/${guid}`),
+    [GET_ENTITY]: ({ guid }) =>
+        getAPIPath('meta', `/entity/guid/${guid}`),
 }
 
 export default groupsMap

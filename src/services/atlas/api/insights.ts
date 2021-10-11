@@ -10,7 +10,7 @@ import {
 import { autosuggestionResponse } from '~/types/insights/autosuggestionEntity.interface'
 import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
 
-const serviceAlias = 'auth/atlas'
+const serviceAlias = 'meta'
 const body = ref({
     typeName: 'Query',
     excludeDeletedEntities: true,

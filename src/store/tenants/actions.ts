@@ -1,6 +1,5 @@
 import { Ref } from 'vue';
 import { Components } from '~/api/auth/client';
-import { Search } from '~/api2/search';
 import { Getters } from './getters';
 import { State } from './state';
 

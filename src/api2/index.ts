@@ -1,27 +1,34 @@
-import { getEnv } from '~/modules/__env'
-import { axiosClient } from '~/modules/_axios'
+import { getEnv } from "~/modules/__env";
+import { axiosClient } from "~/modules/_axios";
 
-export const getAPIPath = (serviceName: string, path = '') => {
-    const realm = getEnv().DEFAULT_REALM
-    return `${serviceName}${path}`
-}
+export const getAPIPath = (serviceName: string, path = "") => {
+    const realm = getEnv().DEFAULT_REALM;
+    return `${serviceName}/${path}`;
+};
 
-export const getAxiosClient = () => axiosClient
+export const getAxiosClient = () => axiosClient;
 
-export const fetcher = (url, params, options): Promise<AxiosResponse['data']> =>
-    getAxiosClient().get(url, { params, ...options })
+
+
+export const fetcher = (
+    url,
+    params,
+    options
+): Promise<AxiosResponse["data"]> => getAxiosClient().get(url, { params, ...options });
 
 export const fetcherPost = (
     url,
     body,
     options
-): Promise<AxiosResponse['data']> => {
-    console.log('fetcher', options.cancelToken)
-    return getAxiosClient().post(url, body, options)
-}
+): Promise<AxiosResponse["data"]> => {
+    console.log("fetcher", options.cancelToken);
+    return getAxiosClient().post(url, body, options);
+};
 
-export const updater = (url, body, options): Promise<AxiosResponse['data']> =>
-    getAxiosClient().put(url, body, options)
+export const updater = (
+    url,
+    body,
+    options
+): Promise<AxiosResponse["data"]> => getAxiosClient().put(url, body, options);
 
-export const deleter = (url, options): Promise<AxiosResponse['data']> =>
-    getAxiosClient().delete(url, options)
+export const deleter = (url, options): Promise<AxiosResponse["data"]> => getAxiosClient().delete(url, options)

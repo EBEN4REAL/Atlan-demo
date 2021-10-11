@@ -63,7 +63,7 @@
 
     import fetchJobList from '~/composables/jobs/fetchJobList'
 
-    import { Components } from '~/api/auth/atlas'
+    import { Components } from '~/api/metastore'
 
     export default defineComponent({
         name: 'WorkflowView',

@@ -62,8 +62,11 @@ export default function useAsyncSelector(
         const { url, method, params, addFormValues } = reqConfig
         loadingData.value = true
         loadDataError.value = false
+        let parsedUrl = url;
+        if (parsedUrl.includes('{{domain}}'))
+            parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            const response = await useAPIPromise(url, method, { params, body: getParsedBody(addFormValues) })
+            const response = await useAPIPromise(parsedUrl, method, { params, body: getParsedBody(addFormValues) })
             setData(response);
         } catch (e) {
             loadDataError.value = true;

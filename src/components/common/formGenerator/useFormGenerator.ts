@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
-import { ref, Ref, watch, computed } from 'vue'
-
+import { ref, Ref, watch, computed, reactive } from 'vue'
+import { useAPIPromise } from '~/api/useAPI';
 
 export default function useFormGenerator(formConfig, formRef) {
   const processedSchema = ref([])
@@ -18,9 +18,11 @@ export default function useFormGenerator(formConfig, formRef) {
       schema.isVisible = true
     if (!schema.hasOwnProperty('rules'))
       schema.rules = []
+    if (schema.type === 'submit')
+      schema.exclude = true;
 
     falseDefault.forEach(d => {
-      if (!s.hasOwnProperty(d))
+      if (!schema.hasOwnProperty(d))
         schema[d] = false
     })
 
@@ -163,6 +165,7 @@ export default function useFormGenerator(formConfig, formRef) {
         if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
 
         const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+        if (typeof val === 'undefined' || val === null) return;
         // ? no groups
         if (f.parent) {
           if (f.parentType === 'object') {
@@ -182,6 +185,7 @@ export default function useFormGenerator(formConfig, formRef) {
           if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
 
           const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+          if (typeof val === 'undefined' || val === null) return;
           // ? no groups
           if (f.parent) {
             if (f.parentType === 'object') {
@@ -264,18 +268,55 @@ export default function useFormGenerator(formConfig, formRef) {
     return ''
   }
 
-  const validate = () => {
-    formRef.value
-      .validate()
-      .then(() => {
-        console.log('values')
-      })
-      .catch((error) => {
-        console.log('error', error)
-      })
+  const validate = async () => {
+    try {
+      await formRef.value.validate()
+      return true;
+    } catch (e) {
+      return false
+    }
   }
 
   const isRequiredField = (f) => f?.rules?.find(r => r.type === 'required')?.enabled ?? false
+
+
+  const submitStatus = ref({
+    loading: false,
+    success: null,
+    error: null,
+    successMessage: "",
+    errorMessage: ""
+  })
+
+  const handleFormSubmit = async (f) => {
+    submitStatus.value = {
+      loading: false,
+      success: null,
+      error: null,
+      successMessage: "",
+      errorMessage: ""
+    }
+
+    const isValid = await validate();
+    if (!isValid) return;
+    try {
+      submitStatus.value.loading = true;
+      const { url, method, params } = f.apiConfig
+      let parsedUrl = url;
+      if (parsedUrl.includes('{{domain}}'))
+        parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
+      const response = await useAPIPromise(parsedUrl, method, { params, body: finalConfigObject(processedSchema.value) })
+      console.log(response)
+      submitStatus.value.success = true;
+      submitStatus.value.successMessage = f.apiConfig?.successMessage || 'success'
+    } catch (e) {
+      submitStatus.value.error = true;
+      if (e?.message)
+        submitStatus.value.errorMessage = f.apiConfig?.errorMessage || e.message
+    }
+    submitStatus.value.loading = false;
+
+  }
 
   watch(
     testModal.value,
@@ -294,7 +335,9 @@ export default function useFormGenerator(formConfig, formRef) {
     testModal,
     getGridClass,
     handleConditional,
+    handleFormSubmit,
     processedSchema,
+    submitStatus,
     isRequiredField,
     finalConfigObject,
   }

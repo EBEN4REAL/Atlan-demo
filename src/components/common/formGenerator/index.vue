@@ -2,8 +2,8 @@
     <div v-if="error">Error in form config.</div>
     <a-form
         v-else
-        :model="valueObject"
         ref="formRef"
+        :model="valueObject"
         :rules="getRules(formModel)"
     >
         <a-button @click="validate">Validate</a-button>
@@ -39,7 +39,7 @@
                                 >*</sup
                             >
 
-                            <a-popover title="Help" v-if="c.helpText">
+                            <a-popover v-if="c.helpText" title="Help">
                                 <template #content>
                                     <p class="text-gray-500">
                                         {{ c.helpText }}
@@ -86,7 +86,7 @@
                 <div v-else class="mb-5 rounded">
                     {{ f.label }}
                     <sup v-if="isRequiredField(f)" class="text-red-600">*</sup>
-                    <a-popover title="Help" v-if="f.helpText">
+                    <a-popover v-if="f.helpText" title="Help">
                         <template #content>
                             <p class="text-gray-500">
                                 {{ f.helpText }}
@@ -114,6 +114,19 @@
                             "
                         ></DynamicInput>
                     </a-form-item>
+                </div>
+                <div v-if="f.type === 'submit'" class="col-span-full">
+                    <a-button
+                        :loading="submitStatus.loading"
+                        @click="handleFormSubmit(f)"
+                        >Submit</a-button
+                    >
+                    <p v-if="submitStatus.error" class="text-red-600">
+                        {{ submitStatus.errorMessage }}
+                    </p>
+                    <p v-if="submitStatus.success" class="text-green-600">
+                        {{ submitStatus.successMessage || 'success' }}
+                    </p>
                 </div>
             </div>
         </span>
@@ -153,14 +166,18 @@
                 processedSchema: formModel,
                 getGridClass,
                 finalConfigObject,
+                submitStatus,
                 getRules,
                 validate,
                 testModal: valueObject,
                 isRequiredField,
+                handleFormSubmit,
             } = useFormGenerator(configX, formRef)
 
             return {
+                handleFormSubmit,
                 valueObject,
+                submitStatus,
                 getRules,
                 formRef,
                 formModel,

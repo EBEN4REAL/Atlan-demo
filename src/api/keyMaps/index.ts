@@ -1,4 +1,4 @@
-import { getAPIPath } from '~/api'
+import { getAPIPath } from "~/api";
 
 import user from '@services/keycloak/users/users_keymap'
 import asset from '~/api/keyMaps/asset'
@@ -30,7 +30,7 @@ export default {
     ...connection,
     ...businessMetadata,
     ...apiKeys,
-    BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
+    BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
     ...classification,
     ...lineage,
     ...role,

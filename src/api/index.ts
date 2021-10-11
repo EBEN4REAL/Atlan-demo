@@ -7,7 +7,7 @@ export type APIFn = (arg0: PathParams) => string
 
 export const getAPIPath = (serviceName: string, path = '') => {
     const realm = getEnv().DEFAULT_REALM
-    return `${serviceName}${path}`
+    return `${serviceName}/tenants/${realm}${path}`
 }
 
 export const getHealthPath = (serviceName: string, path = '') =>

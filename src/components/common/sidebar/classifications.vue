@@ -551,12 +551,14 @@
                     description: '',
                     name: '',
                     superTypes: [],
+                    displayName:''
                 } as unknown as classificationInterface
 
                 createClassificationFormRef.value
                     .validate()
                     .then(() => {
                         classificationObj.name = formState.name
+                        classificationObj.displayName = formState.name
                         classificationObj.description = formState.description
                         payload.classificationDefs.push(classificationObj)
                         // create classification

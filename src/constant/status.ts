@@ -26,7 +26,7 @@ export const List: CheckboxArray = [
     },
     {
         id: 'is_null',
-        label: 'No Status',
+        label: 'No Certification',
         description: 'No Status',
         icon: noStatus,
     },

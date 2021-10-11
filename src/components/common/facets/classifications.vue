@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 pb-6 mt-1">
+    <div class="pb-6 mt-1">
         <div class="">
             <SearchAndFilter
                 v-model:value="classificationSearchText"

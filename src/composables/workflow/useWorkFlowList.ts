@@ -48,19 +48,32 @@ export function useArchivedWorkflowList(
 export function useWorkflowTemplates(
     immediate: boolean = true
 ) {
+    const params = ref({ limit: 10, offset: 0 })
     const { data, error, isLoading, mutate } =
-        Workflows.getWorkflowTemplates({ immediate, options: {} })
+        Workflows.getWorkflowTemplates({ immediate, options: {}, params })
 
     const workflowList = ref([])
+    const totalCount = ref()
     watch(data, () => {
+        if (!data?.value?.records) return;
         console.log('useWorkflowTemplates', data.value.records)
-        workflowList.value = data.value?.records
+        totalCount.value = data.value.total_record
+        workflowList.value.push(...data.value.records)
     })
+
+    const loadMore = () => {
+        params.value.offset += params.value.limit
+        if (params.value.offset > totalCount.value)
+            params.value.offset = totalCount.value
+        mutate()
+    }
+
+
 
     const filterList = (text) =>
         workflowList.value.filter((wf) => wf.name.includes(text))
 
-    return { workflowList, error, isLoading, filterList, mutate }
+    return { workflowList, loadMore, totalCount, error, isLoading, filterList, mutate }
 }
 
 export function useArchivedWorkflowRun(guid, immediate: boolean = true) {

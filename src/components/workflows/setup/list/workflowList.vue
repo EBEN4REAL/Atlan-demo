@@ -15,7 +15,10 @@
             ></ListItem>
         </template>
         <template #footer>
-            <div v-if="isLoading" class="flex items-center justify-center">
+            <div
+                v-if="isLoadMore || isLoading"
+                class="flex items-center justify-center"
+            >
                 <button
                     :disabled="isLoading"
                     class="
@@ -30,7 +33,7 @@
                         text-primary
                     "
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
-                    @click="$emit('loadMore')"
+                    @click="handleLoadMore"
                 >
                     <template v-if="!isLoading">
                         <p
@@ -99,6 +102,11 @@
                 required: true,
                 default: () => false,
             },
+            isLoadMore: {
+                type: Boolean,
+                required: true,
+                default: () => false,
+            },
             autoSelect: {
                 type: Boolean,
                 required: false,
@@ -131,6 +139,11 @@
             //     { immediate: true }
             // )
 
+            const handleLoadMore = () => {
+                console.log('handleLoadMore')
+                emit('loadMore')
+            }
+
             if (autoSelect.value) {
                 watch(
                     () => list.value?.length || 0,
@@ -147,7 +160,7 @@
                 )
             }
 
-            return { handlePreview }
+            return { handlePreview, handleLoadMore }
         },
     })
 </script>

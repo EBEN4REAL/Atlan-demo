@@ -55,7 +55,7 @@
                     </template> -->
                     </SearchAndFilter>
                 </div>
-                <div v-if="workflowList.length && !queryText" class="mx-3">
+                <!-- <div v-if="workflowList.length && !queryText" class="mx-3">
                     <p class="mb-2 text-xl font-bold text-gray-600">Featured</p>
                     <WorkflowCards
                         v-model:autoSelect="autoSelect"
@@ -74,7 +74,7 @@
                         :selected-item-id="selectedItemId"
                         @preview="handlePreview"
                     />
-                </div>
+                </div> -->
 
                 <div
                     v-if="
@@ -105,7 +105,7 @@
                     <div
                         class="overflow-y-auto"
                         :style="
-                            queryText
+                            queryText || true
                                 ? `height: calc(100vh - 9.5rem)`
                                 : `height: calc(100vh - 29rem)`
                         "
@@ -119,6 +119,7 @@
                                     : workflowList
                             "
                             :is-loading="isLoading"
+                            :is-load-more="isLoadMore"
                             :selected-item-id="selectedItemId"
                             @preview="handlePreview"
                             @loadMore="loadMore"
@@ -205,8 +206,18 @@
 
             // Get All Disoverable Asset Types
 
-            const { workflowList, isLoading, filterList, mutate } =
-                useWorkflowTemplates('default', false)
+            const {
+                workflowList,
+                loadMore,
+                totalCount,
+                isLoading,
+                filterList,
+                mutate,
+            } = useWorkflowTemplates(false)
+
+            const isLoadMore = computed(
+                () => totalCount.value > workflowList.value.length
+            )
 
             if (!workflowList.value.length) mutate()
 
@@ -253,11 +264,6 @@
                 selectedItemId.value = item.workflowtemplate.metadata.uid
                 emit('preview', item)
             }
-            const loadMore = () => {
-                autoSelect.value = false
-                offset.value += limit.value
-                updateBody()
-            }
 
             const handleClearFiltersFromList = () => {
                 queryText.value = ''
@@ -275,11 +281,12 @@
                 initialFilters,
                 AllFilters,
                 workflowList,
+                loadMore,
                 emptyScreen,
+                isLoadMore,
                 handleSearchChange,
                 handlePreview,
                 queryText,
-                loadMore,
                 isLoading,
                 dynamicSearchPlaceholder,
                 setPlaceholder,

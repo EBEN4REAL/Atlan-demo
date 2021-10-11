@@ -1,7 +1,8 @@
-import { Ref, toRaw } from 'vue'
+import { Ref, toRaw, ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
+import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
 import { format, FormatOptions } from 'sql-formatter'
 
 export function useEditor(
@@ -96,6 +97,41 @@ export function useEditor(
     function focusEditor(editorInstance) {
         editorInstance.focus()
     }
+    function setEditorTheme(
+        monacoInstance,
+        editorConfig: Ref<editorConfigInterface>,
+        themeName: string
+    ) {
+        if (themeName) {
+            console.log(monacoInstance.editor.setTheme, themeName)
+            monacoInstance.editor.setTheme(themeName)
+            editorConfig.value.theme = themeName
+        }
+    }
+    function setTabSpaces(
+        editorInstance: any,
+        editorConfig: Ref<editorConfigInterface>,
+        tabSpace: number
+    ) {
+        // console.log(editorInstance.getModel())
+        editorInstance.getModel().updateOptions({ tabSize: tabSpace })
+        editorConfig.value.tabSpace = tabSpace
+        // monacoInstance.editor.setTheme(themeName)
+        // editorConfig.value.theme = themeName
+    }
+    function setFontSizes(
+        editorInstance: any,
+        editorConfig: Ref<editorConfigInterface>,
+        size: number
+    ) {
+        console.log(size)
+        // console.log(editorInstance.getModel())
+        editorInstance.updateOptions({ fontSize: size })
+        editorConfig.value.fontSize = size
+        // monacoInstance.editor.setTheme(themeName)
+        // editorConfig.value.theme = themeName
+    }
+
     function setSelection(
         editorInstance,
         monacoInstance,
@@ -121,8 +157,16 @@ export function useEditor(
             )
         )
     }
-
+    const editorConfig = ref({
+        theme: 'vs',
+        tabSpace: 3,
+        fontSize: 12,
+    })
     return {
+        setFontSizes,
+        setTabSpaces,
+        editorConfig,
+        setEditorTheme,
         setEditorFocusedState,
         setEditorPos,
         formatter,

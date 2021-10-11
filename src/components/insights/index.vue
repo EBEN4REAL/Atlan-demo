@@ -36,14 +36,14 @@
             >
                 <!--explorer pane start -->
                 <div
-                    v-if="activeTab.component === 'schema'"
                     class="absolute h-full full-width"
+                    :class="activeTab.component === 'schema' ? 'z-10' : 'z-1'"
                 >
                     <Schema />
                 </div>
                 <div
-                    v-if="activeTab.component === 'queries'"
                     class="absolute h-full full-width"
+                    :class="activeTab.component === 'queries' ? 'z-10' : 'z-1'"
                 >
                     <Queries />
                 </div>
@@ -103,6 +103,7 @@
         provideDataInterface,
     } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
+    import { useEditor } from './common/composables/useEditor'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     // import { useConnector } from './common/composables/useConnector'
     import { useHotKeys } from './common/composables/useHotKeys'
@@ -133,6 +134,7 @@
             } = useSpiltPanes()
             // TODO: will be used for HOTKEYs
             const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
+            const { editorConfig } = useEditor()
 
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
@@ -179,6 +181,7 @@
                 inlineTabs: tabsArray,
                 isQueryRunning: isQueryRunning,
                 editorInstance: editorInstance,
+                editorConfig: editorConfig,
                 monacoInstance: monacoInstance,
                 outputPaneSize: outputPaneSize,
                 queryExecutionTime: queryExecutionTime,

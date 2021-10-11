@@ -198,6 +198,7 @@
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
+                    fontSize: 12,
                     theme: 'vs',
 
                     minimap: {
@@ -324,5 +325,8 @@
     }
     .editor_wrapper {
         overflow: hidden;
+    }
+    .c {
+        font-family: 'Courier New', Courier, monospace;
     }
 </style>

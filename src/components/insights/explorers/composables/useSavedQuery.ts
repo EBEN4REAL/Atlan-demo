@@ -12,7 +12,7 @@ import { message } from 'ant-design-vue'
 import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/atlas/api/insights'
 import { generateUUID } from '~/utils/helper/generator'
-import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -47,8 +47,11 @@ export function useSavedQuery(
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery.guid,
-            updateTime: savedQuery.updateTime,
-            updatedBy: savedQuery.updatedBy,
+            updateTime:
+                savedQuery?.updateTime ??
+                savedQuery.attributes.__modificationTimestamp,
+            updatedBy:
+                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
             connectionId: savedQuery.attributes.connectionId,
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
@@ -282,8 +285,9 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
+        if (parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName =
+                parentFolderQF
             body.value.entity.relationshipAttributes = {
                 folder: {
                     guid: parentFolderGuid,
@@ -291,15 +295,15 @@ export function useSavedQuery(
                 },
             }
         }
-        if(type === 'all') {
-            body.value.entity.classifications =  [
+        if (type === 'all') {
+            body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
                     typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                    validityPeriods: []
-                }
+                    validityPeriods: [],
+                },
             ]
         }
         // chaing loading to true
@@ -340,7 +344,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
-        type: 'personal' | 'all' ,
+        type: 'personal' | 'all',
         parentFolderQF: string,
         parentFolderGuid: string
     ) => {
@@ -411,8 +415,9 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
+        if (parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName =
+                parentFolderQF
             body.value.entity.relationshipAttributes = {
                 folder: {
                     guid: parentFolderGuid,
@@ -420,15 +425,15 @@ export function useSavedQuery(
                 },
             }
         }
-        if(type === 'all') {
-            body.value.entity.classifications =  [
+        if (type === 'all') {
+            body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
                     typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                    validityPeriods: []
-                }
+                    validityPeriods: [],
+                },
             ]
         }
         // chaing loading to true
@@ -480,7 +485,7 @@ export function useSavedQuery(
         return { data, error, isLoading }
     }
 
-    const createFolder =  (
+    const createFolder = (
         folderName: string,
         saveFolderLoading: Ref<boolean>,
         type: 'personal' | 'all',
@@ -533,8 +538,12 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF.value !== 'root' && parentFolderGuid.value !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF.value;
+        if (
+            parentFolderQF.value !== 'root' &&
+            parentFolderGuid.value !== 'root'
+        ) {
+            body.value.entity.attributes.parentFolderQualifiedName =
+                parentFolderQF.value
             body.value.entity.relationshipAttributes = {
                 folder: {
                     guid: parentFolderGuid.value,
@@ -542,15 +551,15 @@ export function useSavedQuery(
                 },
             }
         }
-        if(type === 'all') {
-            body.value.entity.classifications =  [
+        if (type === 'all') {
+            body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
                     typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                    validityPeriods: []
-                }
+                    validityPeriods: [],
+                },
             ]
         }
         // chaing loading to true

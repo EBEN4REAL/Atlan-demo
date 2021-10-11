@@ -14,7 +14,7 @@ import {
 import { getAPIPath, getAxiosClient } from '~/api'
 import { useAPI } from '~/api/useAPI'
 
-const serviceAlias = 'auth'
+const serviceAlias = 'service'
 
 export const URL = {
     UserList: '/users',

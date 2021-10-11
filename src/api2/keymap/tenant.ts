@@ -1,9 +1,9 @@
-import { getAPIPath } from "~/api";
+import { getAPIPath } from '~/api'
 
-export const GET_TENANT = 'GET_TENANT';
+export const GET_TENANT = 'GET_TENANT'
 
 const tenantmap: Record<string, (...params: any) => string> = {
-    [GET_TENANT]: () => getAPIPath('auth', ""),
+    [GET_TENANT]: () => getAPIPath('service', '/tenants/default'),
 }
 
-export default tenantmap;
+export default tenantmap

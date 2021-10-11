@@ -14,24 +14,26 @@ export const REVOKE_INVITATION = 'REVOKE_INVITATION'
 export const INVITE_USERS = 'INVITE_USERS'
 
 const userMap: Record<string, (...params: any) => string> = {
-    [LIST_USERS]: () => getAPIPath('auth', '/users'),
-    [GET_USER]: () => getAPIPath('auth', '/users'),
-    [UPDATE_USER]: ({ id }) => getAPIPath('auth', `/users/${id}`),
+    [LIST_USERS]: () => getAPIPath('service', '/users'),
+    [GET_USER]: () => getAPIPath('service', '/users'),
+    [UPDATE_USER]: ({ id }) => getAPIPath('service', `/users/${id}`),
     [GET_USER_SESSIONS]: ({ id }) =>
-        getAPIPath('auth', `/users/${id}/sessions`),
+        getAPIPath('service', `/users/${id}/sessions`),
     [SIGN_OUT_ALL_SESSIONS]: ({ id }) =>
-        getAPIPath('auth', `/users/${id}/sessions/delete`),
+        getAPIPath('service', `/users/${id}/sessions/delete`),
     [SIGN_OUT_SESSION_BY_ID]: ({ id }) =>
-        getAPIPath('auth', `/users/sessions/${id}/delete`),
+        getAPIPath('service', `/users/sessions/${id}/delete`),
     [GET_USER_ACCESS_LOGS]: ({ id }) =>
-        getAPIPath('auth', `/users/${id}/events`),
+        getAPIPath('service', `/users/${id}/events`),
     [UPDATE_USER_ROLE]: ({ id }) =>
-        getAPIPath('auth', `/users/${id}/roles/update`),
-    [ADD_USER_TO_GROUPS]: ({ id }) => getAPIPath('auth', `/users/${id}/groups`),
+        getAPIPath('service', `/users/${id}/roles/update`),
+    [ADD_USER_TO_GROUPS]: ({ id }) =>
+        getAPIPath('service', `/users/${id}/groups`),
     [RESEND_INVITATION_EMAIL]: ({ id }) =>
-        getAPIPath('auth', `/users/${id}/resendinvite`),
-    [REVOKE_INVITATION]: ({ id }) => getAPIPath('auth', `/users/${id}/delete`),
-    [INVITE_USERS]: () => getAPIPath('auth', `/users`),
+        getAPIPath('service', `/users/${id}/resendinvite`),
+    [REVOKE_INVITATION]: ({ id }) =>
+        getAPIPath('service', `/users/${id}/delete`),
+    [INVITE_USERS]: () => getAPIPath('service', `/users`),
 }
 
 export default userMap

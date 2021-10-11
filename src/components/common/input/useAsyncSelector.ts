@@ -58,7 +58,9 @@ export default function useAsyncSelector(
     }
 
     const loadDataError = ref(false);
+    const shouldRefetch = ref(true)
     const loadData = async () => {
+        shouldRefetch.value = false;
         asyncData.value = [];
         const { url, method, params, addFormValues } = reqConfig
         loadingData.value = true
@@ -98,13 +100,13 @@ export default function useAsyncSelector(
         });
         return temp
     })
-    const debouncer = createDebounce()
+    // const debouncer = createDebounce()
     // ? watch for dynamic ref changing event and re-run load options
     watch(values, (o, n) => {
         console.log({ o, n })
         if (JSON.stringify(o) !== JSON.stringify(n))
             if (!letAsyncSelectDisabled.value)
-                debouncer(() => loadData(), 500)
+                shouldRefetch.value = true;
 
     }, { deep: true })
 
@@ -112,6 +114,7 @@ export default function useAsyncSelector(
     return {
         loadData,
         asyncData,
+        shouldRefetch,
         loadingData,
         letAsyncSelectDisabled
     }

@@ -1,17 +1,39 @@
 <template>
-    <div class="p-5">
-        <div
-            v-if="selectedAssets && selectedAssets.length"
-            class="text-xl font-bold text-primary"
-        >
-            {{ selectedAssets.length }}
-            {{ selectedAssets.length === 1 ? `Asset` : `Assets` }} Selected
+    <div class="px-5 pb-5 pt-3.5">
+        <div class="sidebar_widget_wrapper">
+            <div
+                v-if="selectedAssets && selectedAssets.length"
+                class="mb-3 text-xl font-bold text-primary"
+            >
+                {{ selectedAssets.length }}
+                {{ selectedAssets.length === 1 ? `Asset` : `Assets` }} Selected
+            </div>
+            <Status :existing-status="existingStatus" class="mb-5"></Status>
+            <Owners class="mb-5"></Owners>
+            <Classifications class="mb-5" />
+            <Terms class="mb-5" />
         </div>
-        <Status :existing-status="existingStatus"></Status>
-        <Owners></Owners>
-        <Classifications />
-        <Terms />
-        <a-button @click="updateAssets(selectedAssets)">Update</a-button>
+        <div class="flex gap-x-4">
+            <a-button
+                class="flex-1 bg-gray-300 border-0 hover:text-gray"
+                @click="handeCancel"
+                >Cancel</a-button
+            >
+            <a-button
+                type="primary"
+                class="flex-1 border-0"
+                :disabled="
+                    !(
+                        didOwnersUpdate ||
+                        didStatusUpdate ||
+                        didClassificationsUpdate ||
+                        (termsRef && Object.keys(termsRef).length)
+                    )
+                "
+                @click="updateAssets(selectedAssets)"
+                >Make Changes</a-button
+            >
+        </div>
     </div>
 </template>
 
@@ -37,7 +59,8 @@ export default {
             default: () => [],
         },
     },
-    setup(props) {
+    emits: ['closeBulkMode'],
+    setup(props, { emit }) {
         const { bulkSelectedAssets: selectedAssets } = toRefs(props)
         const {
             existingOwners,
@@ -45,35 +68,50 @@ export default {
             existingClassifications,
             existingTerms,
             updatedStatus,
+            updatedStatusMessage,
+            publishedStatusChangeLog: publishedStatusChangeLogRef,
             updateAssets,
             updateSelectedAssets,
-            ownerUsersFrequencyMap,
-            ownerGroupsFrequencyMap,
-            existingOwnerUsers,
-            existingOwnerGroups,
-            updatedOwners,
             classifications: classificationsRef,
             originalClassifications: originalClassificationsRef,
+            publishedClassificationChangeLog:
+                publishedClassificationChangeLogRef,
             classificationFrequencyMap,
             terms: termsRef,
             originalTerms: originalTermsRef,
             termFrequencyMap,
+            state,
+            owners: ownersRef,
+            originalOwners: originalOwnersRef,
+            ownerFrequencyMap,
+            publishedChangeLog: publishedOwnerChangeLogRef,
+            didOwnersUpdate,
+            didStatusUpdate,
+            didClassificationsUpdate,
         } = useBulkSelect()
         /** PROVIDERS */
         provide('selectedAssets', selectedAssets)
+        /** STATUS PROVIDERS */
         provide('updatedStatus', updatedStatus)
-        provide('ownerUsersFrequencyMap', ownerUsersFrequencyMap)
-        provide('ownerGroupsFrequencyMap', ownerGroupsFrequencyMap)
-        provide('existingOwnerUsers', existingOwnerUsers)
-        provide('existingOwnerGroups', existingOwnerGroups)
-        provide('updatedOwners', updatedOwners)
+        provide('updatedStatusMessage', updatedStatusMessage)
+        provide('publishedStatusChangeLogRef', publishedStatusChangeLogRef)
+        /** CLASSIFICATION PROVIDERS */
         provide('classificationsRef', classificationsRef)
         provide('originalClassificationsRef', originalClassificationsRef)
         provide('classificationFrequencyMap', classificationFrequencyMap)
+        provide(
+            'publishedClassificationChangeLogRef',
+            publishedClassificationChangeLogRef
+        )
+        /** TERMS PROVIDERS */
         provide('termsRef', termsRef)
         provide('originalTermsRef', originalTermsRef)
         provide('termFrequencyMap', termFrequencyMap)
-
+        /** OWNERS PROVIDERS */
+        provide('ownersRef', ownersRef)
+        provide('originalOwnersRef', originalOwnersRef)
+        provide('ownerFrequencyMap', ownerFrequencyMap)
+        provide('publishedOwnerChangeLogRef', publishedOwnerChangeLogRef)
         watch(
             selectedAssets,
             () => {
@@ -83,6 +121,9 @@ export default {
                 immediate: true,
             }
         )
+        const handeCancel = () => {
+            emit('closeBulkMode')
+        }
         return {
             selectedAssets,
             existingOwners,
@@ -90,11 +131,20 @@ export default {
             existingClassifications,
             existingTerms,
             updateAssets,
-            // mutateSelectedAsset,
+            handeCancel,
+            state,
+            termsRef,
+            didOwnersUpdate,
+            didStatusUpdate,
+            didClassificationsUpdate,
         }
     },
 }
 </script>
 
-<style>
+<style lang="less">
+.sidebar_widget_wrapper {
+    height: calc(100vh - 7.5rem);
+    overflow-y: auto;
+}
 </style>

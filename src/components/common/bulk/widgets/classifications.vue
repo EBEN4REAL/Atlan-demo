@@ -1,135 +1,140 @@
 <template>
-    <div
-        class="mb-3 text-xs text-gray-500"
-        @click.stop="toggleLinkClassificationPopover"
+    <a-popover
+        v-model:visible="showLinkClassificationPopover"
+        placement="left"
+        trigger="click"
     >
-        <p class="mb-1 text-sm">Classifications</p>
-        <div class="flex">
-            <!-- same clsf for all selected assets -->
-            <div
-                v-if="classificationsList && classificationsList.length"
-                class="flex flex-grow mr-1 text-sm"
-            >
-                <PillGroup
-                    :class="
-                        classificationsList && classificationsList.length
-                            ? ''
-                            : 'hidden'
-                    "
-                    :data="classificationsList"
-                    label-key="typeName"
-                    popover-trigger="hover"
-                    :read-only="true"
-                >
-                    <template #pillPrefix>
-                        <AtlanIcon
-                            icon="Shield"
-                            class="text-pink-400 group-hover:text-white"
-                        />
-                    </template>
-                    <template #popover="{ item }">
-                        <ClassificationInfoCard :classification="item"
-                    /></template>
-                    <template #suffix>
-                        <div class="p-1.5 border rounded-full">
-                            <AtlanIcon icon="Pencil" />
-                        </div>
-                        <!-- <span
-                        v-if="splittedClassifications.b.length > 0"
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            rounded
-                            text-primary
-                            mr-3
-                            cursor-pointer
-                        "
-                        @click="() => toggleAllClassifications()"
+        <template #content>
+            <LinkClassificationsDropdown
+                ref="linkClassificationDropdownRef"
+                @changeClassifications="handleClassificationChange"
+            />
+            <div class="flex justify-end">
+                <div class="space-x-4">
+                    <a-button class="px-4" @click="handleCancel"
+                        >Cancel</a-button
                     >
-                        {{
-                            showAll
-                                ? 'Show less'
-                                : `and ${splittedClassifications.b.length} more`
-                        }}
-                    </span>-->
-                    </template>
-                </PillGroup>
-            </div>
-            <!-- Multiple clsfs -->
-            <div
-                v-else-if="
-                    classificationsList &&
-                    !classificationsList.length &&
-                    Object.keys(classificationFrequencyMap).length
-                "
-                class="flex"
-            >
-                <div
-                    class="
-                        p-1.5
-                        bg-secondary-light
-                        rounded-sm
-                        text-secondary
-                        mr-1
-                    "
-                >
-                    <span class="text-sm">Multiple classifications</span>
+                    <a-button type="primary" class="px-4" @click="handleConfirm"
+                        >Done</a-button
+                    >
                 </div>
-                <div class="p-1.5 border rounded-full">
+            </div>
+        </template>
+        <div
+            class="mb-3 text-xs text-gray-500"
+            @click.stop="toggleLinkClassificationPopover"
+        >
+            <p class="mb-1 text-sm text-gray mb-2.5">Classifications</p>
+            <div class="flex">
+                <!-- same clsf for all selected assets -->
+                <div
+                    v-if="classificationsList && classificationsList.length"
+                    class="flex flex-grow mr-1 text-sm"
+                >
+                    <PillGroup
+                        :class="
+                            classificationsList && classificationsList.length
+                                ? ''
+                                : 'hidden'
+                        "
+                        :data="formattedClassificationList"
+                        label-key="typeName"
+                        popover-trigger="hover"
+                        :read-only="true"
+                    >
+                        <template #pillPrefix>
+                            <AtlanIcon
+                                icon="Shield"
+                                class="text-pink-400 group-hover:text-white"
+                            />
+                        </template>
+                        <template #popover="{ item }">
+                            <ClassificationInfoCard :classification="item"
+                        /></template>
+                        <template #suffix>
+                            <span
+                                v-if="splitClassifications.second.length > 0"
+                                class="
+                                    px-1
+                                    py-0.5
+                                    text-sm
+                                    rounded
+                                    text-primary
+                                    mr-3
+                                    cursor-pointer
+                                "
+                                @click.stop="() => toggleShowAll()"
+                            >
+                                {{
+                                    showAll
+                                        ? 'Show less'
+                                        : `and ${splitClassifications.second.length} more`
+                                }}
+                            </span>
+                            <div
+                                class="p-1.5 border rounded-full cursor-pointer"
+                            >
+                                <AtlanIcon icon="Pencil" />
+                            </div>
+                        </template>
+                    </PillGroup>
+                </div>
+                <!-- Multiple clsfs -->
+                <div
+                    v-else-if="
+                        classificationsList &&
+                        !classificationsList.length &&
+                        Object.keys(classificationFrequencyMap).length
+                    "
+                    class="flex"
+                >
+                    <div
+                        class="
+                            p-1.5
+                            bg-secondary-light
+                            rounded-sm
+                            text-secondary
+                            mr-1
+                        "
+                    >
+                        <span class="text-sm">Multiple classifications</span>
+                    </div>
+                    <div class="p-1.5 border rounded-full cursor-pointer">
+                        <AtlanIcon icon="Pencil" />
+                    </div>
+                </div>
+                <!-- No clsf present -->
+                <div
+                    v-else-if="!Object.keys(classificationFrequencyMap).length"
+                    class="p-1.5 border rounded-full cursor-pointer"
+                >
                     <AtlanIcon icon="Pencil" />
                 </div>
             </div>
-            <!-- No clsf present -->
-            <div
-                v-else-if="!Object.keys(classificationFrequencyMap).length"
-                class="p-1.5 border rounded-full"
-            >
-                <AtlanIcon icon="Pencil" />
+            <div class="mt-2.5">
+                <div v-if="changeLog.all.length">
+                    {{ getTruncatedStringFromArray(changeLog.all, 20) }}
+                    <span class="text-success">added</span>
+                </div>
+                <div v-if="changeLog.removed.length">
+                    {{ getTruncatedStringFromArray(changeLog.removed, 20) }}
+                    <span class="text-error">removed</span>
+                </div>
             </div>
         </div>
-        <a-popover
-            v-model:visible="showLinkClassificationPopover"
-            placement="left"
-            trigger="click"
-        >
-            <template #content>
-                <LinkClassificationsDropdown
-                    ref="linkClassificationDropdownRef"
-                    @changeClassifications="handleClassificationChange"
-                />
-                <div class="flex justify-end">
-                    <div class="space-x-4">
-                        <a-button class="px-4" @click="handleCancel"
-                            >Cancel</a-button
-                        >
-                        <a-button
-                            type="primary"
-                            class="px-4"
-                            @click="handleConfirm"
-                            >Link</a-button
-                        >
-                    </div>
-                </div>
-            </template>
-        </a-popover>
-    </div>
+    </a-popover>
 </template>
 
 <script lang="ts">
 import { defineComponent, Ref, ref, watch, inject, computed } from 'vue'
-import useBulkSelect from '~/composables/asset/useBulkSelect'
+import useBulkSelect, { LocalState } from '~/composables/asset/useBulkSelect'
 import { Components } from '~/api/atlas/client'
 import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
 import PillGroup from '~/components/UI/pill/pillGroup.vue'
 import LinkClassificationsDropdown from '@/common/dropdown/linkClassificationsDropdown.vue'
 import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
+import { splitArray, getTruncatedStringFromArray } from '~/utils/string'
 
-interface LocalState {
-    all: Components.Schemas.AtlasClassification[]
-    partial: Components.Schemas.AtlasClassification[]
-    removed: Components.Schemas.AtlasClassification[]
-}
 export default defineComponent({
     name: 'UpdateBulkClassifications',
     components: {
@@ -150,6 +155,11 @@ export default defineComponent({
             partial: [] as Components.Schemas.AtlasClassification[],
             removed: [] as Components.Schemas.AtlasClassification[],
         })
+        const changeLog: Ref<Record<string, (string | undefined)[]>> = ref({
+            all: [],
+            partial: [],
+            removed: [],
+        })
         const {
             resetClassifications,
             initialiseLocalState,
@@ -159,20 +169,29 @@ export default defineComponent({
         const originalClassificationsRef = inject('originalClassificationsRef')
         const selectedAssets = inject('selectedAssets')
         const classificationFrequencyMap = inject('classificationFrequencyMap')
+        const publishedClassificationChangeLogRef = inject(
+            'publishedClassificationChangeLogRef'
+        )
         const showLinkClassificationPopover = ref(false)
         const linkClassificationDropdownRef = ref()
-
+        const showAll = ref(false)
         watch(
             originalClassificationsRef,
             () => {
                 resetClassifications(
                     originalClassificationsRef,
-                    classificationsRef
+                    classificationsRef,
+                    publishedClassificationChangeLogRef
                 )
                 localState.value = initialiseLocalState(
                     selectedAssets,
                     classificationFrequencyMap
                 )
+                changeLog.value = {
+                    all: [],
+                    partial: [],
+                    removed: [],
+                }
                 linkClassificationDropdownRef?.value?.clearSelection()
             },
             { immediate: true }
@@ -188,19 +207,29 @@ export default defineComponent({
                     typeName: clsf.name,
                 }))
             localState.value.all = [...modifiedClassificationList]
-            console.log(localState.value)
             // TODO: handle linkClassificationsData
-        }
-        const handleConfirm = () => {
-            updateClassifications(
-                classificationsRef,
-                localState,
-                originalClassificationsRef
-            )
         }
         const toggleLinkClassificationPopover = () => {
             showLinkClassificationPopover.value =
                 !showLinkClassificationPopover.value
+        }
+        const handleConfirm = () => {
+            changeLog.value.all = localState.value.all.map(
+                (clsf) => clsf.typeName
+            )
+            changeLog.value.removed = localState.value.removed.map(
+                (clsf) => clsf.typeName
+            )
+            changeLog.value.partial = localState.value.partial.map(
+                (clsf) => clsf.typeName
+            )
+            updateClassifications(
+                classificationsRef,
+                localState,
+                originalClassificationsRef,
+                publishedClassificationChangeLogRef
+            )
+            toggleLinkClassificationPopover()
         }
         // To show classification tags if all assets have same classifications
         const classificationsList = computed(() => {
@@ -232,6 +261,45 @@ export default defineComponent({
             return []
         })
 
+        const splitClassifications = computed(() => {
+            const { a: first, b: second } = splitArray(
+                5,
+                classificationsList.value
+            )
+            return {
+                first,
+                second,
+            }
+        })
+        const formattedClassificationList = computed(() =>
+            showAll.value
+                ? [
+                      ...splitClassifications.value.first,
+                      ...splitClassifications.value.second,
+                  ]
+                : [...splitClassifications.value.first]
+        )
+        const toggleShowAll = () => {
+            showAll.value = !showAll.value
+        }
+        const handleCancel = () => {
+            resetClassifications(
+                originalClassificationsRef,
+                classificationsRef,
+                publishedClassificationChangeLogRef
+            )
+            localState.value = initialiseLocalState(
+                selectedAssets,
+                classificationFrequencyMap
+            )
+            changeLog.value = {
+                all: [],
+                partial: [],
+                removed: [],
+            }
+            linkClassificationDropdownRef?.value?.clearSelection()
+            toggleLinkClassificationPopover()
+        }
         return {
             classificationsRef,
             localState,
@@ -242,6 +310,13 @@ export default defineComponent({
             showLinkClassificationPopover,
             toggleLinkClassificationPopover,
             linkClassificationDropdownRef,
+            changeLog,
+            handleCancel,
+            formattedClassificationList,
+            toggleShowAll,
+            splitClassifications,
+            showAll,
+            getTruncatedStringFromArray,
         }
     },
 })

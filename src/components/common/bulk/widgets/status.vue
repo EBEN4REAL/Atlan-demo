@@ -64,11 +64,11 @@
             ref="animationPoint"
             class="flex flex-col text-xs text-gray-500 cursor-pointer"
         >
-            <div class="mb-3">
-                <p class="mb-1 text-sm">Certification</p>
+            <div>
+                <p class="mb-1 text-sm text-gray mb-2.5">Certification</p>
                 <div class="flex">
                     <div
-                        v-if="!assetStatus"
+                        v-if="!publishedAssetStatus && !originalAssetStatus"
                         class="
                             inline-flex
                             px-1
@@ -76,7 +76,7 @@
                             mr-5
                             border
                             rounded-md
-                            w-60
+                            flex-none
                         "
                     >
                         <AtlanIcon
@@ -87,33 +87,66 @@
                     </div>
                     <div
                         v-else-if="
-                            assetStatus &&
-                            assetStatusObject &&
-                            assetStatusObject.icon &&
-                            assetStatusObject.label
+                            publishedAssetStatus &&
+                            publishedAssetStatusObject &&
+                            publishedAssetStatusObject.icon &&
+                            publishedAssetStatusObject.label
                         "
                         class="
                             inline-flex
-                            px-1
+                            px-2
                             py-1.5
                             mr-5
                             border
                             rounded-md
-                            w-60
+                            flex-none
                         "
                     >
                         <component
-                            :is="assetStatusObject.icon"
+                            :is="publishedAssetStatusObject.icon"
                             class="self-center w-auto h-4 mr-1"
                         />
                         <span class="text-sm">{{
-                            assetStatusObject.label
+                            publishedAssetStatusObject.label
                         }}</span>
                     </div>
 
-                    <div class="text-gray-500">
+                    <div class="self-center text-gray-500">
                         Certifications will be overidden for all selected
                         assets.
+                    </div>
+                </div>
+                <div
+                    v-if="
+                        (changeLog &&
+                            changeLog.to &&
+                            changeLog.from !== changeLog.to) ||
+                        changeLog.updatedStatusMessage
+                    "
+                    class="mt-2.5"
+                >
+                    <div
+                        v-if="
+                            changeLog &&
+                            changeLog.to &&
+                            changeLog.from !== changeLog.to
+                        "
+                    >
+                        Certification changed<span
+                            v-if="changeLog.from"
+                            class="ml-1"
+                            >from
+                            <span class="font-bold">{{ changeLog.from }}</span>
+                        </span>
+                        <span class="ml-1"
+                            >to
+                            <span class="font-bold">{{
+                                changeLog.to
+                            }}</span></span
+                        >
+                    </div>
+                    <div v-if="changeLog.updatedStatusMessage" class="mt-1.5">
+                        Updated status message
                     </div>
                 </div>
             </div>
@@ -125,6 +158,7 @@
 import { defineComponent, toRefs, computed, ref, inject, watch } from 'vue'
 import useBulkSelect from '~/composables/asset/useBulkSelect'
 import { List } from '~/constant/status'
+import confetti from '~/utils/confetti'
 
 export default defineComponent({
     name: 'UpdateBulkStatus',
@@ -137,12 +171,22 @@ export default defineComponent({
     setup(props) {
         /** INJECTIONS */
         const updatedStatus = inject('updatedStatus')
+        const updatedStatusMessage = inject('updatedStatusMessage')
+        const publishedStatusChangeLogRef = inject(
+            'publishedStatusChangeLogRef'
+        )
         const showPopover = ref(false)
         const { handleUpdateStatus } = useBulkSelect()
         const { existingStatus } = toRefs(props)
         const assetStatus = ref('')
+        const publishedAssetStatus = ref('')
+        const originalAssetStatus = ref('')
+        // has labels for to and from states 👇
+        const changeLog = ref({ to: '', from: '', updatedStatusMessage: '' })
         const statusMessage = ref('')
         const textAreaDisabled = ref(false)
+        const animationPoint = ref(null)
+
         // TODO: this can come from composable itself
         const initialiseAssetStatus = () => {
             const firstStatusKey = Object.keys(existingStatus.value)[0]
@@ -152,28 +196,71 @@ export default defineComponent({
                         existingStatus.value[key] !==
                         existingStatus.value[firstStatusKey]
                 )
-            )
+            ) {
                 assetStatus.value =
                     existingStatus.value[Object.keys(existingStatus.value)[0]]
-            else assetStatus.value = ''
+                originalAssetStatus.value =
+                    existingStatus.value[Object.keys(existingStatus.value)[0]]
+                publishedAssetStatus.value =
+                    existingStatus.value[Object.keys(existingStatus.value)[0]]
+            } else {
+                assetStatus.value = ''
+                originalAssetStatus.value = ''
+                publishedAssetStatus.value = ''
+            }
+            // reset changelog
+            changeLog.value = { to: '', from: '', updatedStatusMessage: '' }
         }
         // initialising assetStatus to find if status of all selected assets is same
         watch(existingStatus, initialiseAssetStatus, {
             immediate: true,
             deep: true,
         })
-
-        const assetStatusObject = computed(() =>
-            List.find((item) => item.id === assetStatus.value)
+        const publishedAssetStatusObject = computed(() =>
+            List.find((item) => item.id === publishedAssetStatus.value)
+        )
+        const originalAssetStatusObject = computed(() =>
+            List.find((item) => item.id === originalAssetStatus.value)
         )
 
         // TODO: add status message flow
         const handleConfirm = () => {
+            publishedAssetStatus.value = assetStatus.value
+            changeLog.value.from = originalAssetStatusObject?.value?.label ?? ''
+            changeLog.value.to = publishedAssetStatusObject?.value?.label ?? ''
+            changeLog.value.updatedStatusMessage = statusMessage.value
             handleUpdateStatus(
-                { status: assetStatus.value, statusMessage: '' },
+                {
+                    status: assetStatus.value,
+                    statusMessage: statusMessage.value,
+                },
                 updatedStatus,
-                existingStatus
+                updatedStatusMessage,
+                publishedStatusChangeLogRef,
+                changeLog
             )
+            // changeLog has labels not ids
+            if (
+                changeLog.value.to === 'Verified' &&
+                changeLog.value.from !== 'Verified'
+            ) {
+                const config = {
+                    angle: 45,
+                    startVelocity: 10,
+                    spread: 100,
+                    elementCount: 50,
+                    colors: [
+                        '#2251cc',
+                        '#2251cc',
+                        '#82b54b',
+                        '#e94a3f',
+                        '#faa040',
+                    ],
+                    width: '0.3rem',
+                    height: '0.3rem',
+                }
+                confetti(animationPoint.value, config)
+            }
             showPopover.value = false
         }
         const handleCancel = () => {
@@ -189,8 +276,13 @@ export default defineComponent({
             textAreaDisabled,
             handleCancel,
             handleConfirm,
-            assetStatusObject,
+            publishedAssetStatusObject,
             showPopover,
+            publishedAssetStatus,
+            originalAssetStatus,
+            originalAssetStatusObject,
+            changeLog,
+            animationPoint,
         }
     },
 })

@@ -88,7 +88,22 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
                  ]
                })
         } 
-        else {
+        else if(savedQueryType?.value === 'personal') {
+            body.value.entityFilters.criterion.push({
+                condition: "AND",
+                criterion: [
+                   {
+                     attributeName: "__classificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "neq"
+                   },
+                   {
+                     attributeName: "__propagatedClassificationNames",
+                     attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                     operator: "neq"
+                   }
+                 ]
+               })
             body.value.entityFilters.criterion.push({
                 attributeName: "owner",
                 attributeValue: username.value,
@@ -98,6 +113,17 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
     }
 
     refreshBody();
+    const getAllQueryFolders = () => {
+        refreshBody();
+
+        body.value.typeName = 'QueryFolder';
+        body.value.offset = 0
+        body.value.limit = 100;
+        
+        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+            body
+        }) as Promise<BasicSearchResponse<Folder>>
+    }
 
     const getQueryFolders = (offset?: number) => {
         refreshBody();
@@ -174,6 +200,7 @@ const useLoadQueryData = ({ connector, savedQueryType }: useLoadQueryDataProps) 
         getQueries,
         getSubFolders,
         getFolderQueries,
+        getAllQueryFolders,
     }
 }
 

@@ -8,13 +8,21 @@
                         ref="assetDiscovery"
                         :initial-filters="initialFilters"
                         @preview="handlePreview"
-                        @bulkSelectChange="updateBulkSelection"
                     ></component>
                 </KeepAlive>
             </div>
         </div>
         <div
-            v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
+            v-if="page === 'discovery' && store.isBulkMode"
+            class="relative overflow-y-auto bg-white asset-preview-container"
+        >
+            <BulkSidebar
+                :bulk-selected-assets="store.bulkSelectedAssets"
+                @closeBulkMode="handleCloseBulk"
+            ></BulkSidebar>
+        </div>
+        <div
+            v-else
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
@@ -25,121 +33,113 @@
                 @asset-mutation="propagateToAssetList"
             ></AssetPreview>
         </div>
-        <div
-            v-else
-            class="relative overflow-y-auto bg-white asset-preview-container"
-        >
-            <BulkSidebar
-                :bulk-selected-assets="bulkSelectedAssets"
-            ></BulkSidebar>
-        </div>
+        <BulkNotification class="fixed bottom-0 right-0" />
     </div>
 </template>
 
 <script lang="ts">
-    import { useHead } from '@vueuse/head'
-    import { computed, defineComponent, ref, Ref, watch } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
-    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
-    import AssetPreview from '@/discovery/preview/assetPreview.vue'
-    import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
-    import { decodeQuery } from '~/utils/helper/routerHelper'
-    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
+import { useHead } from '@vueuse/head'
+import { computed, defineComponent, ref, Ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+import AssetPreview from '@/discovery/preview/assetPreview.vue'
+import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
+import { assetInterface } from '~/types/assets/asset.interface'
+import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+import { decodeQuery } from '~/utils/helper/routerHelper'
+import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
+import useBulkUpdateStore from '~/store/bulkUpdate'
+import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
 
-    export interface initialFiltersType {
-        facetsFilters: any
-        searchText: string
-        limit: number
-    }
-    export default defineComponent({
-        components: {
-            AssetPreview,
-            AssetDiscovery,
-            BulkSidebar,
-        },
-        setup() {
-            useHead({
-                title: 'Discover assets',
-            })
-            const router = useRouter()
-            const route = useRoute()
-            const isItem = computed(() => route.params.id)
-            const updateProfile = ref<boolean>(false)
+export interface initialFiltersType {
+    facetsFilters: any
+    searchText: string
+    limit: number
+}
+export default defineComponent({
+    components: {
+        AssetPreview,
+        AssetDiscovery,
+        BulkSidebar,
+        BulkNotification,
+    },
+    setup() {
+        useHead({
+            title: 'Discover assets',
+        })
+        const router = useRouter()
+        const route = useRoute()
+        const isItem = computed(() => route.params.id)
+        const updateProfile = ref<boolean>(false)
 
-            const assetDiscovery: Ref<Element | null> = ref(null)
-            // const initialFilters: initialFiltersType =
-            //     getDecodedOptionsFromString(router)
+        const assetDiscovery: Ref<Element | null> = ref(null)
+        // const initialFilters: initialFiltersType =
+        //     getDecodedOptionsFromString(router)
 
-            const initialFilters: Record<string, any> = {
-                facetsFilters: {},
-                searchText: '',
-                selectedTab: 'Catalog',
-                sortOrder: 'default',
-                state: 'active',
-                ...decodeQuery(
-                    Object.keys(router.currentRoute.value?.query)[0]
-                ),
-            }
+        const initialFilters: Record<string, any> = {
+            facetsFilters: {},
+            searchText: '',
+            selectedTab: 'Catalog',
+            sortOrder: 'default',
+            state: 'active',
+            ...decodeQuery(Object.keys(router.currentRoute.value?.query)[0]),
+        }
 
-            router.currentRoute.value?.query
-            const selected: Ref<assetInterface | undefined> = ref(undefined)
-            const handlePreview = (selectedItem: assetInterface) => {
-                selected.value = selectedItem
-                console.log(selectedItem)
-            }
-            const page = computed(() =>
-                isItem.value ? 'profile' : 'discovery'
-            )
+        router.currentRoute.value?.query
+        const selected: Ref<assetInterface | undefined> = ref(undefined)
+        const handlePreview = (selectedItem: assetInterface) => {
+            selected.value = selectedItem
+            console.log(selectedItem)
+        }
+        const page = computed(() => (isItem.value ? 'profile' : 'discovery'))
 
-            // * Get all available BMs and save on store
-            const { fetchBMonStore } = useBusinessMetadata()
-            fetchBMonStore()
+        // * Get all available BMs and save on store
+        const { fetchBMonStore } = useBusinessMetadata()
+        fetchBMonStore()
 
-            /* Making the network request here to fetch the latest changes of classifications. 
+        /* Making the network request here to fetch the latest changes of classifications. 
             So that everytime user visit the discover page it will be in sync to latest data not with store
             */
-            const {
-                isClassificationInitializedInStore,
-                initializeClassificationsInStore,
-            } = useClassifications()
-            if (!isClassificationInitializedInStore()) {
-                initializeClassificationsInStore()
-            }
-
-            function propagateToAssetList(updatedAsset: assetInterface) {
-                if (page.value === 'discovery')
-                    assetDiscovery.value.mutateAssetInList(updatedAsset)
-                handlePreview(updatedAsset)
-                updateProfile.value = true
-            }
-            const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
-            const updateBulkSelection = (list) => {
-                bulkSelectedAssets.value = [...list.value]
-            }
-            return {
-                initialFilters,
-                selected,
-                handlePreview,
-                isItem,
-                page,
-                propagateToAssetList,
-                assetDiscovery,
-                updateBulkSelection,
-                bulkSelectedAssets,
-                updateProfile,
-            }
-        },
-    })
+        const {
+            isClassificationInitializedInStore,
+            initializeClassificationsInStore,
+        } = useClassifications()
+        if (!isClassificationInitializedInStore()) {
+            initializeClassificationsInStore()
+        }
+        function propagateToAssetList(updatedAsset: assetInterface) {
+            if (page.value === 'discovery')
+                assetDiscovery.value.mutateAssetInList(updatedAsset)
+            handlePreview(updatedAsset)
+            updateProfile.value = true
+        }
+        const store = useBulkUpdateStore()
+        const handleCloseBulk = () => {
+            store.setBulkSelectedAssets([])
+            store.setBulkMode(false)
+        }
+        return {
+            initialFilters,
+            selected,
+            handlePreview,
+            isItem,
+            page,
+            propagateToAssetList,
+            assetDiscovery,
+            handleCloseBulk,
+            store,
+            updateProfile,
+        }
+    },
+})
 </script>
 <style scoped>
-    .asset-preview-container {
-        width: 420px !important;
-        min-width: 420px !important;
-        max-width: 420px !important;
-    }
+.asset-preview-container {
+    width: 420px !important;
+    min-width: 420px !important;
+    max-width: 420px !important;
+}
 </style>
 <route lang="yaml">
 meta:

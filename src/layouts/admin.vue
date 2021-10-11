@@ -92,32 +92,6 @@ export default defineComponent({
       this.$router.push("/connections");
     },
   },
-
-  // mixins: [KeycloakMixin],
-  // const getDarkTheme = () => import("~/styles/dark.less");
-  // const getLightTheme = () => import("~/styles/light.less");
-
-  //   function themeToggle() {
-  //     const htmlTag = document.querySelector("html");
-  //     if (htmlTag.classList.contains("dark")) {
-  //       htmlTag.className = "light";
-  //     } else {
-  //       htmlTag.className = "dark";
-  //     }
-
-  //     getCurrentTheme().forEach((element: string) => {
-  //       if (element === "dark") {
-  //         getDarkTheme();
-  //       } else {
-  //         getLightTheme();
-  //       }
-  //     });
-  //   };
-
-  // const getCurrentTheme = function (): any {
-  //   const htmlTag = document.querySelector("html");
-  //   return htmlTag?.classList;
-  // };
 });
 </script>
 

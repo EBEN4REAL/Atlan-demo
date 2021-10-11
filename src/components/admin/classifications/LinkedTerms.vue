@@ -1,65 +1,54 @@
 <template>
-    <div class="flex flex-col h-full rounded-lg">
-        <div class="flex items-center mx-3 mb-1">
-            <a-input
+    <div class="flex flex-col overflow-hidden">
+        <div class="px-2 pt-5 pb-4 bg-gray-100 border-b">
+            <SearchAndFilter
+                class="mx-3 bg-white"
                 v-model:value="queryText"
                 :placeholder="`Search ${
                     queryText == '' ? list.length : filteredList.length
                 } linked glossary`"
-                :allow-clear="true"
-                size="default"
-                class="rounded-full"
                 @change="handleSearchChange"
             >
-                <template #suffix>
-                    <a-popover placement="bottomLeft">
-                        <template #content>
-                            <div class="flex">
-                                <div
-                                    class="
-                                        px-3
-                                        border-r border-gray-200 border-dashed
-                                    "
-                                >
-                                    <p class="mb-1 text-gray-500">Show/Hide</p>
-                                    <a-checkbox-group
-                                        v-model:value="preferenceCheckbox"
-                                        @change="handlePreferenceCheckboxChange"
-                                    >
-                                        <div class="flex">
-                                            <div
-                                                class="flex flex-col space-y-1"
-                                            >
-                                                <a-checkbox value="description"
-                                                    >Description</a-checkbox
-                                                >
-                                            </div>
-                                        </div>
-                                    </a-checkbox-group>
+                <template #filter>
+                    <div class="flex">
+                        <div
+                            class="px-3 border-r border-gray-200 border-dashed"
+                        >
+                            <p class="mb-1 text-gray-500">Show/Hide</p>
+                            <a-checkbox-group
+                                v-model:value="preferenceCheckbox"
+                                @change="handlePreferenceCheckboxChange"
+                            >
+                                <div class="flex">
+                                    <div class="flex flex-col space-y-1">
+                                        <a-checkbox value="description"
+                                            >Description</a-checkbox
+                                        >
+                                    </div>
                                 </div>
-                                <div class="pl-3">
-                                    <p class="mb-1 text-gray-500">Order</p>
-                                    <a-radio-group
-                                        v-model:value="sorting"
-                                        @change="handeChangeFilterSorting"
+                            </a-checkbox-group>
+                        </div>
+                        <div class="pl-3">
+                            <p class="mb-1 text-gray-500">Order</p>
+                            <a-radio-group
+                                v-model:value="sorting"
+                                @change="handeChangeFilterSorting"
+                            >
+                                <div class="flex flex-col space-y-1">
+                                    <a-radio value="ascending"
+                                        >Name (A-Z)</a-radio
                                     >
-                                        <div class="flex flex-col space-y-1">
-                                            <a-radio value="ascending"
-                                                >Name (A-Z)</a-radio
-                                            >
-                                            <a-radio value="descending"
-                                                >Name (Z-A)</a-radio
-                                            >
-                                        </div>
-                                    </a-radio-group>
+                                    <a-radio value="descending"
+                                        >Name (Z-A)</a-radio
+                                    >
                                 </div>
-                            </div>
-                        </template>
-                        <fa icon="fal cog"></fa>
-                    </a-popover>
+                            </a-radio-group>
+                        </div>
+                    </div>
                 </template>
-            </a-input>
+            </SearchAndFilter>
         </div>
+
         <!--Body start-->
         <div
             v-if="
@@ -75,8 +64,7 @@
         </div>
         <LinkedTermList
             v-else
-            ref="assetlist"
-            class="asset-list-height"
+            class="pt-2"
             :list="queryText == '' ? list : filteredList"
             :score="searchScoreList"
             :is-loading="isLoading || isValidating"
@@ -101,6 +89,7 @@
     import Preferences from '~/components/discovery/list/preference.vue'
     import LinkedTermList from '@/common/list/linkedTerms/index.vue'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import EmptyView from '@common/empty/discover.vue'
     import Footer from '@common/assets/footer/index.vue'
     import { Components } from '~/api/atlas/client'
@@ -113,6 +102,7 @@
             LinkedTermList,
             EmptyView,
             AssetTabs,
+            SearchAndFilter,
             Footer,
         },
         props: {

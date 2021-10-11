@@ -1,225 +1,37 @@
 <template>
-    <div class="flex w-full h-full">
-        <div style="min-width: 264px" class="p-3 bg-white">
-            <Sidebar></Sidebar>
-        </div>
-        <div class="items-stretch">
-            <div class="grid p-5 bg-primary-light justify-items-center">
-                <div class="flex items-center w-3/4 mb-5">
-                    <div class="flex flex-col w-full pt-5">
-                        <a-input-search
-                            class="p2"
-                            placeholder="Search assets across Atlan..."
-                            size="large"
-                        >
-                        </a-input-search>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="flex flex-col items-center w-full h-full bg-white border-l">
+        <img
+            src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+            class="w-auto h-5 mt-8 mb-2"
+        />
 
-    <div class="w-full min-h-screen px-10 py-5 overflow-y-auto">
-        <div class="flex justify-between">
-            <p class="mb-0 text-2xl">Insights</p>
-            <a-button type="primary" class="text-white rounded"
-                >Create Insights</a-button
-            >
+        <SearchAndFilter
+            placeholder="Search accross atlan..."
+            class="w-1/2 mt-2"
+        />
+        <div class="flex justify-end w-1/2">
+            <span
+                class="flex items-center self-end mt-2 font-bold cursor-pointer  text-primary"
+                @click="redirectToDiscover"
+                >Discover
+                <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
+            </span>
         </div>
-        <div
-            class="grid grid-flow-row gap-8 mt-8 xl:grid-cols-4 2xl:grid-cols-5"
-        >
-            <template v-for="project in dummyProjects" :key="project.id">
-                <div
-                    class="rounded shadow cursor-pointer hover:shadow-lg"
-                    @click="onProjectClick"
-                >
+        <div class="flex flex-col w-full ml-16">
+            <template v-for="item in [1, 2]" :key="item">
+                <div class="w-40 h-10 my-4 bg-gray-300"></div>
+                <div class="flex items-center space-x-20">
                     <div
-                        class="mb-2 overflow-hidden rounded-t shadow  md:h-32 lg:h-36"
+                        v-for="item in [1, 2, 3]"
+                        :key="item"
+                        class="flex items-center justify-center h-32 my-4 bg-gray-300  w-72"
                     >
-                        <img
-                            src="https://picsum.photos/300/150"
-                            class="w-full h-auto"
-                            alt="Project Image"
-                        />
-                    </div>
-                    <div class="p-4">
-                        <p class="mb-2 text-lg text-gray-500">
-                            {{ project.projectName }}
-                        </p>
-                        <p class="mb-2 text-gray">
-                            {{ project.description }}
-                        </p>
-                        <div class="flex justify-between mt-6">
-                            <div>
-                                <div class="flex items-center text-gray-500">
-                                    <template
-                                        v-for="view in views"
-                                        :key="view.id"
-                                    >
-                                        <img
-                                            :src="view.src"
-                                            alt="view"
-                                            class="w-8 h-8 rounded-full view"
-                                        />
-                                    </template>
-                                    +3 Others
-                                </div>
-                            </div>
-                            <a-button
-                                type="default"
-                                class="flex items-center justify-center rounded"
-                            >
-                                <span
-                                    class="flex items-center justify-center mr-2 "
-                                >
-                                    <fa icon="fal circle"></fa
-                                ></span>
-                                Active</a-button
-                            >
-                        </div>
+                        Placeholder
                     </div>
                 </div>
             </template>
         </div>
     </div>
-
-    <div class="grid justify-items-center">
-        <div class="flex items-center w-3/4 mb-5">
-            <div class="grid h-full grid-cols-12 p-6 gap-x-12">
-                <div class="col-span-12 mt-10 sm:col-span-8">
-                    <div class="relative text-white">
-                        <h3 class="text-xl font-bold text-gray">
-                            Your Saved Searches
-                        </h3>
-
-                        <div class="grid grid-cols-12">
-                            <div class="col-span-4 p-5 mr-5 border rounded-md">
-                                <p class="font-bold text-gray">
-                                    Sample Saved Search
-                                </p>
-                                <p class="text-gray-500">
-                                    set of all Tableau sales dashboards, reports
-                                    and data sources from 2020
-                                </p>
-                            </div>
-
-                            <div class="col-span-4 p-5 mr-5 border rounded-md">
-                                <p class="font-bold text-gray">
-                                    Sample Saved Search
-                                </p>
-                                <p class="text-gray-500">
-                                    set of all Tableau sales dashboards, reports
-                                    and data sources from 2020
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-span-12 mt-10 sm:col-span-8">
-                    <div class="relative text-white">
-                        <h3 class="text-xl font-bold text-gray">
-                            NASA's Saved Searches
-                        </h3>
-
-                        <div class="grid grid-cols-12">
-                            <div class="col-span-4 p-5 mr-5 border rounded-md">
-                                <p class="font-bold text-gray">
-                                    Sample Saved Search
-                                </p>
-                                <p class="text-gray-500">
-                                    set of all Tableau sales dashboards, reports
-                                    and data sources from 2020
-                                </p>
-                            </div>
-
-                            <div class="col-span-4 p-5 mr-5 border rounded-md">
-                                <p class="font-bold text-gray">
-                                    Sample Saved Search
-                                </p>
-                                <p class="text-gray-500">
-                                    set of all Tableau sales dashboards, reports
-                                    and data sources from 2020
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--div
-            class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block"
-        >
-            <div class="flex items-center justify-between p-5 align-middle">
-                <div class="flex items-center">
-                    <avatar
-                        :image-url="imageUrl"
-                        :allow-upload="true"
-                        :avatar-name="fullName || username"
-                    />
-                    <div class="flex flex-col ml-2">
-                        <p
-                            class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
-                        >
-                            {{ fullName }}
-                        </p>
-                        <p class="mb-0 text-sm text-gray-500">
-                            @{{ username }}
-                        </p>
-                        <p
-                            class="mt-0 mb-0 text-sm tracking-tight text-gray-800 "
-                        >
-                            <fa
-                                icon="fal user-tag"
-                                class="mr-1 text-gray-800 pushtop"
-                            ></fa
-                            >Admin
-                        </p>
-                    </div>
-                </div>
-                <fa icon="fal cog"></fa>
-            </div>
-            <a-divider class="mt-0"></a-divider>
-            <div class="px-5">
-                <UpdateDesignation
-                    :user="userObj"
-                    :allow-update="true"
-                    @updatedUser="handleUpdateUser"
-                />
-                <UpdateSkills
-                    class="mt-4"
-                    :user="userObj"
-                    :allow-update="true"
-                    @updatedUser="handleUpdateUser"
-                />
-                <div class="mt-4">
-                    <p class="mb-2 leading-none text-gray">Saved Filters</p>
-                    <SavedList></SavedList>
-                </div>
-            </div>
-
-            <a-menu mode="inline" class="bg-transparent">
-          <a-menu-item key="1">
-            <span>Home</span>
-          </a-menu-item>
-          <a-menu-item-group title="Discover">
-            <a-menu-item key="2">
-              <span>Assets</span>
-            </a-menu-item>
-            <a-menu-item key="2">
-              <span>Terms</span>
-            </a-menu-item>
-            <a-menu-item key="2">
-              <span>Connections</span>
-            </a-menu-item>
-            <a-menu-item key="2">
-              <span>Projects</span>
-            </a-menu-item>
-          </a-menu-item-group>
-      </a-menu>
-        </div-->
 </template>
 
 <script lang="ts">
@@ -229,11 +41,13 @@
 
     import { useHead } from '@vueuse/head'
 
+    import { useRouter } from 'vue-router'
     import { useUser } from '~/composables/user/useUsers'
 
     import Avatar from '~/components/common/avatar.vue'
 
     import Sidebar from '~/components/home/sidebar/index.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
@@ -247,6 +61,7 @@
             Avatar,
             UpdateSkills,
             UpdateDesignation,
+            SearchAndFilter,
         },
         props: {
             msg: {
@@ -257,6 +72,7 @@
         setup() {
             const keycloak = inject('$keycloak')
             const tenantStore = useTenantStore()
+            const router = useRouter()
 
             const username = keycloak.tokenParsed.preferred_username || ''
 
@@ -271,6 +87,10 @@
                     lastName.substr(1).toLowerCase()
                 }`
             })
+
+            const redirectToDiscover = () => {
+                router.push('/assets')
+            }
             useHead({
                 title: `Welcome - ${fullName.value} `,
             })
@@ -351,6 +171,7 @@
                 handleUpdateUser,
                 views,
                 dummyProjects,
+                redirectToDiscover,
             }
         },
     })

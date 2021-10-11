@@ -74,7 +74,7 @@
 
     // Composables
     import useAsset from '~/composables/asset/useAsset'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({

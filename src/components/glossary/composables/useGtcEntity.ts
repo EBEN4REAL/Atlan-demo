@@ -8,7 +8,7 @@ import { Components } from "~/api/atlas/client";
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 import { List as StatusList } from '~/constant/status'
-import { useBusinessMetadataStore } from '~/store/businessMetadata';
+import useBusinessMetadataStore from '~/store/businessMetadata';
 
 /*
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on

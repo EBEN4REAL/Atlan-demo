@@ -11,13 +11,13 @@
         @success="handleSuccess"
         @closeModal="handleCloseModal"
     />
-    <splitpanes class="h-full default-theme">
+    <splitpanes class="w-full h-full default-theme" v-if="!isHome">
         <!-- glossary sidebar -->
         <pane
             min-size="12"
             max-size="50"
             style="min-width: 264px"
-            class="z-20 bg-white"
+            class="relative z-20 bg-white"
             id="filterPane"
         >
             <div class="z-20">
@@ -40,10 +40,13 @@
             </div>
         </pane>
         <!-- glossary profile -->
-        <pane :size="82" class="bg-white">
+        <pane :size="82" class="bg-white w-ful">
             <router-view />
         </pane>
     </splitpanes>
+    <div v-else>
+        <router-view />
+    </div>
 </template>
 
 <script lang="ts">
@@ -62,7 +65,7 @@
     import useBusinessMetadata from '~/components/admin/custom-metadata/composables/useBusinessMetadata'
 
     // store
-    import { useBusinessMetadataStore } from '~/store/businessMetadata/index'
+    import useBusinessMetadataStore from '~/store/businessMetadata/index'
 
     // types
     import {

@@ -409,7 +409,10 @@
                     saveQueryLoading,
                     showSaveQueryModal,
                     saveModalRef,
-                    router
+                    router,
+                    'personal',
+                    saveQueryData.parentQF,
+                    saveQueryData.parentGuid
                 )
             }
             const formatDocument = () => {

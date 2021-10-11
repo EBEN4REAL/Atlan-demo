@@ -64,10 +64,23 @@ const GetAutoSuggestions = (body: Record<string, any>) => {
     }) as Promise<autosuggestionResponse>
 }
 
+const DeleteEntity = (guid: string) => {
+    const { data, error, isLoading } = useAPIAsyncState<SavedQueryResponse>(
+        KeyMaps.insights.DELETE_ENTITY,
+        'DELETE',
+        {
+            pathVariables: {
+                guid
+            },
+        }
+    )
+    return { data, error, isLoading }
+}
 export const Insights = {
     GetAutoSuggestions,
     UpdateSavedQuery,
     CreateSavedQuery,
     GetSavedQuery,
     CreateQueryFolder,
+    DeleteEntity
 }

@@ -72,6 +72,9 @@ const useTree = ({
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)
 
+    const immediateParentFolderQF = ref<string>('root')
+    const immediateParentGuid = ref<string>('root')
+
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
         useLoadQueryData({ connector, savedQueryType })
 
@@ -165,8 +168,20 @@ const useTree = ({
             if (
                 !subQueriesResponse.entities?.length &&
                 !subFoldersResponse.entities?.length
-            )
-                treeNode.dataRef.isLeaf = true
+            ){
+
+                treeNode.dataRef.children.push({
+                    attributes: {},
+                    key: 'Empty',
+                    qualifiedName: "Empty",
+                    guid: 'Empty',
+                    title: 'This Folder is Empty',
+                    typeName: 'Empty',
+                    // ...item.attributes,
+                    isLeaf: true,
+                    entity: {},
+                } as any)
+            }
 
             // checkAndAddLoadMoreNode(schemaResponse, 'Database', treeNode.dataRef.qualifiedName)
         }
@@ -176,6 +191,17 @@ const useTree = ({
 
     const expandNode = (expanded: string[], event: any) => {
         // triggered by select
+        // const item = event.node.dataRef.entity as Folder | SavedQuery
+
+        // if (item.typeName === 'Query') {
+        //     immediateParentFolderQF.value = item.attributes.parentFolderQualifiedName;
+        //     immediateParentGuid.value = nodeToParentKeyMap[item.guid];
+
+        // } else if(item.typeName === 'QueryFolder') {
+        //     immediateParentFolderQF.value = item.attributes.qualifiedName;
+        //     immediateParentGuid.value = item.guid;
+        // }
+
         if (!event.node.isLeaf) {
             const key: string = event.node.eventKey
             const isExpanded = expandedKeys.value?.includes(key)
@@ -195,13 +221,18 @@ const useTree = ({
 
     const selectNode = (selected: any, event: any) => {
         const item = event.node.dataRef.entity as Folder | SavedQuery
-
         if (item.typeName === 'Query') {
+            immediateParentFolderQF.value = item.attributes.parentFolderQualifiedName;
+            immediateParentGuid.value = nodeToParentKeyMap[item.guid];
+
             openSavedQueryInNewTab(item)
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
                 pushGuidToURL(item.guid)
             }
+        } else if(item.typeName === 'QueryFolder') {
+            immediateParentFolderQF.value = item.attributes.qualifiedName
+            immediateParentGuid.value = item.guid
         }
 
         // if (!event.node.isLeaf) {
@@ -225,6 +256,10 @@ const useTree = ({
             selectedKeys.value = []
         } else {
             selectedKeys.value = [...selected]
+        }
+        if(!selectedKeys.value.length){
+            immediateParentFolderQF.value = 'root'
+            immediateParentGuid.value = 'root'
         }
         emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
@@ -255,44 +290,6 @@ const useTree = ({
 
             const updatedTreeData: CustomTreeDataItem[] = [...updatedFolders, ...updatedQueries]
 
-            
-            // if(folderResponse !== null) {
-            //     folderResponse?.entities?.forEach((folder) => {
-            //         const existingFolder = treeData.value.find(
-            //             (entity) => entity.guid === folder.guid
-            //         )
-            //         // if the folder already exists,ignore it so as to maintain the expanded state
-            //         if (existingFolder) {
-            //             updatedTreeData.push(existingFolder)
-            //         } else {
-            //             // if a new folder is found at the root level, append it
-            //             nodeToParentKeyMap[folder.guid] = 'root';
-            //             updatedTreeData.push(returnTreeDataItemAttributes(folder))
-            //         }
-            //     })
-            // } else {
-            //     treeData.value.forEach((item) => {
-            //         if(item.typeName === 'QueryFolder') updatedTreeData.push(item)
-            //     })
-            // }
-            // if(queryResponse !== null) {
-            //     queryResponse?.entities?.forEach((query) => {
-            //         const existingQuery = treeData.value.find(
-            //             (entity) => entity.guid === query.guid
-            //         )
-            //         // if term already exists, append the existing one
-            //         if (existingQuery) {
-            //             updatedTreeData.push(existingQuery)
-            //         } else {
-            //             nodeToParentKeyMap[query.guid] = 'root'
-            //             updatedTreeData.push(returnTreeDataItemAttributes(query))
-            //         }
-            //     })
-            // } else {
-            //     treeData.value.forEach((item) => {
-            //         if(item.typeName === 'Query') updatedTreeData.push(item)
-            //     })
-            // }
 
             treeData.value.forEach((item) => {
                 if(item.title === 'Load more') updatedTreeData.push(item);
@@ -321,44 +318,6 @@ const useTree = ({
                     const updatedQueries = checkAndAppendNewNodes(queryResponse, 'Query', false, node)
         
                     const updatedChildren: CustomTreeDataItem[] = [...updatedFolders, ...updatedQueries]
-
-                    // if(folderResponse !== null){
-                    //     folderResponse?.entities?.forEach((folder) => {
-                    //         const existingFolder = node.children?.find(
-                    //             (entity) => entity.guid === folder.guid
-                    //         )
-                    //         // if current folder already exists, append the existing one to maintain expanded state
-                    //         // else append the new one
-                    //         if (existingFolder) {
-                    //             updatedChildren.push(existingFolder)
-                    //         } else {
-                    //             nodeToParentKeyMap[folder.guid] = node.key 
-                    //             updatedChildren.push(returnTreeDataItemAttributes(folder))
-                    //         }
-                    //     })
-                    // } else {
-                    //     node.children?.forEach((item) => {
-                    //         if(item.typeName === 'QueryFolder') updatedChildren.push(item)
-                    //     })
-                    // }
-
-                    // if(queryResponse !== null) {
-                    //     queryResponse?.entities?.forEach((query) => {
-                    //         const existingQuery = node.children?.find(
-                    //             (entity) => entity.guid === query.guid
-                    //         )
-                    //         if (existingQuery) {
-                    //             updatedChildren.push(existingQuery)
-                    //         } else {
-                    //             nodeToParentKeyMap[query.guid] = node.key
-                    //             updatedChildren.push(returnTreeDataItemAttributes(query))
-                    //         }
-                    //     })
-                    // } else {
-                    //     node.children?.forEach((item) => {
-                    //         if(item.typeName === 'Query') updatedChildren.push(item)
-                    //     })
-                    // }
             
                     node.children?.forEach((item) => {
                         if(item.title === 'Load more')  updatedChildren.push(item)
@@ -440,6 +399,7 @@ const useTree = ({
             attributes: item.attributes,
             key: item.guid,
             qualifiedName: item.attributes.qualifiedName,
+            class: item.guid,
             guid: item.guid,
             title: item.attributes.name,
             typeName: item.typeName,
@@ -469,6 +429,9 @@ const useTree = ({
         expandedKeys,
         selectedCache,
         expandedCache,
+        immediateParentFolderQF,
+        immediateParentGuid,
+        nodeToParentKeyMap,
         onLoadData,
         expandNode,
         selectNode,

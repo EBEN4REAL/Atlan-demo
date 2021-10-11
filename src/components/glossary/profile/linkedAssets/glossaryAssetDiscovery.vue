@@ -2,6 +2,21 @@
     <div class="relative flex w-full" :class="$style.tabClasses">
         <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
+                <div
+                    v-if="showCheckBox"
+                    class="flex items-center px-5 py-3 space-x-2 bg-gray-100"
+                >
+                    <atlan-icon
+                        icon="ArrowRight"
+                        class="w-auto h-5 transform -rotate-180 cursor-pointer  hover:underline"
+                        @click="showCheckBox = false"
+                    />
+                    <span
+                        class="cursor-pointer hover:underline"
+                        @click="showCheckBox = false"
+                        >Link Assets</span
+                    >
+                </div>
                 <div v-if="checkedAssetList.length" class="flex">
                     <div
                         class="fixed left-0 z-10 flex justify-between w-full  bottom-8"
@@ -152,8 +167,7 @@
             :get-container="false"
             :wrap-style="{
                 position: 'absolute',
-                minWidth: '264px',
-                backgroundColor: 'rgba(250, 250, 250, var(--tw-bg-opacity))',
+                width: '100%',
             }"
             :keyboard="false"
             :destroy-on-close="true"
@@ -161,7 +175,7 @@
             width="100%"
             :class="$style.drawerClasses"
         >
-            <div class="relative h-full mt-12 bg-gray-100">
+            <div class="relative h-full bg-gray-100">
                 <AssetFilters
                     :ref="
                         (el) => {
@@ -217,7 +231,7 @@
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import useBusinessMetadataStore from '~/store/businessMetadata'
     import { Components } from '~/api/atlas/client'
     import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
 

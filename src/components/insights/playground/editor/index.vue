@@ -210,7 +210,15 @@
             <div
                 class="absolute bottom-0 left-0 flex items-center justify-between w-full text-xs text-gray-500 bg-white "
             >
-                <WarehouseConnector />
+                <div class="flex items-center">
+                    <WarehouseConnector />
+                    <div class="ml-2" v-if="limitRows.checked">
+                        <span class="mr-4">
+                            Output limit:&nbsp;{{ limitRows.rowsCount }}
+                        </span>
+                    </div>
+                </div>
+
                 <div class="flex items-center mr-2">
                     <div class="flex" v-if="editorFocused">
                         <span class="mr-2">
@@ -221,7 +229,7 @@
                         </span>
                     </div>
                     <span class="ml-2 mr-4"> Spaces:&nbsp;4 </span>
-                    <div class="mr-2 group" @click="togglePane">
+                    <div class="group" @click="togglePane">
                         <div
                             class="
                                 flex

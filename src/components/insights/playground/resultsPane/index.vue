@@ -33,7 +33,8 @@
                     </template>
                 </a-input>
             </div>
-            <div class="mt-2 mr-3">
+            <!-- For Clear button -->
+            <!-- <div class="mt-2 mr-3">
                 <a-button
                     @click="clearOutputPaneResults"
                     :disabled="
@@ -53,7 +54,7 @@
                 >
                     <AtlanIcon class="group-hover:text-primary" icon="Trash"
                 /></a-button>
-            </div>
+            </div> -->
         </div>
 
         <!-- <component :is="activeResultsPaneTab?.component"></component> -->

@@ -2,13 +2,26 @@
     <div class="flex" :class="className">
         <template v-for="item in list" :key="item.id">
             <div
-                @click="() => handleClick(item)"
-                class="flex items-center justify-center px-5 py-1 ml-2 text-xs border rounded cursor-pointer  button hover:text-primary hover:border-primary"
+                class="
+                    flex
+                    items-center
+                    justify-center
+                    px-5
+                    py-1
+                    ml-2
+                    text-xs
+                    border
+                    rounded
+                    cursor-pointer
+                    button
+                    hover:text-primary hover:border-primary
+                "
                 :class="
                     item.id === data
                         ? 'active-btn border-primary'
                         : 'text-gray-500'
                 "
+                @click="() => handleClick(item)"
             >
                 {{ item.label }}
             </div>

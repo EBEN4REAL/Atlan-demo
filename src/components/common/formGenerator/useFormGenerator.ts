@@ -136,21 +136,26 @@ export default function useFormGenerator(formConfig, formRef) {
 
 
 
-  const generateSring = (s) => {
+  const generateTemplateValue = (s, id, isStringfied) => {
     if (!processedSchema.value.length) return s
     const templatePartsf = s.split('{{')
     let finalString = ''
     // ? ->
+    let missingValue = false;
     templatePartsf.forEach((p, i) => {
       if (i === 0) {
         finalString += p
       } else {
         const pp = p.split('}}')
+        if (typeof getValueFromSchemaData(pp[0]) === 'undefined') {
+          missingValue = true
+        }
         finalString += getValueFromSchemaData(pp[0]) + pp[1]
       }
     })
-
-    return finalString
+    if (missingValue) return null;
+    testModal.value[id] = isStringfied ? JSON.parse(finalString) : finalString
+    return testModal.value[id]
   }
 
   // FIXME enhance,DRY
@@ -164,7 +169,7 @@ export default function useFormGenerator(formConfig, formRef) {
         // ? if conditional field is hidden dont add
         if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
 
-        const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+        const val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
         if (typeof val === 'undefined' || val === null) return;
         // ? no groups
         if (f.parent) {
@@ -184,7 +189,7 @@ export default function useFormGenerator(formConfig, formRef) {
         f.children.forEach(f => {
           if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
 
-          const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+          const val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
           if (typeof val === 'undefined' || val === null) return;
           // ? no groups
           if (f.parent) {
@@ -319,21 +324,237 @@ export default function useFormGenerator(formConfig, formRef) {
 
   }
 
-  watch(
-    testModal.value,
-    () => {
-      // improve this -- handle @change
-      handleConditional()
-      finalConfigObject(processedSchema.value)
-    },
-    { immediate: true, deep: true }
-  )
+  const handleInputChange = () => {
+    handleConditional()
+    finalConfigObject(processedSchema.value)
+  }
 
+  const x = [
+    {
+      "label": "Account Identifier",
+      "type": "text",
+      "id": "account",
+      "placeholder": "xxx.<region>",
+      "isVisible": true,
+      "isMandatory": true,
+      "helpText": "Follow this [snowflake doc](https://docs.snowflake.com/en/user-guide/admin-account-identifier.html) to get your account identifier",
+      "rules": [
+        {
+          "type": "required",
+          "enabled": true,
+          "errorMessage": "Account identifier is mandatory"
+        },
+        {
+          "type": "regexp",
+          "source": "(^|\\s)([\\w-]+(\\.[\\w-]+)+\\.?(:\\d+)?(\\/\\S*)?)",
+          "flags": "gm",
+          "enabled": true,
+          "errorMessage": "Account Identifier is not valid"
+        }
+      ]
+    },
+    {
+      "label": "Snowflake JDBC template",
+      "type": "template",
+      "id": "url",
+      "isStringified": false,
+      "template": "jdbc:snowflake://{{account}}.snowflakecomputing.com?loginTimeout=5&networkTimeout=5&application=atlan",
+      "isVisible": false
+    },
+    {
+      "id": "authType",
+      "label": "Authentication Mode",
+      "type": "toggle",
+      "default": "basic",
+      "isVisible": true,
+      "rules": [],
+      "options": [
+        {
+          "id": "basic",
+          "label": "Basic"
+        },
+        {
+          "id": "keypair",
+          "label": "Keypair Authentication"
+        }
+      ]
+    },
+    {
+      "id": "username",
+      "label": "Username",
+      "type": "text",
+      "isVisible": true,
+      "isMandatory": true,
+      "conditional": {
+        "refID": "authType",
+        "refValue": "basic"
+      },
+      "rule": [
+        {
+          "type": "required",
+          "enabled": true,
+          "errorMessage": "Username is mandatory"
+        }
+      ]
+    },
+    {
+      "id": "password",
+      "label": "Password basic",
+      "type": "password",
+      "isMandatory": true,
+      "isVisible": true,
+      "conditional": {
+        "refID": "authType",
+        "refValue": "basic"
+      },
+      "rule": [
+        {
+          "type": "required",
+          "enabled": true,
+          "errorMessage": "Password is mandatory"
+        }
+      ]
+    },
+    {
+      "id": "username",
+      "label": "Username",
+      "type": "text",
+      "isVisible": true,
+      "isMandatory": true,
+      "conditional": {
+        "refID": "authType",
+        "refValue": "keypair"
+      },
+      "rule": [
+        {
+          "type": "required",
+          "enabled": true,
+          "errorMessage": "Username is mandatory"
+        }
+      ]
+    },
+    {
+      "id": "private_key_file",
+      "label": "Private Key",
+      "type": "password",
+      "isMandatory": true,
+      "isVisible": true,
+      "conditional": {
+        "refID": "authType",
+        "refValue": "keypair"
+      },
+      "rule": [
+        {
+          "type": "required",
+          "enabled": true,
+          "errorMessage": "Private key is mandatory"
+        }
+      ]
+    },
+    {
+      "id": "private_key_file_pwd",
+      "label": "Private key password (If set)",
+      "type": "password",
+      "isVisible": true,
+      "isMandatory": false,
+      "conditional": {
+        "refID": "authType",
+        "refValue": "keypair"
+      }
+    },
+    {
+      "id": "driverProperties",
+      "label": "Driver Properties",
+      "conditional": {
+        "refID": "authType",
+        "refValue": "basic"
+      },
+      "type": "template",
+      "isStringified": true,
+      "isVisible": false,
+
+      "template": "{\"username\": \"{{username}}\", \"passsword\": \"{{password}}\"}"
+    },
+    {
+      "id": "driverProperties",
+      "label": "Driver Properties",
+      "conditional": {
+        "refID": "authType",
+        "refValue": "keypair"
+      },
+      "isStringified": true,
+      "type": "template",
+      "isVisible": false,
+      "template": "{\"username\": \"{{username}}\", \"private_key_file\": \"{{private_key_file}}\", \"private_key_file_pwd\": \"{{private_key_file_pwd}}\"}"
+    },
+    {
+      "type": "object",
+      "id": "extra",
+      "visible": true,
+      "children": [
+        {
+          "type": "group",
+          "groupTitle": "Advanced",
+          "isVisible": true,
+          "children": [
+            {
+              "id": "role",
+              "label": "Role",
+              "type": "enum",
+              "helpText": "Snowflake role to use as default",
+              "placeholder": "ACCOUNTADMIN",
+              "default": "ACCOUNTADMIN",
+              "isVisible": true,
+              "allowCustom": true,
+              "options": [
+                { "id": "ACCOUNTADMIN", "value": "ACCOUNTADMIN" },
+                { "id": "ACCOUNTADMIN", "value": "SYSADMIN" }
+              ]
+            },
+            {
+              "id": "warehouse",
+              "type": "asyncSelect",
+              "label": "Warehouse",
+              "isVisible": true,
+              "placeholder": "COMPUTE_WH",
+              "default": "COMPUTE_WH",
+              "requestConfig": {
+                "url": "https://{{domain}}/api/sql/query/test",
+                "method": "POST",
+                "params": {},
+                "addFormValues": ["url", "driverProperties", "authType"],
+                "body": {
+                  "className": "net.snowflake.client.jdbc.SnowflakeDriver",
+                  "connector": "snowflake",
+                  "query": "show warehouses"
+                }
+              },
+              "responseConfig": {
+                "rootPath": ".results",
+                "labelPath": ".attributes.displayName",
+                "valuePath": ".guid"
+              }
+            },
+            {
+              "id": "query_timeout",
+              "label": "Query Timeout (in seconds)",
+              "type": "number",
+              "helpText": "Default query timeout for the credential. Zero (0) indicates to wait indefinitely",
+              "placeholder": "COMPUTE_WH",
+              "default": 0,
+              "isVisible": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
 
   return {
     validate,
     getRules,
     testModal,
+    handleInputChange,
     getGridClass,
     handleConditional,
     handleFormSubmit,

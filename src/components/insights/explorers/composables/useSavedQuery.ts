@@ -26,6 +26,7 @@ export function useSavedQuery(
     const { getParsedQuery } = useEditor()
 
     const {
+        overwriteInlineTab,
         isInlineTabAlreadyOpened,
         inlineTabAdd,
         modifyActiveInlineTab,
@@ -46,6 +47,8 @@ export function useSavedQuery(
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery.guid,
+            updateTime: savedQuery.updateTime,
+            updatedBy: savedQuery.updatedBy,
             connectionId: savedQuery.attributes.connectionId,
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
@@ -105,7 +108,13 @@ export function useSavedQuery(
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {
             // show user that this tab is already opened
-            activeInlineTabKey.value = newTab.queryId
+            let key = undefined
+            tabsArray.value.forEach((tab) => {
+                if (tab.queryId === newTab.queryId) key = tab.key
+            })
+            newTab.key = key
+            overwriteInlineTab(newTab, tabsArray)
+            activeInlineTabKey.value = key
         }
     }
     /* Involved network requests */
@@ -184,13 +193,13 @@ export function useSavedQuery(
                     message.success({
                         content: `${name} query saved!`,
                     })
+                    /* Not present in response */
+                    activeInlineTabCopy.updateTime = Date.now()
+                    activeInlineTabCopy.updatedBy = username.value
+                    /* ----------------------------------------------- */
                     // making it save
                     activeInlineTabCopy.isSaved = true
-                    modifyActiveInlineTabEditor(
-                        activeInlineTabCopy,
-                        tabsArray,
-                        true
-                    )
+                    modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                 } else {
                     console.log(error.value.toString())
                     message.error({
@@ -310,6 +319,10 @@ export function useSavedQuery(
                     console.log(data.value, 'saved')
                     if (guid) router.push(`/insights?id=${guid}`)
                     activeInlineTabCopy.queryId = guid
+                    /* Not present in response */
+                    activeInlineTabCopy.updateTime = Date.now()
+                    activeInlineTabCopy.updatedBy = username.value
+                    /* ----------------------------------------------- */
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                 } else {
                     console.log(error.value.toString())

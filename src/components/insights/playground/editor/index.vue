@@ -3,7 +3,7 @@
         <div class="w-full h-full px-3 overflow-x-hidden rounded">
             <div class="flex items-center justify-between w-full my-2">
                 <div class="flex items-center text-base">
-                    <span class="mr-1">{{ activeInlineTab.label }}</span>
+                    <span class="mr-1">{{ activeInlineTab?.label }}</span>
                     <div class="-mt-0.5">
                         <StatusBadge
                             :status-id="activeInlineTab.status"
@@ -92,8 +92,12 @@
                                     <a-menu>
                                         <div class="p-2">
                                             <a-checkbox
-                                                v-model:checked="limitRows"
-                                                >Limit to 100 rows</a-checkbox
+                                                v-model:checked="
+                                                    limitRows.checked
+                                                "
+                                                >Limit to
+                                                {{ limitRows.rowsCount }}
+                                                rows</a-checkbox
                                             >
                                         </div>
                                     </a-menu>
@@ -132,20 +136,33 @@
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
                             "
-                            class="
-                                opacity-70
-                                flex
-                                px-2
-                                items-center
-                                justify-between
-                                ml-2
-                                h-6
-                                py-0.5
-                            "
                         >
-                            <AtlanIcon class="mr-1 text-primary" icon="Check" />
+                            <a-tooltip
+                                class="
+                                    opacity-70
+                                    flex
+                                    px-2
+                                    items-center
+                                    justify-between
+                                    cursor-pointer
+                                    ml-2
+                                    h-6
+                                    py-0.5
+                                "
+                            >
+                                <template #title
+                                    >{{
+                                        useTimeAgo(activeInlineTab?.updateTime)
+                                    }}
+                                    by {{ activeInlineTab.updatedBy }}</template
+                                >
+                                <AtlanIcon
+                                    class="mr-1 text-primary"
+                                    icon="Check"
+                                />
 
-                            Saved
+                                Saved
+                            </a-tooltip>
                         </div>
                         <a-button
                             v-else
@@ -193,8 +210,16 @@
             <div
                 class="absolute bottom-0 left-0 flex items-center justify-between w-full text-xs text-gray-500 bg-white "
             >
-                <WarehouseConnector />
                 <div class="flex items-center">
+                    <WarehouseConnector />
+                    <div class="ml-2" v-if="limitRows.checked">
+                        <span class="mr-4">
+                            Output limit:&nbsp;{{ limitRows.rowsCount }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center mr-2">
                     <div class="flex" v-if="editorFocused">
                         <span class="mr-2">
                             Ln:&nbsp;{{ editorPos.lineNumber }}
@@ -203,7 +228,37 @@
                             Col:&nbsp; {{ editorPos.column }}
                         </span>
                     </div>
-                    <span class="mr-2"> Spaces:&nbsp;4 </span>
+                    <span class="ml-2 mr-4"> Spaces:&nbsp;4 </span>
+                    <div class="group" @click="togglePane">
+                        <div
+                            class="
+                                flex
+                                items-end
+                                justify-center
+                                w-4
+                                h-3.5
+                                border
+                                rounded-sm
+                                group-hover:border-primary
+                            "
+                            :class="
+                                outputPaneSize > 0
+                                    ? 'border-primary'
+                                    : 'border-gray-500'
+                            "
+                            style="padding: 0px 1px"
+                        >
+                            <div
+                                class="w-full h-1 rounded-sm  group-hover:bg-primary"
+                                :class="
+                                    outputPaneSize > 0
+                                        ? 'bg-primary'
+                                        : 'bg-gray-500'
+                                "
+                                style="margin-bottom: 1px"
+                            ></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -232,7 +287,7 @@
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     // import ActionButtons from '~/components/insights/playground/editor/actionButtons/index.vue'
     import WarehouseConnector from '~/components/insights/playground/editor/warehouse/index.vue'
-
+    import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
     import AtlanBtn from '~/components/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
@@ -242,6 +297,7 @@
         useProvide,
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
+    import { useTimeAgo } from '@vueuse/core'
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
@@ -255,8 +311,9 @@
         props: {},
         setup() {
             const router = useRouter()
-
-            const { queryRun } = useRunQuery()
+            // TODO: will be used for HOTKEYs
+            const { resultsPaneSizeToggle } = useHotKeys()
+            const { queryRun, modifyQueryExecutionTime } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
                 column: 0,
@@ -264,7 +321,10 @@
             })
             const editorFocused: Ref<boolean> = ref(false)
             const saveModalRef = ref()
-            const limitRows = ref(false)
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 10,
+            })
             const showcustomToolBar = ref(false)
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -272,6 +332,10 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const queryExecutionTime = inject(
+                'queryExecutionTime'
+            ) as Ref<number>
+            const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
@@ -291,7 +355,9 @@
             }
 
             // callback fxn
-            const getData = (dataList, columnList) => {
+            const getData = (dataList, columnList, executionTime) => {
+                console.log(queryExecutionTime, executionTime, 'extime')
+                modifyQueryExecutionTime(queryExecutionTime, executionTime)
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
@@ -308,7 +374,12 @@
                 }
             }
             const run = () => {
-                queryRun(activeInlineTab.value, getData, isQueryRunning)
+                queryRun(
+                    activeInlineTab.value,
+                    getData,
+                    isQueryRunning,
+                    limitRows
+                )
             }
 
             const setInstance = (
@@ -351,6 +422,10 @@
                     'editor.action.formatDocument'
                 )
             }
+            const togglePane = () => {
+                console.log('called')
+                resultsPaneSizeToggle(outputPaneSize)
+            }
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -368,6 +443,9 @@
                 console.log(pos)
             })
             return {
+                togglePane,
+                outputPaneSize,
+                useTimeAgo,
                 editorFocused,
                 editorPos,
                 limitRows,

@@ -14,10 +14,10 @@ export function useHotKeys() {
             assetSidebarPaneSizeParam.value = assetSidebarPaneSize.value
         } else assetSidebarPaneSizeParam.value = 0
     }
-    function resultsPaneSizeToggle(panesizeParam: Ref<any>) {
-        if (panesizeParam.value == 0) {
-            panesizeParam.value = outputPaneSize.value
-        } else panesizeParam.value = 0
+    function resultsPaneSizeToggle(outputPaneSizeParam: Ref<any>) {
+        if (outputPaneSizeParam.value == 0) {
+            outputPaneSizeParam.value = outputPaneSize.value
+        } else outputPaneSizeParam.value = 0
     }
 
     return {

@@ -7,7 +7,6 @@
         :rules="getRules(formModel)"
     >
         <a-button @click="validate">Validate</a-button>
-        <!-- <pre>{{ formModel }}</pre> -->
         <span class="grid grid-cols-2 gap-x-8">
             <div
                 v-for="(f, x) in formModel"
@@ -55,10 +54,9 @@
                                         :prefix="c.prefix"
                                         :suffix="c.suffix"
                                         :enum-list="c?.options"
-                                        :options="c?.options"
                                         :multiple="c?.isMultivalued"
-                                        :request-config="f?.requestConfig"
-                                        :response-config="f?.responseConfig"
+                                        :request-config="c?.requestConfig"
+                                        :response-config="c?.responseConfig"
                                         :limit-after="c.limitAfter"
                                         :limit-before="c.limitBefore"
                                         :allow-custom="c.allowCustom"
@@ -67,6 +65,7 @@
                                                 ? { valueObject }
                                                 : {}
                                         "
+                                        @change="handleInputChange"
                                     ></DynamicInput>
                                 </a-form-item>
                             </div>
@@ -79,6 +78,7 @@
                         v-model:data="valueObject[f.id]"
                         class="pb-4 border-b"
                         :list="f.options"
+                        @change="handleInputChange"
                     ></CustomRadioButton>
                 </div>
                 <div v-else class="mb-5 rounded">
@@ -113,6 +113,7 @@
                             v-bind="
                                 f.type === 'asyncSelect' ? { valueObject } : {}
                             "
+                            @change="handleInputChange"
                         ></DynamicInput>
                     </a-form-item>
                 </div>
@@ -167,6 +168,7 @@
                 processedSchema: formModel,
                 getGridClass,
                 finalConfigObject,
+                handleInputChange,
                 submitStatus,
                 getRules,
                 validate,
@@ -177,6 +179,7 @@
 
             return {
                 handleFormSubmit,
+                handleInputChange,
                 valueObject,
                 submitStatus,
                 getRules,

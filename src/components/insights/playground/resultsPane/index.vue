@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <div class="flex justify-between">
-            <a-tabs
+        <div class="flex items-center justify-end">
+            <!-- <a-tabs
                 :activeKey="activeResultsPaneTabIndex"
                 :class="$style.result_pane"
                 @change="
@@ -18,8 +18,8 @@
                         {{ tab.name }}
                     </template>
                 </a-tab-pane>
-            </a-tabs>
-            <div class="mt-2 mr-3">
+            </a-tabs> -->
+            <div class="mt-2 mr-2">
                 <a-input
                     v-model:value="searchText"
                     :class="$style.input_class"
@@ -33,9 +33,32 @@
                     </template>
                 </a-input>
             </div>
+            <!-- For Clear button -->
+            <!-- <div class="mt-2 mr-3">
+                <a-button
+                    @click="clearOutputPaneResults"
+                    :disabled="
+                        activeInlineTab.playground.editor.columnList.length < 1
+                    "
+                    class="
+                        flex
+                        group
+                        items-center
+                        justify-center
+                        text-gray-500
+                        h-7
+                        border
+                        px-1.5
+                        py-1
+                    "
+                >
+                    <AtlanIcon class="group-hover:text-primary" icon="Trash"
+                /></a-button>
+            </div> -->
         </div>
 
-        <component :is="activeResultsPaneTab?.component"></component>
+        <!-- <component :is="activeResultsPaneTab?.component"></component> -->
+        <component :is="'result'"></component>
     </div>
 </template>
 
@@ -52,6 +75,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
         components: {
@@ -78,7 +102,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-
+            const { modifyActiveInlineTab } = useInlineTab()
             const activeResultsPaneTabIndex = computed(
                 () => activeInlineTab.value?.playground?.resultsPane?.activeTab
             )
@@ -87,8 +111,20 @@
                     (tab, index) => index === activeResultsPaneTabIndex.value
                 )
             )
+            const clearOutputPaneResults = () => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.playground.editor.dataList = []
+                activeInlineTabCopy.playground.editor.columnList = []
+                modifyActiveInlineTab(
+                    activeInlineTabCopy,
+                    inlineTabs,
+                    activeInlineTabCopy.isSaved
+                )
+            }
             return {
                 searchText,
+                clearOutputPaneResults,
                 resultsPaneTabChange,
                 activeResultsPaneTab,
                 activeResultsPaneTabIndex,

@@ -1,7 +1,8 @@
 import * as monaco from 'monaco-editor'
 import { languageTokens } from './sqlTokens'
+import { suggestionKeywordInterface } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
 
-const sqlKeywords = () => {
+const sqlKeywords = (): suggestionKeywordInterface[] => {
     const keywordsList = languageTokens.keywords.map((keyword) => ({
         label: keyword,
         kind: monaco.languages.CompletionItemKind.Keyword,

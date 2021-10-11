@@ -16,12 +16,13 @@ const List = (params?: any, options?: AxiosRequestConfig) =>
         ...options,
     })
 
-const getWorkflows = ({ immediate, options }) =>
+const getWorkflows = ({ immediate, options, params }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW,
         'GET',
         {
             options,
+            params,
             pathVariables: {},
         },
         { immediate }

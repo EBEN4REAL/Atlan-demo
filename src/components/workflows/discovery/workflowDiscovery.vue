@@ -79,6 +79,7 @@
                         queryText.length ? filterList(queryText) : workflowList
                     "
                     :is-loading="isLoading"
+                    :is-load-more="isLoadMore"
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></WorkflowList>
@@ -160,10 +161,20 @@
 
             // Get All Disoverable Asset Types
 
-            const { workflowList, isLoading, filterList, mutate } =
-                useWorkflowSearchList(false)
+            const {
+                workflowList,
+                isLoading,
+                filterList,
+                totalCount,
+                loadMore,
+                mutate,
+            } = useWorkflowSearchList(false)
 
             if (!workflowList.value.length) mutate()
+
+            const isLoadMore = computed(
+                () => totalCount.value > workflowList.value.length
+            )
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
@@ -207,11 +218,6 @@
             const handlePreview = (item) => {
                 emit('preview', item)
             }
-            const loadMore = () => {
-                autoSelect.value = false
-                offset.value += limit.value
-                updateBody()
-            }
 
             const handleClearFiltersFromList = () => {
                 queryText.value = ''
@@ -230,11 +236,12 @@
                 initialFilters,
                 AllFilters,
                 workflowList,
+                isLoadMore,
+                loadMore,
                 emptyScreen,
                 handleSearchChange,
                 handlePreview,
                 queryText,
-                loadMore,
                 isLoading,
                 dynamicSearchPlaceholder,
                 setPlaceholder,

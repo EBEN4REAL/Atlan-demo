@@ -140,7 +140,6 @@
             // )
 
             const handleLoadMore = () => {
-                console.log('handleLoadMore')
                 emit('loadMore')
             }
 

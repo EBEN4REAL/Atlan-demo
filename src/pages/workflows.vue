@@ -9,7 +9,6 @@
                 <KeepAlive>
                     <component
                         :is="whichComponent.main"
-                        ref="workflowDiscovery"
                         :selected-run-id="selectedRunId"
                         :initial-filters="initialFilters"
                         :update-profile="updateProfile"
@@ -42,6 +41,7 @@
         ref,
         Ref,
         provide,
+        watch,
     } from 'vue'
     import WorkflowDiscovery from '~/components/workflows/discovery/workflowDiscovery.vue'
     import Setup from '@/workflows/setup/index.vue'
@@ -100,9 +100,18 @@
                     preview: 'discoveryPreview',
                 }
             })
+
             const updateProfile = ref<boolean>(false)
             const selectedRunId = ref('')
+            const selected: Ref<assetInterface | undefined> = ref(undefined)
 
+            watch(
+                () => whichComponent,
+                () => {
+                    selected.value = null
+                },
+                { deep: true }
+            )
             const workflowDiscovery: Ref<Element | null> = ref(null)
             // TODO fix initialFilters set , apply , etc
             // const initialFilters: initialFiltersType =
@@ -119,7 +128,6 @@
                 ),
             }
 
-            const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
                 console.log(selectedItem)

@@ -5,20 +5,31 @@ import { Workflows } from '~/services/argo/api/workflow'
 export function useWorkflowSearchList(
     immediate: boolean = true
 ) {
+    const params = ref({ limit: 10, offset: 0 })
     const { data, error, isLoading, mutate } = Workflows.getWorkflows(
-        { immediate, options: {} }
+        { immediate, options: {}, params }
     )
 
     const workflowList = ref([])
+    const totalCount = ref()
     watch(data, () => {
+        if (!data?.value?.records) return;
         console.log('useWorkflowSearchList', data.value.records)
-        workflowList.value = data.value?.records
+        totalCount.value = data.value.total_record
+        workflowList.value.push(...data.value.records)
     })
+
+    const loadMore = () => {
+        params.value.offset += params.value.limit
+        if (params.value.offset > totalCount.value)
+            params.value.offset = totalCount.value
+        mutate()
+    }
 
     const filterList = (text) =>
         workflowList.value.filter((wf) => wf.name.includes(text))
 
-    return { workflowList, error, isLoading, filterList, mutate }
+    return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate }
 }
 
 export function useArchivedWorkflowList(

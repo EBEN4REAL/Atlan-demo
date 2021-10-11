@@ -15,7 +15,10 @@
             ></ListItem>
         </template>
         <template #footer>
-            <div v-if="isLoading" class="flex items-center justify-center">
+            <div
+                v-if="isLoadMore || isLoading"
+                class="flex items-center justify-center"
+            >
                 <button
                     :disabled="isLoading"
                     class="

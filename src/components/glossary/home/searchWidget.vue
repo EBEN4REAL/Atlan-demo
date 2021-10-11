@@ -4,12 +4,6 @@
         :class="$style.menuClasses"
     >
         <a-dropdown :trigger="['click']">
-            <!-- <a-input-search
-                v-model:value="searchQuery"
-                placeholder="Search terms, categories & glossaries"
-                class="w-1/2"
-                @change="onSearch"
-            /> -->
             <SearchAndFilter
                 v-model:value="searchQuery"
                 placeholder="Search terms, categories & glossaries"
@@ -17,7 +11,7 @@
                 @change="onSearch"
             />
             <template #overlay>
-                <a-menu class="overflow-y-auto max-h-40">
+                <a-menu class="overflow-y-auto max-h-48">
                     <a-menu-item v-if="isLoading">
                         <LoadingView />
                     </a-menu-item>

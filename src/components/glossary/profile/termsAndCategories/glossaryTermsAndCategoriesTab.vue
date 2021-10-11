@@ -81,15 +81,15 @@
                 :get-container="false"
                 :wrap-style="{
                     position: 'absolute',
-                    minWidth: '264px',
+                    width: '100%',
                 }"
+                width="100%"
                 :keyboard="false"
                 :destroy-on-close="true"
                 :closable="false"
-                width="100%"
                 :class="$style.drawerClasses"
             >
-                <div class="relative h-full">
+                <div class="h-full">
                     <Filters
                         :initialFilters="initialFilters"
                         @filterUpdated="updateFilters"
@@ -334,7 +334,6 @@
             }
 
             const updateFilters = (filters: any) => {
-                console.log(filters)
                 fetchAssetsPaginated({ filters, offset: 0 })
             }
             const handleFilterInitialize = (value) => {

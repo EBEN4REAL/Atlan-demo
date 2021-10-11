@@ -1,36 +1,48 @@
 <template>
     <div class="border-r glossaryTree" :class="$style.glossaryTree">
         <div :class="$style.parentGroup">
-        <div
-            class="flex px-4 py-3 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
-        >
-            <a-select
-                v-model:value="currentGlossaryGuid"
-                :options="glossaryContextDropdown"
+            <div
+                class="flex px-4 py-3 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
             >
-                <template #option="{value, label, status}">
-                    <hr v-if="value==='createNewGlossary'" />
-                    <span class="py-0.5 flex flex-row items-center content-center my-auto" :class="{
-                        'mt-2':value==='createNewGlossary'
-                    }">
-                        <AtlanIcon v-if="value==='all'" class="mr-2" icon="Home" />
-                        <AtlanIcon v-else-if="value==='createNewGlossary'" class="mr-2" icon="Add" />
-                        <AtlanIcon
-                            v-else
-                             class="mr-2"
-                            :icon="
-                                getEntityStatusIcon(
-                                    'glossary',
-                                    status
-                                )
+                <a-select
+                    v-model:value="currentGlossaryGuid"
+                    :options="glossaryContextDropdown"
+                >
+                    <template #option="{ value, label, status }">
+                        <hr v-if="value === 'createNewGlossary'" />
+                        <span
+                            class="
+                                py-0.5
+                                flex flex-row
+                                items-center
+                                content-center
+                                my-auto
                             "
-                        />
-                        <span>{{ label }}</span>
-                    </span>
-                    
-                    <hr v-if="value==='all'" />
-                </template>
-                <!-- <template #dropdownRender="{ menuNode: menu }">
+                            :class="{
+                                'mt-2': value === 'createNewGlossary',
+                            }"
+                        >
+                            <AtlanIcon
+                                v-if="value === 'all'"
+                                class="mr-2"
+                                icon="Home"
+                            />
+                            <AtlanIcon
+                                v-else-if="value === 'createNewGlossary'"
+                                class="mr-2"
+                                icon="Add"
+                            />
+                            <AtlanIcon
+                                v-else
+                                class="mr-2"
+                                :icon="getEntityStatusIcon('glossary', status)"
+                            />
+                            <span>{{ label }}</span>
+                        </span>
+
+                        <hr v-if="value === 'all'" />
+                    </template>
+                    <!-- <template #dropdownRender="{ menuNode: menu }">
                     <div
                         class="flex px-4 py-2 text-sm leading-5 text-gray-700 cursor-pointer text-bold hover:bg-gray-light"
                         @mousedown="(e) => e.preventDefault()"
@@ -69,452 +81,488 @@
                         </template>
                     </AddGtcModal>
                 </template> -->
-            </a-select>
-        </div>
-
-        <hr />
-
-        <div v-if="isHome" class="h-screen px-2 py-4">
-            <div class="flex flex-col px-2 pb-2">
-                <a-input-search
-                    v-model:value="searchQuery"
-                    placeholder="Search accross Glossaries"
-                    @change="onSearch"
-                ></a-input-search>
+                </a-select>
             </div>
-            <div
-                v-if="searchResults?.length && searchQuery?.length"
-                class="h-full px-4 overflow-y-auto"
-            >
-                <div v-if="searchTerms?.length">
-                    <div class="mb-2 text-gray-500">Terms</div>
-                    <div
-                        v-for="term in searchTerms"
-                        :key="term.guid"
-                        class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                        @click="redirectToProfile('term', term.guid)"
-                    >
-                        <div class="flex content-center w-full mb-1 space-x-2">
-                            <span class="my-auto"
-                                ><AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            'term',
-                                            term.attributes.assetStatus
-                                        )
-                                    "
-                                    class="w-auto h-5"
-                            /></span>
-                            <div class="flex flex-col w-full">
-                                <span class="text-md">{{
-                                    term.displayText
-                                }}</span>
-                                <Tooltip
-                                    v-if="term.attributes.shortDescription"
-                                    :tooltip-text="
-                                        term.attributes.shortDescription
-                                    "
-                                    :rows="1"
-                                    classes="w-auto text-gray-500 text-xs"
-                                />
-                            </div>
-                        </div>
-                    </div>
+
+            <hr />
+
+            <div v-if="isHome" class="h-screen px-2 py-4">
+                <div class="flex flex-col px-2 pb-2">
+                    <a-input-search
+                        v-model:value="searchQuery"
+                        placeholder="Search accross Glossaries"
+                        @change="onSearch"
+                    ></a-input-search>
                 </div>
-                <div v-if="searchCategories?.length" class="mt-4">
-                    <div class="mb-2 text-gray-500">Categories</div>
-                    <div
-                        v-for="category in searchCategories"
-                        :key="category.guid"
-                        class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                        @click="redirectToProfile('category', category.guid)"
-                    >
-                        <div class="flex content-center w-full mb-1 space-x-2">
-                            <span class="my-auto"
-                                ><AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            'category',
-                                            category.attributes.assetStatus
-                                        )
-                                    "
-                                    class="w-auto h-5"
-                            /></span>
-                            <div class="flex flex-col w-full">
-                                <span class="text-md">{{
-                                    category.displayText
-                                }}</span>
-                                <Tooltip
-                                    v-if="category.attributes.shortDescription"
-                                    :tooltip-text="
-                                        category.attributes.shortDescription
-                                    "
-                                    :rows="1"
-                                    classes="w-auto text-gray-500 text-xs"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div v-if="searchGlossaries?.length" class="mt-4">
-                    <div class="mb-2 text-gray-500">Glossaries</div>
-                    <div
-                        v-for="glossary in searchGlossaries"
-                        :key="glossary.guid"
-                        class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                        @click="redirectToProfile('glossary', glossary.guid)"
-                    >
-                        <div class="flex content-center w-full mb-1 space-x-2">
-                            <span class="my-auto"
-                                ><AtlanIcon icon="Glossary" class="w-auto h-5"
-                            /></span>
-                            <div class="flex flex-col w-full">
-                                <span class="text-md">{{
-                                    glossary.displayText
-                                }}</span>
-                                <Tooltip
-                                    v-if="glossary.attributes.shortDescription"
-                                    :tooltip-text="
-                                        glossary.attributes.shortDescription
-                                    "
-                                    :rows="1"
-                                    classes="w-auto text-gray-500 text-xs"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div
-                v-else-if="glossaryList.length"
-                class="h-full pb-32 overflow-y-auto"
-            >
                 <div
-                    v-for="glossary in glossaryList"
-                    :key="glossary.guid"
-                    @click="() => redirectToProfile('glossary', glossary.guid)"
+                    v-if="searchResults?.length && searchQuery?.length"
+                    class="h-full px-4 overflow-y-auto"
+                >
+                    <div v-if="searchTerms?.length">
+                        <div class="mb-2 text-gray-500">Terms</div>
+                        <div
+                            v-for="term in searchTerms"
+                            :key="term.guid"
+                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            @click="redirectToProfile('term', term.guid)"
+                        >
+                            <div
+                                class="flex content-center w-full mb-1 space-x-2 "
+                            >
+                                <span class="my-auto"
+                                    ><AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'term',
+                                                term.attributes.assetStatus
+                                            )
+                                        "
+                                        class="w-auto h-5"
+                                /></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-md">{{
+                                        term.displayText
+                                    }}</span>
+                                    <Tooltip
+                                        v-if="term.attributes.shortDescription"
+                                        :tooltip-text="
+                                            term.attributes.shortDescription
+                                        "
+                                        :rows="1"
+                                        classes="w-auto text-gray-500 text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="searchCategories?.length" class="mt-4">
+                        <div class="mb-2 text-gray-500">Categories</div>
+                        <div
+                            v-for="category in searchCategories"
+                            :key="category.guid"
+                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            @click="
+                                redirectToProfile('category', category.guid)
+                            "
+                        >
+                            <div
+                                class="flex content-center w-full mb-1 space-x-2 "
+                            >
+                                <span class="my-auto"
+                                    ><AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'category',
+                                                category.attributes.assetStatus
+                                            )
+                                        "
+                                        class="w-auto h-5"
+                                /></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-md">{{
+                                        category.displayText
+                                    }}</span>
+                                    <Tooltip
+                                        v-if="
+                                            category.attributes.shortDescription
+                                        "
+                                        :tooltip-text="
+                                            category.attributes.shortDescription
+                                        "
+                                        :rows="1"
+                                        classes="w-auto text-gray-500 text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="searchGlossaries?.length" class="mt-4">
+                        <div class="mb-2 text-gray-500">Glossaries</div>
+                        <div
+                            v-for="glossary in searchGlossaries"
+                            :key="glossary.guid"
+                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            @click="
+                                redirectToProfile('glossary', glossary.guid)
+                            "
+                        >
+                            <div
+                                class="flex content-center w-full mb-1 space-x-2 "
+                            >
+                                <span class="my-auto"
+                                    ><AtlanIcon
+                                        icon="Glossary"
+                                        class="w-auto h-5"
+                                /></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-md">{{
+                                        glossary.displayText
+                                    }}</span>
+                                    <Tooltip
+                                        v-if="
+                                            glossary.attributes.shortDescription
+                                        "
+                                        :tooltip-text="
+                                            glossary.attributes.shortDescription
+                                        "
+                                        :rows="1"
+                                        classes="w-auto text-gray-500 text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    v-else-if="glossaryList.length"
+                    class="h-full pb-32 overflow-y-auto"
                 >
                     <div
-                        class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
+                        v-for="glossary in glossaryList"
+                        :key="glossary.guid"
+                        @click="
+                            () => redirectToProfile('glossary', glossary.guid)
+                        "
                     >
-                        <div class="flex flex-row justify-between">
-                            {{ glossary.displayText }}
-                            <!-- <Fa
+                        <div
+                            class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
+                        >
+                            <div class="flex flex-row justify-between">
+                                {{ glossary.displayText }}
+                                <!-- <Fa
                             class="w-auto h-3 text-white group-hover:text-primary"
                             icon="fal external-link-alt"
                         /> -->
-                            <atlan-icon
-                                class="w-auto h-5 text-white  group-hover:text-primary"
-                                icon="ArrowRight"
-                            />
+                                <atlan-icon
+                                    class="w-auto h-5 text-white  group-hover:text-primary"
+                                    icon="ArrowRight"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div v-else class="flex flex-col h-screen">
-            <div class="flex p-4 pb-0 pr-3 searchArea">
-                <a-input-search
-                    v-model:value="searchQuery"
-                    :placeholder="
-                        currentGuid &&
-                        currentGuid === parentGlossary?.guid &&
-                        parentGlossary?.displayText
-                            ? `Search in ${parentGlossary?.displayText}`
-                            : 'Search'
-                    "
-                    @change="onSearch"
-                ></a-input-search>
-                <!-- Hide for GA -->
-                <!-- <a-button class="flex items-center w-8 h-8 p-2 rounded">
+            <div v-else class="flex flex-col h-screen">
+                <div class="flex p-4 pb-0 pr-3 searchArea">
+                    <a-input-search
+                        v-model:value="searchQuery"
+                        :placeholder="
+                            currentGuid &&
+                            currentGuid === parentGlossary?.guid &&
+                            parentGlossary?.displayText
+                                ? `Search in ${parentGlossary?.displayText}`
+                                : 'Search'
+                        "
+                        @change="onSearch"
+                    ></a-input-search>
+                    <!-- Hide for GA -->
+                    <!-- <a-button class="flex items-center w-8 h-8 p-2 rounded">
                     <AtlanIcon icon="Filter" />
                 </a-button> -->
-            </div>
+                </div>
 
-            <div v-if="isLoading" class="mt-4">
-                <LoadingView />
-            </div>
-            <div
-                v-else-if="!isLoading && !searchQuery?.length"
-                class="h-full mt-2"
-            >
-                <div class="flex justify-between px-4 hover:bg-black hover:bg-opacity-5">
-                    <div class="flex items-center ml-3">
-                        <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+                <div v-if="isLoading" class="mt-4">
+                    <LoadingView />
+                </div>
+                <div
+                    v-else-if="!isLoading && !searchQuery?.length"
+                    class="h-full mt-2"
+                >
+                    <div
+                        class="flex justify-between px-4  hover:bg-black hover:bg-opacity-5"
+                    >
+                        <div class="flex items-center ml-3">
+                            <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+                            <div
+                                class="flex justify-start w-full cursor-pointer"
+                                @click="
+                                    redirectToProfile(
+                                        'glossary',
+                                        parentGlossary.guid
+                                    )
+                                "
+                            >
+                                <span
+                                    class="flex my-auto text-xs font-bold leading-3 "
+                                    :class="{
+                                        'text-primary':
+                                            currentGuid ===
+                                            parentGlossary?.guid,
+                                    }"
+                                >
+                                    GLOSSARY
+                                </span>
+                            </div>
+                        </div>
+
                         <div
-                            class="flex justify-start w-full cursor-pointer"
+                            class="flex content-center  my-autoc tree-glossary-actions parent-group-hover"
+                        >
+                            <div
+                                v-if="expandedKeys.length"
+                                class="flex bg-opacity-0 cursor-pointer  w-7 h-7 py-auto"
+                                @click="collapseAll"
+                            >
+                                <AtlanIcon
+                                    class="m-auto"
+                                    icon="TreeCollapseAll"
+                                />
+                            </div>
+                            <div
+                                class="flex flex-col justify-center p-2 bg-opacity-0 "
+                            >
+                                <AtlanIcon icon="Add" />
+                            </div>
+                            <div
+                                class="flex flex-col justify-center mt-1 bg-opacity-0 "
+                            >
+                                <ThreeDotMenu
+                                    class="w-7 h-7 ml-0.5"
+                                    :entity="parentGlossary"
+                                    :showLinks="false"
+                                    :treeMode="true"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        v-if="treeData.length"
+                        class="py-2 pl-4 pr-2 overflow-x-hidden overflow-y-auto  scrollable-container"
+                        :class="$style.treeStyles"
+                    >
+                        <a-tree
+                            :expandedKeys="expandedKeys"
+                            :selectedKeys="selectedKeys"
+                            :loadedKeys="loadedKeys"
+                            :tree-data="treeData"
+                            :load-data="onLoadData"
+                            :draggable="true"
+                            :block-node="true"
+                            :auto-expand-parent="false"
+                            @select="selectNode"
+                            @expand="expandNode"
+                            @drop="dragAndDrop"
+                            class="h-full"
+                        >
+                            <template #switcherIcon>
+                                <AtlanIcon icon="Caret" />
+                                !
+                            </template>
+
+                            <template #title="entity">
+                                <div
+                                    v-if="entity.title === 'Load more'"
+                                    class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                                    @click="entity.click()"
+                                >
+                                    <span v-if="entity.isLoading">
+                                        <LoadingView
+                                            size="small"
+                                            class="w-1 h-1 mr-4"
+                                        />
+                                    </span>
+                                    <span v-else>{{ entity.title }}</span>
+                                </div>
+                                <a-dropdown v-else :trigger="['contextmenu']">
+                                    <div
+                                        class="min-w-full"
+                                        @click="
+                                            () =>
+                                                redirectToProfile(
+                                                    entity.type,
+                                                    entity.key
+                                                )
+                                        "
+                                    >
+                                        <div
+                                            class="flex justify-between mr-2  group"
+                                        >
+                                            <div class="flex m-0">
+                                                <span
+                                                    v-if="
+                                                        entity.type ===
+                                                        'glossary'
+                                                    "
+                                                    class="p-0 my-auto mr-2"
+                                                >
+                                                    <AtlanIcon
+                                                        icon="Glossary"
+                                                        class="h-5"
+                                                    />
+                                                </span>
+                                                <span
+                                                    v-else
+                                                    class="p-0 my-auto mr-1.5"
+                                                >
+                                                    <AtlanIcon
+                                                        :icon="
+                                                            getEntityStatusIcon(
+                                                                entity.type,
+                                                                entity.assetStatus
+                                                            )
+                                                        "
+                                                    />
+                                                </span>
+                                                <span
+                                                    class="my-auto text-sm leading-5 text-gray-700 "
+                                                    >{{ entity.title }}</span
+                                                >
+                                            </div>
+
+                                            <ThreeDotMenu
+                                                :treeMode="true"
+                                                :visible="false"
+                                                :entity="{
+                                                    guid: entity.guid,
+                                                    displayText: entity.name,
+                                                    typeName:
+                                                        entity.type === 'term'
+                                                            ? 'AtlasGlossaryTerm'
+                                                            : 'AtlasGlossaryCategory',
+                                                    attributes: {
+                                                        ...entity,
+                                                        anchor: {
+                                                            guid: entity.anchor
+                                                                .glossaryGuid,
+                                                            uniqueAttributes: {
+                                                                qualifiedName:
+                                                                    parentGlossary
+                                                                        ?.attributes
+                                                                        ?.qualifiedName,
+                                                            },
+                                                        },
+                                                        name: entity.name,
+                                                        assetStatus:
+                                                            entity.assetStatus,
+                                                        qualifiedName:
+                                                            entity.qualifiedName,
+                                                        parentCategory: {
+                                                            guid: entity
+                                                                .parentCategory
+                                                                ?.categoryGuid,
+                                                        },
+                                                        categories:
+                                                            entity.categories?.map(
+                                                                (category) => ({
+                                                                    guid: category?.categoryGuid,
+                                                                })
+                                                            ),
+                                                    },
+                                                }"
+                                            />
+                                        </div>
+                                    </div>
+                                </a-dropdown>
+                            </template>
+                        </a-tree>
+                    </div>
+                    <div
+                        v-else
+                        class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    >
+                        <AtlanIcon icon="EmptyGlossary" class="h-40" />
+                        <p class="m-0 mt-20">The Glossary is empty,</p>
+                        <p class="m-0">Create a few terms!</p>
+                    </div>
+                </div>
+                <div
+                    v-else-if="searchResults?.length && searchQuery?.length"
+                    class="h-full p-4 overflow-y-auto"
+                >
+                    <div v-if="searchTerms?.length">
+                        <div class="mb-0 text-gray-500">Terms</div>
+                        <div
+                            v-for="term in searchTerms"
+                            :key="term.guid"
+                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            @click="redirectToProfile('term', term.guid)"
+                        >
+                            <div
+                                class="flex content-center w-full mb-1 space-x-2 "
+                            >
+                                <span class="my-auto"
+                                    ><AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'term',
+                                                term.attributes.assetStatus
+                                            )
+                                        "
+                                        class="w-auto h-5"
+                                /></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-md">{{
+                                        term.displayText
+                                    }}</span>
+                                    <Tooltip
+                                        v-if="term.attributes.shortDescription"
+                                        :tooltip-text="
+                                            term.attributes.shortDescription
+                                        "
+                                        :rows="1"
+                                        classes="w-auto text-gray-500 text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="searchCategories?.length" class="mt-4">
+                        <div class="mb-0 text-gray-500">Categories</div>
+                        <div
+                            v-for="category in searchCategories"
+                            :key="category.guid"
+                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
                             @click="
-                                redirectToProfile(
-                                    'glossary',
-                                    parentGlossary.guid
-                                )
+                                redirectToProfile('category', category.guid)
                             "
                         >
-                            <span
-                                class="flex my-auto text-xs font-bold leading-3"
-                                :class="{
-                                    'text-primary':
-                                        currentGuid === parentGlossary?.guid,
-                                }"
-                            >
-                                GLOSSARY
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="flex my-autoc content-center tree-glossary-actions parent-group-hover">
-                        <div
-                            v-if="expandedKeys.length"
-                            class="flex bg-opacity-0 cursor-pointer  w-7 h-7 py-auto"
-                            @click="collapseAll"
-                        >
-                            <AtlanIcon class="m-auto" icon="TreeCollapseAll" />
-                        </div>
-                        <div
-                            class="flex flex-col justify-center p-2 bg-opacity-0"
-                        >
-                            <AtlanIcon icon="Add" />
-                        </div>
-                        <div
-                            class="flex flex-col justify-center mt-1 bg-opacity-0"
-                        >
-                            <ThreeDotMenu
-                                class="w-7 h-7 ml-0.5"
-                                :entity="parentGlossary"
-                                :showLinks="false"
-                                :treeMode="true"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div
-                    v-if="treeData.length"
-                    class="py-2 pl-4 pr-2 overflow-x-hidden overflow-y-auto  scrollable-container"
-                    :class="$style.treeStyles"
-                >
-                    <a-tree
-                        :expandedKeys="expandedKeys"
-                        :selectedKeys="selectedKeys"
-                        :loadedKeys="loadedKeys"
-                        :tree-data="treeData"
-                        :load-data="onLoadData"
-                        :draggable="true"
-                        :block-node="true"
-                        :auto-expand-parent="false"
-                        @select="selectNode"
-                        @expand="expandNode"
-                        @drop="dragAndDrop"
-                        class="h-full"
-                    >
-                        <template #switcherIcon>
-                            <AtlanIcon icon="Caret" />
-!                       </template>
-
-                        <template #title="entity">
                             <div
-                                v-if="entity.title === 'Load more'"
-                                class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
-                                @click="entity.click()"
+                                class="flex content-center w-full mb-1 space-x-2 "
                             >
-                                <span v-if="entity.isLoading">
-                                    <LoadingView
-                                        size="small"
-                                        class="w-1 h-1 mr-4"
-                                    />
-                                </span>
-                                <span v-else>{{ entity.title }}</span>
-                            </div>
-                            <a-dropdown v-else :trigger="['contextmenu']">
-                                <div
-                                    class="min-w-full"
-                                    @click="
-                                        () =>
-                                            redirectToProfile(
-                                                entity.type,
-                                                entity.key
+                                <span class="my-auto"
+                                    ><AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'category',
+                                                category.attributes.assetStatus
                                             )
-                                    "
-                                >
-                                    <div
-                                        class="flex justify-between mr-2 group"
-                                    >
-                                        <div class="flex m-0">
-                                            <span
-                                                v-if="
-                                                    entity.type === 'glossary'
-                                                "
-                                                class="p-0 my-auto mr-2"
-                                            >
-                                                <AtlanIcon
-                                                    icon="Glossary"
-                                                    class="h-5"
-                                                />
-                                            </span>
-                                            <span
-                                                v-else
-                                                class="p-0 my-auto mr-1.5"
-                                            >
-                                                <AtlanIcon
-                                                    :icon="
-                                                        getEntityStatusIcon(
-                                                            entity.type,
-                                                            entity.assetStatus
-                                                        )
-                                                    "
-                                                />
-                                            </span>
-                                            <span
-                                                class="my-auto text-sm leading-5 text-gray-700 "
-                                                >{{ entity.title }}</span
-                                            >
-                                        </div>
-
-                                        <ThreeDotMenu
-                                            :treeMode="true"
-                                            :visible="false"
-                                            :entity="{
-                                                guid: entity.guid,
-                                                displayText: entity.name,
-                                                typeName:
-                                                    entity.type === 'term'
-                                                        ? 'AtlasGlossaryTerm'
-                                                        : 'AtlasGlossaryCategory',
-                                                attributes: {
-                                                    ...entity,
-                                                    anchor: {
-                                                        guid: entity.anchor
-                                                            .glossaryGuid,
-                                                        uniqueAttributes: {
-                                                            qualifiedName:
-                                                                parentGlossary
-                                                                    ?.attributes
-                                                                    ?.qualifiedName,
-                                                        },
-                                                    },
-                                                    name: entity.name,
-                                                    assetStatus:
-                                                        entity.assetStatus,
-                                                    qualifiedName:
-                                                        entity.qualifiedName,
-                                                    parentCategory: {
-                                                        guid: entity
-                                                            .parentCategory
-                                                            ?.categoryGuid,
-                                                    },
-                                                    categories:
-                                                        entity.categories?.map(
-                                                            (category) => ({
-                                                                guid: category?.categoryGuid,
-                                                            })
-                                                        ),
-                                                },
-                                            }"
-                                        />
-                                    </div>
+                                        "
+                                        class="w-auto h-5"
+                                /></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-md">{{
+                                        category.displayText
+                                    }}</span>
+                                    <Tooltip
+                                        v-if="
+                                            category.attributes.shortDescription
+                                        "
+                                        :tooltip-text="
+                                            category.attributes.shortDescription
+                                        "
+                                        :rows="1"
+                                        classes="w-auto text-gray-500 text-xs"
+                                    />
                                 </div>
-                            </a-dropdown>
-                        </template>
-                    </a-tree>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div
-                    v-else
-                    class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    v-else-if="
+                        searchQuery?.length &&
+                        !searchResults?.length &&
+                        !searchLoading
+                    "
+                    class="p-4 font-bold text-gray-500"
                 >
-                    <AtlanIcon icon="EmptyGlossary" class="h-40" />
-                    <p class="m-0 mt-20">The Glossary is empty,</p>
-                    <p class="m-0">Create a few terms!</p>
+                    No results
+                </div>
+                <div v-else class="mt-4">
+                    <LoadingView />
                 </div>
             </div>
-            <div
-                v-else-if="searchResults?.length && searchQuery?.length"
-                class="h-full p-4 overflow-y-auto"
-            >
-                <div v-if="searchTerms?.length">
-                    <div class="mb-0 text-gray-500">Terms</div>
-                    <div
-                        v-for="term in searchTerms"
-                        :key="term.guid"
-                        class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                        @click="redirectToProfile('term', term.guid)"
-                    >
-                        <div class="flex content-center w-full mb-1 space-x-2">
-                            <span class="my-auto"
-                                ><AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            'term',
-                                            term.attributes.assetStatus
-                                        )
-                                    "
-                                    class="w-auto h-5"
-                            /></span>
-                            <div class="flex flex-col w-full">
-                                <span class="text-md">{{
-                                    term.displayText
-                                }}</span>
-                                <Tooltip
-                                    v-if="term.attributes.shortDescription"
-                                    :tooltip-text="
-                                        term.attributes.shortDescription
-                                    "
-                                    :rows="1"
-                                    classes="w-auto text-gray-500 text-xs"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div v-if="searchCategories?.length" class="mt-4">
-                    <div class="mb-0 text-gray-500">Categories</div>
-                    <div
-                        v-for="category in searchCategories"
-                        :key="category.guid"
-                        class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                        @click="redirectToProfile('category', category.guid)"
-                    >
-                        <div class="flex content-center w-full mb-1 space-x-2">
-                            <span class="my-auto"
-                                ><AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            'category',
-                                            category.attributes.assetStatus
-                                        )
-                                    "
-                                    class="w-auto h-5"
-                            /></span>
-                            <div class="flex flex-col w-full">
-                                <span class="text-md">{{
-                                    category.displayText
-                                }}</span>
-                                <Tooltip
-                                    v-if="category.attributes.shortDescription"
-                                    :tooltip-text="
-                                        category.attributes.shortDescription
-                                    "
-                                    :rows="1"
-                                    classes="w-auto text-gray-500 text-xs"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div
-                v-else-if="
-                    searchQuery?.length &&
-                    !searchResults?.length &&
-                    !searchLoading
-                "
-                class="p-4 text-gray-500 font-bold"
-            >
-                No results
-            </div>
-            <div v-else class="mt-4">
-                <LoadingView />
-            </div>
-        </div>
         </div>
     </div>
 </template>
@@ -650,10 +698,13 @@
                 const list = props.glossaryList.map((glossary) => ({
                     value: glossary.guid,
                     label: glossary.attributes.name,
-                    status: glossary.attributes.assetStatus 
+                    status: glossary.attributes.assetStatus,
                 }))
                 list.unshift({ label: 'All Glossaries', value: 'all' })
-                list.push({label: 'Create New Glossary', value: 'createNewGlossary'})
+                list.push({
+                    label: 'Create New Glossary',
+                    value: 'createNewGlossary',
+                })
                 return list
             })
 
@@ -797,7 +848,7 @@
             max-height: calc(100vh - 11rem) !important;
 
             :global(.ant-tree-switcher_open) {
-                transform: rotate(90deg)
+                transform: rotate(90deg);
             }
             :global(.ant-tree-node-selected) {
                 @apply bg-black bg-opacity-5 text-primary font-bold !important;
@@ -826,12 +877,11 @@
                 @apply mb-2 border-0;
             }
         }
-
     }
-        .parentGroup {
-            :global(.parent-group-hover) {
-                @apply opacity-0 !important;
-            }
+    .parentGroup {
+        :global(.parent-group-hover) {
+            @apply opacity-0 !important;
+        }
         &:hover {
             :global(.parent-group-hover) {
                 @apply opacity-100 !important;

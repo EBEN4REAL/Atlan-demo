@@ -112,15 +112,20 @@
                         expand-icon-position="right"
                     >
                         <template #expandIcon="{ isActive }">
-                            <AtlanIcon
-                                icon="ChevronDown"
-                                class="ml-1 transition-transform duration-300 transform "
-                                :class="isActive ? '-rotate-180' : 'rotate-0'"
-                            />
+                            <div class="">
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    class="ml-1 transition-transform duration-300 transform "
+                                    :class="
+                                        isActive ? '-rotate-180' : 'rotate-0'
+                                    "
+                                />
+                            </div>
                         </template>
+
                         <a-collapse-panel key="details" header="Details">
                             <div class="flex flex-col pl-5 pr-2 gap-y-4">
-                                <!-- <div
+                                <div
                                     v-if="
                                         entity?.typeName ===
                                         'AtlasGlossaryCategory'
@@ -149,7 +154,7 @@
                                             >{{ termCount }}
                                         </span>
                                     </div>
-                                </div> -->
+                                </div>
 
                                 <Description
                                     v-if="entity.guid"
@@ -301,6 +306,7 @@
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { Components } from '~/api/atlas/client'
     import Categories from '@/glossary/common/categories.vue'
+    import { message } from 'ant-design-vue'
 
     //  utils
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -356,7 +362,6 @@
             const activeKey = ref(['details'])
             const tabActiveKey = ref('info')
             const updateTreeNode = inject<any>('updateTreeNode')
-
             // computed
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
@@ -384,6 +389,8 @@
                 }
                 return 0
             })
+
+            console.log(termCount.value, categoryCount.value)
             // methods
             const redirectToProfile = () => {
                 if (props.entity.typeName === 'AtlasGlossaryCategory')
@@ -416,6 +423,9 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
+                message.info({
+                    content: 'Copied!',
+                })
             }
             const {
                 isClassificationInitializedInStore,

@@ -9,13 +9,16 @@
                 <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                 <span
                     v-show="entity?.typeName !== 'AtlasGlossary'"
-                    class="mr-1 text-sm"
+                    class="mr-1 text-sm cursor-pointer hover:underline"
+                    @click="redirectToProfile"
                 >
                     {{
                         entity?.attributes?.anchor?.uniqueAttributes
                             ?.qualifiedName
                     }}
-                    /</span
+                </span>
+                <span v-show="entity?.typeName !== 'AtlasGlossary'" class="mx-1"
+                    >/</span
                 >
                 <AtlanIcon
                     v-if="entity.typeName === 'AtlasGlossaryTerm'"
@@ -27,7 +30,9 @@
                     icon="Category"
                     class="h-5 m-0 mr-2"
                 />
-                <span class="mr-2 text-sm">{{ title }}</span>
+                <span class="max-w-sm mr-2 text-sm truncate overflow-ellipse">{{
+                    title
+                }}</span>
                 <component
                     :is="statusObject?.icon"
                     v-if="statusObject"
@@ -58,7 +63,7 @@
                 <div
                     v-if="
                         entity.typeName === 'AtlasGlossaryCategory' ||
-                        entity.typeName === 'AtlasGlossaryCategory'
+                        entity.typeName === 'AtlasGlossaryTerm'
                     "
                     class="flex items-center"
                 >
@@ -66,7 +71,8 @@
                     <AtlanIcon icon="Glossary" class="h-4 m-0 mx-3 mb-0.5" />
                     <span
                         v-show="entity?.typeName !== 'AtlasGlossary'"
-                        class="mr-1 text-sm text-gray-500"
+                        class="mr-1 text-sm text-gray-500 cursor-pointer  hover:underline"
+                        @click="redirectToProfile"
                     >
                         {{
                             entity?.attributes?.anchor?.uniqueAttributes
@@ -97,10 +103,11 @@
                     </a-menu>
                 </template>
                 <a-button
-                    class="flex items-center border-0 shadow-none outline-none"
-                    ><atlan-icon icon="Share" class="w-auto h-4 mr-1" />
-                    <span class="text-sm">Share</span>
-                </a-button>
+                    class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                    ><div class="flex">
+                        <AtlanIcon icon="Share" class="mt-0.5 mr-2" /> Share
+                    </div></a-button
+                >
             </a-dropdown>
             <ThreeDotMenu :entity="entity" :showLinks="false" />
         </div>
@@ -167,6 +174,7 @@
     import { useRouter } from 'vue-router'
 
     // components
+    import { message } from 'ant-design-vue'
     import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     // assets
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -233,12 +241,9 @@
             )
             // methods
             const redirectToProfile = () => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    router.push('/glossary')
-                else
-                    router.push(
-                        `/glossary/${props.entity?.attributes?.anchor?.guid}`
-                    )
+                router.push(
+                    `/glossary/${props.entity?.attributes?.anchor?.guid}`
+                )
             }
             const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin
@@ -253,6 +258,10 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
+
+                message.info({
+                    content: 'Copied!',
+                })
             }
             return {
                 redirectToProfile,

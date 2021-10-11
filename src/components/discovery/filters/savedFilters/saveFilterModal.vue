@@ -73,10 +73,10 @@
         toRefs,
     } from 'vue'
 
+    import { message } from 'ant-design-vue'
     import whoami from '~/composables/user/whoami'
     import { addSavedFilter } from './useSavedFilters'
     import { Components } from '~/api/atlas/client'
-    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {},

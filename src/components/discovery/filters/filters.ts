@@ -21,7 +21,7 @@ export const List: CollapseArray = [
     {
         id: 'saved',
         label: 'Saved Filter',
-        component: 'SavedFilter',
+        component: 'savedFilter',
         overallCondition: 'AND',
         filters: [
 

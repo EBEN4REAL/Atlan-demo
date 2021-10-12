@@ -59,14 +59,47 @@
                     </div>
 
                     <div v-else class="flex flex-col w-full">
-                        <a-radio-group
+                        <!-- <a-radio-group
                             v-model:value="data.checked"
-                            v-for="(filter, index) in list"
+                            v-for="(filter, index) in filteredList"
                             :key="index"
                             @change="handleChange"
                         >
                             <a-radio :value="filter">{{ filter.name }}</a-radio>
-                        </a-radio-group>
+                        </a-radio-group> -->
+
+                        <div
+                            v-for="(filter, index) in filteredList"
+                            :key="index"
+                        >
+                            <a-popover placement="rightTop">
+                                <template #content>
+                                    <div></div>
+                                </template>
+                                <div
+                                    class="flex items-center justify-between px-2 py-1 my-1 border rounded cursor-pointer hover:text-primary hover:bg-primary-light"
+                                    :class="
+                                        selected === filter.name
+                                            ? '  border-primary bg-primary-light  text-primary'
+                                            : '  border-transparent'
+                                    "
+                                    @click.stop="() => handleLoadFilter(filter)"
+                                >
+                                    <Tooltip :tooltip-text="filter.name" />
+                                    <div>
+                                        <a-tooltip placement="top">
+                                            <template #title
+                                                >Load filter</template
+                                            >
+
+                                            <AtlanIcon
+                                                icon="Play"
+                                                class="w-4 h-4 my-auto"
+                                            ></AtlanIcon>
+                                        </a-tooltip>
+                                    </div></div
+                            ></a-popover>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -93,8 +126,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
+    import { defineComponent, PropType, ref, Ref, toRefs, computed } from 'vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
     import { Collapse } from '~/types'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
@@ -104,6 +138,7 @@
         name: 'SavedFilter',
         components: {
             SearchAndFilter,
+            Tooltip,
         },
         props: {
             item: {
@@ -120,26 +155,33 @@
             const { data } = toRefs(props)
             const activeTab: Ref<'personal' | 'all'> = ref('personal')
             const queryText = ref('')
-            const selectedSavedFilter = ref({})
+            const selected = ref('')
 
             // own info
             const { username: myUsername } = whoami()
 
-            const handleSearch = () => {
-                if (activeTab.value === 'personal') {
-                } else if (activeTab.value === 'all') {
-                }
-            }
-
-            const handleChange = () => {
-                emit('change')
-            }
-
             const { data: list, isLoading } = getSavedFilters()
+
+            const filteredList = computed(() =>
+                list.value.filter(
+                    (item) =>
+                        item.name
+                            .toLowerCase()
+                            .includes(queryText.value.toLowerCase()) || []
+                )
+            )
+
+            const handleSearch = (e: { target: { value: string } }) => {
+                queryText.value = e.target.value
+            }
+
+            const handleLoadFilter = (item) => {
+                emit('change', item)
+                selected.value = item.name
+            }
 
             function setActiveTab(tabName: 'personal' | 'all') {
                 activeTab.value = tabName
-                if (queryText.value !== '') handleSearch()
             }
 
             return {
@@ -150,9 +192,10 @@
                 activeTab,
                 setActiveTab,
                 isLoading,
+                filteredList,
+                handleLoadFilter,
                 list,
-                selectedSavedFilter,
-                handleChange,
+                selected,
             }
         },
     })

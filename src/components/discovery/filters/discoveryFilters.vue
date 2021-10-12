@@ -12,7 +12,7 @@
                 <SaveFilterModal :applied-filters="filterMap">
                     <template #trigger>
                         <div
-                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
+                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
                         >
                             Save
                         </div>
@@ -21,7 +21,7 @@
             </div>
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -74,7 +74,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -105,6 +105,13 @@
                     :item="item"
                     :list="bmDataList[item.id]"
                     @change="handleTermChange"
+                ></component>
+                <component
+                    v-else-if="item.component === 'savedFilter'"
+                    is="savedFilter"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    @change="handleSavedFilterChange"
                 ></component>
                 <component
                     v-else
@@ -287,6 +294,12 @@
                 console.log(dirtyTimestamp.value)
                 refresh()
                 // updateChangesInStore(value);
+            }
+
+            const handleSavedFilterChange = (payload) => {
+                dataMap.value['saved'].checked = payload
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                refresh()
             }
 
             const handleTermChange = (termName: string) => {
@@ -496,6 +509,7 @@
                 bmDataList,
                 setConnector,
                 handleTermChange,
+                handleSavedFilterChange,
             }
         },
     })

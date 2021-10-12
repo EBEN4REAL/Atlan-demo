@@ -68,6 +68,7 @@
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const {
+                toggleGhostCursor,
                 onEditorContentChange,
                 formatter,
                 setEditorPos,
@@ -252,8 +253,12 @@
                     setEditorPos(editor, editorPos)
                     setEditorFocusedState(true, editorFocused)
                 })
-                editor?.onDidBlurEditorText(() => {
+                editor?.onDidBlurEditorWidget(() => {
                     setEditorFocusedState(false, editorFocused)
+                    toggleGhostCursor(true, editor, monaco, editorPos)
+                })
+                editor?.onDidFocusEditorWidget(() => {
+                    toggleGhostCursor(false, editor, monaco, editorPos)
                 })
                 setEditorFocusedState(true, editorFocused)
                 editor?.focus()
@@ -319,8 +324,12 @@
                         setEditorPos(editor, editorPos)
                     })
                     editor?.focus()
-                    editor?.onDidBlurEditorText(() => {
+                    editor?.onDidBlurEditorWidget(() => {
                         setEditorFocusedState(false, editorFocused)
+                        toggleGhostCursor(true, editor, monaco, editorPos)
+                    })
+                    editor?.onDidFocusEditorWidget(() => {
+                        toggleGhostCursor(false, editor, monaco, editorPos)
                     })
                     emit('editorInstance', editor, monaco)
                 }
@@ -355,6 +364,16 @@
 <style lang="less">
     .moustacheDecoration {
         @apply bg-purple-200;
-        cursor: pointer;
+    }
+    .ghostCursor {
+        position: relative;
+    }
+    .ghostCursor::after {
+        position: absolute;
+        content: '';
+        width: 2px !important;
+        @apply bg-gray-400;
+        top: -10%;
+        height: 120%;
     }
 </style>

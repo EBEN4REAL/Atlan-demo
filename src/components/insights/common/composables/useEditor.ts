@@ -12,6 +12,7 @@ export function useEditor(
     sqlVariables?: Ref<CustomVaribaleInterface[]>
 ) {
     let decorations = []
+    let cursorDecorations = []
     function setEditorPos(
         editorInstance: any,
         editorPos: Ref<{ column: number; lineNumber: number }>
@@ -194,7 +195,7 @@ export function useEditor(
             }
         })
         console.log(el, 'el')
-        // older decorations needed
+        // older moustacheDecorations needed
         decorations = editorInstance?.deltaDecorations(decorations, el)
     }
     const findCustomVariableMatches = (
@@ -213,12 +214,44 @@ export function useEditor(
             return matches
         }
     }
+    const toggleGhostCursor = (
+        isVisible: boolean,
+        editorInstance: any,
+        monacoInstance,
+        editorPos: Ref<{
+            column: number
+            lineNumber: number
+        }>
+    ) => {
+        const t = {
+            range: new monacoInstance.Range(
+                editorPos.value.lineNumber,
+                editorPos.value.column - 1,
+                editorPos.value.lineNumber,
+                editorPos.value.column
+            ),
+            options: { inlineClassName: 'ghostCursor' },
+        }
+        if (isVisible) {
+            cursorDecorations = editorInstance?.deltaDecorations(
+                cursorDecorations,
+                [t]
+            )
+        } else {
+            cursorDecorations = editorInstance?.deltaDecorations(
+                cursorDecorations,
+                []
+            )
+        }
+    }
     const editorConfig = ref({
         theme: 'vs',
         tabSpace: 3,
         fontSize: 12,
     })
+
     return {
+        toggleGhostCursor,
         findCustomVariableMatches,
         changeMoustacheTemplateColor,
         setFontSizes,

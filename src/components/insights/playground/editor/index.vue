@@ -220,7 +220,7 @@
                 </div>
 
                 <div class="flex items-center mr-2">
-                    <div class="flex" v-if="editorFocused">
+                    <div class="flex">
                         <span class="mr-2">
                             Ln:&nbsp;{{ editorPos.lineNumber }}
                         </span>

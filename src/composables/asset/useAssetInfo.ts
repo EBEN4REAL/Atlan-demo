@@ -1,8 +1,8 @@
 import { Ref } from 'vue'
+import { useTimeAgo } from '@vueuse/core'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
-import { useTimeAgo } from '@vueuse/core'
 import { dataTypeList } from '~/constant/datatype'
 
 import { formatDateTime } from '~/utils/date'
@@ -10,33 +10,19 @@ import { formatDateTime } from '~/utils/date'
 import { getCountString, getSizeString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
-    const attributes = (asset: assetInterface) => {
-        return asset.attributes
-    }
-    const title = (asset: assetInterface) => {
-        return attributes(asset)?.name ?? ''
-    }
-    const status = (asset: assetInterface) => {
-        return attributes(asset).certificateStatus
-    }
-    const assetType = (asset: assetInterface) => {
-        return asset.typeName
-    }
-    const assetState = (asset: assetInterface) => {
-        return asset.status.toLowerCase()
-    }
+    const attributes = (asset: assetInterface) => asset.attributes
+    const title = (asset: assetInterface) => attributes(asset)?.name ?? ''
+    const status = (asset: assetInterface) =>
+        attributes(asset).certificateStatus
+    const assetType = (asset: assetInterface) => asset.typeName
+    const assetState = (asset: assetInterface) => asset.status.toLowerCase()
     const assetTypeLabel = (asset: assetInterface) => {
         const found = AssetTypeList.find((d) => d.id === assetType(asset))
         return found?.label
     }
-    const description = (asset: assetInterface) => {
-        return (
-            attributes(asset).userDescription || attributes(asset).description
-        )
-    }
-    const isPrimary = (asset: assetInterface) => {
-        return attributes(asset).isPrimary
-    }
+    const description = (asset: assetInterface) =>
+        attributes(asset).userDescription || attributes(asset).description
+    const isPrimary = (asset: assetInterface) => attributes(asset).isPrimary
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -86,21 +72,18 @@ export default function useAssetInfo() {
         return name.charAt(0).toUpperCase() + name.slice(1)
     }
 
-    const rowCount = (asset: assetInterface, raw: boolean = false) => {
-        return raw
+    const rowCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
             ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).rowCount)
-    }
-    const columnCount = (asset: assetInterface, raw: boolean = false) => {
-        return raw
+    const columnCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).columnCount)
-    }
-    const sizeBytes = (asset: assetInterface, raw: boolean = false) => {
-        return raw
+    const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
+        raw
             ? attributes(asset)?.sizeBytes?.toLocaleString() || 'N/A'
             : getSizeString(attributes(asset).sizeBytes)
-    }
 
     const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
         if (attributes(asset)?.sourceUpdatedAt) {
@@ -128,39 +111,51 @@ export default function useAssetInfo() {
     const viewDefinition = (asset: assetInterface) =>
         attributes(asset)?.viewDefinition || ''
 
-    const schemaName = (asset: assetInterface) => {
-        return attributes(asset)?.schemaName
+    const schemaName = (asset: assetInterface) => attributes(asset)?.schemaName
+    const databaseName = (asset: assetInterface) =>
+        attributes(asset)?.databaseName
+    const createdAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.__timestamp)
+            if (raw)
+                return formatDateTime(attributes(asset)?.__timestamp) || 'N/A'
+            else
+                return useTimeAgo(attributes(asset)?.__timestamp).value || 'N/A'
+        return 'N/A'
     }
-    const databaseName = (asset: assetInterface) => {
-        return attributes(asset)?.databaseName
-    }
-    const createdAt = (asset: assetInterface) => {
-        return useTimeAgo(attributes(asset)?.__timestamp).value
-    }
-    const createdBy = (asset: assetInterface) => {
-        return attributes(asset)?.__createdBy
-    }
-    const modifiedBy = (asset: assetInterface) => {
-        return attributes(asset)?.__modifiedBy
-    }
-    const updatedAt = (asset: assetInterface) => {
-        return useTimeAgo(attributes(asset)?.__modificationTimestamp).value
+
+    const createdBy = (asset: assetInterface) => attributes(asset)?.__createdBy
+
+    const modifiedBy = (asset: assetInterface) =>
+        attributes(asset)?.__modifiedBy
+    const updatedAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.__modificationTimestamp)
+            if (raw)
+                return (
+                    formatDateTime(
+                        attributes(asset)?.__modificationTimestamp
+                    ) || 'N/A'
+                )
+            else
+                return (
+                    useTimeAgo(attributes(asset)?.__modificationTimestamp)
+                        .value || 'N/A'
+                )
+        return 'N/A'
     }
     const previewURL = (asset: assetInterface) => {
-        const customAttributes = JSON.parse(
-            attributes(asset).__customAttributes.split()
-        )
-        if (customAttributes.previewURL) return customAttributes.previewURL
+        if (attributes(asset)?.__customAttributes) {
+            const customAttributes = JSON.parse(
+                attributes(asset)?.__customAttributes?.split()
+            )
+            if (customAttributes.previewURL) return customAttributes.previewURL
+        }
         return null
     }
 
-    const lastCrawled = (asset: assetInterface) => {
-        return useTimeAgo(attributes(asset).connectionLastSyncedAt).value
-    }
+    const lastCrawled = (asset: assetInterface) =>
+        useTimeAgo(attributes(asset).connectionLastSyncedAt).value
 
-    const dataType = (asset: assetInterface) => {
-        return attributes(asset)?.dataType
-    }
+    const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
     const dataTypeImage = (asset: assetInterface) => {
         const found = dataTypeList.find((d) =>
@@ -181,20 +176,15 @@ export default function useAssetInfo() {
         return found?.image
     }
 
-    const tableInfo = (asset: assetInterface) => {
-        return attributes(asset)?.table
-    }
-    const popularityScore = (asset: assetInterface) => {
-        return attributes(asset)?.popularityScore
-    }
+    const tableInfo = (asset: assetInterface) => attributes(asset)?.table
+    const popularityScore = (asset: assetInterface) =>
+        attributes(asset)?.popularityScore
 
-    const ownerGroups = (asset: assetInterface) => {
-        return attributes(asset)?.ownerGroups?.split(',') || []
-    }
+    const ownerGroups = (asset: assetInterface) =>
+        attributes(asset)?.ownerGroups?.split(',') || []
 
-    const ownerUsers = (asset: assetInterface) => {
-        return attributes(asset)?.ownerUsers?.split(',') || []
-    }
+    const ownerUsers = (asset: assetInterface) =>
+        attributes(asset)?.ownerUsers?.split(',') || []
 
     const certificateStatus = (asset: assetInterface) => {
         attributes(asset)?.certificateStatus
@@ -223,7 +213,7 @@ export default function useAssetInfo() {
     }
     const getTableauHierarchy = (asset: assetInterface) => {
         let filteredHierarchy = []
-        let hierarchyKeys = [
+        const hierarchyKeys = [
             {
                 id: 'connectionName',
                 label: 'Server',
@@ -259,7 +249,7 @@ export default function useAssetInfo() {
             {
                 id: 'tableauWorkbook',
                 label: 'Workbook',
-                value: attributes(asset)['name'],
+                value: attributes(asset).name,
                 icon: 'TableauWorkbook',
             },
         ]
@@ -267,13 +257,13 @@ export default function useAssetInfo() {
             {
                 id: 'tableauWorkbook',
                 label: 'Workbook',
-                value: attributes(asset)['workbookName'],
+                value: attributes(asset).workbookName,
                 icon: 'TableauWorkbook',
             },
             {
                 id: 'tableauWorksheet',
                 label: 'Worksheet',
-                value: attributes(asset)['name'],
+                value: attributes(asset).name,
                 icon: 'TableauWorksheet',
             },
         ]
@@ -281,13 +271,13 @@ export default function useAssetInfo() {
             {
                 id: 'tableauWorkbook',
                 label: 'Workbook',
-                value: attributes(asset)['workbookName'],
+                value: attributes(asset).workbookName,
                 icon: 'TableauWorkbook',
             },
             {
                 id: 'TableauDashboard',
                 label: 'Dashboard',
-                value: attributes(asset)['name'],
+                value: attributes(asset).name,
                 icon: 'TableauDashboard',
             },
         ]
@@ -295,13 +285,13 @@ export default function useAssetInfo() {
             {
                 id: 'tableauWorkbook',
                 label: 'Workbook',
-                value: attributes(asset)['workbookName'],
+                value: attributes(asset).workbookName,
                 icon: 'TableauWorkbook',
             },
             {
                 id: 'tableauEmbeddedDatasource',
                 label: 'Embedded Datasource',
-                value: attributes(asset)['name'],
+                value: attributes(asset).name,
                 icon: 'TableauEmbeddedDatasource',
             },
         ]
@@ -309,13 +299,13 @@ export default function useAssetInfo() {
             {
                 id: 'tableauWorkbook',
                 label: 'Workbook',
-                value: attributes(asset)['workbookName'],
+                value: attributes(asset).workbookName,
                 icon: 'TableauWorkbook',
             },
             {
                 id: 'tableauPublishedDatasource',
                 label: 'Published Datasource',
-                value: attributes(asset)['name'],
+                value: attributes(asset).name,
                 icon: 'TableauPublishedDatasource',
             },
         ]
@@ -323,26 +313,26 @@ export default function useAssetInfo() {
             {
                 id: 'tableauWorkbook',
                 label: 'Workbook',
-                value: attributes(asset)['workbookName'],
+                value: attributes(asset).workbookName,
                 icon: 'TableauWorkbook',
             },
-            attributes(asset)['isPublished']
+            attributes(asset).isPublished
                 ? {
                       id: 'tableauPublishedDatasource',
                       label: 'Published Datasource',
-                      value: attributes(asset)['datasourceName'],
+                      value: attributes(asset).datasourceName,
                       icon: 'TableauPublishedDatasource',
                   }
                 : {
                       id: 'tableauEmbeddedDatasource',
                       label: 'Embedded Datasource',
-                      value: attributes(asset)['datasourceName'],
+                      value: attributes(asset).datasourceName,
                       icon: 'TableauEmbeddedDatasource',
                   },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',
-                value: attributes(asset)['name'],
+                value: attributes(asset).name,
                 icon: 'TableauDatasourceField',
             },
         ]
@@ -353,7 +343,7 @@ export default function useAssetInfo() {
                 id: item.id,
                 label: item.label,
                 icon: item.icon,
-                value: attributes(asset)[item.id] ?? attributes(asset)['name'],
+                value: attributes(asset)[item.id] ?? attributes(asset).name,
             })
         })
         switch (asset.typeName) {
@@ -362,13 +352,13 @@ export default function useAssetInfo() {
                     {
                         id: 'connectionName',
                         label: 'Server',
-                        value: attributes(asset)['connectionName'],
+                        value: attributes(asset).connectionName,
                         icon: 'connectionName',
                     },
                     {
                         id: 'siteName',
                         label: 'Site',
-                        value: attributes(asset)['name'],
+                        value: attributes(asset).name,
                         icon: 'SiteName',
                     },
                 ]
@@ -379,19 +369,19 @@ export default function useAssetInfo() {
                     {
                         id: 'connectionName',
                         label: 'Server',
-                        value: attributes(asset)['connectionName'],
+                        value: attributes(asset).connectionName,
                         icon: 'connectionName',
                     },
                     {
                         id: 'siteName',
                         label: 'Site',
-                        value: attributes(asset)['siteName'],
+                        value: attributes(asset).siteName,
                         icon: 'SiteName',
                     },
                     {
                         id: 'tableauProject',
                         label: 'Project',
-                        value: attributes(asset)['name'],
+                        value: attributes(asset).name,
                         icon: 'TableauProject',
                     },
                 ]
@@ -423,7 +413,7 @@ export default function useAssetInfo() {
             }
             case 'TableauDatasource': {
                 // isPublished - true (published datasoruce) or vice versa
-                if (attributes(asset)['isPublished']) {
+                if (attributes(asset).isPublished) {
                     filteredHierarchy = [
                         ...filteredHierarchy,
                         ...TableauProject,
@@ -456,16 +446,22 @@ export default function useAssetInfo() {
         console.log(properties, 'properties')
         if (asset.value && properties.length > 0) {
             properties.forEach((tableauProperty: any) => {
-                const { label, property } = tableauProperty
+                const { label, property, relatedProperty } = tableauProperty
                 if (attributes(asset.value)[property]) {
                     const temp = {}
                     temp.id = property
                     temp.label = label
+                    if (relatedProperty) temp.relatedProperty = relatedProperty
                     temp[property] = attributes(asset.value)[property]
-                    if (property === '__timestamp')
+                    if (property === '__timestamp') {
                         temp[property] = createdAt(asset.value)
-                    else if (property === '__modificationTimestamp')
+                        if (relatedProperty)
+                            temp[relatedProperty] = createdAt(asset.value, true)
+                    } else if (property === '__modificationTimestamp') {
                         temp[property] = updatedAt(asset.value)
+                        if (relatedProperty)
+                            temp[relatedProperty] = updatedAt(asset.value, true)
+                    }
                     data.push(temp)
                 }
             })

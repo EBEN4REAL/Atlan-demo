@@ -7,7 +7,7 @@
                 class="h-6 mr-2 cursor-pointer"
                 @click="$emit('toggleNavbar')"
             />
-            <img src="/api/service/avatars/_logo_" class="w-auto h-8" />
+            <img :src="logoUrl" class="w-auto h-8" />
 
             <atlan-icon v-if="!isHome" icon="ChevronRight" class="h-4 mx-1" />
             <span class="text-sm font-bold tracking-wider text-gray-500">
@@ -47,6 +47,10 @@
                 return false
             })
 
+            const logoUrl = computed(() => {
+                return `${window.location.origin}/api/service/avatars/_logo_`
+            })
+
             const navKeys = {
                 assets: 'Discover',
                 glossary: 'Glossary',
@@ -58,7 +62,7 @@
                 emit('change', key)
             }
 
-            return { handleClick, navKeys, isHome }
+            return { handleClick, navKeys, isHome, logoUrl }
         },
     })
 </script>

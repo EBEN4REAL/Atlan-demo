@@ -27,7 +27,13 @@
                                         <span class="text-gray-700 svg-icon">
                                             <component
                                                 :is="item.icon"
-                                                class="w-auto h-4 ml-1 mr-2  pushtop"
+                                                class="
+                                                    w-auto
+                                                    h-4
+                                                    ml-1
+                                                    mr-2
+                                                    pushtop
+                                                "
                                             />
                                             {{ item.label }}
                                         </span>
@@ -71,16 +77,18 @@
                     <p class="mb-1 text-sm">Certification</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
+                        :status-id="
+                            selectedAsset?.attributes?.certificateStatus
+                        "
                         :status-message="
                             selectedAsset?.attributes?.assetStatusMessage
                         "
                         :show-chip-style-status="true"
                         :status-updated-at="
-                            selectedAsset?.attributes?.assetStatusUpdatedAt
+                            selectedAsset?.attributes?.certificateUpdatedAt
                         "
                         :status-updated-by="
-                            selectedAsset?.attributes?.assetStatusUpdatedBy
+                            selectedAsset?.attributes?.certificateUpdatedBy
                         "
                         :show-no-status="true"
                         :show-label="true"

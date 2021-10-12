@@ -75,7 +75,12 @@
                             <AtlanIcon
                                 v-else
                                 icon="Group"
-                                class="h-4 mr-2  text-primary group-hover:text-white"
+                                class="
+                                    h-4
+                                    mr-2
+                                    text-primary
+                                    group-hover:text-white
+                                "
                             />
                             <span
                                 class="capitalize"
@@ -122,7 +127,14 @@
             ref="titleBar"
             v-model:value="title"
             :placeholder="`Untitled ${entityType}`"
-            class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+            class="
+                text-lg
+                font-bold
+                text-gray-700
+                border-0
+                shadow-none
+                outline-none
+            "
             :class="$style.titleInput"
         />
         <a-textarea
@@ -277,7 +289,8 @@
                     description.value =
                         props?.entity?.attributes?.shortDescription ??
                         props?.entity?.attributes?.description
-                    currentStatus.value = props?.entity?.attributes?.assetStatus
+                    currentStatus.value =
+                        props?.entity?.attributes?.certificateStatus
                     ownerUsers.value =
                         props?.entity?.attributes?.ownerUsers
                             ?.split(',')
@@ -304,7 +317,8 @@
                                     (props.entityType === 'term'
                                         ? 'Untitled Term'
                                         : 'Untitled category'),
-                                assetStatus: currentStatus.value ?? 'draft',
+                                certificateStatus:
+                                    currentStatus.value ?? 'draft',
                                 shortDescription: description.value ?? '',
                                 ownerUsers: ownerUsers?.value?.join(),
                                 ownerGroups: ownerGroups?.value?.join(),
@@ -320,7 +334,8 @@
                                         (props.entityType === 'term'
                                             ? 'Untitled Term'
                                             : 'Untitled category'),
-                                    assetStatus: currentStatus.value ?? 'draft',
+                                    certificateStatus:
+                                        currentStatus.value ?? 'draft',
                                     ownerUsers: ownerUsers?.value?.join(),
                                     ownerGroups: ownerGroups?.value?.join(),
                                     shortDescription: description.value ?? '',
@@ -329,7 +344,7 @@
 
                             const { entity } = toRefs(props)
                             if (entity) {
-                                entity.value.attributes.assetStatus =
+                                entity.value.attributes.certificateStatus =
                                     currentStatus.value
                                 entity.value.attributes.ownerUsers =
                                     ownerUsers?.value?.join()
@@ -372,7 +387,8 @@
                                         (props.entityType === 'term'
                                             ? 'Untitled Term'
                                             : 'Untitled category'),
-                                    assetStatus: currentStatus.value ?? 'draft',
+                                    certificateStatus:
+                                        currentStatus.value ?? 'draft',
                                     shortDescription: description.value ?? '',
                                     ownerUsers: ownerUsers?.value?.join(),
                                     ownerGroups: ownerGroups?.value?.join(),

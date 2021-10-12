@@ -7,7 +7,7 @@ export interface autosuggestionEntityColumn {
     precision: number
     scale: number
     ownerUsers: string
-    assetStatus: string
+    certificateStatus: string
     popularityScore: any
     isPrimary: boolean
     qualifiedName: string
@@ -23,7 +23,7 @@ export interface autosuggestionEntity {
     precision?: number
     scale?: number
     ownerUsers?: string
-    assetStatus?: string
+    certificateStatus?: string
     popularityScore?: any
     isPrimary?: boolean
     qualifiedName?: string

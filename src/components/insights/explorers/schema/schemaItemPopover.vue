@@ -6,7 +6,7 @@
             </p>
             <div class="ml-2 -mt-0.5">
                 <StatusBadge
-                    :status-id="item.assetStatus"
+                    :status-id="item.certificateStatus"
                     :show-chip-style-status="false"
                     :show-no-status="true"
                     :show-label="false"

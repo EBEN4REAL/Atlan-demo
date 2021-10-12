@@ -11,7 +11,7 @@
             <div class="flex flex-col" style="width: 300px p-4">
                 <div class="">
                     <a-radio-group
-                        v-model:value="assetStatus"
+                        v-model:value="certificateStatus"
                         class="w-full mb-3"
                     >
                         <div class="flex flex-col">
@@ -155,142 +155,154 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs, computed, ref, inject, watch } from 'vue'
-import useBulkSelect from '~/composables/asset/useBulkSelect'
-import { List } from '~/constant/status'
-import confetti from '~/utils/confetti'
+    import { defineComponent, toRefs, computed, ref, inject, watch } from 'vue'
+    import useBulkSelect from '~/composables/asset/useBulkSelect'
+    import { List } from '~/constant/status'
+    import confetti from '~/utils/confetti'
 
-export default defineComponent({
-    name: 'UpdateBulkStatus',
-    props: {
-        existingStatus: {
-            type: Object,
-            default: () => {},
+    export default defineComponent({
+        name: 'UpdateBulkStatus',
+        props: {
+            existingStatus: {
+                type: Object,
+                default: () => {},
+            },
         },
-    },
-    setup(props) {
-        /** INJECTIONS */
-        const updatedStatus = inject('updatedStatus')
-        const updatedStatusMessage = inject('updatedStatusMessage')
-        const publishedStatusChangeLogRef = inject(
-            'publishedStatusChangeLogRef'
-        )
-        const showPopover = ref(false)
-        const { handleUpdateStatus } = useBulkSelect()
-        const { existingStatus } = toRefs(props)
-        const assetStatus = ref('')
-        const publishedAssetStatus = ref('')
-        const originalAssetStatus = ref('')
-        // has labels for to and from states 👇
-        const changeLog = ref({ to: '', from: '', updatedStatusMessage: '' })
-        const statusMessage = ref('')
-        const textAreaDisabled = ref(false)
-        const animationPoint = ref(null)
-
-        // TODO: this can come from composable itself
-        const initialiseAssetStatus = () => {
-            const firstStatusKey = Object.keys(existingStatus.value)[0]
-            if (
-                !Object.keys(existingStatus.value).some(
-                    (key) =>
-                        existingStatus.value[key] !==
-                        existingStatus.value[firstStatusKey]
-                )
-            ) {
-                assetStatus.value =
-                    existingStatus.value[Object.keys(existingStatus.value)[0]]
-                originalAssetStatus.value =
-                    existingStatus.value[Object.keys(existingStatus.value)[0]]
-                publishedAssetStatus.value =
-                    existingStatus.value[Object.keys(existingStatus.value)[0]]
-            } else {
-                assetStatus.value = ''
-                originalAssetStatus.value = ''
-                publishedAssetStatus.value = ''
-            }
-            // reset changelog
-            changeLog.value = { to: '', from: '', updatedStatusMessage: '' }
-        }
-        // initialising assetStatus to find if status of all selected assets is same
-        watch(existingStatus, initialiseAssetStatus, {
-            immediate: true,
-            deep: true,
-        })
-        const publishedAssetStatusObject = computed(() =>
-            List.find((item) => item.id === publishedAssetStatus.value)
-        )
-        const originalAssetStatusObject = computed(() =>
-            List.find((item) => item.id === originalAssetStatus.value)
-        )
-
-        // TODO: add status message flow
-        const handleConfirm = () => {
-            publishedAssetStatus.value = assetStatus.value
-            changeLog.value.from = originalAssetStatusObject?.value?.label ?? ''
-            changeLog.value.to = publishedAssetStatusObject?.value?.label ?? ''
-            changeLog.value.updatedStatusMessage = statusMessage.value
-            handleUpdateStatus(
-                {
-                    status: assetStatus.value,
-                    statusMessage: statusMessage.value,
-                },
-                updatedStatus,
-                updatedStatusMessage,
-                publishedStatusChangeLogRef,
-                changeLog
+        setup(props) {
+            /** INJECTIONS */
+            const updatedStatus = inject('updatedStatus')
+            const updatedStatusMessage = inject('updatedStatusMessage')
+            const publishedStatusChangeLogRef = inject(
+                'publishedStatusChangeLogRef'
             )
-            // changeLog has labels not ids
-            if (
-                changeLog.value.to === 'Verified' &&
-                changeLog.value.from !== 'Verified'
-            ) {
-                const config = {
-                    angle: 45,
-                    startVelocity: 10,
-                    spread: 100,
-                    elementCount: 50,
-                    colors: [
-                        '#2251cc',
-                        '#2251cc',
-                        '#82b54b',
-                        '#e94a3f',
-                        '#faa040',
-                    ],
-                    width: '0.3rem',
-                    height: '0.3rem',
-                }
-                confetti(animationPoint.value, config)
-            }
-            showPopover.value = false
-        }
-        const handleCancel = () => {
-            initialiseAssetStatus()
-            statusMessage.value = ''
-            showPopover.value = false
-        }
+            const showPopover = ref(false)
+            const { handleUpdateStatus } = useBulkSelect()
+            const { existingStatus } = toRefs(props)
+            const certificateStatus = ref('')
+            const publishedAssetStatus = ref('')
+            const originalAssetStatus = ref('')
+            // has labels for to and from states 👇
+            const changeLog = ref({
+                to: '',
+                from: '',
+                updatedStatusMessage: '',
+            })
+            const statusMessage = ref('')
+            const textAreaDisabled = ref(false)
+            const animationPoint = ref(null)
 
-        return {
-            List,
-            statusMessage,
-            assetStatus,
-            textAreaDisabled,
-            handleCancel,
-            handleConfirm,
-            publishedAssetStatusObject,
-            showPopover,
-            publishedAssetStatus,
-            originalAssetStatus,
-            originalAssetStatusObject,
-            changeLog,
-            animationPoint,
-        }
-    },
-})
+            // TODO: this can come from composable itself
+            const initialiseAssetStatus = () => {
+                const firstStatusKey = Object.keys(existingStatus.value)[0]
+                if (
+                    !Object.keys(existingStatus.value).some(
+                        (key) =>
+                            existingStatus.value[key] !==
+                            existingStatus.value[firstStatusKey]
+                    )
+                ) {
+                    certificateStatus.value =
+                        existingStatus.value[
+                            Object.keys(existingStatus.value)[0]
+                        ]
+                    originalAssetStatus.value =
+                        existingStatus.value[
+                            Object.keys(existingStatus.value)[0]
+                        ]
+                    publishedAssetStatus.value =
+                        existingStatus.value[
+                            Object.keys(existingStatus.value)[0]
+                        ]
+                } else {
+                    certificateStatus.value = ''
+                    originalAssetStatus.value = ''
+                    publishedAssetStatus.value = ''
+                }
+                // reset changelog
+                changeLog.value = { to: '', from: '', updatedStatusMessage: '' }
+            }
+            // initialising certificateStatus to find if status of all selected assets is same
+            watch(existingStatus, initialiseAssetStatus, {
+                immediate: true,
+                deep: true,
+            })
+            const publishedAssetStatusObject = computed(() =>
+                List.find((item) => item.id === publishedAssetStatus.value)
+            )
+            const originalAssetStatusObject = computed(() =>
+                List.find((item) => item.id === originalAssetStatus.value)
+            )
+
+            // TODO: add status message flow
+            const handleConfirm = () => {
+                publishedAssetStatus.value = certificateStatus.value
+                changeLog.value.from =
+                    originalAssetStatusObject?.value?.label ?? ''
+                changeLog.value.to =
+                    publishedAssetStatusObject?.value?.label ?? ''
+                changeLog.value.updatedStatusMessage = statusMessage.value
+                handleUpdateStatus(
+                    {
+                        status: certificateStatus.value,
+                        statusMessage: statusMessage.value,
+                    },
+                    updatedStatus,
+                    updatedStatusMessage,
+                    publishedStatusChangeLogRef,
+                    changeLog
+                )
+                // changeLog has labels not ids
+                if (
+                    changeLog.value.to === 'Verified' &&
+                    changeLog.value.from !== 'Verified'
+                ) {
+                    const config = {
+                        angle: 45,
+                        startVelocity: 10,
+                        spread: 100,
+                        elementCount: 50,
+                        colors: [
+                            '#2251cc',
+                            '#2251cc',
+                            '#82b54b',
+                            '#e94a3f',
+                            '#faa040',
+                        ],
+                        width: '0.3rem',
+                        height: '0.3rem',
+                    }
+                    confetti(animationPoint.value, config)
+                }
+                showPopover.value = false
+            }
+            const handleCancel = () => {
+                initialiseAssetStatus()
+                statusMessage.value = ''
+                showPopover.value = false
+            }
+
+            return {
+                List,
+                statusMessage,
+                certificateStatus,
+                textAreaDisabled,
+                handleCancel,
+                handleConfirm,
+                publishedAssetStatusObject,
+                showPopover,
+                publishedAssetStatus,
+                originalAssetStatus,
+                originalAssetStatusObject,
+                changeLog,
+                animationPoint,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.popover {
-    :global(.ant-popover-inner-content) {
-        @apply p-4 !important;
+    .popover {
+        :global(.ant-popover-inner-content) {
+            @apply p-4 !important;
+        }
     }
-}
 </style>

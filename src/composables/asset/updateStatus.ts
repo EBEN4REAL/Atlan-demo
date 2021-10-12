@@ -5,25 +5,25 @@ import { assetInterface } from '~/types/assets/asset.interface'
 
 export default function updateAssetStatus(selectedAsset: Ref<assetInterface>) {
     const { username } = whoami()
-    const assetStatus: { [key: string]: any } = ref({})
+    const certificateStatus: { [key: string]: any } = ref({})
     const isCompleted = ref(false)
     const isLoading = ref(false)
     const body: { [key: string]: any } = ref({})
 
     const statusId: WritableComputedRef<string> = computed({
         get: () =>
-            assetStatus.value.id ||
-            selectedAsset.value?.attributes?.assetStatus ||
+            certificateStatus.value.id ||
+            selectedAsset.value?.attributes?.certificateStatus ||
             'is_null',
         set: (newValue: string) => {
-            assetStatus.value.id = newValue
+            certificateStatus.value.id = newValue
             body.value = getBody()
         },
     })
     const statusMessage: WritableComputedRef<string> = computed({
         get: () => selectedAsset.value?.attributes?.assetStatusMessage,
         set: (newValue: string) => {
-            assetStatus.value.message = newValue
+            certificateStatus.value.message = newValue
             body.value = getBody()
         },
     })
@@ -37,12 +37,12 @@ export default function updateAssetStatus(selectedAsset: Ref<assetInterface>) {
                     qualifiedName:
                         selectedAsset.value.attributes?.qualifiedName,
                     name: selectedAsset.value.attributes?.name,
-                    assetStatus: assetStatus.value.id,
-                    assetStatusMessage: assetStatus.value.message,
-                    assetStatusUpdatedAt: Date.now(),
-                    assetStatusUpdatedBy: username,
+                    certificateStatus: certificateStatus.value.id,
+                    assetStatusMessage: certificateStatus.value.message,
+                    certificateUpdatedAt: Date.now(),
+                    certificateUpdatedBy: username,
                     tenantId: selectedAsset.value.attributes?.tenantId,
-                    anchor: selectedAsset.value.attributes?.anchor
+                    anchor: selectedAsset.value.attributes?.anchor,
                 },
             },
         ],
@@ -62,11 +62,12 @@ export default function updateAssetStatus(selectedAsset: Ref<assetInterface>) {
         if (!error.value && state && isReady.value) {
             isLoading.value = false
             isCompleted.value = false
-            selectedAsset.value.attributes.assetStatus = assetStatus.value.id
+            selectedAsset.value.attributes.certificateStatus =
+                certificateStatus.value.id
             selectedAsset.value.attributes.assetStatusMessage =
-                assetStatus.value.message
-            selectedAsset.value.attributes.assetStatusUpdatedAt = Date.now()
-            selectedAsset.value.attributes.assetStatusUpdatedBy =
+                certificateStatus.value.message
+            selectedAsset.value.attributes.certificateUpdatedAt = Date.now()
+            selectedAsset.value.attributes.certificateUpdatedBy =
                 username as unknown as string
             selectedAsset.value.attributes.__modifiedBy =
                 username as unknown as string

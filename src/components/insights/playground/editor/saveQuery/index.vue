@@ -24,11 +24,11 @@
                                 />
                             </div> -->
                         </div>
-                        <QueryFolderSelector 
-                            :connector="currentConnector" 
-                            :savedQueryType="queryType" 
+                        <QueryFolderSelector
+                            :connector="currentConnector"
+                            :savedQueryType="queryType"
                             :selectedFolderQF="parentFolderQF"
-                            @folderChange="selectFolder" 
+                            @folderChange="selectFolder"
                         />
                     </div>
                     <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
@@ -76,13 +76,25 @@
                         :ref="titleBarRef"
                         v-model:value="title"
                         placeholder="Untitled query"
-                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
+                        class="
+                            text-lg
+                            font-bold
+                            text-gray-500
+                            border-0
+                            shadow-none
+                            outline-none
+                        "
                     />
                 </div>
                 <a-textarea
                     v-model:value="description"
                     placeholder="Add Description"
-                    class="text-sm text-gray-500 border-0 shadow-none outline-none "
+                    class="
+                        text-sm text-gray-500
+                        border-0
+                        shadow-none
+                        outline-none
+                    "
                     :rows="3"
                     show-count
                     :maxlength="140"
@@ -157,12 +169,12 @@
         nextTick,
         PropType,
         toRefs,
-        watch
+        watch,
     } from 'vue'
     import { List } from '~/constant/status'
     import StatusBadge from '@common/badge/status/index.vue'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
-    import { Folder } from "~/types/insights/savedQuery.interface";
+    import { Folder } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: { StatusBadge, QueryFolderSelector },
@@ -188,8 +200,8 @@
             savedQueryType: {
                 type: String as PropType<'personal' | 'all'>,
                 required: true,
-                default: 'personal'
-            }
+                default: 'personal',
+            },
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
@@ -200,7 +212,11 @@
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const selectedParentFolder = ref<Folder | null>(null)
-            const { savedQueryType: queryType, connector:currentConnector, parentFolderQF } = toRefs(props)
+            const {
+                savedQueryType: queryType,
+                connector: currentConnector,
+                parentFolderQF,
+            } = toRefs(props)
 
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id
@@ -220,9 +236,10 @@
                     title: title.value,
                     description: description.value,
                     isSQLSnippet: isSQLSnippet.value,
-                    assetStatus: currentStatus.value,
-                    parentQF: selectedParentFolder.value?.attributes?.qualifiedName,
-                    parentGuid: selectedParentFolder.value?.guid
+                    certificateStatus: currentStatus.value,
+                    parentQF:
+                        selectedParentFolder.value?.attributes?.qualifiedName,
+                    parentGuid: selectedParentFolder.value?.guid,
                 }
                 emit('onSaveQuery', saveQueryData)
             }
@@ -236,7 +253,7 @@
             }
             return {
                 title,
-                queryType, 
+                queryType,
                 currentConnector,
                 description,
                 isSQLSnippet,

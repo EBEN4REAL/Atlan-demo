@@ -20,7 +20,7 @@ function constructRequest(guid: string) {
         'metadata',
         'relativePinOrder',
         'primary key',
-        'assetStatus',
+        'certificateStatus',
         'tenantId',
         'popularityScore',
     ]
@@ -72,8 +72,8 @@ export function useColumns(id: Ref<string>) {
                         : true) &&
                     (filters.value.length
                         ? allowedTypes.includes(
-                            item.attributes.dataType.toLowerCase()
-                        )
+                              item.attributes.dataType.toLowerCase()
+                          )
                         : true)
             ) || []
         )

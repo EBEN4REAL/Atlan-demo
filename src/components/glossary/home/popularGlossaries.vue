@@ -23,7 +23,7 @@
                             :icon="
                                 getEntityStatusIcon(
                                     'glossary',
-                                    item.attributes.assetStatus
+                                    item.attributes.certificateStatus
                                 )
                             "
                             class="w-auto h-4 mr-1"
@@ -39,7 +39,7 @@
                         </span>
                         <StatusBadge
                             :key="item?.guid"
-                            :status-id="item?.attributes?.assetStatus"
+                            :status-id="item?.attributes?.certificateStatus"
                             :show-chip-style-status="false"
                             :show-label="false"
                             class="p-0 ml-2 mb-0.5"
@@ -58,7 +58,13 @@
                         No description available
                     </span>
                     <div
-                        class="flex items-center mt-4 cursor-pointer  text-primary"
+                        class="
+                            flex
+                            items-center
+                            mt-4
+                            cursor-pointer
+                            text-primary
+                        "
                         @click="redirectToProfile(item)"
                     >
                         <span v-if="item.attributes.terms.length">

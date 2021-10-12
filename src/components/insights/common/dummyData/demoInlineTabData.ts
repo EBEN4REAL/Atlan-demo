@@ -5,7 +5,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'ABCDE',
         isSaved: false,
         queryId: undefined,
-        status: 'draft',
+        status: 'DRAFT',
         connectionId: '',
         description: '',
         qualifiedName: '',

@@ -47,9 +47,9 @@
             const newStatus = ref<any>()
 
             onMounted(() => {
-                if (props.data.value.assetStatus) {
+                if (props.data.value.certificateStatus) {
                     newStatus.value = statusList.find(
-                        (stat) => stat.id === props.data.value.assetStatus
+                        (stat) => stat.id === props.data.value.certificateStatus
                     )
                 }
             })

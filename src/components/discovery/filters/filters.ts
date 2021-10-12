@@ -23,9 +23,7 @@ export const List: CollapseArray = [
         label: 'Saved Filter',
         component: 'savedFilter',
         overallCondition: 'AND',
-        filters: [
-
-        ],
+        filters: [],
         isDeleted: false,
         isDisabled: false,
         exclude: false,
@@ -54,7 +52,7 @@ export const List: CollapseArray = [
         overallCondition: 'OR',
         filters: [
             {
-                attributeName: 'assetStatus',
+                attributeName: 'certificateStatus',
                 condition: 'OR',
                 isMultiple: false,
                 operator: 'eq',
@@ -69,9 +67,7 @@ export const List: CollapseArray = [
         label: 'Term',
         component: 'governance',
         overallCondition: 'OR',
-        filters: [
-
-        ],
+        filters: [],
         isDeleted: false,
         isDisabled: false,
         exclude: false,

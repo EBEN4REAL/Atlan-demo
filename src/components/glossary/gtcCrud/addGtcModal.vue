@@ -209,7 +209,7 @@
 
             const title = ref<string | undefined>('')
             const description = ref<string | undefined>('')
-            const currentStatus = ref<string | undefined>('draft')
+            const currentStatus = ref<string | undefined>('DRAFT')
             const ownerUsers = ref<Array<any>>([myUsername.value])
             const ownerGroups = ref<Array<any>>([])
             const selectedCategories = ref<{ categoryGuid: string }[]>([])
@@ -264,7 +264,7 @@
             const resetInput = () => {
                 title.value = ''
                 description.value = ''
-                currentStatus.value = 'draft'
+                currentStatus.value = 'DRAFT'
             }
 
             const showModal = async () => {
@@ -277,7 +277,8 @@
                     description.value =
                         props?.entity?.attributes?.shortDescription ??
                         props?.entity?.attributes?.description
-                    currentStatus.value = props?.entity?.attributes?.assetStatus
+                    currentStatus.value =
+                        props?.entity?.attributes?.certificateStatus
                     ownerUsers.value =
                         props?.entity?.attributes?.ownerUsers
                             ?.split(',')
@@ -304,7 +305,8 @@
                                     (props.entityType === 'term'
                                         ? 'Untitled Term'
                                         : 'Untitled category'),
-                                assetStatus: currentStatus.value ?? 'draft',
+                                certificateStatus:
+                                    currentStatus.value ?? 'DRAFT',
                                 shortDescription: description.value ?? '',
                                 ownerUsers: ownerUsers?.value?.join(),
                                 ownerGroups: ownerGroups?.value?.join(),
@@ -320,7 +322,8 @@
                                         (props.entityType === 'term'
                                             ? 'Untitled Term'
                                             : 'Untitled category'),
-                                    assetStatus: currentStatus.value ?? 'draft',
+                                    certificateStatus:
+                                        currentStatus.value ?? 'DRAFT',
                                     ownerUsers: ownerUsers?.value?.join(),
                                     ownerGroups: ownerGroups?.value?.join(),
                                     shortDescription: description.value ?? '',
@@ -329,7 +332,7 @@
 
                             const { entity } = toRefs(props)
                             if (entity) {
-                                entity.value.attributes.assetStatus =
+                                entity.value.attributes.certificateStatus =
                                     currentStatus.value
                                 entity.value.attributes.ownerUsers =
                                     ownerUsers?.value?.join()
@@ -372,7 +375,8 @@
                                         (props.entityType === 'term'
                                             ? 'Untitled Term'
                                             : 'Untitled category'),
-                                    assetStatus: currentStatus.value ?? 'draft',
+                                    certificateStatus:
+                                        currentStatus.value ?? 'DRAFT',
                                     shortDescription: description.value ?? '',
                                     ownerUsers: ownerUsers?.value?.join(),
                                     ownerGroups: ownerGroups?.value?.join(),

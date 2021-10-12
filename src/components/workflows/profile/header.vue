@@ -27,7 +27,7 @@
 
                 <div class="flex items-center">
                     <Tooltip
-                        :tooltip-text="assetData.metadata.name"
+                        :tooltip-text="assetData?.name"
                         classes="mb-0 text-gray-700 font-semibold text-lg"
                     />
                 </div>
@@ -51,7 +51,7 @@
 
         setup() {
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            const assetDataInjection = inject('selectedAsset')
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)

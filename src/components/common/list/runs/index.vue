@@ -1,7 +1,14 @@
 <template>
     <div class="w-full border rounded">
         <div
-            class="flex justify-between w-full px-4 py-3  rounded-tl-md rounded-tr-md"
+            class="
+                flex
+                justify-between
+                w-full
+                px-4
+                py-3
+                rounded-tl-md rounded-tr-md
+            "
         >
             <div class="flex space-x-3">
                 <WorkflowTypeSelector
@@ -48,7 +55,7 @@
                 <tbody class="rounded-md">
                     <template
                         v-for="item in data.items"
-                        :key="item.metadata.uid"
+                        :key="item.workflowtemplate.metadata.uid"
                     >
                         <ItemView :item="item"></ItemView>
                     </template>

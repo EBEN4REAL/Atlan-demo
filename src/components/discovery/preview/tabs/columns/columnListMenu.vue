@@ -5,7 +5,13 @@
         placement="bottomRight"
     >
         <a-button
-            class="px-2 text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+            class="
+                px-2
+                text-gray-500
+                border-transparent
+                shadow-none
+                hover:border-gray-300 hover:shadow-sm
+            "
         >
             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
         </a-button>
@@ -26,7 +32,9 @@
                         <div class="flex items-center justify-between">
                             <StatusBadge
                                 :key="asset?.guid"
-                                :status-id="asset?.attributes?.assetStatus"
+                                :status-id="
+                                    asset?.attributes?.certificateStatus
+                                "
                                 :show-chip-style-status="false"
                                 :show-no-status="true"
                                 :show-label="true"

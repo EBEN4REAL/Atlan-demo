@@ -57,7 +57,8 @@ const useUpdateGtcEntity = () => {
                     updateTreeNode({
                         guid: newData.guid,
                         name: newData.name,
-                        assetStatus: newData.assetStatus ?? 'is_null',
+                        certificateStatus:
+                            newData.certificateStatus ?? 'is_null',
                     })
                 }
             }

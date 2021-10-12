@@ -9,7 +9,15 @@
         "
     >
         <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent  w-96"
+            class="
+                flex
+                items-start
+                flex-1
+                px-3
+                py-4
+                border-b border-transparent
+                w-96
+            "
             :class="{ ' border-gray-200': !isSelected }"
         >
             <a-checkbox
@@ -20,19 +28,41 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
+                class="
+                    box-border
+                    flex flex-col flex-1
+                    overflow-hidden
+                    gap-y-1
+                    lg:pr-16
+                "
             >
                 <div class="flex items-center flex-none">
                     <span
-                        class="pl-1 text-sm tracking-wider text-gray-700 uppercase "
+                        class="
+                            pl-1
+                            text-sm
+                            tracking-wider
+                            text-gray-700
+                            uppercase
+                        "
                         >WORKFLOW TEMPLATE</span
                     >
                 </div>
 
                 <div class="flex items-center mb-0 overflow-hidden">
                     <span
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate  text-primary overflow-ellipsis whitespace-nowrap"
-                        >{{ item.metadata.name }}</span
+                        class="
+                            flex-shrink
+                            mb-0
+                            overflow-hidden
+                            text-base
+                            font-bold
+                            truncate
+                            text-primary
+                            overflow-ellipsis
+                            whitespace-nowrap
+                        "
+                        >{{ item.workflowtemplate.metadata.name }}</span
                     >
                 </div>
             </div>

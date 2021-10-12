@@ -66,7 +66,7 @@ export default function useGtcSearch(
                 'database',
                 'atlanSchema',
                 'metadata',
-                'assetStatus',
+                'certificateStatus',
                 'shortDescription',
                 'parentCategory',
                 'categories',

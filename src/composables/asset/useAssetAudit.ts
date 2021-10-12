@@ -29,7 +29,6 @@ const useAssetAudit = (params: any, guid: string) => {
     }
 
     const fetchMoreAudits = (fetchmoreParams: any) => {
-
         const { data, isLoading, error } = useAPI<
             Components.Schemas.EntityAuditEventV2[]
         >(GET_ASSET_AUDIT, 'GET', {
@@ -39,7 +38,6 @@ const useAssetAudit = (params: any, guid: string) => {
         })
 
         response.isFetchingMore = isLoading
-
 
         watch(data, () => {
             if (data.value?.length && !error.value) {
@@ -119,8 +117,8 @@ const useAssetAudit = (params: any, guid: string) => {
         typeof parsedDetails === 'object'
             ? parsedDetails?.typeName ?? ''
             : typeof parsedDetails === 'string'
-                ? parsedDetails
-                : ''
+            ? parsedDetails
+            : ''
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
@@ -134,8 +132,10 @@ const useAssetAudit = (params: any, guid: string) => {
             const { attributes } = logs
             const owners = 'ownerUsers' in attributes
             const experts = 'expertUsers' in attributes
-            const status = 'assetStatusUpdatedAt' in attributes
-            const userDescription = 'userDescription' in attributes || 'shortDescription' in attributes
+            const status = 'certificateUpdatedAt' in attributes
+            const userDescription =
+                'userDescription' in attributes ||
+                'shortDescription' in attributes
 
             if (owners) {
                 const users = attributes.ownerUsers.split(',')
@@ -166,15 +166,14 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (userDescription) {
-                const value = attributes.userDescription || attributes.shortDescription
+                const value =
+                    attributes.userDescription || attributes.shortDescription
                 data.value = value
 
                 data.displayValue = 'description'
 
                 return data
             }
-
-
         }
         return data
     }
@@ -201,7 +200,6 @@ const useAssetAudit = (params: any, guid: string) => {
                             // This handles the case when classification is linked using Atlan Bot user
                             // In this case, classification object comes in details
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-
 
                             if (parsedDetails.typeName) {
                                 data.value =

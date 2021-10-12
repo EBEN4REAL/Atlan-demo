@@ -1,7 +1,13 @@
 <template>
     <div class="flex w-full">
         <div
-            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AtlanBtn
                 class="m-2"
@@ -49,7 +55,7 @@
                     </template> -->
                     </SearchAndFilter>
                 </div>
-                <div v-if="workflowList.length && !queryText" class="mx-3">
+                <!-- <div v-if="workflowList.length && !queryText" class="mx-3">
                     <p class="mb-2 text-xl font-bold text-gray-600">Featured</p>
                     <WorkflowCards
                         v-model:autoSelect="autoSelect"
@@ -68,7 +74,7 @@
                         :selected-item-id="selectedItemId"
                         @preview="handlePreview"
                     />
-                </div>
+                </div> -->
 
                 <div
                     v-if="
@@ -99,7 +105,7 @@
                     <div
                         class="overflow-y-auto"
                         :style="
-                            queryText
+                            queryText || true
                                 ? `height: calc(100vh - 9.5rem)`
                                 : `height: calc(100vh - 29rem)`
                         "
@@ -113,6 +119,7 @@
                                     : workflowList
                             "
                             :is-loading="isLoading"
+                            :is-load-more="isLoadMore"
                             :selected-item-id="selectedItemId"
                             @preview="handlePreview"
                             @loadMore="loadMore"
@@ -140,7 +147,7 @@
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import useFilterUtils from '@/workflows/setup/filters/useFilterUtils'
-    import { useClusterWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/setup/cards.vue'
 
@@ -199,8 +206,18 @@
 
             // Get All Disoverable Asset Types
 
-            const { workflowList, isLoading, filterList, mutate } =
-                useClusterWorkflowTemplates('default', false)
+            const {
+                workflowList,
+                loadMore,
+                totalCount,
+                isLoading,
+                filterList,
+                mutate,
+            } = useWorkflowTemplates(false)
+
+            const isLoadMore = computed(
+                () => totalCount.value > workflowList.value.length
+            )
 
             if (!workflowList.value.length) mutate()
 
@@ -244,13 +261,8 @@
             }, 150)
 
             const handlePreview = (item) => {
-                selectedItemId.value = item.metadata.uid
+                selectedItemId.value = item.workflowtemplate.metadata.uid
                 emit('preview', item)
-            }
-            const loadMore = () => {
-                autoSelect.value = false
-                offset.value += limit.value
-                updateBody()
             }
 
             const handleClearFiltersFromList = () => {
@@ -269,11 +281,12 @@
                 initialFilters,
                 AllFilters,
                 workflowList,
+                loadMore,
                 emptyScreen,
+                isLoadMore,
                 handleSearchChange,
                 handlePreview,
                 queryText,
-                loadMore,
                 isLoading,
                 dynamicSearchPlaceholder,
                 setPlaceholder,

@@ -1,4 +1,4 @@
-import { ref, Ref, watch } from 'vue'
+import { ref, Ref, watch, computed } from 'vue'
 import { useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import whoami from '../user/whoami'
@@ -8,6 +8,7 @@ import useBulkSelectOwners from '~/composables/asset/bulk/useBulkSelectOwners'
 import useBulkSelectClassifications from '~/composables/asset/bulk/useBulkSelectClassifications'
 import useBulkSelectTerms from '~/composables/asset/bulk/useBulkSelectTerms'
 import useBulkUpdateStore from '~/store/bulkUpdate'
+import { AssetTypeList } from '~/constant/assetType'
 import { Components } from '~/api/atlas/client'
 
 export interface LocalState {
@@ -40,6 +41,23 @@ export default function useBulkSelect() {
     const updateSelectedAssets = (list: Ref<assetInterface[]>) => {
         selectedAssets.value = [...list.value]
     }
+    const assetTypeMap = computed(() => {
+        const typeMap: Record<string, number> = {}
+        if (selectedAssets.value && selectedAssets.value.length) {
+            selectedAssets.value.forEach((asset) => {
+                const typeObj = AssetTypeList.find(
+                    (type) => type.id === asset.typeName
+                )
+                if (typeObj && typeObj.label) {
+                    if (typeMap.hasOwnProperty(typeObj.label))
+                        typeMap[typeObj.label] += 1
+                    else typeMap[typeObj.label] = 1
+                }
+            })
+        }
+        return typeMap
+    })
+
     /** OWNERS */
     const {
         owners,
@@ -73,6 +91,7 @@ export default function useBulkSelect() {
         originalTerms,
         updateTerms,
         termFrequencyMap,
+        didTermsUpdate,
     } = useBulkSelectTerms(selectedAssets)
 
     /**  HELPER FUNCTIONS */
@@ -86,7 +105,7 @@ export default function useBulkSelect() {
                     name: asset?.attributes?.name,
                     tenantId: asset.attributes?.tenantId,
                     assetStatusMessage: asset.attributes?.assetStatusMessage,
-                    assetStatus: asset.attributes?.assetStatus,
+                    certificateStatus: asset.attributes?.certificateStatus,
                 },
             }
             // parent glossary guid is mandatory for gtc updation
@@ -108,15 +127,15 @@ export default function useBulkSelect() {
             // Update status
             if (didStatusUpdate.value) {
                 if (updatedStatus && updatedStatus.value)
-                    updatedAsset.attributes.assetStatus =
+                    updatedAsset.attributes.certificateStatus =
                         updatedStatus.value ||
-                        updatedAsset.attributes.assetStatus
+                        updatedAsset.attributes.certificateStatus
                 if (updatedStatusMessage && updatedStatusMessage.value)
                     updatedAsset.attributes.assetStatusMessage =
                         updatedStatusMessage.value ||
                         updatedAsset.attributes.assetStatusMessage
-                updatedAsset.attributes.assetStatusUpdatedAt = Date.now()
-                updatedAsset.attributes.assetStatusUpdatedBy = username.value
+                updatedAsset.attributes.certificateUpdatedAt = Date.now()
+                updatedAsset.attributes.certificateUpdatedBy = username.value
             }
 
             // Update owners
@@ -148,8 +167,9 @@ export default function useBulkSelect() {
             ].map((clsf) => ({
                 typeName: clsf.typeName,
                 attributes: {},
-                propagate: false,
-                removePropagationsOnEntityDelete: false,
+                propagate: clsf.propagate,
+                removePropagationsOnEntityDelete:
+                    clsf.removePropagationsOnEntityDelete,
             }))
 
             requestPayload[asset.guid] = {
@@ -317,9 +337,10 @@ export default function useBulkSelect() {
             // below is the check to see if terms changed, if requestPayload has no keys that means there are no NEW terms to link and we need not make the request
             if (Object.keys(requestPayload).length) {
                 // TODO: add changelog
-                const linkTerms = {
+                didTermsUpdate.value = true
+                let linkTerms = {
                     status: 'loading',
-                    didChange: true,
+                    didChange: didTermsUpdate.value,
                     changeLog: {},
                 }
                 store.setUpdateStatus({ ...store.updateStatus, linkTerms })
@@ -348,9 +369,9 @@ export default function useBulkSelect() {
                                     ...asset?.meanings,
                                     ...newTerms,
                                 ]
-                                const linkTerms = {
+                                linkTerms = {
                                     status: 'success',
-                                    didChange: true,
+                                    didChange: didTermsUpdate.value,
                                     changeLog: {},
                                 }
                                 store.setUpdateStatus({
@@ -359,9 +380,9 @@ export default function useBulkSelect() {
                                 })
                             })
                         } else {
-                            const linkTerms = {
+                            linkTerms = {
                                 status: 'error',
-                                didChange: true,
+                                didChange: didTermsUpdate.value,
                                 changeLog: {},
                             }
                             store.setUpdateStatus({
@@ -371,7 +392,7 @@ export default function useBulkSelect() {
                         }
                     }
                 })
-            }
+            } else didTermsUpdate.value = false
         }
         if (didClassificationsUpdate.value) {
             // call to link classifications endpoint
@@ -467,6 +488,7 @@ export default function useBulkSelect() {
         originalTerms,
         updateTerms,
         termFrequencyMap,
+        didTermsUpdate,
         state,
         owners,
         resetOwners,
@@ -479,5 +501,6 @@ export default function useBulkSelect() {
         didOwnersUpdate,
         didStatusUpdate,
         didClassificationsUpdate,
+        assetTypeMap,
     }
 }

@@ -1,19 +1,19 @@
-import { Components } from "~/api/atlas/client";
+import { Components } from '~/api/atlas/client'
 
 export interface BaseAttributes {
-  name?: string;
-  description?: string;
-  assetStatus?: string;
-  createTime: Date,
-  qualifiedName: string
+    name?: string
+    description?: string
+    certificateStatus?: string
+    createTime: Date
+    qualifiedName: string
 }
 
 export interface AtlanTableAttributes extends BaseAttributes {
-  rowCount?: number;
+    rowCount?: number
 }
 
 export interface AtlanConnectionAttributes extends BaseAttributes {
-  integrationName?: string;
-  allowQuery?: boolean;
-  allowPreview?: boolean;
+    integrationName?: string
+    allowQuery?: boolean
+    allowPreview?: boolean
 }

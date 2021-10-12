@@ -4,19 +4,16 @@
             <slot name="dropdownIcon" />
         </div>
 
-        <div
-            v-else
-            class="flex items-center px-2 py-1 transition-colors duration-300 border border-transparent rounded-full  hover:border-gray-300"
-        >
+        <div v-else class="flex items-center">
             <a-avatar
-                :size="24"
-                class="mr-2"
+                :size="28"
+                class="mr-1 border border-primary"
                 src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
             />
-            <span class="text-base text-gray">
-                {{ username }}
-            </span>
-            <AtlanIcon class="h-3 ml-2" icon="ChevronDown" />
+            <div class="text-base text-gray-700 capitalize">
+                {{ name }}
+            </div>
+            <div><AtlanIcon class="h-3 ml-1" icon="ChevronDown" /></div>
         </div>
         <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
               Hover me <a-icon type="down" />

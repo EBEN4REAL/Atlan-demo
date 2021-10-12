@@ -2,7 +2,14 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="
+                    fixed
+                    z-10
+                    px-0
+                    border-r-0
+                    rounded-none rounded-l
+                    -left-5
+                "
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -78,7 +85,7 @@
                 <StatusBadge
                     :key="selectedAsset.guid"
                     :show-no-status="false"
-                    :status-id="selectedAsset?.attributes?.assetStatus"
+                    :status-id="selectedAsset?.attributes?.certificateStatus"
                     class="ml-1.5 mb-1"
                 ></StatusBadge>
             </div>
@@ -107,7 +114,15 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            px-5
+                            py-3
+                            font-semibold
+                            text-gray-700 text-md
+                        "
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -202,7 +217,7 @@
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
-            const { assetTypeLabel, title, assetStatus, assetType } =
+            const { assetTypeLabel, title, certificateStatus, assetType } =
                 useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
@@ -293,7 +308,7 @@
                 dataMap,
                 activeKey,
                 filteredTabs,
-                assetStatus,
+                certificateStatus,
                 handleChange,
                 images,
                 getDataType,

@@ -4,7 +4,7 @@
             <div
                 v-for="(a, x) in finalAttributesList"
                 :key="x"
-                class="ml-2"
+                class=""
                 style="margin-right: 0.5rem"
             >
                 <AttributeItem

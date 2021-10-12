@@ -535,7 +535,7 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-none;
+            @apply border-none !important;
         }
 
         :global(.ant-collapse-header) {

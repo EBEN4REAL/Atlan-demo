@@ -5,12 +5,12 @@ export interface tableInterface {
 }
 
 export type Attributes = {
-    assetStatus?: string
+    certificateStatus?: string
     assetStatusMessage?: string
-    assetStatusUpdatedBy?: string
+    certificateUpdatedBy?: string
     ownerUsers?: string
     ownerGroups?: string
-    assetStatusUpdatedAt?: number
+    certificateUpdatedAt?: number
     columnCount?: number
     dataType?: string
     description?: string

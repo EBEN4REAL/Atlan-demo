@@ -1,12 +1,29 @@
 <template>
     <div class="px-5 pb-5 pt-3.5">
         <div class="sidebar_widget_wrapper">
-            <div
-                v-if="selectedAssets && selectedAssets.length"
-                class="mb-3 text-xl font-bold text-primary"
-            >
-                {{ selectedAssets.length }}
-                {{ selectedAssets.length === 1 ? `Asset` : `Assets` }} Selected
+            <div class="mb-3">
+                <div
+                    v-if="selectedAssets && selectedAssets.length"
+                    class="mb-1 text-xl font-bold text-primary"
+                >
+                    {{ selectedAssets.length }}
+                    {{ selectedAssets.length === 1 ? `Asset` : `Assets` }}
+                    Selected
+                </div>
+                <div>
+                    <span
+                        v-for="(key, index) in Object.keys(assetTypeMap)"
+                        :key="key"
+                    >
+                        {{ pluralizeString(key, assetTypeMap[key], true)
+                        }}<span
+                            v-if="
+                                index !== Object.keys(assetTypeMap).length - 1
+                            "
+                            >,
+                        </span>
+                    </span>
+                </div>
             </div>
             <Status :existing-status="existingStatus" class="mb-5"></Status>
             <Owners class="mb-5"></Owners>
@@ -27,7 +44,7 @@
                         didOwnersUpdate ||
                         didStatusUpdate ||
                         didClassificationsUpdate ||
-                        (termsRef && Object.keys(termsRef).length)
+                        didTermsUpdate
                     )
                 "
                 @click="updateAssets(selectedAssets)"
@@ -44,6 +61,7 @@ import Status from '@/common/bulk/widgets/status.vue'
 import Owners from '@/common/bulk/widgets/owners.vue'
 import Classifications from '@/common/bulk/widgets/classifications.vue'
 import Terms from '@/common/bulk/widgets/terms.vue'
+import { pluralizeString } from '~/utils/string'
 
 export default {
     name: 'BulkSidebar',
@@ -80,6 +98,7 @@ export default {
             terms: termsRef,
             originalTerms: originalTermsRef,
             termFrequencyMap,
+            didTermsUpdate,
             state,
             owners: ownersRef,
             originalOwners: originalOwnersRef,
@@ -88,6 +107,7 @@ export default {
             didOwnersUpdate,
             didStatusUpdate,
             didClassificationsUpdate,
+            assetTypeMap,
         } = useBulkSelect()
         /** PROVIDERS */
         provide('selectedAssets', selectedAssets)
@@ -137,6 +157,9 @@ export default {
             didOwnersUpdate,
             didStatusUpdate,
             didClassificationsUpdate,
+            didTermsUpdate,
+            assetTypeMap,
+            pluralizeString,
         }
     },
 }

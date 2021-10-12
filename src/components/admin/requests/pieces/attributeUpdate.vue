@@ -1,5 +1,5 @@
 <template>
-    <template v-if="name === 'assetStatus'">
+    <template v-if="name === 'certificateStatus'">
         <span class="mr-2 text-sm text-gray-500"> Change status to </span>
         <StatusBadge :status-id="value" show-no-status show-label />
     </template>
@@ -23,7 +23,7 @@
             const { name } = toRefs(props)
             const labelMap = {
                 userDescription: 'DESC',
-                assetStatus: 'STATUS',
+                certificateStatus: 'STATUS',
             }
 
             const attrLabel = computed(() => labelMap[name.value] || 'ATTR')

@@ -9,7 +9,10 @@
         </div>
         <div class="flex items-center">
             <div v-if="totalAppliedFiltersCount">
-                <SaveFilterModal :applied-filters="filterMap">
+                <SaveFilterModal
+                    :applied-filters="filterMap"
+                    @savedFilterAdded="handleSavedFilterAdded"
+                >
                     <template #trigger>
                         <div
                             class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
@@ -107,8 +110,9 @@
                     @change="handleTermChange"
                 ></component>
                 <component
-                    v-else-if="item.component === 'savedFilter'"
                     is="savedFilter"
+                    v-else-if="item.component === 'savedFilter'"
+                    :updateSavedFilters="updateSavedFilters"
                     v-model:data="dataMap[item.id]"
                     :item="item"
                     @change="handleSavedFilterChange"
@@ -197,6 +201,7 @@
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref('dirty_')
+            const updateSavedFilters: Ref<boolean> = ref(false)
 
             /**
              * @desc combines static List with mapped BM object that has filter support
@@ -308,6 +313,9 @@
 
             const setConnector = (payload: any) => {
                 dataMap.value.connector = payload
+            }
+            const handleSavedFilterAdded = () => {
+                updateSavedFilters.value = true
             }
 
             const handleClear = (filterId: string) => {
@@ -517,6 +525,8 @@
                 setConnector,
                 handleTermChange,
                 handleSavedFilterChange,
+                handleSavedFilterAdded,
+                updateSavedFilters,
             }
         },
     })

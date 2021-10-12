@@ -110,7 +110,7 @@
                                             </div>
 
                                             <div
-                                                class="flex items-center ml-32 cursor-pointer  text-primary"
+                                                class="flex items-center cursor-pointer  ml-52 text-primary"
                                                 @click.stop="
                                                     () =>
                                                         handleLoadFilter(filter)
@@ -175,7 +175,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref, watch, computed } from 'vue'
+    import { defineComponent, PropType, ref, Ref, watch, toRefs } from 'vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import { Collapse } from '~/types'
@@ -205,6 +205,10 @@
                 type: Object,
                 required: true,
             },
+            updateSavedFilters: {
+                type: Boolean,
+                required: true,
+            },
         },
         emits: ['change'],
         setup(props, { emit }) {
@@ -212,11 +216,11 @@
             const queryText = ref('')
             const selected = ref('')
             const savedList = ref<any>([])
-
+            const { updateSavedFilters } = toRefs(props)
             // own info
             const { username: myUsername } = whoami()
 
-            const { data: list, isLoading } = getSavedFilters()
+            const { data: list, isLoading, refresh } = getSavedFilters()
 
             const getFilteredList = () => {
                 const { filteredList } = useSavedFiltersSearch(
@@ -242,6 +246,9 @@
             /** WATCHERS */
             watch(list, () => {
                 getFilteredList()
+            })
+            watch(updateSavedFilters, () => {
+                refresh()
             })
 
             return {

@@ -95,7 +95,7 @@
                 required: true,
             },
         },
-        emits: [''],
+        emits: ['savedFilterAdded'],
         setup(props, { emit }) {
             const { username: myUsername, name: myName, email } = whoami()
             const { appliedFilters } = toRefs(props)
@@ -158,6 +158,7 @@
                 }
                 resetInput()
                 visible.value = false
+                emit('savedFilterAdded')
             }
 
             const handleCancel = () => {

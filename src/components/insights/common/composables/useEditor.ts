@@ -11,6 +11,7 @@ export function useEditor(
     activeInlineTab?: Ref<activeInlineTabInterface>,
     sqlVariables?: Ref<CustomVaribaleInterface[]>
 ) {
+    let decorations = []
     function setEditorPos(
         editorInstance: any,
         editorPos: Ref<{ column: number; lineNumber: number }>
@@ -179,21 +180,22 @@ export function useEditor(
         monacoInstance: any,
         matches: any
     ) => {
-        // const el = matches.map((t) => {
-        //     const s = t[0].range
-        //     const token = t.token
-        //     return {
-        //         range: new monacoInstance.Range(
-        //             s.startLineNumber,
-        //             s.startColumn,
-        //             s.endLineNumber,
-        //             s.startColumn + token.length
-        //         ),
-        //         options: { inlineClassName: 'moustacheDecoration' },
-        //     }
-        // })
-        // console.log(el, 'el')
-        // editorInstance?.deltaDecorations([], el)
+        const el = matches.map((t) => {
+            const s = t[0]?.range ?? []
+            const token = t.token
+            return {
+                range: new monacoInstance.Range(
+                    s.startLineNumber,
+                    s.startColumn,
+                    s.endLineNumber,
+                    s.startColumn + token.length
+                ),
+                options: { inlineClassName: 'moustacheDecoration' },
+            }
+        })
+        console.log(el, 'el')
+        // older decorations needed
+        decorations = editorInstance?.deltaDecorations(decorations, el)
     }
     const findCustomVariableMatches = (
         editorInstance: any,

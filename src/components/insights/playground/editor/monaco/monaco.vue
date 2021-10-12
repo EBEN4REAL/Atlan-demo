@@ -231,6 +231,11 @@
                 editor?.getModel().onDidChangeContent(async (event) => {
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
+                    const matches = findCustomVariableMatches(
+                        editor,
+                        activeInlineTab.value.playground.editor.text
+                    )
+                    changeMoustacheTemplateColor(editor, monaco, matches)
                     const changes = event?.changes[0]
                     // const lastTypedCharacter = event?.changes[0]?.text
                     const suggestions = useAutoSuggestions(
@@ -246,11 +251,6 @@
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)
                     setEditorFocusedState(true, editorFocused)
-                    const matches = findCustomVariableMatches(
-                        editor,
-                        activeInlineTab.value.playground.editor.text
-                    )
-                    changeMoustacheTemplateColor(editor, monaco, matches)
                 })
                 editor?.onDidBlurEditorText(() => {
                     setEditorFocusedState(false, editorFocused)
@@ -293,6 +293,11 @@
                         const text = editor.getValue()
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
+                        const matches = findCustomVariableMatches(
+                            editor,
+                            activeInlineTab.value.playground.editor.text
+                        )
+                        changeMoustacheTemplateColor(editor, monaco, matches)
                         // const lastTypedCharacter = event?.changes[0]?.text
                         const suggestions = useAutoSuggestions(
                             changes,
@@ -349,7 +354,7 @@
 </style>
 <style lang="less">
     .moustacheDecoration {
-        @apply bg-gray-200 text-gray-600;
+        @apply bg-purple-200;
         cursor: pointer;
     }
 </style>

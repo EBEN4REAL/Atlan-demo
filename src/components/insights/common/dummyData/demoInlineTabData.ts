@@ -14,8 +14,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             schema: {
                 connectors: {
                     attributeName: 'schemaQualifiedName',
-                    attributeValue:
-                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                    attributeValue: '',
                 },
             },
             queries: {
@@ -67,8 +66,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             schema: {
                 connectors: {
                     attributeName: 'schemaQualifiedName',
-                    attributeValue:
-                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                    attributeValue: '',
                 },
             },
             queries: {
@@ -120,8 +118,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             schema: {
                 connectors: {
                     attributeName: 'schemaQualifiedName',
-                    attributeValue:
-                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                    attributeValue: '',
                 },
             },
             queries: {

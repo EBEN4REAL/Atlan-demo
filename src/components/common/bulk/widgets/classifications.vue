@@ -203,8 +203,11 @@ export default defineComponent({
             // classifications from store don't have typeName property, instead have name, so adding typename so that the mapping is correct
             const modifiedClassificationList =
                 selectedClassificationsList.value.map((clsf) => ({
-                    ...clsf,
+                    name: clsf.name,
                     typeName: clsf.name,
+                    propagate: linkClassificationData.value.propagate,
+                    removePropagationsOnEntityDelete:
+                        linkClassificationData.value.removePropagationsOnEntityDelete,
                 }))
             localState.value.all = [...modifiedClassificationList]
             // TODO: handle linkClassificationsData

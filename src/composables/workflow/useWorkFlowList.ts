@@ -2,25 +2,34 @@
 import { watch, ref, computed } from 'vue'
 import { Workflows } from '~/services/argo/api/workflow'
 
-export function useWorkflowTemplateSearchList(
-    tenant,
+export function useWorkflowSearchList(
     immediate: boolean = true
 ) {
-    const { data, error, isLoading, mutate } = Workflows.getWorkflowTemplates(
-        tenant,
-        { immediate, options: {} }
+    const params = ref({ limit: 10, offset: 0 })
+    const { data, error, isLoading, mutate } = Workflows.getWorkflows(
+        { immediate, options: {}, params }
     )
 
     const workflowList = ref([])
+    const totalCount = ref()
     watch(data, () => {
-        console.log('useWorkflowTemplateSearchList', data.value.items)
-        workflowList.value = data.value?.items
+        if (!data?.value?.records) return;
+        console.log('useWorkflowSearchList', data.value.records)
+        totalCount.value = data.value.total_record
+        workflowList.value.push(...data.value.records)
     })
 
-    const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.metadata.name.includes(text))
+    const loadMore = () => {
+        params.value.offset += params.value.limit
+        if (params.value.offset > totalCount.value)
+            params.value.offset = totalCount.value
+        mutate()
+    }
 
-    return { workflowList, error, isLoading, filterList, mutate }
+    const filterList = (text) =>
+        workflowList.value.filter((wf) => wf.name.includes(text))
+
+    return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate }
 }
 
 export function useArchivedWorkflowList(
@@ -47,22 +56,35 @@ export function useArchivedWorkflowList(
     return { workflowList, error, isLoading, filterList, mutate }
 }
 
-export function useClusterWorkflowTemplates(
+export function useWorkflowTemplates(
     immediate: boolean = true
 ) {
+    const params = ref({ limit: 10, offset: 0 })
     const { data, error, isLoading, mutate } =
-        Workflows.getClusterWorkflowTemplates({ immediate, options: {} })
+        Workflows.getWorkflowTemplates({ immediate, options: {}, params })
 
     const workflowList = ref([])
+    const totalCount = ref()
     watch(data, () => {
-        console.log('useClusterWorkflowTemplates', data.value.items)
-        workflowList.value = data.value?.items
+        if (!data?.value?.records) return;
+        console.log('useWorkflowTemplates', data.value.records)
+        totalCount.value = data.value.total_record
+        workflowList.value.push(...data.value.records)
     })
 
-    const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.metadata.name.includes(text))
+    const loadMore = () => {
+        params.value.offset += params.value.limit
+        if (params.value.offset > totalCount.value)
+            params.value.offset = totalCount.value
+        mutate()
+    }
 
-    return { workflowList, error, isLoading, filterList, mutate }
+
+
+    const filterList = (text) =>
+        workflowList.value.filter((wf) => wf.name.includes(text))
+
+    return { workflowList, loadMore, totalCount, error, isLoading, filterList, mutate }
 }
 
 export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
@@ -80,9 +102,9 @@ export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
     return { runDeets, error, isLoading, mutate }
 }
 
-export function useWorkflowTemplate(tenant, name, immediate: boolean = true) {
+export function useWorkflowByName(name, immediate: boolean = true) {
     const { data, error, isLoading, mutate } =
-        Workflows.getWorkflowTemplateByName(tenant, name, {
+        Workflows.getWorkflowByName(name, {
             immediate,
             options: {},
         })

@@ -1,7 +1,7 @@
 <template>
     <a-layout class="min-h-full">
-        <a-layout-header class="z-30 h-12 p-0 m-0">
-            <div class="h-full px-5 bg-white border-b">
+        <a-layout-header class="z-30 h-10 p-0 m-0">
+            <div class="h-full px-4 bg-white border-b">
                 <NavMenu
                     :page="activeKey[0]"
                     @change="handleChange"

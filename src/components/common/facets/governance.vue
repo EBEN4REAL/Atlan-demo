@@ -5,7 +5,7 @@
         </div>
         <div
             v-else
-            class="ml-4 overflow-y-auto max-h-64"
+            class="overflow-y-auto max-h-64"
             :class="$style.filterTree"
         >
             <a-tree

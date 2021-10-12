@@ -1,7 +1,14 @@
 <template>
     <div class="flex w-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AtlanBtn
                 class="m-2"
@@ -52,7 +59,9 @@
                 </div>
 
                 <div
-                    v-if="runList && runList.length <= 0 && !isLoading"
+                    v-if="
+                        workflowList && workflowList.length <= 0 && !isLoading
+                    "
                     class="flex flex-col items-center mt-10"
                 >
                     <img
@@ -66,8 +75,11 @@
                     v-else
                     v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
-                    :list="queryText.length ? filterList(queryText) : runList"
+                    :list="
+                        queryText.length ? filterList(queryText) : workflowList
+                    "
                     :is-loading="isLoading"
+                    :is-load-more="isLoadMore"
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></WorkflowList>
@@ -93,7 +105,7 @@
 
     import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
 
-    import { useWorkflowTemplateSearchList } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowSearchList } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
 
     export default defineComponent({
@@ -150,13 +162,19 @@
             // Get All Disoverable Asset Types
 
             const {
-                workflowList: runList,
+                workflowList,
                 isLoading,
                 filterList,
+                totalCount,
+                loadMore,
                 mutate,
-            } = useWorkflowTemplateSearchList('default', false)
+            } = useWorkflowSearchList(false)
 
-            if (!runList.value.length) mutate()
+            if (!workflowList.value.length) mutate()
+
+            const isLoadMore = computed(
+                () => totalCount.value > workflowList.value.length
+            )
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
@@ -200,11 +218,6 @@
             const handlePreview = (item) => {
                 emit('preview', item)
             }
-            const loadMore = () => {
-                autoSelect.value = false
-                offset.value += limit.value
-                updateBody()
-            }
 
             const handleClearFiltersFromList = () => {
                 queryText.value = ''
@@ -222,12 +235,13 @@
                 workflowFilterRef,
                 initialFilters,
                 AllFilters,
-                runList,
+                workflowList,
+                isLoadMore,
+                loadMore,
                 emptyScreen,
                 handleSearchChange,
                 handlePreview,
                 queryText,
-                loadMore,
                 isLoading,
                 dynamicSearchPlaceholder,
                 setPlaceholder,

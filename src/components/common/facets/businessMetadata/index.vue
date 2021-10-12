@@ -1,6 +1,6 @@
 <template>
     <span class="pb-6">
-        <div v-if="list.attributeDefs.length > 10" class="px-4 mt-1 mb-2">
+        <div v-if="list.attributeDefs.length > 10" class="mt-1 mb-2">
             <a-input-search
                 ref="searchText"
                 v-model:value="attributeSearchText"

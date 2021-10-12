@@ -1,29 +1,14 @@
 <template>
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
-        <div v-if="page === '/'" class="flex justify-between w-full mx-4 mt-4">
-            <div class="flex">
-                <a-avatar
-                    :size="30"
-                    class="mr-2"
-                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                />
-
-                <div class="flex flex-col">
-                    <span class="capitalize">{{ name }}</span>
-                    <span class="text-gray-500">@{{ username }}</span>
-                </div>
-            </div>
-            <div class="mr-10">
-                <UserPersonalAvatar>
-                    <template #dropdownIcon>
-                        <atlan-icon icon="KebabMenu" class="cursor-pointer" />
-                    </template>
-                </UserPersonalAvatar>
-            </div>
+        <div
+            v-if="page === '/'"
+            class="flex items-center justify-between w-full px-3 py-3"
+        >
+            <UserPersonalAvatar> </UserPersonalAvatar>
         </div>
-        <a-divider v-if="page === '/'" class="mt-5 mb-0" />
-        <span class="px-4 mt-5 mb-2 text-xs font-bold text-gray-500">
+        <a-divider v-if="page === '/'" class="my-0" />
+        <!-- <span class="px-4 mt-5 mb-2 text-xs font-bold text-gray-500">
             PURPOSE</span
         >
         <a-dropdown class="mx-4">
@@ -43,35 +28,39 @@
                     <AtlanIcon icon="ChevronDown" class="h-4" />
                 </div>
             </a-button>
-        </a-dropdown>
-        <!-- workspaces -->
-        <span class="px-4 mt-8 mb-2 text-xs font-bold text-gray-500">
-            WORKSPACE</span
-        >
-        <!-- pages -->
-        <button
-            class="menu-item"
-            :class="{ active: page === '/' }"
-            @click="handleClick('home')"
-        >
-            <span class="flex items-center">
-                <atlan-icon icon="Trash" class="h-4 mr-3 text-primary" />
-                Home
-            </span>
-        </button>
+        </a-dropdown> -->
 
-        <button
-            v-for="nav in navKeys"
-            :key="nav.label"
-            class="menu-item"
-            :class="{ active: nav.path === page }"
-            @click="handleClick(nav.path)"
-        >
-            <span class="flex items-center">
-                <atlan-icon icon="Link" class="h-4 mr-3 text-primary" />
-                {{ nav.label }}
-            </span>
-        </button>
+        <div class="px-3">
+            <button
+                class="w-full mx-0 mt-3 menu-item"
+                :class="{ active: page === '/' }"
+                @click="handleClick('home')"
+            >
+                <span class="flex items-center">
+                    <atlan-icon icon="Home" class="h-4 mr-2 text-primary" />
+                    Home
+                </span>
+            </button>
+
+            <!-- workspaces -->
+            <div class="mt-4 mb-3 text-xs font-bold text-gray-500">
+                WORKSPACE
+            </div>
+            <!-- pages -->
+
+            <button
+                v-for="nav in navKeys"
+                :key="nav.label"
+                class="w-full mx-0 menu-item"
+                :class="{ active: nav.path === page }"
+                @click="handleClick(nav.path)"
+            >
+                <span class="flex items-center">
+                    <atlan-icon :icon="nav.icon" class="h-4 mr-2" />
+                    {{ nav.label }}
+                </span>
+            </button>
+        </div>
         <div class="flex-grow"></div>
         <div class="w-full justify-self-end">
             <button
@@ -80,17 +69,17 @@
                 @click="handleClick('admin')"
             >
                 <span class="flex items-center">
-                    <atlan-icon icon="Link" class="h-4 mr-3 text-primary" />
+                    <atlan-icon icon="Shield" class="h-4 mr-3 text-primary" />
                     Admin Center
                 </span>
             </button>
             <button
-                v-for="item in ['Notifications', 'Help', 'Feedback']"
+                v-for="item in ['Help & Community', 'Feedback']"
                 :key="item"
                 class="mr-2 menu-item"
             >
                 <span class="flex items-center">
-                    <atlan-icon icon="Link" class="h-4 mr-3 text-primary" />
+                    <atlan-icon icon="Globe" class="h-4 mr-3 text-primary" />
                     {{ item }}
                 </span>
             </button>
@@ -109,7 +98,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
-    import UserPersonalAvatar from '~/components/common/avatar/me.vue'
+    import UserPersonalAvatar from '~/components/common/avatar/meLarge.vue'
     import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
@@ -125,10 +114,10 @@
             const esc = keys.Escape
             const { username, name } = whoami()
             const navKeys = [
-                { path: 'assets', label: 'Discover' },
-                { path: 'glossary', label: 'Glossary' },
-                { path: 'insights', label: 'Insights' },
-                { path: 'workflows', label: 'Workflows' },
+                { path: 'assets', label: 'Assets', icon: 'Search' },
+                { path: 'glossary', label: 'Glossary', icon: 'FolderOpen' },
+                { path: 'insights', label: 'Insights', icon: 'Queries' },
+                { path: 'workflows', label: 'Workflows', icon: 'Lineage' },
             ]
 
             function handleClick(key: string) {

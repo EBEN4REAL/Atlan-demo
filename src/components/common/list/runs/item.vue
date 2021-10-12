@@ -148,7 +148,7 @@
             const category = computed(() => {
                 return (
                     titleCase(props.item?.metadata?.labels['category'], ' ') ||
-                    props.item.metadata.name
+                    props.item.workflowtemplate.metadata.name
                 )
             })
 

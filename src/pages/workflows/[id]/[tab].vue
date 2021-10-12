@@ -37,8 +37,8 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        provide,
         toRefs,
+        inject,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -48,7 +48,7 @@
     import Header from '@/workflows/profile/header.vue'
 
     // Composables
-    import { useWorkflowTemplate } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowByName } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {
@@ -78,6 +78,9 @@
             /** DATA */
             const activeKey = ref(2)
             const data = ref({})
+            const selectedAsset = inject('selectedAsset')
+            if (selectedAsset) data.value.asset = selectedAsset.value
+
             const refs: { [key: string]: any } = ref({})
             const { updateProfile } = toRefs(props)
             const tabs = [
@@ -123,11 +126,12 @@
 
             // fetch
             const fetch = () => {
+                if (selectedAsset.value) return
                 const {
                     workflow: response,
                     error,
                     isLoading,
-                } = useWorkflowTemplate('default', id.value)
+                } = useWorkflowByName(id.value)
 
                 watch(response, (v) => {
                     data.value.asset = v
@@ -153,9 +157,6 @@
                 if (id.value) fetch()
             })
             watch(updateProfile, () => fetch())
-
-            /** PROVIDER */
-            provide('assetData', data.value)
 
             return {
                 id,

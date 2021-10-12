@@ -9,6 +9,10 @@ export default function useFilterUtils(filters: Ref<Record<string, any>>) {
                 filters.value[id]?.attributeName
             )
         }
+        else if (id === 'saved') {
+            if (filters.value[id]?.checked) return true
+            return false
+        }
         else if (id === 'owners') {
             const onrFltr = filters.value[id]
             return (
@@ -17,7 +21,7 @@ export default function useFilterUtils(filters: Ref<Record<string, any>>) {
                 onrFltr?.userValue?.length
             )
         } else if (
-            ['saved', 'classifications', 'status', 'assetCategory'].includes(id)
+            ['classifications', 'status', 'assetCategory'].includes(id)
         ) {
             if (filters.value[id]?.checked?.length) return true
         } else if (filters.value[id]?.applied) {

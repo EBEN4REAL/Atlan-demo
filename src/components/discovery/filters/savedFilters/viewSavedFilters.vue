@@ -143,7 +143,7 @@
 
                                             <AtlanIcon
                                                 icon="Play"
-                                                class="w-4 h-4 my-auto"
+                                                class="w-4 h-4 my-auto text-gray-500 "
                                             ></AtlanIcon>
                                         </a-tooltip>
                                     </div></div

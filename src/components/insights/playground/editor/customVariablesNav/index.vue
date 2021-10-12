@@ -38,7 +38,9 @@
                                 <div class="px-4 py-2">
                                     <span
                                         class="absolute right-0 flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
-                                        @click="() => deleteVariable(variable)"
+                                        @click="
+                                            () => onDeleteVariable(variable)
+                                        "
                                     >
                                         <fa icon="fal trash-alt" class="" />
                                     </span>
@@ -145,21 +147,10 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        Ref,
-        inject,
-        ref,
-        toRaw,
-        ComputedRef,
-        watch,
-        computed,
-    } from 'vue'
+    import { defineComponent, Ref, inject, ref, toRaw, ComputedRef } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { editor } from 'monaco-editor'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
 
     export default defineComponent({
@@ -169,9 +160,6 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
-            ) as Ref<string>
             const sqlVariables = inject('sqlVariables') as Ref<
                 CustomVaribaleInterface[]
             >
@@ -183,9 +171,7 @@
             const editorInstance = toRaw(editorInstanceRef.value)
             const monacoInstance = toRaw(monacoInstanceRef.value)
 
-            const { modifyEditorContent } = useEditor(tabs, activeInlineTab)
-            const { modifyActiveInlineTabEditor } = useInlineTab()
-            const { saveVariable, addVariable, setSqlVariables } =
+            const { saveVariable, addVariable, deleteVariable } =
                 useCustomVariable(editorInstance, monacoInstance)
 
             const currVariable: Ref<CustomVaribaleInterface | undefined> = ref()
@@ -214,32 +200,8 @@
                 currVariable.value = { ...variable }
             }
 
-            const deleteVariableFromEditor = (str, regex, updatedName, key) => {
-                let updatedString = str.replace(regex, `${updatedName}`)
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                activeInlineTabCopy.playground.editor.text = updatedString
-                const variables =
-                    activeInlineTabCopy.playground.editor.variables.filter(
-                        (x) => x.key !== key
-                    )
-                sqlVariables.value = variables
-                activeInlineTabCopy.playground.editor.variables = variables
-                activeInlineTabCopy.playground.editor.text = updatedString
-                modifyEditorContent(
-                    editorInstance,
-                    monacoInstance,
-                    updatedString
-                )
-                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
-            }
-
-            const deleteVariable = (variable: CustomVaribaleInterface) => {
-                const editorQuery = editorInstance.getValue()
-                const oldVariableName = variable.name
-                const key: string = variable.key
-                let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
-                deleteVariableFromEditor(editorQuery, reg, '', key)
+            const onDeleteVariable = (variable: CustomVaribaleInterface) => {
+                deleteVariable(activeInlineTab, tabs, variable, sqlVariables)
                 closeDropdown()
             }
 
@@ -255,6 +217,7 @@
             }
 
             return {
+                onDeleteVariable,
                 cancelEdit,
                 customVariableOpenKey,
                 onSaveVariable,

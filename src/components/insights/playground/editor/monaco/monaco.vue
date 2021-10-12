@@ -72,6 +72,8 @@
                 formatter,
                 setEditorPos,
                 setEditorFocusedState,
+                findCustomVariableMatches,
+                changeMoustacheTemplateColor,
             } = useEditor(tabs, activeInlineTab, sqlVariables)
 
             const entityFilters = {
@@ -218,11 +220,17 @@
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
+                const matches = findCustomVariableMatches(
+                    editor,
+                    activeInlineTab.value.playground.editor.text
+                )
+                changeMoustacheTemplateColor(editor, monaco, matches)
+
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
                 editor?.getModel().onDidChangeContent(async (event) => {
                     const text = editor?.getValue()
-                    onEditorContentChange(event, text)
+                    onEditorContentChange(event, text, editor)
                     const changes = event?.changes[0]
                     // const lastTypedCharacter = event?.changes[0]?.text
                     const suggestions = useAutoSuggestions(
@@ -238,6 +246,11 @@
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)
                     setEditorFocusedState(true, editorFocused)
+                    const matches = findCustomVariableMatches(
+                        editor,
+                        activeInlineTab.value.playground.editor.text
+                    )
+                    changeMoustacheTemplateColor(editor, monaco, matches)
                 })
                 editor?.onDidBlurEditorText(() => {
                     setEditorFocusedState(false, editorFocused)
@@ -278,7 +291,7 @@
                     editor?.setModel(model)
                     editor.getModel().onDidChangeContent(async (event) => {
                         const text = editor.getValue()
-                        onEditorContentChange(event, text)
+                        onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
                         // const lastTypedCharacter = event?.changes[0]?.text
                         const suggestions = useAutoSuggestions(
@@ -332,5 +345,11 @@
     }
     .c {
         font-family: 'Courier New', Courier, monospace;
+    }
+</style>
+<style lang="less">
+    .moustacheDecoration {
+        @apply bg-gray-200 text-gray-600;
+        cursor: pointer;
     }
 </style>

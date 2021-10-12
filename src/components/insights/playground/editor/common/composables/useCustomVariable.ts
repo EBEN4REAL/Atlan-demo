@@ -2,6 +2,7 @@ import { Ref, inject, ref, toRaw, ComputedRef } from 'vue'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { generateUUID } from '~/utils/helper/generator'
 
 export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     const { modifyActiveInlineTabEditor } = useInlineTab()
@@ -72,6 +73,38 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         )
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
     }
+    function deleteVariable(
+        activeInlineTab: ComputedRef<activeInlineTabInterface>,
+        tabs: Ref<activeInlineTabInterface[]>,
+        variable: CustomVaribaleInterface,
+        sqlVariables: Ref<CustomVaribaleInterface[]>
+    ) {
+        if (!editorInstance && !monacoInstance) {
+            console.error(
+                'Pass editorInstance & monaco Instance to the useCustomVariable'
+            )
+            return
+        }
+        const str = editorInstance.getValue()
+        const oldVariableName = variable.name
+        let updatedName = ''
+        const key: string = variable.key
+        let regex = new RegExp(`{{${oldVariableName}}}`, 'g')
+        let updatedString = str.replace(regex, `${updatedName}`)
+        const activeInlineTabCopy: activeInlineTabInterface = toRaw(
+            activeInlineTab.value
+        )
+        let copy = JSON.parse(JSON.stringify(toRaw(sqlVariables.value)))
+        copy = copy.filter((c) => c.name !== oldVariableName)
+        editorInstance.getModel().setValue(updatedString)
+        sqlVariables.value = copy
+
+        activeInlineTabCopy.playground.editor.variables = toRaw(
+            sqlVariables.value
+        )
+        activeInlineTabCopy.playground.editor.text = updatedString
+        modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+    }
     function setSqlVariables(
         sqlVariables: Ref<CustomVaribaleInterface[]>,
         newSqlVariables: CustomVaribaleInterface[]
@@ -83,7 +116,8 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     function isSqlVariablesChanged(
         editorText: string,
         sqlVariables: Ref<CustomVaribaleInterface[]>,
-        event: any
+        event: any,
+        editorInstance?: any
     ) {
         const changedChar = event?.changes[0].text
         const reg = /{{\s*[\w\.]+\s*}}/gm
@@ -119,7 +153,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                 if (isVariableAlreadyThere) {
                     isVariableAlreadyThere.name =
                         isVariableAlreadyThere.name + changedChar
-                    isVariableAlreadyThere.key = String(new Date().getTime())
+                    isVariableAlreadyThere.key = generateUUID()
                     isVariableAlreadyThere.value = isVariableAlreadyThere.value
                     isVariableAlreadyThere.type = isVariableAlreadyThere.type
                     newSqlVariables.push(isVariableAlreadyThere)
@@ -127,7 +161,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                     /* This is newly created variable from editor */
                     const new_variable: CustomVaribaleInterface = {
                         name: varName,
-                        key: String(new Date().getTime()),
+                        key: generateUUID(),
                         type: 'string',
                         value: '',
                     }
@@ -152,6 +186,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     const sqlVariables: Ref<CustomVaribaleInterface[]> = ref([])
 
     return {
+        deleteVariable,
         initializeSqlVariables,
         isSqlVariablesChanged,
         sqlVariables,

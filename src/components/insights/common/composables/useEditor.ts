@@ -26,7 +26,11 @@ export function useEditor(
     }
     const { modifyActiveInlineTabEditor } = useInlineTab()
     const { isSqlVariablesChanged, setSqlVariables } = useCustomVariable()
-    function onEditorContentChange(event: any, editorText: string) {
+    function onEditorContentChange(
+        event: any,
+        editorText: string,
+        editorInstance: any
+    ) {
         if (activeInlineTab?.value && tabs?.value) {
             const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
                 {},
@@ -35,7 +39,8 @@ export function useEditor(
             const res: CustomVaribaleInterface[] = isSqlVariablesChanged(
                 editorText,
                 sqlVariables,
-                event
+                event,
+                editorInstance
             )
             /* If there are any array changes show them here */
             setSqlVariables(sqlVariables, res)
@@ -55,7 +60,7 @@ export function useEditor(
         editorInstance?.setModel(model)
         editorInstance?.getModel().onDidChangeContent((event) => {
             const text = editorInstance.getValue()
-            onEditorContentChange(event, text)
+            onEditorContentChange(event, text, editorInstance)
         })
     }
     function moustacheInterpolator(query, variables) {
@@ -168,12 +173,52 @@ export function useEditor(
             )
         )
     }
+
+    const changeMoustacheTemplateColor = (
+        editorInstance: any,
+        monacoInstance: any,
+        matches: any
+    ) => {
+        // const el = matches.map((t) => {
+        //     const s = t[0].range
+        //     const token = t.token
+        //     return {
+        //         range: new monacoInstance.Range(
+        //             s.startLineNumber,
+        //             s.startColumn,
+        //             s.endLineNumber,
+        //             s.startColumn + token.length
+        //         ),
+        //         options: { inlineClassName: 'moustacheDecoration' },
+        //     }
+        // })
+        // console.log(el, 'el')
+        // editorInstance?.deltaDecorations([], el)
+    }
+    const findCustomVariableMatches = (
+        editorInstance: any,
+        editorText: string
+    ) => {
+        const reg = /{{\s*[\w\.]+\s*}}/gm
+        const v: string[] | null = editorText.match(reg)
+        const matches = []
+        if (editorInstance) {
+            for (let i = 0; i < v?.length; i++) {
+                const t = editorInstance.getModel().findMatches(v[i])
+                matches.push({ ...t, token: v[i] })
+                console.log(t, 'position', v[i])
+            }
+            return matches
+        }
+    }
     const editorConfig = ref({
         theme: 'vs',
         tabSpace: 3,
         fontSize: 12,
     })
     return {
+        findCustomVariableMatches,
+        changeMoustacheTemplateColor,
         setFontSizes,
         setTabSpaces,
         editorConfig,

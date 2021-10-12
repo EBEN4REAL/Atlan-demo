@@ -363,7 +363,7 @@
 </style>
 <style lang="less">
     .moustacheDecoration {
-        @apply bg-purple-200;
+        @apply bg-purple-200 text-purple-700 !important;
     }
     .ghostCursor {
         position: relative;

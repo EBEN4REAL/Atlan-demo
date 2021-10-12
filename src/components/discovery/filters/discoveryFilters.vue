@@ -12,7 +12,7 @@
                 <SaveFilterModal :applied-filters="filterMap">
                     <template #trigger>
                         <div
-                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
+                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
                         >
                             Save
                         </div>
@@ -21,7 +21,7 @@
             </div>
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -74,7 +74,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -376,6 +376,13 @@
                         }
 
                         return facetFiltersData.slice(0, 2).join(', ')
+                    }
+                    case 'saved': {
+                        let facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
+                        facetFiltersData = facetFiltersData?.name
+
+                        return facetFiltersData
                     }
                     case 'status': {
                         let facetFiltersData =

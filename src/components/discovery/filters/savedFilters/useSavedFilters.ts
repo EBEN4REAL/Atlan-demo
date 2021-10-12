@@ -140,3 +140,24 @@ export function editSavedFilter(
         isReady,
     }
 }
+
+export function useSavedFiltersSearch(filterList, searchTerm) {
+    const filteredList = computed(() => {
+
+        const keyword = searchTerm.toLowerCase()
+
+        return (
+            filterList?.filter(
+                (item) =>
+
+                (keyword
+                    ? item.name.toLowerCase().includes(keyword)
+                    : true)
+            ) || []
+        )
+    })
+
+    return {
+        filteredList,
+    }
+}

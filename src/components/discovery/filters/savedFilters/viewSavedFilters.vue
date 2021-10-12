@@ -43,7 +43,7 @@
                         ><span>Fetching Saved Filters</span>
                     </div>
                     <div
-                        v-else-if="list.length < 1 && !isLoading"
+                        v-else-if="savedList.length < 1 && !isLoading"
                         class="flex flex-col items-center justify-center h-full"
                     >
                         <div class="flex flex-col items-center">
@@ -59,10 +59,7 @@
                     </div>
 
                     <div v-else class="flex flex-col w-full">
-                        <div
-                            v-for="(filter, index) in filteredList"
-                            :key="index"
-                        >
+                        <div v-for="(filter, index) in savedList" :key="index">
                             <a-popover placement="rightTop">
                                 <template #content>
                                     <div class="popover-container">
@@ -113,7 +110,7 @@
                                             </div>
 
                                             <div
-                                                class="flex items-center ml-16 cursor-pointer  text-primary"
+                                                class="flex items-center ml-32 cursor-pointer  text-primary"
                                                 @click.stop="
                                                     () =>
                                                         handleLoadFilter(filter)
@@ -178,13 +175,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref, toRefs, computed } from 'vue'
+    import { defineComponent, PropType, ref, Ref, watch, computed } from 'vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import { Collapse } from '~/types'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
-    import { getSavedFilters } from './useSavedFilters'
+    import { getSavedFilters, useSavedFiltersSearch } from './useSavedFilters'
     import { KeyMaps } from '~/api/keyMap'
     import Avatar from '~/components/common/avatar.vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
@@ -214,23 +211,23 @@
             const activeTab: Ref<'personal' | 'all'> = ref('personal')
             const queryText = ref('')
             const selected = ref('')
+            const savedList = ref<any>([])
 
             // own info
             const { username: myUsername } = whoami()
 
             const { data: list, isLoading } = getSavedFilters()
 
-            const filteredList = computed(() =>
-                list.value.filter(
-                    (item) =>
-                        item.name
-                            .toLowerCase()
-                            .includes(queryText.value.toLowerCase()) || []
+            const getFilteredList = () => {
+                const { filteredList } = useSavedFiltersSearch(
+                    list.value,
+                    queryText.value
                 )
-            )
+                savedList.value = filteredList.value
+            }
 
-            const handleSearch = (e: { target: { value: string } }) => {
-                queryText.value = e.target.value
+            const handleSearch = () => {
+                getFilteredList()
             }
 
             const handleLoadFilter = (item) => {
@@ -242,6 +239,11 @@
                 activeTab.value = tabName
             }
 
+            /** WATCHERS */
+            watch(list, () => {
+                getFilteredList()
+            })
+
             return {
                 emptyScreen,
                 queryText,
@@ -250,7 +252,7 @@
                 activeTab,
                 setActiveTab,
                 isLoading,
-                filteredList,
+                savedList,
                 handleLoadFilter,
                 list,
                 selected,

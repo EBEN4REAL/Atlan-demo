@@ -2,32 +2,30 @@
     <div class="flex items-center justify-between w-full h-full">
         <div class="flex items-center">
             <atlan-icon
-                icon="Readme"
-                class="h-4 mr-3 cursor-pointer"
+                v-if="!isHome"
+                icon="Dots"
+                class="h-6 mr-2 cursor-pointer"
                 @click="$emit('toggleNavbar')"
             />
-            <img
-                src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-                class="w-auto h-4 mb-1"
-            />
-            <atlan-icon
-                v-if="page !== '/'"
-                icon="ChevronRight"
-                class="h-4 mx-3"
-            />
-            <span class="mt-1 text-xs font-bold tracking-wider text-gray-500">
+            <img src="/api/service/avatars/_logo_" class="w-auto h-8" />
+
+            <atlan-icon v-if="!isHome" icon="ChevronRight" class="h-4 mx-1" />
+            <span class="text-sm font-bold tracking-wider text-gray-500">
                 {{ navKeys[page]?.toUpperCase() }}</span
             >
         </div>
         <div class="flex items-center justify-self-end">
-            <AtlanIcon icon="Notification" class="h-5 mr-3" />
-            <UserPersonalAvatar class="self-center" />
+            <atlan-icon icon="Search" class="h-5 mr-3" />
+            <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" />
+            <!-- <AtlanIcon icon="Notification" class="h-5 mr-3" /> -->
+            <UserPersonalAvatar class="self-center pl-3 border-l" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { computed, defineComponent } from 'vue'
+    import { useRoute } from 'vue-router'
     import UserPersonalAvatar from '~/components/common/avatar/me.vue'
 
     export default defineComponent({
@@ -38,6 +36,17 @@
         },
         emits: ['change', 'toggleNavbar'],
         setup(props, { emit }) {
+            const route = useRoute()
+
+            const path = computed(() => route.path)
+
+            const isHome = computed(() => {
+                if (path.value === '/' || path.value === '') {
+                    return true
+                }
+                return false
+            })
+
             const navKeys = {
                 assets: 'Discover',
                 glossary: 'Glossary',
@@ -49,7 +58,7 @@
                 emit('change', key)
             }
 
-            return { handleClick, navKeys }
+            return { handleClick, navKeys, isHome }
         },
     })
 </script>

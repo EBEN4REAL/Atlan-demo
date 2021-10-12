@@ -4,7 +4,7 @@
             <div class="add-variable-btn">
                 <a-button
                     class="flex items-center justify-between mr-2 py-0.5 px-2"
-                    @click="addVariable"
+                    @click="onAddVariable"
                 >
                     <span class="flex items-center justify-center">
                         <fa icon="fal plus" class="" />
@@ -125,7 +125,7 @@
                             </a-menu>
                         </template>
                     </a-dropdown>
-                    <p class="mb-0 text-gray-500">
+                    <p class="mb-0 text-gray-500 cursor-default">
                         {{ variable.name }}
                     </p>
                 </div>
@@ -133,7 +133,7 @@
                     class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br  bg-primary"
                 >
                     <p
-                        class="mb-0 truncate variable-value"
+                        class="mb-0 truncate cursor-default variable-value"
                         :class="variable.value === '' ? 'mr-4' : 'mr-0'"
                     >
                         {{ variable.value }}
@@ -160,6 +160,7 @@
     import { editor } from 'monaco-editor'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
 
     export default defineComponent({
         components: {},
@@ -171,6 +172,9 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+            const sqlVariables = inject('sqlVariables') as Ref<
+                CustomVaribaleInterface[]
+            >
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const editorInstanceRef = inject(
                 'editorInstance'
@@ -181,27 +185,13 @@
 
             const { modifyEditorContent } = useEditor(tabs, activeInlineTab)
             const { modifyActiveInlineTabEditor } = useInlineTab()
+            const { saveVariable, addVariable, setSqlVariables } =
+                useCustomVariable(editorInstance, monacoInstance)
 
             const currVariable: Ref<CustomVaribaleInterface | undefined> = ref()
             const customVariableOpenKey: Ref<string | undefined> =
                 ref(undefined)
-            const sqlVariables: Ref<CustomVaribaleInterface[]> = ref()
-            watch(
-                [activeInlineTabKey],
-                () => {
-                    if (activeInlineTabKey.value) {
-                        sqlVariables.value = JSON.parse(
-                            JSON.stringify(
-                                toRaw(activeInlineTab.value).playground.editor
-                                    .variables
-                            )
-                        )
-                    }
-                },
-                {
-                    immediate: true,
-                }
-            )
+
             const closeDropdown = () => {
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
@@ -214,25 +204,8 @@
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
             }
-            const addVariable = () => {
-                const len = sqlVariables.value.length
-                const key = String(new Date().getTime())
-                const new_variable: CustomVaribaleInterface = {
-                    name: `variable${len}`,
-                    key,
-                    type: 'string',
-                    value: '',
-                }
-                sqlVariables.value.push(new_variable)
-                const currText = editorInstance?.getValue()
-                const text = `${currText} {{variable${len}}}`
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                activeInlineTabCopy.playground.editor.variables =
-                    activeInlineTab.value.playground.editor.variables
-                activeInlineTabCopy.playground.editor.text = text
-                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
-                modifyEditorContent(editorInstance, monacoInstance, text)
+            const onAddVariable = () => {
+                addVariable(activeInlineTab, tabs, sqlVariables)
                 closeDropdown()
             }
 
@@ -271,28 +244,13 @@
             }
 
             const onSaveVariable = (variable: CustomVaribaleInterface) => {
-                const index = sqlVariables.value.findIndex(
-                    (v) => v.key === variable.key
+                saveVariable(
+                    activeInlineTab,
+                    tabs,
+                    variable,
+                    currVariable,
+                    sqlVariables
                 )
-                const oldVariableName = currVariable.value.name
-                let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
-                const editorQuery = editorInstance.getValue()
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                activeInlineTabCopy.playground.editor.variables = toRaw(
-                    sqlVariables.value
-                )
-                let updatedString = editorQuery.replace(
-                    reg,
-                    `{{${variable.name}}}`
-                )
-                activeInlineTabCopy.playground.editor.text = updatedString
-                modifyEditorContent(
-                    editorInstance,
-                    monacoInstance,
-                    updatedString
-                )
-                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
                 closeDropdown()
             }
 
@@ -304,7 +262,7 @@
                 currVariable,
                 activeInlineTab,
                 openDropdown,
-                addVariable,
+                onAddVariable,
                 deleteVariable,
                 closeDropdown,
             }

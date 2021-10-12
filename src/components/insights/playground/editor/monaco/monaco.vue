@@ -34,6 +34,7 @@
     } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
+    import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 
     const turndownService = new TurndownService({})
 
@@ -53,6 +54,9 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const sqlVariables = inject('sqlVariables') as Ref<
+                CustomVaribaleInterface[]
+            >
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorPos = inject('editorPos') as Ref<{
                 column: number
@@ -68,7 +72,7 @@
                 formatter,
                 setEditorPos,
                 setEditorFocusedState,
-            } = useEditor(tabs, activeInlineTab)
+            } = useEditor(tabs, activeInlineTab, sqlVariables)
 
             const entityFilters = {
                 condition: 'OR',

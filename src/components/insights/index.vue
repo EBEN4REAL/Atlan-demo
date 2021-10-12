@@ -85,6 +85,7 @@
         watch,
         inject,
         Ref,
+        toRaw,
         onUnmounted,
         onMounted,
     } from 'vue'
@@ -111,6 +112,7 @@
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
 
     export default defineComponent({
         components: {
@@ -162,6 +164,10 @@
             }
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()
+            const { sqlVariables, initializeSqlVariables } = useCustomVariable(
+                toRaw(editorInstance.value),
+                toRaw(monacoInstance.value)
+            )
 
             const setEditorInstance = (
                 editorInstanceParam: any,
@@ -183,15 +189,18 @@
                 editorInstance: editorInstance,
                 editorConfig: editorConfig,
                 monacoInstance: monacoInstance,
+                sqlVariables: sqlVariables,
                 outputPaneSize: outputPaneSize,
                 queryExecutionTime: queryExecutionTime,
                 setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
             /*-------------------------------------*/
+            initializeSqlVariables(activeInlineTab)
 
             /* Watchers for syncing in localstorage*/
             watch(activeInlineTabKey, () => {
+                initializeSqlVariables(activeInlineTab)
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })

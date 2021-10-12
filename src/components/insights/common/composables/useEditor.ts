@@ -4,10 +4,12 @@ import { useInlineTab } from '~/components/insights/common/composables/useInline
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
 import { format, FormatOptions } from 'sql-formatter'
+import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
-    activeInlineTab?: Ref<activeInlineTabInterface>
+    activeInlineTab?: Ref<activeInlineTabInterface>,
+    sqlVariables?: Ref<CustomVaribaleInterface[]>
 ) {
     function setEditorPos(
         editorInstance: any,
@@ -23,12 +25,21 @@ export function useEditor(
         editorFocused.value = state
     }
     const { modifyActiveInlineTabEditor } = useInlineTab()
+    const { isSqlVariablesChanged, setSqlVariables } = useCustomVariable()
     function onEditorContentChange(event: any, editorText: string) {
-        if (activeInlineTab && tabs?.value) {
+        if (activeInlineTab?.value && tabs?.value) {
             const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
                 {},
                 activeInlineTab.value
             )
+            const res: CustomVaribaleInterface[] = isSqlVariablesChanged(
+                editorText,
+                sqlVariables,
+                event
+            )
+            /* If there are any array changes show them here */
+            setSqlVariables(sqlVariables, res)
+            activeInlineTabCopy.playground.editor.variables = res
             activeInlineTabCopy.playground.editor.text = editorText
             modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
         }

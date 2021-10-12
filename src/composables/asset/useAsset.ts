@@ -21,7 +21,7 @@ export default function useAsset({
     }
 
     const options = {
-        typeName: 'AtlanAsset',
+        typeName: 'Catalog',
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,

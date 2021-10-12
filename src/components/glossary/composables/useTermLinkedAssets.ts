@@ -18,7 +18,7 @@ export default function useTermLinkedAssets() {
 
     const getBody = () => ({
         termName: termQualifiedName.value,
-        typeName: 'AtlanAsset',
+        typeName: 'Catalog',
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,

@@ -40,7 +40,7 @@
                         class="flex items-center justify-center mt-3"
                     >
                         <a-spin size="small" class="mr-2 leading-none"></a-spin
-                        ><span>Fetching users</span>
+                        ><span>Fetching Saved Filters</span>
                     </div>
                     <div
                         v-else-if="list.length < 1 && !isLoading"
@@ -135,7 +135,7 @@
                 emit('change')
             }
 
-            const { data: list, error, isLoading, isReady } = getSavedFilters()
+            const { data: list, isLoading } = getSavedFilters()
 
             function setActiveTab(tabName: 'personal' | 'all') {
                 activeTab.value = tabName

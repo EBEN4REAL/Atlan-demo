@@ -55,7 +55,9 @@
                 :rows="2"
             />
         </div>
-        <div v-if="activeTab === 'replace'"></div>
+        <div v-if="activeTab === 'replace'">
+            <EditSavedFilter :applied-filters="appliedFilters" />
+        </div>
     </a-modal>
 </template>
 
@@ -63,6 +65,7 @@
     import {
         defineComponent,
         ref,
+        defineAsyncComponent,
         computed,
         onMounted,
         nextTick,
@@ -79,7 +82,11 @@
     import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
-        components: {},
+        components: {
+            EditSavedFilter: defineAsyncComponent(
+                () => import('./editSavedFilter.vue')
+            ),
+        },
         props: {
             appliedFilters: {
                 type: Object as PropType<Components.Schemas.FilterCriteria[]>,
@@ -92,10 +99,8 @@
             const { appliedFilters } = toRefs(props)
             const title = ref<string>('')
             const description = ref<string | undefined>('')
-            const selectedCategories = ref<{ categoryGuid: string }[]>([])
 
             const visible = ref<boolean>(false)
-            const isCreateMore = ref<boolean>(false)
             const activeTab: Ref<'new' | 'replace'> = ref('new')
 
             function setActiveTab(tabName: 'new' | 'replace') {
@@ -146,14 +151,12 @@
             })
 
             return {
-                selectedCategories,
                 handleOk,
                 handleCancel,
                 description,
                 title,
                 showModal,
                 visible,
-                isCreateMore,
                 titleBar,
                 myUsername,
                 activeTab,

@@ -232,7 +232,7 @@
 
                 if (data.value?.connector) {
                     criterion?.push({
-                        attributeName: 'integrationName',
+                        attributeName: 'connectorName',
                         attributeValue: data.value?.connector,
                         operator: 'eq',
                     })

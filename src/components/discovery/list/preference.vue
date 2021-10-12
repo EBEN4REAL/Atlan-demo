@@ -15,12 +15,8 @@
                 <a-select-option value="Catalog.popularityScore|ascending"
                     >Least popular</a-select-option
                 >
-                <a-select-option value="Asset.name.keyword|ascending"
-                    >A-Z</a-select-option
-                >
-                <a-select-option value="Asset.name.keyword|descending"
-                    >Z-A</a-select-option
-                >
+                <a-select-option value="name|ascending">A-Z</a-select-option>
+                <a-select-option value="name|descending">Z-A</a-select-option>
             </a-select>
         </div>
         <div class="pt-4">
@@ -86,8 +82,8 @@
                     <a-radio value="Catalog.popularityScore|ascending"
                         >Least popular</a-radio
                     >
-                    <a-radio value="Asset.name.keyword|ascending">A-Z</a-radio>
-                    <a-radio value="Asset.name.keyword|descending">Z-A</a-radio>
+                    <a-radio value="name|ascending">A-Z</a-radio>
+                    <a-radio value="name|descending">Z-A</a-radio>
                 </div>
             </a-radio-group>
 

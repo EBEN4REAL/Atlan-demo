@@ -15,12 +15,8 @@
                 <a-select-option value="Catalog.popularityScore|ascending"
                     >Least popular</a-select-option
                 >
-                <a-select-option value="Asset.name.keyword|ascending"
-                    >A-Z</a-select-option
-                >
-                <a-select-option value="Asset.name.keyword|descending"
-                    >Z-A</a-select-option
-                >
+                <a-select-option value="name|ascending">A-Z</a-select-option>
+                <a-select-option value="name|descending">Z-A</a-select-option>
             </a-select>
         </div>
         <div class="pt-4">

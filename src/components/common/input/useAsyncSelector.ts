@@ -1,15 +1,14 @@
 
 import { ref, computed, watch } from 'vue'
 import { useAPIPromise } from '~/api/useAPI';
-import { createDebounce } from "~/composables/utils/debounce";
+import tempConfig from './Untitled-1.json'
 
 export default function useAsyncSelector(
     reqConfig: { url?: any; method?: any; params?: any; addFormValues: Array; body: Object },
     resConfig: { rootPath: any; labelPath: any; valuePath: any; },
-    valueObject: { [x: string]: string; }) {
+    valueObject: { [x: string]: string; }, getConfig: object,) {
     const asyncData = ref()
 
-    const loadingData = ref(false)
 
     const setData = (res: any) => {
         const { rootPath, labelPath, valuePath } = resConfig;
@@ -25,6 +24,7 @@ export default function useAsyncSelector(
 
         const data = root.map((o: any) => {
             let label = o;
+            // {{.a.b.c}} - {{.b.c.d}} 
             const labelPathParts = labelPath.split('.').slice(1)
             labelPathParts.forEach((p: string | number) => {
                 label = label[p]
@@ -57,6 +57,27 @@ export default function useAsyncSelector(
         return addFormValues
     }
 
+    const newConfig = ref(null);
+    const newConfigLoading = ref(false);
+    const newConfigError = ref(false);
+
+    const handleCreateNew = async () => {
+        const { url, method, params } = getConfig.requestConfig
+        newConfigLoading.value = true;
+        let parsedUrl = url;
+        if (parsedUrl.includes('{{domain}}'))
+            parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
+        try {
+            // temporary testing
+            newConfig.value = tempConfig
+            // const response = await useAPIPromise(parsedUrl, method, { params, body: getParsedBody(addFormValues) })
+        } catch (e) {
+            newConfigError.value = true;
+        }
+        newConfigLoading.value = false
+    }
+
+    const loadingData = ref(false)
     const loadDataError = ref(false);
     const shouldRefetch = ref(true)
     const loadData = async () => {
@@ -103,7 +124,6 @@ export default function useAsyncSelector(
     // const debouncer = createDebounce()
     // ? watch for dynamic ref changing event and re-run load options
     watch(values, (o, n) => {
-        console.log({ o, n })
         if (JSON.stringify(o) !== JSON.stringify(n))
             if (!letAsyncSelectDisabled.value)
                 shouldRefetch.value = true;
@@ -113,9 +133,11 @@ export default function useAsyncSelector(
 
     return {
         loadData,
+        newConfig,
         asyncData,
         shouldRefetch,
         loadingData,
+        handleCreateNew,
         letAsyncSelectDisabled
     }
 };

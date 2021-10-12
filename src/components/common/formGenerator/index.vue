@@ -61,8 +61,14 @@
                                         :limit-before="c.limitBefore"
                                         :allow-custom="c.allowCustom"
                                         v-bind="
-                                            c.type === 'asyncSelect'
-                                                ? { valueObject }
+                                            f.type === 'asyncSelect'
+                                                ? {
+                                                      valueObject,
+                                                      allowCreate:
+                                                          c?.allowCreate,
+                                                      getFormConfig:
+                                                          c?.getFormConfig,
+                                                  }
                                                 : {}
                                         "
                                         @change="handleInputChange"
@@ -111,7 +117,13 @@
                             :limit-before="f.limitBefore"
                             :allow-custom="f.allowCustom"
                             v-bind="
-                                f.type === 'asyncSelect' ? { valueObject } : {}
+                                f.type === 'asyncSelect'
+                                    ? {
+                                          valueObject,
+                                          allowCreate: f.allowCreate,
+                                          getFormConfig: f.getFormConfig,
+                                      }
+                                    : {}
                             "
                             @change="handleInputChange"
                         ></DynamicInput>

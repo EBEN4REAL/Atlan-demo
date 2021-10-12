@@ -105,13 +105,13 @@
             const selectedRunId = ref('')
             const selected: Ref<assetInterface | undefined> = ref(undefined)
 
-            watch(
-                () => whichComponent,
-                () => {
-                    selected.value = null
-                },
-                { deep: true }
-            )
+            // watch(
+            //     () => whichComponent,
+            //     () => {
+            //         selected.value = null
+            //     },
+            //     { deep: true }
+            // )
             const workflowDiscovery: Ref<Element | null> = ref(null)
             // TODO fix initialFilters set , apply , etc
             // const initialFilters: initialFiltersType =

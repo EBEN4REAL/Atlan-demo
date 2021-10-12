@@ -35,7 +35,7 @@ export function addSavedFilter(
             includeClassificationAttributes: true,
             includeSubClassifications: true,
             includeSubTypes: true,
-            typeName: "AtlanAsset"
+            typeName: "Catalog"
         },
         searchType: "BASIC",
     }
@@ -106,3 +106,37 @@ export function getSavedFilters(
     }
 }
 
+export function editSavedFilter(
+    oldFilter: Ref<any>,
+    appliedFilters: Ref<Components.Schemas.FilterCriteria[]>,
+) {
+    const cancelTokenSource = axios.CancelToken.source()
+
+    const axiosOpts: AxiosRequestConfig = {
+        cancelToken: cancelTokenSource?.token,
+    }
+
+    const body = ref({ ...oldFilter.value })
+
+    body.value.searchParameters.entityFilters.criterion = [...appliedFilters.value]
+
+    const { data, mutate, error, isLoading, isReady } = useAPIAsyncState<any>(
+        KeyMaps.asset.SAVED_SEARCH,
+        'PUT',
+        { body, options: axiosOpts },
+        { resetOnExecute: false }
+    )
+
+    watch(data, () => {
+
+    })
+
+    return {
+        data,
+        isLoading,
+        error,
+        body,
+        mutate,
+        isReady,
+    }
+}

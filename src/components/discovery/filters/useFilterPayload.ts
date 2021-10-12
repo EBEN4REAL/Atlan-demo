@@ -18,14 +18,9 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                     }
                     case 'saved': {
                         if (fltrObj?.checked?.searchParameters?.entityFilters?.criterion)
-
                             fltrObj.checked.searchParameters.entityFilters.criterion?.forEach(criteria => pl.push(criteria))
 
                         break
-                        /* fltrObj?.checked?.forEach((facetFilterValue) => {
-                            facetFilterValue?.searchParameters?.entityFilters?.criterion?.forEach(criteria => pl.push(criteria))
-                        })
-                        break */
                     }
                     case 'status': {
                         fltrObj?.checked?.forEach((facetFilterValue) => {

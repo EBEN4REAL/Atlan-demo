@@ -56,7 +56,9 @@
             />
         </div>
         <div v-if="activeTab === 'replace'">
-            <EditSavedFilter :applied-filters="appliedFilters" />
+            <keep-alive>
+                <EditSavedFilter @replaceFilter="handleReplaceFilterSelection"
+            /></keep-alive>
         </div>
     </a-modal>
 </template>
@@ -78,7 +80,7 @@
 
     import { message } from 'ant-design-vue'
     import whoami from '~/composables/user/whoami'
-    import { addSavedFilter } from './useSavedFilters'
+    import { addSavedFilter, editSavedFilter } from './useSavedFilters'
     import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
@@ -99,7 +101,7 @@
             const { appliedFilters } = toRefs(props)
             const title = ref<string>('')
             const description = ref<string | undefined>('')
-
+            const replaceSelectedFilter = ref()
             const visible = ref<boolean>(false)
             const activeTab: Ref<'new' | 'replace'> = ref('new')
 
@@ -120,22 +122,40 @@
                 await nextTick()
                 titleBar.value?.focus()
             }
-
+            const handleReplaceFilterSelection = (payload) => {
+                replaceSelectedFilter.value = payload
+            }
             const handleOk = () => {
-                const { data, error, isLoading, isReady } = addSavedFilter(
-                    title,
-                    myUsername,
-                    appliedFilters
-                )
-                watch([data, isReady, error, isLoading], () => {
-                    if (isReady && !error.value && !isLoading.value) {
-                        message.success('Saved filter added')
-                    } else if (error && error.value) {
-                        message.error(
-                            'Failed to add the saved filter, try again later'
-                        )
-                    }
-                })
+                if (activeTab.value === 'new') {
+                    const { data, error, isLoading, isReady } = addSavedFilter(
+                        title,
+                        myUsername,
+                        appliedFilters
+                    )
+                    watch([data, isReady, error, isLoading], () => {
+                        if (isReady && !error.value && !isLoading.value) {
+                            message.success('Saved filter added')
+                        } else if (error && error.value) {
+                            message.error(
+                                'Failed to add the saved filter, try again later'
+                            )
+                        }
+                    })
+                } else {
+                    const { data, error, isLoading, isReady } = editSavedFilter(
+                        replaceSelectedFilter,
+                        appliedFilters
+                    )
+                    watch([data, isReady, error, isLoading], () => {
+                        if (isReady && !error.value && !isLoading.value) {
+                            message.success('Saved filter replaced')
+                        } else if (error && error.value) {
+                            message.error(
+                                'Failed to replace the saved filter, try again later'
+                            )
+                        }
+                    })
+                }
                 resetInput()
                 visible.value = false
             }
@@ -161,6 +181,7 @@
                 myUsername,
                 activeTab,
                 setActiveTab,
+                handleReplaceFilterSelection,
             }
         },
     })

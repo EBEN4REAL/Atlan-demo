@@ -48,17 +48,9 @@
     import { SelectTypes } from 'ant-design-vue/es/select'
 
     export default defineComponent({
-        components: {},
-        props: {
-            appliedFilters: {
-                type: Object as PropType<Components.Schemas.FilterCriteria[]>,
-                required: true,
-            },
-        },
-        emits: [''],
-        setup(props, { emit }) {
+        emits: ['replaceFilter'],
+        setup(_, { emit }) {
             const { username: myUsername, name: myName, email } = whoami()
-            const { appliedFilters } = toRefs(props)
 
             const selectedFilter = ref()
             const title = ref<string>('')
@@ -71,38 +63,16 @@
 
             const { data: list, isLoading } = getSavedFilters()
 
-            const options = computed<SelectTypes['options']>(() => [...list])
-
-            const handleChange = (value: string) => {
-                console.log(`selected ${value}`)
-            }
-
-            const handleOk = () => {
-                const { data, error, isLoading, isReady } = addSavedFilter(
-                    title,
-                    myUsername,
-                    appliedFilters
-                )
-                watch([data, isReady, error, isLoading], () => {
-                    if (isReady && !error.value && !isLoading.value) {
-                        message.success('Saved filter added')
-                    } else if (error && error.value) {
-                        message.error(
-                            'Failed to add the saved filter, try again later'
-                        )
-                    }
-                })
-                resetInput()
+            const handleChange = () => {
+                emit('replaceFilter', selectedFilter.value)
             }
 
             return {
                 selectedFilter,
-                handleOk,
                 handleChange,
                 description,
                 title,
                 list,
-                options,
                 isLoading,
             }
         },

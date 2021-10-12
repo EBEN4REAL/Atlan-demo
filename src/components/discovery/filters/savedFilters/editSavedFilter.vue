@@ -5,70 +5,53 @@
     </div>
     <div v-else>
         <a-select
-            v-model:value="selectedFilter"
+            v-model:value="selectedFilterName"
+            class="mt-2"
             show-search
-            placeholder="Select a saved filter"
+            placeholder="Choose saved filter"
             style="width: 300px"
             @change="handleChange"
         >
             <a-select-option
                 v-for="(filter, index) in list"
                 :key="index"
-                :value="filter"
+                :value="filter.name"
                 >{{ filter.name }}</a-select-option
             >
         </a-select>
 
-        <div v-if="selectedFilter">
+        <div v-if="selectedFilterName && selectedFilterName !== ''">
             <div class="mt-2 text-lg font-bold text-gray-700">
-                {{ selectedFilter.name }}
+                {{ selectedFilterName }}
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        computed,
-        onMounted,
-        nextTick,
-        watch,
-        Ref,
-        inject,
-        PropType,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, ref } from 'vue'
 
-    import { message } from 'ant-design-vue'
-    import whoami from '~/composables/user/whoami'
-    import { Components } from '~/api/atlas/client'
     import { getSavedFilters } from './useSavedFilters'
-    import { SelectTypes } from 'ant-design-vue/es/select'
 
     export default defineComponent({
         emits: ['replaceFilter'],
         setup(_, { emit }) {
-            const { username: myUsername, name: myName, email } = whoami()
-
+            const selectedFilterName = ref()
             const selectedFilter = ref()
             const title = ref<string>('')
             const description = ref<string | undefined>('')
 
-            const resetInput = () => {
-                title.value = ''
-                description.value = ''
-            }
-
             const { data: list, isLoading } = getSavedFilters()
 
-            const handleChange = () => {
+            const handleChange = (value) => {
+                selectedFilter.value = list.value.find(
+                    (item) => item.name === value
+                )
                 emit('replaceFilter', selectedFilter.value)
             }
 
             return {
-                selectedFilter,
+                selectedFilterName,
                 handleChange,
                 description,
                 title,
@@ -78,32 +61,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .input {
-        :global(.ant-input:focus
-                .ant-input:hover
-                .ant-input::selection
-                .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
-        }
-        :global(.ant-input) {
-            @apply shadow-none outline-none px-0 border-0 !important;
-        }
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4  !important;
-        }
-
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-4 pt-0 pb-4 !important;
-        }
-    }
-    .titleInput {
-        :global(.ant-input::-webkit-input-placeholder) {
-            @apply font-bold text-gray-500 !important;
-        }
-    }
-</style>

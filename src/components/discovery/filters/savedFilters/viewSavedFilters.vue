@@ -9,7 +9,7 @@
                 size="minimal"
             >
             </SearchAndFilter>
-            <a-button-group class="mb-2 text-xs rounded shadow">
+            <!--  <a-button-group class="mb-2 text-xs rounded shadow">
                 <a-button
                     :class="
                         activeTab === 'personal'
@@ -30,7 +30,7 @@
                     @click="setActiveTab('all')"
                     >All</a-button
                 >
-            </a-button-group>
+            </a-button-group> -->
         </div>
         <div class="relative w-full">
             <template v-if="activeTab === 'personal'">

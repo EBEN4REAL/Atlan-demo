@@ -253,8 +253,8 @@
                 )
                 // changeLog has labels not ids
                 if (
-                    changeLog.value.to === 'Verified' &&
-                    changeLog.value.from !== 'Verified'
+                    changeLog.value.to === 'VERIFIED' &&
+                    changeLog.value.from !== 'VERIFIED'
                 ) {
                     const config = {
                         angle: 45,

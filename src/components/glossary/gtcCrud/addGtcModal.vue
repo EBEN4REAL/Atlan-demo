@@ -75,12 +75,7 @@
                             <AtlanIcon
                                 v-else
                                 icon="Group"
-                                class="
-                                    h-4
-                                    mr-2
-                                    text-primary
-                                    group-hover:text-white
-                                "
+                                class="h-4 mr-2  text-primary group-hover:text-white"
                             />
                             <span
                                 class="capitalize"
@@ -127,14 +122,7 @@
             ref="titleBar"
             v-model:value="title"
             :placeholder="`Untitled ${entityType}`"
-            class="
-                text-lg
-                font-bold
-                text-gray-700
-                border-0
-                shadow-none
-                outline-none
-            "
+            class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
             :class="$style.titleInput"
         />
         <a-textarea
@@ -221,7 +209,7 @@
 
             const title = ref<string | undefined>('')
             const description = ref<string | undefined>('')
-            const currentStatus = ref<string | undefined>('draft')
+            const currentStatus = ref<string | undefined>('DRAFT')
             const ownerUsers = ref<Array<any>>([myUsername.value])
             const ownerGroups = ref<Array<any>>([])
             const selectedCategories = ref<{ categoryGuid: string }[]>([])
@@ -276,7 +264,7 @@
             const resetInput = () => {
                 title.value = ''
                 description.value = ''
-                currentStatus.value = 'draft'
+                currentStatus.value = 'DRAFT'
             }
 
             const showModal = async () => {
@@ -318,7 +306,7 @@
                                         ? 'Untitled Term'
                                         : 'Untitled category'),
                                 certificateStatus:
-                                    currentStatus.value ?? 'draft',
+                                    currentStatus.value ?? 'DRAFT',
                                 shortDescription: description.value ?? '',
                                 ownerUsers: ownerUsers?.value?.join(),
                                 ownerGroups: ownerGroups?.value?.join(),
@@ -335,7 +323,7 @@
                                             ? 'Untitled Term'
                                             : 'Untitled category'),
                                     certificateStatus:
-                                        currentStatus.value ?? 'draft',
+                                        currentStatus.value ?? 'DRAFT',
                                     ownerUsers: ownerUsers?.value?.join(),
                                     ownerGroups: ownerGroups?.value?.join(),
                                     shortDescription: description.value ?? '',
@@ -388,7 +376,7 @@
                                             ? 'Untitled Term'
                                             : 'Untitled category'),
                                     certificateStatus:
-                                        currentStatus.value ?? 'draft',
+                                        currentStatus.value ?? 'DRAFT',
                                     shortDescription: description.value ?? '',
                                     ownerUsers: ownerUsers?.value?.join(),
                                     ownerGroups: ownerGroups?.value?.join(),

@@ -7,19 +7,19 @@ import wip from '~/assets/images/status/work_in_progress.svg'
 
 export const List: CheckboxArray = [
     {
-        id: 'verified',
+        id: 'VERIFIED',
         label: 'Verified',
         description: 'Verified',
         icon: verified,
     },
     {
-        id: 'draft',
+        id: 'DRAFT',
         label: 'Draft',
         description: 'Draft',
         icon: wip,
     },
     {
-        id: 'deprecated',
+        id: 'DEPRECATED',
         label: 'Deprecated',
         description: 'Deprecated',
         icon: deprecated,

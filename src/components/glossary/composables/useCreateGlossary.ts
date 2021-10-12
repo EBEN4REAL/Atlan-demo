@@ -56,7 +56,7 @@ const useCreateGlossary = () => {
             name: title ?? 'Untitled Glossary',
             shortDescription: description ?? '',
             longDescription: '',
-            certificateStatus: status ?? 'draft',
+            certificateStatus: status ?? 'DRAFT',
             ownerUsers: ownerUsers ?? `${username.value}`,
             ownerGroups: ownerGroups ?? ``,
         }
@@ -105,7 +105,7 @@ const useCreateGlossary = () => {
             name: title ?? generateUUID(),
             shortDescription: description ?? '',
             longDescription: '',
-            certificateStatus: status ?? 'draft',
+            certificateStatus: status ?? 'DRAFT',
             ownerUsers: ownerUsers ?? `${username.value}`,
             ownerGroups: ownerGroups ?? ``,
             anchor: {
@@ -184,7 +184,7 @@ const useCreateGlossary = () => {
             name: title ?? generateUUID(),
             shortDescription: description ?? '',
             longDescription: '',
-            certificateStatus: status ?? 'draft',
+            certificateStatus: status ?? 'DRAFT',
             ownerUsers: ownerUsers ?? `${username.value}`,
             ownerGroups: ownerGroups ?? ``,
             anchor: {

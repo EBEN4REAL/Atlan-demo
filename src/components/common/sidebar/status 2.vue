@@ -27,13 +27,7 @@
                                         <span class="text-gray-700 svg-icon">
                                             <component
                                                 :is="item.icon"
-                                                class="
-                                                    w-auto
-                                                    h-4
-                                                    ml-1
-                                                    mr-2
-                                                    pushtop
-                                                "
+                                                class="w-auto h-4 ml-1 mr-2  pushtop"
                                             />
                                             {{ item.label }}
                                         </span>
@@ -168,7 +162,7 @@
 
             watch(isReady, () => {
                 if (isReady.value) {
-                    if (statusId.value === 'verified') {
+                    if (statusId.value === 'VERIFIED') {
                         const config = {
                             angle: 45,
                             startVelocity: 10,

@@ -76,25 +76,13 @@
                         :ref="titleBarRef"
                         v-model:value="title"
                         placeholder="Untitled query"
-                        class="
-                            text-lg
-                            font-bold
-                            text-gray-500
-                            border-0
-                            shadow-none
-                            outline-none
-                        "
+                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
                     />
                 </div>
                 <a-textarea
                     v-model:value="description"
                     placeholder="Add Description"
-                    class="
-                        text-sm text-gray-500
-                        border-0
-                        shadow-none
-                        outline-none
-                    "
+                    class="text-sm text-gray-500 border-0 shadow-none outline-none "
                     :rows="3"
                     show-count
                     :maxlength="140"
@@ -206,7 +194,7 @@
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
             const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
-            const currentStatus: Ref<string | undefined> = ref('draft')
+            const currentStatus: Ref<string | undefined> = ref('DRAFT')
             const title: Ref<string> = ref('')
             const description: Ref<string | undefined> = ref('')
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
@@ -229,7 +217,7 @@
                 title.value = ''
                 description.value = ''
                 isSQLSnippet.value = false
-                currentStatus.value = 'draft'
+                currentStatus.value = 'DRAFT'
             }
             const createSaveQuery = () => {
                 const saveQueryData = {

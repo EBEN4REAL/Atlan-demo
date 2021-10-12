@@ -52,7 +52,7 @@
             })
 
             const navKeys = {
-                assets: 'Discover',
+                assets: 'Assets',
                 glossary: 'Glossary',
                 insights: 'Insights',
                 workflows: 'Workflows',

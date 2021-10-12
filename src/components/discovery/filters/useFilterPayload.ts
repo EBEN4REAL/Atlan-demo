@@ -20,7 +20,7 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                         fltrObj?.checked?.forEach((facetFilterValue) => {
                             if (facetFilterValue !== 'is_null')
                                 pl.push({
-                                    attributeName: 'assetStatus',
+                                    attributeName: 'certificateStatus',
                                     attributeValue: facetFilterValue,
                                     operator: 'eq',
                                 })
@@ -32,13 +32,13 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                                             criterion: [
                                                 {
                                                     attributeName:
-                                                        'assetStatus',
+                                                        'certificateStatus',
                                                     attributeValue: 'is_null',
                                                     operator: 'eq',
                                                 },
                                                 {
                                                     attributeName:
-                                                        'assetStatus',
+                                                        'certificateStatus',
                                                     attributeValue: '',
                                                     operator: 'isNull',
                                                 },

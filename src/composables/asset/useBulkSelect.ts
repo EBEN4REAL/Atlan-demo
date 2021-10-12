@@ -105,7 +105,7 @@ export default function useBulkSelect() {
                     name: asset?.attributes?.name,
                     tenantId: asset.attributes?.tenantId,
                     assetStatusMessage: asset.attributes?.assetStatusMessage,
-                    assetStatus: asset.attributes?.assetStatus,
+                    certificateStatus: asset.attributes?.certificateStatus,
                 },
             }
             // parent glossary guid is mandatory for gtc updation
@@ -127,15 +127,15 @@ export default function useBulkSelect() {
             // Update status
             if (didStatusUpdate.value) {
                 if (updatedStatus && updatedStatus.value)
-                    updatedAsset.attributes.assetStatus =
+                    updatedAsset.attributes.certificateStatus =
                         updatedStatus.value ||
-                        updatedAsset.attributes.assetStatus
+                        updatedAsset.attributes.certificateStatus
                 if (updatedStatusMessage && updatedStatusMessage.value)
                     updatedAsset.attributes.assetStatusMessage =
                         updatedStatusMessage.value ||
                         updatedAsset.attributes.assetStatusMessage
-                updatedAsset.attributes.assetStatusUpdatedAt = Date.now()
-                updatedAsset.attributes.assetStatusUpdatedBy = username.value
+                updatedAsset.attributes.certificateUpdatedAt = Date.now()
+                updatedAsset.attributes.certificateUpdatedBy = username.value
             }
 
             // Update owners

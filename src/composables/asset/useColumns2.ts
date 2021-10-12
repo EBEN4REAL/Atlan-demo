@@ -55,7 +55,13 @@ interface filterConfig extends ColumnListConfig {
     parentQfName: Ref<string>
 }
 
-function getEntityFilters({ parentQfName, dataTypes, pinned, certification, columnGuid }: filterConfig) {
+function getEntityFilters({
+    parentQfName,
+    dataTypes,
+    pinned,
+    certification,
+    columnGuid,
+}: filterConfig) {
     const baseFilter = {
         condition: 'AND',
         criterion: [
@@ -92,7 +98,7 @@ function getEntityFilters({ parentQfName, dataTypes, pinned, certification, colu
         baseFilter.criterion.push({
             condition: 'OR',
             criterion: certification.value.map((filter) => ({
-                attributeName: 'assetStatus',
+                attributeName: 'certificateStatus',
                 attributeValue: filter,
                 operator: 'eq',
             })),
@@ -146,7 +152,6 @@ export function useColumnsList(
     const offset = ref(0)
 
     const split = computed(() => sort.value.split('|'))
-
 
     const payload = computed(() => ({
         typeName: 'Column',

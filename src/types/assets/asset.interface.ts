@@ -2,12 +2,12 @@ import { classificationInterface } from '~/types/classifications/classification.
 
 export interface assetInterface {
     attributes: {
-        assetStatus?: string
+        certificateStatus?: string
         assetStatusMessage: string
-        assetStatusUpdatedBy: string
+        certificateUpdatedBy: string
         ownerUsers: string
         ownerGroups: string
-        assetStatusUpdatedAt: number
+        certificateUpdatedAt: number
         order: number
         columnCount: number
         sizeBytes: number

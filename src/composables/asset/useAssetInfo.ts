@@ -17,7 +17,7 @@ export default function useAssetInfo() {
         return attributes(asset)?.name ?? ''
     }
     const status = (asset: assetInterface) => {
-        return attributes(asset).assetStatus
+        return attributes(asset).certificateStatus
     }
     const assetType = (asset: assetInterface) => {
         return asset.typeName
@@ -210,8 +210,8 @@ export default function useAssetInfo() {
         return attributes(asset)?.ownerUsers?.split(',') || []
     }
 
-    const assetStatus = (asset: assetInterface) => {
-        attributes(asset)?.assetStatus
+    const certificateStatus = (asset: assetInterface) => {
+        attributes(asset)?.certificateStatus
     }
 
     const getHierarchy = (asset: assetInterface) => {
@@ -523,7 +523,7 @@ export default function useAssetInfo() {
         tableInfo,
         ownerGroups,
         ownerUsers,
-        assetStatus,
+        certificateStatus,
         getHierarchy,
         getTableauProperties,
         getTableauHierarchy,

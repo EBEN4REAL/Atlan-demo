@@ -7,12 +7,12 @@ export interface SavedQueryInterface {
 }
 
 export type Attributes = {
-    assetStatus?: string
+    certificateStatus?: string
     assetStatusMessage?: string
-    assetStatusUpdatedBy?: string
+    certificateUpdatedBy?: string
     ownerUsers?: string
     ownerGroups?: string
-    assetStatusUpdatedAt?: number
+    certificateUpdatedAt?: number
     dataType?: string
     description?: string
     meanings: { displayText: string }[]

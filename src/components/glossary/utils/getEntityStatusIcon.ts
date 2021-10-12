@@ -1,13 +1,16 @@
-const getEntityStatusIcon = (type: String, assetStatus: String): String => {
+const getEntityStatusIcon = (
+    type: String,
+    certificateStatus: String
+): String => {
     if (
-        assetStatus === undefined ||
-        assetStatus === '' ||
-        assetStatus === 'is_null'
+        certificateStatus === undefined ||
+        certificateStatus === '' ||
+        certificateStatus === 'is_null'
     )
         return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
 
-    return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}${assetStatus
+    return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}${certificateStatus
         ?.charAt(0)
-        .toUpperCase()}${assetStatus?.slice(1)}`
+        .toUpperCase()}${certificateStatus?.slice(1)}`
 }
 export default getEntityStatusIcon

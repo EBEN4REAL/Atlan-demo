@@ -14,7 +14,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
-        BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
+        BULK_UPDATE_ASSETS: () => getAPIPath('meta', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -31,7 +31,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${entityGuid}/classifications`),
         // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
         BULK_LINK_CLASSIFICATION: () =>
-            getAPIPath('auth/atlas', `/entity/bulk/setClassifications`),
+            getAPIPath('meta', `/entity/bulk/setClassifications`),
     },
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
@@ -160,15 +160,19 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'meta',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
+        BULK_LINK_TERMS: () =>
+            getAPIPath('meta', `/glossary/terms/assignedEntities`),
         health: {
             PING_USER: () => getHealthPath('auth', '/debug/health'),
         },
@@ -191,7 +195,7 @@ export const KeyMaps = {
             getAPIPath('api/query', `/sql/stream?${params}`),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`

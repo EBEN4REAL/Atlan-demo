@@ -11,7 +11,7 @@
                 :is-selected="item.guid === selectedAssetId"
                 :score="score[item.guid]"
                 :projection="projection"
-                :show-check-box="true"
+                :show-check-box="projection?.includes('enableCheckbox')"
                 :bulk-select-mode="
                     bulkSelectedAssets && bulkSelectedAssets.length
                         ? true
@@ -33,13 +33,32 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        py-2
+                        transition-all
+                        duration-300
+                        bg-white
+                        rounded-full
+                        text-primary
+                    "
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="
+                                m-0
+                                mr-1
+                                overflow-hidden
+                                text-sm
+                                transition-all
+                                duration-300
+                                overflow-ellipsis
+                                whitespace-nowrap
+                            "
                         >
                             Load more
                         </p>

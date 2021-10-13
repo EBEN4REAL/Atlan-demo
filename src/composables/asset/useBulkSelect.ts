@@ -91,6 +91,7 @@ export default function useBulkSelect() {
         originalTerms,
         updateTerms,
         termFrequencyMap,
+        publishedChangeLog: publishedTermChangeLog,
         didTermsUpdate,
     } = useBulkSelectTerms(selectedAssets)
 
@@ -236,116 +237,32 @@ export default function useBulkSelect() {
         if (didStatusUpdate.value || didOwnersUpdate.value) {
             // call to bulk endpoint
             const requestPayload = getBulkUpdateRequestPayload(assetList)
-            let updatedState = { ...store.updateStatus }
-            if (didOwnersUpdate.value)
-                updatedState = {
-                    ...updatedState,
-                    updateOwners: {
-                        status: 'loading',
-                        changeLog: {},
-                        didChange: didOwnersUpdate.value,
-                    },
-                }
-            if (didStatusUpdate.value)
-                updatedState = {
-                    ...updatedState,
-                    updateCertification: {
-                        status: 'loading',
-                        changeLog: {},
-                        didChange: didStatusUpdate.value,
-                    },
-                }
-            store.setUpdateStatus({ ...store.updateStatus, ...updatedState })
-            const { data, error, isLoading } = useAPIAsyncState<any>(
-                KeyMaps.asset.BULK_UPDATE_ASSETS,
-                'POST',
-                { body: requestPayload },
-                { immediate: true, resetOnExecute: false }
-            )
-            watch([data, error, isLoading], () => {
-                if (isLoading.value === false) {
-                    if (error.value === undefined) {
-                        assetList.forEach((asset) => {
-                            const updatedAttributes =
-                                requestPayload.entities.find(
-                                    (entity) => entity.guid === asset.guid
-                                )?.attributes
-                            // eslint-disable-next-line no-param-reassign
-                            asset.attributes = {
-                                ...asset.attributes,
-                                ...(updatedAttributes || {}),
-                            }
-                        })
-                        updatedState = { ...store.updateStatus }
-                        if (didOwnersUpdate.value)
-                            updatedState = {
-                                ...updatedState,
-                                updateOwners: {
-                                    status: 'success',
-                                    changeLog: {},
-                                    didChange: didOwnersUpdate.value,
-                                },
-                            }
-                        if (didStatusUpdate.value)
-                            updatedState = {
-                                ...updatedState,
-                                updateCertification: {
-                                    status: 'success',
-                                    changeLog: {},
-                                    didChange: didStatusUpdate.value,
-                                },
-                            }
-
-                        store.setUpdateStatus({
-                            ...store.updateStatus,
-                            ...updatedState,
-                        })
-                        // state.value.updateStatusOwners = 'success'
-                    } else {
-                        updatedState = { ...store.updateStatus }
-                        if (didOwnersUpdate.value)
-                            updatedState = {
-                                ...updatedState,
-                                updateOwners: {
-                                    status: 'error',
-                                    changeLog: {},
-                                    didChange: didOwnersUpdate.value,
-                                },
-                            }
-                        if (didStatusUpdate.value)
-                            updatedState = {
-                                ...updatedState,
-                                updateCertification: {
-                                    status: 'error',
-                                    changeLog: {},
-                                    didChange: didStatusUpdate.value,
-                                },
-                            }
-
-                        store.setUpdateStatus({
-                            ...store.updateStatus,
-                            ...updatedState,
-                        })
+            try {
+                let updatedState = { ...store.updateStatus }
+                if (didOwnersUpdate.value)
+                    updatedState = {
+                        ...updatedState,
+                        updateOwners: {
+                            status: 'loading',
+                            changeLog: {},
+                            didChange: didOwnersUpdate.value,
+                        },
                     }
-                }
-            })
-        }
-        if (terms.value && Object.keys(terms.value).length) {
-            // call to link terms endpoint
-            const { requestPayload, requestPayloadLocal } =
-                getBulkTermUpdateRequestPayload(assetList)
-            // below is the check to see if terms changed, if requestPayload has no keys that means there are no NEW terms to link and we need not make the request
-            if (Object.keys(requestPayload).length) {
-                // TODO: add changelog
-                didTermsUpdate.value = true
-                let linkTerms = {
-                    status: 'loading',
-                    didChange: didTermsUpdate.value,
-                    changeLog: {},
-                }
-                store.setUpdateStatus({ ...store.updateStatus, linkTerms })
+                if (didStatusUpdate.value)
+                    updatedState = {
+                        ...updatedState,
+                        updateCertification: {
+                            status: 'loading',
+                            changeLog: {},
+                            didChange: didStatusUpdate.value,
+                        },
+                    }
+                store.setUpdateStatus({
+                    ...store.updateStatus,
+                    ...updatedState,
+                })
                 const { data, error, isLoading } = useAPIAsyncState<any>(
-                    KeyMaps.glossary.BULK_LINK_TERMS,
+                    KeyMaps.asset.BULK_UPDATE_ASSETS,
                     'POST',
                     { body: requestPayload },
                     { immediate: true, resetOnExecute: false }
@@ -354,23 +271,154 @@ export default function useBulkSelect() {
                     if (isLoading.value === false) {
                         if (error.value === undefined) {
                             assetList.forEach((asset) => {
-                                const newTerms = []
-                                Object.keys(requestPayload).forEach(
-                                    (termGuid) => {
-                                        newTerms.push({
-                                            termGuid,
-                                            displayText:
-                                                requestPayloadLocal?.termGuid
-                                                    ?.termInfo?.displayText,
-                                        })
+                                const updatedAttributes =
+                                    requestPayload.entities.find(
+                                        (entity) => entity.guid === asset.guid
+                                    )?.attributes
+                                // eslint-disable-next-line no-param-reassign
+                                asset.attributes = {
+                                    ...asset.attributes,
+                                    ...(updatedAttributes || {}),
+                                }
+                            })
+                            updatedState = { ...store.updateStatus }
+                            if (didOwnersUpdate.value)
+                                updatedState = {
+                                    ...updatedState,
+                                    updateOwners: {
+                                        status: 'success',
+                                        changeLog: {},
+                                        didChange: didOwnersUpdate.value,
+                                    },
+                                }
+                            if (didStatusUpdate.value)
+                                updatedState = {
+                                    ...updatedState,
+                                    updateCertification: {
+                                        status: 'success',
+                                        changeLog: {},
+                                        didChange: didStatusUpdate.value,
+                                    },
+                                }
+
+                            store.setUpdateStatus({
+                                ...store.updateStatus,
+                                ...updatedState,
+                            })
+                            // state.value.updateStatusOwners = 'success'
+                        } else {
+                            updatedState = { ...store.updateStatus }
+                            if (didOwnersUpdate.value)
+                                updatedState = {
+                                    ...updatedState,
+                                    updateOwners: {
+                                        status: 'error',
+                                        changeLog: {},
+                                        didChange: didOwnersUpdate.value,
+                                    },
+                                }
+                            if (didStatusUpdate.value)
+                                updatedState = {
+                                    ...updatedState,
+                                    updateCertification: {
+                                        status: 'error',
+                                        changeLog: {},
+                                        didChange: didStatusUpdate.value,
+                                    },
+                                }
+
+                            store.setUpdateStatus({
+                                ...store.updateStatus,
+                                ...updatedState,
+                            })
+                        }
+                    }
+                })
+            } catch (e) {
+                let updatedState = {}
+                if (didOwnersUpdate.value)
+                    updatedState = {
+                        ...updatedState,
+                        updateOwners: {
+                            status: 'loading',
+                            changeLog: {},
+                            didChange: didOwnersUpdate.value,
+                        },
+                    }
+                if (didStatusUpdate.value)
+                    updatedState = {
+                        ...updatedState,
+                        updateCertification: {
+                            status: 'loading',
+                            changeLog: {},
+                            didChange: didStatusUpdate.value,
+                        },
+                    }
+                store.setUpdateStatus({
+                    ...store.updateStatus,
+                    ...updatedState,
+                })
+            }
+        }
+        if (terms.value && Object.keys(terms.value).length) {
+            // call to link terms endpoint
+            if (didTermsUpdate.value) {
+                const { requestPayload, requestPayloadLocal } =
+                    getBulkTermUpdateRequestPayload(assetList)
+                try {
+                    // TODO: add changelog
+                    let linkTerms = {
+                        status: 'loading',
+                        didChange: didTermsUpdate.value,
+                        changeLog: {},
+                    }
+                    store.setUpdateStatus({ ...store.updateStatus, linkTerms })
+                    const { data, error, isLoading } = useAPIAsyncState<any>(
+                        KeyMaps.glossary.BULK_LINK_TERMS,
+                        'POST',
+                        { body: requestPayload },
+                        { immediate: true, resetOnExecute: false }
+                    )
+                    watch([data, error, isLoading], () => {
+                        if (isLoading.value === false) {
+                            if (error.value === undefined) {
+                                assetList.forEach((asset) => {
+                                    const newTerms = []
+                                    Object.keys(requestPayload).forEach(
+                                        (termGuid) => {
+                                            newTerms.push({
+                                                termGuid,
+                                                displayText:
+                                                    requestPayloadLocal?.[
+                                                        termGuid
+                                                    ]?.termInfo?.displayText,
+                                            })
+                                        }
+                                    )
+                                    asset.meanings = [
+                                        ...asset?.meanings,
+                                        ...newTerms,
+                                    ]
+                                    asset.meaningNames = [
+                                        ...asset?.meaningNames,
+                                        ...newTerms.map(
+                                            (newTerm) =>
+                                                newTerm?.displayText || ''
+                                        ),
+                                    ]
+                                    linkTerms = {
+                                        status: 'success',
+                                        didChange: didTermsUpdate.value,
+                                        changeLog: {},
                                     }
-                                )
-                                asset.meanings = [
-                                    ...asset?.meanings,
-                                    ...newTerms,
-                                ]
+                                    store.setUpdateStatus({
+                                        ...store.updateStatus,
+                                        linkTerms,
+                                    })
+                                })
+                            } else {
                                 linkTerms = {
-                                    status: 'success',
+                                    status: 'error',
                                     didChange: didTermsUpdate.value,
                                     changeLog: {},
                                 }
@@ -378,78 +426,92 @@ export default function useBulkSelect() {
                                     ...store.updateStatus,
                                     linkTerms,
                                 })
-                            })
-                        } else {
-                            linkTerms = {
-                                status: 'error',
-                                didChange: didTermsUpdate.value,
-                                changeLog: {},
                             }
-                            store.setUpdateStatus({
-                                ...store.updateStatus,
-                                linkTerms,
-                            })
                         }
+                    })
+                } catch (e) {
+                    const linkTerms = {
+                        status: 'error',
+                        didChange: didTermsUpdate.value,
+                        changeLog: {},
                     }
-                })
-            } else didTermsUpdate.value = false
+                    store.setUpdateStatus({
+                        ...store.updateStatus,
+                        linkTerms,
+                    })
+                }
+            }
         }
         if (didClassificationsUpdate.value) {
             // call to link classifications endpoint
             const requestPayload =
                 getBulkClassificationUpdateRequestPayload(assetList)
-            let linkClassifications = {
-                status: 'loading',
-                didChange: didClassificationsUpdate.value,
-                changeLog: { ...publishedClassificationChangeLog.value },
-            }
-            store.setUpdateStatus({
-                ...store.updateStatus,
-                linkClassifications,
-            })
-            const { data, error, isLoading } = useAPIAsyncState<any>(
-                KeyMaps.classification.BULK_LINK_CLASSIFICATION,
-                'POST',
-                { body: requestPayload },
-                { immediate: true, resetOnExecute: false }
-            )
-            watch([data, error, isLoading], () => {
-                if (isLoading.value === false) {
-                    if (error.value === undefined) {
-                        assetList.forEach((asset) => {
-                            const updatedClassificationsLocal =
-                                requestPayload.guidHeaderMap[asset.guid]
-                            // eslint-disable-next-line no-param-reassign
-                            asset.classifications = [
-                                ...updatedClassificationsLocal?.classifications,
-                            ]
-                        })
-                        linkClassifications = {
-                            status: 'success',
-                            didChange: didClassificationsUpdate.value,
-                            changeLog: {
-                                ...publishedClassificationChangeLog.value,
-                            },
-                        }
-                        store.setUpdateStatus({
-                            ...store.updateStatus,
-                            linkClassifications,
-                        })
-                    } else {
-                        linkClassifications = {
-                            status: 'error',
-                            didChange: didClassificationsUpdate.value,
-                            changeLog: {
-                                ...publishedClassificationChangeLog.value,
-                            },
-                        }
-                        store.setUpdateStatus({
-                            ...store.updateStatus,
-                            linkClassifications,
-                        })
-                    }
+            try {
+                let linkClassifications = {
+                    status: 'loading',
+                    didChange: didClassificationsUpdate.value,
+                    changeLog: { ...publishedClassificationChangeLog.value },
                 }
-            })
+                store.setUpdateStatus({
+                    ...store.updateStatus,
+                    linkClassifications,
+                })
+                const { data, error, isLoading } = useAPIAsyncState<any>(
+                    KeyMaps.classification.BULK_LINK_CLASSIFICATION,
+                    'POST',
+                    { body: requestPayload },
+                    { immediate: true, resetOnExecute: false }
+                )
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value === false) {
+                        if (error.value === undefined) {
+                            assetList.forEach((asset) => {
+                                const updatedClassificationsLocal =
+                                    requestPayload.guidHeaderMap[asset.guid]
+                                // eslint-disable-next-line no-param-reassign
+                                asset.classifications = [
+                                    ...updatedClassificationsLocal?.classifications,
+                                ]
+                            })
+                            linkClassifications = {
+                                status: 'success',
+                                didChange: didClassificationsUpdate.value,
+                                changeLog: {
+                                    ...publishedClassificationChangeLog.value,
+                                },
+                            }
+                            store.setUpdateStatus({
+                                ...store.updateStatus,
+                                linkClassifications,
+                            })
+                        } else {
+                            linkClassifications = {
+                                status: 'error',
+                                didChange: didClassificationsUpdate.value,
+                                changeLog: {
+                                    ...publishedClassificationChangeLog.value,
+                                },
+                            }
+                            store.setUpdateStatus({
+                                ...store.updateStatus,
+                                linkClassifications,
+                            })
+                        }
+                    }
+                })
+            } catch (e) {
+                const linkClassifications = {
+                    status: 'error',
+                    didChange: didClassificationsUpdate.value,
+                    changeLog: {
+                        ...publishedClassificationChangeLog.value,
+                    },
+                }
+                store.setUpdateStatus({
+                    ...store.updateStatus,
+                    linkClassifications,
+                })
+            }
         }
     }
     /** WATCHERS */
@@ -488,6 +550,7 @@ export default function useBulkSelect() {
         originalTerms,
         updateTerms,
         termFrequencyMap,
+        publishedTermChangeLog,
         didTermsUpdate,
         state,
         owners,

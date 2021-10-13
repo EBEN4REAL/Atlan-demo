@@ -52,6 +52,21 @@ const keyMap = {
                 properties: (props) => ({ gtc_type: props?.gtc_type }),
             },
         },
+        term: {
+            created: {
+                action: 'gtc_term_created',
+            },
+        },
+        category: {
+            created: {
+                action: 'gtc_category_created',
+            },
+        },
+        glossary: {
+            created: {
+                action: 'gtc_glossary_created',
+            },
+        },
     },
 }
 export default keyMap

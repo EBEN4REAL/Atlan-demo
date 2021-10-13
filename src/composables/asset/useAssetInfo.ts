@@ -76,7 +76,6 @@ export default function useAssetInfo() {
         raw
             ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).rowCount)
-    }
     const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
         let connectorsName: undefined | string = undefined
         const values = qualifiedName.split('/')

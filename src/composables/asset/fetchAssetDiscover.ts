@@ -246,7 +246,7 @@ export default function fetchAssetDiscover(
 
         payload.connectors.forEach((element: any) => {
             tempCriteria.criterion?.push({
-                attributeName: 'integrationName',
+                attributeName: 'connectorName',
                 attributeValue: element,
                 operator: 'eq',
             })

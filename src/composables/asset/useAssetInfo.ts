@@ -76,6 +76,22 @@ export default function useAssetInfo() {
         raw
             ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).rowCount)
+    }
+    const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
+        let connectorsName: undefined | string = undefined
+        const values = qualifiedName.split('/')
+        if (values.length > 1) {
+            connectorsName = values[1]
+        }
+        return connectorsName
+    }
+    const getConnectorName = (attributes: any) => {
+        return (
+            attributes?.connectorName ??
+            getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
+        )
+    }
+
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
@@ -470,6 +486,8 @@ export default function useAssetInfo() {
     }
 
     return {
+        getConnectorName,
+        getConnectorsNameFromQualifiedName,
         isPrimary,
         dataTypeImageForColumn,
         popularityScore,

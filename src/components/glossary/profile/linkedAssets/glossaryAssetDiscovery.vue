@@ -615,7 +615,7 @@
                 }
                 if (connectorsPayload.value?.connector) {
                     connectorCritera.criterion?.push({
-                        attributeName: 'integrationName',
+                        attributeName: 'connectorName',
                         attributeValue: connectorsPayload.value?.connector,
                         operator: 'eq',
                     })

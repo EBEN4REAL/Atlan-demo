@@ -143,7 +143,7 @@ export function useColumnsList(
         query = ref(''),
         dataTypes = ref([] as string[]),
         pinned,
-        sort = ref('Column.order|ascending'),
+        sort = ref('order|ascending'),
         certification = ref([] as string[]),
         columnGuid,
     }: ColumnListConfig,

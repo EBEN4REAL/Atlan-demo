@@ -114,6 +114,7 @@
     import confetti from '~/utils/confetti'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         components: { StatusBadge },
@@ -192,7 +193,12 @@
                             'gtc',
                             'metadata',
                             'certification_updated',
-                            undefined
+                            {
+                                gtc_type:
+                                    assetTypeLabel[
+                                        selectedAsset.value?.typeName
+                                    ],
+                            }
                         )
                     else
                         useAddEvent(

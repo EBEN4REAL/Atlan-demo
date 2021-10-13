@@ -64,6 +64,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { message } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         props: {
@@ -137,12 +138,9 @@
                     selectedAsset.value?.typeName === 'AtlasGlossaryTerm' ||
                     selectedAsset.value?.typeName === 'AtlasGlossaryCategory'
                 )
-                    useAddEvent(
-                        'gtc',
-                        'metadata',
-                        'description_updated',
-                        undefined
-                    )
+                    useAddEvent('gtc', 'metadata', 'description_updated', {
+                        gtc_type: assetTypeLabel[selectedAsset.value?.typeName],
+                    })
                 else
                     useAddEvent(
                         'discovery',

@@ -37,18 +37,19 @@ const keyMap = {
         metadata: {
             description_updated: {
                 action: 'gtc_metadata_description_updated',
-            },
-            classifications_updated: {
-                action: 'gtc_metadata_classifications_updated',
+                properties: (props) => ({ gtc_type: props?.gtc_type }),
             },
             certification_updated: {
                 action: 'gtc_metadata_certification_updated',
+                properties: (props) => ({ gtc_type: props?.gtc_type }),
             },
             owners_updated: {
                 action: 'gtc_metadata_owners_updated',
+                properties: (props) => ({ gtc_type: props?.gtc_type }),
             },
-            terms_updated: {
-                action: 'gtc_metadata_terms_updated',
+            classifications_updated: {
+                action: 'gtc_metadata_classifications_updated',
+                properties: (props) => ({ gtc_type: props?.gtc_type }),
             },
         },
     },

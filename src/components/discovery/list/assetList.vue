@@ -22,7 +22,7 @@
                         (listItem) => listItem.guid === item.guid
                     ) > -1
                 "
-                @click="handlePreview(item)"
+                @click="handleCardClicked(item)"
                 @listItem:check="(e, item) => updateBulkSelectedAssets(item)"
             ></ListItem>
         </template>
@@ -143,12 +143,15 @@
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
                 emit('preview', item)
-                const idx = props.list.findIndex((el) => el.guid === item.guid)
+            }
 
+            const handleCardClicked = (item: any) => {
                 // add event
+                const idx = props.list.findIndex((el) => el.guid === item.guid)
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: idx,
                 })
+                handlePreview(item)
             }
             const store = useBulkUpdateStore()
             const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
@@ -204,6 +207,7 @@
                 list,
                 bulkSelectedAssets,
                 updateBulkSelectedAssets,
+                handleCardClicked,
             }
         },
     })

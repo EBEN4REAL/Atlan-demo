@@ -31,7 +31,7 @@ export default function useIndexSearch(
         Discovery.IndexSearch(
             {
                 body: {
-                    query: JSON.stringify(queryDSL),
+                    query: queryDSL,
                 },
                 options: asyncOptions,
             },

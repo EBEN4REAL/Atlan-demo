@@ -91,7 +91,7 @@
         </div>
         <div v-else>
             <div
-                v-if="!bannerDescription || bannerDescription === ''"
+                v-if="!announcementTitle || announcementTitle === ''"
                 class="flex justify-between"
             >
                 <div>

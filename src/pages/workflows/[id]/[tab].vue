@@ -21,6 +21,7 @@
                             }
                         "
                         :selected-run-id="selectedRunId"
+                        :ui-config="data?.uiConfig"
                         class="bg-transparent"
                         @change="handlePreview"
                     ></component>
@@ -33,7 +34,6 @@
                 v-if="selected"
                 :selected-workflow="selected"
                 :selected-dag="selectedDag"
-                :uiConfig="data?.uiconfig"
             />
         </div>
     </div>
@@ -48,7 +48,6 @@
         watch,
         onMounted,
         toRefs,
-        inject,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -190,7 +189,7 @@
 
             // fetch
             const fetch = () => {
-                if (selectedAsset.value) {
+                if (selected.value) {
                     fetchUIConfig()
                     return
                 }
@@ -241,7 +240,6 @@
                 emit,
                 id,
                 activeKey,
-                uiConfig,
                 selected,
                 tabs,
                 handlePreview,

@@ -11,18 +11,23 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, computed, ref } from 'vue'
+    import { defineComponent, computed, ref, toRefs } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
-    import json from './Untitled-1.json'
 
     export default defineComponent({
         name: 'WorkflowSetup',
         components: { CustomRadioButton },
+        props: {
+            uiConfig: {
+                type: Object,
+                required: false,
+                default: null,
+            },
+        },
         emits: ['change'],
         setup(props, { emit }) {
-            const uiConfig = inject('uiConfig')
             const selected = ref('')
-
+            const { uiConfig } = toRefs(props)
             const template = computed(() => {
                 if (uiConfig.value)
                     return JSON.parse(uiConfig.value[0]?.data?.templates)
@@ -33,14 +38,7 @@
                 emit('change', selected.value, 'dag')
             }
 
-            const config = computed(() => {
-                return json
-                if (uiConfig.value) {
-                    return JSON.parse(uiConfig.value[0].data.uiConfig)
-                }
-                return []
-            })
-            return { uiConfig, selected, template, config, handleInputChange }
+            return { selected, template, handleInputChange }
         },
     })
 </script>

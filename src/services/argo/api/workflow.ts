@@ -39,6 +39,17 @@ const getWorkflowTemplates = ({ immediate, options, params }) =>
         { immediate }
     )
 
+const getWorkflowConfigMap = (pathVariables, { immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.WORKFLOW_CONFIG_MAP,
+        'GET',
+        {
+            options,
+            pathVariables,
+        },
+        { immediate }
+    )
+
 const getWorkflowByName = (name, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW_BY_NAME,
@@ -83,5 +94,6 @@ export const Workflows = {
     getWorkflowByName,
     getWorkflows,
     getArchivedWorkflowRun,
-    getWorkflowTemplates
+    getWorkflowTemplates,
+    getWorkflowConfigMap
 }

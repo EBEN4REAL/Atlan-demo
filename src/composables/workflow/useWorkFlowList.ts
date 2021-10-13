@@ -116,3 +116,12 @@ export function useWorkflowByName(name, immediate: boolean = true) {
         mutate,
     }
 }
+
+export function getWorkflowConfigMap(label, immediate: boolean = true) {
+    const pathVariable = computed(() => ({
+        'name': `${label}` // `com.atlan.orchestration/workflow-template-name=${label}`
+    }))
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap(pathVariable, { immediate, options: {} })
+
+    return { data, error, isLoading, mutate }
+}

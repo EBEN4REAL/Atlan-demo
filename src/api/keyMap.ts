@@ -160,15 +160,13 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'meta',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         health: {
@@ -193,7 +191,7 @@ export const KeyMaps = {
             getAPIPath('api/query', `/sql/stream?${params}`),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
@@ -215,5 +213,8 @@ export const KeyMaps = {
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
+        WORKFLOW_CONFIG_MAP: ({ name }: PathParams) =>
+            getAPIPath('/service', `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name}`)
+
     },
 }

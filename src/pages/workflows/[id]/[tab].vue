@@ -21,6 +21,7 @@
                             }
                         "
                         :selected-run-id="selectedRunId"
+                        @change="(a, is) => emit('preview', a, is)"
                         class="bg-transparent"
                     ></component>
                 </a-tab-pane>
@@ -48,7 +49,10 @@
     import Header from '@/workflows/profile/header.vue'
 
     // Composables
-    import { useWorkflowByName } from '~/composables/workflow/useWorkFlowList'
+    import {
+        useWorkflowByName,
+        getWorkflowConfigMap,
+    } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {
@@ -74,12 +78,14 @@
             },
         },
         emits: ['preview'],
-        setup(props, context) {
+        setup(props, { emit }) {
             /** DATA */
-            const activeKey = ref(2)
+            const activeKey = ref(1)
             const data = ref({})
             const selectedAsset = inject('selectedAsset')
+            const uiConfig = inject('uiConfig')
             if (selectedAsset) data.value.asset = selectedAsset.value
+            if (uiConfig) data.value.uiConfig = uiConfig
 
             const refs: { [key: string]: any } = ref({})
             const { updateProfile } = toRefs(props)
@@ -120,13 +126,47 @@
             }
 
             // handlePreview
-            const handlePreview = (item) => {
-                context.emit('preview', item)
+            const handlePreview = (item, config) => {
+                emit('preview', item, config)
             }
+
+            const templateName = computed(() => {
+                if (
+                    // eslint-disable-next-line no-prototype-builtins
+                    data.value?.asset?.labels.hasOwnProperty(
+                        'com.atlan.orchestration/workflow-template-name'
+                    )
+                )
+                    return data.value.asset.labels[
+                        'com.atlan.orchestration/workflow-template-name'
+                    ]
+                return null
+            })
+
+            const fetchUIConfig = () => {
+                const {
+                    data: uiconfig,
+                    error: e,
+                    isLoading: l,
+                } = getWorkflowConfigMap(templateName.value)
+
+                watch(uiconfig, (v) => {
+                    if (uiconfig.value?.items)
+                        data.value.uiConfig = uiconfig.value?.items
+                    handlePreview(uiconfig.value?.items, 'config')
+                })
+            }
+            watch(templateName, (v) => {
+                if (!v) return
+                fetchUIConfig()
+            })
 
             // fetch
             const fetch = () => {
-                if (selectedAsset.value) return
+                if (selectedAsset.value) {
+                    fetchUIConfig()
+                    return
+                }
                 const {
                     workflow: response,
                     error,
@@ -136,20 +176,32 @@
                 watch(response, (v) => {
                     data.value.asset = v
                     data.value.error = error.value
-                    handlePreview(data.value?.asset)
+                    fetchUIConfig()
+                    handlePreview(data.value?.asset, null)
                 })
             }
+
+            watch(
+                () => data.value.asset,
+                (v) => {
+                    if (!v) return
+                    fetchUIConfig()
+                },
+                {
+                    deep: true,
+                }
+            )
 
             /** LIFECYCLES */
             onMounted(async () => {
                 await fetch()
 
-                // const tab = route?.params?.tab
-                // if (!tab) return
-                // const currTab = tabs.find(
-                //     (i) => i.name.toLowerCase() === tab.toLowerCase()
-                // )
-                // activeKey.value = currTab.id
+                const tab = route?.params?.tab
+                if (!tab) return
+                const currTab = tabs.find(
+                    (i) => i.name.toLowerCase() === tab.toLowerCase()
+                )
+                activeKey.value = currTab.id
             })
 
             /** WATCHERS */
@@ -159,13 +211,16 @@
             watch(updateProfile, () => fetch())
 
             return {
+                emit,
                 id,
                 activeKey,
+                uiConfig,
                 tabs,
                 handlePreview,
                 refs,
                 data,
                 selectTab,
+                templateName,
             }
         },
     })

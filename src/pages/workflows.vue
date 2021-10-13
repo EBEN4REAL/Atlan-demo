@@ -25,6 +25,8 @@
                 :is="whichComponent.preview"
                 v-if="selected"
                 :selected-workflow="selected"
+                :ui-config="uiConfig"
+                :selected-dag="selectedDag"
                 @change="selectedRunId = $event"
             ></component>
         </div>
@@ -75,7 +77,7 @@
         },
         setup() {
             useHead({
-                title: 'Discover assets',
+                title: 'Discover workflows',
             })
             const router = useRouter()
             const route = useRoute()
@@ -104,18 +106,10 @@
             const updateProfile = ref<boolean>(false)
             const selectedRunId = ref('')
             const selected: Ref<assetInterface | undefined> = ref(undefined)
+            const uiConfig = ref(null)
+            const selectedDag = ref(null)
 
-            watch(
-                () => whichComponent,
-                () => {
-                    selected.value = null
-                },
-                { deep: true }
-            )
             const workflowDiscovery: Ref<Element | null> = ref(null)
-            // TODO fix initialFilters set , apply , etc
-            // const initialFilters: initialFiltersType =
-            //     getDecodedOptionsFromString(router)
 
             const initialFilters: Record<string, any> = {
                 facetsFilters: {},
@@ -128,35 +122,33 @@
                 ),
             }
 
-            const handlePreview = (selectedItem: assetInterface) => {
-                selected.value = selectedItem
-                console.log(selectedItem)
+            const handlePreview = (selectedItem: any, is) => {
+                console.log({ is })
+                if (is === 'config') {
+                    uiConfig.value = selectedItem
+                } else if (is === 'dag') {
+                    selectedDag.value = selectedItem
+                } else selected.value = selectedItem
             }
             const page = computed(() => {
                 if (isItem.value === 'new') return 'setup'
                 return isItem.value ? 'profile' : 'discovery'
             })
 
-            // !KILL this
-            function propagateToAssetList(updatedAsset: assetInterface) {
-                if (page.value === 'discovery')
-                    workflowDiscovery.value.mutateAssetInList(updatedAsset)
-                handlePreview(updatedAsset)
-                updateProfile.value = true
-            }
-
             provide('selectedAsset', selected)
+            provide('uiConfig', uiConfig)
 
             return {
                 initialFilters,
                 selected,
                 handlePreview,
+                uiConfig,
                 isItem,
                 page,
                 updateProfile,
-                propagateToAssetList,
                 workflowDiscovery,
                 selectedRunId,
+                selectedDag,
                 whichComponent,
             }
         },

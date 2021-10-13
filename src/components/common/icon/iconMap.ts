@@ -87,6 +87,7 @@ import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
 import Pencil from '~/assets/images/icons/pencil.svg'
 import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
+import Dots from '~/assets/images/icons/dots.svg'
 
 export default {
     Metadata,
@@ -177,4 +178,5 @@ export default {
     Pencil,
     Caret,
     Check,
+    Dots,
 }

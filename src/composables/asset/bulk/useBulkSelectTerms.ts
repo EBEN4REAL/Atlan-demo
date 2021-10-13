@@ -17,6 +17,9 @@ export default function useBulkSelectTerms(selectedAssets) {
             | Components.Schemas.AtlasTermAssignmentHeader[]
         >
     > = ref({})
+    // will set it in the parent composable; basically if the final payload is empty => no change; since we are already evaluating that, why compute here
+    const didTermsUpdate: Ref<boolean> = ref(false)
+
     watch(selectedAssets, () => {
         if (selectedAssets.value.length) {
             // update existing owners and groups
@@ -125,5 +128,6 @@ export default function useBulkSelectTerms(selectedAssets) {
         initialiseLocalState,
         updateTerms,
         termFrequencyMap,
+        didTermsUpdate,
     }
 }

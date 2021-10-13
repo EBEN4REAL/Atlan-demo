@@ -28,7 +28,7 @@ const useLoadTreeData = () => {
             'dataType',
             'description',
             'userDescription',
-            'assetStatus',
+            'certificateStatus',
             'ownerUsers',
             'ownerGroups',
             'classifications',

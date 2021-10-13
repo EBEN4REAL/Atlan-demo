@@ -25,8 +25,9 @@ export default function useBulkSelectOwners(selectedAssets) {
         if (selectedAssets.value.length) {
             const assetStatusMap: Record<string, string> = {}
             selectedAssets.value.forEach((asset: assetInterface) => {
-                assetStatusMap[asset.guid] = asset?.attributes?.assetStatus
-                    ? asset.attributes.assetStatus
+                assetStatusMap[asset.guid] = asset?.attributes
+                    ?.certificateStatus
+                    ? asset.attributes.certificateStatus
                     : 'is_null'
             })
             return assetStatusMap

@@ -8,21 +8,45 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="item.metadata.uid === selectedItemId"
+                :is-selected="
+                    item.workflowtemplate.metadata.uid === selectedItemId
+                "
                 @click="handlePreview(item)"
             ></ListItem>
         </template>
         <template #footer>
-            <div v-if="isLoading" class="flex items-center justify-center">
+            <div
+                v-if="isLoadMore || isLoading"
+                class="flex items-center justify-center"
+            >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        py-2
+                        transition-all
+                        duration-300
+                        bg-white
+                        rounded-full
+                        text-primary
+                    "
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="
+                                m-0
+                                mr-1
+                                overflow-hidden
+                                text-sm
+                                transition-all
+                                duration-300
+                                overflow-ellipsis
+                                whitespace-nowrap
+                            "
                         >
                             Load more
                         </p>
@@ -90,7 +114,7 @@
             const selectedItemId = ref('')
             let shouldReSelect = false
             function handlePreview(item: any) {
-                selectedItemId.value = item.metadata.uid
+                selectedItemId.value = item.workflowtemplate.metadata.uid
                 emit('preview', item)
             }
 

@@ -16,11 +16,17 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                             })
                         break
                     }
+                    case 'saved': {
+                        if (fltrObj?.checked?.searchParameters?.entityFilters?.criterion)
+                            fltrObj.checked.searchParameters.entityFilters.criterion?.forEach(criteria => pl.push(criteria))
+
+                        break
+                    }
                     case 'status': {
                         fltrObj?.checked?.forEach((facetFilterValue) => {
                             if (facetFilterValue !== 'is_null')
                                 pl.push({
-                                    attributeName: 'assetStatus',
+                                    attributeName: 'certificateStatus',
                                     attributeValue: facetFilterValue,
                                     operator: 'eq',
                                 })
@@ -32,13 +38,13 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                                             criterion: [
                                                 {
                                                     attributeName:
-                                                        'assetStatus',
+                                                        'certificateStatus',
                                                     attributeValue: 'is_null',
                                                     operator: 'eq',
                                                 },
                                                 {
                                                     attributeName:
-                                                        'assetStatus',
+                                                        'certificateStatus',
                                                     attributeValue: '',
                                                     operator: 'isNull',
                                                 },
@@ -75,11 +81,11 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                                     // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
                                     fltrObj?.checked?.forEach((val) => {
                                         const subFilter: Components.Schemas.FilterCriteria =
-                                            {
-                                                condition: 'OR',
-                                                criterion:
-                                                    [] as Components.Schemas.FilterCriteria[],
-                                            }
+                                        {
+                                            condition: 'OR',
+                                            criterion:
+                                                [] as Components.Schemas.FilterCriteria[],
+                                        }
                                         const subFilterCriterion: Components.Schemas.FilterCriteria[] =
                                             []
                                         subFilterCriterion.push({
@@ -179,7 +185,7 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                                     attributeName: key,
                                     attributeValue:
                                         fl[flk] === '-' &&
-                                        ['isNull', 'notNull'].includes(flk)
+                                            ['isNull', 'notNull'].includes(flk)
                                             ? ''
                                             : fl[flk],
                                     operator: flk,

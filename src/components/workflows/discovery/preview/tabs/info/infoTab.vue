@@ -1,7 +1,7 @@
 <template>
     <div v-if="!isLoaded" class="">
         <div class="w-full px-5 mt-2">
-        <p v-for="(v, k) in selectedWorkflow.metadata.labels" :key="v" class="mb-2">
+        <p v-for="(v, k) in selectedWorkflow.labels" :key="v" class="mb-2">
             <div class="mb-1 text-sm tracking-wide text-gray-500">{{ capitalizeFirstLetter(k.split('-').join(' '))  }}:</div>
             <div class="mb-0 text-gray-700 break-all">{{ v}}</div>
         </p>

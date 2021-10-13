@@ -6,7 +6,7 @@ export const KeyMaps = {
         GET_ASSET_AUDIT: ({ guid }: PathParams) =>
             getAPIPath('meta', `/entity/${guid}/audit`),
         BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
-        SAVED_SEARCH: () => getAPIPath('meta', `/search/save`),
+        SAVED_SEARCH: () => getAPIPath('meta', '/search/saved'),
         GET_ASSET_RELATIONSHIP: () =>
             getAPIPath('meta', '/search/relationship'),
         PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
@@ -47,9 +47,9 @@ export const KeyMaps = {
                 getAPIPath('auth', `/accesstokens/${id}/delete`),
         },
         avatar: {
-            UPLOAD_AVATAR: () => getAPIPath('auth', '/avatars'),
+            UPLOAD_AVATAR: () => getAPIPath('service', '/avatars'),
             GET_AVATAR: ({ username }: PathParams) =>
-                `/api/${getAPIPath('auth', `/avatars/${username}`)}`,
+                `/api/${getAPIPath('service', `/avatars/${username}`)}`,
         },
         connection: {
             TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
@@ -71,7 +71,7 @@ export const KeyMaps = {
         image: {
             UPLOAD_IMAGE: () => getAPIPath('auth', '/images'),
             GET_IMAGE: ({ id }: PathParams) =>
-                getAPIPath('auth', `/images/${id}`),
+                getAPIPath('service', `/images/${id}`),
         },
         policies: {
             ASSET_ACCESS: () => getAPIPath('auth', '/access/evaluate'),
@@ -160,15 +160,13 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'meta',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         health: {
@@ -193,7 +191,7 @@ export const KeyMaps = {
             getAPIPath('api/query', `/sql/stream?${params}`),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
@@ -208,15 +206,12 @@ export const KeyMaps = {
         BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
     },
     workflow: {
-        WORKFLOW_TEMPLATES: ({ tenant }: PathParams) =>
-            getAPIPath('/auth/argo', `/workflow-templates/${tenant}`),
-        ARCHIVED_WORKFLOW: () =>
-            getAPIPath('/auth/argo', `/archived-workflows`),
+        WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
         ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
-            getAPIPath('/auth/argo', `/archived-workflows/${guid}`),
-        CLUSTER_WORKFLOW_TEMPLATE: () =>
-            getAPIPath('/auth/argo', `/cluster-workflow-templates`),
-        WORKFLOW_TEMPLATES_BY_NAME: ({ tenant, name }: PathParams) =>
-            getAPIPath('/auth/argo', `/workflow-templates/${tenant}/${name}`),
+            getAPIPath('/service', `/archived-workflows/${guid}`),
+        WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
+        WORKFLOW_BY_NAME: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflows/${name}`),
     },
 }

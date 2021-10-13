@@ -1,7 +1,7 @@
 <template>
     <a-checkbox-group
         v-model:value="data.checked"
-        class="w-full px-4 py-1 pb-6"
+        class="w-full py-1 pb-6"
         @change="$emit('change')"
     >
         <div class="flex flex-col w-full gap-y-3">
@@ -33,36 +33,36 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import { List } from '~/constant/assetCategory'
-    import { Collapse } from '~/types'
+import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+import { List } from '~/constant/assetCategory'
+import { Collapse } from '~/types'
 
-    export default defineComponent({
-        props: {
-            item: {
-                type: Object as PropType<Collapse>,
-                required: true,
-            },
-            data: {
-                type: Object,
-                required: true,
-            },
+export default defineComponent({
+    props: {
+        item: {
+            type: Object as PropType<Collapse>,
+            required: true,
         },
-        emits: ['change'],
-        setup(props) {
-            const list = computed(() => List)
-            const { data } = toRefs(props)
+        data: {
+            type: Object,
+            required: true,
+        },
+    },
+    emits: ['change'],
+    setup(props) {
+        const list = computed(() => List)
+        const { data } = toRefs(props)
 
-            return {
-                data,
-                list,
-            }
-        },
-    })
+        return {
+            data,
+            list,
+        }
+    },
+})
 </script>
 
 <style scoped>
-    :global(.ant-tooltip-arrow) {
-        display: none;
-    }
+:global(.ant-tooltip-arrow) {
+    display: none;
+}
 </style>

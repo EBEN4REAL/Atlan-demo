@@ -1,5 +1,5 @@
 <template>
-    <div class="text-xs text-gray-500">
+    <div class="flex flex-col justify-between text-xs text-gray-500">
         <p class="mb-2 text-sm">Owners</p>
 
         <div
@@ -66,12 +66,13 @@
             overlay-class-name="inlinepopover"
             trigger="click"
         >
-            <span
+            <div
                 v-if="ownerUsers.length < 1 && ownerGroups.length < 1"
                 class="text-xs cursor-pointer text-primary hover:underline"
                 @click.stop="toggleOwnerPopover"
-                >Add owners</span
             >
+                Add owners
+            </div>
             <template #content>
                 <div
                     class="
@@ -84,13 +85,13 @@
                         rounded
                     "
                 >
-                    <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center justify-between w-full mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
                             :autofocus="true"
                             placeholder="Search "
-                            @change="handleOwnerSearch"
                             size="minimal"
+                            @change="handleOwnerSearch"
                         >
                         </SearchAndFilter>
                         <a-button-group>
@@ -163,7 +164,12 @@
                                 </div>
                                 <div
                                     v-else
-                                    class="flex items-center justify-center mt-3 "
+                                    class="
+                                        flex
+                                        items-center
+                                        justify-center
+                                        mt-3
+                                    "
                                 >
                                     <a-spin
                                         size="small"
@@ -180,7 +186,12 @@
                                         STATES.SUCCESS === groupOwnerState &&
                                         groupList.length < 1
                                     "
-                                    class="flex flex-col items-center justify-center h-full "
+                                    class="
+                                        flex flex-col
+                                        items-center
+                                        justify-center
+                                        h-full
+                                    "
                                 >
                                     <div class="flex flex-col items-center">
                                         <img

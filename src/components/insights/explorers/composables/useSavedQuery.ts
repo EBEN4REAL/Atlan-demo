@@ -56,7 +56,7 @@ export function useSavedQuery(
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
-            status: savedQuery.attributes.assetStatus as string,
+            status: savedQuery.attributes.certificateStatus as string,
             explorer: {
                 schema: {
                     connectors: {
@@ -139,7 +139,7 @@ export function useSavedQuery(
             getConnectionQualifiedName(attributeValue)
         const connectionName = getConnectorName(attributeValue)
         const name = activeInlineTab.value.label
-        const assetStatus = activeInlineTab.value.status
+        const certificateStatus = activeInlineTab.value.status
         const description = activeInlineTab.value.description
         const isSQLSnippet = activeInlineTab.value.isSQLSnippet
         const editorInstanceRaw = toRaw(editorInstance.value)
@@ -164,7 +164,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
+                    certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionId: connectionQualifiedName,
                     connectionQualifiedName,
@@ -234,7 +234,7 @@ export function useSavedQuery(
         )
         activeInlineTabCopy.isSaved = true
         activeInlineTabCopy.label = saveQueryData.title
-        activeInlineTabCopy.status = saveQueryData.assetStatus
+        activeInlineTabCopy.status = saveQueryData.certificateStatus
 
         const uuidv4 = generateUUID()
         const integrationName = getConnectorName(attributeValue) ?? ''
@@ -244,7 +244,7 @@ export function useSavedQuery(
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
         const description = saveQueryData.description
-        const assetStatus = saveQueryData.assetStatus
+        const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = editorInstanceRaw?.getValue()
         const compiledQuery = getParsedQuery(
@@ -267,7 +267,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
+                    certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
                     description,
@@ -359,7 +359,7 @@ export function useSavedQuery(
         )
         activeInlineTabCopy.isSaved = true
         activeInlineTabCopy.label = saveQueryData.title
-        activeInlineTabCopy.status = saveQueryData.assetStatus
+        activeInlineTabCopy.status = saveQueryData.certificateStatus
         // /* Editor text */
         // activeInlineTabCopy.playground.editor.text = ''
 
@@ -371,7 +371,7 @@ export function useSavedQuery(
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
         const description = saveQueryData.description
-        const assetStatus = saveQueryData.assetStatus
+        const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = editorInstanceRaw?.getValue()
         const compiledQuery = getParsedQuery(
@@ -397,7 +397,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
+                    certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
                     description,
@@ -455,7 +455,7 @@ export function useSavedQuery(
                     savedQuery.attributes.connectionName = connectionName
                     savedQuery.attributes.name = name
                     savedQuery.attributes.description = description
-                    savedQuery.attributes.assetStatus = assetStatus
+                    savedQuery.attributes.certificateStatus = certificateStatus
                     savedQuery.attributes.isSQLSnippet = isSQLSnippet
                     /* Initial should be empty */
                     savedQuery.attributes.rawQuery = ''
@@ -502,7 +502,7 @@ export function useSavedQuery(
         // )
         // activeInlineTabCopy.isSaved = true
         // activeInlineTabCopy.label = saveFolderData.title
-        // activeInlineTabCopy.status = saveFolderData.assetStatus
+        // activeInlineTabCopy.status = saveFolderData.certificateStatus
 
         const uuidv4 = generateUUID()
         const integrationName = getConnectorName(attributeValue) ?? ''

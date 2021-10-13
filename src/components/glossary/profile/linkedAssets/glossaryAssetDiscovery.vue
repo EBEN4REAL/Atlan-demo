@@ -307,7 +307,7 @@
             checked?: Array<string>
             condition: string
             criterion: Array<{
-                attributeName: 'assetStatus'
+                attributeName: 'certificateStatus'
                 attributeValue: string
                 operator: string
             }>

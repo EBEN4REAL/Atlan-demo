@@ -1,6 +1,16 @@
 <template>
     <div
-        class="flex justify-between w-full py-6 pl-0 pr-4 border-b cursor-pointer  group"
+        class="
+            flex
+            justify-between
+            w-full
+            py-6
+            pl-0
+            pr-4
+            border-b
+            cursor-pointer
+            group
+        "
         :class="[bulkSelectMode && isChecked ? 'bg-primary-light' : '']"
         @click="$emit('gtcCardClicked', entity)"
     >
@@ -78,7 +88,13 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(entity).length
                         "
-                        class="flex items-center text-sm leading-5 text-gray-500 "
+                        class="
+                            flex
+                            items-center
+                            text-sm
+                            leading-5
+                            text-gray-500
+                        "
                     >
                         <AtlanIcon icon="User" class="m-0 mr-1" />
 
@@ -222,7 +238,8 @@
             const statusObject = computed(() =>
                 StatusList.find(
                     (status) =>
-                        status.id === props.entity?.attributes?.assetStatus
+                        status.id ===
+                        props.entity?.attributes?.certificateStatus
                 )
             )
 

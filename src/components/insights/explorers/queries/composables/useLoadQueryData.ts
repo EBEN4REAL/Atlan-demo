@@ -34,7 +34,7 @@ const useLoadQueryData = ({
         'dataType',
         'description',
         'userDescription',
-        'assetStatus',
+        'certificateStatus',
         'ownerUsers',
         'ownerGroups',
         'classifications',

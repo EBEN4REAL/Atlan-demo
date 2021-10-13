@@ -327,7 +327,7 @@
 
                         input.setAttribute(
                             'class',
-                            `outline-none border py-0 px-1 z-10 rounded mx-4 my-1 w-auto ${inputClassName}`
+                            `outline-none border py-0 px-1 rounded mx-4 my-1 w-auto ${inputClassName}`
                         )
                         input.setAttribute('placeholder', 'Name your folder')
                         input.addEventListener('input', (e) => {
@@ -470,7 +470,7 @@
                 title: string
                 description: string
                 isSQLSnippet: boolean
-                assetStatus: string
+                certificateStatus: string
                 parentQF?: string
                 parentGuid?: string
             }) => {

@@ -1,120 +1,49 @@
-name: Package Docker Image
-
+name: Production Website Workflow
 on:
-    push:
-        branches:
-            - development
-            - beta
-
+  push:
+    branches:
+      - beta
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                  fetch-depth: 0
-
-            - name: Get branch name
-              run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-              id: get_branch
-
-            - run: echo "REPOSITORY_NAME=`echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"`" >> $GITHUB_ENV
-              shell: bash
-
-            - name: Get version tag
-              run: echo "##[set-output name=version;]$(echo `git ls-remote https://${{ secrets.my_pat }}@github.com/atlanhq/${REPOSITORY_NAME}.git ${{ steps.get_branch.outputs.branch }} | awk '{ print $1}' | cut -c1-7`)abcd"
-              id: get_version
-
-            - name: Set up Buildx
-              id: buildx
-              uses: docker/setup-buildx-action@v1
-
-            - name: Login to GitHub Registry
-              uses: docker/login-action@v1
-              with:
-                  registry: ghcr.io
-                  username: $GITHUB_ACTOR
-                  password: ${{ secrets.my_pat }}
-
-            - name: Build and push docker image
-              id: docker_build
-              uses: docker/build-push-action@v2
-              with:
-                  context: .
-                  file: ./Dockerfile
-                  push: true
-                  tags: |
-                      ghcr.io/atlanhq/${{ github.event.repository.name }}-${{ steps.get_branch.outputs.branch }}:latest
-                      ghcr.io/atlanhq/${{ github.event.repository.name }}-${{ steps.get_branch.outputs.branch }}:${{ steps.get_version.outputs.version }}
-                  build-args: |
-                      ACCESS_TOKEN_USR=$GITHUB_ACTOR
-                      ACCESS_TOKEN_PWD=${{ secrets.my_pat }}
-
-            - name: Check out into atlan-v2 repo
-              if: ${{ github.ref != 'refs/heads/main' }}
-              uses: actions/checkout@v2
-              with:
-                  fetch-depth: 0
-                  ref: master
-                  repository: atlanhq/atlan-v2
-                  token: ${{ secrets.my_pat }}
-
-            - name: Get previous tag from atlan-v2 repo
-              if: ${{ github.ref != 'refs/heads/main' }}
-              id: get_latest_tag
-              run: |
-                  repo_branch=${{ steps.get_branch.outputs.branch }}
-                  if [[ "$repo_branch" == "master" ]]; then
-                    charts_tag="staging"
-                  elif [[ "$repo_branch" == "development" ]]; then
-                    charts_tag="development"
-                  else 
-                    charts_tag="$repo_branch"
-                  fi
-                  echo "##[set-output name=charts_tag;]$(echo $charts_tag)"
-                  tag=$(git tag | grep "\<$charts_tag\>" | sort -V | grep 'v[0-9].*' | tail -1)
-                  echo "##[set-output name=tag;]$(git tag | grep "\<$charts_tag\>" | sort -V | grep 'v[0-9].*' | tail -1)"
-                  if echo $tag | grep "999"; then
-                      echo "##[set-output name=command;]$(echo 'm')"
-                  else
-                      echo "##[set-output name=command;]$(echo 'p')"
-                  fi
-              shell: bash
-
-            - name: Get new tag by doing semver version bump
-              if: ${{ github.ref != 'refs/heads/main' }}
-              id: bump_tag
-              run: |
-                  chmod +x ./scripts/semver-version-upgrade.sh
-                  bumped_tag=$(./scripts/semver-version-upgrade.sh -${{ steps.get_latest_tag.outputs.command }} ${{ steps.get_latest_tag.outputs.tag }})
-                  echo "##[set-output name=new_tag;]$(echo $bumped_tag)"
-
-            - name: Create Release on atlan-v2 repo
-              if: ${{ github.ref != 'refs/heads/main' }}
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.my_pat }}
-              with:
-                  tag_name: ${{ steps.bump_tag.outputs.new_tag }}-${{ steps.get_latest_tag.outputs.charts_tag }}
-                  release_name: ${{ github.event.repository.name }}
-                  body: |
-                      ${{ github.event.head_commit.message }}
-                      Commit id - ${{ steps.get_version.outputs.version }}
-                  draft: false
-                  prerelease: false
-                  owner: atlanhq
-                  repo: atlan-v2
-                  commitish: ${{ steps.get_latest_tag.outputs.charts_tag }}
-
-            # Send a slack notification message on the specified channel with the failure github actions workflow report.
-            - name: Slack notification
-              uses: 8398a7/action-slack@v3
-              with:
-                  status: ${{ job.status }}
-                  author_name: Github-Actions # default: 8398a7@action-slack
-                  fields: repo,commit,workflow,message,author,took # default: repo,commit
-                  text: '- @infra, Job ${{ job.status }} :rocket:'
-              env:
-                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-              if: failure() # Pick up events even if the job fails or is canceled.
+  test:
+    name: Production Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: AWS CLI Install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+      - name: Install
+        run: npm install
+      - name: Setup AWS CLI
+        run: |
+          mkdir ~/.aws
+          touch ~/.aws/credentials
+          echo [default] >> ~/.aws/credentials
+          echo aws_access_key_id = $AWS_ACCESS_KEY_ID >> ~/.aws/credentials
+          echo aws_secret_access_key = $AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Build
+        run: NODE_OPTIONS=--max_old_space_size=8000 npm run build
+      - name: COPY DIST TO S3
+        run: aws s3 cp ./dist s3://$AWS_S3_BUCKET/ --recursive --region $AWS_REGION
+        env:
+          AWS_REGION: "ap-south-1"
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_MASTER }}
+      # Send a slack notification message on the specified channel with the failure github actions workflow report.
+      - name: Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+            status: ${{ job.status }}
+            author_name: Github-Actions # default: 8398a7@action-slack
+            fields: repo,commit,workflow,message,author,took # default: repo,commit
+            text: '- @infra, Job ${{ job.status }} :rocket:'
+        env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        if: failure() # Pick up events even if the job fails or is canceled.

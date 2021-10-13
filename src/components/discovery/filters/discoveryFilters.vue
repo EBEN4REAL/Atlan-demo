@@ -8,6 +8,20 @@
             applied
         </div>
         <div class="flex items-center">
+            <div v-if="totalAppliedFiltersCount">
+                <SaveFilterModal
+                    :applied-filters="filterMap"
+                    @savedFilterAdded="handleSavedFilterAdded"
+                >
+                    <template #trigger>
+                        <div
+                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
+                        >
+                            Save
+                        </div>
+                    </template>
+                </SaveFilterModal>
+            </div>
             <div
                 v-if="totalAppliedFiltersCount"
                 class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
@@ -15,10 +29,6 @@
             >
                 Reset
             </div>
-            <!-- <a-button
-                class="px-3 py-1 text-sm font-medium border-0 rounded bg-primary-light text-primary"
-                >Save</a-button
-            > -->
         </div>
     </div>
     <div class="h-full overflow-y-auto bg-gray-100">
@@ -100,6 +110,14 @@
                     @change="handleTermChange"
                 ></component>
                 <component
+                    is="savedFilter"
+                    v-else-if="item.component === 'savedFilter'"
+                    :updateSavedFilters="updateSavedFilters"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    @change="handleSavedFilterChange"
+                ></component>
+                <component
                     v-else
                     :is="item.component"
                     v-model:data="dataMap[item.id]"
@@ -154,6 +172,12 @@
             businessMetadata: defineAsyncComponent(
                 () => import('@common/facets/businessMetadata/index.vue')
             ),
+            SavedFilter: defineAsyncComponent(
+                () => import('./savedFilters/viewSavedFilters.vue')
+            ),
+            SaveFilterModal: defineAsyncComponent(
+                () => import('./savedFilters/saveFilterModal.vue')
+            ),
         },
         props: {
             initialFilters: {
@@ -177,6 +201,7 @@
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref('dirty_')
+            const updateSavedFilters: Ref<boolean> = ref(false)
 
             /**
              * @desc combines static List with mapped BM object that has filter support
@@ -193,6 +218,9 @@
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({
                 connector: props.initialFilters?.facetsFilters?.connector || {},
+                saved: props.initialFilters?.facetsFilters?.saved || {
+                    checked: undefined,
+                },
                 assetCategory: props.initialFilters?.facetsFilters
                     ?.assetCategory || { checked: undefined },
                 status: props.initialFilters?.facetsFilters?.status || {
@@ -273,12 +301,21 @@
                 // updateChangesInStore(value);
             }
 
+            const handleSavedFilterChange = (payload) => {
+                dataMap.value['saved'].checked = payload
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                refresh()
+            }
+
             const handleTermChange = (termName: string) => {
                 emit('termNameChange', termName)
             }
 
             const setConnector = (payload: any) => {
                 dataMap.value.connector = payload
+            }
+            const handleSavedFilterAdded = () => {
+                updateSavedFilters.value = true
             }
 
             const handleClear = (filterId: string) => {
@@ -288,6 +325,10 @@
                             attributeName: undefined,
                             attributeValue: undefined,
                         }
+                        break
+                    }
+                    case 'saved': {
+                        dataMap.value[filterId].checked = []
                         break
                     }
                     case 'assetCategory': {
@@ -343,6 +384,13 @@
                         }
 
                         return facetFiltersData.slice(0, 2).join(', ')
+                    }
+                    case 'saved': {
+                        let facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
+                        facetFiltersData = facetFiltersData?.name
+
+                        return facetFiltersData
                     }
                     case 'status': {
                         let facetFiltersData =
@@ -437,6 +485,8 @@
                     attributeName: undefined,
                     attributeValue: undefined,
                 }
+                dataMap.value.saved.checked = []
+
                 dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
@@ -474,6 +524,9 @@
                 bmDataList,
                 setConnector,
                 handleTermChange,
+                handleSavedFilterChange,
+                handleSavedFilterAdded,
+                updateSavedFilters,
             }
         },
     })
@@ -482,7 +535,7 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-none;
+            @apply border-none !important;
         }
 
         :global(.ant-collapse-header) {

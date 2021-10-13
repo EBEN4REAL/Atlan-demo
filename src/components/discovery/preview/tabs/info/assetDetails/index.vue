@@ -48,13 +48,13 @@
         />
 
         <Owners
-            v-if="selectedAsset.guid && page !== 'nonBiOverview'"
+            v-if="selectedAsset.guid && selectedAsset.selectedAsset !== 'Column' && page !== 'nonBiOverview'"
             :selected-asset="selectedAsset"
             @update:selected-asset="mutateSelectedAsset"
         />
 
         <Status
-            v-if="selectedAsset.guid && page !== 'nonBiOverview'"
+            v-if="selectedAsset.guid"
             :selected-asset="selectedAsset"
             @update:selected-asset="mutateSelectedAsset"
         />

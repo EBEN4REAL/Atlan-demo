@@ -16,7 +16,12 @@
                                 assetType(assetData).toLowerCase()
                             )
                         "
-                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                        class="
+                            text-gray-500
+                            border-transparent
+                            shadow-none
+                            hover:border-gray-300 hover:shadow-sm
+                        "
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -25,7 +30,12 @@
                     >
                     <a-button
                         v-if="assetType(assetData).includes('Tableau')"
-                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                        class="
+                            text-gray-500
+                            border-transparent
+                            shadow-none
+                            hover:border-gray-300 hover:shadow-sm
+                        "
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -33,7 +43,12 @@
                         </div></a-button
                     >
                     <a-button
-                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                        class="
+                            text-gray-500
+                            border-transparent
+                            shadow-none
+                            hover:border-gray-300 hover:shadow-sm
+                        "
                         ><div class="flex">
                             <AtlanIcon icon="Share" class="mt-0.5 mr-2" /> Share
                         </div></a-button
@@ -70,7 +85,7 @@
                 <StatusBadge
                     :key="assetData.guid"
                     :show-no-status="false"
-                    :status-id="assetData?.attributes?.assetStatus"
+                    :status-id="assetData?.attributes?.certificateStatus"
                     class="ml-1.5"
                 ></StatusBadge>
             </div>

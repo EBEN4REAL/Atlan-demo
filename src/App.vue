@@ -13,6 +13,7 @@
     import { CONNECTION_FETCH_LIST } from './constant/cache'
     import { useTenantStore } from './store/tenants'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import  useCheckAccess  from '~/services/access/useCheckAccess' 
 
     export default defineComponent({
         setup(props, context) {
@@ -34,7 +35,7 @@
             const initialBody = {
                 limit: 100,
             }
-
+            const { refreshWorkspacePermissions } = useCheckAccess()
             useConnectionsList(isAuth, initialBody, CONNECTION_FETCH_LIST)
             useClassificationStore()
 
@@ -42,6 +43,7 @@
                 () => tenantStore.isAuthenticated,
                 () => {
                     isAuth.value = true
+                    refreshWorkspacePermissions();
                 }
             )
 

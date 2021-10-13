@@ -1,10 +1,10 @@
 <template>
     <div class="flex h-full">
         <!--Sidebar navigation pane start -->
-        <div class="py-3 bg-white border-r sidebar-nav">
+        <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="flex flex-col items-center text-xs  my-7 sidebar-nav-icon"
+                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -13,12 +13,17 @@
                         class="w-6 h-6"
                         :class="activeTabId === tab.id ? 'text-primary' : ''"
                     />
-                    <p
-                        class="mt-2 mb-0 text-gray"
+                    <!-- <p
+                        class="mt-1 mb-0 text-xs text-gray"
                         :class="activeTabId === tab.id ? 'text-primary' : ''"
                     >
                         {{ tab.name }}
-                    </p>
+                    </p> -->
+                    <div
+                        class="absolute top-0 right-0 h-full"
+                        style="width: 3px"
+                        :class="activeTabId === tab.id ? 'bg-primary' : ''"
+                    ></div>
                 </div>
             </template>
         </div>
@@ -388,8 +393,12 @@
     .explorer_splitpane {
         width: 20.75rem;
     }
-    .sidebar-nav-icon:first-child {
-        @apply mt-0 !important;
+    // .sidebar-nav-icon:first-child {
+    //     @apply pt-2 !important;
+    // }
+    .sidebar-nav-icon {
+        padding-top: 16px;
+        padding-bottom: 16px;
     }
     .sidebar-nav {
         /* 60px */

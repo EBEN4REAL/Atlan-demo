@@ -320,7 +320,8 @@
 <style lang="less" module>
     .connector {
         :global(.ant-select-selector) {
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+            @apply rounded-lg !important;
         }
     }
 </style>

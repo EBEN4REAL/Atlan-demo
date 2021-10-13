@@ -29,7 +29,7 @@
                                     "
                                 ></component>
                                 <span
-                                    class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
+                                    class="mb-0 text-sm text-gray-700  nooverflow"
                                 >
                                     {{ title(item) }}
                                 </span>
@@ -129,16 +129,14 @@
                         </div>
                         <!------------------------------->
                         <!--For Others -->
-                        <div v-else class="relative flex w-full z">
+                        <div v-else class="relative flex items-center w-full">
                             <AtlanIcon
                                 :icon="assetType(item)"
-                                class="w-4 h-4 my-auto mr-1"
+                                class="w-4 h-4 mr-1.5 -mt-0.5"
                             ></AtlanIcon>
-                            <span
-                                class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
-                            >
+                            <div class="mb-0 text-sm text-gray-700 nooverflow">
                                 {{ title(item) }}
-                            </span>
+                            </div>
                             <div
                                 class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                                 :class="
@@ -413,7 +411,7 @@
         text-overflow: ellipsis;
         white-space: nowrap !important;
         width: 0;
-        min-width: 100%;
+        min-width: 92%;
     }
     .popover-width {
         min-width: 440px;
@@ -444,6 +442,9 @@
         // min-width: 440px !important;
         max-width: none !important;
         // min-height: 228px !important;
+    }
+    :global(.ant-tree li) {
+        @apply pt-0 pb-0 !important;
     }
 </style>
 

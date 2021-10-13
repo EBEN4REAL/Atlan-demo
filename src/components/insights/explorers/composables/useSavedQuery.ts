@@ -63,7 +63,7 @@ export function useSavedQuery(
                 },
                 queries: {
                     connectors: {
-                        connector: savedQuery.attributes.integrationName,
+                        connector: savedQuery.attributes.connectorName,
                     },
                 },
             },
@@ -131,7 +131,7 @@ export function useSavedQuery(
             activeInlineTab.value.explorer.schema.connectors.attributeValue
         const attributeName =
             activeInlineTab.value.explorer.schema.connectors.attributeName
-        const integrationName = getConnectorName(attributeValue)
+        const connectorName = getConnectorName(attributeValue)
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionName = getConnectorName(attributeValue)
@@ -156,7 +156,7 @@ export function useSavedQuery(
             entity: {
                 typeName: 'Query',
                 attributes: {
-                    integrationName,
+                    connectorName,
                     name,
                     qualifiedName,
                     connectionName,
@@ -234,7 +234,7 @@ export function useSavedQuery(
         activeInlineTabCopy.status = saveQueryData.certificateStatus
 
         const uuidv4 = generateUUID()
-        const integrationName = getConnectorName(attributeValue) ?? ''
+        const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''
@@ -259,7 +259,7 @@ export function useSavedQuery(
             entity: {
                 typeName: 'Query',
                 attributes: {
-                    integrationName,
+                    connectorName,
                     name,
                     qualifiedName,
                     connectionName,
@@ -361,7 +361,7 @@ export function useSavedQuery(
         // activeInlineTabCopy.playground.editor.text = ''
 
         const uuidv4 = generateUUID()
-        const integrationName = getConnectorName(attributeValue) ?? ''
+        const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''
@@ -389,7 +389,7 @@ export function useSavedQuery(
             entity: {
                 typeName: 'Query',
                 attributes: {
-                    integrationName,
+                    connectorName,
                     name,
                     qualifiedName,
                     connectionName,
@@ -445,7 +445,7 @@ export function useSavedQuery(
                     /* properties not coming in the response */
                     savedQuery.attributes.defaultSchemaQualifiedName =
                         defaultSchemaQualifiedName
-                    savedQuery.attributes.integrationName = integrationName
+                    savedQuery.attributes.connectorName = connectorName
                     savedQuery.attributes.connectionQualifiedName =
                         connectionQualifiedName
                     savedQuery.attributes.connectionGuid = connectionGuid
@@ -502,7 +502,7 @@ export function useSavedQuery(
         // activeInlineTabCopy.status = saveFolderData.certificateStatus
 
         const uuidv4 = generateUUID()
-        const integrationName = getConnectorName(attributeValue) ?? ''
+        const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''
@@ -518,7 +518,7 @@ export function useSavedQuery(
             entity: {
                 typeName: 'QueryFolder',
                 attributes: {
-                    integrationName,
+                    connectorName,
                     name,
                     qualifiedName,
                     connectionName,

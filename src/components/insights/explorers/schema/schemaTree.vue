@@ -15,6 +15,9 @@
                     :class="$style.tree"
                     @expand="expandNode"
                 >
+                    <template #switcherIcon>
+                        <AtlanIcon icon="Caret" />
+                    </template>
                     <template #title="item">
                         <SchemaTreeItem
                             :item="item"
@@ -193,4 +196,11 @@
     // :global(.ant-tree-treenode-switcher-close:hover) {
     //     background-color: #e5e5e5 !important;
     // }
+</style>
+<style lang="less" module>
+    .queryTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+    }
 </style>

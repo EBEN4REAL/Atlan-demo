@@ -78,6 +78,7 @@
                 insights: '/insights',
                 connections: '/connections',
                 workflows: '/workflows',
+                reporting: '/reporting',
                 admin: '/admin',
                 404: '/404',
             }

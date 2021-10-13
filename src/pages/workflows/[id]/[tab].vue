@@ -94,10 +94,6 @@
             /** DATA */
             const activeKey = ref(1)
             const data = ref({})
-            const selectedAsset = inject('selectedAsset')
-            const uiConfig = inject('uiConfig')
-            if (selectedAsset) data.value.asset = selectedAsset.value
-            if (uiConfig) data.value.uiConfig = uiConfig
 
             const refs: { [key: string]: any } = ref({})
             const { updateProfile } = toRefs(props)
@@ -121,7 +117,6 @@
 
             const selected = ref(null)
             const selectedDag = ref(null)
-            const uiConfig = ref(null)
 
             /** UTILS */
             const router = useRouter()

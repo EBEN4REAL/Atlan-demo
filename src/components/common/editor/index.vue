@@ -227,8 +227,8 @@
                 editor.value?.chain().setContent(content).run()
             }
             const getEditorContent = () => {
-                const content = editor.value.getHTML()
-                const json = editor.value.getJSON()
+                const content = editor.value?.getHTML()
+                const json = editor.value?.getJSON()
                 return { content, json }
             }
 

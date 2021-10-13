@@ -54,6 +54,8 @@ export interface assetInterface {
         __timestamp: number
         __modifiedBy: string
         __state: string
+        isPublished?: boolean
+        isTopLevelProject?: boolean
     }
     classificationNames: string[]
     classifications: classificationInterface[]

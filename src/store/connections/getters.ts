@@ -4,6 +4,7 @@ import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { SourceList } from '~/constant/source'
 import { ConnectionType } from '~/types/atlas/connection'
 import { State, Status } from './state'
+import useAssetInfo from '~/composables/asset/useAssetInfo'
 
 export type Getters = {
     getList(state: State): ConnectionType[]
@@ -19,6 +20,10 @@ export type Getters = {
     getImage(): (id: string) => any
     getSourceTree(): (searchText: string) => TreeDataItem[]
     getStatus(state: State): Status
+    getConnectorName(attributes: any): string
+    getConnectorsNameFromQualifiedName(
+        qualifiedName: string
+    ): string | undefined
 }
 
 export const getters: Getters = {
@@ -29,7 +34,12 @@ export const getters: Getters = {
         return state.data.entities
     },
     getSourceMap() {
-        return [...new Set(this.getList?.map((i) => i.attributes.integrationName))]
+        const { getConnectorName } = useAssetInfo()
+        return [
+            ...new Set(
+                this.getList?.map((i) => getConnectorName(i.attributes))
+            ),
+        ]
     },
     getSourceList() {
         return SourceList.filter((s) =>
@@ -41,6 +51,7 @@ export const getters: Getters = {
     },
     getSourceTree() {
         return (searchText) => {
+            const { getConnectorName } = useAssetInfo()
             const treeData: TreeDataItem[] = []
 
             this.getSourceList?.forEach((src) => {
@@ -48,8 +59,8 @@ export const getters: Getters = {
                     .filter((item) => {
                         if (searchText && searchText !== '') {
                             return (
-                                item.attributes.integrationName === src.id &&
-                                (item.attributes.integrationName
+                                getConnectorName(item.attributes) === src.id &&
+                                (getConnectorName(item.attributes)
                                     .toLowerCase()
                                     .includes(searchText?.toLowerCase()) ||
                                     item.attributes.displayName
@@ -57,7 +68,7 @@ export const getters: Getters = {
                                         .includes(searchText?.toLowerCase()))
                             )
                         }
-                        return item.attributes.integrationName === src.id
+                        return getConnectorName(item.attributes) === src.id
                     })
                     .map((item) => ({
                         key: item.guid,

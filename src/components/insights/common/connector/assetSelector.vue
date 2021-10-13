@@ -70,7 +70,7 @@
                 offset: 0,
                 entityFilters: props.filters,
                 attributes: ['name', 'displayName'],
-                sortBy: 'Asset.name.keyword',
+                sortBy: 'name',
                 aggregationAttributes: ['__typeName.keyword'],
                 sortOrder: 'ASCENDING',
             }

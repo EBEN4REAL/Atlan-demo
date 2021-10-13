@@ -87,6 +87,21 @@ export function useWorkflowTemplates(
     return { workflowList, loadMore, totalCount, error, isLoading, filterList, mutate }
 }
 
+export function useWorkflowTemplateByName(name, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } =
+        Workflows.getWorkflowTemplateByName(name, {
+            immediate,
+            options: {},
+        })
+
+    return {
+        data,
+        error,
+        isLoading,
+        mutate,
+    }
+}
+
 export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
     const { data, error, isLoading, mutate } = Workflows.getArchivedWorkflowRun(
         guid,

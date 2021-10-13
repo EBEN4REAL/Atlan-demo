@@ -52,6 +52,7 @@
     import {
         useWorkflowByName,
         getWorkflowConfigMap,
+        useWorkflowTemplateByName,
     } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
@@ -156,6 +157,21 @@
                     handlePreview(uiconfig.value?.items, 'config')
                 })
             }
+
+            const fetchWorkflowTemplate = () => {
+                const {
+                    data: template,
+                    error: e,
+                    isLoading: l,
+                } = useWorkflowTemplateByName(templateName.value)
+
+                watch(template, (v) => {
+                    if (uiconfig.value?.items)
+                        data.value.uiConfig = uiconfig.value?.items
+                    handlePreview(uiconfig.value?.items, 'config')
+                })
+            }
+
             watch(templateName, (v) => {
                 if (!v) return
                 fetchUIConfig()

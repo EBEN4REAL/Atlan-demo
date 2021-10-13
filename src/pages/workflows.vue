@@ -6,21 +6,18 @@
     <div v-else class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex h-full">
-                <KeepAlive>
-                    <component
-                        :is="whichComponent.main"
-                        :selected-run-id="selectedRunId"
-                        :initial-filters="initialFilters"
-                        :update-profile="updateProfile"
-                        @preview="handlePreview"
-                    ></component>
-                </KeepAlive>
+                <!-- <KeepAlive> -->
+                <component
+                    :is="whichComponent.main"
+                    :selected-run-id="selectedRunId"
+                    :initial-filters="initialFilters"
+                    :update-profile="updateProfile"
+                    @preview="handlePreview"
+                ></component>
+                <!-- </KeepAlive> -->
             </div>
         </div>
-        <div
-            id="overAssetPreviewSidebar"
-            class="relative bg-white asset-preview-container"
-        >
+        <div class="relative bg-white asset-preview-container">
             <component
                 :is="whichComponent.preview"
                 v-if="selected"

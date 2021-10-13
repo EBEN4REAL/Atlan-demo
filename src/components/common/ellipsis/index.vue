@@ -5,7 +5,18 @@
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
         ><div :class="classes" :style="{ maxWidth: '95%' }">
-            <router-link :to="routeTo">
+            <template v-if="routeTo">
+                <router-link :to="routeTo">
+                    <a-typography-paragraph
+                        :class="classes"
+                        :ellipsis="{
+                            rows: rows,
+                            onEllipsis: () => (truncated = !truncated),
+                        }"
+                        :content="tooltipText"
+                    /> </router-link
+            ></template>
+            <template v-else>
                 <a-typography-paragraph
                     :class="classes"
                     :ellipsis="{
@@ -14,7 +25,7 @@
                     }"
                     :content="tooltipText"
                 />
-            </router-link>
+            </template>
         </div>
     </a-tooltip>
 </template>
@@ -46,7 +57,7 @@
             },
             routeTo: {
                 type: String,
-                default: '',
+                required: false,
             },
         },
         setup(props) {

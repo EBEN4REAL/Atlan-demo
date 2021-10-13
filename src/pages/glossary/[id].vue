@@ -8,7 +8,7 @@
             ref="scrollDiv"
             :class="{
                 'overflow-y-auto': !headerReachedTop,
-                ' border-r': bulkSelectedAssets.length,
+                ' border-r': store.bulkSelectedAssets.length,
             }"
             @scroll="handleScroll"
         >
@@ -77,12 +77,16 @@
         </div>
         <div id="sidePanel" class="relative w-1/3">
             <SidePanel
-                v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
+                v-if="
+                    !store.bulkSelectedAssets ||
+                    !store.bulkSelectedAssets.length
+                "
                 :entity="glossary"
             />
             <BulkSidebar
                 v-else
-                :bulk-selected-assets="bulkSelectedAssets"
+                :bulk-selected-assets="store.bulkSelectedAssets"
+                @closeBulkMode="handleCloseBulk"
             ></BulkSidebar>
         </div>
     </div>
@@ -113,6 +117,7 @@
     // import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
     // import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
+    import useBulkUpdateStore from '~/store/bulkUpdate'
 
     // static
     import {
@@ -147,7 +152,6 @@
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
             const temp = ref(false) // flag for sticky header
-            const bulkSelectedAssets = ref([])
 
             const router = useRouter()
             const {
@@ -267,9 +271,10 @@
                 newName.value = ''
             })
             // upate bulk list for sidebar
-            const updateBulkSelection = (list) => {
-                bulkSelectedAssets.value = [...list.value]
-                console.log(bulkSelectedAssets.value)
+            const store = useBulkUpdateStore()
+            const handleCloseBulk = () => {
+                store.setBulkSelectedAssets([])
+                store.setBulkMode(false)
             }
 
             // Providers
@@ -305,8 +310,8 @@
                 updateTitle,
                 handleScroll,
                 handleFirstCardReachedTop,
-                updateBulkSelection,
-                bulkSelectedAssets,
+                handleCloseBulk,
+                store,
             }
         },
     })

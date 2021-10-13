@@ -149,12 +149,6 @@
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: idx,
                 })
-                // ;(window as any).analytics.track(
-                //     'discovery_asset_card_clicked',
-                //     {
-                //         click_index: idx,
-                //     }
-                // )
             }
             const store = useBulkUpdateStore()
             const bulkSelectedAssets: Ref<assetInterface[]> = ref([])

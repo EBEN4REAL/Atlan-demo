@@ -113,6 +113,7 @@
     import updateStatus from '~/composables/asset/updateStatus'
     import confetti from '~/utils/confetti'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { StatusBadge },
@@ -180,6 +181,27 @@
                         }
                         confetti(animationPoint.value, config)
                     }
+                    // event sent on certificate description
+                    if (
+                        selectedAsset.value?.typeName === 'AtlasGlossary' ||
+                        selectedAsset.value?.typeName === 'AtlasGlossaryTerm' ||
+                        selectedAsset.value?.typeName ===
+                            'AtlasGlossaryCategory'
+                    )
+                        useAddEvent(
+                            'gtc',
+                            'metadata',
+                            'certification_updated',
+                            undefined
+                        )
+                    else
+                        useAddEvent(
+                            'discovery',
+                            'metadata',
+                            'certification_updated',
+                            undefined
+                        )
+
                     emit('update:selectedAsset', selectedAsset.value)
                 }
             })

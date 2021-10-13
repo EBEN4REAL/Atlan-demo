@@ -551,7 +551,7 @@
                     description: '',
                     name: '',
                     superTypes: [],
-                    displayName:''
+                    displayName: '',
                 } as unknown as classificationInterface
 
                 createClassificationFormRef.value

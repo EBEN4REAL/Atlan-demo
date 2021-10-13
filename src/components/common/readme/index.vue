@@ -189,7 +189,7 @@
                 if (editor.value) {
                     editor.value.resetEditor()
                 }
-                editorContent.value = editor.value.getEditorContent().content
+                editorContent.value = editor.value.getEditorContent()?.content
 
                 editable.value = false
             }

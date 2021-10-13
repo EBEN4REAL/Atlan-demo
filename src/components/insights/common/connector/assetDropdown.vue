@@ -76,7 +76,7 @@
                     condition: 'AND',
                     criterion: [
                         {
-                            attributeName: 'integrationName',
+                            attributeName: 'connectorName',
                             attributeValue: props.data?.connector,
                             operator: 'eq',
                         },

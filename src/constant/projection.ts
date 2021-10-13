@@ -2,7 +2,6 @@ export const SavedQueryAttributes = [
     'certificateUpdatedBy',
     'popularityScore',
     'assetStatusMessage',
-    'integrationName',
     'connectionLastSyncedJob',
     'qualifiedName',
     'name',
@@ -36,7 +35,7 @@ export const ConnectionAttributes = [
     'ownerUsers',
     'ownerGroups',
     'displayName',
-    'integrationName',
+    'connectorName',
     'integrationCredentialQualifiedName',
 ]
 
@@ -104,7 +103,6 @@ export const BotsAttributes = [
     'subCategory',
     'supportLink',
     'templateName',
-    'integrationName',
     'version',
     'logo',
     'isSample',
@@ -186,7 +184,6 @@ export const BasicSearchAttributes = [
     'viewName',
     'lastUpdatedByJob',
     'category',
-    'integrationName',
     'host',
     'botQualifiedName',
     'schemaName',

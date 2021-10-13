@@ -6,10 +6,11 @@ type collapsiblePanels = {
     label: string
     component: string
 }
-type tableauProperty = {
+export type tableauProperty = {
     id: string
     label: string
     property: string
+    relatedProperty?: string
 }
 type AssetTab = {
     panels: collapsiblePanels[]
@@ -116,12 +117,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -142,7 +143,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
         ],
@@ -163,7 +164,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
         ],
@@ -185,12 +186,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -212,12 +213,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -239,12 +240,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -265,12 +266,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -291,39 +292,39 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
     },
     PowerBIWorkspace: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
     PowerBIDashboard: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
     PowerBIReport: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
     PowerBIDataset: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
     PowerBIDataflow: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
     PowerBITile: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
     PowerBIPage: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
     PowerBIDatasource: {
-        panels: [assetDetails, linkedAsset, properties]
+        panels: [assetDetails, linkedAsset, properties],
     },
 }
 
@@ -368,12 +369,12 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -394,7 +395,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
         ],
@@ -415,7 +416,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
         ],
@@ -437,12 +438,12 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -464,12 +465,12 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -491,12 +492,12 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
             },
         ],
@@ -526,13 +527,15 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created ',
                 property: '__timestamp',
+                relatedProperty: 'createdAtDate',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
+                relatedProperty: 'modifiedAtDate',
             },
         ],
     },
@@ -552,8 +555,9 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
+                relatedProperty: 'createdAtDate',
             },
         ],
     },
@@ -573,14 +577,14 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
+                relatedProperty: 'createdAtDate',
             },
         ],
     },
     TableauDashboard: {
         panels: [
-
             tableauProperties,
             assetDetails,
             linkedAsset,
@@ -595,19 +599,20 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
+                relatedProperty: 'createdAtDate',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
+                relatedProperty: 'modifiedAtDate',
             },
         ],
     },
     TableauWorksheet: {
         panels: [
-
             tableauProperties,
             assetDetails,
             linkedAsset,
@@ -622,13 +627,15 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
+                relatedProperty: 'createdAtDate',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
+                relatedProperty: 'modifiedAtDate',
             },
         ],
     },
@@ -649,13 +656,15 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             },
             {
                 id: '__timestamp',
-                label: 'Created on',
+                label: 'Created',
                 property: '__timestamp',
+                relatedProperty: 'createdAtDate',
             },
             {
                 id: '__modificationTimestamp',
-                label: 'Modified on',
+                label: 'Modified',
                 property: '__modificationTimestamp',
+                relatedProperty: 'modifiedAtDate',
             },
         ],
     },

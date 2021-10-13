@@ -39,7 +39,7 @@ const useLoadQueryData = ({
         'ownerGroups',
         'classifications',
 
-        'integrationName',
+        'connectorName',
         'connectionQualifiedName',
         'parentFolderQualifiedName',
         'parentFolder',
@@ -66,12 +66,12 @@ const useLoadQueryData = ({
                 condition: 'AND',
                 criterion: [],
             },
-            sortBy: 'Asset.name.keyword',
+            sortBy: 'name',
             sortOrder: 'ASCENDING',
         }
         if (connector.value) {
             body.value.entityFilters.criterion.push({
-                attributeName: 'integrationName',
+                attributeName: 'connectorName',
                 attributeValue: connector.value,
                 operator: 'eq',
             })

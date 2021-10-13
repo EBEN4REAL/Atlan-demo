@@ -11,9 +11,7 @@
                 <a-select-option value="Column.order|ascending"
                     >Default</a-select-option
                 >
-                <a-select-option value="Asset.name.keyword|ascending"
-                    >Name</a-select-option
-                >
+                <a-select-option value="name|ascending">Name</a-select-option>
 
                 <a-select-option value="Catalog.popularityScore|descending"
                     >Most Popular</a-select-option

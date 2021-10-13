@@ -2,8 +2,8 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full h-full">
-        <div class="flex flex-col">
+    <div v-if="data?.asset" class="flex w-full h-full">
+        <div class="flex flex-col w-full">
             <Header class="px-5 pt-3 bg-white" />
 
             <a-tabs
@@ -21,11 +21,20 @@
                             }
                         "
                         :selected-run-id="selectedRunId"
-                        @change="(a, is) => emit('preview', a, is)"
                         class="bg-transparent"
+                        @change="handlePreview"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
+        </div>
+
+        <div class="border-l border-gray-300 preview-container">
+            <ProfilePreview
+                v-if="selected"
+                :selected-workflow="selected"
+                :selected-dag="selectedDag"
+                :uiConfig="data?.uiconfig"
+            />
         </div>
     </div>
 </template>
@@ -46,6 +55,7 @@
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
+    import ProfilePreview from '@/workflows/profile/preview/preview.vue'
     import Header from '@/workflows/profile/header.vue'
 
     // Composables
@@ -60,6 +70,7 @@
             Header,
             LoadingView,
             ErrorView,
+            ProfilePreview,
             setup: defineAsyncComponent(
                 () => import('@/workflows/profile/tabs/setup/index.vue')
             ),
@@ -108,6 +119,10 @@
                 },
             ]
 
+            const selected = ref(null)
+            const selectedDag = ref(null)
+            const uiConfig = ref(null)
+
             /** UTILS */
             const router = useRouter()
             const route = useRoute()
@@ -127,8 +142,10 @@
             }
 
             // handlePreview
-            const handlePreview = (item, config) => {
-                emit('preview', item, config)
+            const handlePreview = (item, is) => {
+                if (is === 'dag') {
+                    selectedDag.value = item
+                } else selected.value = item
             }
 
             const templateName = computed(() => {
@@ -154,7 +171,6 @@
                 watch(uiconfig, (v) => {
                     if (uiconfig.value?.items)
                         data.value.uiConfig = uiconfig.value?.items
-                    handlePreview(uiconfig.value?.items, 'config')
                 })
             }
 
@@ -231,9 +247,11 @@
                 id,
                 activeKey,
                 uiConfig,
+                selected,
                 tabs,
                 handlePreview,
                 refs,
+                selectedDag,
                 data,
                 selectTab,
                 templateName,
@@ -281,5 +299,18 @@ meta:
         :global(.ant-tabs-tabpane) {
             @apply px-0 pb-0 !important;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .facets {
+        min-width: 264px;
+        width: 20%;
+    }
+
+    .preview-container {
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>

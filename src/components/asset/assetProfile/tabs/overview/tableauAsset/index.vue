@@ -1,65 +1,82 @@
 <template>
-    <div class="px-12 mt-8">
+    <div class="flex flex-col pl-10 mt-8 gap-y-10">
+        <!-- Announcements -->
+        <div>
+            <Announcements :asset="assetData" class="pr-6" />
+        </div>
+
+        <!-- Tableaue Asset Summary -->
+        <TableauAssetSummary class="border-b" :selected-asset="assetData" />
         <!-- Readme widget -->
-        <div class="p-5 mb-10 bg-white border border-gray-light">
+        <div class="pb-6 border-b">
             <Readme
-                class="w-full border-0"
+                class="w-full pr-6 border-0"
                 :show-borders="false"
                 :show-padding-x="false"
                 :parent-asset-id="assetData"
             />
         </div>
+        <div class="pb-6 pr-6">
+            <Resources :asset="assetData" />
+        </div>
         <!-- Overview Image Preview -->
-
         <div v-if="imageId" class="mb-10">
             <h2 class="mb-6 text-xl text-gray">Preview</h2>
-            <overview-image-preview :selected-asset="assetData" />
+            <overview-image-preview :selected-asset="assetData" class="pr-6" />
         </div>
 
         <!-- Overview Relations -->
-        <div class="mb-16">
+        <!-- <div class="mb-16">
             <h2 class="mb-6 text-xl text-gray">Relations</h2>
-            <overview-relations />
-        </div>
+            <overview-relations class="pr-6"/>
+        </div> -->
     </div>
 </template>
 
 <script lang="ts">
-    // Vue
-    import { defineComponent, inject, computed, ref, onMounted } from 'vue'
+// Vue
+import { defineComponent, inject, computed, ref, onMounted } from 'vue'
 
-    // Components
-    import Readme from '@/common/readme/index.vue'
-    import overviewRelations from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewRelations.vue'
-    import overviewImagePreview from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewImagePreview.vue'
+// Components
+import TableauAssetSummary from '@/asset/assetProfile/tabs/overview/tableauAsset/tableauAssetSummary.vue'
+import Readme from '@/common/readme/index.vue'
 
-    // Composables
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+import overviewImagePreview from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewImagePreview.vue'
+import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
+import Resources from '@/asset/assetProfile/widgets/resources/resources.vue'
+// Composables
+import useAssetInfo from '~/composables/asset/useAssetInfo'
 
-    import { getAPIPath } from '~/api'
+import { getAPIPath } from '~/api'
 
-    export default defineComponent({
-        components: { overviewRelations, overviewImagePreview, Readme },
-        setup() {
-            /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+export default defineComponent({
+    components: {
+        overviewImagePreview,
+        Readme,
+        TableauAssetSummary,
+        Announcements,
+        Resources,
+    },
+    setup() {
+        /** INJECTIONS */
+        const assetDataInjection = inject('assetData')
 
-            /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
-            const imagePreview = ref<string>('')
-            const imageId = ref()
+        /** COMPUTED */
+        const assetData = computed(() => assetDataInjection?.asset)
+        const imagePreview = ref<string>('')
+        const imageId = ref()
 
-            const { previewURL } = useAssetInfo()
-            const fetch = () => {
-                imageId.value = previewURL(assetData.value)
+        const { previewURL } = useAssetInfo()
+        const fetch = () => {
+            imageId.value = previewURL(assetData.value)
 
-                imagePreview.value = `/api${getAPIPath('/auth', imageId.value)}`
-            }
-            onMounted(() => {
-                fetch()
-            })
+            imagePreview.value = `/api${getAPIPath('/auth', imageId.value)}`
+        }
+        onMounted(() => {
+            fetch()
+        })
 
-            return { assetData, imagePreview, imageId }
-        },
-    })
+        return { assetData, imagePreview, imageId }
+    },
+})
 </script>

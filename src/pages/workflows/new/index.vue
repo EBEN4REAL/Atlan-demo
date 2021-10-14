@@ -1,7 +1,13 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col h-full bg-white border-r border-gray-300 facets"
+            class="
+                flex flex-col
+                h-full
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AtlanBtn
                 class="m-2"
@@ -151,7 +157,7 @@
     import SetupPreview from '@/workflows/new/preview/preview.vue'
 
     export default defineComponent({
-        // name: 'WorkflowDiscovery',
+        name: 'WorkflowSetup',
         components: {
             WorkflowList,
             SetupPreview,

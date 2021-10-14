@@ -392,9 +392,6 @@
                 setEditorInstanceFxn(editorInstanceParam, monacoInstanceParam)
             }
             const updateQuery = () => {
-                useAddEvent('insights', 'query', 'updated', {
-                    num_variables: undefined,
-                })
                 updateSavedQuery(editorInstance, isUpdating)
             }
 
@@ -421,9 +418,6 @@
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid
                 )
-                useAddEvent('insights', 'query', 'saved', {
-                    num_variables: undefined,
-                })
             }
             const formatDocument = () => {
                 const editorInstanceRaw = toRaw(editorInstance.value)

@@ -286,12 +286,6 @@
 
                         // helper function to make the api call and remove the input on completion
                         const makeCreateFolderRequest = () => {
-                            useAddEvent(
-                                'insights',
-                                'folder',
-                                'created',
-                                newFolderName.value
-                            )
                             const { data } = createFolder(
                                 newFolderName.value,
                                 saveQueryLoading,
@@ -301,6 +295,12 @@
                             )
                             watch(data, async (newData) => {
                                 if (newData) {
+                                    useAddEvent(
+                                        'insights',
+                                        'folder',
+                                        'created',
+                                        newFolderName.value
+                                    )
                                     newFolderName.value = ''
                                     if (savedQueryType.value === 'personal') {
                                         await per_refetchNode(

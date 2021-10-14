@@ -293,12 +293,12 @@
                     payload,
                     entityGuid: props.item.guid,
                 })
-                useAddEvent('insights', 'folder', 'space_changed', {
-                    finalSpace: 'public',
-                })
 
                 watch([isLoading], () => {
                     if (isLoading.value == false && !error.value) {
+                        useAddEvent('insights', 'folder', 'space_changed', {
+                            finalSpace: 'public',
+                        })
                         message.success({
                             content: `${item.value?.attributes?.name} was made public!`,
                         })
@@ -312,10 +312,10 @@
 
             const deleteFolder = () => {
                 const { data, error } = Insights.DeleteEntity(item.value.guid)
-                useAddEvent('insights', 'folder', 'deleted', undefined)
 
                 watch([data, error], ([newData, newError]) => {
                     if (newData && !newError) {
+                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })

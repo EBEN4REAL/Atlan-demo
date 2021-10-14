@@ -451,7 +451,7 @@
                 switch (action) {
                     case 'add': {
                         editorInstance.trigger('keyboard', 'type', {
-                            text: `${t.title}`,
+                            text: `${title(t)}`,
                         })
                         break
                     }
@@ -462,7 +462,11 @@
                         const prevText =
                             activeInlineTabCopy.playground.editor.text
                         // new text
-                        const newQuery = `\/* {{${item.value?.title}}} preview *\/\nSELECT * FROM \"${item.value?.title}\" LIMIT 50;\n`
+                        const newQuery = `\/* {{${title(
+                            item.value
+                        )}}} preview *\/\nSELECT * FROM \"${title(
+                            item.value
+                        )}\" LIMIT 50;\n`
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
                         modifyActiveInlineTab(activeInlineTabCopy, inlineTabs)

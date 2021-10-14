@@ -60,7 +60,7 @@ export default function useProject() {
         activeInlineTab: activeInlineTabInterface,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
         isQueryRunning: Ref<string>,
-        limitRows: Ref<{ checked: boolean; rowsCount: number }>
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>
     ) => {
         const attributeValue =
             activeInlineTab.explorer.schema.connectors.attributeValue
@@ -85,8 +85,9 @@ export default function useProject() {
             ),
             length: 10,
         }
-        /* Adding a limit param if limit rows is checked */
-        if (limitRows.value.checked) params['limit'] = limitRows.value.rowsCount
+        /* Adding a limit param if limit rows is checked and limit is passed*/
+        if (limitRows?.value && limitRows?.value?.checked)
+            params['limit'] = limitRows.value.rowsCount
 
         let search_prms = generateQueryStringParamsFromObj(params)
 

@@ -431,7 +431,6 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const fullScreen = inject('fullScreen') as Function
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >

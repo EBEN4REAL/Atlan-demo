@@ -1,5 +1,5 @@
 <template>
-    <div class="max-h-screen">
+    <div class="max-h-screen" :class="$style.queryTreeStyles">
         <div class="h-full overflow-x-hidden">
             <div v-if="treeData.length">
                 <a-tree

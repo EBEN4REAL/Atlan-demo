@@ -125,18 +125,22 @@
                     />
                     <span>Classifications</span>
                 </div> -->
-                <div>
+                <!-- <div>
                     <a-checkbox
                         v-model:checked="isSQLSnippet"
                         class="text-xs text-gray-500"
                         >Make SQL snippet</a-checkbox
                     >
-                </div>
-                <div class="flex justify-end flex-1">
-                    <a-button class="" @click="closeModal">Cancel</a-button>
+                </div> -->
+                <div
+                    class="flex items-center justify-end flex-1 text-gray-700 cursor-pointer "
+                >
+                    <div @click="closeModal" class="hover:text-primary">
+                        Cancel
+                    </div>
                     <a-button
                         @click="createSaveQuery"
-                        type="primary"
+                        type="primary border-none"
                         class="flex items-center justify-between ml-4"
                         :loading="saveQueryLoading"
                     >

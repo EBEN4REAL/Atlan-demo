@@ -61,15 +61,7 @@
             </div>
             <div
                 v-if="!searchQuery?.length"
-                class="
-                    relative
-                    w-full
-                    h-full
-                    p-3
-                    pt-0
-                    overflow-y-auto
-                    scrollable-container
-                "
+                class="relative w-full h-full p-3 pt-0 overflow-y-auto  scrollable-container"
             >
                 <!--explorer pane start -->
                 <div
@@ -106,16 +98,7 @@
             </div>
             <div
                 v-else
-                class="
-                    relative
-                    w-full
-                    h-full
-                    p-3
-                    pl-6
-                    pt-0
-                    overflow-y-auto
-                    scrollable-container
-                "
+                class="relative w-full h-full p-3 pt-0 pl-6 overflow-y-auto  scrollable-container"
             >
                 <div v-if="searchLoading">
                     <LoadingView />
@@ -216,8 +199,8 @@
                 useConnector()
             const connector = ref(
                 getConnectorName(
-                    activeInlineTab.value.explorer.schema.connectors
-                        .attributeValue
+                    activeInlineTab.value?.explorer?.schema?.connectors
+                        ?.attributeValue
                 )
             )
             const { focusEditor } = useEditor()

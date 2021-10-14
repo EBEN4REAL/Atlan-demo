@@ -12,21 +12,23 @@ export function useConnector() {
         connectorsData: Ref<connectorsWidgetInterface> | Ref<any>,
         explorerType: 'schema' | 'queries' = 'schema'
     ) => {
-        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-            {},
-            activeInlineTab.value
-        )
+        if (connectorsData.value.attributeValue) {
+            const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+                {},
+                activeInlineTab.value
+            )
 
-        if (explorerType === 'schema') {
-            activeInlineTabCopy.explorer[explorerType].connectors =
-                connectorsData.value
-        } else {
-            activeInlineTabCopy.explorer.queries.connectors.connector =
-                connectorsData.value
+            if (explorerType === 'schema') {
+                activeInlineTabCopy.explorer[explorerType].connectors =
+                    connectorsData.value
+            } else {
+                activeInlineTabCopy.explorer.queries.connectors.connector =
+                    connectorsData.value
+            }
+            modifyActiveInlineTab(activeInlineTabCopy, tabs)
+
+            console.log(connectorsData, 'Connectors Data')
         }
-        modifyActiveInlineTab(activeInlineTabCopy, tabs)
-
-        console.log(connectorsData, 'Connectors Data')
     }
 
     //selectedDataSourceName: 'default/snowflake/vqaqufvr-i'

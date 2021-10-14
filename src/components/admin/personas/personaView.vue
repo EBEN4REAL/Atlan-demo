@@ -9,6 +9,7 @@
                 size="sm"
                 color="secondary"
                 padding="compact"
+                @click="toggleModal"
             >
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
@@ -39,8 +40,15 @@
             </ExplorerList>
         </template>
 
+        <CreationModal
+            v-model:visible="modalVisible"
+            title="New Persona"
+            @cancel="() => (modalVisible = false)"
+            @ok="handleCreation"
+        >
+        </CreationModal>
         <PersonaHeader :persona="selectedPersona" />
-        <PersonaDetails :selectedPersona="selectedPersona" />
+        <PersonaDetails v-if="selectedPersona" :persona="selectedPersona" />
     </ExplorerLayout>
 </template>
 
@@ -53,11 +61,14 @@
     import PersonaDetails from './personaDetails.vue'
     import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
+    import CreationModal from '@/admin/common/addModal.vue'
     import { until, invoke } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PersonaView',
         components: {
+            AtlanBtn,
+            CreationModal,
             SearchAndFilter,
             PersonaDetails,
             PersonaHeader,
@@ -96,48 +107,23 @@
                     selectedPersonaId.value = personaList.value[0].id
             })
 
+            const modalVisible = ref(false)
+
+            function toggleModal() {
+                modalVisible.value = !modalVisible.value
+            }
+
+            function handleCreation() {}
+
             return {
                 filteredPersonas,
                 selectedPersona,
                 selectedPersonaId,
                 searchTerm,
+                toggleModal,
+                modalVisible,
+                handleCreation,
             }
         },
     })
 </script>
-
-<style lang="less" module>
-    .sidebar {
-        &:global(.ant-menu-root) {
-            @apply bg-transparent;
-        }
-
-        &:global(.ant-menu-inline) {
-            @apply border-none !important;
-        }
-
-        :global(.ant-menu-item-group-title) {
-            @apply px-0;
-        }
-
-        :global(.ant-menu-item) {
-            height: 32px;
-            line-height: 32px;
-            @apply my-1 text-gray !important;
-        }
-
-        :global(.ant-menu-item-active) {
-            @apply bg-gray-light !important;
-        }
-
-        :global(.ant-menu-item::after) {
-            @apply border-none !important;
-        }
-
-        :global(.ant-menu-item-selected) {
-            @apply rounded !important;
-            @apply bg-gray-200 !important;
-            @apply font-bold;
-        }
-    }
-</style>

@@ -10,7 +10,7 @@ export interface IPersona {
     personaName: string
     metadataPolicies: MetadataPolicies[]
     orgPolicies: []
-    roles: []
+    admins: string[]
     updatedAt: string
     updatedBy: string
     createdAt: string

@@ -1,32 +1,32 @@
 <template>
-    <template v-if="selectedPersona">
+    <template v-if="persona">
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
         <div class="px-5 pt-4 pb-2 overflow-y-auto">
             <a-form
-                :key="selectedPersona.id"
+                :key="persona.id"
                 layout="vertical"
                 :wrapper-col="{ span: 12 }"
-                :model="selectedPersona"
+                :model="persona"
             >
                 <a-form-item label="Name" name="displayName" required>
                     <a-input
-                        v-model:value="selectedPersona.displayName"
+                        v-model:value="persona.displayName"
                         placeholder="Persona Name"
                     />
                 </a-form-item>
                 <a-form-item label="Description" name="description">
                     <a-textarea
-                        v-model:value="selectedPersona.description"
+                        v-model:value="persona.description"
                         showCount
                         :maxlength="140"
                         :auto-size="{ minRows: 1, maxRows: 3 }"
                     />
                 </a-form-item>
                 <a-form-item label="Admins" name="admins">
-                    {{ selectedPersona.admins }}
+                    {{ persona.admins }}
                 </a-form-item>
                 <a-form-item label="Created On" name="createdAt">
-                    {{ selectedPersona.createdAt }}
+                    {{ persona.createdAt }}
                 </a-form-item>
                 <a-divider />
 
@@ -37,9 +37,7 @@
                             >{{ scope.type }}</span
                         >
                         <a-checkbox-group
-                            :value="
-                                selectedPersona.metadataPolicies[0]?.actions
-                            "
+                            :value="persona.metadataPolicies[0]?.actions"
                             :name="scope.type"
                             :options="scope.scopes"
                         />
@@ -55,15 +53,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        Ref,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, Ref, ref, toRefs, watch } from 'vue'
     import useScopeService from '~/services/heracles/composables/scopes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
@@ -73,9 +63,9 @@
         name: 'PersonaScopes',
         components: { SearchAndFilter, MinimalTab },
         props: {
-            selectedPersona: {
+            persona: {
                 type: Object as PropType<IPersona>,
-                required: false,
+                required: true,
             },
         },
         emits: ['update:persona'],

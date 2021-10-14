@@ -22,9 +22,9 @@
 
     // API
     import { useAPI } from '~/api/useAPI'
+    import HEKA_SERVICE_API from '~/services/heka/index'
 
     export default defineComponent({
-        emits: ['preview'],
         setup() {
             /** DATA */
             const tableColumns = ref([])
@@ -36,26 +36,19 @@
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
 
-            /** METHODS */
-            // getTableData
-            const getTableData = () => {
-                const {
-                    connectionQualifiedName,
-                    databaseName,
-                    schemaName,
-                    name,
-                } = { ...assetData.value.attributes }
+            const { connectionQualifiedName, databaseName, schemaName, name } =
+                { ...assetData.value.attributes }
 
-                const body = {
-                    tableName: name,
-                    defaultSchema: `${databaseName}.${schemaName}`,
-                    dataSourceName: connectionQualifiedName,
-                }
-
-                return useAPI('PREVIEW_TABLE', 'POST', { body })
+            const body = {
+                sql: `select * from ${name}`,
+                defaultSchema: `${databaseName}.${schemaName}`,
+                dataSourceName: connectionQualifiedName,
+                limit: 100,
             }
+            /** METHODS */
 
-            const { data, isLoading } = getTableData()
+            const { data, isLoading } =
+                HEKA_SERVICE_API.Assets.GetSampleData(body)
 
             /** WATCHERS */
             watch([data], () => {

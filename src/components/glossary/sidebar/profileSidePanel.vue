@@ -213,9 +213,9 @@
 
             const store = useAccessStore()
             const permissionMap = {
-                'AtlasGlsosary': 'EDIT_GLOSSARY',
-                'AtlasGlossaryCategory': 'EDIT_CATEGORY',
-                'AtlasGlossaryTerm': 'EDIT_TERM'
+                AtlasGlossary: "UPDATE_GLOSSARY",
+                AtlasGlossaryCategory: 'UPDATE_CATEGORY',
+                AtlasGlossaryTerm: 'UPDATE_TERM'
             }
             const userHasEditPermission = computed(() => store.checkPermission(permissionMap[props.entity.typeName]))
             const updateEntityAndTree = (

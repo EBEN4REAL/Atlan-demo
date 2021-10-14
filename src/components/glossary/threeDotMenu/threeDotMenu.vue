@@ -1,5 +1,6 @@
 <template>
     <div
+        v-if="!noPermissions"
         class="group-hover:opacity-100"
         :class="{
             'opacity-100': isVisible,
@@ -59,7 +60,7 @@
 
                     <a-menu-divider v-if="showLinks" />
                     <a-menu-item
-                        v-if="showGtcCrud"
+                        v-if="showGtcCrud && udpatePermission"
                         key="edit"
                         @click="closeMenu"
                     >
@@ -94,7 +95,8 @@
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
-                            entity?.typeName !== 'AtlasGlossaryTerm'
+                            entity?.typeName !== 'AtlasGlossaryTerm' &&
+                            permissions.CREATE_TERM
                         "
                         key="add"
                         @click="closeMenu"
@@ -128,7 +130,8 @@
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
-                            entity?.typeName !== 'AtlasGlossaryTerm'
+                            entity?.typeName !== 'AtlasGlossaryTerm' &&
+                            permissions.CREATE_CATEGORY
                         "
                         key="addCat"
                         @click="closeMenu"
@@ -171,6 +174,7 @@
                             </div>
                         </a-button>
                     </a-menu-item>
+                   
                     <a-menu-divider v-if="showUnlinkAsset" />
 
                     <a-menu-divider
@@ -179,7 +183,7 @@
                             entity?.typeName !== 'AtlasGlossaryTerm'
                         "
                     />
-                    <a-sub-menu key="status">
+                    <a-sub-menu v-if="udpatePermission" key="status">
                         <template #title>
                             <div class="flex items-center justify-between">
                                 <StatusBadge
@@ -202,12 +206,13 @@
                             <Status
                                 v-if="entity?.guid"
                                 :selectedAsset="entity"
+                                :editPermission="udpatePermission"
                                 @update:selectedAsset="updateTree"
                             />
                         </a-menu-item>
                     </a-sub-menu>
 
-                    <a-sub-menu key="owner">
+                    <a-sub-menu v-if="udpatePermission" key="owner">
                         <template #title>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center justify-between">
@@ -227,6 +232,7 @@
                         <a-menu-item class="m-0 bg-white">
                             <Owners
                                 :selectedAsset="entity"
+                                :editPermission="udpatePermission"
                                 @update:selectedAsset="updateTree"
                             />
                         </a-menu-item>
@@ -234,7 +240,8 @@
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
-                            entity?.typeName === 'AtlasGlossaryTerm'
+                            entity?.typeName === 'AtlasGlossaryTerm' &&
+                            udpatePermission
                         "
                         key="categories"
                         class="pr-0"
@@ -269,6 +276,7 @@
                                     :termGuid="entity.guid"
                                     :term="entity"
                                     mode="threeDotMenu"
+                                    :editPermission="udpatePermission"
                                 />
                             </template>
                         </a-popover>
@@ -277,9 +285,11 @@
                         </template>
                         <template #expandIcon><div></div> </template> -->
                     </a-menu-item>
+
                     <a-menu-divider v-if="showGtcCrud" />
+
                     <a-menu-item
-                        v-if="showGtcCrud"
+                        v-if="showGtcCrud && deletePermission"
                         key="archive"
                         class="text-red-700"
                     >
@@ -366,6 +376,7 @@
         Category,
         Term,
     } from '~/types/glossary/glossary.interface'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         components: {
@@ -553,7 +564,31 @@
                     })
                 }
             }
+
+            const store = useAccessStore()
+            const permissionMap = {
+                AtlasGlossary: {
+                    update: "UPDATE_GLOSSARY",
+                    delete: "DELETE_GLOSSARY"
+                },
+                AtlasGlossaryCategory: {
+                    update: 'UPDATE_CATEGORY',
+                    delete: 'DELETE_CATEGORY'
+                },
+                AtlasGlossaryTerm: {
+                    update: 'UPDATE_TERM',
+                    delete: 'DELETE_TERM'
+                }
+            }
+            const permissions = computed(() => store.checkPermissions(['CREATE_TERM', 'CREATE_CATEGORY']))
+            const deletePermission = computed(() => store.checkPermission(permissionMap[props.entity?.typeName]?.delete))
+            const udpatePermission = computed(() => store.checkPermission(permissionMap[props.entity?.typeName]?.update))
+            const noPermissions = computed(() => !(permissions.value.CREATE_TERM || permissions.value.CREATE_CATEGORY || deletePermission.value || udpatePermission.value) )
             return {
+                permissions,
+                deletePermission,
+                udpatePermission,
+                noPermissions,
                 handleCopyProfileLink,
                 assetTypeLabel,
                 isVisible,

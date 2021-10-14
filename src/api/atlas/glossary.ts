@@ -124,7 +124,7 @@ const ListTermsForGlossary = (
     config?: IConfig
 ) => {
     const data = getAxiosClient().get(
-        getAPIPath(serviceAlias, `/glossary/${glossaryID}/terms/optimized`),
+        getAPIPath(serviceAlias, `/glossary/${glossaryID}/terms`),
         {
             params,
             ...options,

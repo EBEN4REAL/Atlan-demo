@@ -13,7 +13,7 @@
                         <div class="relative w-4 h-4 mr-2 overflow-hidden">
                             <div class="absolute absolute-center">
                                 <AtlanIcon
-                                    icon="PublicFolder"
+                                    icon="FolderClosed"
                                     class="h-4 m-0 -ml-0.5 -mt-0.5"
                                 />
                             </div>
@@ -107,7 +107,7 @@
                     />
                     <span>Terms</span>
                 </div>
-                <div
+                <!-- <div
                     class="
                         flex
                         items-center
@@ -124,7 +124,7 @@
                         class="h-4 m-0 mr-1.5 -mt-0.5 text-pink-400"
                     />
                     <span>Classifications</span>
-                </div>
+                </div> -->
                 <div>
                     <a-checkbox
                         v-model:checked="isSQLSnippet"

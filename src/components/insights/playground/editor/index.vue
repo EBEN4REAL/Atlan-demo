@@ -3,16 +3,21 @@
         <div class="w-full h-full px-3 overflow-x-hidden rounded">
             <div class="flex items-center justify-between w-full my-2">
                 <div class="flex items-center text-base">
-                    <span class="mr-1">{{ activeInlineTab?.label }}</span>
-                    <div class="-mt-0.5">
-                        <StatusBadge
-                            :status-id="activeInlineTab.status"
-                            show-no-status
-                        ></StatusBadge>
+                    <div
+                        class="flex items-center mr-4"
+                        v-if="activeInlineTab?.isSaved"
+                    >
+                        <span class="mr-1">{{ activeInlineTab?.label }}</span>
+                        <div class="-mt-0.5">
+                            <StatusBadge
+                                :status-id="activeInlineTab.status"
+                                show-no-status
+                            ></StatusBadge>
+                        </div>
                     </div>
                     <div class="flex items-center">
                         <div
-                            class="items-center justify-center px-1 ml-4 rounded cursor-pointer  hover:bg-gray-300"
+                            class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
                             :class="showcustomToolBar ? 'bg-gray-300' : ''"
                             @click="toggleCustomToolbar"
                         >

@@ -5,11 +5,12 @@
     >
         <template #action>
             <AtlanBtn
+                :disabled="isEditing"
                 class="flex-none"
                 size="sm"
                 color="secondary"
                 padding="compact"
-                @click="toggleModal"
+                @click="createNewPersona"
             >
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
@@ -23,6 +24,7 @@
             />
 
             <ExplorerList
+                :disabled="isEditing"
                 :list="filteredPersonas"
                 v-model:selected="selectedPersonaId"
                 dataKey="id"
@@ -70,6 +72,8 @@
         selectedPersona,
         selectedPersonaId,
     } from './composables/usePersonaList'
+    import { createNewPersona } from './composables/useNewPersona'
+    import { isEditing } from './composables/useEditPersona'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -99,6 +103,8 @@
                 toggleModal,
                 modalVisible,
                 handleCreation,
+                createNewPersona,
+                isEditing,
             }
         },
     })

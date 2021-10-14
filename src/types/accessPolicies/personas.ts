@@ -11,8 +11,8 @@ export interface IPersona {
     metadataPolicies: MetadataPolicies[]
     orgPolicies: []
     admins: string[]
-    updatedAt: string
-    updatedBy: string
-    createdAt: string
-    createdBy: string
+    updatedAt?: string
+    updatedBy?: string
+    createdAt?: string
+    createdBy?: string
 }

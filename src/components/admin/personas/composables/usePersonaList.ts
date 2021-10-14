@@ -5,7 +5,7 @@ import usePersonaService from '~/services/heracles/composables/personas'
 // Main Persona List, fetched from API
 const { listPersonas } = usePersonaService()
 const { data: personaList, isReady, mutate } = listPersonas()
-export { mutate }
+export { mutate, personaList }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
 export const selectedPersona = computed(() => {

@@ -7,7 +7,7 @@ const listPersonas = () =>
     useAPIAsyncState<IPersona[]>(
         KeyMaps.personas.LIST_PERSONAS,
         'GET',
-        {},
+        { initialState: [] },
         { resetOnExecute: false }
     )
 

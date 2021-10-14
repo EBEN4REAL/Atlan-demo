@@ -10,7 +10,7 @@
             <span
                 class="flex items-center self-end mt-2 font-bold cursor-pointer  text-primary"
                 @click="redirectToDiscover"
-                >Discover
+                >Assets
                 <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
             </span>
         </div>

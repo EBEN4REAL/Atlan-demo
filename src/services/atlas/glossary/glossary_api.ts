@@ -60,7 +60,7 @@ const ListCategoryForGlossary = (glossaryID: string, params?: any, options?: Axi
 }
 
 const ListTermsForGlossary = (glossaryID: string, params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
-    const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/${glossaryID}/terms/optimized`), {
+    const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/${glossaryID}/terms`), {
         params,
         ...options,
     });

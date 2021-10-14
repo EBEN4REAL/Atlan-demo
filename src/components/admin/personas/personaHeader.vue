@@ -5,7 +5,24 @@
             <span class="text-sm tracking-wide text-gray-500 uppercase"
                 >Persona</span
             >
-            <Dropdown class="ml-auto" :options="personaActions"></Dropdown>
+            <div class="flex-1" />
+            <template v-if="isEditing">
+                <AtlanBtn
+                    size="sm"
+                    @click="discardPersona"
+                    color="secondary"
+                    padding="compact"
+                    >Discard</AtlanBtn
+                >
+                <AtlanBtn
+                    size="sm"
+                    @click="savePersona"
+                    color="primary"
+                    padding="compact"
+                    >Save</AtlanBtn
+                >
+            </template>
+            <Dropdown :options="personaActions"></Dropdown>
         </div>
         <span class="mb-1 text-xl truncate text-gray">{{
             persona.displayName
@@ -18,23 +35,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs } from 'vue'
+    import { defineComponent, PropType, computed } from 'vue'
+    import AtlanBtn from '@/UI/button.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
+    import {
+        isEditing,
+        savePersona,
+        discardPersona,
+    } from './composables/useEditPersona'
+
     import Dropdown from '@/UI/dropdown.vue'
 
     export default defineComponent({
         name: 'PersonaHeader',
-        components: { Dropdown },
-        emits: ['update:isEditMode'],
+        components: { Dropdown, AtlanBtn },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
                 required: false,
-            },
-            isEditMode: {
-                type: Boolean,
-                required: false,
-                default: () => false,
             },
         },
         setup(props, { emit }) {
@@ -43,7 +61,7 @@
                     title: 'Edit',
                     icon: 'Edit',
                     handleClick: () => {
-                        emit('update:isEditMode', true)
+                        isEditing.value = true
                     },
                 },
                 {
@@ -55,6 +73,9 @@
             ])
             return {
                 personaActions,
+                isEditing,
+                savePersona,
+                discardPersona,
             }
         },
     })

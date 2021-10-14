@@ -1,36 +1,26 @@
 <template>
-    <template v-if="selectedPersona">
+    <template v-if="selectedPersonaDirty">
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
-        <div
-            class="flex items-center justify-end flex-grow pt-2 transition-all duration-300  gap-x-4"
-            :class="{ 'h-0 opacity-0': !isEditMode }"
-        >
-            <AtlanBtn @click="handleDiscard" color="secondary" padding="compact"
-                >Discard</AtlanBtn
-            >
-            <AtlanBtn @click="handleSave" color="primary" padding="compact"
-                >Save</AtlanBtn
-            >
-        </div>
+
         <div class="px-5 pt-4 pb-2 overflow-y-auto">
             <a-form
-                :key="selectedPersona.id"
+                :key="selectedPersonaDirty.id"
                 layout="vertical"
                 :wrapper-col="{ span: 12 }"
-                :model="selectedPersona"
+                :model="selectedPersonaDirty"
             >
                 <a-form-item label="Name" name="displayName" required>
                     <a-input
-                        v-if="isEditMode"
-                        v-model:value="selectedPersona.displayName"
+                        v-if="isEditing"
+                        v-model:value="selectedPersonaDirty.displayName"
                         placeholder="Persona Name"
                     />
                     <span v-else>{{ persona.displayName }}</span>
                 </a-form-item>
                 <a-form-item label="Description" name="description">
                     <a-textarea
-                        v-if="isEditMode"
-                        v-model:value="selectedPersona.description"
+                        v-if="isEditing"
+                        v-model:value="selectedPersonaDirty.description"
                         showCount
                         :maxlength="140"
                         :auto-size="{ minRows: 1, maxRows: 3 }"
@@ -38,10 +28,10 @@
                     <span v-else>{{ persona.description }}</span>
                 </a-form-item>
                 <a-form-item label="Admins" name="admins">
-                    {{ selectedPersona.admins }}
+                    {{ selectedPersonaDirty.admins }}
                 </a-form-item>
                 <a-form-item label="Created On" name="createdAt">
-                    {{ selectedPersona.createdAt }}
+                    {{ selectedPersonaDirty.createdAt }}
                 </a-form-item>
                 <a-divider />
 
@@ -53,7 +43,8 @@
                         >
                         <a-checkbox-group
                             :value="
-                                selectedPersona.metadataPolicies[0]?.actions
+                                selectedPersonaDirty.metadataPolicies[0]
+                                    ?.actions
                             "
                             :name="scope.type"
                             :options="scope.scopes"
@@ -70,33 +61,23 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        Ref,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import useScopeService from '~/services/heracles/composables/scopes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
-    import AtlanBtn from '@/UI/button.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
+    import {
+        isEditing,
+        selectedPersonaDirty,
+    } from './composables/useEditPersona'
 
     export default defineComponent({
         name: 'PersonaScopes',
-        components: { SearchAndFilter, MinimalTab, AtlanBtn },
+        components: { SearchAndFilter, MinimalTab },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
                 required: true,
-            },
-            isEditMode: {
-                type: Boolean,
-                required: false,
-                default: () => false,
             },
         },
         emits: ['update:persona', 'update:isEditMode'],
@@ -104,12 +85,10 @@
             // Persona related stuff
             const { persona } = toRefs(props)
 
-            const selectedPersona: Ref<IPersona | undefined> = ref(undefined)
-
             watch(
                 persona,
                 () => {
-                    selectedPersona.value = { ...persona.value }
+                    selectedPersonaDirty.value = { ...persona.value }
                 },
                 { immediate: true }
             )
@@ -127,20 +106,12 @@
 
             const { scopeList } = useScopeService().listScopes()
 
-            function handleDiscard() {
-                emit('update:isEditMode', false)
-            }
-            function handleSave() {
-                emit('update:isEditMode', false)
-                emit('update:persona', selectedPersona.value)
-            }
             return {
                 scopeList,
                 activeTabKey,
                 tabConfig,
-                selectedPersona,
-                handleDiscard,
-                handleSave,
+                selectedPersonaDirty,
+                isEditing,
             }
         },
     })

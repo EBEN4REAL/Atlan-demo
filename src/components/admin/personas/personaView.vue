@@ -47,13 +47,9 @@
             @ok="handleCreation"
         >
         </CreationModal>
-        <PersonaHeader
-            :persona="selectedPersona"
-            v-model:isEditMode="isEditMode"
-        />
+        <PersonaHeader :persona="selectedPersona" />
         <PersonaDetails
             v-if="selectedPersona"
-            v-model:isEditMode="isEditMode"
             v-model:persona="selectedPersona"
         />
     </ExplorerLayout>
@@ -83,7 +79,6 @@
             ExplorerList,
         },
         setup() {
-            const isEditMode = ref(false)
             const selectedPersonaId = ref('')
             const searchTerm = ref('')
 
@@ -130,7 +125,6 @@
                 toggleModal,
                 modalVisible,
                 handleCreation,
-                isEditMode,
             }
         },
     })

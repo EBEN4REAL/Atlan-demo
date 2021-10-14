@@ -25,13 +25,18 @@
                         <div
                             class="flex items-center justify-between inline_tab"
                         >
-                            <div class="flex items-center">
+                            <div class="flex items-center text-gray-700">
                                 <span
                                     class="
                                         text-sm
                                         truncate
                                         ...
                                         inline_tab_label
+                                    "
+                                    :class="
+                                        tab.key !== activeInlineTabKey
+                                            ? 'text-gray-500'
+                                            : ''
                                     "
                                     >{{ tab.label }}</span
                                 >
@@ -239,6 +244,7 @@
         .ant-tabs-extra-content {
             line-height: 30px !important;
         }
+
         .ant-tabs-tab {
             height: 100%;
             border-radius: 0px !important;
@@ -248,6 +254,7 @@
             border-top: 0px !important;
             padding: 0 12px !important;
             height: 30px !important;
+            @apply bg-gray-light !important;
 
             > div {
                 height: 100%;
@@ -255,6 +262,7 @@
 
             &.ant-tabs-tab-active {
                 border-bottom: 1px solid !important;
+                @apply bg-white !important;
             }
             .ant-tabs-close-x {
                 visibility: hidden;
@@ -310,7 +318,7 @@
             @apply flex items-center !important;
         }
         :global(.ant-tabs-bar) {
-            @apply m-0 !important;
+            @apply m-0 bg-gray-light !important;
         }
     }
 </style>

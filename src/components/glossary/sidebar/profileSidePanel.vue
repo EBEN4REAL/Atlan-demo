@@ -61,16 +61,19 @@
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    :editPermission="userHasEditPermission"
                                     @update:selected-asset="refreshEntity"
                                 />
                                 <Owners
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    :editPermission="userHasEditPermission"
                                     @update:selected-asset="updateEntityAndTree"
                                 />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    :editPermission="userHasEditPermission"
                                     @update:selected-asset="updateEntityAndTree"
                                 />
                             </div>
@@ -154,6 +157,7 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         components: {
@@ -207,6 +211,13 @@
             })
             const glossaryTerms = computed(() => props.topTerms ?? [])
 
+            const store = useAccessStore()
+            const permissionMap = {
+                'AtlasGlsosary': 'EDIT_GLOSSARY',
+                'AtlasGlossaryCategory': 'EDIT_CATEGORY',
+                'AtlasGlossaryTerm': 'EDIT_TERM'
+            }
+            const userHasEditPermission = computed(() => store.checkPermission(permissionMap[props.entity.typeName]))
             const updateEntityAndTree = (
                 selectedAsset: Glossary | Category | Term
             ) => {
@@ -260,6 +271,7 @@
                 refreshEntity,
                 updateEntityAndTree,
                 tabActiveKey,
+                userHasEditPermission
             }
         },
     })

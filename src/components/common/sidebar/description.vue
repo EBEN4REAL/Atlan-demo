@@ -74,6 +74,11 @@
                 type: Boolean,
                 default: () => true,
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
@@ -122,11 +127,13 @@
             }
 
             const handleAddDescriptionClick = () => {
-                showEditableDescription.value = true
-                nextTick(() => {
-                    descriptionInput.value = description.value
-                    document.getElementById('description-sidebar').focus()
-                })
+                if(props.editPermission) {
+                    showEditableDescription.value = true
+                    nextTick(() => {
+                        descriptionInput.value = description.value
+                        document.getElementById('description-sidebar').focus()
+                    })
+                }
             }
 
             watch(description, () => {

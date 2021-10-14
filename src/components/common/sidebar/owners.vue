@@ -10,6 +10,7 @@
                 :data="ownerList"
                 label-key="username"
                 popover-trigger="hover"
+                :readOnly="!editPermission"
                 @add="toggleOwnerPopover"
                 @delete="handleRemoveOwner"
                 @select="(item, index) => handleClickUser(item)"
@@ -61,6 +62,7 @@
             </PillGroup>
         </div>
         <a-popover
+            v-if="editPermission"
             v-model:visible="showOwnersDropdown"
             placement="left"
             overlay-class-name="inlinepopover"
@@ -309,6 +311,11 @@ export default defineComponent({
             type: Object as PropType<assetInterface>,
             required: true,
         },
+        editPermission: {
+            type: Boolean,
+            required: false,
+            default: true
+        }
     },
     emits: ['update:selectedAsset'],
     setup(props, { emit }) {

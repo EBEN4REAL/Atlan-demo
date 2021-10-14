@@ -3,7 +3,7 @@
         <p v-if="mode === 'edit'" class="mb-1 text-sm text-gray-500">Categories</p>
         <div class="flex flex-wrap items-center" >
                 <div v-if="mode === 'edit' && existingCategories.length < 1">
-                    <div @click.stop="toggleCategoriesTree">
+                    <div v-if="editPermission" @click.stop="toggleCategoriesTree">
                         <div
                             v-if="mode === 'edit'"
                             class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
@@ -14,11 +14,15 @@
                             <span  class="text-xs">Add to categories</span>
                         </div>
                     </div>
+                    <div v-else>
+                        <span  class="text-xs">Term does not belong to any categories</span>
+                    </div>
                 </div>
                 <PillGroup
                     v-else-if="mode === 'edit'"
                     :data="existingCategories"
                     label-key="guid"
+                    :readOnly="!editPermission"
                     @add="toggleCategoriesTree"
                 >
                 <template #pillPrefix>
@@ -148,6 +152,11 @@ export default defineComponent({
             type: String as PropType<'edit' | 'create' | 'threeDotMenu'>,
             required: true,
             default: 'create'
+        },
+        editPermission: {
+            type: Boolean,
+            required: false,
+            default: true
         }
     },
     emits: ['updateCategories'],

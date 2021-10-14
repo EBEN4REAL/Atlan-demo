@@ -159,6 +159,7 @@
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    :editPermission="userHasEditPermission"
                                     @update:selected-asset="
                                         (updated) =>
                                             $emit('updateAsset', updated)
@@ -167,11 +168,13 @@
                                 <Owners
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    :editPermission="userHasEditPermission"
                                     @update:selected-asset="updateEntityAndTree"
                                 />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
+                                    :editPermission="userHasEditPermission"
                                     @update:selected-asset="updateEntityAndTree"
                                 />
                                 <Categories
@@ -186,6 +189,7 @@
                                     "
                                     :termGuid="entity.guid"
                                     :term="entity"
+                                    :editPermission="userHasEditPermission"
                                     mode="edit"
                                 />
                             </div>
@@ -321,6 +325,7 @@
     } from '~/types/glossary/glossary.interface'
 
     import { List as StatusList } from '~/constant/status'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         components: {
@@ -389,6 +394,13 @@
                 }
                 return 0
             })
+            const store = useAccessStore()
+            const permissionMap = {
+                'AtlasGlsosary': 'EDIT_GLOSSARY',
+                'AtlasGlossaryCategory': 'EDIT_CATEGORY',
+                'AtlasGlossaryTerm': 'EDIT_TERM'
+            }
+            const userHasEditPermission = computed(() => store.checkPermission(permissionMap[props.entity.typeName]))
 
             console.log(termCount.value, categoryCount.value)
             // methods
@@ -446,6 +458,7 @@
                 handleCopyProfileLink,
                 termCount,
                 categoryCount,
+                userHasEditPermission
             }
         },
     })

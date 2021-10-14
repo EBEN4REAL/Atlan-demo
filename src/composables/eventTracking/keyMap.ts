@@ -110,6 +110,9 @@ const keyMap = {
             created: {
                 action: 'insights_folder_created',
             },
+            deleted: {
+                action: 'insights_folder_deleted',
+            },
         },
     },
 }

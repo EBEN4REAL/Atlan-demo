@@ -165,7 +165,12 @@
                                 </div>
                                 <div
                                     v-else
-                                    class="flex items-center justify-center mt-3 "
+                                    class="
+                                        flex
+                                        items-center
+                                        justify-center
+                                        mt-3
+                                    "
                                 >
                                     <a-spin
                                         size="small"
@@ -182,7 +187,12 @@
                                         STATES.SUCCESS === groupOwnerState &&
                                         groupList.length < 1
                                     "
-                                    class="flex flex-col items-center justify-center h-full "
+                                    class="
+                                        flex flex-col
+                                        items-center
+                                        justify-center
+                                        h-full
+                                    "
                                 >
                                     <div class="flex flex-col items-center">
                                         <img
@@ -314,8 +324,8 @@ export default defineComponent({
         editPermission: {
             type: Boolean,
             required: false,
-            default: true
-        }
+            default: true,
+        },
     },
     emits: ['update:selectedAsset'],
     setup(props, { emit }) {

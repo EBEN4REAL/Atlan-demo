@@ -25,7 +25,13 @@
             <div v-if="pillTerms.length < 1">
                 <div @click.stop="toggleLinkTermPopover">
                     <div
-                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
+                        class="
+                            flex
+                            items-center
+                            cursor-pointer
+                            text-primary
+                            hover:text-primary hover:underline
+                        "
                     >
                         <span class="text-xs">Add Terms</span>
                     </div>
@@ -248,10 +254,14 @@
                 { immediate: true }
             )
 
-            watch(selectedAsset, () => {
-                pillTerms.value = [...props.selectedAsset?.meanings]
-                updateAvailableTerms()
-            })
+            watch(
+                selectedAsset,
+                () => {
+                    pillTerms.value = [...props.selectedAsset?.meanings]
+                    updateAvailableTerms()
+                },
+                { deep: true }
+            )
 
             return {
                 asset,

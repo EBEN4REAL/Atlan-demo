@@ -34,7 +34,7 @@
                             isSelected ? 'text-primary font-bold' : 'text-gray'
                         "
                     >
-                        {{ item.personaName }}
+                        {{ item.displayName }}
                     </span>
                 </template>
             </ExplorerList>
@@ -47,8 +47,15 @@
             @ok="handleCreation"
         >
         </CreationModal>
-        <PersonaHeader :persona="selectedPersona" />
-        <PersonaDetails v-if="selectedPersona" :persona="selectedPersona" />
+        <PersonaHeader
+            :persona="selectedPersona"
+            v-model:isEditMode="isEditMode"
+        />
+        <PersonaDetails
+            v-if="selectedPersona"
+            v-model:isEditMode="isEditMode"
+            v-model:persona="selectedPersona"
+        />
     </ExplorerLayout>
 </template>
 
@@ -74,9 +81,9 @@
             PersonaHeader,
             ExplorerLayout,
             ExplorerList,
-            AtlanBtn,
         },
         setup() {
+            const isEditMode = ref(false)
             const selectedPersonaId = ref('')
             const searchTerm = ref('')
 
@@ -123,6 +130,7 @@
                 toggleModal,
                 modalVisible,
                 handleCreation,
+                isEditMode,
             }
         },
     })

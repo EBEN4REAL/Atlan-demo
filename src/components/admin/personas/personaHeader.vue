@@ -18,25 +18,33 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed } from 'vue'
+    import { defineComponent, PropType, computed, toRefs } from 'vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import Dropdown from '@/UI/dropdown.vue'
 
     export default defineComponent({
         name: 'PersonaHeader',
         components: { Dropdown },
+        emits: ['update:isEditMode'],
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
                 required: false,
             },
+            isEditMode: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
-        setup() {
+        setup(props, { emit }) {
             const personaActions = computed(() => [
                 {
                     title: 'Edit',
                     icon: 'Edit',
-                    handleClick: () => {},
+                    handleClick: () => {
+                        emit('update:isEditMode', true)
+                    },
                 },
                 {
                     title: 'Delete',

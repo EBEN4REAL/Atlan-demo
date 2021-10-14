@@ -22,16 +22,6 @@
                     <AtlanIcon icon="Add" class="" />
                 </div>
             </AtlanBtn>
-            <!-- <WorkflowFilters
-                :ref="
-                    (el) => {
-                        workflowFilterRef = el
-                    }
-                "
-                :initial-filters="AllFilters"
-                @refresh="handleFilterChange"
-                @initialize="handleFilterInit"
-            ></WorkflowFilters> -->
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
@@ -85,6 +75,9 @@
                 ></WorkflowList>
             </div>
         </div>
+        <div class="border-l border-gray-300 preview-container">
+            <DiscoveryPreview v-if="selected" :selected-workflow="selected" />
+        </div>
     </div>
 </template>
 
@@ -107,15 +100,13 @@
 
     import { useWorkflowSearchList } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
+    import DiscoveryPreview from '@/workflows/discovery/preview/preview.vue'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
             WorkflowList,
-            WorkflowFilters,
-            workflowPagination,
-            Preferences,
-            EmptyView,
+            DiscoveryPreview,
             AtlanBtn,
             SearchAndFilter,
         },
@@ -158,9 +149,7 @@
             const facets = computed(() => AllFilters.value?.facetsFilters)
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
-
-            // Get All Disoverable Asset Types
-
+            const selected = ref(null)
             const {
                 workflowList,
                 isLoading,
@@ -192,10 +181,6 @@
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
 
-            const updateBody = () => {
-                console.log('updateBody')
-            }
-
             // FIXME
             const setRouterOptions = () => {
                 const routerOptions: Record<string, any> = {
@@ -216,7 +201,7 @@
             }, 150)
 
             const handlePreview = (item) => {
-                emit('preview', item)
+                selected.value = item
             }
 
             const handleClearFiltersFromList = () => {
@@ -233,7 +218,7 @@
                 goToSetup,
                 handleClearFiltersFromList,
                 workflowFilterRef,
-                initialFilters,
+                selected,
                 AllFilters,
                 workflowList,
                 isLoadMore,
@@ -262,6 +247,12 @@
 <style scoped>
     .facets {
         min-width: 264px;
-        width: 25%;
+        width: 20%;
+    }
+
+    .preview-container {
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>

@@ -128,6 +128,10 @@
                 </div>
             </div>
         </div>
+
+        <div class="border-l border-gray-300 preview-container">
+            <SetupPreview v-if="selected" :selected-workflow="selected" />
+        </div>
     </div>
 </template>
 
@@ -150,11 +154,13 @@
     import { useWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/setup/cards.vue'
+    import SetupPreview from '@/workflows/setup/preview/preview.vue'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
             WorkflowList,
+            SetupPreview,
             WorkflowFilters,
             workflowPagination,
             Preferences,
@@ -205,7 +211,7 @@
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
 
             // Get All Disoverable Asset Types
-
+            const selected = ref(null)
             const {
                 workflowList,
                 loadMore,
@@ -222,6 +228,7 @@
             if (!workflowList.value.length) mutate()
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
+
             const dynamicSearchPlaceholder = computed(() => {
                 let placeholder = 'Search for Workflow Templates'
                 if (placeholderLabel.value.asset) {
@@ -235,10 +242,6 @@
             function setPlaceholder(label: string, type: string) {
                 placeholderLabel.value[type] = label
                 if (type === 'connector') placeholderLabel.value.asset = ''
-            }
-
-            const updateBody = () => {
-                console.log('updateBody')
             }
 
             // FIXME
@@ -262,7 +265,7 @@
 
             const handlePreview = (item) => {
                 selectedItemId.value = item.workflowtemplate.metadata.uid
-                emit('preview', item)
+                selected.value = item
             }
 
             const handleClearFiltersFromList = () => {
@@ -278,8 +281,8 @@
                 autoSelect,
                 handleClearFiltersFromList,
                 workflowFilterRef,
-                initialFilters,
                 AllFilters,
+                selected,
                 workflowList,
                 loadMore,
                 emptyScreen,
@@ -309,6 +312,12 @@
 <style scoped>
     .facets {
         min-width: 264px;
-        width: 25%;
+        width: 20%;
+    }
+
+    .preview-container {
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>

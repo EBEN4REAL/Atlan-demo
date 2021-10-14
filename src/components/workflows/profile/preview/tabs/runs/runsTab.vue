@@ -9,7 +9,15 @@
     <template v-else-if="workflowList?.length">
         <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
             <div
-                class="text-base truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                class="
+                    text-base
+                    truncate
+                    cursor-pointer
+                    text-primary
+                    hover:underline
+                    overflow-ellipsis
+                    whitespace-nowrap
+                "
                 :class="{ 'font-bold underline': currRunId === r.metadata.uid }"
                 @click="loadRunGraph(r.metadata.uid)"
             >

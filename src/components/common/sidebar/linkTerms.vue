@@ -99,6 +99,7 @@
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { PillGroup },
@@ -187,6 +188,14 @@
                         selectedAsset.value.meaningNames.push(obj.displayText)
 
                         updateAvailableTerms()
+                        // event for link term
+                        useAddEvent(
+                            'discovery',
+                            'metadata',
+                            'terms_updated',
+                            undefined
+                        )
+
                         emit('update:selectedAsset', props.selectedAsset)
                     })
                 })
@@ -220,6 +229,13 @@
                 watch(unlinkResponse, (data) => {
                     // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
                     emit('update:selectedAsset', props.selectedAsset)
+                    useAddEvent(
+                        'discovery',
+                        'metadata',
+                        'terms_updated',
+                        undefined
+                    )
+
                     updateAvailableTerms()
                 })
             }

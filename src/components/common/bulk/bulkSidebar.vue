@@ -98,6 +98,7 @@ export default {
             terms: termsRef,
             originalTerms: originalTermsRef,
             termFrequencyMap,
+            publishedTermChangeLog: publishedTermChangeLogRef,
             didTermsUpdate,
             state,
             owners: ownersRef,
@@ -127,6 +128,7 @@ export default {
         provide('termsRef', termsRef)
         provide('originalTermsRef', originalTermsRef)
         provide('termFrequencyMap', termFrequencyMap)
+        provide('publishedTermChangeLogRef', publishedTermChangeLogRef)
         /** OWNERS PROVIDERS */
         provide('ownersRef', ownersRef)
         provide('originalOwnersRef', originalOwnersRef)

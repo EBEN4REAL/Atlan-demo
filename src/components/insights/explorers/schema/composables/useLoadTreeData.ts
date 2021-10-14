@@ -28,7 +28,7 @@ const useLoadTreeData = () => {
             'dataType',
             'description',
             'userDescription',
-            'assetStatus',
+            'certificateStatus',
             'ownerUsers',
             'ownerGroups',
             'classifications',
@@ -47,7 +47,7 @@ const useLoadTreeData = () => {
                 },
             ],
         },
-        sortBy: 'Asset.name.keyword',
+        sortBy: 'name',
         sortOrder: 'ASCENDING',
     })
 

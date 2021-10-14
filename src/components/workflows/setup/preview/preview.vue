@@ -2,7 +2,6 @@
     <div>{{ selectedWorkflow.name }}</div>
     <AtlanButton
         class="absolute bottom-0 m-2"
-        style="width: 90%"
         size="sm"
         color="primary"
         padding="compact"

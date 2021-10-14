@@ -10,6 +10,7 @@ import {
     CREATE_GLOSSARY_CATEGORY,
     CREATE_GLOSSARY_TERM,
 } from '~/api/keyMaps/glossary'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 import useUpdateGtcEntity from './useUpdateGtcEntity'
 
@@ -56,7 +57,7 @@ const useCreateGlossary = () => {
             name: title ?? 'Untitled Glossary',
             shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: status ?? 'draft',
+            certificateStatus: status ?? 'DRAFT',
             ownerUsers: ownerUsers ?? `${username.value}`,
             ownerGroups: ownerGroups ?? ``,
         }
@@ -76,6 +77,8 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                useAddEvent('gtc', 'glossary', 'created', undefined)
+
                 message.success({
                     content: `${title} created!`,
                     key: `${title}`,
@@ -105,7 +108,7 @@ const useCreateGlossary = () => {
             name: title ?? generateUUID(),
             shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: status ?? 'draft',
+            certificateStatus: status ?? 'DRAFT',
             ownerUsers: ownerUsers ?? `${username.value}`,
             ownerGroups: ownerGroups ?? ``,
             anchor: {
@@ -138,6 +141,7 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                useAddEvent('gtc', 'category', 'created', undefined)
                 message.success({
                     content: `${title} created!`,
                     key: `${title}`,
@@ -184,7 +188,7 @@ const useCreateGlossary = () => {
             name: title ?? generateUUID(),
             shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: status ?? 'draft',
+            certificateStatus: status ?? 'DRAFT',
             ownerUsers: ownerUsers ?? `${username.value}`,
             ownerGroups: ownerGroups ?? ``,
             anchor: {
@@ -219,6 +223,7 @@ const useCreateGlossary = () => {
         watch(data, (newData) => {
             console.log(data)
             if (newData?.guid) {
+                useAddEvent('gtc', 'term', 'created', undefined)
                 message.success({
                     content: `${title} created!`,
                     key: `${title}`,

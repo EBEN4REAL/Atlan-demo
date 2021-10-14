@@ -5,7 +5,14 @@
     >
         <div
             v-if="preview"
-            class="flex flex-row items-center justify-between px-5 pt-3 align-middle "
+            class="
+                flex flex-row
+                items-center
+                justify-between
+                px-5
+                pt-3
+                align-middle
+            "
         >
             <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
@@ -29,7 +36,16 @@
             </div>
             <div class="flex flex-row items-center">
                 <a-button
-                    class="flex items-center justify-center p-1 px-2 text-sm border-r-0 rounded-none rounded-l "
+                    class="
+                        flex
+                        items-center
+                        justify-center
+                        p-1
+                        px-2
+                        text-sm
+                        border-r-0
+                        rounded-none rounded-l
+                    "
                     @click="redirectToProfile(entity?.typeName, entity?.guid)"
                 >
                     <atlan-icon
@@ -57,7 +73,13 @@
                     </template>
 
                     <a-button
-                        class="flex items-center p-1 px-2 rounded-none rounded-r "
+                        class="
+                            flex
+                            items-center
+                            p-1
+                            px-2
+                            rounded-none rounded-r
+                        "
                         ><atlan-icon icon="Share" class="w-auto" />
                     </a-button>
                 </a-dropdown>
@@ -70,7 +92,16 @@
         >
             <div class="flex w-3/4 tems-center">
                 <span
-                    class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 truncate  text-primary"
+                    class="
+                        items-baseline
+                        pl-5
+                        mr-2
+                        text-xl
+                        font-bold
+                        leading-7
+                        truncate
+                        text-primary
+                    "
                     >{{ entity.displayText }}</span
                 >
                 <component
@@ -80,7 +111,14 @@
                 />
             </div>
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="
+                    fixed
+                    z-10
+                    px-0
+                    border-r-0
+                    rounded-none rounded-l
+                    -left-5
+                "
                 @click="handlClosePreviewPanel"
             >
                 <AtlanIcon
@@ -115,7 +153,12 @@
                             <div class="">
                                 <AtlanIcon
                                     icon="ChevronDown"
-                                    class="ml-1 transition-transform duration-300 transform "
+                                    class="
+                                        ml-1
+                                        transition-transform
+                                        duration-300
+                                        transform
+                                    "
                                     :class="
                                         isActive ? '-rotate-180' : 'rotate-0'
                                     "
@@ -134,23 +177,45 @@
                                 >
                                     <div class="flex flex-col">
                                         <span
-                                            class="mb-2 text-sm leading-5 text-gray-500 "
+                                            class="
+                                                mb-2
+                                                text-sm
+                                                leading-5
+                                                text-gray-500
+                                            "
                                         >
                                             Categories
                                         </span>
                                         <span
-                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
+                                            class="
+                                                p-0
+                                                m-0
+                                                text-sm
+                                                leading-5
+                                                text-gray-700
+                                            "
                                             >{{ categoryCount }}
                                         </span>
                                     </div>
                                     <div class="flex flex-col">
                                         <span
-                                            class="mb-2 text-sm leading-5 text-gray-500 "
+                                            class="
+                                                mb-2
+                                                text-sm
+                                                leading-5
+                                                text-gray-500
+                                            "
                                         >
                                             Terms
                                         </span>
                                         <span
-                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
+                                            class="
+                                                p-0
+                                                m-0
+                                                text-sm
+                                                leading-5
+                                                text-gray-700
+                                            "
                                             >{{ termCount }}
                                         </span>
                                     </div>
@@ -269,7 +334,15 @@
                     />
                 </template>
                 <div
-                    class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        px-5
+                        py-3
+                        font-semibold
+                        text-gray-700 text-md
+                    "
                 >
                     Custom metadata
                 </div>
@@ -376,7 +449,8 @@
             const statusObject = computed(() =>
                 StatusList.find(
                     (status) =>
-                        status.id === props.entity?.attributes?.assetStatus
+                        status.id ===
+                        props.entity?.attributes?.certificateStatus
                 )
             )
             const termCount = computed(

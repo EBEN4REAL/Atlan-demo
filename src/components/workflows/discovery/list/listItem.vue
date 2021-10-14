@@ -56,7 +56,7 @@
                                 ? cssClasses?.textSize
                                 : 'text-md'
                         "
-                        :to="`/workflows/${item.workflowtemplate.metadata.name}/monitor`"
+                        :to="`/workflows/${item.workflowtemplate.metadata.name}/setup`"
                         class="
                             flex-shrink
                             mb-0

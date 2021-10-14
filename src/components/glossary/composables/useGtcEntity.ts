@@ -3,12 +3,12 @@ import { watch, ref, Ref, computed, isRef, WritableComputedRef } from 'vue'
 import { useAPI } from '~/api/useAPI'
 import { GET_GTC_ENTITY } from '~/api/keyMaps/glossary'
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
-import { Components } from "~/api/atlas/client";
+import { Components } from '~/api/atlas/client'
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 import { List as StatusList } from '~/constant/status'
-import useBusinessMetadataStore from '~/store/businessMetadata';
+import useBusinessMetadataStore from '~/store/businessMetadata'
 
 /*
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on
@@ -22,7 +22,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         | Ref<'glossary' | 'category' | 'term'>,
     entityGuid: Ref<string>,
     cache?: boolean | string,
-    watchForGuidChange: boolean = true,
+    watchForGuidChange: boolean = true
 ) => {
     const keyMap = {
         glossary: 'AtlasGlossary',
@@ -48,7 +48,9 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         'validValuesFor',
         'seeAlso',
     ]
-    const bmProjection = computed(() => useBusinessMetadataStore().getBusinessMetadataListProjections);
+    const bmProjection = computed(
+        () => useBusinessMetadataStore().getBusinessMetadataListProjections
+    )
 
     const getBody = () => ({
         typeName: keyMap[isRef(type) ? type.value : type],
@@ -61,7 +63,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             'assignedEntities',
             'atlanSchema',
             'metadata',
-            'assetStatus',
+            'certificateStatus',
             'shortDescription',
             'parentCategory',
             'categories',
@@ -88,24 +90,31 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     })
 
     body.value = getBody()
-    const { data, error, isValidating: isLoading, mutate } = useAPI<any>(
-        GET_GTC_ENTITY,
-        'POST',
-        {
-            cache: cache ?? true,
-            dependantFetchingKey: entityGuid,
-            body,
-            options: {
-                revalidateOnFocus: false,
-            },
-        }
-    )
+    const {
+        data,
+        error,
+        isValidating: isLoading,
+        mutate,
+    } = useAPI<any>(GET_GTC_ENTITY, 'POST', {
+        cache: cache ?? true,
+        dependantFetchingKey: entityGuid,
+        body,
+        options: {
+            revalidateOnFocus: false,
+        },
+    })
 
     const entity = computed(() =>
         data.value?.entities ? (data.value?.entities[0] as T) : undefined
     )
 
-    const referredEntities = computed(() => data.value?.referredEntities as Record<string, Components.Schemas.AtlasEntityHeader>)
+    const referredEntities = computed(
+        () =>
+            data.value?.referredEntities as Record<
+                string,
+                Components.Schemas.AtlasEntityHeader
+            >
+    )
     const title: WritableComputedRef<string | undefined> = computed({
         get: () => entity.value?.attributes?.name ?? '',
         set: (val: string) => {
@@ -124,7 +133,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
 
     const statusObject = computed(() =>
         StatusList.find(
-            (status) => status.id === entity.value?.attributes?.assetStatus
+            (status) =>
+                status.id === entity.value?.attributes?.certificateStatus
         )
     )
 

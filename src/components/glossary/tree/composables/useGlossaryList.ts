@@ -1,15 +1,14 @@
-import { watch, ref, Ref,computed } from 'vue';
+import { watch, ref, Ref, computed } from 'vue'
 
-import { useAPI } from "~/api/useAPI"
-import { GLOSSARY_LIST } from "~/api/keyMaps/glossary"
-import { Glossary } from "~/types/glossary/glossary.interface";
+import { useAPI } from '~/api/useAPI'
+import { GLOSSARY_LIST } from '~/api/keyMaps/glossary'
+import { Glossary } from '~/types/glossary/glossary.interface'
 
-
-import { projection } from "~/api/atlas/utils";
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
+import { projection } from '~/api/atlas/utils'
+import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
 const useGlossaryList = (isHome?: Ref<boolean>) => {
-    const body = ref({});
+    const body = ref({})
 
     const getBody = () => ({
         typeName: 'AtlasGlossary',
@@ -19,30 +18,36 @@ const useGlossaryList = (isHome?: Ref<boolean>) => {
         includeSubTypes: true,
         attributes: [
             ...projection,
-            "metadata",
-            "assetStatus",
-            "shortDescription",
-            "parentCategory",
-            "categories",
-            "terms",
-            "tenantId",
+            'metadata',
+            'certificateStatus',
+            'shortDescription',
+            'parentCategory',
+            'categories',
+            'terms',
+            'tenantId',
             ...BaseAttributes,
-            ...BasicSearchAttributes
+            ...BasicSearchAttributes,
         ],
-    });
+    })
 
-    body.value = getBody();
-    const { data, error, isValidating: isLoading, mutate } = useAPI<any>(GLOSSARY_LIST, 'POST', {
+    body.value = getBody()
+    const {
+        data,
+        error,
+        isValidating: isLoading,
+        mutate,
+    } = useAPI<any>(GLOSSARY_LIST, 'POST', {
         cache: true,
         dependantFetchingKey: isHome,
         body,
         options: {
-            revalidateOnFocus: false
-        }
+            revalidateOnFocus: false,
+        },
     })
 
-    const glossaryList = computed(() => data.value?.entities ? data.value?.entities as Glossary[] : undefined);
-
+    const glossaryList = computed(() =>
+        data.value?.entities ? (data.value?.entities as Glossary[]) : undefined
+    )
 
     const refetch = () => {
         body.value = getBody()
@@ -52,4 +57,4 @@ const useGlossaryList = (isHome?: Ref<boolean>) => {
     return { glossaryList, error, isLoading, refetch }
 }
 
-export default useGlossaryList;
+export default useGlossaryList

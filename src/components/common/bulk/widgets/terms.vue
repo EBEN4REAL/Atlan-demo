@@ -105,11 +105,11 @@
             </div>
             <div class="mt-2.5">
                 <div v-if="changeLog.all.length">
-                    {{ getTruncatedStringFromArray(changeLog.all, 20) }}
+                    {{ getTruncatedStringFromArray(changeLog.all, 35) }}
                     <span class="text-success">added</span>
                 </div>
                 <div v-if="changeLog.removed.length">
-                    {{ getTruncatedStringFromArray(changeLog.removed, 20) }}
+                    {{ getTruncatedStringFromArray(changeLog.removed, 35) }}
                     <span class="text-error">removed</span>
                 </div>
             </div>
@@ -168,13 +168,18 @@ export default defineComponent({
         const originalTermsRef = inject('originalTermsRef')
         const selectedAssets = inject('selectedAssets')
         const termFrequencyMap = inject('termFrequencyMap')
+        const publishedTermChangeLogRef = inject('publishedTermChangeLogRef')
         const showLinkTermPopover = ref(false)
         const linkTermDropdownRef = ref()
         const showAll = ref(false)
         watch(
             originalTermsRef,
             () => {
-                resetTerms(originalTermsRef, termsRef)
+                resetTerms(
+                    originalTermsRef,
+                    termsRef,
+                    publishedTermChangeLogRef
+                )
                 localState.value = initialiseLocalState(
                     selectedAssets,
                     termFrequencyMap
@@ -204,7 +209,12 @@ export default defineComponent({
             changeLog.value.partial = localState.value.partial.map(
                 (term) => term.displayText
             )
-            updateTerms(termsRef, localState, originalTermsRef)
+            updateTerms(
+                termsRef,
+                localState,
+                originalTermsRef,
+                publishedTermChangeLogRef
+            )
             toggleLinkTermPopover()
         }
 
@@ -252,7 +262,7 @@ export default defineComponent({
             showAll.value = !showAll.value
         }
         const handleCancel = () => {
-            resetTerms(originalTermsRef, termsRef)
+            resetTerms(originalTermsRef, termsRef, publishedTermChangeLogRef)
             localState.value = initialiseLocalState(
                 selectedAssets,
                 termFrequencyMap

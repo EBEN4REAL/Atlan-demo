@@ -71,16 +71,18 @@
                     <p class="mb-1 text-sm">Certification</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
+                        :status-id="
+                            selectedAsset?.attributes?.certificateStatus
+                        "
                         :status-message="
                             selectedAsset?.attributes?.assetStatusMessage
                         "
                         :show-chip-style-status="true"
                         :status-updated-at="
-                            selectedAsset?.attributes?.assetStatusUpdatedAt
+                            selectedAsset?.attributes?.certificateUpdatedAt
                         "
                         :status-updated-by="
-                            selectedAsset?.attributes?.assetStatusUpdatedBy
+                            selectedAsset?.attributes?.certificateUpdatedBy
                         "
                         :show-no-status="true"
                         :show-label="true"
@@ -160,7 +162,7 @@
 
             watch(isReady, () => {
                 if (isReady.value) {
-                    if (statusId.value === 'verified') {
+                    if (statusId.value === 'VERIFIED') {
                         const config = {
                             angle: 45,
                             startVelocity: 10,

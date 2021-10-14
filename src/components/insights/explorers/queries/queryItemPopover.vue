@@ -28,7 +28,7 @@
             </div>
             <div class="mt-0.5">
                 <StatusBadge
-                    :status-id="item.attributes.assetStatus"
+                    :status-id="item.attributes.certificateStatus"
                     :show-chip-style-status="false"
                     :show-no-status="true"
                     :showLabel="true"

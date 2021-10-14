@@ -63,6 +63,8 @@
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { message } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         props: {
@@ -137,6 +139,23 @@
             }
 
             watch(description, () => {
+                // event sent on update description
+                if (
+                    selectedAsset.value?.typeName === 'AtlasGlossary' ||
+                    selectedAsset.value?.typeName === 'AtlasGlossaryTerm' ||
+                    selectedAsset.value?.typeName === 'AtlasGlossaryCategory'
+                )
+                    useAddEvent('gtc', 'metadata', 'description_updated', {
+                        gtc_type: assetTypeLabel[selectedAsset.value?.typeName],
+                    })
+                else
+                    useAddEvent(
+                        'discovery',
+                        'metadata',
+                        'description_updated',
+                        undefined
+                    )
+
                 emit('update:selectedAsset', selectedAsset.value)
             })
 

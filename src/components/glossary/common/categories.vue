@@ -180,24 +180,18 @@
     </div>
 </template>
 <script lang="ts">
-import {
-    defineComponent,
-    computed,
-    ref,
-    watch,
-    PropType,
-    toRef,
-    inject,
-} from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        watch,
+        PropType,
+        toRef,
+        inject,
+    } from 'vue'
 
-//components
-import PillGroup from '~/components/UI/pill/pillGroup.vue'
-
-//composables
-import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
-import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
-import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
-import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+    //components
+    import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
 //types
 import {
@@ -393,7 +387,6 @@ export default defineComponent({
                 )
             }
         }
-
         const convertCategoriesToTree = (categories: Category[]) => {
             categories.forEach((category) => {
                 treeData.value.push({
@@ -482,8 +475,20 @@ export default defineComponent({
     div {
         position: relative !important;
     }
-    :global(.ant-select-tree-dropdown) {
-        top: 0 !important;
+    .popover {
+        max-height: 600px;
+        padding: 1rem;
+    }
+    .treeSelect {
+        div {
+            position: relative !important;
+        }
+        :global(.ant-select-tree-dropdown) {
+            top: 0 !important;
+        }
+    }
+    .popoverButton {
+        min-width: 104px !important;
     }
 }
 .popoverButton {

@@ -8,7 +8,12 @@ export default function useFilterUtils(filters: Ref<Record<string, any>>) {
                 filters.value[id]?.attributeValue &&
                 filters.value[id]?.attributeName
             )
-        } else if (id === 'owners') {
+        }
+        else if (id === 'saved') {
+            if (filters.value[id]?.checked) return true
+            return false
+        }
+        else if (id === 'owners') {
             const onrFltr = filters.value[id]
             return (
                 onrFltr?.noOwnerAssigned ||

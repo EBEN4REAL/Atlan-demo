@@ -3,19 +3,29 @@
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
-                    class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="
+                        flex
+                        content-center
+                        w-full
+                        my-auto
+                        overflow-hidden
+                        text-sm
+                        leading-5
+                        text-gray-700
+                    "
                 >
                     <!--FOLDER NODE -->
-                      <a-dropdown v-if="item.typeName === 'QueryFolder'" :trigger="['contextmenu']">
-
-                        <div
-                            class="relative flex w-full z py-1.5"
-                            
-                        >
+                    <a-dropdown
+                        v-if="item.typeName === 'QueryFolder'"
+                        :trigger="['contextmenu']"
+                    >
+                        <div class="relative flex w-full z py-1.5">
                             <div class="flex w-full">
                                 <AtlanIcon
                                     :icon="
-                                        expandedKeys.find((key) => key === item.key)
+                                        expandedKeys.find(
+                                            (key) => key === item.key
+                                        )
                                             ? 'FolderOpen'
                                             : 'FolderClosed'
                                     "
@@ -26,19 +36,36 @@
                                 }}</span>
                             </div>
                         </div>
-                            <template #overlay>
-                                <a-menu>
-                                    <a-menu-item key="rename">Rename Folder</a-menu-item>
-                                    <a-menu-item key="newQuery" @click="newQuery">New Query</a-menu-item>
-                                    <a-menu-item v-if="savedQueryType === 'personal'" key="public" @click="publishFolder">Make folder public</a-menu-item>
-                                    <a-menu-item key="deleteFolder" class="text-red-600" @click="deleteFolder">Delete Folder</a-menu-item>
-                                </a-menu>
-                            </template>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item key="rename"
+                                    >Rename Folder</a-menu-item
+                                >
+                                <a-menu-item key="newQuery" @click="newQuery"
+                                    >New Query</a-menu-item
+                                >
+                                <a-menu-item
+                                    v-if="savedQueryType === 'personal'"
+                                    key="public"
+                                    @click="publishFolder"
+                                    >Make folder public</a-menu-item
+                                >
+                                <a-menu-item
+                                    key="deleteFolder"
+                                    class="text-red-600"
+                                    @click="deleteFolder"
+                                    >Delete Folder</a-menu-item
+                                >
+                            </a-menu>
+                        </template>
                     </a-dropdown>
 
                     <!------------------------------->
                     <!--SAVED QUERY NODE -->
-                    <a-popover v-else-if="item.typeName === 'Query'" placement="rightTop">
+                    <a-popover
+                        v-else-if="item.typeName === 'Query'"
+                        placement="rightTop"
+                    >
                         <template #content>
                             <div>
                                 <QueryItemPopover :item="item" />
@@ -53,7 +80,7 @@
                                     <StatusBadge
                                         v-if="item.typeName !== 'QueryFolder'"
                                         :status-id="
-                                            item?.attributes?.assetStatus
+                                            item?.attributes?.certificateStatus
                                         "
                                         :show-chip-style-status="false"
                                         :show-no-status="true"
@@ -135,7 +162,10 @@
                     </a-popover>
                     <!------------------------------->
                     <!--Empty NODE -->
-                    <div v-else-if="item.typeName === 'Empty'" class="text-sm text-gray-500 font-bold" >
+                    <div
+                        v-else-if="item.typeName === 'Empty'"
+                        class="text-sm text-gray-500 font-bold"
+                    >
                         {{ item.title }}
                     </div>
                 </div>
@@ -154,22 +184,22 @@
         inject,
         toRaw,
         watch,
-        ref
+        ref,
     } from 'vue'
-    import { message } from "ant-design-vue";
-    
+    import { message } from 'ant-design-vue'
+
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
-    
+
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    
+
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
-    
+
     import { Classification } from '~/api/atlas/classification'
-    import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
+    import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
     import { Insights } from '~/services/atlas/api/insights'
 
     export default defineComponent({
@@ -194,9 +224,19 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
-            const toggleCreateQueryModal = inject<(guid: string) => void>('toggleCreateQueryModal')
-            const savedQueryType = inject('savedQueryType') as Ref<'all' | 'personal'>
-            const refetchParentNode = inject<(guid: string | 'root', type: 'query' | 'queryFolder', tree?: 'personal' | 'all') => void>('refetchParentNode', () => {})
+            const toggleCreateQueryModal = inject<(guid: string) => void>(
+                'toggleCreateQueryModal'
+            )
+            const savedQueryType = inject('savedQueryType') as Ref<
+                'all' | 'personal'
+            >
+            const refetchParentNode = inject<
+                (
+                    guid: string | 'root',
+                    type: 'query' | 'queryFolder',
+                    tree?: 'personal' | 'all'
+                ) => void
+            >('refetchParentNode', () => {})
             const editorInstance = toRaw(editorInstanceRef.value)
             const {
                 isPrimary,
@@ -237,8 +277,11 @@
             }
 
             const newQuery = () => {
-                if(toggleCreateQueryModal) {
-                    toggleCreateQueryModal(props.item.guid, props.item.qualifiedName)
+                if (toggleCreateQueryModal) {
+                    toggleCreateQueryModal(
+                        props.item.guid,
+                        props.item.qualifiedName
+                    )
                 }
             }
             const publishFolder = () => {
@@ -263,9 +306,9 @@
                     if (isLoading.value == false && !error.value) {
                         message.success({
                             content: `${item.value?.attributes?.name} was made public!`,
-                        });
+                        })
                         refetchParentNode(props.item.guid, 'queryFolder')
-                    } 
+                    }
                 })
             }
 
@@ -273,11 +316,15 @@
                 const { data, error } = Insights.DeleteEntity(item.value.guid)
 
                 watch([data, error], ([newData, newError]) => {
-                    if(newData && !newError) {
+                    if (newData && !newError) {
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
-                        });
-                        refetchParentNode(props.item.guid, 'queryFolder', savedQueryType.value)
+                        })
+                        refetchParentNode(
+                            props.item.guid,
+                            'queryFolder',
+                            savedQueryType.value
+                        )
                     }
                 })
             }

@@ -72,16 +72,18 @@
                     <p class="mb-2 text-sm">Certificate</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
+                        :status-id="
+                            selectedAsset?.attributes?.certificateStatus
+                        "
                         :status-message="
                             selectedAsset?.attributes?.assetStatusMessage
                         "
                         :show-chip-style-status="true"
                         :status-updated-at="
-                            selectedAsset?.attributes?.assetStatusUpdatedAt
+                            selectedAsset?.attributes?.certificateUpdatedAt
                         "
                         :status-updated-by="
-                            selectedAsset?.attributes?.assetStatusUpdatedBy
+                            selectedAsset?.attributes?.certificateUpdatedBy
                         "
                         :show-no-status="true"
                         :show-label="true"
@@ -148,6 +150,8 @@
     import updateStatus from '~/composables/asset/updateStatus'
     import confetti from '~/utils/confetti'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         components: { StatusBadge },
@@ -202,7 +206,7 @@
 
             watch(isReady, () => {
                 if (isReady.value) {
-                    if (statusId.value === 'verified') {
+                    if (statusId.value === 'VERIFIED') {
                         const config = {
                             angle: 45,
                             startVelocity: 10,
@@ -220,6 +224,32 @@
                         }
                         confetti(animationPoint.value, config)
                     }
+                    // event sent on certificate description
+                    if (
+                        selectedAsset.value?.typeName === 'AtlasGlossary' ||
+                        selectedAsset.value?.typeName === 'AtlasGlossaryTerm' ||
+                        selectedAsset.value?.typeName ===
+                            'AtlasGlossaryCategory'
+                    )
+                        useAddEvent(
+                            'gtc',
+                            'metadata',
+                            'certification_updated',
+                            {
+                                gtc_type:
+                                    assetTypeLabel[
+                                        selectedAsset.value?.typeName
+                                    ],
+                            }
+                        )
+                    else
+                        useAddEvent(
+                            'discovery',
+                            'metadata',
+                            'certification_updated',
+                            undefined
+                        )
+
                     emit('update:selectedAsset', selectedAsset.value)
                 }
             })

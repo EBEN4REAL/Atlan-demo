@@ -11,7 +11,7 @@
             <div class="flex flex-col" style="width: 300px p-4">
                 <div class="">
                     <a-radio-group
-                        v-model:value="assetStatus"
+                        v-model:value="certificateStatus"
                         class="w-full mb-3"
                     >
                         <div class="flex flex-col">
@@ -178,11 +178,15 @@ export default defineComponent({
         const showPopover = ref(false)
         const { handleUpdateStatus } = useBulkSelect()
         const { existingStatus } = toRefs(props)
-        const assetStatus = ref('')
+        const certificateStatus = ref('')
         const publishedAssetStatus = ref('')
         const originalAssetStatus = ref('')
         // has labels for to and from states 👇
-        const changeLog = ref({ to: '', from: '', updatedStatusMessage: '' })
+        const changeLog = ref({
+            to: '',
+            from: '',
+            updatedStatusMessage: '',
+        })
         const statusMessage = ref('')
         const textAreaDisabled = ref(false)
         const animationPoint = ref(null)
@@ -197,21 +201,21 @@ export default defineComponent({
                         existingStatus.value[firstStatusKey]
                 )
             ) {
-                assetStatus.value =
+                certificateStatus.value =
                     existingStatus.value[Object.keys(existingStatus.value)[0]]
                 originalAssetStatus.value =
                     existingStatus.value[Object.keys(existingStatus.value)[0]]
                 publishedAssetStatus.value =
                     existingStatus.value[Object.keys(existingStatus.value)[0]]
             } else {
-                assetStatus.value = ''
+                certificateStatus.value = ''
                 originalAssetStatus.value = ''
                 publishedAssetStatus.value = ''
             }
             // reset changelog
             changeLog.value = { to: '', from: '', updatedStatusMessage: '' }
         }
-        // initialising assetStatus to find if status of all selected assets is same
+        // initialising certificateStatus to find if status of all selected assets is same
         watch(existingStatus, initialiseAssetStatus, {
             immediate: true,
             deep: true,
@@ -225,13 +229,13 @@ export default defineComponent({
 
         // TODO: add status message flow
         const handleConfirm = () => {
-            publishedAssetStatus.value = assetStatus.value
+            publishedAssetStatus.value = certificateStatus.value
             changeLog.value.from = originalAssetStatusObject?.value?.label ?? ''
             changeLog.value.to = publishedAssetStatusObject?.value?.label ?? ''
             changeLog.value.updatedStatusMessage = statusMessage.value
             handleUpdateStatus(
                 {
-                    status: assetStatus.value,
+                    status: certificateStatus.value,
                     statusMessage: statusMessage.value,
                 },
                 updatedStatus,
@@ -272,7 +276,7 @@ export default defineComponent({
         return {
             List,
             statusMessage,
-            assetStatus,
+            certificateStatus,
             textAreaDisabled,
             handleCancel,
             handleConfirm,

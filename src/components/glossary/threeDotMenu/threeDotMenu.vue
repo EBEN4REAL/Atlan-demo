@@ -165,7 +165,15 @@
 
                     <a-menu-item v-if="showUnlinkAsset" key="unkink">
                         <a-button
-                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
+                            class="
+                                w-full
+                                p-0
+                                m-0
+                                bg-transparent
+                                border-0
+                                shadow-none
+                                outline-none
+                            "
                             @click="$emit('unlinkAsset', entity)"
                         >
                             <div class="flex items-center text-red-700">
@@ -188,7 +196,9 @@
                             <div class="flex items-center justify-between">
                                 <StatusBadge
                                     :key="entity?.guid"
-                                    :status-id="entity?.attributes?.assetStatus"
+                                    :status-id="
+                                        entity?.attributes?.certificateStatus
+                                    "
                                     :show-chip-style-status="false"
                                     :show-no-status="true"
                                     :show-label="true"
@@ -248,7 +258,13 @@
                     >
                         <a-popover :trigger="['hover']" placement="right">
                             <div
-                                class="flex items-center justify-between pr-4 mr-2 "
+                                class="
+                                    flex
+                                    items-center
+                                    justify-between
+                                    pr-4
+                                    mr-2
+                                "
                             >
                                 <div class="flex items-center justify-between">
                                     <AtlanIcon
@@ -294,7 +310,15 @@
                         class="text-red-700"
                     >
                         <a-button
-                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
+                            class="
+                                w-full
+                                p-0
+                                m-0
+                                bg-transparent
+                                border-0
+                                shadow-none
+                                outline-none
+                            "
                             @click="showModal"
                         >
                             <div class="flex items-center text-red-700">

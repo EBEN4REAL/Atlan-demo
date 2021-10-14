@@ -2,7 +2,7 @@
     <div>
         <p class="mb-1 text-sm text-gray-500">Request Details</p>
         <div class="pl-3 border-l-2 border-gray-300">
-            <div class="flex" v-if="attribute === 'assetStatus'">
+            <div class="flex" v-if="attribute === 'certificateStatus'">
                 <span class="mr-1"
                     >Change {{ attributeCopyMapping[attribute] }} to</span
                 >

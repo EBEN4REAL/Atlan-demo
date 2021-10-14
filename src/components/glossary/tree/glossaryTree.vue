@@ -2,7 +2,16 @@
     <div class="border-r glossaryTree" :class="$style.glossaryTree">
         <div :class="$style.parentGroup">
             <div
-                class="flex px-4 py-3 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
+                class="
+                    flex
+                    px-4
+                    py-3
+                    text-sm
+                    leading-5
+                    text-gray-500
+                    bg-gray-100
+                    cursor-pointer
+                "
             >
                 <a-select
                     v-model:value="currentGlossaryGuid"
@@ -103,18 +112,31 @@
                         <div
                             v-for="term in searchTerms"
                             :key="term.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            class="
+                                flex flex-row
+                                p-2
+                                rounded
+                                cursor-pointer
+                                hover:bg-primary-light
+                            "
                             @click="redirectToProfile('term', term.guid)"
                         >
                             <div
-                                class="flex content-center w-full mb-1 space-x-2 "
+                                class="
+                                    flex
+                                    content-center
+                                    w-full
+                                    mb-1
+                                    space-x-2
+                                "
                             >
                                 <span class="my-auto"
                                     ><AtlanIcon
                                         :icon="
                                             getEntityStatusIcon(
                                                 'term',
-                                                term.attributes.assetStatus
+                                                term.attributes
+                                                    .certificateStatus
                                             )
                                         "
                                         class="w-auto h-5"
@@ -140,20 +162,33 @@
                         <div
                             v-for="category in searchCategories"
                             :key="category.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            class="
+                                flex flex-row
+                                p-2
+                                rounded
+                                cursor-pointer
+                                hover:bg-primary-light
+                            "
                             @click="
                                 redirectToProfile('category', category.guid)
                             "
                         >
                             <div
-                                class="flex content-center w-full mb-1 space-x-2 "
+                                class="
+                                    flex
+                                    content-center
+                                    w-full
+                                    mb-1
+                                    space-x-2
+                                "
                             >
                                 <span class="my-auto"
                                     ><AtlanIcon
                                         :icon="
                                             getEntityStatusIcon(
                                                 'category',
-                                                category.attributes.assetStatus
+                                                category.attributes
+                                                    .certificateStatus
                                             )
                                         "
                                         class="w-auto h-5"
@@ -181,13 +216,25 @@
                         <div
                             v-for="glossary in searchGlossaries"
                             :key="glossary.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            class="
+                                flex flex-row
+                                p-2
+                                rounded
+                                cursor-pointer
+                                hover:bg-primary-light
+                            "
                             @click="
                                 redirectToProfile('glossary', glossary.guid)
                             "
                         >
                             <div
-                                class="flex content-center w-full mb-1 space-x-2 "
+                                class="
+                                    flex
+                                    content-center
+                                    w-full
+                                    mb-1
+                                    space-x-2
+                                "
                             >
                                 <span class="my-auto"
                                     ><AtlanIcon
@@ -225,7 +272,19 @@
                         "
                     >
                         <div
-                            class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
+                            class="
+                                flex flex-col
+                                justify-center
+                                px-3
+                                mr-2
+                                text-sm
+                                leading-5
+                                text-gray-700
+                                cursor-pointer
+                                h-9
+                                group
+                                hover:bg-primary-light hover:text-primary
+                            "
                         >
                             <div class="flex flex-row justify-between">
                                 {{ glossary.displayText }}
@@ -234,7 +293,12 @@
                             icon="fal external-link-alt"
                         /> -->
                                 <atlan-icon
-                                    class="w-auto h-5 text-white  group-hover:text-primary"
+                                    class="
+                                        w-auto
+                                        h-5
+                                        text-white
+                                        group-hover:text-primary
+                                    "
                                     icon="ArrowRight"
                                 />
                             </div>
@@ -270,7 +334,12 @@
                     class="h-full mt-2"
                 >
                     <div
-                        class="flex justify-between px-4  hover:bg-black hover:bg-opacity-5"
+                        class="
+                            flex
+                            justify-between
+                            px-4
+                            hover:bg-black hover:bg-opacity-5
+                        "
                     >
                         <div class="flex items-center ml-3">
                             <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
@@ -284,7 +353,13 @@
                                 "
                             >
                                 <span
-                                    class="flex my-auto text-xs font-bold leading-3 "
+                                    class="
+                                        flex
+                                        my-auto
+                                        text-xs
+                                        font-bold
+                                        leading-3
+                                    "
                                     :class="{
                                         'text-primary':
                                             currentGuid ===
@@ -297,11 +372,24 @@
                         </div>
 
                         <div
-                            class="flex content-center  my-autoc tree-glossary-actions parent-group-hover"
+                            class="
+                                flex
+                                content-center
+                                my-autoc
+                                tree-glossary-actions
+                                parent-group-hover
+                            "
                         >
                             <div
                                 v-if="expandedKeys.length"
-                                class="flex bg-opacity-0 cursor-pointer  w-7 h-7 py-auto"
+                                class="
+                                    flex
+                                    bg-opacity-0
+                                    cursor-pointer
+                                    w-7
+                                    h-7
+                                    py-auto
+                                "
                                 @click="collapseAll"
                             >
                                 <AtlanIcon
@@ -310,12 +398,22 @@
                                 />
                             </div>
                             <div
-                                class="flex flex-col justify-center p-2 bg-opacity-0 "
+                                class="
+                                    flex flex-col
+                                    justify-center
+                                    p-2
+                                    bg-opacity-0
+                                "
                             >
                                 <AtlanIcon icon="Add" />
                             </div>
                             <div
-                                class="flex flex-col justify-center mt-1 bg-opacity-0 "
+                                class="
+                                    flex flex-col
+                                    justify-center
+                                    mt-1
+                                    bg-opacity-0
+                                "
                             >
                                 <ThreeDotMenu
                                     class="w-7 h-7 ml-0.5"
@@ -328,7 +426,13 @@
                     </div>
                     <div
                         v-if="treeData.length"
-                        class="py-2 pl-4 pr-2 overflow-x-hidden overflow-y-auto  scrollable-container"
+                        class="
+                            py-2
+                            pl-4
+                            pr-2
+                            overflow-x-hidden overflow-y-auto
+                            scrollable-container
+                        "
                         :class="$style.treeStyles"
                     >
                         <a-tree
@@ -353,7 +457,14 @@
                             <template #title="entity">
                                 <div
                                     v-if="entity.title === 'Load more'"
-                                    class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                                    class="
+                                        flex flex-row
+                                        w-full
+                                        text-sm
+                                        font-bold
+                                        leading-5
+                                        text-primary
+                                    "
                                     @click="entity.click()"
                                 >
                                     <span v-if="entity.isLoading">
@@ -376,7 +487,12 @@
                                         "
                                     >
                                         <div
-                                            class="flex justify-between mr-2  group"
+                                            class="
+                                                flex
+                                                justify-between
+                                                mr-2
+                                                group
+                                            "
                                         >
                                             <div class="flex m-0">
                                                 <span
@@ -399,13 +515,18 @@
                                                         :icon="
                                                             getEntityStatusIcon(
                                                                 entity.type,
-                                                                entity.assetStatus
+                                                                entity.certificateStatus
                                                             )
                                                         "
                                                     />
                                                 </span>
                                                 <span
-                                                    class="my-auto text-sm leading-5 text-gray-700 "
+                                                    class="
+                                                        my-auto
+                                                        text-sm
+                                                        leading-5
+                                                        text-gray-700
+                                                    "
                                                     >{{ entity.title }}</span
                                                 >
                                             </div>
@@ -433,8 +554,8 @@
                                                             },
                                                         },
                                                         name: entity.name,
-                                                        assetStatus:
-                                                            entity.assetStatus,
+                                                        certificateStatus:
+                                                            entity.certificateStatus,
                                                         qualifiedName:
                                                             entity.qualifiedName,
                                                         parentCategory: {
@@ -459,7 +580,14 @@
                     </div>
                     <div
                         v-else
-                        class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                        class="
+                            flex flex-col
+                            justify-center
+                            text-base
+                            leading-6
+                            text-center text-gray-500
+                            mt-14
+                        "
                     >
                         <AtlanIcon icon="EmptyGlossary" class="h-40" />
                         <p class="m-0 mt-20">The Glossary is empty,</p>
@@ -475,18 +603,31 @@
                         <div
                             v-for="term in searchTerms"
                             :key="term.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            class="
+                                flex flex-row
+                                p-2
+                                rounded
+                                cursor-pointer
+                                hover:bg-primary-light
+                            "
                             @click="redirectToProfile('term', term.guid)"
                         >
                             <div
-                                class="flex content-center w-full mb-1 space-x-2 "
+                                class="
+                                    flex
+                                    content-center
+                                    w-full
+                                    mb-1
+                                    space-x-2
+                                "
                             >
                                 <span class="my-auto"
                                     ><AtlanIcon
                                         :icon="
                                             getEntityStatusIcon(
                                                 'term',
-                                                term.attributes.assetStatus
+                                                term.attributes
+                                                    .certificateStatus
                                             )
                                         "
                                         class="w-auto h-5"
@@ -512,20 +653,33 @@
                         <div
                             v-for="category in searchCategories"
                             :key="category.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            class="
+                                flex flex-row
+                                p-2
+                                rounded
+                                cursor-pointer
+                                hover:bg-primary-light
+                            "
                             @click="
                                 redirectToProfile('category', category.guid)
                             "
                         >
                             <div
-                                class="flex content-center w-full mb-1 space-x-2 "
+                                class="
+                                    flex
+                                    content-center
+                                    w-full
+                                    mb-1
+                                    space-x-2
+                                "
                             >
                                 <span class="my-auto"
                                     ><AtlanIcon
                                         :icon="
                                             getEntityStatusIcon(
                                                 'category',
-                                                category.attributes.assetStatus
+                                                category.attributes
+                                                    .certificateStatus
                                             )
                                         "
                                         class="w-auto h-5"
@@ -698,7 +852,7 @@
                 const list = props.glossaryList.map((glossary) => ({
                     value: glossary.guid,
                     label: glossary.attributes.name,
-                    status: glossary.attributes.assetStatus,
+                    status: glossary.attributes.certificateStatus,
                 }))
                 list.unshift({ label: 'All Glossaries', value: 'all' })
                 list.push({
@@ -758,20 +912,20 @@
             // to get correct icon from type and status
             const getEntityStatusIcon = (
                 type: String,
-                assetStatus: String
+                certificateStatus: String
             ): String => {
                 if (
-                    assetStatus === undefined ||
-                    assetStatus === '' ||
-                    assetStatus === 'is_null'
+                    certificateStatus === undefined ||
+                    certificateStatus === '' ||
+                    certificateStatus === 'is_null'
                 )
                     return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
 
                 return `${type?.charAt(0).toUpperCase()}${type?.slice(
                     1
-                )}${assetStatus?.charAt(0).toUpperCase()}${assetStatus?.slice(
-                    1
-                )}`
+                )}${certificateStatus
+                    ?.charAt(0)
+                    .toUpperCase()}${certificateStatus?.slice(1)}`
             }
 
             watch(home, () => {

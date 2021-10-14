@@ -2,7 +2,17 @@
     <!-- filters -->
     <div class="h-full">
         <div
-            class="flex items-center justify-between px-4 py-2 mb-2 text-sm bg-gray-100 border-b border-gray-300 "
+            class="
+                flex
+                items-center
+                justify-between
+                px-4
+                py-2
+                mb-2
+                text-sm
+                bg-gray-100
+                border-b border-gray-300
+            "
         >
             <div class="font-medium text-gray-500">
                 {{ totalAppliedFiltersCount || 'No' }}
@@ -12,7 +22,14 @@
             <div class="flex items-center">
                 <div
                     v-if="totalAppliedFiltersCount"
-                    class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                    class="
+                        text-sm
+                        font-medium
+                        text-gray-500
+                        rounded
+                        cursor-pointer
+                        hover:text-gray-700
+                    "
                     @click="resetAllFilters"
                 >
                     Reset
@@ -40,7 +57,11 @@
                 <template #header>
                     <div class="select-none">
                         <div
-                            class="flex justify-between align-middle  align-items"
+                            class="
+                                flex
+                                justify-between
+                                align-middle align-items
+                            "
                         >
                             <div class="flex flex-col flex-1">
                                 <div class="flex items-center">
@@ -49,7 +70,13 @@
                                     >
                                     <AtlanIcon
                                         icon="ChevronDown"
-                                        class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                                        class="
+                                            ml-3
+                                            text-gray-500
+                                            transition-transform
+                                            duration-300
+                                            transform
+                                        "
                                         :class="
                                             activeKey?.includes(item.id)
                                                 ? '-rotate-180'
@@ -58,7 +85,13 @@
                                     />
                                     <div
                                         v-if="isFilterApplied(item.id)"
-                                        class="flex items-center ml-auto text-xs text-gray-500  hover:text-primary"
+                                        class="
+                                            flex
+                                            items-center
+                                            ml-auto
+                                            text-xs text-gray-500
+                                            hover:text-primary
+                                        "
                                         @click.stop.prevent="
                                             handleClear(item.id)
                                         "
@@ -160,7 +193,7 @@
                     overallCondition: 'OR',
                     filters: [
                         {
-                            attributeName: 'assetStatus',
+                            attributeName: 'certificateStatus',
                             condition: 'OR',
                             isMultiple: false,
                             operator: 'eq',

@@ -6,7 +6,7 @@ export const KeyMaps = {
         GET_ASSET_AUDIT: ({ guid }: PathParams) =>
             getAPIPath('meta', `/entity/${guid}/audit`),
         BASIC_SEARCH: () => getAPIPath('meta', '/search/basic'),
-        SAVED_SEARCH: () => getAPIPath('meta', `/search/save`),
+        SAVED_SEARCH: () => getAPIPath('meta', '/search/saved'),
         GET_ASSET_RELATIONSHIP: () =>
             getAPIPath('meta', '/search/relationship'),
         PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
@@ -14,7 +14,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
-        BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
+        BULK_UPDATE_ASSETS: () => getAPIPath('meta', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -31,7 +31,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${entityGuid}/classifications`),
         // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
         BULK_LINK_CLASSIFICATION: () =>
-            getAPIPath('auth/atlas', `/entity/bulk/setClassifications`),
+            getAPIPath('meta', `/entity/bulk/setClassifications`),
     },
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
@@ -171,6 +171,8 @@ export const KeyMaps = {
                     offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
+        BULK_LINK_TERMS: () =>
+            getAPIPath('meta', `/glossary/terms/assignedEntities`),
         health: {
             PING_USER: () => getHealthPath('auth', '/debug/health'),
         },
@@ -213,7 +215,11 @@ export const KeyMaps = {
         ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
             getAPIPath('/service', `/archived-workflows/${guid}`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
+        WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflowtemplates/${name}`),
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
+        WORKFLOW_CONFIG_MAP: ({ name }: PathParams) =>
+            getAPIPath('/service', `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name}`)
+
     },
 }

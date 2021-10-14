@@ -1,7 +1,10 @@
 import { ref } from 'vue'
 import { useAPI } from '~/api/useAPI'
 
-import { GET_TERM_LINKED_ASSETS, ASSIGN_TERM_LINKED_ASSETS } from '~/api/keyMaps/glossary'
+import {
+    GET_TERM_LINKED_ASSETS,
+    ASSIGN_TERM_LINKED_ASSETS,
+} from '~/api/keyMaps/glossary'
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
@@ -11,11 +14,11 @@ import { Components } from '~/api/atlas/client'
 export default function useTermLinkedAssets() {
     const termQualifiedName = ref<string>()
     const requestQuery = ref<string>()
-    const body = ref();
+    const body = ref()
 
-   const getBody = () => ({
+    const getBody = () => ({
         termName: termQualifiedName.value,
-        typeName: 'AtlanAsset',
+        typeName: 'Catalog',
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
@@ -23,7 +26,7 @@ export default function useTermLinkedAssets() {
         attributes: [
             ...projection,
             'atlanSchema',
-            'assetStatus',
+            'certificateStatus',
             ...BaseAttributes,
             ...BasicSearchAttributes,
         ],
@@ -52,11 +55,10 @@ export default function useTermLinkedAssets() {
         termQualifiedName.value = termName
         requestQuery.value = query ?? ''
 
-        body.value = getBody();
-        
+        body.value = getBody()
+
         if (termName || query) mutate()
     }
-
 
     return {
         linkedAssets,

@@ -2,7 +2,14 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="
+                    fixed
+                    z-10
+                    px-0
+                    border-r-0
+                    rounded-none rounded-l
+                    -left-5
+                "
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -33,8 +40,21 @@
                 </div>
             </div>
         </div>
-
+        <div v-if="selectedTab === 'setup'">
+            <div v-if="json[selectedDag]" class="m-3">
+                <FormBuilder :config="json[selectedDag]" />
+                <AtlanButton
+                    class="absolute bottom-0 m-2"
+                    size="sm"
+                    color="primary"
+                    padding="compact"
+                >
+                    Save
+                </AtlanButton>
+            </div>
+        </div>
         <a-tabs
+            v-else
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
             tab-position="left"
@@ -57,7 +77,15 @@
                     :style="{ height: 'calc(100vh - 7.8rem)' }"
                 >
                     <div
-                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            px-4
+                            pt-2
+                            font-semibold
+                            text-gray-700 text-md
+                        "
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -85,13 +113,17 @@
         toRefs,
         watch,
         provide,
+        computed,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import { useRoute } from 'vue-router'
+    import json from '@/workflows/profile/tabs/setup/Untitled-1.json'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
+    import FormBuilder from '@/common/formGenerator/index.vue'
 
     export default defineComponent({
         name: 'ProfileWorkflowPreview',
@@ -101,6 +133,7 @@
             StatusBadge,
             SidePanelTabHeaders,
             AtlanButton,
+            FormBuilder,
             info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
             runs: defineAsyncComponent(() => import('./tabs/runs/runsTab.vue')),
         },
@@ -114,10 +147,17 @@
                 type: Boolean,
                 required: false,
             },
+            selectedDag: {
+                type: String,
+                required: true,
+            },
         },
         emits: ['assetMutation', 'closeSidebar', 'change'],
         setup(props, { emit }) {
             const { selectedWorkflow } = toRefs(props)
+
+            const route = useRoute()
+            const selectedTab = computed(() => route?.params?.tab || '')
 
             const filteredTabs = [
                 {
@@ -151,10 +191,6 @@
                 if (idx > -1) activeKey.value = idx
             })
 
-            // watch(page, () => {
-            //     if (activeKey.value > filteredTabs.length) activeKey.value = 0
-            // })
-
             function init() {
                 isLoaded.value = false
             }
@@ -164,10 +200,12 @@
 
             return {
                 tabHeights,
+                selectedTab,
                 isLoaded,
                 activeKey,
                 filteredTabs,
                 emit,
+                json,
             }
         },
     })

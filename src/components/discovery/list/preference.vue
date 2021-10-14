@@ -8,12 +8,17 @@
                 @change="handeChangeSorting"
                 style="width: 135px"
             >
+                <template #suffixIcon>
+                   <AtlanIcon
+                      icon="ChevronDown"
+                      class="text-gray-500 custom-icon-drop"            
+                    />
+                </template>
                 <a-select-option value="default">Relevance</a-select-option>
-                <a-select-option value="Catalog.popularityScore|descending"
-                    >Most popular</a-select-option
-                >
+                <a-select-option value="Catalog.popularityScore|descending">Most popular</a-select-option>
                 <a-select-option value="Catalog.popularityScore|ascending"
-                    >Least popular</a-select-option
+                    >
+                    Least popular</a-select-option
                 >
                 <a-select-option value="name|ascending">A-Z</a-select-option>
                 <a-select-option value="name|descending">Z-A</a-select-option>
@@ -163,16 +168,16 @@
 
             const properties = [
                 {
-                    id: 'description',
-                    label: 'Description',
-                },
-                {
                     id: 'terms',
                     label: 'Business Terms',
                 },
                 {
                     id: 'classifications',
                     label: 'Classifications',
+                },
+                {
+                    id: 'description',
+                    label: 'Description',
                 },
                 {
                     id: 'hierarchy',
@@ -221,5 +226,8 @@
 <style lang="less" scoped>
     .preference-container {
         width: 240px;
+    }
+    .custom-icon-drop{
+      transform: translateY(-2px);
     }
 </style>

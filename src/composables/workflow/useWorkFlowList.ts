@@ -59,7 +59,7 @@ export function useArchivedWorkflowList(
 export function useWorkflowTemplates(
     immediate: boolean = true
 ) {
-    const params = ref({ limit: 10, offset: 0 })
+    const params = ref({ limit: 10, offset: 0, labelSelector: "com.atlan.orchestration.credential/verified=true" })
     const { data, error, isLoading, mutate } =
         Workflows.getWorkflowTemplates({ immediate, options: {}, params })
 
@@ -85,6 +85,21 @@ export function useWorkflowTemplates(
         workflowList.value.filter((wf) => wf.name.includes(text))
 
     return { workflowList, loadMore, totalCount, error, isLoading, filterList, mutate }
+}
+
+export function useWorkflowTemplateByName(name, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } =
+        Workflows.getWorkflowTemplateByName(name, {
+            immediate,
+            options: {},
+        })
+
+    return {
+        data,
+        error,
+        isLoading,
+        mutate,
+    }
 }
 
 export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
@@ -115,4 +130,14 @@ export function useWorkflowByName(name, immediate: boolean = true) {
         isLoading,
         mutate,
     }
+}
+
+export function getWorkflowConfigMap(label, immediate: boolean = true) {
+    const pathVariable = computed(() => ({
+        'name': `${label}` // `com.atlan.orchestration/workflow-template-name=${label}`
+    }))
+    // const params = ref({ labelSelector: "" })
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap(pathVariable, { immediate, options: {} })
+
+    return { data, error, isLoading, mutate }
 }

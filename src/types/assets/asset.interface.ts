@@ -2,12 +2,12 @@ import { classificationInterface } from '~/types/classifications/classification.
 
 export interface assetInterface {
     attributes: {
-        assetStatus?: string
+        certificateStatus?: string
         assetStatusMessage: string
-        assetStatusUpdatedBy: string
+        certificateUpdatedBy: string
         ownerUsers: string
         ownerGroups: string
-        assetStatusUpdatedAt: number
+        certificateUpdatedAt: number
         order: number
         columnCount: number
         sizeBytes: number
@@ -31,12 +31,9 @@ export interface assetInterface {
         sourceUpdatedAt: string
         tenantId: string
         viewDefinition: string
-        banner?: {
-            message: string
-            username: string
-            timestamp: number
-        }
-        bannerMessage: string
+        bannerDescription: string
+        bannerTitle: string
+        bannerType: string
         bannerUpdatedAt: number
         bannerUpdatedBy: string
 
@@ -54,6 +51,8 @@ export interface assetInterface {
         __timestamp: number
         __modifiedBy: string
         __state: string
+        isPublished?: boolean
+        isTopLevelProject?: boolean
     }
     classificationNames: string[]
     classifications: classificationInterface[]

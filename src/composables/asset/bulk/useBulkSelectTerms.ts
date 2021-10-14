@@ -1,6 +1,7 @@
-import { ref, Ref, computed, watch } from 'vue'
+import { ref, Ref, computed, watch, ComputedRef } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { Components } from '~/api/atlas/client'
+import { LocalState } from '~/composables/asset/useBulkSelect'
 
 export default function useBulkSelectTerms(selectedAssets) {
     const originalTerms: Ref<
@@ -17,8 +18,19 @@ export default function useBulkSelectTerms(selectedAssets) {
             | Components.Schemas.AtlasTermAssignmentHeader[]
         >
     > = ref({})
-    // will set it in the parent composable; basically if the final payload is empty => no change; since we are already evaluating that, why compute here
-    const didTermsUpdate: Ref<boolean> = ref(false)
+    // diff bw original and latest published changes (published changes are the ones that get saved after someone clicks on done)
+    const publishedChangeLog: Ref<LocalState> = ref({
+        all: [] as Components.Schemas.AtlasClassification[],
+        partial: [] as Components.Schemas.AtlasClassification[],
+        removed: [] as Components.Schemas.AtlasClassification[],
+    })
+    const didTermsUpdate: ComputedRef<boolean> = computed(
+        () =>
+            !!(
+                publishedChangeLog.value.all.length ||
+                publishedChangeLog.value.removed.length
+            )
+    )
 
     watch(selectedAssets, () => {
         if (selectedAssets.value.length) {
@@ -65,8 +77,13 @@ export default function useBulkSelectTerms(selectedAssets) {
         }
         return frequencyMap
     })
-    const resetTerms = (originalTermsRef, termsRef) => {
+    const resetTerms = (originalTermsRef, termsRef, publishedChangeLogRef) => {
         termsRef.value = { ...originalTermsRef.value }
+        publishedChangeLogRef.value = {
+            all: [],
+            partial: [],
+            removed: [],
+        }
     }
     const initialiseLocalState = (selectedAssets, termFrequencyMap) => {
         const state = {
@@ -94,7 +111,12 @@ export default function useBulkSelectTerms(selectedAssets) {
         }
         return state
     }
-    const updateTerms = (termsRef, localState, originalTermsRef) => {
+    const updateTerms = (
+        termsRef,
+        localState,
+        originalTermsRef,
+        publishedChangeLogRef
+    ) => {
         const updatedObj = {}
         Object.keys(originalTermsRef.value).map((assetGuid) => {
             const uniqueTermsNames = new Set()
@@ -119,6 +141,7 @@ export default function useBulkSelectTerms(selectedAssets) {
             )
         })
         termsRef.value = { ...updatedObj }
+        publishedChangeLogRef.value = { ...localState.value }
     }
 
     return {
@@ -129,5 +152,6 @@ export default function useBulkSelectTerms(selectedAssets) {
         updateTerms,
         termFrequencyMap,
         didTermsUpdate,
+        publishedChangeLog,
     }
 }

@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between mb-3">
             <span class="text-base font-bold text-gray">Resources</span>
             <AddResources :asset="asset">
-                <button class="flex items-center text-gray-500 gap-x-2">
+                <button class="flex items-center pr-4 text-gray-500 gap-x-2">
                     <AtlanIcon icon="Add" />
                     <span class="text-sm">Add</span>
                 </button>

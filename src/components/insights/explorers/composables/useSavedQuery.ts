@@ -12,7 +12,7 @@ import { message } from 'ant-design-vue'
 import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/atlas/api/insights'
 import { generateUUID } from '~/utils/helper/generator'
-import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -53,7 +53,7 @@ export function useSavedQuery(
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
-            status: savedQuery.attributes.assetStatus as string,
+            status: savedQuery.attributes.certificateStatus as string,
             explorer: {
                 schema: {
                     connectors: {
@@ -136,7 +136,7 @@ export function useSavedQuery(
             getConnectionQualifiedName(attributeValue)
         const connectionName = getConnectorName(attributeValue)
         const name = activeInlineTab.value.label
-        const assetStatus = activeInlineTab.value.status
+        const certificateStatus = activeInlineTab.value.status
         const description = activeInlineTab.value.description
         const isSQLSnippet = activeInlineTab.value.isSQLSnippet
         const editorInstanceRaw = toRaw(editorInstance.value)
@@ -161,7 +161,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
+                    certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionId: connectionQualifiedName,
                     connectionQualifiedName,
@@ -231,7 +231,7 @@ export function useSavedQuery(
         )
         activeInlineTabCopy.isSaved = true
         activeInlineTabCopy.label = saveQueryData.title
-        activeInlineTabCopy.status = saveQueryData.assetStatus
+        activeInlineTabCopy.status = saveQueryData.certificateStatus
 
         const uuidv4 = generateUUID()
         const integrationName = getConnectorName(attributeValue) ?? ''
@@ -241,7 +241,7 @@ export function useSavedQuery(
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
         const description = saveQueryData.description
-        const assetStatus = saveQueryData.assetStatus
+        const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = editorInstanceRaw?.getValue()
         const compiledQuery = getParsedQuery(
@@ -264,7 +264,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
+                    certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
                     description,
@@ -282,8 +282,9 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
+        if (parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName =
+                parentFolderQF
             body.value.entity.relationshipAttributes = {
                 folder: {
                     guid: parentFolderGuid,
@@ -291,15 +292,15 @@ export function useSavedQuery(
                 },
             }
         }
-        if(type === 'all') {
-            body.value.entity.classifications =  [
+        if (type === 'all') {
+            body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
                     typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                    validityPeriods: []
-                }
+                    validityPeriods: [],
+                },
             ]
         }
         // chaing loading to true
@@ -340,7 +341,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
-        type: 'personal' | 'all' ,
+        type: 'personal' | 'all',
         parentFolderQF: string,
         parentFolderGuid: string
     ) => {
@@ -355,7 +356,7 @@ export function useSavedQuery(
         )
         activeInlineTabCopy.isSaved = true
         activeInlineTabCopy.label = saveQueryData.title
-        activeInlineTabCopy.status = saveQueryData.assetStatus
+        activeInlineTabCopy.status = saveQueryData.certificateStatus
         // /* Editor text */
         // activeInlineTabCopy.playground.editor.text = ''
 
@@ -367,7 +368,7 @@ export function useSavedQuery(
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
         const description = saveQueryData.description
-        const assetStatus = saveQueryData.assetStatus
+        const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = editorInstanceRaw?.getValue()
         const compiledQuery = getParsedQuery(
@@ -393,7 +394,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    assetStatus,
+                    certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
                     description,
@@ -411,8 +412,9 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF;
+        if (parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+            body.value.entity.attributes.parentFolderQualifiedName =
+                parentFolderQF
             body.value.entity.relationshipAttributes = {
                 folder: {
                     guid: parentFolderGuid,
@@ -420,15 +422,15 @@ export function useSavedQuery(
                 },
             }
         }
-        if(type === 'all') {
-            body.value.entity.classifications =  [
+        if (type === 'all') {
+            body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
                     typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                    validityPeriods: []
-                }
+                    validityPeriods: [],
+                },
             ]
         }
         // chaing loading to true
@@ -450,7 +452,7 @@ export function useSavedQuery(
                     savedQuery.attributes.connectionName = connectionName
                     savedQuery.attributes.name = name
                     savedQuery.attributes.description = description
-                    savedQuery.attributes.assetStatus = assetStatus
+                    savedQuery.attributes.certificateStatus = certificateStatus
                     savedQuery.attributes.isSQLSnippet = isSQLSnippet
                     /* Initial should be empty */
                     savedQuery.attributes.rawQuery = ''
@@ -480,7 +482,7 @@ export function useSavedQuery(
         return { data, error, isLoading }
     }
 
-    const createFolder =  (
+    const createFolder = (
         folderName: string,
         saveFolderLoading: Ref<boolean>,
         type: 'personal' | 'all',
@@ -497,7 +499,7 @@ export function useSavedQuery(
         // )
         // activeInlineTabCopy.isSaved = true
         // activeInlineTabCopy.label = saveFolderData.title
-        // activeInlineTabCopy.status = saveFolderData.assetStatus
+        // activeInlineTabCopy.status = saveFolderData.certificateStatus
 
         const uuidv4 = generateUUID()
         const integrationName = getConnectorName(attributeValue) ?? ''
@@ -533,8 +535,12 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if(parentFolderQF.value !== 'root' && parentFolderGuid.value !== 'root') {
-            body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF.value;
+        if (
+            parentFolderQF.value !== 'root' &&
+            parentFolderGuid.value !== 'root'
+        ) {
+            body.value.entity.attributes.parentFolderQualifiedName =
+                parentFolderQF.value
             body.value.entity.relationshipAttributes = {
                 folder: {
                     guid: parentFolderGuid.value,
@@ -542,15 +548,15 @@ export function useSavedQuery(
                 },
             }
         }
-        if(type === 'all') {
-            body.value.entity.classifications =  [
+        if (type === 'all') {
+            body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
                     typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                    validityPeriods: []
-                }
+                    validityPeriods: [],
+                },
             ]
         }
         // chaing loading to true

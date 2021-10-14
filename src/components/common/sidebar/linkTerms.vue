@@ -25,7 +25,13 @@
             <div v-if="pillTerms.length < 1">
                 <div @click.stop="toggleLinkTermPopover">
                     <div
-                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
+                        class="
+                            flex
+                            items-center
+                            cursor-pointer
+                            text-primary
+                            hover:text-primary hover:underline
+                        "
                     >
                         <span class="text-xs">Add Terms</span>
                     </div>
@@ -99,6 +105,7 @@
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { PillGroup },
@@ -187,6 +194,14 @@
                         selectedAsset.value.meaningNames.push(obj.displayText)
 
                         updateAvailableTerms()
+                        // event for link term
+                        useAddEvent(
+                            'discovery',
+                            'metadata',
+                            'terms_updated',
+                            undefined
+                        )
+
                         emit('update:selectedAsset', props.selectedAsset)
                     })
                 })
@@ -220,6 +235,13 @@
                 watch(unlinkResponse, (data) => {
                     // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
                     emit('update:selectedAsset', props.selectedAsset)
+                    useAddEvent(
+                        'discovery',
+                        'metadata',
+                        'terms_updated',
+                        undefined
+                    )
+
                     updateAvailableTerms()
                 })
             }
@@ -232,10 +254,14 @@
                 { immediate: true }
             )
 
-            watch(selectedAsset, () => {
-                pillTerms.value = [...props.selectedAsset?.meanings]
-                updateAvailableTerms()
-            })
+            watch(
+                selectedAsset,
+                () => {
+                    pillTerms.value = [...props.selectedAsset?.meanings]
+                    updateAvailableTerms()
+                },
+                { deep: true }
+            )
 
             return {
                 asset,

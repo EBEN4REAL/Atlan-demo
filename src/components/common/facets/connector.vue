@@ -58,6 +58,7 @@
     import { Collapse } from '~/types'
     import { useConnectionsStore } from '~/store/connections'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
         props: {
@@ -84,6 +85,7 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
+            const { getConnectorName } = useAssetInfo()
             const { data, filterSourceIds, isLeafNodeSelectable } =
                 toRefs(props)
 
@@ -108,6 +110,10 @@
             const selectedValue = computed(
                 () => connection.value || connector.value || undefined
             )
+            // watch([connection, connector], () => {
+            //     selectedValue.value =
+            //         connection.value || connector.value || undefined
+            // })
             /* Remove the sources mentioned in filterIds array */
             const filterSourceList = (filterSourceIds: string[]) => {
                 return store.getSourceList.filter(
@@ -116,6 +122,7 @@
             }
 
             const store = useConnectionsStore()
+            // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
             else fetch all the sourcelist from store */
             const filteredList = computed(() =>
@@ -133,34 +140,36 @@
                 return store.getList
                     .filter(
                         (connection) =>
-                            connection.attributes.integrationName ===
+                            getConnectorName(connection?.attributes) ===
                             connectorId
                     )
                     .sort((a, b) =>
-                        a.attributes.displayName?.toLowerCase() >
-                        b.attributes.displayName?.toLowerCase()
+                        a.attributes.name?.toLowerCase() >
+                        b.attributes.name?.toLowerCase()
                             ? 1
-                            : b.attributes.displayName?.toLowerCase() >
-                              a.attributes.displayName?.toLowerCase()
+                            : b.attributes.name?.toLowerCase() >
+                              a.attributes.name?.toLowerCase()
                             ? -1
                             : 0
                     )
                     .map((connection) => {
                         if (
-                            connection.attributes.integrationName ===
+                            getConnectorName(connection?.attributes) ===
                             connectorId
                         ) {
                             return {
                                 key: connection.attributes.qualifiedName,
                                 name:
-                                    connection.attributes.displayName ||
+                                    connection.attributes.name ||
                                     connection.attributes.qualifiedName,
                                 value: connection.attributes.qualifiedName,
-                                connector:
-                                    connection.attributes.integrationName,
+                                connector: getConnectorName(
+                                    connection?.attributes
+                                ),
                                 connection: connection.attributes.qualifiedName,
-                                integrationName:
-                                    connection?.attributes?.integrationName,
+                                integrationName: getConnectorName(
+                                    connection?.attributes
+                                ),
                                 slots: {
                                     title: 'title',
                                 },
@@ -203,7 +212,7 @@
                     })
                 } else if (connector.value) {
                     criterion?.push({
-                        attributeName: 'integrationName',
+                        attributeName: 'connectorName',
                         attributeValue: connector.value,
                         operator: 'eq',
                     })
@@ -265,7 +274,7 @@
                 const chunks = value?.split('/')
 
                 if (chunks?.length == 1 && chunks[0]) {
-                    payload.attributeName = 'integrationName'
+                    payload.attributeName = 'connectorName'
                     payload.attributeValue = chunks[0]
                 } else if (chunks?.length > 2) {
                     payload.attributeName = 'connectionQualifiedName'

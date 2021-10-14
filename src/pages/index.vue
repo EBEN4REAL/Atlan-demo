@@ -1,9 +1,6 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white border-l">
-        <img
-            src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-            class="w-auto h-5 mt-8 mb-2"
-        />
+        <img :src="logoUrl" class="w-auto h-12 mt-8 mb-2" />
 
         <SearchAndFilter
             placeholder="Search accross atlan..."
@@ -73,6 +70,10 @@
             const keycloak = inject('$keycloak')
             const tenantStore = useTenantStore()
             const router = useRouter()
+
+            const logoUrl = computed(() => {
+                return `${window.location.origin}/api/service/avatars/_logo_`
+            })
 
             const username = keycloak.tokenParsed.preferred_username || ''
 
@@ -171,6 +172,7 @@
                 handleUpdateUser,
                 views,
                 dummyProjects,
+                logoUrl,
                 redirectToDiscover,
             }
         },

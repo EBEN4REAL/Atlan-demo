@@ -19,41 +19,41 @@
 </template>
 
 <script lang="ts">
-    import { ref , defineComponent } from 'vue';
-    
-    import useAssetTree from '~/composables/bots/useAssetTree';
+    import { ref, defineComponent } from 'vue'
+
+    import useAssetTree from '~/composables/bots/useAssetTree'
     import {
         BaseAttributes,
         BasicSearchAttributes,
-    } from '~/constant/projection';
-    import { useConnectionsStore } from '~/store/connections';
-    import { SearchParameters } from '~/types/atlas/attributes';
+    } from '~/constant/projection'
+    import { useConnectionsStore } from '~/store/connections'
+    import { SearchParameters } from '~/types/atlas/attributes'
 
     export default defineComponent({
         components: {},
         setup(props, { emit }) {
-            const store = useConnectionsStore();
+            const store = useConnectionsStore()
 
-            const getSourceImage = (id: any) => store.getSourceList?.find((src: any) => src.id == id)
-                    ?.image;
+            const getSourceImage = (id: any) =>
+                store.getSourceList?.find((src: any) => src.id == id)?.image
 
-            const now = ref(true);
+            const now = ref(true)
             const intialBody: SearchParameters = {
-                sortBy: 'Asset.name.keyword',
+                sortBy: 'name',
                 sortOrder: 'ASCENDING',
                 limit: 10,
                 attributes: [...BaseAttributes, ...BasicSearchAttributes],
-            };
+            }
             const { treeData, onLoadData } = useAssetTree(
                 now,
                 'Database',
                 intialBody,
                 'dsasd'
-            );
-            return { treeData, getSourceImage, onLoadData };
+            )
+            return { treeData, getSourceImage, onLoadData }
         },
         data() {
-            return {};
+            return {}
         },
-    });
+    })
 </script>

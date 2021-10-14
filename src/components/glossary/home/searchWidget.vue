@@ -26,7 +26,7 @@
                                     <StatusBadge
                                         :key="item?.guid"
                                         :status-id="
-                                            item?.attributes?.assetStatus
+                                            item?.attributes?.certificateStatus
                                         "
                                         :show-chip-style-status="false"
                                         :show-label="false"

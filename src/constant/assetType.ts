@@ -95,21 +95,23 @@ export const AssetTypeList: {
         },
         {
             id: 'TableauSite',
-            label: 'Site',
+            label: 'Tableau Site',
             nameAttribute: 'siteName',
             isDiscoverable: true,
             parents: [],
         },
         {
             id: 'TableauProject',
-            label: 'Project',
+            label: 'Tableau Project',
             nameAttribute: 'projectName',
             isDiscoverable: true,
+            // in order of hierarchy
             parents: ['TableauProject', 'TableauSite'],
         },
         {
             id: 'TableauWorkbook',
-            label: 'Workbook',
+            label: 'Tableau Workbook',
+            nameAttribute:'workbookName',
             isDiscoverable: true,
             parents: ['TableauProject'],
         },
@@ -128,6 +130,7 @@ export const AssetTypeList: {
         {
             id: 'TableauDatasource',
             label: 'Tableau Datasource',
+            nameAttribute:'datasourceName',
             isDiscoverable: true,
             parents: ['TableauWorkbook'],
         },
@@ -136,7 +139,7 @@ export const AssetTypeList: {
             label: 'Tableau Datasource Field',
             parents: ['TableauWorkbook'],
         },
-        {
+        {   
             id: 'TableauCalculatedField',
             label: 'Tableau Calculated Field',
             parents: ['TableauWorkbook'],

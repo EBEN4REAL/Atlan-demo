@@ -3,10 +3,10 @@
         <div class="flex items-center justify-between text-gray">
             <span class="mr-6 text-sm text-gray">Order By</span>
             <a-select
-                class="text-gray-500"
                 v-model:value="sorting"
-                @change="handeChangeSorting"
+                class="text-gray-500"
                 style="width: 135px"
+                @change="handeChangeSorting"
             >
                 <a-select-option value="default">Relevance</a-select-option>
                 <a-select-option value="Catalog.popularityScore|descending"
@@ -15,12 +15,8 @@
                 <a-select-option value="Catalog.popularityScore|ascending"
                     >Least popular</a-select-option
                 >
-                <a-select-option value="Asset.name.keyword|ascending"
-                    >A-Z</a-select-option
-                >
-                <a-select-option value="Asset.name.keyword|descending"
-                    >Z-A</a-select-option
-                >
+                <a-select-option value="name|ascending">A-Z</a-select-option>
+                <a-select-option value="name|descending">Z-A</a-select-option>
             </a-select>
         </div>
         <div class="pt-4">
@@ -29,12 +25,12 @@
                 <template v-for="item in properties" :key="item.id">
                     <div
                         class="px-2 py-1 mb-1 mr-1 border rounded cursor-pointer "
-                        @click="() => togglePropertySelect(item)"
                         :class="
                             isProjectionSelected(item)
                                 ? 'bg-primary-light border-white hover:bg-primary-light text-gray'
                                 : ' text-gray-500'
                         "
+                        @click="() => togglePropertySelect(item)"
                     >
                         {{ item.label }}
                     </div>
@@ -45,10 +41,10 @@
             <p class="mb-3 text-sm text-gray">State</p>
             <div class="">
                 <CustomRadioButton
+                    v-model:data="state"
                     class=""
                     :list="radioButtonData"
                     @change="handleChangeState"
-                    v-model:data="state"
                 />
             </div>
         </div>
@@ -86,8 +82,8 @@
                     <a-radio value="Catalog.popularityScore|ascending"
                         >Least popular</a-radio
                     >
-                    <a-radio value="Asset.name.keyword|ascending">A-Z</a-radio>
-                    <a-radio value="Asset.name.keyword|descending">Z-A</a-radio>
+                    <a-radio value="name|ascending">A-Z</a-radio>
+                    <a-radio value="name|descending">Z-A</a-radio>
                 </div>
             </a-radio-group>
 
@@ -138,9 +134,7 @@
             const handleChange = () => {
                 emit('change', projection.value)
             }
-            const isProjectionSelected = (property) => {
-                return projection.value.includes(property.id)
-            }
+            const isProjectionSelected = (property) => projection.value.includes(property.id)
             const togglePropertySelect = (property) => {
                 if (projection.value.includes(property.id)) {
                     const index = projection.value.indexOf(property.id)
@@ -189,6 +183,10 @@
                 {
                     id: 'searchscore',
                     label: 'Relevance',
+                },
+                {
+                    id: 'enableCheckbox',
+                    label: 'Checkbox',
                 },
             ]
 

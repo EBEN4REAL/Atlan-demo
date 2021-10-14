@@ -52,10 +52,11 @@
             })
 
             const navKeys = {
-                assets: 'Discover',
+                assets: 'Assets',
                 glossary: 'Glossary',
                 insights: 'Insights',
                 workflows: 'Workflows',
+                admin: 'Admin Centre',
             }
 
             function handleClick(key: string) {

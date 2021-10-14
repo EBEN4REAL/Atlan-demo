@@ -24,11 +24,11 @@
                                 />
                             </div> -->
                         </div>
-                        <QueryFolderSelector 
-                            :connector="currentConnector" 
-                            :savedQueryType="queryType" 
+                        <QueryFolderSelector
+                            :connector="currentConnector"
+                            :savedQueryType="queryType"
                             :selectedFolderQF="parentFolderQF"
-                            @folderChange="selectFolder" 
+                            @folderChange="selectFolder"
                         />
                     </div>
                     <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
@@ -157,12 +157,12 @@
         nextTick,
         PropType,
         toRefs,
-        watch
+        watch,
     } from 'vue'
     import { List } from '~/constant/status'
     import StatusBadge from '@common/badge/status/index.vue'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
-    import { Folder } from "~/types/insights/savedQuery.interface";
+    import { Folder } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: { StatusBadge, QueryFolderSelector },
@@ -188,19 +188,23 @@
             savedQueryType: {
                 type: String as PropType<'personal' | 'all'>,
                 required: true,
-                default: 'personal'
-            }
+                default: 'personal',
+            },
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
             const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
-            const currentStatus: Ref<string | undefined> = ref('draft')
+            const currentStatus: Ref<string | undefined> = ref('DRAFT')
             const title: Ref<string> = ref('')
             const description: Ref<string | undefined> = ref('')
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const selectedParentFolder = ref<Folder | null>(null)
-            const { savedQueryType: queryType, connector:currentConnector, parentFolderQF } = toRefs(props)
+            const {
+                savedQueryType: queryType,
+                connector: currentConnector,
+                parentFolderQF,
+            } = toRefs(props)
 
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id
@@ -213,16 +217,17 @@
                 title.value = ''
                 description.value = ''
                 isSQLSnippet.value = false
-                currentStatus.value = 'draft'
+                currentStatus.value = 'DRAFT'
             }
             const createSaveQuery = () => {
                 const saveQueryData = {
                     title: title.value,
                     description: description.value,
                     isSQLSnippet: isSQLSnippet.value,
-                    assetStatus: currentStatus.value,
-                    parentQF: selectedParentFolder.value?.attributes?.qualifiedName,
-                    parentGuid: selectedParentFolder.value?.guid
+                    certificateStatus: currentStatus.value,
+                    parentQF:
+                        selectedParentFolder.value?.attributes?.qualifiedName,
+                    parentGuid: selectedParentFolder.value?.guid,
                 }
                 emit('onSaveQuery', saveQueryData)
             }
@@ -236,7 +241,7 @@
             }
             return {
                 title,
-                queryType, 
+                queryType,
                 currentConnector,
                 description,
                 isSQLSnippet,

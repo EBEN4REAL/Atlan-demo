@@ -341,7 +341,7 @@ export function getDecodedOptionsFromString(router) {
                 facetFilterValues.forEach((facetFilterValue) => {
                     if (facetFilterValue !== 'is_null')
                         criterion.push({
-                            attributeName: 'assetStatus',
+                            attributeName: 'certificateStatus',
                             attributeValue: facetFilterValue,
                             operator: 'eq',
                         })
@@ -352,12 +352,12 @@ export function getDecodedOptionsFromString(router) {
                                     condition: 'OR',
                                     criterion: [
                                         {
-                                            attributeName: 'assetStatus',
+                                            attributeName: 'certificateStatus',
                                             attributeValue: 'is_null',
                                             operator: 'eq',
                                         },
                                         {
-                                            attributeName: 'assetStatus',
+                                            attributeName: 'certificateStatus',
                                             attributeValue: '',
                                             operator: 'isNull',
                                         },

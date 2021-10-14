@@ -54,9 +54,8 @@ export const getTruncatedStringFromArray = (
     const displayArray = arr.slice(0, idx)
     /** The elements that would be truncated as x other(s) */
     const truncated = arr.slice(idx)
-
     // Check if something needs to be truncated
-    if (truncated.length) {
+    if (truncated.length && idx > 0) {
         // If there is only 1 element to be truncated then compare the
         // length of name and 'x others(s)'
         const lastElm =
@@ -66,6 +65,16 @@ export const getTruncatedStringFromArray = (
                 : `${truncated.length} other(s)`
 
         return `${displayArray.join(', ')} and ${lastElm}`
+    }
+    // first element being greater than the limit, truncate first element till limit and show # of others
+    if (!displayArray.length && truncated.length) {
+        // If there is only 1 element to be truncated then compare the
+        // length of name and 'x others(s)'
+        const others =
+            truncated.length >= 2 ? `${truncated.length - 1} other(s)` : ``
+        if (others)
+            return `${truncated[0].slice(0, wordCount)}... and ${others}`
+        return `${truncated[0].slice(0, wordCount)}...`
     }
     // Check if everything can be directly displayed
     // If so then take the last element from array, append it with 'and'

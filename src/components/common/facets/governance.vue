@@ -3,11 +3,7 @@
         <div v-if="isInitingTree">
             <LoadingView size="small" class="w-1 h-1 mt-4 mr-4" />
         </div>
-        <div
-            v-else
-            class="overflow-y-auto max-h-64"
-            :class="$style.filterTree"
-        >
+        <div v-else class="overflow-y-auto max-h-64" :class="$style.filterTree">
             <a-tree
                 :expandedKeys="expandedKeys"
                 :selectedKeys="selectedKeys"
@@ -26,7 +22,14 @@
                 <template #title="entity">
                     <div
                         v-if="entity.title === 'Load more'"
-                        class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                        class="
+                            flex flex-row
+                            w-full
+                            text-sm
+                            font-bold
+                            leading-5
+                            text-primary
+                        "
                         @click="entity.click()"
                     >
                         <span v-if="entity.isLoading">
@@ -52,13 +55,18 @@
                                             :icon="
                                                 getEntityStatusIcon(
                                                     entity.type,
-                                                    entity.assetStatus
+                                                    entity.certificateStatus
                                                 )
                                             "
                                         />
                                     </span>
                                     <span
-                                        class="my-auto text-sm leading-5 text-gray-700 "
+                                        class="
+                                            my-auto
+                                            text-sm
+                                            leading-5
+                                            text-gray-700
+                                        "
                                     >
                                         {{ entity.title }}</span
                                     >

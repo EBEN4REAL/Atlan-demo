@@ -6,7 +6,7 @@
         :model="valueObject"
         :rules="getRules(formModel)"
     >
-        <a-button @click="validate">Validate</a-button>
+        <!-- <a-button @click="validate">Validate</a-button> -->
         <span class="grid grid-cols-2 gap-x-8">
             <div
                 v-for="(f, x) in formModel"
@@ -187,10 +187,16 @@
                 testModal: valueObject,
                 isRequiredField,
                 handleFormSubmit,
+                init,
             } = useFormGenerator(configX, formRef)
+
+            watch(configX, () => {
+                init()
+            })
 
             return {
                 handleFormSubmit,
+                init,
                 handleInputChange,
                 valueObject,
                 submitStatus,

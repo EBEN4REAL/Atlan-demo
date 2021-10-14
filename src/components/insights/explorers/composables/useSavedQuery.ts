@@ -102,8 +102,11 @@ export function useSavedQuery(
         }
         if (!isInlineTabAlreadyOpened(newTab, tabsArray)) {
             console.log('not opened')
-            activeInlineTabKey.value = newTab.queryId
+            /* CAREFUL:-------Order is important here------ */
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
+            activeInlineTabKey.value = newTab.queryId
+            /* ----------------------------- */
+            debugger
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {

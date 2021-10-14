@@ -12,7 +12,7 @@ export function useConnector() {
         connectorsData: Ref<connectorsWidgetInterface> | Ref<any>,
         explorerType: 'schema' | 'queries' = 'schema'
     ) => {
-        if (connectorsData.value.attributeValue) {
+        if (connectorsData.value.attributeValue && activeInlineTab.value) {
             const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
                 {},
                 activeInlineTab.value

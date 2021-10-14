@@ -4,10 +4,15 @@
             <atlan-icon
                 v-if="!isHome"
                 icon="Dots"
-                class="h-6 mr-2 cursor-pointer"
+                class="h-6 mr-2 rounded cursor-pointer  hover:bg-primary-light hover:text-primary"
+                :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
-            <img :src="logoUrl" class="w-auto h-8" />
+            <img
+                :src="logoUrl"
+                class="w-auto h-8 cursor-pointer"
+                @click="handleClick('home')"
+            />
 
             <atlan-icon v-if="!isHome" icon="ChevronRight" class="h-4 mx-1" />
             <span class="text-sm font-bold tracking-wider text-gray-500">
@@ -34,13 +39,16 @@ export default defineComponent({
     components: { UserPersonalAvatar },
     props: {
         page: { type: String, required: true },
+        isSidebarActive: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
     },
     emits: ['change', 'toggleNavbar'],
     setup(props, { emit }) {
         const route = useRoute()
         const tenantStore = useTenantStore()
-        const path = computed(() => route.path)
-
         const isHome = computed(() => {
             if (path.value === '/' || path.value === '') {
                 return true
@@ -51,7 +59,6 @@ export default defineComponent({
         watch(
             tenantStore,
             () => {
-               
                 logoUrl.value = `${window.location.origin}/api/service/avatars/_logo_`
             },
             { deep: true }

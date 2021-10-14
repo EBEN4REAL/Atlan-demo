@@ -167,12 +167,3 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .three-dots {
-        height: fit-content;
-        cursor: pointer;
-    }
-    .max-text-width {
-        max-width: calc(100vw - 48rem);
-    }
-</style>

@@ -18,7 +18,7 @@
                 placeholder="Search for personas"
                 v-model:value="searchTerm"
                 class="mx-4 mt-6 mb-4 bg-white"
-                size="minimal"
+                :autofocus="true"
             />
 
             <ExplorerList
@@ -39,31 +39,9 @@
             </ExplorerList>
         </template>
 
-        <PersonaScopes :selectedPersona="selectedPersona" />
+        <PersonaHeader :persona="selectedPersona" />
+        <PersonaDetails :selectedPersona="selectedPersona" />
     </ExplorerLayout>
-    <!-- <div class="flex scroll-container">
-        <div class="w-1/4 h-full overflow-y-hidden">
-            <SearchAndFilter
-                placeholder="Search for personas"
-                v-model:value="searchTerm"
-                class="pt-6 mb-4"
-            />
-            <aside class="overflow-y-auto" style="height: calc(100% - 4.5rem)">
-                <a-menu v-model:selectedKeys="selectedPersonaId" mode="inline">
-                    <a-menu-item
-                        v-for="persona in filteredPersonas"
-                        :key="persona.id"
-                    >
-                        {{ persona.personaName }}
-                    </a-menu-item>
-                </a-menu>
-            </aside>
-        </div>
-
-        <div class="flex flex-col w-3/4 h-full px-4 overflow-y-hidden">
-            <PersonaScopes :selectedPersona="selectedPersona" />
-        </div>
-    </div> -->
 </template>
 
 <script lang="ts">
@@ -72,14 +50,17 @@
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
-    import PersonaScopes from './personaScopes.vue'
+    import PersonaDetails from './personaDetails.vue'
+    import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
+    import { until, invoke } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PersonaView',
         components: {
             SearchAndFilter,
-            PersonaScopes,
+            PersonaDetails,
+            PersonaHeader,
             ExplorerLayout,
             ExplorerList,
             AtlanBtn,
@@ -89,7 +70,7 @@
             const searchTerm = ref('')
 
             const { listPersonas } = usePersonaService()
-            const { data: personaList } = listPersonas()
+            const { data: personaList, isReady } = listPersonas()
 
             const filteredPersonas = computed(() => {
                 if (searchTerm.value)
@@ -107,6 +88,12 @@
                         (ps) => ps.id === selectedPersonaId.value
                     )
                 else return undefined
+            })
+
+            invoke(async () => {
+                await until(isReady).toBe(true)
+                if (personaList.value?.length)
+                    selectedPersonaId.value = personaList.value[0].id
             })
 
             return {

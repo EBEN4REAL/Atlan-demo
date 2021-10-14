@@ -298,6 +298,8 @@
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
@@ -374,6 +376,7 @@
                 }
             }
             const run = () => {
+                useAddEvent('insights', 'query', 'run', undefined)
                 queryRun(
                     activeInlineTab.value,
                     getData,
@@ -389,6 +392,9 @@
                 setEditorInstanceFxn(editorInstanceParam, monacoInstanceParam)
             }
             const updateQuery = () => {
+                useAddEvent('insights', 'query', 'updated', {
+                    num_variables: undefined,
+                })
                 updateSavedQuery(editorInstance, isUpdating)
             }
 
@@ -398,6 +404,7 @@
                 message.success({
                     content: 'Link Copied!',
                 })
+                useAddEvent('insights', 'query', 'link_copied', undefined)
             }
             const toggleCustomToolbar = () => {
                 showcustomToolBar.value = !showcustomToolBar.value
@@ -414,6 +421,9 @@
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid
                 )
+                useAddEvent('insights', 'query', 'saved', {
+                    num_variables: undefined,
+                })
             }
             const formatDocument = () => {
                 const editorInstanceRaw = toRaw(editorInstance.value)

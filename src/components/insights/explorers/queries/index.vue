@@ -61,15 +61,7 @@
             </div>
             <div
                 v-if="!searchQuery?.length"
-                class="
-                    relative
-                    w-full
-                    h-full
-                    p-3
-                    pt-0
-                    overflow-y-auto
-                    scrollable-container
-                "
+                class="relative w-full h-full p-3 pt-0 overflow-y-auto  scrollable-container"
             >
                 <!--explorer pane start -->
                 <div
@@ -106,16 +98,7 @@
             </div>
             <div
                 v-else
-                class="
-                    relative
-                    w-full
-                    h-full
-                    p-3
-                    pl-6
-                    pt-0
-                    overflow-y-auto
-                    scrollable-container
-                "
+                class="relative w-full h-full p-3 pt-0 pl-6 overflow-y-auto  scrollable-container"
             >
                 <div v-if="searchLoading">
                     <LoadingView />
@@ -183,6 +166,7 @@
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -302,6 +286,12 @@
 
                         // helper function to make the api call and remove the input on completion
                         const makeCreateFolderRequest = () => {
+                            useAddEvent(
+                                'insights',
+                                'folder',
+                                'created',
+                                newFolderName.value
+                            )
                             const { data } = createFolder(
                                 newFolderName.value,
                                 saveQueryLoading,

@@ -215,7 +215,7 @@ export const KeyMaps = {
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
         WORKFLOW_CONFIG_MAP: ({ name }: PathParams) =>
-            getAPIPath('/service', `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name}`)
+            getAPIPath('/service', `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name},com.atlan.orchestration/type=package`)
 
     },
 }

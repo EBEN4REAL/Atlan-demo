@@ -464,6 +464,8 @@
                 if (newActiveInlineTab) {
                     connector.value =
                         newActiveInlineTab?.explorer?.queries?.connectors?.connector
+                } else {
+                    connector.value = undefined
                 }
             })
             const saveQuery = async (saveQueryData: {

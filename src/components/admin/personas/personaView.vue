@@ -56,8 +56,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
-    import usePersonaService from '~/services/heracles/composables/personas'
+    import { defineComponent, ref } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -65,7 +64,12 @@
     import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
     import CreationModal from '@/admin/common/addModal.vue'
-    import { until, invoke } from '@vueuse/core'
+    import {
+        filteredPersonas,
+        searchTerm,
+        selectedPersona,
+        selectedPersonaId,
+    } from './composables/usePersonaList'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -79,36 +83,6 @@
             ExplorerList,
         },
         setup() {
-            const selectedPersonaId = ref('')
-            const searchTerm = ref('')
-
-            const { listPersonas } = usePersonaService()
-            const { data: personaList, isReady } = listPersonas()
-
-            const filteredPersonas = computed(() => {
-                if (searchTerm.value)
-                    return personaList.value.filter((ps) =>
-                        ps.personaName
-                            .toLowerCase()
-                            .includes(searchTerm.value.toLowerCase())
-                    )
-                else return personaList.value
-            })
-
-            const selectedPersona = computed(() => {
-                if (selectedPersonaId.value)
-                    return personaList.value.find(
-                        (ps) => ps.id === selectedPersonaId.value
-                    )
-                else return undefined
-            })
-
-            invoke(async () => {
-                await until(isReady).toBe(true)
-                if (personaList.value?.length)
-                    selectedPersonaId.value = personaList.value[0].id
-            })
-
             const modalVisible = ref(false)
 
             function toggleModal() {

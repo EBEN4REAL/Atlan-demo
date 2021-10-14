@@ -4,7 +4,12 @@ import { Ref } from 'vue'
 import { IPersona } from '~/types/accessPolicies/personas'
 
 const listPersonas = () =>
-    useAPIAsyncState<IPersona[]>(KeyMaps.personas.LIST_PERSONAS, 'GET', {})
+    useAPIAsyncState<IPersona[]>(
+        KeyMaps.personas.LIST_PERSONAS,
+        'GET',
+        {},
+        { resetOnExecute: false }
+    )
 
 const createPersona = () =>
     useAPIAsyncState<IPersona[]>(KeyMaps.personas.CREATE_PERSONA, 'POST', {})

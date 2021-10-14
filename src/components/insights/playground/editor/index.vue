@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <div class="flex mr-4 text-sm">
+                    <div class="flex text-sm">
                         <div class="flex">
                             <a-button
                                 type="primary"
@@ -175,6 +175,7 @@
                                 flex
                                 items-center
                                 justify-between
+                                px-3
                                 ml-2
                                 h-6
                                 py-0.5

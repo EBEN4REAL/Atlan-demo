@@ -162,15 +162,10 @@
                     },
                     playground: {
                         editor: {
-                            text:
-                                activeInlineTab.value?.playground?.editor
-                                    .text ??
-                                'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
+                            text: '',
                             dataList: [],
                             columnList: [],
-                            variables:
-                                activeInlineTab.value?.playground?.editor
-                                    .variables ?? [],
+                            variables: [],
                         },
                         resultsPane: {
                             activeTab:

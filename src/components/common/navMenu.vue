@@ -24,68 +24,77 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
-    import { useRoute } from 'vue-router'
-    import UserPersonalAvatar from '~/components/common/avatar/me.vue'
+import { computed, defineComponent, watch, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import UserPersonalAvatar from '~/components/common/avatar/me.vue'
+import { useTenantStore } from '~/store/tenants'
 
-    export default defineComponent({
-        name: 'Navigation Menu',
-        components: { UserPersonalAvatar },
-        props: {
-            page: { type: String, required: true },
-        },
-        emits: ['change', 'toggleNavbar'],
-        setup(props, { emit }) {
-            const route = useRoute()
+export default defineComponent({
+    name: 'Navigation Menu',
+    components: { UserPersonalAvatar },
+    props: {
+        page: { type: String, required: true },
+    },
+    emits: ['change', 'toggleNavbar'],
+    setup(props, { emit }) {
+        const route = useRoute()
+        const tenantStore = useTenantStore()
+        const path = computed(() => route.path)
 
-            const path = computed(() => route.path)
-
-            const isHome = computed(() => {
-                if (path.value === '/' || path.value === '') {
-                    return true
-                }
-                return false
-            })
-
-            const logoUrl = computed(() => {
-                return `${window.location.origin}/api/service/avatars/_logo_`
-            })
-
-            const navKeys = {
-                assets: 'Assets',
-                glossary: 'Glossary',
-                insights: 'Insights',
-                workflows: 'Workflows',
-                admin: 'Admin Centre',
+        const isHome = computed(() => {
+            if (path.value === '/' || path.value === '') {
+                return true
             }
+            return false
+        })
+        const logoUrl = ref('')
+        watch(
+            tenantStore,
+            () => {
+               
+                logoUrl.value = `${window.location.origin}/api/service/avatars/_logo_`
+            },
+            { deep: true }
+        )
+        // const logoUrl = computed(() => {
+        //     return `${window.location.origin}/api/service/avatars/_logo_`
+        // })
 
-            function handleClick(key: string) {
-                emit('change', key)
-            }
+        const navKeys = {
+            assets: 'Assets',
+            glossary: 'Glossary',
+            insights: 'Insights',
+            workflows: 'Workflows',
+            admin: 'Admin Centre',
+        }
 
-            return { handleClick, navKeys, isHome, logoUrl }
-        },
-    })
+        function handleClick(key: string) {
+            emit('change', key)
+        }
+
+        return { handleClick, navKeys, isHome, logoUrl }
+    },
+})
 </script>
 
 <style lang="less" scoped>
-    .menu-item {
-        @apply flex items-center px-3 my-2 self-stretch mx-1;
-        @apply font-bold text-base text-gray;
-        @apply rounded;
-        @apply transition duration-300;
-        @apply outline-none;
-        @apply border border-transparent;
+.menu-item {
+    @apply flex items-center px-3 my-2 self-stretch mx-1;
+    @apply font-bold text-base text-gray;
+    @apply rounded;
+    @apply transition duration-300;
+    @apply outline-none;
+    @apply border border-transparent;
 
-        &:hover {
-            @apply text-primary;
-        }
-        &:focus-visible {
-            @apply border-primary-focus !important;
-        }
-        &.active {
-            @apply text-primary;
-            @apply bg-primary-light;
-        }
+    &:hover {
+        @apply text-primary;
     }
+    &:focus-visible {
+        @apply border-primary-focus !important;
+    }
+    &.active {
+        @apply text-primary;
+        @apply bg-primary-light;
+    }
+}
 </style>

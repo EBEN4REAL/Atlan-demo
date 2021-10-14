@@ -1,0 +1,375 @@
+{
+    "metadata": {
+        "name": "atlan-jdbc-snowflake-crawler",
+        "uid": "b83dc6b3-bb5a-4a61-a104-e09e6422a1f7",
+        "resourceVersion": "8858051",
+        "generation": 7,
+        "creationTimestamp": "2021-10-14T05:52:21Z",
+        "labels": {
+            "com.atlan.orchestration.credential/verified": "true",
+            "com.atlan.orchestration.credential/version": "1",
+            "com.atlan.orchestration/description": "Package-to-crawl-metadata-from-snowflake",
+            "com.atlan.orchestration/displayName": "Snowflake-metadata-crawler",
+            "com.atlan.orchestration/package-type": "crawler",
+            "com.atlan.orchestration/parent-template-name": "atlan-jdbc-crawler",
+            "com.atlan.orchestration/source": "snowflake",
+            "com.atlan.orchestration/sourceType": "warehouse",
+            "com.atlan.orchestration/sub-type": "warehouse",
+            "com.atlan.orchestration/subType": "crawler",
+            "com.atlan.orchestration/type": "package",
+            "com.atlan.orchestration/workflow-template-name": "atlan-jdbc-crawler",
+            "org.argopm.package.installer": "argopm",
+            "org.argopm.package.name": "a-t-ratlans-l-a-s-hjdbc-crawler",
+            "org.argopm.package.parent": "a-t-ratlans-l-a-s-hjdbc-crawlera-t-r0.4.7",
+            "org.argopm.package.registry": "local",
+            "org.argopm.package.version": "0.4.7"
+        },
+        "managedFields": [
+            {
+                "manager": "unknown",
+                "operation": "Update",
+                "apiVersion": "argoproj.io/v1alpha1",
+                "time": "2021-10-14T07:27:48Z",
+                "fieldsType": "FieldsV1",
+                "fieldsV1": {
+                    "f:metadata": {
+                        "f:labels": {
+                            ".": {},
+                            "f:com.atlan.orchestration.credential/verified": {},
+                            "f:com.atlan.orchestration.credential/version": {},
+                            "f:com.atlan.orchestration/description": {},
+                            "f:com.atlan.orchestration/displayName": {},
+                            "f:com.atlan.orchestration/package-type": {},
+                            "f:com.atlan.orchestration/parent-template-name": {},
+                            "f:com.atlan.orchestration/source": {},
+                            "f:com.atlan.orchestration/sourceType": {},
+                            "f:com.atlan.orchestration/sub-type": {},
+                            "f:com.atlan.orchestration/subType": {},
+                            "f:com.atlan.orchestration/type": {},
+                            "f:com.atlan.orchestration/workflow-template-name": {},
+                            "f:org.argopm.package.installer": {},
+                            "f:org.argopm.package.name": {},
+                            "f:org.argopm.package.parent": {},
+                            "f:org.argopm.package.registry": {},
+                            "f:org.argopm.package.version": {}
+                        }
+                    },
+                    "f:spec": {
+                        ".": {},
+                        "f:arguments": {},
+                        "f:entrypoint": {},
+                        "f:templates": {},
+                        "f:workflowTemplateRef": {}
+                    }
+                }
+            }
+        ]
+    },
+    "spec": {
+        "templates": [
+            {
+                "name": "main",
+                "inputs": {},
+                "outputs": {},
+                "metadata": {},
+                "dag": {
+                    "tasks": [
+                        {
+                            "name": "extract",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "credentials-fetch-strategy",
+                                        "value": "{{workflow.parameters.credentials-fetch-strategy}}"
+                                    },
+                                    {
+                                        "name": "credential-kube-secret-name",
+                                        "value": "{{workflow.parameters.credential-kube-secret-name}}"
+                                    },
+                                    {
+                                        "name": "credential-guid",
+                                        "value": "{{workflow.parameters.credential-guid}}"
+                                    },
+                                    {
+                                        "name": "jdbc-jar-tarball-location",
+                                        "value": "{{workflow.parameters.jdbc-jar-tarball-location}}"
+                                    },
+                                    {
+                                        "name": "runtime-properties",
+                                        "value": "{{workflow.parameters.runtime-properties}}"
+                                    },
+                                    {
+                                        "name": "system-schema-regex",
+                                        "value": "{{workflow.parameters.system-schema-regex}}"
+                                    },
+                                    {
+                                        "name": "include-filter",
+                                        "value": "{{workflow.parameters.include-filter}}"
+                                    },
+                                    {
+                                        "name": "exclude-filter",
+                                        "value": "{{workflow.parameters.exclude-filter}}"
+                                    },
+                                    {
+                                        "name": "output-prefix",
+                                        "value": "{{workflow.parameters.output-prefix}}"
+                                    },
+                                    {
+                                        "name": "default-database-name",
+                                        "value": "{{workflow.parameters.default-database-name}}"
+                                    },
+                                    {
+                                        "name": "default-schema-name",
+                                        "value": "{{workflow.parameters.default-schema-name}}"
+                                    },
+                                    {
+                                        "name": "fetch-primary-keys",
+                                        "value": "{{workflow.parameters.fetch-primary-keys}}"
+                                    },
+                                    {
+                                        "name": "fetch-imported-keys",
+                                        "value": "{{workflow.parameters.fetch-imported-keys}}"
+                                    },
+                                    {
+                                        "name": "database-companion-sql",
+                                        "value": "{{workflow.parameters.database-companion-sql}}"
+                                    },
+                                    {
+                                        "name": "schema-companion-sql",
+                                        "value": "{{workflow.parameters.schema-companion-sql}}"
+                                    },
+                                    {
+                                        "name": "table-companion-sql",
+                                        "value": "{{workflow.parameters.table-companion-sql}}"
+                                    },
+                                    {
+                                        "name": "column-companion-sql",
+                                        "value": "{{workflow.parameters.column-companion-sql}}"
+                                    },
+                                    {
+                                        "name": "extra-companion-sqls",
+                                        "value": "{{workflow.parameters.extra-companion-sqls}}"
+                                    },
+                                    {
+                                        "name": "dynamic-query-config",
+                                        "value": "{{workflow.parameters.dynamic-query-config}}"
+                                    }
+                                ]
+                            },
+                            "templateRef": {
+                                "name": "atlan-jdbc-crawler",
+                                "template": "extract-metadata",
+                                "clusterScope": true
+                            }
+                        },
+                        {
+                            "name": "publish",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "connection-name",
+                                        "value": "{{workflow.parameters.connection-name}}"
+                                    },
+                                    {
+                                        "name": "mode",
+                                        "value": "{{workflow.parameters.mode}}"
+                                    },
+                                    {
+                                        "name": "credential-guid",
+                                        "value": "{{workflow.parameters.credential-guid}}"
+                                    },
+                                    {
+                                        "name": "host",
+                                        "value": "{{workflow.parameters.host}}"
+                                    },
+                                    {
+                                        "name": "port",
+                                        "value": "{{workflow.parameters.port}}"
+                                    },
+                                    {
+                                        "name": "source",
+                                        "value": "{{workflow.parameters.source}}"
+                                    },
+                                    {
+                                        "name": "crawler-name",
+                                        "value": "{{workflow.parameters.crawler-name}}"
+                                    },
+                                    {
+                                        "name": "atlas-auth-type",
+                                        "value": "{{workflow.parameters.atlas-auth-type}}"
+                                    },
+                                    {
+                                        "name": "allow-preview",
+                                        "value": "{{workflow.parameters.allow-preview}}"
+                                    },
+                                    {
+                                        "name": "allow-query",
+                                        "value": "{{workflow.parameters.allow-query}}"
+                                    },
+                                    {
+                                        "name": "row-limit",
+                                        "value": "{{workflow.parameters.row-limit}}"
+                                    }
+                                ]
+                            },
+                            "templateRef": {
+                                "name": "atlan-jdbc-crawler",
+                                "template": "publish",
+                                "clusterScope": true
+                            },
+                            "dependencies": [
+                                "extract"
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "entrypoint": "main",
+        "arguments": {
+            "parameters": [
+                {
+                    "name": "connection-name",
+                    "value": "amit-conn"
+                },
+                {
+                    "name": "mode",
+                    "value": "production",
+                    "enum": [
+                        "production",
+                        "test",
+                        "dev"
+                    ]
+                },
+                {
+                    "name": "credentials-fetch-strategy",
+                    "value": "credential_guid",
+                    "enum": [
+                        "k8s_secret",
+                        "credential_guid"
+                    ]
+                },
+                {
+                    "name": "credential-guid",
+                    "value": "f897469a-8dd6-4334-9c52-36e182481b2b"
+                },
+                {
+                    "name": "credential-kube-secret-name",
+                    "value": ""
+                },
+                {
+                    "name": "host",
+                    "value": "jv22371.ap-south-1.snowflakecomputing.com"
+                },
+                {
+                    "name": "port",
+                    "value": "443"
+                },
+                {
+                    "name": "source",
+                    "value": "snowflake"
+                },
+                {
+                    "name": "crawler-name",
+                    "value": "amit"
+                },
+                {
+                    "name": "atlas-auth-type",
+                    "value": "internal",
+                    "enum": [
+                        "internal",
+                        "apikey"
+                    ]
+                },
+                {
+                    "name": "allow-preview",
+                    "value": "true",
+                    "enum": [
+                        "true",
+                        "false"
+                    ]
+                },
+                {
+                    "name": "allow-query",
+                    "value": "true",
+                    "enum": [
+                        "true",
+                        "false"
+                    ]
+                },
+                {
+                    "name": "row-limit",
+                    "value": "1000"
+                },
+                {
+                    "name": "jdbc-jar-tarball-location",
+                    "value": "https://atlan-public.s3-eu-west-1.amazonaws.com/atlan/jdbc/snowflake.tar.gz"
+                },
+                {
+                    "name": "runtime-properties",
+                    "value": "{}"
+                },
+                {
+                    "name": "system-schema-regex",
+                    "value": "[\"INFORMATION_SCHEMA\"]\n"
+                },
+                {
+                    "name": "include-filter",
+                    "value": "{}"
+                },
+                {
+                    "name": "exclude-filter",
+                    "value": "{}"
+                },
+                {
+                    "name": "output-prefix",
+                    "value": "jdbc-extractor"
+                },
+                {
+                    "name": "default-database-name",
+                    "value": ""
+                },
+                {
+                    "name": "default-schema-name",
+                    "value": ""
+                },
+                {
+                    "name": "fetch-primary-keys",
+                    "value": "true"
+                },
+                {
+                    "name": "fetch-imported-keys",
+                    "value": "true"
+                },
+                {
+                    "name": "database-companion-sql",
+                    "value": ""
+                },
+                {
+                    "name": "schema-companion-sql",
+                    "value": ""
+                },
+                {
+                    "name": "table-companion-sql",
+                    "value": "SELECT s.STAGE_URL, s.STAGE_REGION, e.LOCATION, e.FILE_FORMAT_TYPE, v.VIEW_DEFINITION, t.TABLE_CATALOG as TABLE_CAT, t.TABLE_SCHEMA as TABLE_SCHEM, t.* FROM INFORMATION_SCHEMA.TABLES as t LEFT JOIN INFORMATION_SCHEMA.EXTERNAL_TABLES as e ON (t.TABLE_SCHEMA = e.TABLE_SCHEMA AND t.TABLE_NAME = e.TABLE_NAME AND t.TABLE_TYPE = 'EXTERNAL TABLE') LEFT JOIN INFORMATION_SCHEMA.STAGES as s ON (t.TABLE_SCHEMA = s.STAGE_SCHEMA AND t.TABLE_TYPE = 'EXTERNAL TABLE') LEFT JOIN INFORMATION_SCHEMA.VIEWS as v ON (t.TABLE_SCHEMA = v.TABLE_SCHEMA AND t.TABLE_NAME = v.TABLE_NAME) WHERE t.TABLE_SCHEMA != 'INFORMATION_SCHEMA'"
+                },
+                {
+                    "name": "column-companion-sql",
+                    "value": "SELECT TABLE_CATALOG as TABLE_CAT, TABLE_SCHEMA as TABLE_SCHEM, * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema != 'INFORMATION_SCHEMA'"
+                },
+                {
+                    "name": "extra-companion-sqls",
+                    "value": "{}"
+                },
+                {
+                    "name": "dynamic-query-config",
+                    "value": "{}"
+                }
+            ]
+        },
+        "workflowTemplateRef": {
+            "name": "atlan-jdbc-crawler",
+            "clusterScope": true
+        }
+    }
+}

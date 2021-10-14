@@ -100,12 +100,24 @@ const getArchivedWorkflowRun = (guid, { immediate, options }) =>
         { immediate }
     )
 
+const createWorkflow = ({ body, immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.CREATE_WORKFLOW,
+        'POST',
+        {
+            body,
+            options
+        },
+        { immediate }
+    )
+
 export const Workflows = {
     URL,
     List,
     getArchivedWorkflowList,
     getWorkflowByName,
     getWorkflows,
+    createWorkflow,
     getArchivedWorkflowRun,
     getWorkflowTemplates,
     getWorkflowConfigMap,

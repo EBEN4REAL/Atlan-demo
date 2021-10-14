@@ -1,8 +1,11 @@
 import { computed } from 'vue'
 import { isEditing } from './useEditPersona'
-import { personaList, selectedPersonaId } from './usePersonaList'
+import { personaList, selectedPersonaId, reFetchList } from './usePersonaList'
+import usePersonaService from '~/services/heracles/composables/personas'
 
-const newPersonaIndex = computed(() =>
+const { createPersona } = usePersonaService()
+
+export const newPersonaIndex = computed(() =>
     personaList.value.findIndex((persona) => persona.id === 'new')
 )
 
@@ -29,8 +32,13 @@ export function createNewPersona() {
     isEditing.value = true
 }
 
-export function saveNewPersona() {
-    console.log('NEW PERSONA', personaList.value[newPersonaIndex.value])
+export async function saveNewPersona() {
+    if (isNewPersona.value) {
+        const newPersona = personaList.value[newPersonaIndex.value]
+        newPersona.personaName = newPersona.displayName
+        await createPersona(newPersona)
+        reFetchList()
+    }
 }
 
 export function discardNewPersona() {

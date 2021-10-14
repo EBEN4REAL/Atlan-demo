@@ -1,6 +1,5 @@
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState, useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '../keyMaps'
-import { Ref } from 'vue'
 import { IPersona } from '~/types/accessPolicies/personas'
 
 const listPersonas = () =>
@@ -11,8 +10,10 @@ const listPersonas = () =>
         { resetOnExecute: false }
     )
 
-const createPersona = () =>
-    useAPIAsyncState<IPersona[]>(KeyMaps.personas.CREATE_PERSONA, 'POST', {})
+const createPersona = (newPersona: IPersona) =>
+    useAPIPromise(KeyMaps.personas.CREATE_PERSONA(), 'POST', {
+        body: newPersona,
+    })
 
 export const personaServiceAPI = {
     listPersonas,

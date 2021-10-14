@@ -30,7 +30,11 @@
                 <a-form-item label="Admins" name="admins">
                     {{ selectedPersonaDirty.admins }}
                 </a-form-item>
-                <a-form-item label="Created On" name="createdAt">
+                <a-form-item
+                    v-if="selectedPersonaDirty.createdAt"
+                    label="Created On"
+                    name="createdAt"
+                >
                     {{ selectedPersonaDirty.createdAt }}
                 </a-form-item>
                 <a-divider />
@@ -92,11 +96,6 @@
                 },
                 { immediate: true }
             )
-
-            // const selectedPersona = computed({
-            //     get: () => localPerson.value,
-            //     set: (val) => emit('update:persona', val),
-            // })
 
             const activeTabKey = ref('ov')
             const tabConfig = [

@@ -1,13 +1,7 @@
 <template>
-    <div class="flex w-full">
+    <div class="flex w-full h-full">
         <div
-            class="
-                flex flex-col
-                h-full
-                bg-white
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full bg-white border-r border-gray-300 facets"
         >
             <AtlanBtn
                 class="m-2"
@@ -144,20 +138,20 @@
     import { useRouter } from 'vue-router'
     import emptyScreen from '~/assets/images/empty_search.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import Preferences from '@/workflows/setup/list/preference.vue'
-    import WorkflowList from '@/workflows/setup/list/workflowList.vue'
-    import WorkflowFilters from '@/workflows/setup/filters/workflowFilters.vue'
+    import Preferences from '@/workflows/new/list/preference.vue'
+    import WorkflowList from '@/workflows/new/list/workflowList.vue'
+    import WorkflowFilters from '@/workflows/new/filters/workflowFilters.vue'
 
-    import { serializeQuery } from '~/utils/helper/routerHelper'
+    import { serializeQuery, decodeQuery } from '~/utils/helper/routerHelper'
 
-    import useFilterUtils from '@/workflows/setup/filters/useFilterUtils'
+    import useFilterUtils from '@/workflows/new/filters/useFilterUtils'
     import { useWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
-    import WorkflowCards from '@/workflows/setup/cards.vue'
-    import SetupPreview from '@/workflows/setup/preview/preview.vue'
+    import WorkflowCards from '@/workflows/new/cards.vue'
+    import SetupPreview from '@/workflows/new/preview/preview.vue'
 
     export default defineComponent({
-        name: 'WorkflowDiscovery',
+        // name: 'WorkflowDiscovery',
         components: {
             WorkflowList,
             SetupPreview,
@@ -169,20 +163,24 @@
             SearchAndFilter,
             AtlanBtn,
         },
-        props: {
-            initialFilters: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-        },
         emits: ['preview'],
         setup(props, { emit }) {
+            console.log('In Setup')
+
             // FIXME FIX FILTERS
-            const { initialFilters } = toRefs(props)
             const router = useRouter()
+            const initialFilters: Record<string, any> = ref({
+                facetsFilters: {},
+                searchText: '',
+                selectedTab: 'Catalog',
+                sortOrder: 'default',
+                state: 'active',
+                ...decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                ),
+            })
+
+            console.log(initialFilters.value)
 
             // workflow filter component ref
             const workflowFilterRef = ref()

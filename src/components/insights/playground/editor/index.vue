@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-full h-full rounded">
+    <div class="relative w-full h-full bg-white rounded">
         <div class="w-full h-full px-3 overflow-x-hidden rounded">
             <div class="flex items-center justify-between w-full my-2">
                 <div class="flex items-center text-base">
@@ -16,30 +16,100 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <div
-                            class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
-                            :class="showcustomToolBar ? 'bg-gray-300' : ''"
-                            @click="toggleCustomToolbar"
-                        >
-                            {&nbsp;}
-                        </div>
-                        <div
-                            class="
-                                items-center
-                                justify-center
-                                px-1
-                                ml-2
-                                py-0.5
-                                -mt-0.5
-                                rounded
-                                cursor-pointer
-                                hover:bg-gray-300
-                                group
-                            "
-                            @click="formatDocument"
-                        >
-                            <AtlanIcon icon="Readme" class="w-5 h-5" />
-                        </div>
+                        <a-tooltip>
+                            <template #title>Custom variables</template>
+                            <div
+                                class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
+                                :class="showcustomToolBar ? 'bg-gray-300' : ''"
+                                @click="toggleCustomToolbar"
+                            >
+                                {&nbsp;}
+                            </div>
+                        </a-tooltip>
+                        <a-tooltip>
+                            <template #title>Format text</template>
+                            <div
+                                class="
+                                    items-center
+                                    justify-center
+                                    px-1
+                                    ml-2
+                                    py-0.5
+                                    -mt-0.5
+                                    rounded
+                                    cursor-pointer
+                                    hover:bg-gray-300
+                                    group
+                                "
+                                @click="formatDocument"
+                            >
+                                <AtlanIcon icon="Readme" class="w-5 h-5" />
+                            </div>
+                        </a-tooltip>
+                        <a-tooltip>
+                            <template #title>{{
+                                fullSreenState
+                                    ? 'Exit full screen'
+                                    : 'Go full screen'
+                            }}</template>
+                            <div
+                                :class="fullSreenState ? 'bg-gray-300' : ''"
+                                class="
+                                    items-center
+                                    justify-center
+                                    px-1
+                                    ml-1
+                                    py-0.5
+                                    -mt-0.5
+                                    rounded
+                                    cursor-pointer
+                                    hover:bg-gray-300
+                                    group
+                                "
+                            >
+                                <div
+                                    class="
+                                        items-center
+                                        justify-center
+                                        px-1
+                                        py-0.5
+                                        rounded
+                                        cursor-pointer
+                                        hover:bg-gray-300
+                                    "
+                                    @click="tFullScreen"
+                                >
+                                    <div
+                                        class="
+                                            w-4
+                                            h-4
+                                            p-0.5
+                                            border border-gray-500
+                                            rounded
+                                        "
+                                        v-if="fullSreenState"
+                                    >
+                                        <div
+                                            class="w-full h-full bg-gray-500 border rounded "
+                                        ></div>
+                                    </div>
+                                    <div
+                                        class="
+                                            w-4
+                                            h-4
+                                            p-0.5
+                                            border border-gray-500
+                                            rounded
+                                        "
+                                        v-else
+                                    >
+                                        <div
+                                            class="w-full h-full border border-gray-500 rounded "
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a-tooltip>
                     </div>
                 </div>
                 <div class="flex items-center">
@@ -50,6 +120,8 @@
                                 class="
                                     flex
                                     items-center
+                                    button-shadow
+                                    border-none
                                     py-0.5
                                     h-6
                                     rounded-none rounded-tl rounded-bl
@@ -57,7 +129,7 @@
                                 :class="
                                     isQueryRunning === 'loading'
                                         ? 'px-4.5 pr-3.5'
-                                        : 'px-2 pr-1'
+                                        : 'px-2'
                                 "
                                 :loading="
                                     isQueryRunning === 'loading' ? true : false
@@ -73,12 +145,12 @@
                                 Run</a-button
                             >
                             <a-dropdown :trigger="['click']">
-                                <a-button
-                                    type="primary"
+                                <div
                                     class="
                                         flex
                                         w-5
                                         items-center
+                                        run-three-dot
                                         bg-primary
                                         justify-between
                                         rounded-none rounded-tr rounded-br
@@ -86,13 +158,11 @@
                                         py-0.5
                                     "
                                 >
-                                    <template #icon>
-                                        <AtlanIcon
-                                            class="text-white"
-                                            icon="KebabMenu"
-                                        />
-                                    </template>
-                                </a-button>
+                                    <AtlanIcon
+                                        class="text-white"
+                                        icon="KebabMenu"
+                                    />
+                                </div>
                                 <template #overlay>
                                     <a-menu>
                                         <div class="p-2">
@@ -118,6 +188,8 @@
                                 flex
                                 items-center
                                 justify-between
+                                button-shadow
+                                border-none
                                 ml-2
                                 h-6
                                 py-0.5
@@ -148,7 +220,8 @@
                                     flex
                                     px-2
                                     items-center
-                                    justify-between
+                                    button-shadow
+                                    border-none
                                     cursor-pointer
                                     ml-2
                                     h-6
@@ -174,7 +247,8 @@
                             class="
                                 flex
                                 items-center
-                                justify-between
+                                button-shadow
+                                border-none
                                 px-3
                                 ml-2
                                 h-6
@@ -188,14 +262,34 @@
 
                             Save
                         </a-button>
-                        <a-button
-                            class="flex items-center ml-2 h-6 py-0.5 px-2"
-                            @click="copyURL"
-                        >
-                            <AtlanIcon class="mr-1" icon="Share" /><span
-                                >Share</span
-                            ></a-button
-                        >
+                        <a-dropdown>
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item key="1" @click="copyURL">
+                                        Copy link
+                                    </a-menu-item>
+                                    <!-- <a-menu-item key="2">
+                            Share via other integration
+                        </a-menu-item>
+                        <a-menu-item key="3"> Share via slack </a-menu-item> -->
+                                </a-menu>
+                            </template>
+                            <a-button
+                                class="
+                                    flex
+                                    items-center
+                                    ml-2
+                                    h-6
+                                    py-0.5
+                                    button-shadow
+                                    border-none
+                                "
+                            >
+                                <AtlanIcon class="mr-1" icon="Share" /><span
+                                    >Share</span
+                                ></a-button
+                            >
+                        </a-dropdown>
                         <ThreeDotMenu />
                     </div>
                 </div>
@@ -290,6 +384,7 @@
     import { editor } from 'monaco-editor'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useFullScreen } from '~/components/insights/common/composables/useFullScreen'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     // import ActionButtons from '~/components/insights/playground/editor/actionButtons/index.vue'
     import WarehouseConnector from '~/components/insights/playground/editor/warehouse/index.vue'
@@ -321,6 +416,7 @@
             const { resultsPaneSizeToggle } = useHotKeys()
             const { queryRun, modifyQueryExecutionTime } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
+            const { toggleFullScreenMode } = useFullScreen()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
                 column: 0,
                 lineNumber: 0,
@@ -329,15 +425,17 @@
             const saveModalRef = ref()
             const limitRows = ref({
                 checked: true,
-                rowsCount: 10,
+                rowsCount: 100,
             })
             const showcustomToolBar = ref(false)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const fullScreen = inject('fullScreen') as Function
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
@@ -432,9 +530,13 @@
                 console.log('called')
                 resultsPaneSizeToggle(outputPaneSize)
             }
+            const tFullScreen = () => {
+                toggleFullScreenMode(fullSreenState)
+            }
+
             /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
+                ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+                */
             const provideData: provideDataInterface = {
                 editorPos: editorPos,
                 editorFocused: editorFocused,
@@ -449,6 +551,8 @@
                 console.log(pos)
             })
             return {
+                tFullScreen,
+                fullSreenState,
                 togglePane,
                 outputPaneSize,
                 useTimeAgo,
@@ -484,6 +588,12 @@
     }
     .editor_height {
         height: 95%;
+    }
+    .button-shadow {
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    .run-three-dot {
+        border-left: 1px solid rgba(255, 255, 255, 0.203);
     }
 </style>
 

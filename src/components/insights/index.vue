@@ -1,5 +1,5 @@
 <template>
-    <div class="flex h-full">
+    <div class="flex h-full" id="fullScreenId">
         <!--Sidebar navigation pane start -->
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
@@ -111,6 +111,7 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     // import { useConnector } from './common/composables/useConnector'
     import { useHotKeys } from './common/composables/useHotKeys'
+    import { useFullScreen } from './common/composables/useFullScreen'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
@@ -138,6 +139,7 @@
             } = useSpiltPanes()
             // TODO: will be used for HOTKEYs
             const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
+            const { fullSreenState } = useFullScreen()
 
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
@@ -175,6 +177,7 @@
                     monacoInstance.value = monacoInstanceParam
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
+
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -187,6 +190,7 @@
                 monacoInstance: monacoInstance,
                 outputPaneSize: outputPaneSize,
                 queryExecutionTime: queryExecutionTime,
+                fullSreenState: fullSreenState,
                 setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
@@ -224,6 +228,7 @@
             onUnmounted(() => {
                 window.removeEventListener('keypress', _keyListener)
             })
+
             return {
                 activeTab,
                 activeTabId,

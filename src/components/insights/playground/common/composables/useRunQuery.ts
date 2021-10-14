@@ -1,6 +1,6 @@
 import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
-import { KeyMaps } from '~/api/keyMap'
+import { KeyMaps } from '~/services/heka/heka_keyMaps'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
@@ -100,7 +100,7 @@ export default function useProject() {
             error,
             isLoading,
         } = useSSE({
-            path: KeyMaps.query.RUN_QUERY,
+            path: KeyMaps.insights.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
         })

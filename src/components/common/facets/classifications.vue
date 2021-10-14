@@ -64,7 +64,7 @@
                         >
                             <a-checkbox
                                 v-if="item?.displayName"
-                                :value="item.name"
+                                :value="item.displayName"
                                 class="w-full mb-3"
                             >
                                 <span class="mb-0 truncated">

@@ -137,14 +137,7 @@
 
 <script>
     import DynamicInput from '@common/input/dynamic.vue'
-    import {
-        defineComponent,
-        reactive,
-        ref,
-        watch,
-        computed,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, ref, watch, computed } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import useFormGenerator from './useFormGenerator'
 
@@ -161,13 +154,13 @@
                 type: Boolean,
             },
         },
-        setup(props) {
+        emits: ['change'],
+        setup(props, { emit }) {
             const formRef = ref()
             const configX = computed(() => props.config)
             const {
                 processedSchema: formModel,
                 getGridClass,
-                finalConfigObject,
                 handleInputChange,
                 submitStatus,
                 getRules,
@@ -176,7 +169,7 @@
                 isRequiredField,
                 handleFormSubmit,
                 init,
-            } = useFormGenerator(configX, formRef)
+            } = useFormGenerator(configX, formRef, emit)
 
             watch(configX, () => {
                 init()

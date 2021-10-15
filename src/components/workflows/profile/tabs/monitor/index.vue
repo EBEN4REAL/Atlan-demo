@@ -20,7 +20,7 @@
     // Composables
     import {
         useArchivedWorkflowRun,
-        useArchivedWorkflowList,
+        useArchivedRunList,
     } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
@@ -43,11 +43,11 @@
             const id = computed(() => route?.params?.id || '')
 
             /** METHODS */
-            // useArchivedWorkflowList
+            // useArchivedRunList
             const labelSelector = computed(
                 () => `workflows.argoproj.io/workflow-template=${id.value}`
             )
-            const { workflowList } = useArchivedWorkflowList(labelSelector)
+            const { runList } = useArchivedRunList(labelSelector)
 
             // useArchivedWorkflowRun
             const fetchRunData = () => {
@@ -59,7 +59,7 @@
             }
 
             /** Watchers */
-            watch(workflowList, (newVal) => {
+            watch(runList, (newVal) => {
                 currRunId.value = newVal[0].metadata.uid
                 fetchRunData()
             })

@@ -89,6 +89,8 @@ import Pencil from '~/assets/images/icons/pencil.svg'
 import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
+import RunSuccess from '~/assets/images/icons/run-success.svg'
+import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
 import WorkflowsInactive from '~/assets/images/icons/workflows_inactive.svg'
 import InsightsActive from '~/assets/images/icons/insights_active.svg'
@@ -97,6 +99,8 @@ import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 
 export default {
+    RunSuccess,
+    RunFailed,
     Metadata,
     Relation,
     Overview,

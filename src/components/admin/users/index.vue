@@ -338,7 +338,7 @@
     import ChangeRole from './changeRole.vue'
     import InviteUsers from './inviteUsers.vue'
     import useRoles from '~/composables/roles/useRoles'
-    import { useTenantStore } from '~/store/tenants'
+    import { useTenantStore } from '~/services/keycloak/tenant/store'
 
     export default defineComponent({
         components: {
@@ -611,7 +611,7 @@
                 return name
             }
             const imageUrl = (username: any) =>
-                `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
+             `${window.location.origin}/api/service/avatars/${username}`;
             const handleStatusFilterChange = () => {
                 console.log(statusFilterValue.value)
                 const localFilterParams = [...userListAPIParams.filter.$and]

@@ -1,5 +1,5 @@
 import { defineComponent, getCurrentInstance, computed, inject } from 'vue';
-import { useTenantStore } from '~/store/tenants';
+import { useTenantStore } from '~/services/keycloak/tenant/store';
 
 export default defineComponent({
     setup() {

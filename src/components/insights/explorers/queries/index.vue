@@ -30,7 +30,7 @@
                                     : ''
                             "
                             @click="() => onSelectQueryType('personal')"
-                            >Personal</span
+                            >Private</span
                         >
                         <span
                             class="cursor-pointer hover:text-primary-400"

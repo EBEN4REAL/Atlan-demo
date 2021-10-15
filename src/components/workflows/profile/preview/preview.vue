@@ -1,45 +1,5 @@
 <template>
     <div>
-        <div v-if="showCrossIcon">
-            <a-button
-                class="
-                    fixed
-                    z-10
-                    px-0
-                    border-r-0
-                    rounded-none rounded-l
-                    -left-5
-                "
-                @click="$emit('closeSidebar')"
-            >
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="h-4 ml-1 transition-transform transform -rotate-90"
-                />
-            </a-button>
-        </div>
-        <div class="px-5 py-3 border-b">
-            <div class="flex items-center justify-between mb-0 text-sm">
-                <div class="flex items-center flex-none">
-                    <span class="text-sm tracking-wider text-gray-700 uppercase"
-                        >WORKFLOW</span
-                    >
-                </div>
-                <div class="flex space-x-2">
-                    <a-button-group>
-                        <a-button size="small"
-                            ><AtlanIcon icon="Share"
-                        /></a-button>
-                        <a-button size="small">
-                            <AtlanIcon icon="External" />
-                        </a-button>
-                        <a-button size="small">
-                            <AtlanIcon icon="Bookmark" />
-                        </a-button>
-                    </a-button-group>
-                </div>
-            </div>
-        </div>
         <div v-if="selectedTab === 'setup'">
             <div v-if="formConfig[selectedDag]" class="m-3">
                 <FormBuilder
@@ -96,11 +56,13 @@
                             justify-between
                             px-4
                             pt-2
+                            mt-2
+                            text-lg
                             font-semibold
-                            text-gray-700 text-md
+                            text-gray-700
                         "
                     >
-                        {{ tab.tooltip }}
+                        {{ tab.name }}
                     </div>
 
                     <component
@@ -120,12 +82,10 @@
         defineAsyncComponent,
         defineComponent,
         onMounted,
-        PropType,
         ref,
         Ref,
         toRefs,
         watch,
-        provide,
         computed,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
@@ -133,7 +93,6 @@
     import { useRoute } from 'vue-router'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import FormBuilder from '@/common/formGenerator/index.vue'
     import { updateWorkflowByName } from '~/composables/workflow/useWorkFlowList'
@@ -186,10 +145,10 @@
                     tooltip: 'Overview',
                 },
                 {
-                    name: 'Runs',
+                    name: 'Run History',
                     component: 'runs',
-                    icon: 'Activity',
-                    tooltip: 'Runs',
+                    icon: 'RunHistory',
+                    tooltip: 'Run History',
                 },
             ]
 

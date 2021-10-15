@@ -49,7 +49,7 @@ export function useArchivedRunList(
     })
 
     const filterList = (text) =>
-        runList.value.filter((wf) => wf.metadata.name.includes(text))
+        runList.value.filter((wf) => wf.name.toLowerCase().includes(text.toLowerCase()))
 
 
     const reFetch = (name) => {

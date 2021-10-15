@@ -57,7 +57,6 @@
 <script lang="ts">
     import { defineComponent, computed, ref, PropType } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
-    import Dropdown from '~/components/admin/classifications/dropdown.vue'
     import UpdateClassificationModal from './updateClassificationModal.vue'
     import DeleteClassificationModal from './deleteClassificationModal.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -119,21 +118,19 @@
             const updatedBy = computed(
                 () => selectedClassification.value.updatedBy
             )
-            const classificationDropdownOption = computed(() => {
-                const dpOpArray: any[] = []
-                dpOpArray.push({
+            const classificationDropdownOption = computed(() => [
+                {
                     title: 'Edit',
                     icon: 'Edit',
                     handleClick: editClassification,
-                })
-                dpOpArray.push({
+                },
+                {
                     title: 'Delete',
                     icon: 'Trash',
                     class: 'text-red-700',
                     handleClick: deleteClassification,
-                })
-                return dpOpArray
-            })
+                },
+            ])
             const deleteClassification = () => {
                 isDeleteClassificationModalOpen.value = true
             }
@@ -170,12 +167,3 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .three-dots {
-        height: fit-content;
-        cursor: pointer;
-    }
-    .max-text-width {
-        max-width: calc(100vw - 48rem);
-    }
-</style>

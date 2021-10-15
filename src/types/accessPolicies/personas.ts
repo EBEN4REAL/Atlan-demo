@@ -1,9 +1,18 @@
+export interface MetadataPolicies {
+    actions: string[]
+    assets: string[]
+}
+
 export interface IPersona {
     id: string
-    metadataPolicies: []
-    orgPolicies: []
+    displayName: string
+    description?: string
     personaName: string
-    roles: []
-    updatedAt: string
-    updatedBy: string
+    metadataPolicies: MetadataPolicies[]
+    orgPolicies: []
+    admins: string[]
+    updatedAt?: string
+    updatedBy?: string
+    createdAt?: string
+    createdBy?: string
 }

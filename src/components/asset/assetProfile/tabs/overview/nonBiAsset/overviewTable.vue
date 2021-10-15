@@ -1,33 +1,31 @@
 <template>
     <div class="sampleData">
         <!-- Table -->
-        <!-- <div class="flex justify-center w-full h-full overflow-x-auto rounded">
+        <!--  <div class="relative border rounded border-gray-light h-96">
             <a-table
                 :columns="tableColumns"
                 :data-source="results"
                 :pagination="false"
-                :scroll="{ y: 300 }"
+                :scroll="{ x: true, y: 300 }"
                 :loading="isLoading"
-                class="w-full overflow-x-auto"
+                class="absolute left-0 w-full"
                 size="small"
             >
-            </a-table> 
-            <a-table
+            </a-table>
+             <a-table
                 :data-source="results"
                 :loading="isLoading"
                 :pagination="false"
                 :scroll="{ y: 300 }"
-                class="w-full overflow-x-auto"
+                class="absolute left-0 w-full"
                 size="small"
             >
                 <a-table-column
                     v-for="col in tableColumns"
                     :key="col.dataIndex"
                     :data-index="col.dataIndex"
-                    :style="{ width: col.width }"
                 >
                     <template #title>
-                        
                         <div class="flex">
                             <component
                                 :is="images[col.columnType]"
@@ -41,8 +39,8 @@
                         {{ text }}
                     </template>
                 </a-table-column>
-            </a-table>
-        </div> -->
+            </a-table> 
+        </div>-->
         <table>
             <thead>
                 <tr>
@@ -52,7 +50,7 @@
                                 :is="images[col.data_type]"
                                 class="w-4 h-4 mr-3"
                             ></component>
-                            {{ col.title }}
+                            <Tooltip :tooltip-text="col.title" />
                         </div>
                     </th>
                 </tr>
@@ -61,7 +59,7 @@
             <tbody>
                 <tr v-for="(row, index) in results" :key="index">
                     <td v-for="(rowData, index) in row" :key="index">
-                        {{ rowData }}
+                        <Tooltip :tooltip-text="rowData" />
                     </td>
                 </tr>
             </tbody>
@@ -81,7 +79,7 @@
     import { useAPI } from '~/api/useAPI'
 
     export default defineComponent({
-        coponents: { Tooltip },
+        components: { Tooltip },
         setup() {
             /** DATA */
             const tableColumns = ref<any>([])
@@ -111,7 +109,7 @@
             const getDataType = (type: string) => {
                 let label = ''
                 dataTypeList.forEach((i) => {
-                    if (i.type.includes(type)) label = i.label
+                    if (i.type.includes(type.toUpperCase())) label = i.label
                 })
                 return label
             }
@@ -120,7 +118,7 @@
             watch([data], () => {
                 if (data.value) {
                     tableColumns.value.push({
-                        width: '50px',
+                        width: 50,
                         fixed: 'left',
                         title: '#',
                         dataIndex: 'hash_index',
@@ -132,9 +130,10 @@
                             dataIndex: col.label,
                             title: col.columnName,
                             data_type: getDataType(col.type.rep),
-                            width: '150px',
+                            width: 150,
+                            ellipsis: true,
                         }
-                        console.log(obj.data_type)
+
                         tableColumns.value.push(obj)
                     })
                     data.value.rows.forEach((val, index) => {
@@ -181,30 +180,35 @@
 
 <style lang="less" scoped>
     .sampleData {
-        @apply w-full overflow-x-auto border border-gray-light rounded;
-    }
-
-    th,
-    td {
-        @apply border border-gray-light;
+        @apply w-full border border-gray-light rounded m-0 p-0;
     }
     table {
-        @apply w-full border-collapse;
-        max-height: 280px;
-    }
-    thead {
-        @apply bg-gray-100;
-    }
-    tbody {
-        @apply overflow-y-auto;
-        max-height: 240px;
-    }
-    th {
-        @apply font-normal text-gray-700 px-4 py-2 text-sm;
-    }
-    td {
-        @apply text-gray-700 px-4 py-2 text-xs;
-        width: 150px;
-        min-width: 150px;
+        @apply w-full block overflow-auto h-80 m-0 p-0;
+
+        thead {
+            @apply sticky top-0;
+            th {
+                @apply font-normal text-gray-700 px-4 py-2 text-sm bg-gray-100 border border-gray-light;
+                width: 150px;
+                min-width: 150px;
+            }
+        }
+        tbody {
+            td {
+                @apply text-gray-700 px-4 py-2 text-xs bg-white border border-gray-light;
+                width: 150px;
+                min-width: 150px;
+            }
+        }
+        td:first-child {
+            @apply sticky left-0 border-r border-gray-light;
+            width: 50px;
+            min-width: 50px;
+        }
+        /*  th:first-child {
+            
+            width: 50px;
+            min-width: 50px;
+        } */
     }
 </style>

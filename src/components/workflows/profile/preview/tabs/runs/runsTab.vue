@@ -6,8 +6,8 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="workflowList?.length">
-        <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
+    <template v-else-if="runList?.length">
+        <div v-for="(r, x) in runList" :key="x" class="mx-4 mt-3">
             <div
                 class="
                     text-base
@@ -18,21 +18,19 @@
                     overflow-ellipsis
                     whitespace-nowrap
                 "
-                :class="{ 'font-bold underline': currRunId === r.metadata.uid }"
-                @click="loadRunGraph(r.metadata.uid)"
+                :class="{ 'font-bold underline': currRunId === r.uid }"
+                @click="loadRunGraph(r.uid)"
             >
                 <span>
-                    {{ r.metadata.name }}
+                    {{ r.name }}
                 </span>
-                <a-spin
-                    v-if="isLoadingRunGraph && currRunId === r.metadata.uid"
-                />
+                <a-spin v-if="isLoadingRunGraph && currRunId === r.uid" />
             </div>
             <div>
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
                     Status:
                     <span class="text-gray-700">
-                        {{ r.status.phase }}
+                        {{ r.phase }}
                     </span>
                 </p>
                 <p>
@@ -40,13 +38,13 @@
                         >Started:</span
                     >
                     <span class="text-gray-700"
-                        >{{ timeAgo(r.status.startedAt) }},
+                        >{{ timeAgo(r.started_at) }},
                     </span>
                     <span class="mb-1 text-sm tracking-wide text-gray-500"
                         >finished:</span
                     >
                     <span class="text-gray-700">{{
-                        timeAgo(r.status.finishedAt)
+                        timeAgo(r.finished_at)
                     }}</span>
                 </p>
             </div>
@@ -59,19 +57,12 @@
 </template>
 
 <script lang="ts">
-    import {
-        watch,
-        computed,
-        defineComponent,
-        PropType,
-        toRefs,
-        ref,
-    } from 'vue'
+    import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
 
     import { useTimeAgo } from '@vueuse/core'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedWorkflowList } from '~/composables/workflow/useWorkFlowList'
+    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {},
@@ -88,12 +79,10 @@
         setup(props, { emit }) {
             const { selectedWorkflow: item } = toRefs(props)
 
-            const labelSelector = computed(
-                () =>
-                    `workflows.argoproj.io/workflow-template=${item.value.metadata.name}`
+            const { runList, error, isLoading, reFetch } = useArchivedRunList(
+                '',
+                false
             )
-            const { workflowList, error, isLoading, mutate } =
-                useArchivedWorkflowList(labelSelector)
 
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
@@ -112,16 +101,16 @@
                 }, 2500)
             }
 
-            watch(workflowList, (newVal) => {
-                if (newVal) currRunId.value = newVal[0].metadata.uid
+            watch(runList, (newVal) => {
+                if (newVal) currRunId.value = newVal[0].uid
             })
 
             watch(
                 item,
                 (n, o) => {
                     console.log(n, o)
-                    if (!o) mutate()
-                    else if (n.metadata.name !== o.metadata.name) mutate()
+                    if (!o) reFetch(n.name)
+                    else if (n.name !== o.name) reFetch(n.name)
                 },
                 {
                     immediate: true,
@@ -131,7 +120,7 @@
 
             return {
                 item,
-                workflowList,
+                runList,
                 error,
                 isLoading,
                 timeAgo,

@@ -39,13 +39,13 @@ const getWorkflowTemplates = ({ immediate, options, params }) =>
         { immediate }
     )
 
-const getWorkflowConfigMap = (pathVariables, { immediate, options, params }) =>
+const getWorkflowConfigMap = ({ immediate, options, params }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW_CONFIG_MAP,
         'GET',
         {
             options,
-            pathVariables
+            params
         },
         { immediate }
     )
@@ -56,6 +56,20 @@ const getWorkflowByName = (name, { immediate, options }) =>
         'GET',
         {
             options,
+            pathVariables: {
+                name,
+            },
+        },
+        { immediate }
+    )
+
+const updateWorkflowByName = (name, body, { immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.WORKFLOW_UPDATE_BY_NAME,
+        'POST',
+        {
+            options,
+            body,
             pathVariables: {
                 name,
             },
@@ -76,13 +90,13 @@ const getWorkflowTemplateByName = (name, { immediate, options }) =>
         { immediate }
     )
 
-const getArchivedWorkflowList = (params, { immediate, options }) =>
+const getArchivedRunList = (pathVariables, { immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.ARCHIVED_WORKFLOW,
+        KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
         'GET',
         {
             options,
-            params,
+            pathVariables,
         },
         { immediate }
     )
@@ -100,12 +114,25 @@ const getArchivedWorkflowRun = (guid, { immediate, options }) =>
         { immediate }
     )
 
+const createWorkflow = ({ body, immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.CREATE_WORKFLOW,
+        'POST',
+        {
+            body,
+            options
+        },
+        { immediate }
+    )
+
 export const Workflows = {
     URL,
     List,
-    getArchivedWorkflowList,
+    getArchivedRunList,
+    updateWorkflowByName,
     getWorkflowByName,
     getWorkflows,
+    createWorkflow,
     getArchivedWorkflowRun,
     getWorkflowTemplates,
     getWorkflowConfigMap,

@@ -34,6 +34,7 @@
                 v-if="selected"
                 :selected-workflow="selected"
                 :selected-dag="selectedDag"
+                :formConfig="formConfig"
             />
         </div>
     </div>
@@ -82,20 +83,25 @@
             ),
         },
         props: {
-            updateProfile: { type: Boolean, required: true },
             selectedRunId: {
+                type: String,
+                required: true,
+            },
+            id: {
+                type: String,
+                required: true,
+            },
+            tab: {
                 type: String,
                 required: true,
             },
         },
         emits: ['preview'],
         setup(props, { emit }) {
-            /** DATA */
             const activeKey = ref(1)
             const data = ref({})
 
             const refs: { [key: string]: any } = ref({})
-            const { updateProfile } = toRefs(props)
             const tabs = [
                 {
                     id: 1,
@@ -125,6 +131,24 @@
             // ! this is actually name
             const id = computed(() => route?.params?.id || '')
 
+            const formConfig = computed(() => {
+                if (data.value?.uiConfig?.length) {
+                    const configCopy =
+                        data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                    configCopy
+                        .replace(/\\n/g, '\\n')
+                        .replace(/\\'/g, "\\'")
+                        .replace(/\\"/g, '\\"')
+                        .replace(/\\&/g, '\\&')
+                        .replace(/\\r/g, '\\r')
+                        .replace(/\\t/g, '\\t')
+                        .replace(/\\b/g, '\\b')
+                        .replace(/\\f/g, '\\f')
+                    return JSON.parse(configCopy) ?? {}
+                }
+                return {}
+            })
+
             /** METHODS */
             // selectTab
             const selectTab = (val: number) => {
@@ -142,50 +166,29 @@
                 } else selected.value = item
             }
 
-            const templateName = computed(() => {
-                if (
-                    // eslint-disable-next-line no-prototype-builtins
-                    data.value?.asset?.labels.hasOwnProperty(
-                        'com.atlan.orchestration/workflow-template-name'
-                    )
-                )
-                    return data.value.asset.labels[
-                        'com.atlan.orchestration/workflow-template-name'
-                    ]
-                return null
-            })
+            const templateName = computed(
+                () =>
+                    data.value?.asset?.workflowtemplate?.spec
+                        ?.workflowTemplateRef?.name ||
+                    data.value.asset.labels[
+                        'com.atlan.orchestration/parent-template-name'
+                    ] ||
+                    ''
+            )
 
             const fetchUIConfig = () => {
+                if (!templateName.value) return
                 const {
-                    data: uiconfig,
+                    data: config,
                     error: e,
                     isLoading: l,
                 } = getWorkflowConfigMap(templateName.value)
 
-                watch(uiconfig, (v) => {
-                    if (uiconfig.value?.items)
-                        data.value.uiConfig = uiconfig.value?.items
+                watch(config, (v) => {
+                    if (config.value?.items)
+                        data.value.uiConfig = config.value?.items
                 })
             }
-
-            const fetchWorkflowTemplate = () => {
-                const {
-                    data: template,
-                    error: e,
-                    isLoading: l,
-                } = useWorkflowTemplateByName(templateName.value)
-
-                watch(template, (v) => {
-                    if (uiconfig.value?.items)
-                        data.value.uiConfig = uiconfig.value?.items
-                    handlePreview(uiconfig.value?.items, 'config')
-                })
-            }
-
-            watch(templateName, (v) => {
-                if (!v) return
-                fetchUIConfig()
-            })
 
             // fetch
             const fetch = () => {
@@ -207,17 +210,6 @@
                 })
             }
 
-            watch(
-                () => data.value.asset,
-                (v) => {
-                    if (!v) return
-                    fetchUIConfig()
-                },
-                {
-                    deep: true,
-                }
-            )
-
             /** LIFECYCLES */
             onMounted(async () => {
                 await fetch()
@@ -230,11 +222,9 @@
                 activeKey.value = currTab.id
             })
 
-            /** WATCHERS */
-            watch(id, () => {
-                if (id.value) fetch()
+            watch(id, (n, o) => {
+                if (n && !o) fetch()
             })
-            watch(updateProfile, () => fetch())
 
             return {
                 emit,
@@ -248,6 +238,7 @@
                 data,
                 selectTab,
                 templateName,
+                formConfig,
             }
         },
     })

@@ -257,6 +257,8 @@
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         props: {
@@ -415,6 +417,32 @@
                         unlinkClassificationStatus.value.status = 'success'
                         unlinkClassificationStatus.value.typeName = null
                         removeClassificationFromSelectedAsset(classification)
+                        // event sent on unlink classification
+                        if (
+                            selectedAsset.value?.typeName === 'AtlasGlossary' ||
+                            selectedAsset.value?.typeName ===
+                                'AtlasGlossaryTerm' ||
+                            selectedAsset.value?.typeName ===
+                                'AtlasGlossaryCategory'
+                        )
+                            useAddEvent(
+                                'gtc',
+                                'metadata',
+                                'classifications_updated',
+                                {
+                                    gtc_type:
+                                        assetTypeLabel[
+                                            selectedAsset.value?.typeName
+                                        ],
+                                }
+                            )
+                        else
+                            useAddEvent(
+                                'discovery',
+                                'metadata',
+                                'classifications_updated',
+                                undefined
+                            )
                     } else {
                         unlinkClassificationStatus.value.status = 'failed'
                         unlinkClassificationStatus.value.typeName = null
@@ -487,6 +515,33 @@
                             removePropagationsOnEntityDelete: true,
                             typeName: '',
                         }
+
+                        // event sent on link classification
+                        if (
+                            selectedAsset.value?.typeName === 'AtlasGlossary' ||
+                            selectedAsset.value?.typeName ===
+                                'AtlasGlossaryTerm' ||
+                            selectedAsset.value?.typeName ===
+                                'AtlasGlossaryCategory'
+                        )
+                            useAddEvent(
+                                'gtc',
+                                'metadata',
+                                'classifications_updated',
+                                {
+                                    gtc_type:
+                                        assetTypeLabel[
+                                            selectedAsset.value?.typeName
+                                        ],
+                                }
+                            )
+                        else
+                            useAddEvent(
+                                'discovery',
+                                'metadata',
+                                'classifications_updated',
+                                undefined
+                            )
                     } else {
                         console.log('link failed')
                         linkClassificationStatus.value = 'error'
@@ -551,7 +606,7 @@
                     description: '',
                     name: '',
                     superTypes: [],
-                    displayName:''
+                    displayName: '',
                 } as unknown as classificationInterface
 
                 createClassificationFormRef.value

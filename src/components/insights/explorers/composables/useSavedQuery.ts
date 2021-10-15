@@ -13,6 +13,7 @@ import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/atlas/api/insights'
 import { generateUUID } from '~/utils/helper/generator'
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -193,6 +194,9 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 isUpdating.value = false
                 if (error.value === undefined) {
+                    useAddEvent('insights', 'query', 'updated', {
+                        num_variables: undefined,
+                    })
                     message.success({
                         content: `${name} query saved!`,
                     })
@@ -314,6 +318,9 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
+                    useAddEvent('insights', 'query', 'saved', {
+                        num_variables: undefined,
+                    })
                     showSaveQueryModal.value = false
                     message.success({
                         content: `${name} query saved!`,

@@ -1,4 +1,4 @@
-import { getRequests, actOnRequest } from '~/api/heracles/requests'
+import { getRequests, actOnRequest } from '~/services/heracles/apis/requests'
 import { Ref, computed, watch } from 'vue'
 import { RequestStatus } from '~/types/atlas/requests'
 import { useDebounceFn } from '@vueuse/core'

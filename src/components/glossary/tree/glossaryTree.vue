@@ -20,6 +20,7 @@
                     <template #option="{ value, label, status }">
                         <hr v-if="value === 'createNewGlossary'" />
                         <span
+                            v-if="value !== 'createNewGlossary'"
                             class="
                                 py-0.5
                                 flex flex-row
@@ -27,19 +28,11 @@
                                 content-center
                                 my-auto
                             "
-                            :class="{
-                                'mt-2': value === 'createNewGlossary',
-                            }"
                         >
                             <AtlanIcon
                                 v-if="value === 'all'"
                                 class="mr-2"
                                 icon="Home"
-                            />
-                            <AtlanIcon
-                                v-else-if="value === 'createNewGlossary'"
-                                class="mr-2"
-                                icon="Add"
                             />
                             <AtlanIcon
                                 v-else
@@ -48,7 +41,40 @@
                             />
                             <span>{{ label }}</span>
                         </span>
-
+                        <span v-else @click.stop="">
+ 
+                            <AddGtcModal
+                                entityType="glossary"
+                                @onAddGlossary="refetchGlossaryList"
+                            >
+                                <template #header>
+                                    <div class="flex items-center mr-5">
+                                        <AtlanIcon
+                                            icon="Glossary"
+                                            class="h-4 m-0 mr-2"
+                                        />
+                                        <span class="text-xs font-bold text-gray-700">
+                                            New glossary
+                                        </span>
+                                    </div>
+                                </template>
+                                <template #trigger>
+                                    <div
+                                        class="py-0.5
+                                        mt-2
+                                        flex flex-row
+                                        items-center
+                                        content-center
+                                        my-auto text-sm leading-5 text-gray-700 cursor-pointer text-bold hover:bg-gray-light"
+                                        @mousedown="(e) => e.preventDefault()"
+                                    >
+                                        <AtlanIcon icon="Add" class="mr-2" /> 
+                                        <span>{{ label }}</span>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
+                            
+                        </span>
                         <hr v-if="value === 'all'" />
                     </template>
                     <!-- <template #dropdownRender="{ menuNode: menu }">
@@ -925,7 +951,7 @@
                     1
                 )}${certificateStatus
                     ?.charAt(0)
-                    .toUpperCase()}${certificateStatus?.slice(1)}`
+                    .toUpperCase()}${certificateStatus?.slice(1).toLowerCase()}`
             }
 
             watch(home, () => {

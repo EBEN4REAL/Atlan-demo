@@ -2,8 +2,8 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full h-full">
-        <div class="flex flex-col">
+    <div v-if="data?.asset" class="flex w-full h-full">
+        <div class="flex flex-col w-full">
             <Header class="px-5 pt-3 bg-white" />
 
             <a-tabs
@@ -21,10 +21,21 @@
                             }
                         "
                         :selected-run-id="selectedRunId"
+                        :ui-config="data?.uiConfig"
                         class="bg-transparent"
+                        @change="handlePreview"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
+        </div>
+
+        <div class="border-l border-gray-300 preview-container">
+            <ProfilePreview
+                v-if="selected"
+                :selected-workflow="selected"
+                :selected-dag="selectedDag"
+                :formConfig="formConfig"
+            />
         </div>
     </div>
 </template>
@@ -38,23 +49,28 @@
         watch,
         onMounted,
         toRefs,
-        inject,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
+    import ProfilePreview from '@/workflows/profile/preview/preview.vue'
     import Header from '@/workflows/profile/header.vue'
 
     // Composables
-    import { useWorkflowByName } from '~/composables/workflow/useWorkFlowList'
+    import {
+        useWorkflowByName,
+        getWorkflowConfigMap,
+        useWorkflowTemplateByName,
+    } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {
             Header,
             LoadingView,
             ErrorView,
+            ProfilePreview,
             setup: defineAsyncComponent(
                 () => import('@/workflows/profile/tabs/setup/index.vue')
             ),
@@ -67,22 +83,25 @@
             ),
         },
         props: {
-            updateProfile: { type: Boolean, required: true },
             selectedRunId: {
+                type: String,
+                required: true,
+            },
+            id: {
+                type: String,
+                required: true,
+            },
+            tab: {
                 type: String,
                 required: true,
             },
         },
         emits: ['preview'],
-        setup(props, context) {
-            /** DATA */
-            const activeKey = ref(2)
+        setup(props, { emit }) {
+            const activeKey = ref(1)
             const data = ref({})
-            const selectedAsset = inject('selectedAsset')
-            if (selectedAsset) data.value.asset = selectedAsset.value
 
             const refs: { [key: string]: any } = ref({})
-            const { updateProfile } = toRefs(props)
             const tabs = [
                 {
                     id: 1,
@@ -101,6 +120,9 @@
                 },
             ]
 
+            const selected = ref(null)
+            const selectedDag = ref(null)
+
             /** UTILS */
             const router = useRouter()
             const route = useRoute()
@@ -108,6 +130,24 @@
             /** COMPUTED */
             // ! this is actually name
             const id = computed(() => route?.params?.id || '')
+
+            const formConfig = computed(() => {
+                if (data.value?.uiConfig?.length) {
+                    const configCopy =
+                        data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                    configCopy
+                        .replace(/\\n/g, '\\n')
+                        .replace(/\\'/g, "\\'")
+                        .replace(/\\"/g, '\\"')
+                        .replace(/\\&/g, '\\&')
+                        .replace(/\\r/g, '\\r')
+                        .replace(/\\t/g, '\\t')
+                        .replace(/\\b/g, '\\b')
+                        .replace(/\\f/g, '\\f')
+                    return JSON.parse(configCopy) ?? {}
+                }
+                return {}
+            })
 
             /** METHODS */
             // selectTab
@@ -120,13 +160,42 @@
             }
 
             // handlePreview
-            const handlePreview = (item) => {
-                context.emit('preview', item)
+            const handlePreview = (item, is) => {
+                if (is === 'dag') {
+                    selectedDag.value = item
+                } else selected.value = item
+            }
+
+            const templateName = computed(
+                () =>
+                    data.value?.asset?.workflowtemplate?.spec
+                        ?.workflowTemplateRef?.name ||
+                    data.value.asset.labels[
+                        'com.atlan.orchestration/parent-template-name'
+                    ] ||
+                    ''
+            )
+
+            const fetchUIConfig = () => {
+                if (!templateName.value) return
+                const {
+                    data: config,
+                    error: e,
+                    isLoading: l,
+                } = getWorkflowConfigMap(templateName.value)
+
+                watch(config, (v) => {
+                    if (config.value?.items)
+                        data.value.uiConfig = config.value?.items
+                })
             }
 
             // fetch
             const fetch = () => {
-                if (selectedAsset.value) return
+                if (selected.value) {
+                    fetchUIConfig()
+                    return
+                }
                 const {
                     workflow: response,
                     error,
@@ -136,7 +205,8 @@
                 watch(response, (v) => {
                     data.value.asset = v
                     data.value.error = error.value
-                    handlePreview(data.value?.asset)
+                    fetchUIConfig()
+                    handlePreview(data.value?.asset, null)
                 })
             }
 
@@ -144,28 +214,31 @@
             onMounted(async () => {
                 await fetch()
 
-                // const tab = route?.params?.tab
-                // if (!tab) return
-                // const currTab = tabs.find(
-                //     (i) => i.name.toLowerCase() === tab.toLowerCase()
-                // )
-                // activeKey.value = currTab.id
+                const tab = route?.params?.tab
+                if (!tab) return
+                const currTab = tabs.find(
+                    (i) => i.name.toLowerCase() === tab.toLowerCase()
+                )
+                activeKey.value = currTab.id
             })
 
-            /** WATCHERS */
-            watch(id, () => {
-                if (id.value) fetch()
+            watch(id, (n, o) => {
+                if (n && !o) fetch()
             })
-            watch(updateProfile, () => fetch())
 
             return {
+                emit,
                 id,
                 activeKey,
+                selected,
                 tabs,
                 handlePreview,
                 refs,
+                selectedDag,
                 data,
                 selectTab,
+                templateName,
+                formConfig,
             }
         },
     })
@@ -210,5 +283,18 @@ meta:
         :global(.ant-tabs-tabpane) {
             @apply px-0 pb-0 !important;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .facets {
+        min-width: 264px;
+        width: 20%;
+    }
+
+    .preview-container {
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>

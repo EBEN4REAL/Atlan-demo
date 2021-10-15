@@ -87,7 +87,8 @@
                 now,
                 initialBody.typeName,
                 initialBody,
-                `selector_${initialBody.typeName}`
+                `selector_${initialBody.typeName}`,
+                false
             )
 
             const handleChange = (checkedValues: string) => {

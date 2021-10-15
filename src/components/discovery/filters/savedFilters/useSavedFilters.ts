@@ -1,6 +1,5 @@
 import { Ref, ref, watch, computed } from 'vue'
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
-// import { Search } from '~/api2/search'
 import { useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { assetInterface } from '~/types/assets/asset.interface'

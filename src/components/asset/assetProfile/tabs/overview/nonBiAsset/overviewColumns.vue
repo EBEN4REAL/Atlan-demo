@@ -173,7 +173,7 @@
             const filters: Ref<string[]> = ref([])
             const columnsList: Ref<assetInterface[]> = ref([])
             const certificationFilters: Ref<string[]> = ref([])
-            const sortOrder = ref('Column.order|ascending')
+            const sortOrder = ref('order|ascending')
             const clearAllFilters = ref<boolean>(false)
             const columnFromUrl: Ref<assetInterface[]> = ref([])
             const { columnCount } = useAssetInfo()

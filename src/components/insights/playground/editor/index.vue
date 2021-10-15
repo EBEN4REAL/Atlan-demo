@@ -391,6 +391,8 @@
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
@@ -477,6 +479,7 @@
                 }
             }
             const run = () => {
+                useAddEvent('insights', 'query', 'run', undefined)
                 queryRun(
                     activeInlineTab.value,
                     getData,
@@ -501,6 +504,7 @@
                 message.success({
                     content: 'Link Copied!',
                 })
+                useAddEvent('insights', 'query', 'link_copied', undefined)
             }
             const toggleCustomToolbar = () => {
                 showcustomToolBar.value = !showcustomToolBar.value

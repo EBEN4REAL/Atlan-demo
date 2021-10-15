@@ -124,6 +124,7 @@ export const ColumnAttributes = [
     'isPrimary',
     'isClustered',
     'isPartition',
+    'isForeign',
     'isIndexed',
     'table',
     'view',

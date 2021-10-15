@@ -289,11 +289,11 @@
             </div>
             <div class="mt-2.5">
                 <div v-if="changeLog.all.length">
-                    {{ getTruncatedStringFromArray(changeLog.all, 20) }}
+                    {{ getTruncatedStringFromArray(changeLog.all, 35) }}
                     <span class="text-success">added</span>
                 </div>
                 <div v-if="changeLog.removed.length">
-                    {{ getTruncatedStringFromArray(changeLog.removed, 20) }}
+                    {{ getTruncatedStringFromArray(changeLog.removed, 35) }}
                     <span class="text-error">removed</span>
                 </div>
             </div>

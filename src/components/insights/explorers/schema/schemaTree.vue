@@ -1,6 +1,6 @@
 <template>
-    <div class="max-h-screen" :class="$style.queryTreeStyles">
-        <div class="h-full overflow-x-hidden">
+    <div class="max-h-screen">
+        <div class="h-full overflow-x-hidden" :class="$style.schemaTreeStyles">
             <div v-if="treeData.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
@@ -149,6 +149,15 @@
     }
 </style>
 <style lang="less" module>
+    .schemaTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+        :global(.ant-tree li ul) {
+            padding-left: 16px !important;
+        }
+    }
+
     :global(.ant-tree-title) {
         width: calc(100% - 1.5rem) !important;
     }

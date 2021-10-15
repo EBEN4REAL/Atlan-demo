@@ -71,7 +71,7 @@ const useLoadQueryData = ({
         }
         if (connector.value) {
             body.value.entityFilters.criterion.push({
-                attributeName: 'connectorName',
+                attributeName: 'connectionName',
                 attributeValue: connector.value,
                 operator: 'eq',
             })

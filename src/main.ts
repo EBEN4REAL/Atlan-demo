@@ -10,7 +10,7 @@ import App from './App.vue'
 import '~/styles/antd.less'
 import '~/styles/index.less'
 
-import { useTenantStore } from './store/tenants'
+import { useTenantStore } from './services/keycloak/tenant/store'
 
 const app = createApp(App)
 const head = createHead()
@@ -53,9 +53,8 @@ router.beforeEach(async (to, from, next) => {
                         true,
                         app.config.globalProperties.$keycloak.tokenParsed
                     )
-                    
-                    next()
 
+                    next()
                 } else {
                     tenantStore.setIsAuthenticated(false, null)
                     window.location.replace(
@@ -75,7 +74,7 @@ router.beforeEach(async (to, from, next) => {
             }
         } else if (app.config.globalProperties.$keycloak.authenticated) {
             // Manually capturing pageview coz posthog does not capture pageviews if user changes tab/page in Atlan
-            (window as any).analytics.page(to.name)
+            ;(window as any).analytics.page(to.name)
             next()
         } else {
             window.location.replace(
@@ -83,7 +82,7 @@ router.beforeEach(async (to, from, next) => {
             )
         }
     } else {
-        return false;
+        return false
     }
 })
 

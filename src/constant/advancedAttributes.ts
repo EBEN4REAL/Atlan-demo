@@ -28,11 +28,31 @@ export const AdvancedAttributeList = [
         typeName: "date",
     },
     {
+        value: "sourceCreatedBy",
+        label: "Source created by",
+        typeName: "users",
+    },
+    {
+        value: "sourceCreatedAt",
+        label: "Source created at",
+        typeName: "date",
+    },
+    {
+        value: "sourceUpdatedBy",
+        label: "Source updated by",
+        typeName: "users",
+    },
+    {
+        value: "sourceUpdatedAt",
+        label: "Source updated at",
+        typeName: "date",
+    },
+    {
         value: "popularityScore",
         label: "Popularity Score",
         typeName: "number",
-        hide:true
-    }, 
+        hide: true
+    },
 
 ];
 

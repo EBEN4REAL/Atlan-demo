@@ -227,7 +227,7 @@ import { message } from "ant-design-vue";
 import ImportMetadataFromXML from "../common/importMetadataFromXML.vue";
 import ImportText from "../common/importText.vue";
 
-import { useTenantStore } from "~/store/tenants";
+import { useTenantStore } from "~/services/keycloak/tenant/store";
 
 import {
   topSAMLProviders,

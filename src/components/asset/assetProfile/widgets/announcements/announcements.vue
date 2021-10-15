@@ -37,7 +37,7 @@
                 </template>
 
                 <div
-                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer max-w-min"
+                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer  max-w-min"
                     :class="
                         announcementType === 'information'
                             ? 'information-bg'
@@ -60,9 +60,10 @@
             </a-dropdown>
             <a-input
                 ref="titleBar"
-                v-model:value="announcementHeader"
+                v-model:value="announcementTitle"
                 placeholder="Add Announcement Header..."
                 class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                @change="handleTitleUpdate"
             />
             <a-textarea
                 v-model:value="announcementDescription"
@@ -90,12 +91,12 @@
         </div>
         <div v-else>
             <div
-                v-if="!bannerMessage || bannerMessage === ''"
+                v-if="!announcementTitle || announcementTitle === ''"
                 class="flex justify-between"
             >
                 <div>
                     <div
-                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer  max-w-min"
                         :class="
                             announcementType === 'information'
                                 ? 'information-bg'
@@ -131,7 +132,7 @@
                     <a-dropdown trigger="click" placement="bottomRight">
                         <a-button
                             v-show="showKebabMenu"
-                            class="px-2 bg-transparent border-transparent shadow-none hover:border-current"
+                            class="px-2 bg-transparent border-transparent shadow-none  hover:border-current"
                         >
                             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                         </a-button>
@@ -177,10 +178,10 @@
                     </div>
                     <div>
                         <div class="mb-1 text-lg font-bold text-gray-700">
-                            Announcement Header
+                            {{ bannerTitle }}
                         </div>
-                        <div class="mb-2 text-gray-500">
-                            {{ bannerMessage }}
+                        <div class="w-11/12 mb-2 text-gray-500">
+                            {{ bannerDescription }}
                         </div>
                         <div class="flex items-center">
                             <a-popover>
@@ -228,7 +229,7 @@
                     <a-dropdown trigger="click" placement="bottomRight">
                         <a-button
                             v-show="showKebabMenu"
-                            class="px-2 ml-2 bg-transparent border-transparent shadow-none hover:border-current"
+                            class="px-2 ml-2 bg-transparent border-transparent shadow-none  hover:border-current"
                         >
                             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                         </a-button>
@@ -277,7 +278,6 @@
         },
         setup(props) {
             const editable = ref(false)
-            const announcementHeader = ref('')
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             const showKebabMenu = ref(false)
 
@@ -286,17 +286,20 @@
                 handleCancel,
                 update,
                 bannerType,
-                bannerMessage,
+                bannerDescription,
+                bannerTitle,
                 isCompleted,
                 isLoading,
             } = addAnnouncement(asset)
 
-            const announcementDescription = ref(bannerMessage.value)
+            const announcementDescription = ref(bannerDescription.value)
             const announcementType = ref(bannerType.value)
+            const announcementTitle = ref(bannerTitle.value)
 
             const handleUpdate = () => {
-                bannerMessage.value = announcementDescription.value
+                bannerDescription.value = announcementDescription.value
                 bannerType.value = announcementType.value
+                bannerTitle.value = announcementTitle.value
                 editable.value = false
                 update()
             }
@@ -306,6 +309,9 @@
             }
             const handleTextAreaUpdate = (e: any) => {
                 announcementDescription.value = e.target.value
+            }
+            const handleTitleUpdate = (e: any) => {
+                announcementTitle.value = e.target.value
             }
 
             const announcementObject = computed(() => {
@@ -340,19 +346,21 @@
                 bannerObject,
                 onCancel,
                 startEdit,
-                announcementHeader,
+                announcementTitle,
                 announcementDescription,
                 handleMenuClick,
                 announcementType,
                 announcementObject,
                 isLoading,
                 handleTextAreaUpdate,
-                bannerMessage,
+                bannerDescription,
                 bannerType,
+                bannerTitle,
                 timeAgo,
                 KeyMaps,
                 isCompleted,
                 showKebabMenu,
+                handleTitleUpdate,
             }
         },
     })

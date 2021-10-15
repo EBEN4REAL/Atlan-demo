@@ -4,13 +4,7 @@
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="
-                        relative
-                        flex flex-col
-                        items-center
-                        text-xs
-                        sidebar-nav-icon
-                    "
+                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -229,10 +223,10 @@
                 }
             }
             onMounted(() => {
-                window.addEventListener('keypress', _keyListener)
+                window.addEventListener('keydown', _keyListener)
             })
             onUnmounted(() => {
-                window.removeEventListener('keypress', _keyListener)
+                window.removeEventListener('keydown', _keyListener)
             })
 
             return {

@@ -37,9 +37,16 @@ export function useFullScreen() {
             // Hooray, now we're in fullscreen mode!
         }
     }
+    const setFullScreenState = (
+        state: boolean,
+        fullSreenState: Ref<boolean>
+    ) => {
+        fullSreenState.value = state
+    }
 
     return {
         fullSreenState,
+        setFullScreenState,
         toggleFullScreenMode,
     }
 }

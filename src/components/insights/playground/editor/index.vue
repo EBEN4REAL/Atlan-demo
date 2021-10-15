@@ -368,6 +368,8 @@
 <script lang="ts">
     import {
         computed,
+        onMounted,
+        onUnmounted,
         defineComponent,
         inject,
         Ref,
@@ -389,6 +391,7 @@
     // import ActionButtons from '~/components/insights/playground/editor/actionButtons/index.vue'
     import WarehouseConnector from '~/components/insights/playground/editor/warehouse/index.vue'
     import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
+
     import AtlanBtn from '~/components/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
@@ -434,6 +437,7 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
@@ -445,6 +449,8 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
+            const { setFullScreenState } = useFullScreen()
+
             const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
                 inlineTabs,
                 activeInlineTab,
@@ -549,6 +555,23 @@
                 editorPos.value.lineNumber = pos.lineNumber
                 console.log(pos)
             })
+
+            /* Handlng the Fullscreen esc key logic */
+            // const _keyListener = (e) => {
+            //     if (e.key === 'Escape') {
+            //         setFullScreenState(false, fullSreenState)
+            //         console.log('key pressed', e.key, e)
+            //         //prevent the default action
+            //     }
+            // }
+            // onMounted(() => {
+            //     window.addEventListener('keydown', _keyListener)
+            // })
+            // onUnmounted(() => {
+            //     window.removeEventListener('keydown', _keyListener)
+            // })
+
+            /* ------------------------------------------ */
             return {
                 tFullScreen,
                 fullSreenState,

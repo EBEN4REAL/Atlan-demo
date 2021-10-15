@@ -443,6 +443,7 @@
                     focusEditor(editorInstance)
                 }
             }
+            // console.log(editorInstance, 'editorInstance')
             // const selectAndFocus=()={
 
             // }
@@ -450,9 +451,11 @@
             const actionClick = (action: string, t: assetInterface) => {
                 switch (action) {
                     case 'add': {
-                        editorInstance.trigger('keyboard', 'type', {
-                            text: `${title(t)}`,
-                        })
+                        // const editorInstance = toRaw(editorInstanceRef.value)
+                        console.log(title(t), editorInstance, 'sd')
+                        // editorInstance.trigger('keyboard', 'type', {
+                        //     text: `${title(t)}`,
+                        // })
                         break
                     }
                     case 'play': {
@@ -501,6 +504,7 @@
             }
 
             return {
+                editorInstance,
                 isPopoverAllowed,
                 activeInlineTab,
                 certificateStatus,

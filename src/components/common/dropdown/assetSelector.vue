@@ -68,7 +68,7 @@
                 offset: 0,
                 entityFilters: filters.value,
                 attributes: ['name', 'displayName'],
-                sortBy: 'name',
+                // sortBy: 'name',
                 aggregationAttributes: ['__typeName.keyword'],
                 sortOrder: 'ASCENDING',
             }

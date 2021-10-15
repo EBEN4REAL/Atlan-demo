@@ -223,16 +223,19 @@
                     const text = editor?.getValue()
                     onEditorContentChange(event, text)
                     const changes = event?.changes[0]
-                    // const lastTypedCharacter = event?.changes[0]?.text
-                    const suggestions = useAutoSuggestions(
-                        changes,
-                        editor,
-                        activeInlineTab
-                    ) as Promise<{
-                        suggestions: suggestionKeywordInterface[]
-                        incomplete: boolean
-                    }>
-                    triggerAutoCompletion(suggestions)
+                    const lastTypedCharacter = event?.changes[0]?.text
+                    /* Preventing network request when pasting name of table */
+                    if (lastTypedCharacter.length < 3) {
+                        const suggestions = useAutoSuggestions(
+                            changes,
+                            editor,
+                            activeInlineTab
+                        ) as Promise<{
+                            suggestions: suggestionKeywordInterface[]
+                            incomplete: boolean
+                        }>
+                        triggerAutoCompletion(suggestions)
+                    }
                 })
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)

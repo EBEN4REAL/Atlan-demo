@@ -47,7 +47,7 @@ const useLoadTreeData = () => {
                 },
             ],
         },
-        sortBy: 'name',
+        // sortBy: 'name',
         sortOrder: 'ASCENDING',
     })
 

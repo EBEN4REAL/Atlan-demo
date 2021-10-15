@@ -107,22 +107,26 @@ export default function useProject() {
         })
 
         watch([isLoading, error], () => {
+            console.log(isLoading.value, error.value, 'request log')
             try {
                 isQueryRunning.value = !isLoading.value ? 'success' : 'loading'
                 if (!isLoading.value && error.value === undefined) {
-                    const { subscribe, close } = sse.value
+                    const { subscribe } = sse.value
                     subscribe('', (message: any) => {
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
                             setRows(dataList, columnList, message.rows)
-                        if (message?.status === 'completed') {
+                        if (message?.details.status === 'completed') {
                             getData(
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),
-                                message?.executionTime
+                                message?.details.executionTime
                             )
-                            close()
+                            if (eventSource?.close) {
+                                // for closing the connection
+                                eventSource.close()
+                            }
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {

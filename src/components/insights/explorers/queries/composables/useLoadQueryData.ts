@@ -66,7 +66,7 @@ const useLoadQueryData = ({
                 condition: 'AND',
                 criterion: [],
             },
-            sortBy: 'name',
+            // sortBy: 'name',
             sortOrder: 'ASCENDING',
         }
         if (connector.value) {

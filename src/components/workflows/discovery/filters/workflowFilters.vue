@@ -10,7 +10,7 @@
         <div class="flex items-center">
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -45,11 +45,14 @@
                     <div :key="dirtyTimestamp" class="select-none">
                         <div class="flex flex-col flex-1">
                             <div class="flex items-center">
-                                <span class="text-xs uppercase text-gray">
+                                <span
+                                    class="text-xs uppercase text-gray"
+                                    style="letter-spacing: 0.07em"
+                                >
                                     <img
                                         v-if="item.image"
                                         :src="item.image"
-                                        class="float-left w-auto h-5 mr-2"
+                                        class="float-left w-auto h-4 mr-2"
                                     />
                                     {{ item.label }}</span
                                 >
@@ -64,7 +67,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -72,7 +75,7 @@
                             </div>
                             <div
                                 v-if="!activeKey.includes(item.id)"
-                                class="text-gray-500"
+                                class="text-primary"
                             >
                                 {{ getFiltersAppliedString(item.id) }}
                             </div>
@@ -82,6 +85,7 @@
                 <component
                     :is="item.component"
                     v-model:data="dataMap[item.id]"
+                    :class="item.id === 'owners' ? 'px-4' : ''"
                     :item="item"
                     @change="handleChange"
                 ></component>
@@ -99,8 +103,9 @@
         Ref,
         watch,
     } from 'vue'
-    import { List as StatusList } from '~/constant/status'
-    import { List as AssetCategoryList } from '~/constant/assetCategory'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
+    import { List as WorkflowCategoryList } from '~/constant/workflowCategory'
+    import { WorkflowTypeList } from '~/constant/workflowTypes'
     import { List } from './filters'
     import useFilterPayload from './useFilterPayload'
     import useFilterUtils from './useFilterUtils'
@@ -108,12 +113,18 @@
     export default defineComponent({
         name: 'DiscoveryFacets',
         components: {
-            Status: defineAsyncComponent(
-                () => import('@common/facets/status.vue')
-            ),
             Connector: defineAsyncComponent(
                 () => import('@common/facets/connector.vue')
-            )
+            ),
+            WorkflowCategory: defineAsyncComponent(
+                () => import('@common/facets/workflowCategory.vue')
+            ),
+            WorkflowType: defineAsyncComponent(
+                () => import('@common/facets/workflowType.vue')
+            ),
+            CreatedBy: defineAsyncComponent(
+                () => import('@common/facets/createdBy.vue')
+            ),
         },
         props: {
             initialFilters: {
@@ -133,31 +144,40 @@
         },
         emits: ['refresh', 'initialize'],
         setup(props, { emit }) {
+            const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref('dirty_')
 
-
             /**
              * @desc combines static List with mapped BM object that has filter support
              * */
-             const dynamicList = computed(() => {
+            const dynamicList = computed(() => {
                 if (props.filtersList?.length > 0) {
                     const arr = List.filter((el) =>
                         props.filtersList?.includes(el.id)
                     )
                     return [...arr]
                 }
-                return [...List]
+                return [...List, ...bmFiltersList.value]
             })
-
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({
                 connector: props.initialFilters?.facetsFilters?.connector || {},
-                assetCategory: props.initialFilters?.facetsFilters
-                    ?.assetCategory || { checked: undefined },
-                status: props.initialFilters?.facetsFilters?.status || {
-                    checked: undefined,
+                workflowCategory: props.initialFilters?.facetsFilters
+                    ?.workflowCategory || { checked: undefined },
+                workflowType: props.initialFilters?.facetsFilters
+                    ?.workflowType || { checked: undefined },
+                owners: {
+                    userValue:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.userValue || [],
+                    groupValue:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.groupValue || [],
+                    noOwnerAssigned:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.noOwnerAssigned || false,
                 },
             })
 
@@ -165,15 +185,35 @@
             const { isFilterApplied, totalAppliedFiltersCount } =
                 useFilterUtils(dataMap)
 
+            // ? watching for bmDataList to be computed
+            watch(
+                bmDataList,
+                () => {
+                    // ? add initial applied filters to dataMap
+                    Object.keys(bmDataList.value).forEach((b) => {
+                        dataMap.value[b] = {
+                            applied: {
+                                ...dataMap.value[b]?.applied,
+                                ...props.initialFilters?.facetsFilters?.[b]
+                                    ?.applied,
+                            },
+                        }
+                    })
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
+
             const refresh = () => {
                 emit('refresh', filterMap.value, dataMap.value)
             }
-
             const handleChange = () => {
+                // console.log(filterMap.value, dataMap.value)
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 refresh()
-                // updateChangesInStore(value);
             }
 
             const setConnector = (payload: any) => {
@@ -189,8 +229,18 @@
                         }
                         break
                     }
-                    case 'status': {
+                    case 'workflowCategory': {
                         dataMap.value[filterId].checked = []
+                        break
+                    }
+                    case 'workflowType': {
+                        dataMap.value[filterId].checked = []
+                        break
+                    }
+                    case 'owners': {
+                        dataMap.value[filterId].userValue = []
+                        dataMap.value[filterId].groupValue = []
+                        dataMap.value[filterId].noOwnerAssigned = false
                         break
                     }
                     default: {
@@ -199,27 +249,74 @@
                 }
                 refresh()
             }
-
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
-                    case 'status': {
+                    case 'workflowCategory': {
                         let facetFiltersData =
                             dataMap.value[filterId]?.checked || []
-                        facetFiltersData = facetFiltersData.map(
-                            (statusId: string) =>
-                                StatusList?.find(
-                                    (status: any) => status.id === statusId
+                        facetFiltersData = facetFiltersData?.map(
+                            (workflowCategoryId: string) =>
+                                WorkflowCategoryList?.find(
+                                    (workflowCategory: any) =>
+                                        workflowCategory.id ===
+                                        workflowCategoryId
                                 ).label
                         )
-                        if (facetFiltersData.length > 3) {
+                        if (facetFiltersData.length > 2) {
                             return `${facetFiltersData
-                                .slice(0, 3)
+                                .slice(0, 2)
                                 .join(', ')} +${
-                                facetFiltersData.length - 3
+                                facetFiltersData.length - 2
                             } others`
                         }
 
-                        return facetFiltersData.slice(0, 3).join(', ')
+                        return facetFiltersData.slice(0, 2).join(', ')
+                    }
+                    case 'workflowType': {
+                        let facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
+                        facetFiltersData = facetFiltersData?.map(
+                            (workflowTypeId: string) =>
+                                WorkflowTypeList?.find(
+                                    (workflowType: any) =>
+                                        workflowType.id === workflowTypeId
+                                ).label
+                        )
+                        if (facetFiltersData.length > 2) {
+                            return `${facetFiltersData
+                                .slice(0, 2)
+                                .join(', ')} +${
+                                facetFiltersData.length - 2
+                            } others`
+                        }
+
+                        return facetFiltersData.slice(0, 2).join(', ')
+                    }
+                    case 'owners': {
+                        const users = dataMap.value[filterId]?.userValue || []
+                        const groups = dataMap.value[filterId]?.groupValue || []
+                        const noOwnerAssigned =
+                            dataMap.value[filterId]?.noOwnerAssigned || false
+                        let appliedOwnersString = ''
+                        if (users && users?.length > 0) {
+                            if (users?.length === 1)
+                                appliedOwnersString += `${users.length} user`
+                            else appliedOwnersString += `${users.length} users`
+                        }
+                        if (groups && groups?.length > 0) {
+                            if (appliedOwnersString.length > 0) {
+                                if (groups.length === 1)
+                                    appliedOwnersString += ` & ${groups.length} group`
+                                else
+                                    appliedOwnersString += ` & ${groups.length} groups`
+                            } else if (groups.length === 1)
+                                appliedOwnersString += `${groups.length} group`
+                            else
+                                appliedOwnersString += `${groups.length} groups`
+                        }
+                        if (noOwnerAssigned) appliedOwnersString += 'No Owners'
+
+                        return appliedOwnersString
                     }
                     default: {
                         // ? default fall back to bm filter
@@ -239,11 +336,23 @@
                     attributeName: undefined,
                     attributeValue: undefined,
                 }
-                dataMap.value.status.checked = []
+                dataMap.value.workflowCategory.checked = []
+                dataMap.value.workflowType.checked = []
+                dataMap.value.owners.userValue = []
+                dataMap.value.owners.groupValue = []
+                dataMap.value.owners.noOwnerAssigned = false
+                // ? remove bm applied data
+                bmFiltersList.value
+                    .map((b) => b.id)
+                    .forEach((n) => {
+                        dataMap.value[n].applied = {}
+                    })
+                refresh()
             }
 
             emit('initialize', filterMap.value)
 
+            // console.log(dynamicList, 'list')
             return {
                 resetAllFilters,
                 totalAppliedFiltersCount,
@@ -256,6 +365,8 @@
                 filterMap,
                 handleClear,
                 dynamicList,
+                bmFiltersList,
+                bmDataList,
                 setConnector,
             }
         },
@@ -272,10 +383,6 @@
             @apply px-4 !important;
             @apply py-3 !important;
             @apply border-none;
-        }
-
-        :global(.ant-collapse-item:last-child) {
-            @apply border-gray-300;
         }
 
         :global(.ant-collapse-content-box) {

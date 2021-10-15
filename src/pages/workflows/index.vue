@@ -1,20 +1,18 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300 facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
-            <AtlanBtn
-                class="m-2"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="goToSetup"
-            >
-                <div class="flex items-center gap-2">
-                    <div>Setup</div>
-                    <AtlanIcon icon="Add" class="" />
-                </div>
-            </AtlanBtn>
+            <WorkflowFilters
+                :ref="
+                    (el) => {
+                        workflowFilterRef = el
+                    }
+                "
+                :initial-filters="AllFilters"
+                @refresh="handleFilterChange"
+                @initialize="handleFilterInit"
+            ></WorkflowFilters>
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
@@ -110,6 +108,7 @@
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
+            WorkflowFilters,
             WorkflowList,
             DiscoveryPreview,
             AtlanBtn,
@@ -134,6 +133,7 @@
             // workflow filter component ref
             const workflowFilterRef = ref()
             const autoSelect = ref(true)
+            const isAggregate = ref(true)
 
             // Clean Stuff
             const AllFilters: Ref = ref({ ...initialFilters.value })
@@ -206,6 +206,23 @@
                 setRouterOptions()
             }, 150)
 
+            const handleFilterChange = (
+                payload: any,
+                filterMapData: Record<string, Components.Schemas.FilterCriteria>
+            ) => {
+                // console.log(payload)
+                AllFilters.value.facetsFilters = filterMapData
+                filters.value = payload
+                offset.value = 0
+                isAggregate.value = true
+                // updateBody()
+                setRouterOptions()
+            }
+
+            const handleFilterInit = (payload: any) => {
+                filters.value = payload
+            }
+
             const handlePreview = (item) => {
                 selected.value = item
             }
@@ -239,6 +256,8 @@
                 placeholderLabel,
                 filters,
                 filterList,
+                handleFilterChange,
+                handleFilterInit,
             }
         },
         data() {

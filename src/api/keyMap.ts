@@ -80,9 +80,11 @@ export const KeyMaps = {
             LIST_ROLES: () => getAPIPath('auth', '/roles'),
         },
         tenant: {
-            GET_TENANT: () => getAPIPath('auth', ''),
+            GET_TENANT: () => getAPIPath('service', '/tenants/default'),
+            UPDATE_TENANT: () => getAPIPath('service', '/tenants/default'),
             TEST_SMTP_CONFIG: () => getAPIPath('auth', '/smtp/test'),
             UPDATE_SMTP: () => getAPIPath('auth', ''),
+            CREATE_LOGO: () => getAPIPath('service', '/logo'),
         },
         user: {
             LIST_USERS: () => getAPIPath('auth', '/users'),
@@ -215,11 +217,14 @@ export const KeyMaps = {
         ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
             getAPIPath('/service', `/archived-workflows/${guid}`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
-        WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflowtemplates/${name}`),
+        WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflowtemplates/${name}`),
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
         WORKFLOW_CONFIG_MAP: ({ name }: PathParams) =>
-            getAPIPath('/service', `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name}`)
-
+            getAPIPath(
+                '/service',
+                `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name}`
+            ),
     },
 }

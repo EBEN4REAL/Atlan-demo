@@ -3,6 +3,7 @@ import { State } from './state'
 
 export interface Getters {
     checkPermission(state: State): (key: string) => boolean
+    checkPermissions(state: State): (keys: string[]) => Record<string, boolean>
 }
 
 
@@ -13,5 +14,17 @@ export const getters: GettersTree<State> & Getters = {
         }
         
         return check;
+    },
+    checkPermissions(state){        
+        const check = (keys: string[]) => {
+            const permissions = {};
+            keys.forEach((key) => {
+                permissions[key] =  !!state.permissions.find((permission) => permission === key)
+            })
+
+            return permissions;
+        }
+        return check;
     }
+
 }

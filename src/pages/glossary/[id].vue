@@ -88,6 +88,7 @@
                 :bulk-selected-assets="store.bulkSelectedAssets"
                 @closeBulkMode="handleCloseBulk"
             ></BulkSidebar>
+            <BulkNotification class="fixed bottom-0 right-0" />
         </div>
     </div>
 </template>
@@ -111,6 +112,7 @@
     import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
     import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
     import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
+    import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -134,6 +136,7 @@
             SidePanel,
             ProfileHeader,
             BulkSidebar,
+            BulkNotification,
         },
         props: {
             id: {

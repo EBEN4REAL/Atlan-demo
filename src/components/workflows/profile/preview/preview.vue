@@ -41,13 +41,18 @@
             </div>
         </div>
         <div v-if="selectedTab === 'setup'">
-            <div v-if="json[selectedDag]" class="m-3">
-                <FormBuilder :config="json[selectedDag]" />
+            <div v-if="formConfig[selectedDag]" class="m-3">
+                <FormBuilder
+                    :config="formConfig[selectedDag]"
+                    @change="handleChange"
+                />
                 <AtlanButton
                     class="absolute bottom-0 m-2"
                     size="sm"
                     color="primary"
                     padding="compact"
+                    :loading="isLoading"
+                    @click="updateWorkflow"
                 >
                     Save
                 </AtlanButton>
@@ -118,12 +123,12 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
-    import json from '@/workflows/profile/tabs/setup/Untitled-1.json'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import FormBuilder from '@/common/formGenerator/index.vue'
+    import { updateWorkflowByName } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         name: 'ProfileWorkflowPreview',
@@ -151,6 +156,11 @@
                 type: String,
                 required: true,
             },
+            formConfig: {
+                type: Object,
+                required: false,
+                default: null,
+            },
         },
         emits: ['assetMutation', 'closeSidebar', 'change'],
         setup(props, { emit }) {
@@ -177,35 +187,48 @@
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
-            const tabHeights = {
-                discovery: 'calc(100vh - 7.8rem)',
-                profile: 'calc(100vh - 3rem)',
-            }
-
-            provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
-                emit('assetMutation', updatedAsset)
-            })
-
-            provide('switchTab', (tabName: string) => {
-                const idx = filteredTabs.findIndex((tl) => tl.name === tabName)
-                if (idx > -1) activeKey.value = idx
-            })
-
             function init() {
                 isLoaded.value = false
             }
 
+            const body = ref(selectedWorkflow.value.workflowtemplate)
+
+            const { workflow, error, isLoading, mutate, isReady } =
+                updateWorkflowByName(selectedWorkflow.value.name, body, false)
+
             watch(selectedWorkflow, init, { deep: true })
             onMounted(init)
 
+            const updateWorkflow = () => {
+                mutate()
+            }
+            const handleChange = (v) => {
+                Object.entries(v).forEach(([key, value]) => {
+                    const index =
+                        body.value.spec.arguments.parameters.findIndex(
+                            (e) => e.name === key
+                        )
+                    if (index > -1)
+                        body.value.spec.arguments.parameters[index].value =
+                            value
+                    else
+                        body.value.spec.arguments.parameters.push({
+                            name: key,
+                            value,
+                        })
+                })
+            }
+
             return {
-                tabHeights,
+                updateWorkflow,
+                handleChange,
                 selectedTab,
+                isLoading,
                 isLoaded,
+                body,
                 activeKey,
                 filteredTabs,
                 emit,
-                json,
             }
         },
     })

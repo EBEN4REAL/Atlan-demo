@@ -186,8 +186,6 @@
                 ),
             })
 
-            console.log(initialFilters.value)
-
             // workflow filter component ref
             const workflowFilterRef = ref()
             // FIXME auto select logic bug

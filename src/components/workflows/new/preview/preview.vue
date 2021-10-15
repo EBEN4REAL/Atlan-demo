@@ -1,35 +1,45 @@
 <template>
-    <div>{{ selectedWorkflow.name }}</div>
-    <div class="">
-        <a-modal
-            v-model:visible="visible"
-            title="Create Workflow"
-            :class="$style.input"
-        >
-            <p>Name:</p>
-            <a-input v-model:value="workflowName"></a-input>
-            <template #footer>
-                <div class="flex items-center justify-end space-x-3">
-                    <a-button @click="visible = false">Cancel</a-button>
-                    <a-button
-                        type="primary"
-                        @click="handleCreate"
-                        :loading="isLoading"
-                        >Create</a-button
-                    >
-                </div>
-            </template>
-        </a-modal>
-    </div>
-    <AtlanButton
-        class="absolute bottom-0 m-2"
-        size="sm"
-        color="primary"
-        padding="compact"
-        @click="handleSetupWorkflow"
-    >
-        Setup
-    </AtlanButton>
+    <Loader v-if="configLoading"></Loader>
+    <ErrorView
+        v-else-if="!configLoading && configMapError"
+        :error="configMapError"
+    ></ErrorView>
+
+    <template v-else>
+        <div></div>
+        <div class="">
+            <a-modal
+                v-model:visible="visible"
+                title="Create Workflow"
+                :class="$style.input"
+            >
+                <p>Name:</p>
+                <a-input v-model:value="workflowName"></a-input>
+                <template #footer>
+                    <div class="flex items-center justify-end space-x-3">
+                        <a-button @click="visible = false">Cancel</a-button>
+                        <a-button
+                            type="primary"
+                            :loading="isLoading"
+                            @click="handleCreate"
+                            >Create</a-button
+                        >
+                    </div>
+                </template>
+            </a-modal>
+        </div>
+        <div class="w-full">
+            <AtlanButton
+                class="absolute bottom-0 m-2"
+                size="sm"
+                color="primary"
+                padding="compact"
+                @click="handleSetupWorkflow"
+            >
+                Setup
+            </AtlanButton>
+        </div>
+    </template>
 </template>
 
 <script lang="ts">
@@ -46,13 +56,20 @@
         computed,
     } from 'vue'
     import { useRouter } from 'vue-router'
-    import { createWorkflow } from '~/composables/workflow/useWorkFlowList'
+    import Loader from '@common/loaders/page.vue'
+    import ErrorView from '@common/error/index.vue'
+    import {
+        createWorkflow,
+        getWorkflowConfigMap,
+    } from '~/composables/workflow/useWorkFlowList'
     import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'SetupWorkflowPreview',
         components: {
             AtlanButton,
+            ErrorView,
+            Loader,
         },
         props: {
             selectedWorkflow: {
@@ -69,7 +86,6 @@
         setup(props, { emit }) {
             const { selectedWorkflow } = toRefs(props)
 
-            const isLoaded: Ref<boolean> = ref(true)
             const visible: Ref<boolean> = ref(false)
             const router = useRouter()
 
@@ -115,8 +131,15 @@
                 })
             }
 
+            const {
+                data: configMap,
+                error: configMapError,
+                isLoading: configLoading,
+                changeName: mutateConfigMap,
+            } = getWorkflowConfigMap(selectedWorkflow.value.name, true)
+
             function init() {
-                isLoaded.value = false
+                mutateConfigMap(selectedWorkflow.value.name)
             }
 
             watch(selectedWorkflow, init, { deep: true })
@@ -124,7 +147,10 @@
             return {
                 handleSetupWorkflow,
                 handleCreate,
+                configMap,
                 isLoading,
+                configMapError,
+                configLoading,
                 body,
                 visible,
                 workflowName,

@@ -130,14 +130,37 @@ export function useWorkflowByName(name, immediate: boolean = true) {
     }
 }
 
-export function getWorkflowConfigMap(label, immediate: boolean = true) {
-    const pathVariable = computed(() => ({
-        'name': `${label}` // `com.atlan.orchestration/workflow-template-name=${label}`
-    }))
-    // const params = ref({ labelSelector: "" })
-    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap(pathVariable, { immediate, options: {} })
+export function updateWorkflowByName(name, body, immediate: boolean = true) {
+    const { data, error, isLoading, isReady, mutate } =
+        Workflows.updateWorkflowByName(name, body, {
+            immediate,
+            options: {},
+        })
 
-    return { data, error, isLoading, mutate }
+    return {
+        workflow: data,
+        error,
+        isLoading,
+        isReady,
+        mutate,
+    }
+}
+
+
+export function getWorkflowConfigMap(name, immediate: boolean = true) {
+    const params = ref({ labelSelector: `com.atlan.orchestration/workflow-template-name=${name},com.atlan.orchestration/type=package` })
+    // const params = computed(() => ({
+    //     'name': `${name.value}` // `com.atlan.orchestration/workflow-template-name=${label}`
+    // }))
+    // const params = ref({ labelSelector: "" })
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap({ immediate, options: {}, params })
+
+    const changeName = (n) => {
+        params.value.labelSelector = `com.atlan.orchestration/workflow-template-name=${n},com.atlan.orchestration/type=package`
+        mutate()
+    }
+
+    return { data, error, isLoading, mutate, changeName }
 }
 
 export function createWorkflow(body, immediate: boolean = true) {

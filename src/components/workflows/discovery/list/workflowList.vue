@@ -107,6 +107,11 @@
                 required: false,
                 default: () => false,
             },
+            isLoadMore: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
         emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {

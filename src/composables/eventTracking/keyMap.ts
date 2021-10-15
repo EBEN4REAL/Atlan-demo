@@ -68,5 +68,52 @@ const keyMap = {
             },
         },
     },
+    insights: {
+        query: {
+            // query made public/private
+            space_changed: {
+                action: 'insights_query_space_changed',
+                properties: (props) => ({ finalSpace: props?.finalSPace }),
+            },
+            deleted: {
+                action: 'inights_query_deleted',
+            },
+            saved: {
+                action: 'insights_query_saved',
+                properties: (props) => ({
+                    num_variables: props?.num_variables,
+                }),
+            },
+
+            updated: {
+                action: 'insights_query_updated',
+                properties: (props) => ({
+                    num_variables: props?.num_variables,
+                }),
+            },
+            link_copied: {
+                action: 'insights_query_link_copied',
+            },
+            run: {
+                action: 'insights_query_run',
+            },
+        },
+        folder: {
+            renamed: {
+                action: 'insights_folder_renamed',
+            },
+            // folder made public/private
+            space_changed: {
+                action: 'insights_folder_space_changed',
+                properties: (props) => ({ finalSpace: props?.finalSPace }),
+            },
+            created: {
+                action: 'insights_folder_created',
+            },
+            deleted: {
+                action: 'insights_folder_deleted',
+            },
+        },
+    },
 }
 export default keyMap

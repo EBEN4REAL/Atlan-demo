@@ -1,11 +1,5 @@
 <template>
-    <a-tabs
-        v-model:activeKey="activeTabKey"
-        class="flex-none w-full mt-2 typeTabs"
-    >
-        <a-tab-pane key="1" tab="Linked Assets" />
-        <a-tab-pane key="2" tab="Linked Terms" />
-    </a-tabs>
+    <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
     <KeepAlive>
         <AssetsWrapper :dataMap="filterConfig" v-if="activeTabKey === '1'" />
         <LinkedTerms
@@ -19,6 +13,7 @@
     import { defineComponent, computed, ref, PropType, toRefs } from 'vue'
     import AssetsWrapper from '@common/assets/index.vue'
     import LinkedTerms from './LinkedTerms.vue'
+    import MinimalTab from '@/UI/minimalTab.vue'
     import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
@@ -26,6 +21,7 @@
         components: {
             AssetsWrapper,
             LinkedTerms,
+            MinimalTab,
         },
         props: {
             classification: {
@@ -40,6 +36,10 @@
                 assetSearchText.value = e.target.value
             }
             const activeTabKey = ref('1')
+            const tabConfig = [
+                { key: '1', label: 'Linked Assets' },
+                { key: '2', label: 'Linked Terms' },
+            ]
 
             const filterConfig = computed(() => ({
                 classifications: {
@@ -54,6 +54,7 @@
                 activeTabKey,
                 assetSearchText,
                 handleAssetSearch,
+                tabConfig,
             }
         },
     })

@@ -42,6 +42,7 @@ import Approve from '~/assets/images/icons/approve.svg'
 import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
+import GlossaryInactive from '~/assets/images/icons/glossary_inactive.svg'
 import GlossaryDeprecated from '~/assets/images/icons/glossary-deprecated.svg'
 import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
@@ -90,6 +91,12 @@ import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
 import RunSuccess from '~/assets/images/icons/run-success.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
+import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
+import WorkflowsInactive from '~/assets/images/icons/workflows_inactive.svg'
+import InsightsActive from '~/assets/images/icons/insights_active.svg'
+import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
+import AssetsActive from '~/assets/images/icons/assets_active.svg'
+import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 
 export default {
     RunSuccess,
@@ -145,6 +152,7 @@ export default {
     CategoryDraft,
     EmptyGlossary,
     Glossary,
+    GlossaryInactive,
     KebabMenu,
     User,
     Chats,
@@ -183,4 +191,10 @@ export default {
     Caret,
     Check,
     Dots,
+    WorkflowsActive,
+    WorkflowsInactive,
+    InsightsActive,
+    InsightsInactive,
+    AssetsActive,
+    AssetsInactive,
 }

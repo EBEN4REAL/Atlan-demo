@@ -10,7 +10,7 @@ import App from './App.vue'
 import '~/styles/antd.less'
 import '~/styles/index.less'
 
-import { useTenantStore } from './store/tenants'
+import { useTenantStore } from './services/keycloak/tenant/store'
 
 const app = createApp(App)
 const head = createHead()

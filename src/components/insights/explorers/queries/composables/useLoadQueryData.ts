@@ -66,12 +66,12 @@ const useLoadQueryData = ({
                 condition: 'AND',
                 criterion: [],
             },
-            sortBy: 'name',
-            sortOrder: 'ASCENDING',
+            // sortBy: 'name',
+            // sortOrder: 'ASCENDING',
         }
         if (connector.value) {
             body.value.entityFilters.criterion.push({
-                attributeName: 'connectorName',
+                attributeName: 'connectionName',
                 attributeValue: connector.value,
                 operator: 'eq',
             })

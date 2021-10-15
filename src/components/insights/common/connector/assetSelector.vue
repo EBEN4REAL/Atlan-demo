@@ -70,8 +70,8 @@
                 offset: 0,
                 entityFilters: props.filters,
                 attributes: ['name', 'displayName'],
-                sortBy: 'name',
-                aggregationAttributes: ['__typeName.keyword'],
+                // sortBy: 'name',
+                // aggregationAttributes: ['__typeName.keyword'],
                 sortOrder: 'ASCENDING',
             }
 
@@ -87,7 +87,8 @@
                 now,
                 initialBody.typeName,
                 initialBody,
-                `selector_${initialBody.typeName}`
+                `selector_${initialBody.typeName}`,
+                false
             )
 
             const handleChange = (checkedValues: string) => {

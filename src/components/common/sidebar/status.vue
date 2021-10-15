@@ -1,6 +1,7 @@
 <template>
     <div class="">
         <a-popover
+            v-if="editPermission"
             v-model:visible="isCompleted"
             class="p-0"
             placement="left"
@@ -102,6 +103,42 @@
                 </div> -->
             </div>
         </a-popover>
+        <div v-else 
+            ref="animationPoint"
+            class="flex flex-col text-xs text-gray-500 cursor-pointer"
+        >
+            <div class="">
+                <p class="mb-2 text-sm">Certificate</p>
+                <StatusBadge
+                    :key="selectedAsset.guid"
+                    :status-id="selectedAsset?.attributes?.assetStatus"
+                    :status-message="
+                        selectedAsset?.attributes?.assetStatusMessage
+                    "
+                    :show-chip-style-status="true"
+                    :status-updated-at="
+                        selectedAsset?.attributes?.assetStatusUpdatedAt
+                    "
+                    :status-updated-by="
+                        selectedAsset?.attributes?.assetStatusUpdatedBy
+                    "
+                    :show-no-status="true"
+                    :show-label="true"
+                ></StatusBadge>
+            </div>
+
+            <!-- <div
+                v-if="selectedAsset?.attributes?.assetStatusMessage"
+                class=""
+            >
+                <p class="mb-1 text-xs">Message</p>
+                <p
+                    v-linkified
+                    class="mb-0 text-sm text-gray"
+                    v-html="statusMessage"
+                ></p>
+            </div> -->
+        </div>
     </div>
 </template>
 
@@ -123,6 +160,11 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {

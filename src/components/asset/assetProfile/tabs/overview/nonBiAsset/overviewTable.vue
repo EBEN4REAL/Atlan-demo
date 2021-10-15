@@ -145,9 +145,15 @@
             max-width: 150px;
             min-width: 150px;
         }
+        tbody {
+            font-family: Hack;
+            font-weight: 400;
+            src: url('~/assets/fonts/hack/Hack-Regular.ttf') format('ttf');
+        }
 
         td:first-child,
         th:first-child {
+            @apply bg-gray-100;
             width: 50px;
             min-width: 50px;
         }

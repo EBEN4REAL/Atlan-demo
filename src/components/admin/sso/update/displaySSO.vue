@@ -111,7 +111,7 @@
     import { topSAMLProviders, customSamlProvider } from '~/constant/saml';
     import { IdentityProvider } from '~/api/auth/identityProvider';
 
-    import { useTenantStore } from '~/store/tenants';
+    import { useTenantStore } from '~/services/keycloak/tenant/store';
     import { Tenant } from '~/api/auth/tenant';
 
     export default defineComponent({

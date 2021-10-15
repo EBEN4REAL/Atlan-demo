@@ -1,17 +1,17 @@
 import { useAPIAsyncState, useAPIPromise } from '~/api/useAPI'
-import { KeyMaps } from '../keyMaps'
+import { heracles_keymap } from '../heracles_keymap'
 import { IPersona } from '~/types/accessPolicies/personas'
 
 const listPersonas = () =>
     useAPIAsyncState<IPersona[]>(
-        KeyMaps.personas.LIST_PERSONAS,
+        heracles_keymap.personas.LIST_PERSONAS,
         'GET',
         { initialState: [] },
         { resetOnExecute: false }
     )
 
 const createPersona = (newPersona: IPersona) =>
-    useAPIPromise(KeyMaps.personas.CREATE_PERSONA(), 'POST', {
+    useAPIPromise(heracles_keymap.personas.CREATE_PERSONA(), 'POST', {
         body: newPersona,
     })
 

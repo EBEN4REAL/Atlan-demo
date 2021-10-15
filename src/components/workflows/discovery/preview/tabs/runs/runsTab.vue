@@ -6,8 +6,8 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="workflowList?.length">
-        <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
+    <template v-else-if="runList?.length">
+        <div v-for="(r, x) in runList" :key="x" class="mx-4 mt-3">
             <div
                 class="
                     text-base
@@ -21,16 +21,16 @@
                 "
             >
                 <router-link
-                    :to="`/workflows/${item.workflowtemplate.metadata.name}/overview`"
+                    :to="`/workflows/${selectedWorkflow.name}/overview`"
                 >
-                    {{ r.metadata.name }}
+                    {{ r.name }}
                 </router-link>
             </div>
             <div>
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
                     Status:
                     <span class="text-gray-700">
-                        {{ r.status.phase }}
+                        {{ r.phase }}
                     </span>
                 </p>
                 <p>
@@ -38,13 +38,13 @@
                         >Started:</span
                     >
                     <span class="text-gray-700"
-                        >{{ timeAgo(r.status.startedAt) }},
+                        >{{ timeAgo(r.started_at) }},
                     </span>
                     <span class="mb-1 text-sm tracking-wide text-gray-500"
                         >finished:</span
                     >
                     <span class="text-gray-700">{{
-                        timeAgo(r.status.finishedAt)
+                        timeAgo(r.finished_at)
                     }}</span>
                 </p>
             </div>
@@ -62,7 +62,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedWorkflowList } from '~/composables/workflow/useWorkFlowList'
+    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {},
@@ -77,25 +77,23 @@
         },
         emits: ['change'],
         setup(props) {
-            const { selectedWorkflow: item } = toRefs(props)
+            const { selectedWorkflow } = toRefs(props)
 
-            const labelSelector = computed(
-                () =>
-                    `workflows.argoproj.io/workflow-template=${item.value.metadata.name}`
+            const { runList, error, isLoading, reFetch } = useArchivedRunList(
+                '',
+                false
             )
-            const { workflowList, error, isLoading, mutate } =
-                useArchivedWorkflowList(labelSelector)
 
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
             }
 
             watch(
-                item,
+                selectedWorkflow,
                 (n, o) => {
                     console.log(n, o)
-                    if (!o) mutate()
-                    else if (n.metadata.name !== o.metadata.name) mutate()
+                    if (!o) reFetch(n.name)
+                    else if (n.name !== o.name) reFetch(n.name)
                 },
                 {
                     immediate: true,
@@ -104,8 +102,7 @@
             )
 
             return {
-                item,
-                workflowList,
+                runList,
                 error,
                 isLoading,
                 timeAgo,

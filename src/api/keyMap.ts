@@ -212,8 +212,8 @@ export const KeyMaps = {
         CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
         WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflows/${name}`),
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
-        ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
-            getAPIPath('/service', `/archived-workflows/${guid}`),
+        ARCHIVED_WORKFLOW_RUN: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflows/${name}/runs/archived`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
         WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflowtemplates/${name}`),
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>

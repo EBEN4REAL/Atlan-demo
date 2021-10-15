@@ -57,6 +57,14 @@
                     Save
                 </AtlanButton>
             </div>
+            <div v-else class="flex flex-col items-center">
+                <img
+                    :src="emptyScreen"
+                    alt="No Runs"
+                    class="w-2/5 m-auto mb-4"
+                />
+                <span class="text-gray-500">No Form found</span>
+            </div>
         </div>
         <a-tabs
             v-else
@@ -129,6 +137,7 @@
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import FormBuilder from '@/common/formGenerator/index.vue'
     import { updateWorkflowByName } from '~/composables/workflow/useWorkFlowList'
+    import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
         name: 'ProfileWorkflowPreview',
@@ -229,6 +238,7 @@
                 activeKey,
                 filteredTabs,
                 emit,
+                emptyScreen,
             }
         },
     })

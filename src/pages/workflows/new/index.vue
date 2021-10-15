@@ -157,7 +157,7 @@
     import SetupPreview from '@/workflows/new/preview/preview.vue'
 
     export default defineComponent({
-        name: 'WorkflowSetup',
+        name: 'WorkflowSetupPage',
         components: {
             WorkflowList,
             SetupPreview,

@@ -87,6 +87,14 @@
                 type: String,
                 required: true,
             },
+            id: {
+                type: String,
+                required: true,
+            },
+            tab: {
+                type: String,
+                required: true,
+            },
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -124,9 +132,9 @@
             const id = computed(() => route?.params?.id || '')
 
             const formConfig = computed(() => {
-                if (data.value?.uiConfig) {
+                if (data.value?.uiConfig?.length) {
                     const configCopy =
-                        data.value.uiConfig[0]?.data?.uiConfig || ''
+                        data.value.uiConfig[0]?.data?.uiConfig || '{}'
                     configCopy
                         .replace(/\\n/g, '\\n')
                         .replace(/\\'/g, "\\'")

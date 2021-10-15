@@ -1,8 +1,7 @@
 import { KeyMaps } from '../heka_keyMaps'
-import { useAPIAsyncState, useAPIPromise } from '~/api/useAPI'
+import { useAPI } from '~/api/useAPI'
 
-
-const GetSampleData = (body: Record<string, any>) => useAPIAsyncState(KeyMaps.asset.PREVIEW_TABLE(), 'POST', {
+const GetSampleData = (body: Record<string, any>) => useAPI(KeyMaps.asset.PREVIEW_TABLE(), 'POST', {
     body,
 })
 

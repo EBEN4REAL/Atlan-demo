@@ -68,6 +68,8 @@
                                                           c?.allowCreate,
                                                       getFormConfig:
                                                           c?.getFormConfig,
+                                                      createNewLabel:
+                                                          c?.createNewLabel,
                                                   }
                                                 : {}
                                         "
@@ -122,6 +124,7 @@
                                           valueObject,
                                           allowCreate: f.allowCreate,
                                           getFormConfig: f.getFormConfig,
+                                          createNewLabel: f.createNewLabel,
                                       }
                                     : {}
                             "

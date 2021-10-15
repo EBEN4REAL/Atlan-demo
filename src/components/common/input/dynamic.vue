@@ -65,7 +65,7 @@
                         @mousedown="(e) => e.preventDefault()"
                         @click="handleCreateNew"
                     >
-                        Create New
+                        {{ createNewLabel || 'Create More' }}
                     </div>
                 </template>
             </template>
@@ -174,6 +174,11 @@
                 default(): string {
                     return ''
                 },
+            },
+            createNewLabel: {
+                type: String,
+                required: false,
+                default: '',
             },
             placeholder: {
                 type: String,

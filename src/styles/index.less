@@ -33,15 +33,33 @@ body,
 
 
   .toolTips-badge {
+    .icon-badge{
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 4px;
+    }
+    .footer{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .description{
+      margin-bottom: 10px;
+      padding: 0 6px;
+    }
     .ant-tooltip-inner {
         color: #3E4359;
+        padding: 8px;
+        border-radius: 15px;
+        min-width: 150px;
     }
     &.verified{
       .ant-tooltip-arrow-content {
-        background-color: #CFF5D1!important;
+        background-color: #EEFFEF!important;
       }
       .ant-tooltip-inner {
-        background-color: #CFF5D1!important;
+        background-color: #EEFFEF!important;
       }
     }
     &.draft{

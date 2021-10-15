@@ -55,7 +55,26 @@
                      <a-tooltip 
                       placement="topLeft" 
                       :overlayClassName="`toolTips-badge ${status(item)?.toLowerCase()}`" 
-                      :title="status(item)?.toLowerCase()">
+                      >
+                       <template #title>
+                         <div>
+                          <div v-if="item?.attributes?.description" class="description">{{item?.attributes?.description}}</div>
+                          <div class="footer">
+                            <div class="icon-badge">
+                                <StatusBadge
+                                  :key="item.guid"
+                                  :show-no-status="false"
+                                  :status-id="status(item)"
+                                  class="flex-none mb-0.5 ml-1"
+                                />
+                                {{status(item)?.toLowerCase()}}
+                            </div>
+                            <div class="icon-badge">
+                              {{item?.attributes?.certificateUpdatedBy}}
+                            </div>
+                          </div>
+                         </div>
+                       </template>
                        <StatusBadge
                            :key="item.guid"
                            :show-no-status="false"

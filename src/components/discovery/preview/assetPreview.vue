@@ -84,13 +84,32 @@
                   <a-tooltip 
                       placement="bottomRight" 
                       :overlayClassName="`toolTips-badge ${selectedAsset?.attributes?.certificateStatus?.toLowerCase()}`" 
-                      :title="selectedAsset?.attributes?.certificateStatus?.toLowerCase()">
-                  <StatusBadge
-                      :key="selectedAsset.guid"
-                      :show-no-status="false"
-                      :status-id="selectedAsset?.attributes?.certificateStatus"
-                      class="ml-1.5 mb-1"
-                  ></StatusBadge> 
+                      >
+                      <template #title>
+                         <div>
+                            <div v-if="selectedAsset?.attributes?.description" class="description">{{selectedAsset?.attributes?.description}}</div>
+                            <div class="footer">
+                              <div class="icon-badge">
+                                  <StatusBadge
+                                    :key="selectedAsset.guid"
+                                    :show-no-status="false"
+                                    :status-id="selectedAsset?.attributes?.certificateStatus"
+                                    class="flex-none mb-0.5 ml-1"
+                                  />
+                                  {{selectedAsset?.attributes?.certificateStatus?.toLowerCase()}}
+                              </div>
+                              <div class="icon-badge">
+                                {{selectedAsset?.attributes?.certificateUpdatedBy}}
+                              </div>
+                            </div>
+                         </div>
+                       </template>
+                    <StatusBadge
+                        :key="selectedAsset.guid"
+                        :show-no-status="false"
+                        :status-id="selectedAsset?.attributes?.certificateStatus"
+                        class="ml-1.5 mb-1"
+                    /> 
                 </a-tooltip>
             </div>
         </div>

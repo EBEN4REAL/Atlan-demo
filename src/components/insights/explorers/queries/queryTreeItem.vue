@@ -73,7 +73,7 @@
                         </template>
                         <div class="relative flex w-full z py-1.5">
                             <div class="flex w-full">
-                                <span class="text-sm leading-5 tracking-wide">{{
+                                <span class="text-sm leading-5 tracking-wide pl-6">{{
                                     item.title
                                 }}</span>
                                 <div class="ml-1 mt-0.5">

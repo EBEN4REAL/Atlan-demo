@@ -313,34 +313,34 @@
                             watch(data, async (newData) => {
                                 if (newData) {
                                     newFolderName.value = ''
-                                    // setTimeout(async () => {
-                                    //     if (savedQueryType.value === 'personal') {
-                                    //         await per_refetchNode(
-                                    //             getRelevantTreeData().parentGuid
-                                    //                 .value,
-                                    //             'queryFolder'
-                                    //         )
-                                    //         ul.removeChild(li)
-                                    //         await all_refetchNode(
-                                    //             getRelevantTreeData().parentGuid
-                                    //                 .value,
-                                    //             'queryFolder'
-                                    //         )
-                                    //     }
-                                    //     if (savedQueryType.value === 'all') {
-                                    //         await all_refetchNode(
-                                    //             getRelevantTreeData().parentGuid
-                                    //                 .value,
-                                    //             'queryFolder'
-                                    //         )
-                                    //         ul.removeChild(li)
-                                    //         await per_refetchNode(
-                                    //             getRelevantTreeData().parentGuid
-                                    //                 .value,
-                                    //             'queryFolder'
-                                    //         )
-                                    //     }
-                                    // }, 500)
+                                    setTimeout(async () => {
+                                        if (savedQueryType.value === 'personal') {
+                                            await per_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                            ul.removeChild(li)
+                                            await all_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                        }
+                                        if (savedQueryType.value === 'all') {
+                                            await all_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                            ul.removeChild(li)
+                                            await per_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                        }
+                                    }, 500)
                                 }
                             })
                         }

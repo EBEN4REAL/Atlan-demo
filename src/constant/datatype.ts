@@ -52,6 +52,7 @@ export const dataTypeList = [
             "DOUBLE",
             "DOUBLE PRECISION",
             "REAL",
+            'PRIMITIVE_DOUBLE',
         ],
         image: float1,
     },

@@ -7,7 +7,7 @@
         ><span>Getting sample data</span>
     </div>
     <div v-else class="w-full p-0 m-0 border rounded border-gray-light">
-        <table class="relative block w-full p-0 m-0 overflow-auto h-80">
+        <table class="relative block w-full p-0 m-0 overflow-auto h-96">
             <thead>
                 <tr>
                     <th
@@ -18,7 +18,7 @@
                         <div class="flex">
                             <component
                                 :is="images[col.data_type]"
-                                class="w-4 h-4 mr-3"
+                                class="w-4 h-4 mr-1"
                             ></component>
                             <Tooltip
                                 :tooltip-text="col.title"
@@ -153,9 +153,9 @@
 
         td:first-child,
         th:first-child {
-            @apply bg-gray-100;
-            width: 50px;
-            min-width: 50px;
+            @apply bg-gray-100 text-center !important;
+            width: 35px;
+            min-width: 35px;
         }
     }
 </style>

@@ -88,7 +88,7 @@
     }
     .ant-tooltip-inner {
         font-size: 12px;
-        transform: translateY(40px) translateX(-10px);
+        transform: translateY(39px) translateX(-11px);
         color: #3E4359;
         padding: 8px;
         border-radius: 8px;

@@ -177,12 +177,12 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     isPrivate: true,
                 },
-                relationshipAttributes: {
-                    folder: {
-                        guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
-                        typeName: 'QueryFolder',
-                    },
-                },
+                // relationshipAttributes: {
+                //     folder: {
+                //         guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
+                //         typeName: 'QueryFolder',
+                //     },
+                // },
             },
         })
         // console.log(body.value, 'update')

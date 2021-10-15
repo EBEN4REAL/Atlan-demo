@@ -34,6 +34,7 @@
     } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
+    import { getLightAtlanTheme } from './customTheme'
 
     const turndownService = new TurndownService({})
 

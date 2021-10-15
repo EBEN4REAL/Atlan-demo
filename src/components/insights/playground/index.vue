@@ -22,42 +22,59 @@
                 </template>
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
                     <template #tab>
-                        <div
-                            class="flex items-center justify-between inline_tab"
+                        <a-dropdown
+                            :trigger="['click']"
+                            :visible="
+                                unsavedPopover.show &&
+                                unsavedPopover.key === tab.key
+                            "
                         >
-                            <div class="flex items-center text-gray-700">
-                                <span
-                                    class="
-                                        text-sm
-                                        truncate
-                                        ...
-                                        inline_tab_label
-                                    "
-                                    :class="
-                                        tab.key !== activeInlineTabKey
-                                            ? 'text-gray-500'
-                                            : ''
-                                    "
-                                    >{{ tab.label }}</span
-                                >
-                            </div>
                             <div
-                                v-if="!tab.isSaved"
-                                class="flex items-center mr-2 unsaved-dot"
+                                class="flex items-center justify-between  inline_tab"
                             >
+                                <div class="flex items-center text-gray-700">
+                                    <span
+                                        class="
+                                            text-sm
+                                            truncate
+                                            ...
+                                            inline_tab_label
+                                        "
+                                        :class="
+                                            tab.key !== activeInlineTabKey
+                                                ? 'text-gray-500'
+                                                : ''
+                                        "
+                                        >{{ tab.label }}</span
+                                    >
+                                </div>
                                 <div
-                                    class="
-                                        w-1.5
-                                        h-1.5
-                                        rounded-full
-                                        bg-primary
-                                        -mt-0.5
-                                        absolute
-                                        right-2.5
-                                    "
-                                ></div>
+                                    v-if="!tab.isSaved"
+                                    class="flex items-center mr-2 unsaved-dot"
+                                >
+                                    <div
+                                        class="
+                                            w-1.5
+                                            h-1.5
+                                            rounded-full
+                                            bg-primary
+                                            -mt-0.5
+                                            absolute
+                                            right-2.5
+                                        "
+                                    ></div>
+                                </div>
                             </div>
-                        </div>
+                            <template #overlay>
+                                <a-menu>
+                                    <UnsavedPopover
+                                        @closeTab="closeTabConfirm"
+                                        @saveTab="saveTabConfirm"
+                                        :unsavedPopover="unsavedPopover"
+                                    />
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
                     </template>
                 </a-tab-pane>
             </a-tabs>
@@ -98,12 +115,13 @@
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useRouter } from 'vue-router'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
-        components: { Editor, ResultsPane, NoActiveInlineTab },
+        components: { Editor, ResultsPane, NoActiveInlineTab, UnsavedPopover },
         props: {
             activeInlineTabKey: {
                 type: String,
@@ -115,7 +133,10 @@
             const { queryRun } = useRunQuery()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
-
+            const unsavedPopover = ref({
+                show: false,
+                key: undefined,
+            })
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTab = inject(
@@ -208,15 +229,44 @@
                     handleAdd()
                 } else {
                     console.log(targetKey)
-                    inlineTabRemove(
-                        targetKey as string,
-                        tabs,
-                        activeInlineTabKey,
-                        pushGuidToURL
-                    )
+                    let crossedTabState: boolean = false
+                    tabs.value.forEach((tab) => {
+                        if (tab.key === targetKey) {
+                            crossedTabState = tab.isSaved
+                        }
+                    })
+                    /* If it is unsaved then show popover confirm */
+                    if (!crossedTabState) {
+                        unsavedPopover.value.key = targetKey as string
+                        unsavedPopover.value.show = true
+                    } else {
+                        inlineTabRemove(
+                            targetKey as string,
+                            tabs,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+                    }
                 }
             }
+            const closeTabConfirm = (key: string) => {
+                console.log(key, 'close')
+                inlineTabRemove(
+                    key as string,
+                    tabs,
+                    activeInlineTabKey,
+                    pushGuidToURL
+                )
+                unsavedPopover.value.key = undefined
+                unsavedPopover.value.show = false
+            }
+            const saveTabConfirm = (key: string) => {
+                console.log('save', key)
+            }
             return {
+                saveTabConfirm,
+                closeTabConfirm,
+                unsavedPopover,
                 isActiveInlineTabSaved,
                 isQueryRunning,
                 activeInlineTab,

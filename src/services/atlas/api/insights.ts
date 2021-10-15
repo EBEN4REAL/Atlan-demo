@@ -70,7 +70,7 @@ const DeleteEntity = (guid: string) => {
         'DELETE',
         {
             pathVariables: {
-                guid
+                guid,
             },
         }
     )
@@ -82,5 +82,5 @@ export const Insights = {
     CreateSavedQuery,
     GetSavedQuery,
     CreateQueryFolder,
-    DeleteEntity
+    DeleteEntity,
 }

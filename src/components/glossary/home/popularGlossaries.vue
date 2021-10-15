@@ -23,7 +23,7 @@
                             :icon="
                                 getEntityStatusIcon(
                                     'glossary',
-                                    item.attributes.certificateStatus
+                                    item.attributes?.certificateStatus
                                 )
                             "
                             class="w-auto h-4 mr-1"
@@ -67,7 +67,7 @@
                         "
                         @click="redirectToProfile(item.typeName, item.guid)"
                     >
-                        <span v-if="item.attributes.terms.length">
+                        <span v-if="item.attributes?.terms?.length">
                             See all {{ item.attributes.terms.length }} terms
                         </span>
                         <span v-else> Add terms </span>

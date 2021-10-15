@@ -18,7 +18,6 @@ import classification from '~/api/keyMaps/atlas/classification'
 import lineage from '~/api/keyMaps/atlas/lineage'
 import image from '~/api/keyMaps/auth/image'
 import policies from '~/api/keyMaps/auth/policies'
-import requests from '~/api/keyMaps/heracles/request'
 
 export default {
     ...asset,
@@ -38,5 +37,4 @@ export default {
     ...search,
     ...image,
     ...policies,
-    ...requests,
 }

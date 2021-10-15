@@ -149,13 +149,23 @@ const useTree = (
      */
     const initTreeData = async (guid?: string) => {
         if (guid) {
-            const categoryList = await GlossaryApi.ListCategoryForGlossary(
-                guid,
-                {}
-            ) // all categories in a glossary
-            const termsList = await GlossaryApi.ListTermsForGlossary(guid, {
-                limit: defaultLimit,
-            }) // root level terms
+            let categoryList;
+            try{
+                categoryList = await GlossaryApi.ListCategoryForGlossary(
+                    guid,
+                    {}
+                ) // all categories in a glossary
+            } catch {
+                categoryList = []
+            }
+            let termsList;
+            try {
+                termsList = await GlossaryApi.ListTermsForGlossary(guid, {
+                    limit: defaultLimit,
+                }) // root level terms
+            } catch {
+                termsList = []
+            }
 
             categoryMap[guid] = categoryList
             treeData.value = []

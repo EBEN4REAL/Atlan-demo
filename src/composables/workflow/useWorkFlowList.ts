@@ -87,6 +87,21 @@ export function useWorkflowTemplates(
     return { workflowList, loadMore, totalCount, error, isLoading, filterList, mutate }
 }
 
+export function useWorkflowTemplateByName(name, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } =
+        Workflows.getWorkflowTemplateByName(name, {
+            immediate,
+            options: {},
+        })
+
+    return {
+        data,
+        error,
+        isLoading,
+        mutate,
+    }
+}
+
 export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
     const { data, error, isLoading, mutate } = Workflows.getArchivedWorkflowRun(
         guid,
@@ -115,4 +130,13 @@ export function useWorkflowByName(name, immediate: boolean = true) {
         isLoading,
         mutate,
     }
+}
+
+export function getWorkflowConfigMap(label, immediate: boolean = true) {
+    const pathVariable = computed(() => ({
+        'name': `${label}` // `com.atlan.orchestration/workflow-template-name=${label}`
+    }))
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap(pathVariable, { immediate, options: {} })
+
+    return { data, error, isLoading, mutate }
 }

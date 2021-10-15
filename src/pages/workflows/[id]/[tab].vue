@@ -2,8 +2,8 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full h-full">
-        <div class="flex flex-col">
+    <div v-if="data?.asset" class="flex w-full h-full">
+        <div class="flex flex-col w-full">
             <Header class="px-5 pt-3 bg-white" />
 
             <a-tabs
@@ -21,10 +21,20 @@
                             }
                         "
                         :selected-run-id="selectedRunId"
+                        :ui-config="data?.uiConfig"
                         class="bg-transparent"
+                        @change="handlePreview"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
+        </div>
+
+        <div class="border-l border-gray-300 preview-container">
+            <ProfilePreview
+                v-if="selected"
+                :selected-workflow="selected"
+                :selected-dag="selectedDag"
+            />
         </div>
     </div>
 </template>
@@ -38,23 +48,28 @@
         watch,
         onMounted,
         toRefs,
-        inject,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
+    import ProfilePreview from '@/workflows/profile/preview/preview.vue'
     import Header from '@/workflows/profile/header.vue'
 
     // Composables
-    import { useWorkflowByName } from '~/composables/workflow/useWorkFlowList'
+    import {
+        useWorkflowByName,
+        getWorkflowConfigMap,
+        useWorkflowTemplateByName,
+    } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {
             Header,
             LoadingView,
             ErrorView,
+            ProfilePreview,
             setup: defineAsyncComponent(
                 () => import('@/workflows/profile/tabs/setup/index.vue')
             ),
@@ -74,12 +89,10 @@
             },
         },
         emits: ['preview'],
-        setup(props, context) {
+        setup(props, { emit }) {
             /** DATA */
-            const activeKey = ref(2)
+            const activeKey = ref(1)
             const data = ref({})
-            const selectedAsset = inject('selectedAsset')
-            if (selectedAsset) data.value.asset = selectedAsset.value
 
             const refs: { [key: string]: any } = ref({})
             const { updateProfile } = toRefs(props)
@@ -101,6 +114,9 @@
                 },
             ]
 
+            const selected = ref(null)
+            const selectedDag = ref(null)
+
             /** UTILS */
             const router = useRouter()
             const route = useRoute()
@@ -120,13 +136,63 @@
             }
 
             // handlePreview
-            const handlePreview = (item) => {
-                context.emit('preview', item)
+            const handlePreview = (item, is) => {
+                if (is === 'dag') {
+                    selectedDag.value = item
+                } else selected.value = item
             }
+
+            const templateName = computed(() => {
+                if (
+                    // eslint-disable-next-line no-prototype-builtins
+                    data.value?.asset?.labels.hasOwnProperty(
+                        'com.atlan.orchestration/workflow-template-name'
+                    )
+                )
+                    return data.value.asset.labels[
+                        'com.atlan.orchestration/workflow-template-name'
+                    ]
+                return null
+            })
+
+            const fetchUIConfig = () => {
+                const {
+                    data: uiconfig,
+                    error: e,
+                    isLoading: l,
+                } = getWorkflowConfigMap(templateName.value)
+
+                watch(uiconfig, (v) => {
+                    if (uiconfig.value?.items)
+                        data.value.uiConfig = uiconfig.value?.items
+                })
+            }
+
+            const fetchWorkflowTemplate = () => {
+                const {
+                    data: template,
+                    error: e,
+                    isLoading: l,
+                } = useWorkflowTemplateByName(templateName.value)
+
+                watch(template, (v) => {
+                    if (uiconfig.value?.items)
+                        data.value.uiConfig = uiconfig.value?.items
+                    handlePreview(uiconfig.value?.items, 'config')
+                })
+            }
+
+            watch(templateName, (v) => {
+                if (!v) return
+                fetchUIConfig()
+            })
 
             // fetch
             const fetch = () => {
-                if (selectedAsset.value) return
+                if (selected.value) {
+                    fetchUIConfig()
+                    return
+                }
                 const {
                     workflow: response,
                     error,
@@ -136,20 +202,32 @@
                 watch(response, (v) => {
                     data.value.asset = v
                     data.value.error = error.value
-                    handlePreview(data.value?.asset)
+                    fetchUIConfig()
+                    handlePreview(data.value?.asset, null)
                 })
             }
+
+            watch(
+                () => data.value.asset,
+                (v) => {
+                    if (!v) return
+                    fetchUIConfig()
+                },
+                {
+                    deep: true,
+                }
+            )
 
             /** LIFECYCLES */
             onMounted(async () => {
                 await fetch()
 
-                // const tab = route?.params?.tab
-                // if (!tab) return
-                // const currTab = tabs.find(
-                //     (i) => i.name.toLowerCase() === tab.toLowerCase()
-                // )
-                // activeKey.value = currTab.id
+                const tab = route?.params?.tab
+                if (!tab) return
+                const currTab = tabs.find(
+                    (i) => i.name.toLowerCase() === tab.toLowerCase()
+                )
+                activeKey.value = currTab.id
             })
 
             /** WATCHERS */
@@ -159,13 +237,17 @@
             watch(updateProfile, () => fetch())
 
             return {
+                emit,
                 id,
                 activeKey,
+                selected,
                 tabs,
                 handlePreview,
                 refs,
+                selectedDag,
                 data,
                 selectTab,
+                templateName,
             }
         },
     })
@@ -210,5 +292,18 @@ meta:
         :global(.ant-tabs-tabpane) {
             @apply px-0 pb-0 !important;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .facets {
+        min-width: 264px;
+        width: 20%;
+    }
+
+    .preview-container {
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>

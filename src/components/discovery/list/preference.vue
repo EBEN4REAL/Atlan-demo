@@ -3,17 +3,22 @@
         <div class="flex items-center justify-between text-gray">
             <span class="mr-6 text-sm text-gray">Order By</span>
             <a-select
-                class="text-gray-500"
                 v-model:value="sorting"
-                @change="handeChangeSorting"
+                class="text-gray-500"
                 style="width: 135px"
+                @change="handeChangeSorting"
             >
+                <template #suffixIcon>
+                   <AtlanIcon
+                      icon="ChevronDown"
+                      class="text-gray-500 custom-icon-drop"            
+                    />
+                </template>
                 <a-select-option value="default">Relevance</a-select-option>
-                <a-select-option value="Catalog.popularityScore|descending"
-                    >Most popular</a-select-option
-                >
+                <a-select-option value="Catalog.popularityScore|descending">Most popular</a-select-option>
                 <a-select-option value="Catalog.popularityScore|ascending"
-                    >Least popular</a-select-option
+                    >
+                    Least popular</a-select-option
                 >
                 <a-select-option value="name|ascending">A-Z</a-select-option>
                 <a-select-option value="name|descending">Z-A</a-select-option>
@@ -25,12 +30,12 @@
                 <template v-for="item in properties" :key="item.id">
                     <div
                         class="px-2 py-1 mb-1 mr-1 border rounded cursor-pointer "
-                        @click="() => togglePropertySelect(item)"
                         :class="
                             isProjectionSelected(item)
                                 ? 'bg-primary-light border-white hover:bg-primary-light text-gray'
                                 : ' text-gray-500'
                         "
+                        @click="() => togglePropertySelect(item)"
                     >
                         {{ item.label }}
                     </div>
@@ -41,10 +46,10 @@
             <p class="mb-3 text-sm text-gray">State</p>
             <div class="">
                 <CustomRadioButton
+                    v-model:data="state"
                     class=""
                     :list="radioButtonData"
                     @change="handleChangeState"
-                    v-model:data="state"
                 />
             </div>
         </div>
@@ -134,9 +139,7 @@
             const handleChange = () => {
                 emit('change', projection.value)
             }
-            const isProjectionSelected = (property) => {
-                return projection.value.includes(property.id)
-            }
+            const isProjectionSelected = (property) => projection.value.includes(property.id)
             const togglePropertySelect = (property) => {
                 if (projection.value.includes(property.id)) {
                     const index = projection.value.indexOf(property.id)
@@ -163,16 +166,16 @@
 
             const properties = [
                 {
-                    id: 'description',
-                    label: 'Description',
-                },
-                {
                     id: 'terms',
                     label: 'Business Terms',
                 },
                 {
                     id: 'classifications',
                     label: 'Classifications',
+                },
+                {
+                    id: 'description',
+                    label: 'Description',
                 },
                 {
                     id: 'hierarchy',
@@ -185,6 +188,10 @@
                 {
                     id: 'searchscore',
                     label: 'Relevance',
+                },
+                {
+                    id: 'enableCheckbox',
+                    label: 'Checkbox',
                 },
             ]
 
@@ -221,5 +228,8 @@
 <style lang="less" scoped>
     .preference-container {
         width: 240px;
+    }
+    .custom-icon-drop{
+      transform: translateY(-2px);
     }
 </style>

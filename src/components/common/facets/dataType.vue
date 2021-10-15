@@ -8,7 +8,7 @@
                 style="width: 135px"
                 @change="handeChangeSorting"
             >
-                <a-select-option value="Column.order|ascending"
+                <a-select-option value="order|ascending"
                     >Default</a-select-option
                 >
                 <a-select-option value="name|ascending">Name</a-select-option>
@@ -172,7 +172,7 @@
             const certificationFilters: Ref<any[]> = ref([])
             const activeKey = ref('')
 
-            sorting.value = 'Column.order|ascending'
+            sorting.value = 'order|ascending'
 
             const list = computed(() => List)
 
@@ -238,8 +238,8 @@
                 }
             }
             const changeToDefaultSorting = () => {
-                if (sorting.value !== 'Column.order|ascending') {
-                    sorting.value = 'Column.order|ascending'
+                if (sorting.value !== 'order|ascending') {
+                    sorting.value = 'order|ascending'
                     handeChangeSorting()
                 }
             }

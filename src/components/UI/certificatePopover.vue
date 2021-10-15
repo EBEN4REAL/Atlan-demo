@@ -5,7 +5,7 @@
     >
         <template #title>
             <div>
-            <div class="description">{{data?.attributes?.description}} “Table is ready for use”</div>
+            <div class="description">{{data?.attributes?.description}}</div>
             <div class="footer">
             <div class="icon-badge">
                 <StatusBadge
@@ -16,7 +16,7 @@
                 />
                 {{status(data)?.toLowerCase()}}
             </div>
-            <div class="icon-badge">
+            <div class="mr-10-cs icon-badge">
                 {{data?.attributes?.certificateUpdatedBy}}
             </div>
             </div>
@@ -66,7 +66,10 @@
   .toolTips-badge {
     // transform: translateY(40px) translateX(-10px);
     // transition: none!important;
-    .icon-badge{
+    .mr-10-cs {
+      margin-right: 10px;
+    }
+    .icon-badge  {
       display: flex;
       align-items: center;
       gap: 5px;
@@ -88,7 +91,9 @@
         transform: translateY(40px) translateX(-10px);
         color: #3E4359;
         padding: 8px;
-        border-radius: 15px;
+        border-radius: 8px;
+        border-top-left-radius: 18px;
+        border-bottom-right-radius: 18px;
         min-width: 150px;
     }
     &.verified{

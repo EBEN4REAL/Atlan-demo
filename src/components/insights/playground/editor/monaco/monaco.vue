@@ -195,6 +195,10 @@
             /* ----------------------------------------------------- */
             onMounted(() => {
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
+                    glyphMargin: false,
+                    folding: false,
+                    lineDecorationsWidth: 8,
+                    lineNumbersMinChars: 2,
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
@@ -318,7 +322,7 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .monacoeditor {
         min-height: 90%;
     }

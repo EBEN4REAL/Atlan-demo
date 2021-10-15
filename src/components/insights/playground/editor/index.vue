@@ -124,12 +124,12 @@
                                     border-none
                                     py-0.5
                                     h-6
-                                    rounded-none rounded-tl rounded-bl
+                                    rounded
                                 "
                                 :class="
                                     isQueryRunning === 'loading'
                                         ? 'px-4.5 pr-3.5'
-                                        : 'px-2'
+                                        : 'px-3'
                                 "
                                 :loading="
                                     isQueryRunning === 'loading' ? true : false
@@ -144,7 +144,7 @@
                                 </template>
                                 Run</a-button
                             >
-                            <a-dropdown :trigger="['click']">
+                            <!-- <a-dropdown :trigger="['click']">
                                 <div
                                     class="
                                         flex
@@ -177,7 +177,7 @@
                                         </div>
                                     </a-menu>
                                 </template>
-                            </a-dropdown>
+                            </a-dropdown> -->
                         </div>
                         <a-button
                             v-if="
@@ -308,18 +308,31 @@
             <Monaco @editorInstance="setInstance" />
 
             <div
-                class="absolute bottom-0 left-0 flex items-center justify-between w-full text-xs text-gray-500 bg-white "
+                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pb-1 text-xs text-gray-500 bg-white "
             >
                 <div class="flex items-center">
-                    <WarehouseConnector />
-                    <div class="ml-2" v-if="limitRows.checked">
-                        <span class="mr-4">
+                    <!-- <WarehouseConnector /> -->
+                    <div class="">
+                        <!-- <span class="mr-4">
                             Output limit:&nbsp;{{ limitRows.rowsCount }}
-                        </span>
+                        </span> -->
+                        <div class="">
+                            <a-checkbox
+                                :class="$style.checkbox_style"
+                                v-model:checked="limitRows.checked"
+                                class="text-xs"
+                            >
+                                <span class="text-gray-500">
+                                    Limit to
+                                    {{ limitRows.rowsCount }}
+                                    rows
+                                </span>
+                            </a-checkbox>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex items-center mr-2">
+                <div class="flex items-center">
                     <div class="flex" v-if="editorFocused">
                         <span class="mr-2">
                             Ln:&nbsp;{{ editorPos.lineNumber }}
@@ -329,34 +342,26 @@
                         </span>
                     </div>
                     <span class="ml-2 mr-4"> Spaces:&nbsp;4 </span>
-                    <div class="group" @click="togglePane">
-                        <div
-                            class="
-                                flex
-                                items-end
-                                justify-center
-                                w-4
-                                h-3.5
-                                border
-                                rounded-sm
-                                group-hover:border-primary
-                            "
-                            :class="
-                                outputPaneSize > 0
-                                    ? 'border-primary'
-                                    : 'border-gray-500'
-                            "
-                            style="padding: 0px 1px"
-                        >
-                            <div
-                                class="w-full h-1 rounded-sm  group-hover:bg-primary"
-                                :class="
-                                    outputPaneSize > 0
-                                        ? 'bg-primary'
-                                        : 'bg-gray-500'
-                                "
-                                style="margin-bottom: 1px"
-                            ></div>
+                    <div class="flex items-center justify-center">
+                        <div class="" @click="togglePane">
+                            <a-tooltip>
+                                <template #title>Toggle output pane</template>
+
+                                <AtlanIcon
+                                    icon="OutputpaneTrigger"
+                                    class="w-4 h-4 text-gray-500"
+                                />
+                            </a-tooltip>
+                        </div>
+                        <div class="ml-2">
+                            <a-tooltip>
+                                <template #title>Toggle asset preview</template>
+
+                                <AtlanIcon
+                                    icon="SidebarTrigger"
+                                    class="w-4 h-4 text-gray-500"
+                                />
+                            </a-tooltip>
                         </div>
                     </div>
                 </div>
@@ -616,6 +621,14 @@
     }
     .run-three-dot {
         border-left: 1px solid rgba(255, 255, 255, 0.203);
+    }
+</style>
+<style lang="less" module>
+    .checkbox_style {
+        :global(.ant-checkbox-inner::after) {
+            width: 6px !important;
+            height: 8px !important;
+        }
     }
 </style>
 

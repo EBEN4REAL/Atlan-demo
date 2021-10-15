@@ -192,11 +192,6 @@
                     name: newName.value,
                 })
             }
-            const redirectToProfile = () => {
-                router.push(
-                    `/glossary/${category.value?.attributes?.anchor?.guid}`
-                )
-            }
             const handleScroll = () => {
                 if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
                     headerReachedTop.value = true
@@ -261,7 +256,6 @@
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
                 updateTitle,
-                redirectToProfile,
                 handleScroll,
                 handleFirstCardReachedTop,
                 updateBulkSelection,

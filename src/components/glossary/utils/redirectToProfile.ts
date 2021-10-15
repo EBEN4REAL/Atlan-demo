@@ -1,14 +1,15 @@
-import { useRouter } from 'vue-router'
+import { Router, useRouter } from 'vue-router'
 
-export default function redirectToProfile(
-    entityType: String,
+export default (router: Router) => (
+    typeName: String,
     guid: String
-): void {
-    console.log(useRouter())
-    const router = useRouter()
-    console.log(router)
-    if (entityType === 'AtlasGlossaryCategory')
+): void  => {
+    // if(guid !== '-1') {
+    // }
+    if (typeName === 'AtlasGlossary')
+        router.push(`/glossary/${guid}`)
+    else if (typeName === 'AtlasGlossaryCategory')
         router.push(`/glossary/category/${guid}`)
-    else if (entityType === 'AtlasGlossaryTerm')
+    else if (typeName === 'AtlasGlossaryTerm')
         router.push(`/glossary/term/${guid}`)
 }

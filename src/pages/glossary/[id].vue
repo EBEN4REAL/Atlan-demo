@@ -215,9 +215,6 @@
                 previewEntity.value = undefined
                 showPreviewPanel.value = false
             }
-            const redirectToProfile = () => {
-                router.push(`/glossary`)
-            }
             const updateTitle = () => {
                 updateEntity('glossary', glossary.value?.guid ?? '', {
                     name: newName.value,
@@ -301,7 +298,6 @@
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
-                redirectToProfile,
                 updateTitle,
                 handleScroll,
                 handleFirstCardReachedTop,

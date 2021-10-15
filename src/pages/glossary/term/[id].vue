@@ -184,9 +184,6 @@
                     name: newName.value,
                 })
             }
-            const redirectToProfile = () => {
-                router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
-            }
             const handleScroll = () => {
                 if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
                     headerReachedTop.value = true
@@ -213,7 +210,6 @@
             provide('refreshEntity', refetch)
 
             return {
-                redirectToProfile,
                 term,
                 currentTab,
                 error,

@@ -57,7 +57,7 @@
                             hover:underline
                             overflow-ellipsis
                         "
-                        @click="redirectToProfile"
+                        @click="redirectToProfile(entity?.typeName, entity?.guid)"
                     >
                         {{ entity?.displayText }}
                     </span>
@@ -169,7 +169,6 @@
         <!-- three dot menu -->
         <ThreeDotMenu
             :entity="entity"
-            :redirectToProfile="redirectToProfile"
             :visible="false"
             class="mt-1 opacity-0"
         />
@@ -203,6 +202,7 @@
     } from '~/types/glossary/glossary.interface'
 
     import { List as StatusList } from '~/constant/status'
+    import redirect from '@/glossary/utils/redirectToProfile';
 
     export default defineComponent({
         components: { ThreeDotMenu, Tooltip, ScrollStrip, Pill },
@@ -314,14 +314,7 @@
                     (name) => name.length
                 )
             }
-            const redirectToProfile = () => {
-                if (props.entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryCategory')
-                    router.push(`/glossary/category/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${props.entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
 
             return {
                 statusObject,

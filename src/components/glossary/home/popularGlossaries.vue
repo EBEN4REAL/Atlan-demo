@@ -4,7 +4,7 @@
             <span class="self-start text-lg font-bold">Popular Glossaries</span>
             <span
                 class="self-end cursor-pointer text-primary"
-                @click="redirectToProfile(entities[0])"
+                @click="redirectToProfile(entities[0]?.typeName, entities[0]?.guid)"
                 >View all
             </span>
         </div>
@@ -33,7 +33,7 @@
                     <div class="flex items-center">
                         <span
                             class="font-bold cursor-pointer hover:underline"
-                            @click="redirectToProfile(item)"
+                            @click="redirectToProfile(item.typeName, item.guid)"
                         >
                             {{ item.displayText }}
                         </span>
@@ -65,7 +65,7 @@
                             cursor-pointer
                             text-primary
                         "
-                        @click="redirectToProfile(item)"
+                        @click="redirectToProfile(item.typeName, item.guid)"
                     >
                         <span v-if="item.attributes.terms.length">
                             See all {{ item.attributes.terms.length }} terms
@@ -89,6 +89,7 @@
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     // utils
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import redirect from '@/glossary/utils/redirectToProfile';
 
     export default defineComponent({
         components: { LoadingView, StatusBadge },
@@ -108,13 +109,7 @@
                     offset: 0,
                 })
             }, 400)
-            const redirectToProfile = (entity) => {
-                if (entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${entity.guid}`)
-                else if (entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${entity.guid}`)
-                else router.push(`/glossary/category/${entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
 
             return {
                 entities,

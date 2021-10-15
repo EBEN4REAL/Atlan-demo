@@ -388,6 +388,7 @@
     //  utils
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     import { copyToClipboard } from '~/utils/clipboard'
+    import redirect from '@/glossary/utils/redirectToProfile';
 
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
@@ -477,12 +478,7 @@
             const userHasEditPermission = computed(() => store.checkPermission(permissionMap[props.entity.typeName]))
 
             // methods
-            const redirectToProfile = () => {
-                if (props.entity.typeName === 'AtlasGlossaryCategory')
-                    router.push(`/glossary/category/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${props.entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }

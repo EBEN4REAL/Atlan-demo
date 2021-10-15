@@ -169,10 +169,15 @@
             const templateName = computed(
                 () =>
                     data.value?.asset?.workflowtemplate?.spec
-                        ?.workflowTemplateRef?.name || ''
+                        ?.workflowTemplateRef?.name ||
+                    data.value.asset.labels[
+                        'com.atlan.orchestration/parent-template-name'
+                    ] ||
+                    ''
             )
 
             const fetchUIConfig = () => {
+                if (!templateName.value) return
                 const {
                     data: config,
                     error: e,

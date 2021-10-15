@@ -57,14 +57,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        watch,
-        computed,
-        defineComponent,
-        PropType,
-        toRefs,
-        ref,
-    } from 'vue'
+    import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
 
     import { useTimeAgo } from '@vueuse/core'
     import emptyScreen from '~/assets/images/empty_search.png'

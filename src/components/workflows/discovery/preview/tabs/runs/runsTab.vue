@@ -20,9 +20,7 @@
                     whitespace-nowrap
                 "
             >
-                <router-link
-                    :to="`/workflows/${selectedWorkflow.name}/overview`"
-                >
+                <router-link :to="`/workflows/${selectedWorkflow.name}/setup`">
                     {{ r.name }}
                 </router-link>
             </div>

@@ -52,7 +52,7 @@
                     >
                         {{ title(item) }}
                     </router-link>
-                     <CertificationBadge :data="item" />
+                     <CertificatePopover :data="item" />
                 </div>
 
                 <!-- Info bar -->
@@ -208,6 +208,7 @@ import HierarchyBar from '@common/badge/hierarchy.vue'
 import StatusBadge from '@common/badge/status/index.vue'
 import { computed, defineComponent, PropType, Ref, ref } from 'vue'
 import Pill from '@/UI/pill/pill.vue'
+import CertificatePopover from '@/UI/certificatePopover.vue'
 import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
 
 import AssetLogo from '@/common/icon/assetIcon.vue'
@@ -215,7 +216,6 @@ import { Components } from '~/api/atlas/client'
 import useAssetInfo from '~/composables/asset/useAssetInfo'
 import { assetInterface } from '~/types/assets/asset.interface'
 import ScrollStrip from '@/UI/scrollStrip.vue'
-import CertificationBadge from '@/discovery/certificationBadge.vue'
 
 export default defineComponent({
     name: 'AssetListItem',
@@ -226,7 +226,7 @@ export default defineComponent({
         Pill,
         ThreeDotMenu,
         ScrollStrip,
-        CertificationBadge
+        CertificatePopover
     },
     props: {
         item: {

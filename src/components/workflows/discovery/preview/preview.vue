@@ -2,7 +2,14 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="
+                    fixed
+                    z-10
+                    px-0
+                    border-r-0
+                    rounded-none rounded-l
+                    -left-5
+                "
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -32,7 +39,14 @@
                     </a-button-group>
                 </div>
             </div>
+            <h3 class="text-lg font-bold text-primary">
+                {{ selectedWorkflow?.name }}
+            </h3>
         </div>
+
+        <!-- <pre class="overflow-scroll" style="height: 600px">{{
+            selectedWorkflow
+        }}</pre> -->
 
         <a-tabs
             v-model:activeKey="activeKey"
@@ -57,7 +71,15 @@
                     :style="{ height: 'calc(100vh - 7.8rem)' }"
                 >
                     <div
-                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            px-4
+                            pt-2
+                            font-semibold
+                            text-gray-700 text-md
+                        "
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -127,7 +149,7 @@
                     tooltip: 'Overview',
                 },
                 {
-                    name: 'Runs',
+                    name: 'Run History',
                     component: 'runs',
                     icon: 'Activity',
                     tooltip: 'Runs',

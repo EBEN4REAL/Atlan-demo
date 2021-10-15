@@ -106,6 +106,7 @@
             const { list } = fetchColumnList('', now, entityFilters, [
                 'Column.dataType.keyword',
             ])
+            // const { list } = fetchColumnList('', now, entityFilters)
             console.log(list)
 
             monaco.languages.register({ id: 'atlansql' })

@@ -29,9 +29,10 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, watch, ref } from 'vue'
     import { useRoute } from 'vue-router'
     import UserPersonalAvatar from '~/components/common/avatar/me.vue'
+    import { useTenantStore } from '~/services/keycloak/tenant/store'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -47,19 +48,24 @@
         emits: ['change', 'toggleNavbar'],
         setup(props, { emit }) {
             const route = useRoute()
-
-            const path = computed(() => route.path)
-
+            const tenantStore = useTenantStore()
             const isHome = computed(() => {
-                if (path.value === '/' || path.value === '') {
+                if (props.page === '/' || props.page === '') {
                     return true
                 }
                 return false
             })
-
-            const logoUrl = computed(() => {
-                return `${window.location.origin}/api/service/avatars/_logo_`
-            })
+            const logoUrl = ref('')
+            watch(
+                tenantStore,
+                () => {
+                    logoUrl.value = `${window.location.origin}/api/service/avatars/_logo_`
+                },
+                { deep: true }
+            )
+            // const logoUrl = computed(() => {
+            //     return `${window.location.origin}/api/service/avatars/_logo_`
+            // })
 
             const navKeys = {
                 assets: 'Assets',

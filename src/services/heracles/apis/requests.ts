@@ -2,12 +2,12 @@ import { AxiosRequestConfig } from 'axios'
 import { Ref } from 'vue'
 import { IRequestActionBody, RequestAttributes } from '~/types/atlas/requests'
 import { useAPIPromise, useAPIAsyncState } from '~/api/useAPI'
-import { KeyMaps } from '~/api/keyMap'
+import { heracles_keymap } from '../heracles_keymap'
 
 export const getRequests = (params?: any, options?: AxiosRequestConfig) => {
     const { data, error, mutate, isLoading } = useAPIAsyncState<{
         records: RequestAttributes[]
-    }>(KeyMaps.auth.requests.LIST_REQUESTS, 'GET', {
+    }>(heracles_keymap.requests.LIST_REQUESTS, 'GET', {
         options,
         params,
     })
@@ -19,7 +19,7 @@ export const actOnRequest = (
     id: string,
     body: IRequestActionBody | Ref<IRequestActionBody>
 ) => {
-    return useAPIPromise(KeyMaps.auth.requests.ACT_ON_REQUEST({ id }), 'POST', {
+    return useAPIPromise(heracles_keymap.requests.ACT_ON_REQUEST({ id }), 'POST', {
         body,
     })
 }

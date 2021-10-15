@@ -1,19 +1,21 @@
 <template>
-    <div>Overview</div>
+    <OrgOverview></OrgOverview>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
-    import { useHead } from '@vueuse/head'
+import { defineComponent } from 'vue'
+import { useHead } from '@vueuse/head'
+import OrgOverview from '@/admin/overview/index.vue'
 
-    export default defineComponent({
-        components: {},
-        setup() {
-            useHead({
-                title: 'Overview',
-            })
-        },
-    })
+export default defineComponent({
+    name: 'Overview',
+    components: { OrgOverview },
+    setup() {
+        useHead({
+            title: 'Overview',
+        })
+    },
+})
 </script>
 <style lang="less" module></style>
 <route lang="yaml">

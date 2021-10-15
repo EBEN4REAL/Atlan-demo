@@ -192,23 +192,26 @@
 
     //components
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
+    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+    import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
+    import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
 
-//types
-import {
-    Category,
-    RelatedEntity,
-    Term,
-} from '~/types/glossary/glossary.interface'
-import { TreeSelect } from 'ant-design-vue'
+    //types
+    import {
+        Category,
+        RelatedEntity,
+        Term,
+    } from '~/types/glossary/glossary.interface'
+    import { TreeSelect } from 'ant-design-vue'
 
-type TreeDataItem = Category & {
-    children?: TreeDataItem[]
-    id: string
-    pId: string
-    value: string
-    title: string
-    isLeaf?: boolean
-}
+    type TreeDataItem = Category & {
+        children?: TreeDataItem[]
+        id: string
+        pId: string
+        value: string
+        title: string
+        isLeaf?: boolean
+    }
 
 export default defineComponent({
     components: { PillGroup },

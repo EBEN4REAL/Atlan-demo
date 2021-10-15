@@ -80,9 +80,11 @@ export const KeyMaps = {
             LIST_ROLES: () => getAPIPath('auth', '/roles'),
         },
         tenant: {
-            GET_TENANT: () => getAPIPath('auth', ''),
+            GET_TENANT: () => getAPIPath('service', '/tenants/default'),
+            UPDATE_TENANT: () => getAPIPath('service', '/tenants/default'),
             TEST_SMTP_CONFIG: () => getAPIPath('auth', '/smtp/test'),
             UPDATE_SMTP: () => getAPIPath('auth', ''),
+            CREATE_LOGO: () => getAPIPath('service', '/logo'),
         },
         user: {
             LIST_USERS: () => getAPIPath('auth', '/users'),
@@ -107,11 +109,6 @@ export const KeyMaps = {
                 getAPIPath('auth', `/users/${id}/delete`),
             /** FIXME: Not implemented properly */
             INVITE_USERS: ({ id }: PathParams) => getAPIPath('auth', `/users`),
-        },
-        requests: {
-            LIST_REQUESTS: () => getAPIPath('auth', '/requests'),
-            ACT_ON_REQUEST: ({ id }: PathParams) =>
-                getAPIPath('auth', `/requests/${id}/action`),
         },
     },
     BM: {
@@ -209,15 +206,18 @@ export const KeyMaps = {
     },
     workflow: {
         WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflows/${name}`),
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
-        ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
-            getAPIPath('/service', `/archived-workflows/${guid}`),
+        ARCHIVED_WORKFLOW_RUN: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflows/${name}/runs/archived`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
-        WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflowtemplates/${name}`),
+        WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflowtemplates/${name}`),
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
-        WORKFLOW_CONFIG_MAP: ({ name }: PathParams) =>
-            getAPIPath('/service', `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name}`)
+        WORKFLOW_CONFIG_MAP: () =>
+            getAPIPath('/service', `/configmap`)
 
     },
 }

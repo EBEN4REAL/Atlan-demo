@@ -68,9 +68,9 @@
                 offset: 0,
                 entityFilters: filters.value,
                 attributes: ['name', 'displayName'],
-                sortBy: 'name',
-                aggregationAttributes: ['__typeName.keyword'],
-                sortOrder: 'ASCENDING',
+                // sortBy: 'name',
+                // aggregationAttributes: ['__typeName.keyword'],
+                // sortOrder: 'ASCENDING',
             }
 
             const { list, replaceBody, data, isLoading } = useAssetListing(

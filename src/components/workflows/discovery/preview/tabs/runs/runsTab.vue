@@ -1,69 +1,33 @@
 <template>
     <div
         v-if="isLoading"
-        class="flex items-center justify-center text-sm leading-none"
+        class="flex items-center justify-center h-full text-sm leading-none"
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
     <template v-else-if="runList?.length">
-        <div v-for="(r, x) in runList" :key="x" class="mx-4 mt-3">
-            <div
-                class="
-                    text-base
-                    font-bold
-                    truncate
-                    cursor-pointer
-                    text-primary
-                    hover:underline
-                    overflow-ellipsis
-                    whitespace-nowrap
-                "
-            >
-                <router-link :to="`/workflows/${selectedWorkflow.name}/setup`">
-                    {{ r.name }}
-                </router-link>
-            </div>
-            <div>
-                <p class="mb-1 text-sm tracking-wide text-gray-500">
-                    Status:
-                    <span class="text-gray-700">
-                        {{ r.phase }}
-                    </span>
-                </p>
-                <p>
-                    <span class="mb-1 text-sm tracking-wide text-gray-500"
-                        >Started:</span
-                    >
-                    <span class="text-gray-700"
-                        >{{ timeAgo(r.started_at) }},
-                    </span>
-                    <span class="mb-1 text-sm tracking-wide text-gray-500"
-                        >finished:</span
-                    >
-                    <span class="text-gray-700">{{
-                        timeAgo(r.finished_at)
-                    }}</span>
-                </p>
-            </div>
-        </div>
+        <RunCard
+            v-for="(r, x) in runList"
+            :key="x"
+            :r="r"
+            :select-enabled="false"
+        />
     </template>
-    <div v-else class="flex flex-col items-center">
-        <img :src="emptyScreen" alt="No Runs" class="w-2/5 m-auto mb-4" />
-        <span class="text-gray-500">No runs found</span>
-    </div>
+    <EmptyView v-else empty="No Runs Available" />
 </template>
 
 <script lang="ts">
     import { watch, computed, defineComponent, PropType, toRefs } from 'vue'
 
     import { useTimeAgo } from '@vueuse/core'
-    import emptyScreen from '~/assets/images/empty_search.png'
+    import EmptyView from '@common/empty/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
+    import RunCard from '@/workflows/shared/runCard.vue'
 
     export default defineComponent({
-        components: {},
+        components: { RunCard, EmptyView },
         props: {
             selectedWorkflow: {
                 type: Object as PropType<assetInterface>,
@@ -104,7 +68,6 @@
                 error,
                 isLoading,
                 timeAgo,
-                emptyScreen,
             }
         },
     })

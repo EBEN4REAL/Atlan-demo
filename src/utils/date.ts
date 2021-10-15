@@ -21,39 +21,40 @@ export const formatDateTime = (date: Date, locale = 'en-US') => {
     return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'medium' }).format(date)
 }
 
-export function timeDiffCalc(dateFuture, dateNow) {
-    let diffInMilliSeconds = Math.abs(dateFuture - dateNow) / 1000;
 
-    // calculate days
-    const days = Math.floor(diffInMilliSeconds / 86400);
-    diffInMilliSeconds -= days * 86400;
-    console.log('calculated days', days);
+/**
+ * 
+ * @param date_future date_now  date timestamp
+ * @returns human readable difference between two days
+ */
+export function timeDiffCalc(date_future, date_now) {
+    // get total seconds between the times
+    let delta = Math.abs(date_future - date_now) / 1000;
 
-    // calculate hours
-    const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
-    diffInMilliSeconds -= hours * 3600;
-    console.log('calculated hours', hours);
+    // calculate (and subtract) whole days
+    const days = Math.floor(delta / 86400);
+    delta -= days * 86400;
 
-    // calculate minutes
-    const minutes = Math.floor(diffInMilliSeconds / 60) % 60;
-    diffInMilliSeconds -= minutes * 60;
-    console.log('minutes', minutes);
+    // calculate (and subtract) whole hours
+    const hours = Math.floor(delta / 3600) % 24;
+    delta -= hours * 3600;
 
-    // calculate seconds
-    const seconds = Math.floor(diffInMilliSeconds / 60) % 60;
-    diffInMilliSeconds -= seconds * 60;
-    console.log('seconds', seconds);
+    // calculate (and subtract) whole minutes
+    const minutes = Math.floor(delta / 60) % 60;
+    delta -= minutes * 60;
 
-    let difference = '';
-    if (days > 0) {
-        difference += (days === 1) ? `${days} d, ` : `${days} d, `;
-    }
+    // what's left is seconds
+    const seconds = delta % 60;
 
-    difference += (hours === 0 || hours === 1) ? `${hours} h, ` : `${hours} h, `;
+    let string = ''
 
-    difference += (minutes === 0 || hours === 1) ? `${minutes} m` : `${minutes} m`;
+    if (days && hours && minutes && seconds)
+        string = `${days}d ${hours}h ${minutes}m ${seconds}s`
+    else if (hours && minutes && seconds)
+        string = `${hours}h ${minutes}m ${seconds}s`
+    else
+        string = `${minutes}m ${seconds}s`
 
-    difference += (minutes === 0 || hours === 1) ? `${seconds} s` : `${seconds} s`;
 
-    return difference;
+    return string;
 }

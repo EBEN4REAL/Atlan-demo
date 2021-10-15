@@ -210,6 +210,7 @@ export const KeyMaps = {
     workflow: {
         WORKFLOW: () => getAPIPath('/service', `/workflows`),
         CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflows/${name}`),
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
         ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
             getAPIPath('/service', `/archived-workflows/${guid}`),
@@ -217,8 +218,8 @@ export const KeyMaps = {
         WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflowtemplates/${name}`),
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
-        WORKFLOW_CONFIG_MAP: ({ name }: PathParams) =>
-            getAPIPath('/service', `/configmap?labelSelector=com.atlan.orchestration/workflow-template-name=${name},com.atlan.orchestration/type=package`)
+        WORKFLOW_CONFIG_MAP: () =>
+            getAPIPath('/service', `/configmap`)
 
     },
 }

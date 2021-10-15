@@ -1,0 +1,82 @@
+<template>
+    <div class="flex flex-col px-5" v-if="persona">
+        <div class="flex items-center mb-2 gap-x-2">
+            <AtlanIcon icon="User" class="text-primary" />
+            <span class="text-sm tracking-wide text-gray-500 uppercase"
+                >Persona</span
+            >
+            <div class="flex-1" />
+            <template v-if="isEditing">
+                <AtlanBtn
+                    size="sm"
+                    @click="discardPersona"
+                    color="secondary"
+                    padding="compact"
+                    >Discard</AtlanBtn
+                >
+                <AtlanBtn
+                    size="sm"
+                    @click="savePersona"
+                    color="primary"
+                    padding="compact"
+                    >Save</AtlanBtn
+                >
+            </template>
+            <Dropdown :options="personaActions"></Dropdown>
+        </div>
+        <span class="mb-1 text-xl truncate text-gray">{{
+            persona.displayName
+        }}</span>
+
+        <div class="flex mb-0 text-sm text-gray-500">
+            <span class="truncate">{{ persona.description }}</span>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { defineComponent, PropType, computed } from 'vue'
+    import AtlanBtn from '@/UI/button.vue'
+    import { IPersona } from '~/types/accessPolicies/personas'
+    import {
+        isEditing,
+        savePersona,
+        discardPersona,
+    } from './composables/useEditPersona'
+
+    import Dropdown from '@/UI/dropdown.vue'
+
+    export default defineComponent({
+        name: 'PersonaHeader',
+        components: { Dropdown, AtlanBtn },
+        props: {
+            persona: {
+                type: Object as PropType<IPersona>,
+                required: false,
+            },
+        },
+        setup(props, { emit }) {
+            const personaActions = computed(() => [
+                {
+                    title: 'Edit',
+                    icon: 'Edit',
+                    handleClick: () => {
+                        isEditing.value = true
+                    },
+                },
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: () => {},
+                },
+            ])
+            return {
+                personaActions,
+                isEditing,
+                savePersona,
+                discardPersona,
+            }
+        },
+    })
+</script>

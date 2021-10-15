@@ -3,15 +3,28 @@
         title="Personas"
         subTitle="Access controls for user personas"
     >
+        <template #action>
+            <AtlanBtn
+                :disabled="isEditing"
+                class="flex-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                @click="createNewPersona"
+            >
+                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+            </AtlanBtn>
+        </template>
         <template #sidebar>
             <SearchAndFilter
                 placeholder="Search for personas"
                 v-model:value="searchTerm"
                 class="mx-4 mt-6 mb-4 bg-white"
-                size="minimal"
+                :autofocus="true"
             />
 
             <ExplorerList
+                :disabled="isEditing"
                 :list="filteredPersonas"
                 v-model:selected="selectedPersonaId"
                 dataKey="id"
@@ -23,122 +36,76 @@
                             isSelected ? 'text-primary font-bold' : 'text-gray'
                         "
                     >
-                        {{ item.personaName }}
+                        {{ item.displayName }}
                     </span>
                 </template>
             </ExplorerList>
         </template>
 
-        <PersonaScopes :selectedPersona="selectedPersona" />
+        <CreationModal
+            v-model:visible="modalVisible"
+            title="New Persona"
+            @cancel="() => (modalVisible = false)"
+            @ok="handleCreation"
+        >
+        </CreationModal>
+        <PersonaHeader :persona="selectedPersona" />
+        <PersonaDetails
+            v-if="selectedPersona"
+            v-model:persona="selectedPersona"
+        />
     </ExplorerLayout>
-    <!-- <div class="flex scroll-container">
-        <div class="w-1/4 h-full overflow-y-hidden">
-            <SearchAndFilter
-                placeholder="Search for personas"
-                v-model:value="searchTerm"
-                class="pt-6 mb-4"
-            />
-            <aside class="overflow-y-auto" style="height: calc(100% - 4.5rem)">
-                <a-menu v-model:selectedKeys="selectedPersonaId" mode="inline">
-                    <a-menu-item
-                        v-for="persona in filteredPersonas"
-                        :key="persona.id"
-                    >
-                        {{ persona.personaName }}
-                    </a-menu-item>
-                </a-menu>
-            </aside>
-        </div>
-
-        <div class="flex flex-col w-3/4 h-full px-4 overflow-y-hidden">
-            <PersonaScopes :selectedPersona="selectedPersona" />
-        </div>
-    </div> -->
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
-    import usePersonaService from '~/services/heracles/composables/personas'
+    import { defineComponent, ref } from 'vue'
+    import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
-    import PersonaScopes from './personaScopes.vue'
+    import PersonaDetails from './personaDetails.vue'
+    import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
+    import CreationModal from '@/admin/common/addModal.vue'
+    import {
+        filteredPersonas,
+        searchTerm,
+        selectedPersona,
+        selectedPersonaId,
+    } from './composables/usePersonaList'
+    import { createNewPersona } from './composables/useNewPersona'
+    import { isEditing } from './composables/useEditPersona'
 
     export default defineComponent({
         name: 'PersonaView',
         components: {
+            AtlanBtn,
+            CreationModal,
             SearchAndFilter,
-            PersonaScopes,
+            PersonaDetails,
+            PersonaHeader,
             ExplorerLayout,
             ExplorerList,
         },
         setup() {
-            const selectedPersonaId = ref('')
-            const searchTerm = ref('')
+            const modalVisible = ref(false)
 
-            const { listPersonas } = usePersonaService()
-            const { data: personaList } = listPersonas()
+            function toggleModal() {
+                modalVisible.value = !modalVisible.value
+            }
 
-            const filteredPersonas = computed(() => {
-                if (searchTerm.value)
-                    return personaList.value.filter((ps) =>
-                        ps.personaName
-                            .toLowerCase()
-                            .includes(searchTerm.value.toLowerCase())
-                    )
-                else return personaList.value
-            })
-
-            const selectedPersona = computed(() => {
-                if (selectedPersonaId.value)
-                    return personaList.value.find(
-                        (ps) => ps.id === selectedPersonaId.value
-                    )
-                else return undefined
-            })
+            function handleCreation() {}
 
             return {
                 filteredPersonas,
                 selectedPersona,
                 selectedPersonaId,
                 searchTerm,
+                toggleModal,
+                modalVisible,
+                handleCreation,
+                createNewPersona,
+                isEditing,
             }
         },
     })
 </script>
-
-<style lang="less" module>
-    .sidebar {
-        &:global(.ant-menu-root) {
-            @apply bg-transparent;
-        }
-
-        &:global(.ant-menu-inline) {
-            @apply border-none !important;
-        }
-
-        :global(.ant-menu-item-group-title) {
-            @apply px-0;
-        }
-
-        :global(.ant-menu-item) {
-            height: 32px;
-            line-height: 32px;
-            @apply my-1 text-gray !important;
-        }
-
-        :global(.ant-menu-item-active) {
-            @apply bg-gray-light !important;
-        }
-
-        :global(.ant-menu-item::after) {
-            @apply border-none !important;
-        }
-
-        :global(.ant-menu-item-selected) {
-            @apply rounded !important;
-            @apply bg-gray-200 !important;
-            @apply font-bold;
-        }
-    }
-</style>

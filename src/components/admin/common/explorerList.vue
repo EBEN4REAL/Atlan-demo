@@ -3,16 +3,19 @@
         <div
             class="px-3 py-2 rounded cursor-pointer"
             v-for="(item, index) in list"
-            :class="
+            :class="[
                 item[dataKey] === selected
                     ? 'bg-gray-300'
-                    : 'hover:bg-gray-light'
-            "
+                    : 'hover:bg-gray-light',
+                disabled ? 'cursor-not-allowed opacity-70' : '',
+            ]"
             :key="item[dataKey]"
             @click="
                 () => {
-                    $emit('update:selected', item[dataKey])
-                    $emit('select', item)
+                    if (!disabled) {
+                        $emit('update:selected', item[dataKey])
+                        $emit('select', item)
+                    }
                 }
             "
         >
@@ -26,17 +29,18 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType } from 'vue'
 
     export default defineComponent({
         name: 'ExplorerList',
         props: {
             list: {
-                type: Array as PropType<Any[]>,
+                type: Array as PropType<any[]>,
                 required: true,
                 default: () => [],
             },
             selected: String,
+            disabled: { type: Boolean, default: () => false },
             dataKey: { type: String, required: true, default: () => 'guid' },
         },
         emits: ['update:selected', 'select'],

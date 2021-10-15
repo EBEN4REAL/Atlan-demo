@@ -7,46 +7,60 @@
         ><span>Getting Runs</span>
     </div>
     <template v-else-if="runList?.length">
-        <div v-for="(r, x) in runList" :key="x" class="mx-4 mt-3">
-            <div
-                class="
-                    text-base
-                    truncate
-                    cursor-pointer
-                    text-primary
-                    hover:underline
-                    overflow-ellipsis
-                    whitespace-nowrap
-                "
-                :class="{ 'font-bold underline': currRunId === r.uid }"
-                @click="loadRunGraph(r.uid)"
-            >
-                <span>
-                    {{ r.name }}
-                </span>
-                <a-spin v-if="isLoadingRunGraph && currRunId === r.uid" />
-            </div>
-            <div>
-                <p class="mb-1 text-sm tracking-wide text-gray-500">
-                    Status:
-                    <span class="text-gray-700">
-                        {{ r.phase }}
+        <div
+            v-for="(r, x) in runList"
+            :key="x"
+            class="
+                flex
+                items-center
+                gap-3
+                px-4
+                py-2
+                cursor-pointer
+                hover:bg-gray-50
+            "
+            :class="{ 'bg-blue-50': currRunId === r.uid }"
+            @click="loadRunGraph(r.uid)"
+        >
+            <AtlanIcon
+                :icon="r.phase === 'Success' ? 'RunSuccess' : 'RunFailed'"
+            />
+            <div class="">
+                <div
+                    class="
+                        text-base
+                        truncate
+                        overflow-ellipsis
+                        whitespace-nowrap
+                    "
+                    :class="{ 'font-bold': currRunId === r.uid }"
+                >
+                    <span>
+                        {{ r.name }}
                     </span>
-                </p>
-                <p>
-                    <span class="mb-1 text-sm tracking-wide text-gray-500"
-                        >Started:</span
-                    >
-                    <span class="text-gray-700"
-                        >{{ timeAgo(r.started_at) }},
-                    </span>
-                    <span class="mb-1 text-sm tracking-wide text-gray-500"
-                        >finished:</span
-                    >
-                    <span class="text-gray-700">{{
-                        timeAgo(r.finished_at)
-                    }}</span>
-                </p>
+                    <a-spin
+                        class="ml-2"
+                        v-if="isLoadingRunGraph && currRunId === r.uid"
+                    />
+                </div>
+                <div>
+                    <p>
+                        <span class="mb-1 text-sm tracking-wide text-gray-500">
+                            2m 32s
+                        </span>
+                        <span
+                            class="
+                                mb-1
+                                text-sm
+                                tracking-wide
+                                text-gray-500
+                                capitalize
+                            "
+                        >
+                            {{ timeAgo(r.finished_at) }}</span
+                        >
+                    </p>
+                </div>
             </div>
         </div>
     </template>
@@ -63,6 +77,7 @@
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
+    import { timeDiffCalc } from '~/utils/date'
 
     export default defineComponent({
         components: {},
@@ -120,6 +135,7 @@
 
             return {
                 item,
+                timeDiffCalc,
                 runList,
                 error,
                 isLoading,

@@ -23,7 +23,6 @@ const useCheckAccess = () => {
 
         return isReady
     }
-
     const evaluatePermissions = (assets: EvaluateAssetInterface | EvaluateAssetInterface[], actions: string | string[] ) => {
         let body: EvaluatesBody = {
             entities: []

@@ -1,17 +1,16 @@
 import { getAPIPath, getAxiosClient } from '~/api'
 
 import { AxiosRequestConfig } from 'axios'
-import { Ref } from 'vue'
-import { IRequestActionBody, RequestAttributes } from '~/types/atlas/requests'
-import { useAPIPromise, useAPIAsyncState } from '~/api/useAPI'
-import { KeyMaps } from '~/api/keyMap'
+import {  RequestAttributes } from '~/types/atlas/requests'
+import { useAPIAsyncState } from '~/api/useAPI'
+import { heracles_keymap } from '~/services/heracles/heracles_keymap'
 
 const serviceAlias = 'heka/api/query'
 
 export const getRequests = (params?: any, options?: AxiosRequestConfig) => {
     const { data, error, mutate, isLoading } = useAPIAsyncState<{
         records: RequestAttributes[]
-    }>(KeyMaps.auth.requests.LIST_REQUESTS, 'GET', {
+    }>(heracles_keymap.requests.LIST_REQUESTS, 'GET', {
         options,
         params,
     })

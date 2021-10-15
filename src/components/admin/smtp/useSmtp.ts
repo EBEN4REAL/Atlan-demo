@@ -1,6 +1,6 @@
 import { computed, watch, ref } from "vue";
 import { Tenant } from "~/api/auth/tenant";
-import { useTenantStore } from "~/store/tenants";
+import { useTenantStore } from "~/services/keycloak/tenant/store";
 
 export function useSmtp() {
   const store = useTenantStore();

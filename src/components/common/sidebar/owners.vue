@@ -10,6 +10,7 @@
                 :data="ownerList"
                 label-key="username"
                 popover-trigger="hover"
+                :readOnly="!editPermission"
                 @add="toggleOwnerPopover"
                 @delete="handleRemoveOwner"
                 @select="(item, index) => handleClickUser(item)"
@@ -61,6 +62,7 @@
             </PillGroup>
         </div>
         <a-popover
+            v-if="editPermission"
             v-model:visible="showOwnersDropdown"
             placement="left"
             overlay-class-name="inlinepopover"
@@ -164,7 +166,12 @@
                                 </div>
                                 <div
                                     v-else
-                                    class="flex items-center justify-center mt-3 "
+                                    class="
+                                        flex
+                                        items-center
+                                        justify-center
+                                        mt-3
+                                    "
                                 >
                                     <a-spin
                                         size="small"
@@ -181,7 +188,12 @@
                                         STATES.SUCCESS === groupOwnerState &&
                                         groupList.length < 1
                                     "
-                                    class="flex flex-col items-center justify-center h-full "
+                                    class="
+                                        flex flex-col
+                                        items-center
+                                        justify-center
+                                        h-full
+                                    "
                                 >
                                     <div class="flex flex-col items-center">
                                         <img
@@ -309,6 +321,11 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['update:selectedAsset'],

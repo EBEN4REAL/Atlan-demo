@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full bg-white">
+    <div class="flex flex-col w-full h-full bg-white playground-height">
         <div class="flex text-gray">
             <a-tabs
                 v-model:activeKey="activeInlineTabKey"
@@ -65,14 +65,14 @@
         <div v-if="activeInlineTabKey" class="w-full h-full">
             <splitpanes horizontal :push-other-panes="false">
                 <pane
-                    :max-size="100"
+                    :max-size="95.5"
                     :size="100 - outputPaneSize"
                     min-size="45"
                     class="overflow-x-hidden"
                 >
                     <Editor
                 /></pane>
-                <pane min-size="0" :size="outputPaneSize" max-size="45">
+                <pane min-size="4.5" :size="outputPaneSize" max-size="53">
                     <ResultsPane
                 /></pane>
             </splitpanes>

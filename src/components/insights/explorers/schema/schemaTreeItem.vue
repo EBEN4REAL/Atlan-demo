@@ -392,8 +392,6 @@
                 return popoverAllowed.includes(typeName)
             }
 
-            const editorInstance = toRaw(editorInstanceRef.value)
-            const monacoInstance = toRaw(monacoInstanceRef.value)
             const selectionObject: Ref<any> = ref({
                 startLineNumber: 1,
                 startColumnNumber: 1,
@@ -436,14 +434,13 @@
                         saveQueryDataInLocalStorage
                     )
                     setSelection(
-                        editorInstance,
-                        monacoInstance,
+                        toRaw(editorInstanceRef.value),
+                        toRaw(monacoInstanceRef.value),
                         selectionObject.value
                     )
-                    focusEditor(editorInstance)
+                    focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
-            // console.log(editorInstance, 'editorInstance')
             // const selectAndFocus=()={
 
             // }
@@ -451,11 +448,10 @@
             const actionClick = (action: string, t: assetInterface) => {
                 switch (action) {
                     case 'add': {
-                        // const editorInstance = toRaw(editorInstanceRef.value)
-                        console.log(title(t), editorInstance, 'sd')
-                        // editorInstance.trigger('keyboard', 'type', {
-                        //     text: `${title(t)}`,
-                        // })
+                        const editorInstance = toRaw(editorInstanceRef.value)
+                        editorInstance.trigger('keyboard', 'type', {
+                            text: `${title(t)}`,
+                        })
                         break
                     }
                     case 'play': {
@@ -504,7 +500,6 @@
             }
 
             return {
-                editorInstance,
                 isPopoverAllowed,
                 activeInlineTab,
                 certificateStatus,

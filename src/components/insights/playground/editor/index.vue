@@ -5,7 +5,7 @@
                 <div class="flex items-center text-base">
                     <div
                         class="flex items-center mr-4"
-                        v-if="activeInlineTab?.isSaved"
+                        v-if="activeInlineTab?.queryId"
                     >
                         <span class="mr-1">{{ activeInlineTab?.label }}</span>
                         <div class="-mt-0.5">
@@ -71,42 +71,23 @@
                                     class="
                                         items-center
                                         justify-center
-                                        px-1
-                                        py-0.5
                                         rounded
                                         cursor-pointer
                                         hover:bg-gray-300
+                                        py-0.5
                                     "
                                     @click="tFullScreen"
                                 >
-                                    <div
-                                        class="
-                                            w-4
-                                            h-4
-                                            p-0.5
-                                            border border-gray-500
-                                            rounded
-                                        "
+                                    <AtlanIcon
                                         v-if="fullSreenState"
-                                    >
-                                        <div
-                                            class="w-full h-full bg-gray-500 border rounded "
-                                        ></div>
-                                    </div>
-                                    <div
-                                        class="
-                                            w-4
-                                            h-4
-                                            p-0.5
-                                            border border-gray-500
-                                            rounded
-                                        "
+                                        class="w-4 h-4 border-gray-500"
+                                        icon="ExitFullScreen"
+                                    />
+                                    <AtlanIcon
                                         v-else
-                                    >
-                                        <div
-                                            class="w-full h-full border border-gray-500 rounded "
-                                        ></div>
-                                    </div>
+                                        class="w-4 h-4 border-gray-500"
+                                        icon="FullScreen"
+                                    />
                                 </div>
                             </div>
                         </a-tooltip>
@@ -345,7 +326,9 @@
                     <div class="flex items-center justify-center">
                         <div class="" @click="togglePane">
                             <a-tooltip>
-                                <template #title>Toggle output pane</template>
+                                <template #title
+                                    >Toggle output pane ( ctrl + j )</template
+                                >
 
                                 <AtlanIcon
                                     icon="OutputpaneTrigger"
@@ -646,6 +629,9 @@
         :global(.ant-checkbox-inner::after) {
             width: 6px !important;
             height: 8px !important;
+        }
+        :global(.ant-checkbox + span) {
+            @apply px-1 !important;
         }
     }
 </style>

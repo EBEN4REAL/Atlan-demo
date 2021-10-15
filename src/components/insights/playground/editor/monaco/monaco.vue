@@ -49,6 +49,7 @@
         props: {},
 
         setup(props, { emit }) {
+            const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -219,17 +220,19 @@
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
-                editor?.getModel().onDidChangeContent(async (event) => {
+                editor?.getModel().onDidChangeContent((event) => {
                     const text = editor?.getValue()
                     onEditorContentChange(event, text)
                     const changes = event?.changes[0]
                     const lastTypedCharacter = event?.changes[0]?.text
+                    console.log(changes, 'changes')
                     /* Preventing network request when pasting name of table */
                     if (lastTypedCharacter.length < 3) {
                         const suggestions = useAutoSuggestions(
                             changes,
                             editor,
-                            activeInlineTab
+                            activeInlineTab,
+                            cancelTokenSource
                         ) as Promise<{
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
@@ -286,7 +289,8 @@
                         const suggestions = useAutoSuggestions(
                             changes,
                             editor,
-                            activeInlineTab
+                            activeInlineTab,
+                            cancelTokenSource
                         ) as Promise<{
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean

@@ -10,6 +10,7 @@ import {
     autosuggestionEntityColumn,
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
+import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
 
 export interface suggestionKeywordInterface {
     label: string
@@ -96,14 +97,6 @@ export function entitiesToEditorKeyword(
                             }
                             words.push(keyword)
                         }
-                        // keyword = {
-                        //     label: entities[i].name,
-                        //     detail: `${type}: ${entities[i].type}`, // COLUMN,
-                        //     kind: monaco.languages.CompletionItemKind.Field,
-                        //     documentation: `Some descripiton for ${type}`,
-                        //     insertText: `${entities[i].name}`,
-                        // }
-                        // words.push(keyword)
                     }
                 }
             }
@@ -155,7 +148,8 @@ async function getSuggestionsUsingType(
         connectionQualifiedName: string | undefined
         databaseName: string | undefined
         schemaName: string | undefined
-    }
+    },
+    cancelTokenSource: Ref<any>
 ) {
     const body = {
         dataSourceName: connectorsInfo.connectionQualifiedName,
@@ -172,15 +166,23 @@ async function getSuggestionsUsingType(
             // currentWord = tokens[len - 1]
             // fetchTables(currentWord)
 
+            if (cancelTokenSource.value !== undefined) {
+                cancelTokenSource.value.cancel()
+            }
             /* Current Word Should be greater than 1char */
             if (currentWord.length > 1) {
                 const entitiesResponsPromise =
                     HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
+                cancelTokenSource.value = axios.CancelToken.source()
+                entitiesResponsPromise.then(() => {
+                    cancelTokenSource.value = undefined
+                })
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
                     type,
                     currentWord
                 )
+
                 return suggestionsPromise
             }
 
@@ -190,6 +192,9 @@ async function getSuggestionsUsingType(
             if (currentWord.length > 1) {
                 const entitiesResponsPromise =
                     HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
+                entitiesResponsPromise.then(() => {
+                    cancelTokenSource.value = undefined
+                })
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
                     type,
@@ -215,7 +220,8 @@ async function getSuggestionsUsingType(
 export async function useAutoSuggestions(
     changes: any,
     editorInstance: any,
-    activeInlineTab: Ref<activeInlineTabInterface>
+    activeInlineTab: Ref<activeInlineTabInterface>,
+    cancelTokenSource: Ref<any>
 ) {
     console.log(changes, 'changes')
     const changedText = changes.text
@@ -284,7 +290,8 @@ export async function useAutoSuggestions(
                 lastMatchedKeyword.type,
                 lastMatchedKeyword.token,
                 currentWord,
-                connectorsInfo
+                connectorsInfo,
+                cancelTokenSource
             )
         }
     }

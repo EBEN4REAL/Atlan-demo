@@ -32,7 +32,14 @@
                     </a-button-group>
                 </div>
             </div>
+            <h3 class="text-lg font-bold text-primary">
+                {{ selectedWorkflow?.name }}
+            </h3>
         </div>
+
+        <!-- <pre class="overflow-scroll" style="height: 600px">{{
+            selectedWorkflow
+        }}</pre> -->
 
         <a-tabs
             v-model:activeKey="activeKey"

@@ -81,13 +81,17 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :show-no-status="false"
-                    :status-id="selectedAsset?.attributes?.certificateStatus"
-                    class="ml-1.5 mb-1"
-                ></StatusBadge>
+                  <a-tooltip 
+                      placement="bottomRight" 
+                      :overlayClassName="`toolTips-badge ${selectedAsset?.attributes?.certificateStatus?.toLowerCase()}`" 
+                      :title="selectedAsset?.attributes?.certificateStatus?.toLowerCase()">
+                  <StatusBadge
+                      :key="selectedAsset.guid"
+                      :show-no-status="false"
+                      :status-id="selectedAsset?.attributes?.certificateStatus"
+                      class="ml-1.5 mb-1"
+                  ></StatusBadge> 
+                </a-tooltip>
             </div>
         </div>
         <a-tabs

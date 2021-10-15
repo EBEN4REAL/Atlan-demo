@@ -48,16 +48,21 @@
                                 ? getColumnUrl(item)
                                 : `/assets/${item.guid}/overview`
                         "
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
-                    <StatusBadge
-                        :key="item.guid"
-                        :show-no-status="false"
-                        :status-id="status(item)"
-                        class="flex-none mb-0.5 ml-1"
-                    ></StatusBadge>
+                     <a-tooltip 
+                      placement="topLeft" 
+                      :overlayClassName="`toolTips-badge ${status(item)?.toLowerCase()}`" 
+                      :title="status(item)?.toLowerCase()">
+                       <StatusBadge
+                           :key="item.guid"
+                           :show-no-status="false"
+                           :status-id="status(item)"
+                           class="flex-none mb-0.5 ml-1"
+                       ></StatusBadge>
+                     </a-tooltip>
                 </div>
 
                 <!-- Info bar -->

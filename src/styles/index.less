@@ -30,3 +30,34 @@ body,
     margin: 0 !important;
     padding: 0;
 }
+
+
+  .toolTips-badge {
+    .ant-tooltip-inner {
+        color: #3E4359;
+    }
+    &.verified{
+      .ant-tooltip-arrow-content {
+        background-color: #CFF5D1!important;
+      }
+      .ant-tooltip-inner {
+        background-color: #CFF5D1!important;
+      }
+    }
+    &.draft{
+      .ant-tooltip-arrow-content {
+        background-color: #FFEEC6!important;
+      }
+      .ant-tooltip-inner {
+        background-color: #FFEEC6!important;
+      }
+    }
+    &.deprecated{
+      .ant-tooltip-arrow-content {
+        background-color: #FFD2B8!important;
+      }
+      .ant-tooltip-inner {
+        background-color: #FFD2B8!important;
+      }
+    }
+  }

@@ -48,7 +48,7 @@
 
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
-    import { useTenantStore } from '~/store/tenants'
+    import { useTenantStore } from '~/services/keycloak/tenant/store'
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -96,7 +96,7 @@
                 title: `Welcome - ${fullName.value} `,
             })
             const imageUrl = ref(
-                `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
+                `${window.location.origin}/api/service/avatars/${username}`
             )
             const filterObj = {
                 $and: [{ email_verified: true }, { username }],

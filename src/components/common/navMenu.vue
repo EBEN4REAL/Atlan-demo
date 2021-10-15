@@ -32,7 +32,7 @@
     import { computed, defineComponent, watch, ref } from 'vue'
     import { useRoute } from 'vue-router'
     import UserPersonalAvatar from '~/components/common/avatar/me.vue'
-    import { useTenantStore } from '~/store/tenants'
+    import { useTenantStore } from '~/services/keycloak/tenant/store'
 
     export default defineComponent({
         name: 'Navigation Menu',

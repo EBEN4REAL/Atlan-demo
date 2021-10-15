@@ -48,7 +48,7 @@ import { defineComponent, computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import DefaultLayout from '@/admin/defaultLayout.vue'
 import OrgLogo from '~/components/common/orgLogo.vue'
-import { useTenantStore } from '~/store/tenants'
+import { useTenantStore } from '~/services/keycloak/tenant/store'
 import { KeyMaps } from '~/api/keyMap'
 import { useAPIAsyncState } from '~/api/useAPI'
 

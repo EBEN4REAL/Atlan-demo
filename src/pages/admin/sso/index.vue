@@ -12,7 +12,7 @@
     import EmptySSOScreen from '@/admin/sso/configure/emptySSOScreen.vue';
     import DisplaySSO from '@/admin/sso/update/displaySSO.vue';
     import { useHead } from '@vueuse/head';
-    import { useTenantStore } from '~/store/tenants';
+    import { useTenantStore } from '~/services/keycloak/tenant/store';
 
     export default defineComponent({
         components: {

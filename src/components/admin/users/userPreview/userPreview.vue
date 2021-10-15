@@ -137,7 +137,7 @@
             const isCurrentUser = computed(() => username.value === userObj.value.username);
             const imageUrl = computed(() => {
                 if (userObj.value && userObj.value.username)
-                    return `http://localhost:3333/api/auth/tenants/default/avatars/${userObj.value.username}`;
+                    return  `${window.location.origin}/api/service/avatars/${userObj.value.id}`;
                 return '';
             });
             const handleUserUpdate = async () => {

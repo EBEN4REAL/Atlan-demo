@@ -196,7 +196,7 @@ export default defineComponent({
       }
       context.emit("updateSelectedUsers", selectedIds.value);
     };
-    const imageUrl = (username: any) => `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
+    const imageUrl = (username: any) => `${window.location.origin}/api/service/avatars/${username}`;
     return {
       searchText,
       showLoadMore,

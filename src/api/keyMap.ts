@@ -110,11 +110,6 @@ export const KeyMaps = {
             /** FIXME: Not implemented properly */
             INVITE_USERS: ({ id }: PathParams) => getAPIPath('auth', `/users`),
         },
-        requests: {
-            LIST_REQUESTS: () => getAPIPath('auth', '/requests'),
-            ACT_ON_REQUEST: ({ id }: PathParams) =>
-                getAPIPath('auth', `/requests/${id}/action`),
-        },
     },
     BM: {
         GET_BUSINESS_METADATA: () => getAPIPath('meta', `/types/typedefs`),

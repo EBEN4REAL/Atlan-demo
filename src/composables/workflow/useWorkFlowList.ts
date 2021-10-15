@@ -32,28 +32,32 @@ export function useWorkflowSearchList(
     return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate }
 }
 
-export function useArchivedWorkflowList(
-    labelSelector,
+export function useArchivedRunList(
+    workflowName,
     immediate: boolean = true
 ) {
-    const param = computed(() => ({
-        'listOptions.labelSelector': labelSelector.value,
-        'listOptions.limit': 100,
-    }))
-
+    const pathVariables = ref({
+        name: workflowName
+    })
     const { data, error, isLoading, mutate } =
-        Workflows.getArchivedWorkflowList(param, { immediate, options: {} })
+        Workflows.getArchivedRunList(pathVariables, { immediate, options: {} })
 
-    const workflowList = ref([])
+    const runList = ref([])
     watch(data, () => {
-        console.log('useArchivedWorkflowList', data.value.items)
-        workflowList.value = data.value?.items
+        console.log('useArchivedRunList', data.value)
+        runList.value = data.value
     })
 
     const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.metadata.name.includes(text))
+        runList.value.filter((wf) => wf.metadata.name.includes(text))
 
-    return { workflowList, error, isLoading, filterList, mutate }
+
+    const reFetch = (name) => {
+        pathVariables.value.name = name
+        mutate()
+    }
+
+    return { runList, error, isLoading, filterList, mutate, reFetch }
 }
 
 export function useWorkflowTemplates(

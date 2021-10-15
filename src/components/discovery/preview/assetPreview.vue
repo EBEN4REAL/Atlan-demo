@@ -2,14 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="
-                    fixed
-                    z-10
-                    px-0
-                    border-r-0
-                    rounded-none rounded-l
-                    -left-5
-                "
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -81,36 +74,7 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-                  <a-tooltip 
-                      placement="bottomRight" 
-                      :overlayClassName="`toolTips-badge ${selectedAsset?.attributes?.certificateStatus?.toLowerCase()}`" 
-                      >
-                      <template #title>
-                         <div>
-                            <div v-if="selectedAsset?.attributes?.description" class="description">{{selectedAsset?.attributes?.description}}</div>
-                            <div class="footer">
-                              <div class="icon-badge">
-                                  <StatusBadge
-                                    :key="selectedAsset.guid"
-                                    :show-no-status="false"
-                                    :status-id="selectedAsset?.attributes?.certificateStatus"
-                                    class="flex-none mb-0.5 ml-1"
-                                  />
-                                  {{selectedAsset?.attributes?.certificateStatus?.toLowerCase()}}
-                              </div>
-                              <div class="icon-badge">
-                                {{selectedAsset?.attributes?.certificateUpdatedBy}}
-                              </div>
-                            </div>
-                         </div>
-                       </template>
-                    <StatusBadge
-                        :key="selectedAsset.guid"
-                        :show-no-status="false"
-                        :status-id="selectedAsset?.attributes?.certificateStatus"
-                        class="ml-1.5 mb-1"
-                    /> 
-                </a-tooltip>
+                  <CertificationBadge :data="selectedAsset" />
             </div>
         </div>
         <a-tabs
@@ -137,15 +101,7 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            px-5
-                            py-3
-                            font-semibold
-                            text-gray-700 text-md
-                        "
+                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700 text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -190,6 +146,7 @@
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
     import { copyToClipboard } from '~/utils/clipboard'
+    import CertificationBadge from '@/discovery/certificationBadge.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -221,6 +178,7 @@
             businessMetadataTab: defineAsyncComponent(
                 () => import('./tabs/businessMetadata/businessMetadataTab.vue')
             ),
+            CertificationBadge,
         },
         props: {
             selectedAsset: {

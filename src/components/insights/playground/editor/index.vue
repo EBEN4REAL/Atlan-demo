@@ -353,7 +353,7 @@
                                 />
                             </a-tooltip>
                         </div>
-                        <div class="ml-2">
+                        <div class="ml-2" @click="toggleAssetPreview">
                             <a-tooltip>
                                 <template #title>Toggle asset preview</template>
 
@@ -396,6 +396,7 @@
     // import ActionButtons from '~/components/insights/playground/editor/actionButtons/index.vue'
     import WarehouseConnector from '~/components/insights/playground/editor/warehouse/index.vue'
     import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
 
     import AtlanBtn from '~/components/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -420,6 +421,7 @@
         props: {},
         setup() {
             const router = useRouter()
+
             // TODO: will be used for HOTKEYs
             const { resultsPaneSizeToggle } = useHotKeys()
             const { queryRun, modifyQueryExecutionTime } = useRunQuery()
@@ -467,6 +469,10 @@
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
+            const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
@@ -543,6 +549,17 @@
             const tFullScreen = () => {
                 toggleFullScreenMode(fullSreenState)
             }
+            const toggleAssetPreview = () => {
+                // const activeInlineTabCopy: activeInlineTabInterface =
+                //     Object.assign({}, activeInlineTab.value)
+                // if (activeInlineTab.value.assetSidebar.isVisible) {
+                //     activeInlineTabCopy.assetSidebar.isVisible = false
+                //     closeAssetSidebar(activeInlineTabCopy)
+                // } else {
+                //     activeInlineTabCopy.assetSidebar.isVisible = true
+                //     openAssetSidebar(activeInlineTabCopy)
+                // }
+            }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
                 ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -578,6 +595,7 @@
 
             /* ------------------------------------------ */
             return {
+                toggleAssetPreview,
                 tFullScreen,
                 fullSreenState,
                 togglePane,

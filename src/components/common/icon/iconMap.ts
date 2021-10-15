@@ -89,6 +89,8 @@ import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
 import Cross from '~/assets/images/icons/cross.svg'
+import SidebarTrigger from '~/assets/images/icons/sidebar-trigger.svg'
+import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
 
 export default {
     Metadata,
@@ -181,4 +183,6 @@ export default {
     Check,
     Dots,
     Cross,
+    SidebarTrigger,
+    OutputpaneTrigger,
 }

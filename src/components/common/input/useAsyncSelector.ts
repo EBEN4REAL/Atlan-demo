@@ -1,6 +1,7 @@
 
 import { ref, computed, watch } from 'vue'
 import { useAPIPromise } from '~/api/useAPI';
+//! WILL REMOVE THIS 
 import tempConfig from './Untitled-1.json'
 
 export default function useAsyncSelector(
@@ -17,8 +18,9 @@ export default function useAsyncSelector(
 
         let root = res
 
-        rootPathParts.forEach((p: string | number) => {
-            root = root[p]
+        rootPathParts.forEach((p: string) => {
+            if (p)
+                root = root[p]
         });
 
 
@@ -60,17 +62,48 @@ export default function useAsyncSelector(
     const newConfig = ref(null);
     const newConfigLoading = ref(false);
     const newConfigError = ref(false);
+    const createNewVisibility = ref(false);
 
+    const setConfigData = (response) => {
+        const rootPathParts = getConfig?.rootPath.split('.').slice(1)
+
+        let data = response
+
+        rootPathParts.forEach((p: string) => {
+            if (p)
+                data = data[p]
+        });
+
+
+        if (typeof data === 'string')
+            try {
+                const configCopy = data.replace(/\\n/g, '\\n')
+                    .replace(/\\'/g, "\\'")
+                    .replace(/\\"/g, '\\"')
+                    .replace(/\\&/g, '\\&')
+                    .replace(/\\r/g, '\\r')
+                    .replace(/\\t/g, '\\t')
+                    .replace(/\\b/g, '\\b')
+                    .replace(/\\f/g, '\\f')
+                newConfig.value = JSON.parse(configCopy)
+            } catch (e) {
+                console.log('setConfigData', e)
+            }
+        else
+            newConfig.value = [...data]
+
+
+    }
     const handleCreateNew = async () => {
-        const { url, method, params } = getConfig.requestConfig
+        const { url, method, params, body } = getConfig.requestConfig
         newConfigLoading.value = true;
         let parsedUrl = url;
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            // temporary testing
-            newConfig.value = tempConfig
-            // const response = await useAPIPromise(parsedUrl, method, { params, body: getParsedBody(addFormValues) })
+            const response = await useAPIPromise(parsedUrl, method, { params, body })
+            setConfigData(response)
+            createNewVisibility.value = true
         } catch (e) {
             newConfigError.value = true;
         }
@@ -138,6 +171,7 @@ export default function useAsyncSelector(
         shouldRefetch,
         loadingData,
         handleCreateNew,
+        createNewVisibility,
         letAsyncSelectDisabled
     }
 };

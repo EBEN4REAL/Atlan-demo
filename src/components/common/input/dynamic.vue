@@ -70,19 +70,19 @@
                 </template>
             </template>
         </a-select>
-
-        <div v-if="newConfig" class="form-render-wrapper">
-            <a-modal
-                v-model:visible="visible"
-                title="Basic Modal"
-                @ok="handleOk"
-                width="60%"
-            >
-                <div class="overflow-y-scroll" style="height: 65vh">
-                    <formGenerator :config="newConfig" />
-                </div>
-            </a-modal>
-        </div>
+        <a-modal
+            v-model:visible="createNewVisibility"
+            title="Basic Modal"
+            width="60%"
+            :closable="false"
+        >
+            <div class="overflow-y-scroll" style="height: 65vh">
+                <FormGenerator :config="newConfig" />
+            </div>
+            <template #footer>
+                <a-button @click="handleClose">Close</a-button>
+            </template>
+        </a-modal>
 
         <a-input-number
             v-if="dataType === 'number'"
@@ -148,7 +148,7 @@
         components: {
             UserSelector,
             // formGenerator,
-            formGenerator: defineAsyncComponent(
+            FormGenerator: defineAsyncComponent(
                 () => import('@/common/formGenerator/index.vue')
             ),
             // formModal,
@@ -274,6 +274,7 @@
                 letAsyncSelectDisabled,
                 shouldRefetch,
                 handleCreateNew,
+                createNewVisibility,
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
@@ -284,13 +285,15 @@
             const handleDropdownVisibleChange = (open) => {
                 if (open && shouldRefetch.value) loadData()
             }
-            const visible = ref(true)
 
-            const showModal = () => (visible.value = true)
+            const handleClose = () => {
+                createNewVisibility.value = false
+                loadData()
+            }
             return {
                 loadData,
-                showModal,
-                visible,
+                handleClose,
+                createNewVisibility,
                 newConfig,
                 handleCreateNew,
                 handleDropdownVisibleChange,

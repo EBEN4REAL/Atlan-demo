@@ -5,7 +5,7 @@
     >
         <template #title>
             <div>
-            <div class="description">{{data?.attributes?.description}}</div>
+            <div v-if="data?.attributes?.description" class="description">{{data?.attributes?.description}}</div>
             <div class="footer">
             <div class="icon-badge">
                 <StatusBadge

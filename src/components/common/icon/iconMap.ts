@@ -88,8 +88,12 @@ import Pencil from '~/assets/images/icons/pencil.svg'
 import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
+import RunSuccess from '~/assets/images/icons/run-success.svg'
+import RunFailed from '~/assets/images/icons/run-failed.svg'
 
 export default {
+    RunSuccess,
+    RunFailed,
     Metadata,
     Relation,
     Overview,

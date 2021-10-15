@@ -8,6 +8,12 @@
                 style="width: 135px"
                 @change="handeChangeSorting"
             >
+                <template #suffixIcon>
+                   <AtlanIcon
+                      icon="ChevronDown"
+                      class="text-gray-500 custom-icon-drop"            
+                    />
+                </template>
                 <a-select-option value="order|ascending"
                     >Default</a-select-option
                 >
@@ -28,7 +34,7 @@
                 <span>Data type</span>
 
                 <div
-                    class="text-xs text-gray-500 cursor-pointer  hover:text-primary"
+                    class="text-xs text-gray-500 cursor-pointer hover:text-primary"
                     @click.stop.prevent="clearDataTypeFilters"
                 >
                     Clear
@@ -82,7 +88,7 @@
                         <div>
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="mb-1 mr-8 transition-transform duration-300 transform  text-gray"
+                                class="mb-1 mr-8 transition-transform duration-300 transform text-gray"
                                 :class="isActive ? '-rotate-180' : 'rotate-0'"
                             />
                         </div>
@@ -296,5 +302,12 @@
         :global(.ant-collapse-content-box) {
             @apply p-0 !important;
         }
+    }
+    
+</style>
+
+<style lang="less" scoped>
+.custom-icon-drop{
+      transform: translateY(-2px);
     }
 </style>

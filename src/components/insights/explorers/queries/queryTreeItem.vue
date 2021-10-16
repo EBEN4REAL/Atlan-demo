@@ -111,7 +111,7 @@
                                 "
                             ></StatusBadge>
                             <div
-                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute right-6 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -140,6 +140,36 @@
                                     </a-tooltip>
                                 </div>
                             </div>
+                            <div
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            >
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    @click.stop="() => {}"
+                                >
+                                    <div class="pl-2">
+                                        <AtlanIcon
+                                            icon="KebabMenu"
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </div>
+                                    <template #overlay>
+                                        <a-menu>
+                                            <a-menu-item
+                                                key="rename"
+                                                @click="renameFolder"
+                                                >Rename Query</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                key="deleteFolder"
+                                                class="text-red-600"
+                                                @click="showDeletePopover = true"
+                                                >Delete Query</a-menu-item
+                                            >
+                                        </a-menu>
+                                    </template>
+                                </a-dropdown>
+                            </div>
                         </div>
                         <!------------------------------->
                     </div>
@@ -151,15 +181,13 @@
     </div>
         <a-popover :visible="showDeletePopover" placement="right">
             <template #content>
-                <TreeDeletePopover :item="item" @cancel="showDeletePopover = false" @delete="deleteFolder" />
+                <TreeDeletePopover :item="item" @cancel="showDeletePopover = false" @delete="() => delteItem(item.typeName)" />
             </template>
-            <div class="m-0 p-0 w-0"></div>
         </a-popover>
         <a-popover :visible="showPublishPopover" placement="right">
             <template #content>
                 <PublishFolderPopover :item="item" @cancel="showPublishPopover = false" @publish="publishFolder" />
             </template>
-            <div class="m-0 p-0 w-0"></div>
         </a-popover>
 </template>
 
@@ -311,7 +339,7 @@
                 useAddEvent('insights', 'folder', 'renamed', undefined)
             }
 
-            const deleteFolder = () => {
+            const delteItem = (type: 'Query' | 'QueryFolder') => {
                 const { data, error } = Insights.DeleteEntity(item.value.guid)
 
                 watch([data, error], ([newData, newError]) => {
@@ -322,7 +350,7 @@
                         })
                         refetchParentNode(
                             props.item.guid,
-                            'queryFolder',
+                            type === 'Query' ? 'query' : 'queryFolder',
                             savedQueryType.value
                         )
                     }
@@ -331,7 +359,7 @@
             return {
                 certificateStatus,
                 renameFolder,
-                deleteFolder,
+                delteItem,
                 publishFolder,
                 newQuery,
                 savedQueryType,

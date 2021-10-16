@@ -1,7 +1,7 @@
 <template>
     <div class="relative w-full h-full bg-white rounded">
-        <div class="w-full h-full px-3 overflow-x-hidden rounded">
-            <div class="flex items-center justify-between w-full my-2">
+        <div class="w-full h-full overflow-x-hidden rounded">
+            <div class="flex items-center justify-between w-full px-3 my-2">
                 <div class="flex items-center text-base">
                     <div
                         class="flex items-center mr-3"

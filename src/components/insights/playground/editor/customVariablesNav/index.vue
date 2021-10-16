@@ -1,9 +1,18 @@
 <template>
-    <div class="my-2 mb-4">
+    <div class="px-3 py-3 mb-3 bg-gray-100">
         <div class="flex overflow-x-auto">
             <div class="add-variable-btn">
                 <a-button
-                    class="flex items-center justify-between mr-2 py-0.5 px-2"
+                    class="
+                        flex
+                        items-center
+                        border-none
+                        justify-between
+                        mr-2
+                        py-0.5
+                        px-2
+                        btn-shadow
+                    "
                     @click="onAddVariable"
                 >
                     <span class="flex items-center justify-center">
@@ -13,7 +22,7 @@
                         class="m-0 ml-1"
                         v-if="sqlVariables && sqlVariables?.length == 0"
                     >
-                        Add Variable
+                        Add
                     </p>
                 </a-button>
             </div>
@@ -232,7 +241,11 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .btn-shadow {
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
+    }
+</style>
 
 <route lang="yaml">
 meta:

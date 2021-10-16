@@ -28,7 +28,7 @@ import { defineComponent, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import redirect from '@/glossary/utils/redirectToProfile';
 
-import { Glossary } from '~/api/atlas/glossary'
+import { Glossary } from '~/services/atlas/glossary/glossary_api'
 
 export default defineComponent({
     props: {},

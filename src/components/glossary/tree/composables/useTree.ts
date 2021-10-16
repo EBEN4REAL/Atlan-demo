@@ -9,7 +9,7 @@ import { Components } from '~/api/atlas/client'
 import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 import useGlossaryList from '~/components/glossary/tree/composables/useGlossaryList'
 
-import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
 import store from '~/utils/storage'
 
 // composables

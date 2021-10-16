@@ -1,5 +1,5 @@
 import { KeyMaps } from '../heka_keyMaps'
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from  "~/services/api/useAPI";
 import { RequestAttributes } from '~/types/atlas/requests'
 
 const GetSampleData = (body: Record<string, any>) => {

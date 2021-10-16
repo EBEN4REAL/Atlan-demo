@@ -130,7 +130,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onMounted, watch, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        onMounted,
+        watch,
+        computed,
+        toRefs,
+    } from 'vue'
 
     import Editor from '@/common/editor/index.vue'
     import {
@@ -179,6 +186,7 @@
             const templateName = ref('')
             const newTemplateName = ref('')
             const templateNameDropdown = ref(false)
+            const { entity } = toRefs(props)
             const readmeDescription = computed(
                 () => props.entity?.attributes?.readme?.attributes?.description
             )
@@ -255,7 +263,7 @@
                 } else {
                     console.log('creating new readme')
                     const { createReadme } = useCreateReadme(
-                        props?.entity,
+                        entity,
                         editorContent.value
                     )
                     createReadme()

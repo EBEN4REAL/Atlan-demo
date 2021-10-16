@@ -9,13 +9,13 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
             typeName: 'Readme',
             attributes: {
                 qualifiedName: generateUUID(),
-                name: `${selectedAsset?.displayText} Readme`,
+                name: `${selectedAsset.value?.displayText} Readme`,
                 description: readmeContent,
             },
             relationshipAttributes: {
                 asset: {
-                    guid: selectedAsset?.guid,
-                    typeName: selectedAsset?.typeName,
+                    guid: selectedAsset.value?.guid,
+                    typeName: selectedAsset.value?.typeName,
                 },
             },
         },
@@ -31,6 +31,10 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
         console.log(data, error, isLoading)
         watch(data, () => {
             console.log(data)
+            selectedAsset.value.attributes.readme = {
+                ...data.value.mutatedEntities.CREATE[0],
+            }
+            console.log(selectedAsset.value)
         })
         return { data, error, isLoading }
     }

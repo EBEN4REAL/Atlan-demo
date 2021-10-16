@@ -14,6 +14,7 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
                 typeName: selectedAsset.typeName,
                 attributes: {
                     qualifiedName:
+                        selectedAsset?.attributes?.qualifiedName ||
                         selectedAsset.uniqueAttributes?.qualifiedName,
                     name: selectedAsset.attributes?.name,
                     description: readmeContent,

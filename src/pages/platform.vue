@@ -13,6 +13,7 @@
                 >
                     <a-menu-item-group title="Platform">
                         <a-menu-item key="services">Services</a-menu-item>
+                        <a-menu-item key="query">Query</a-menu-item>
 
                         <!-- <a-menu-item key="integrations">Integrations</a-menu-item> -->
                         <!-- <a-menu-item key="billing">Billing & License</a-menu-item> -->

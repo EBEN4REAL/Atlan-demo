@@ -27,7 +27,7 @@
             })
 
             const iframeUrl = ref(
-                '/api/observe/d/TFHNXCk7k/atlan-service-overview?orgId=1&refresh=1m'
+                '/api/observe/d/E_7xL0mnz/heka-dashboard?orgId=1&refresh=10s'
             )
 
             const onLoad = () => {

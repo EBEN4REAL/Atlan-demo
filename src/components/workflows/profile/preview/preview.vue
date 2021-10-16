@@ -1,56 +1,29 @@
 <template>
     <div>
-        <div v-if="showCrossIcon">
-            <a-button
-                class="
-                    fixed
-                    z-10
-                    px-0
-                    border-r-0
-                    rounded-none rounded-l
-                    -left-5
-                "
-                @click="$emit('closeSidebar')"
-            >
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="h-4 ml-1 transition-transform transform -rotate-90"
-                />
-            </a-button>
-        </div>
-        <div class="px-5 py-3 border-b">
-            <div class="flex items-center justify-between mb-0 text-sm">
-                <div class="flex items-center flex-none">
-                    <span class="text-sm tracking-wider text-gray-700 uppercase"
-                        >WORKFLOW</span
-                    >
-                </div>
-                <div class="flex space-x-2">
-                    <a-button-group>
-                        <a-button size="small"
-                            ><AtlanIcon icon="Share"
-                        /></a-button>
-                        <a-button size="small">
-                            <AtlanIcon icon="External" />
-                        </a-button>
-                        <a-button size="small">
-                            <AtlanIcon icon="Bookmark" />
-                        </a-button>
-                    </a-button-group>
-                </div>
-            </div>
-        </div>
         <div v-if="selectedTab === 'setup'">
-            <div v-if="json[selectedDag]" class="m-3">
-                <FormBuilder :config="json[selectedDag]" />
+            <div v-if="formConfig[selectedDag]" class="m-3">
+                <FormBuilder
+                    :config="formConfig[selectedDag]"
+                    @change="handleChange"
+                />
                 <AtlanButton
                     class="absolute bottom-0 m-2"
                     size="sm"
                     color="primary"
                     padding="compact"
+                    :loading="isLoading"
+                    @click="updateWorkflow"
                 >
                     Save
                 </AtlanButton>
+            </div>
+            <div v-else class="flex flex-col items-center">
+                <img
+                    :src="emptyScreen"
+                    alt="No Runs"
+                    class="w-2/5 m-auto mb-4"
+                />
+                <span class="text-gray-500">No Form found</span>
             </div>
         </div>
         <a-tabs
@@ -83,11 +56,13 @@
                             justify-between
                             px-4
                             pt-2
+                            mt-2
+                            text-lg
                             font-semibold
-                            text-gray-700 text-md
+                            text-gray-700
                         "
                     >
-                        {{ tab.tooltip }}
+                        {{ tab.name }}
                     </div>
 
                     <component
@@ -107,23 +82,21 @@
         defineAsyncComponent,
         defineComponent,
         onMounted,
-        PropType,
         ref,
         Ref,
         toRefs,
         watch,
-        provide,
         computed,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
-    import json from '@/workflows/profile/tabs/setup/Untitled-1.json'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import FormBuilder from '@/common/formGenerator/index.vue'
+    import { updateWorkflowByName } from '~/composables/workflow/useWorkFlowList'
+    import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
         name: 'ProfileWorkflowPreview',
@@ -151,6 +124,11 @@
                 type: String,
                 required: true,
             },
+            formConfig: {
+                type: Object,
+                required: false,
+                default: null,
+            },
         },
         emits: ['assetMutation', 'closeSidebar', 'change'],
         setup(props, { emit }) {
@@ -167,45 +145,59 @@
                     tooltip: 'Overview',
                 },
                 {
-                    name: 'Runs',
+                    name: 'Run History',
                     component: 'runs',
-                    icon: 'Activity',
-                    tooltip: 'Runs',
+                    icon: 'RunHistory',
+                    tooltip: 'Run History',
                 },
             ]
 
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
-            const tabHeights = {
-                discovery: 'calc(100vh - 7.8rem)',
-                profile: 'calc(100vh - 3rem)',
-            }
-
-            provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
-                emit('assetMutation', updatedAsset)
-            })
-
-            provide('switchTab', (tabName: string) => {
-                const idx = filteredTabs.findIndex((tl) => tl.name === tabName)
-                if (idx > -1) activeKey.value = idx
-            })
-
             function init() {
                 isLoaded.value = false
             }
 
+            const body = ref(selectedWorkflow.value.workflowtemplate)
+
+            const { workflow, error, isLoading, mutate, isReady } =
+                updateWorkflowByName(selectedWorkflow.value.name, body, false)
+
             watch(selectedWorkflow, init, { deep: true })
             onMounted(init)
 
+            const updateWorkflow = () => {
+                mutate()
+            }
+            const handleChange = (v) => {
+                Object.entries(v).forEach(([key, value]) => {
+                    const index =
+                        body.value.spec.arguments.parameters.findIndex(
+                            (e) => e.name === key
+                        )
+                    if (index > -1)
+                        body.value.spec.arguments.parameters[index].value =
+                            value
+                    else
+                        body.value.spec.arguments.parameters.push({
+                            name: key,
+                            value,
+                        })
+                })
+            }
+
             return {
-                tabHeights,
+                updateWorkflow,
+                handleChange,
                 selectedTab,
+                isLoading,
                 isLoaded,
+                body,
                 activeKey,
                 filteredTabs,
                 emit,
-                json,
+                emptyScreen,
             }
         },
     })

@@ -1,29 +1,20 @@
 <template>
     <div
-        class="
-            flex
-            justify-between
-            w-full
-            py-6
-            pl-0
-            pr-4
-            border-b
-            cursor-pointer
-            group
-        "
+        class="flex justify-between w-full py-6 pl-0 pr-4 border-b cursor-pointer  group"
         :class="[bulkSelectMode && isChecked ? 'bg-primary-light' : '']"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- checkbox for bulk -->
         <a-checkbox
+            v-if="projection.includes('checkbox')"
             :checked="isChecked"
-            class="mt-1 ml-2 mr-3 opacity-0 group-hover:opacity-100"
+            class="mt-1 ml-2 opacity-0 group-hover:opacity-100"
             :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
             @click.stop
             @change="(e) => $emit('listItem:check', e, entity)"
         />
 
-        <div class="flex flex-row w-full">
+        <div class="flex flex-row w-full ml-3">
             <div class="flex flex-col justify-center w-full max-w-2xl ml-1">
                 <!-- display name and status -->
                 <span class="flex items-center mb-1 cursor-pointer">
@@ -88,13 +79,7 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(entity).length
                         "
-                        class="
-                            flex
-                            items-center
-                            text-sm
-                            leading-5
-                            text-gray-500
-                        "
+                        class="flex items-center text-sm leading-5 text-gray-500 "
                     >
                         <AtlanIcon icon="User" class="m-0 mr-1" />
 

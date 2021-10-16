@@ -1,80 +1,48 @@
 <template>
     <div
         v-if="isLoading"
-        class="flex items-center justify-center text-sm leading-none"
+        class="flex items-center justify-center h-full text-sm leading-none"
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="workflowList?.length">
-        <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
-            <div
-                class="
-                    text-base
-                    truncate
-                    cursor-pointer
-                    text-primary
-                    hover:underline
-                    overflow-ellipsis
-                    whitespace-nowrap
-                "
-                :class="{ 'font-bold underline': currRunId === r.metadata.uid }"
-                @click="loadRunGraph(r.metadata.uid)"
-            >
-                <span>
-                    {{ r.metadata.name }}
-                </span>
-                <a-spin
-                    v-if="isLoadingRunGraph && currRunId === r.metadata.uid"
-                />
-            </div>
-            <div>
-                <p class="mb-1 text-sm tracking-wide text-gray-500">
-                    Status:
-                    <span class="text-gray-700">
-                        {{ r.status.phase }}
-                    </span>
-                </p>
-                <p>
-                    <span class="mb-1 text-sm tracking-wide text-gray-500"
-                        >Started:</span
-                    >
-                    <span class="text-gray-700"
-                        >{{ timeAgo(r.status.startedAt) }},
-                    </span>
-                    <span class="mb-1 text-sm tracking-wide text-gray-500"
-                        >finished:</span
-                    >
-                    <span class="text-gray-700">{{
-                        timeAgo(r.status.finishedAt)
-                    }}</span>
-                </p>
-            </div>
+    <template v-else-if="runList?.length">
+        <div class="flex px-4 mt-4 mb-4">
+            <a-input-search
+                v-model:value="searchText"
+                placeholder="Search Members"
+                class="mr-1"
+                size="default"
+                :allow-clear="true"
+            ></a-input-search>
+            <a-button class="p-2 ml-2 rounded">
+                <AtlanIcon icon="FilterDot" class="h-4" />
+            </a-button>
         </div>
+        <RunCard
+            v-for="(r, x) in searchText ? filterList(searchText) : runList"
+            :key="x"
+            :r="r"
+            :curr-run-id="currRunId"
+            :is-loading="isLoadingRunGraph"
+            :select-enabled="true"
+            @select="loadRunGraph"
+        />
     </template>
-    <div v-else class="flex flex-col items-center">
-        <img :src="emptyScreen" alt="No Runs" class="w-2/5 m-auto mb-4" />
-        <span class="text-gray-500">No runs found</span>
-    </div>
+    <EmptyView v-else empty="No Runs Available" />
 </template>
 
 <script lang="ts">
-    import {
-        watch,
-        computed,
-        defineComponent,
-        PropType,
-        toRefs,
-        ref,
-    } from 'vue'
+    import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
 
-    import { useTimeAgo } from '@vueuse/core'
-    import emptyScreen from '~/assets/images/empty_search.png'
+    import EmptyView from '@common/empty/index.vue'
+
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedWorkflowList } from '~/composables/workflow/useWorkFlowList'
+    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
+    import RunCard from '@/workflows/shared/runCard.vue'
 
     export default defineComponent({
-        components: {},
+        components: { RunCard, EmptyView },
         props: {
             selectedWorkflow: {
                 type: Object as PropType<assetInterface>,
@@ -88,16 +56,10 @@
         setup(props, { emit }) {
             const { selectedWorkflow: item } = toRefs(props)
 
-            const labelSelector = computed(
-                () =>
-                    `workflows.argoproj.io/workflow-template=${item.value.metadata.name}`
-            )
-            const { workflowList, error, isLoading, mutate } =
-                useArchivedWorkflowList(labelSelector)
+            const searchText = ref('')
 
-            function timeAgo(time: number) {
-                return useTimeAgo(time).value
-            }
+            const { runList, error, isLoading, reFetch, filterList } =
+                useArchivedRunList('', false)
 
             const isLoadingRunGraph = ref(false)
             const currRunId = ref('')
@@ -112,16 +74,16 @@
                 }, 2500)
             }
 
-            watch(workflowList, (newVal) => {
-                if (newVal) currRunId.value = newVal[0].metadata.uid
+            watch(runList, (newVal) => {
+                if (newVal) currRunId.value = newVal[0].uid
             })
 
             watch(
                 item,
                 (n, o) => {
                     console.log(n, o)
-                    if (!o) mutate()
-                    else if (n.metadata.name !== o.metadata.name) mutate()
+                    if (!o) reFetch(n.name)
+                    else if (n.name !== o.name) reFetch(n.name)
                 },
                 {
                     immediate: true,
@@ -130,12 +92,12 @@
             )
 
             return {
+                filterList,
                 item,
-                workflowList,
+                searchText,
+                runList,
                 error,
                 isLoading,
-                timeAgo,
-                emptyScreen,
                 emit,
                 loadRunGraph,
                 isLoadingRunGraph,

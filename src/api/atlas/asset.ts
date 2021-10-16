@@ -1,4 +1,4 @@
-import { useAPI } from "~/api/useAPI";
+import { useAPI } from "~/services/api/useAPI";
 import { getBasicQuery } from "~/api/atlas/utils";
 
 const basicSearch = ({

@@ -3,7 +3,7 @@ import { Ref } from "vue";
 import { IConfig } from "swrv";
 import { AsyncStateOptions } from "@vueuse/core";
 import { UPLOAD_AVATAR } from "~/api/keyMaps/auth/avatar"
-import { useAPI } from "../useAPI";
+import { useAPI } from "../../services/api/useAPI";
 
 
 

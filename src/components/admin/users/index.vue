@@ -233,7 +233,11 @@
                                     "
                                     ><template #title
                                         ><div
-                                            class="flex items-center justify-between "
+                                            class="
+                                                flex
+                                                items-center
+                                                justify-between
+                                            "
                                         >
                                             <span>Change Role</span
                                             ><a-button
@@ -611,7 +615,7 @@
                 return name
             }
             const imageUrl = (username: any) =>
-             `${window.location.origin}/api/service/avatars/${username}`;
+                `${window.location.origin}/api/service/avatars/${username}`
             const handleStatusFilterChange = () => {
                 console.log(statusFilterValue.value)
                 const localFilterParams = [...userListAPIParams.filter.$and]

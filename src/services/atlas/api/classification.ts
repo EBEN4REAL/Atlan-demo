@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { classificationInterface } from '~/types/classifications/classification.interface'
 
 const getClassificationList = <T>({ cache }: { cache: boolean }) =>

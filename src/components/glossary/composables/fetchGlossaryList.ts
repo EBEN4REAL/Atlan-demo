@@ -1,7 +1,7 @@
 import { computed, ComputedRef, ref, Ref, toRefs, watch } from "vue";
 import { Components } from "~/api/atlas/client";
 import { Search } from "~/api/atlas/search";
-import { useAPI } from "~/api/useAPI";
+import { useAPI } from "~/services/api/useAPI";
 
 import { BaseAttributes, GlossaryAttributes } from "~/constant/projection";
 import { GlossaryType } from "~/types/atlas/glossary";

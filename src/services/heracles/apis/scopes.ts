@@ -1,4 +1,4 @@
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from '~/services/api/useAPI'
 import { IScopes } from '~/types/accessPolicies/scopes'
 import { heracles_keymap } from '../heracles_keymap'
 

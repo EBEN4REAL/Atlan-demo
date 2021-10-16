@@ -50,7 +50,7 @@ import DefaultLayout from '@/admin/defaultLayout.vue'
 import OrgLogo from '~/components/common/orgLogo.vue'
 import { useTenantStore } from '~/services/keycloak/tenant/store'
 import { KeyMaps } from '~/api/keyMap'
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from '~/services/api/useAPI'
 
 export default defineComponent({
     name: 'OrgOverview',

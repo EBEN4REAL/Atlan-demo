@@ -11,6 +11,6 @@ const getEntityStatusIcon = (
 
     return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}${certificateStatus
         ?.charAt(0)
-        .toUpperCase()}${certificateStatus?.slice(1)}`
+        .toUpperCase()}${certificateStatus?.slice(1).toLowerCase()}`
 }
 export default getEntityStatusIcon

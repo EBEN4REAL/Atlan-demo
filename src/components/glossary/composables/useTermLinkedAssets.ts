@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 import {
     GET_TERM_LINKED_ASSETS,

@@ -6,8 +6,8 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="workflowList?.length">
-        <div v-for="(r, x) in workflowList" :key="x" class="mx-4 mt-3">
+    <template v-else-if="runList?.length">
+        <div v-for="(r, x) in runList" :key="x" class="mx-4 mt-3">
             <div
                 class="
                     text-base
@@ -62,7 +62,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedWorkflowList } from '~/composables/workflow/useWorkFlowList'
+    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: {},
@@ -83,8 +83,8 @@
                 () =>
                     `workflows.argoproj.io/workflow-template=${item.value.metadata.name}`
             )
-            const { workflowList, error, isLoading, mutate } =
-                useArchivedWorkflowList(labelSelector)
+            const { runList, error, isLoading, mutate } =
+                useArchivedRunList(labelSelector)
 
             function timeAgo(time: number) {
                 return useTimeAgo(time).value
@@ -105,7 +105,7 @@
 
             return {
                 item,
-                workflowList,
+                runList,
                 error,
                 isLoading,
                 timeAgo,

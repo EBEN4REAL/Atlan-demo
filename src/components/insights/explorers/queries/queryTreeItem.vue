@@ -24,7 +24,7 @@
                                 {{ title(item) }}</span
                             >
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -111,7 +111,7 @@
                                 "
                             ></StatusBadge>
                             <div
-                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '

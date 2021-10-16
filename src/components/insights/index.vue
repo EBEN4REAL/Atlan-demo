@@ -289,10 +289,23 @@
                 -webkit-transition: background-color 0.3s;
                 transition: background-color 0.3s;
                 transform: translateY(-50%);
-                width: 5px;
+                width: 10px;
                 height: 100%;
                 margin-left: 0px;
+                @apply z-50 !important;
             }
+        }
+        &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            @apply bg-transparent;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 100%;
+            margin-left: 0px;
+            @apply z-50 !important;
         }
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter) {

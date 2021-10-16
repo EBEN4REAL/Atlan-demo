@@ -10,20 +10,20 @@
             <div class="flex w-full text-xs">
                 <div class="flex items-center flex-1 mr-5">
                     <div class="flex items-center mr-1">
-                        <div class="relative w-4 h-4 mr-2 overflow-hidden">
+                        <!-- <div class="relative w-4 h-4 mr-2 overflow-hidden">
                             <div class="absolute absolute-center">
                                 <AtlanIcon
                                     icon="FolderClosed"
-                                    class="h-4 m-0 -ml-0.5 -mt-0.5"
+                                    class="h-4 m-0 -ml-0.5 mr-2 -mt-0.5"
                                 />
                             </div>
-                            <!-- <div class="absolute absolute-center">
+                            <div class="absolute absolute-center">
                                 <AtlanIcon
                                     icon="PrivateFolder"
                                     class="h-4 m-0 -ml-0.5 -mt-0.5 absolute"
                                 />
-                            </div> -->
-                        </div>
+                            </div>
+                        </div> -->
                         <QueryFolderSelector
                             :connector="currentConnector"
                             :savedQueryType="queryType"
@@ -31,10 +31,10 @@
                             @folderChange="selectFolder"
                         />
                     </div>
-                    <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
+                    <!-- <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
                     <div class="flex items-center ml-1">
                         <span>{{ title }}</span>
-                    </div>
+                    </div> -->
                 </div>
                 <div>
                     <a-dropdown
@@ -182,7 +182,7 @@
             parentFolderQF: {
                 type: String,
                 required: true,
-                default: 'query',
+                default: 'root',
             },
             connector: {
                 type: String as PropType<string | undefined>,
@@ -244,6 +244,7 @@
                 selectedParentFolder.value = folder
             }
             return {
+                parentFolderQF,
                 title,
                 queryType,
                 currentConnector,

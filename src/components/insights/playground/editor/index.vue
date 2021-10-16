@@ -4,7 +4,7 @@
             <div class="flex items-center justify-between w-full my-2">
                 <div class="flex items-center text-base">
                     <div
-                        class="flex items-center mr-4"
+                        class="flex items-center mr-3"
                         v-if="activeInlineTab?.queryId"
                     >
                         <span class="mr-1">{{ activeInlineTab?.label }}</span>

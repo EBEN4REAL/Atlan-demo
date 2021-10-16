@@ -60,14 +60,23 @@ export default function useProject() {
         activeInlineTab: activeInlineTabInterface,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
         isQueryRunning: Ref<string>,
-        limitRows?: Ref<{ checked: boolean; rowsCount: number }>
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
+        getRowsCount: boolean = false
     ) => {
         const attributeValue =
             activeInlineTab.explorer.schema.connectors.attributeValue
-        let queryText = getParsedQuery(
-            activeInlineTab.playground.editor.variables,
-            activeInlineTab.playground.editor.text
-        )
+        let queryText
+        if (getRowsCount) {
+            queryText = `SELECT COUNT(*) as count from (${getParsedQuery(
+                activeInlineTab.playground.editor.variables,
+                activeInlineTab.playground.editor.text
+            )})`
+        } else {
+            queryText = getParsedQuery(
+                activeInlineTab.playground.editor.variables,
+                activeInlineTab.playground.editor.text
+            )
+        }
 
         isQueryRunning.value = 'loading'
         dataList.value = []

@@ -37,8 +37,8 @@ export function useSavedQuery(
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedNameValues =
             savedQuery.attributes.defaultSchemaQualifiedName?.split('.') ?? [
-                'schemaQualifiedName',
-                'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                undefined,
+                undefined,
             ]
         /* --------NOTE- TEMPERORY FIX-------*/
 

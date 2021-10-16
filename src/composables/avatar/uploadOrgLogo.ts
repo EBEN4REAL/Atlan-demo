@@ -1,6 +1,6 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import axios, { CancelTokenSource } from 'axios'
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from '~/services/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 
 export default function uploadOrgLogo() {

@@ -1,7 +1,7 @@
 import { ref, watch, computed, ComputedRef, Ref } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import swrvState from "~/composables/utils/swrvState";
-import { useAPI } from "~/api/useAPI";
+import { useAPI } from "~/services/api/useAPI";
 import { pluralizeString } from "~/composables/utils/string-operations";
 import { roleMap } from "~/constant/role";
 

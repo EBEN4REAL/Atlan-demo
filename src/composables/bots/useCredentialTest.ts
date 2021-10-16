@@ -2,7 +2,6 @@ import { computed, reactive, Ref, ref, watch } from 'vue';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
 // import { IConfig } from 'swrv';
 import { Credential } from '~/api/auth/credential';
-// import useSWRVState from '~/api2/useSWRVState';
 
 
 export default function useCredentialTest(initialBody?: any, asyncOpts?: object) {

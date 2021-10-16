@@ -55,8 +55,8 @@
     import Tooltip from '@/common/ellipsis/index.vue'
 
     // API
+    import { useAPI } from '~/services/api/useAPI'
     import HEKA_SERVICE_API from '~/services/heka/index'
-    import { useAPI } from '~/api/useAPI'
 
     export default defineComponent({
         components: { Tooltip },

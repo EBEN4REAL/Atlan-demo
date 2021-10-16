@@ -1,4 +1,4 @@
-import { useAPI as useAPIV2 } from '~/api/useAPI'
+import { useAPI as useAPIV2 } from '~/services/api/useAPI'
 
 /**
  * @deprecated

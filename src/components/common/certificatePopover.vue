@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, PropType } from "vue"
+  import { PropType } from "vue"
   import StatusBadge from '@common/badge/status/index.vue'
   import useAssetInfo from '~/composables/asset/useAssetInfo'
   import { assetInterface } from '~/types/assets/asset.interface'

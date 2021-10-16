@@ -1,5 +1,6 @@
 <template>
     <div class="w-full p-0 mb-6">
+        {{ entity?.attributes?.readme }}
         <Readme
             class="min-w-full"
             :placeholder="placeholder"
@@ -57,7 +58,7 @@ Aliquam rutrum blandit nisi. Quisque eget nisi eu sem cursus venenatis.`
             const showTermCountComputed = computed(
                 () => props.entity?.typeName !== 'AtlasGlossaryTerm'
             )
-
+            console.log(props.entity)
             return {
                 shortDescription,
                 termCount,

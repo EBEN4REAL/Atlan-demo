@@ -72,10 +72,18 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             'tenantId',
             'anchor',
             'linkedAssets',
+            'readme',
             ...bmProjection.value,
             ...relatedTerms,
             ...BaseAttributes,
             ...BasicSearchAttributes,
+        ],
+        relationAttributes: [
+            'readme',
+            'displayText',
+            'name',
+            'description',
+            'shortDescription',
         ],
         entityFilters: {
             condition: 'AND',

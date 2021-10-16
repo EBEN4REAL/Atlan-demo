@@ -181,7 +181,7 @@
             ])
 
             const onUpdate = (content: string, json: Record<string, any>) => {
-                // console.log(content, json)
+                console.log(content)
                 editorContent.value = content
             }
 

@@ -122,7 +122,7 @@
                 (content: string, json: Record<string, any>) => {
                     emit('onEditorContentUpdate', content, json)
                 },
-                200
+                500
             )
 
             const CustomImage = Image.extend({

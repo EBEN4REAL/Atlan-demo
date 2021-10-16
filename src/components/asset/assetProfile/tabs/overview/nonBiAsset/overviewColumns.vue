@@ -265,7 +265,7 @@
             const getDataType = (type: string) => {
                 let label = ''
                 dataTypeList.forEach((i) => {
-                    if (i.type.includes(type)) label = i.label
+                    if (i.type.includes(type.toUpperCase())) label = i.label
                 })
                 return label
             }

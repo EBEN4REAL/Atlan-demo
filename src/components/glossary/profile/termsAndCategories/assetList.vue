@@ -87,6 +87,7 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import { Category, Term } from '~/types/glossary/glossary.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useBulkUpdateStore from '~/store/bulkUpdate'
 
     export default defineComponent({
         name: 'AssetList',
@@ -135,6 +136,7 @@
         setup(props, ctx: SetupContext) {
             // data
             const bulkSelectedAssets = ref([])
+            const store = useBulkUpdateStore()
 
             // methods
             const updateBulkSelectedAssets = (listItem) => {
@@ -144,13 +146,18 @@
                 if (itemIndex >= 0)
                     bulkSelectedAssets.value.splice(itemIndex, 1)
                 else bulkSelectedAssets.value.push(listItem)
-                console.log(bulkSelectedAssets)
-                ctx.emit('bulkSelectChange', bulkSelectedAssets)
+                store.setBulkMode(!!bulkSelectedAssets.value.length)
+                store.setBulkSelectedAssets(bulkSelectedAssets.value)
             }
 
             const handleGtcCardClicked = (entity: Category | Term) => {
                 ctx.emit('gtcCardClicked', entity)
             }
+            watch(store, () => {
+                if (!store.bulkSelectedAssets?.length || !store.isBulkMode)
+                    bulkSelectedAssets.value = []
+            })
+
             return {
                 handleGtcCardClicked,
                 bulkSelectedAssets,

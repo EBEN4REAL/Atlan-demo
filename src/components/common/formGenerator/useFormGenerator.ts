@@ -2,7 +2,7 @@
 import { ref, Ref, watch, computed, reactive } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 
-export default function useFormGenerator(formConfig, formRef) {
+export default function useFormGenerator(formConfig, formRef, emit) {
   const processedSchema = ref([])
   const privateTypes = ['object', 'array', 'group']
 
@@ -215,7 +215,7 @@ export default function useFormGenerator(formConfig, formRef) {
 
       }
     })
-    console.log('FinalConfigGenerated: ')
+    emit('change', temp)
     console.table(temp)
     return temp
   }

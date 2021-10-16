@@ -15,7 +15,7 @@
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
 
     export default defineComponent({
-        name: 'WorkflowSetup',
+        name: 'WorkflowSetupTab',
         components: { CustomRadioButton },
         props: {
             uiConfig: {
@@ -29,7 +29,7 @@
             const selected = ref('')
             const { uiConfig } = toRefs(props)
             const template = computed(() => {
-                if (uiConfig.value)
+                if (uiConfig.value?.length)
                     return JSON.parse(uiConfig.value[0]?.data?.templates)
                 return []
             })

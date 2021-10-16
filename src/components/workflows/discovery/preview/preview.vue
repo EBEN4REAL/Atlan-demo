@@ -1,39 +1,5 @@
 <template>
     <div>
-        <div v-if="showCrossIcon">
-            <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
-                @click="$emit('closeSidebar')"
-            >
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="h-4 ml-1 transition-transform transform -rotate-90"
-                />
-            </a-button>
-        </div>
-        <div class="px-5 py-3 border-b">
-            <div class="flex items-center justify-between mb-0 text-sm">
-                <div class="flex items-center flex-none">
-                    <span class="text-sm tracking-wider text-gray-700 uppercase"
-                        >WORKFLOW</span
-                    >
-                </div>
-                <div class="flex space-x-2">
-                    <a-button-group>
-                        <a-button size="small"
-                            ><AtlanIcon icon="Share"
-                        /></a-button>
-                        <a-button size="small">
-                            <AtlanIcon icon="External" />
-                        </a-button>
-                        <a-button size="small">
-                            <AtlanIcon icon="Bookmark" />
-                        </a-button>
-                    </a-button-group>
-                </div>
-            </div>
-        </div>
-
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
@@ -57,9 +23,19 @@
                     :style="{ height: 'calc(100vh - 7.8rem)' }"
                 >
                     <div
-                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            px-4
+                            pt-2
+                            mt-2
+                            text-lg
+                            font-semibold
+                            text-gray-700
+                        "
                     >
-                        {{ tab.tooltip }}
+                        {{ tab.name }}
                     </div>
 
                     <component
@@ -79,7 +55,6 @@
         defineAsyncComponent,
         defineComponent,
         onMounted,
-        PropType,
         ref,
         Ref,
         toRefs,
@@ -127,10 +102,10 @@
                     tooltip: 'Overview',
                 },
                 {
-                    name: 'Runs',
+                    name: 'Run History',
                     component: 'runs',
-                    icon: 'Activity',
-                    tooltip: 'Runs',
+                    icon: 'RunHistory',
+                    tooltip: 'Runs History',
                 },
             ]
 
@@ -151,10 +126,6 @@
                 const idx = filteredTabs.findIndex((tl) => tl.name === tabName)
                 if (idx > -1) activeKey.value = idx
             })
-
-            // watch(page, () => {
-            //     if (activeKey.value > filteredTabs.length) activeKey.value = 0
-            // })
 
             function init() {
                 isLoaded.value = false

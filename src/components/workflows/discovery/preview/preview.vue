@@ -1,5 +1,6 @@
 <template>
     <div>
+        <PreviewHeader :name="selectedWorkflow.name" type="workflow" />
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
@@ -23,17 +24,7 @@
                     :style="{ height: 'calc(100vh - 7.8rem)' }"
                 >
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            px-4
-                            pt-2
-                            mt-2
-                            text-lg
-                            font-semibold
-                            text-gray-700
-                        "
+                        class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
                     >
                         {{ tab.name }}
                     </div>
@@ -67,6 +58,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
+    import PreviewHeader from '@/workflows/shared/previewHeader.vue'
 
     export default defineComponent({
         name: 'DiscoverWorkflowPreview',
@@ -78,6 +70,7 @@
             AtlanButton,
             info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
             runs: defineAsyncComponent(() => import('./tabs/runs/runsTab.vue')),
+            PreviewHeader,
         },
         props: {
             selectedWorkflow: {

@@ -1,13 +1,7 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="
-                flex flex-col
-                h-full
-                bg-white
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
         >
             <AtlanBtn
                 class="m-2"
@@ -96,12 +90,6 @@
                 </div>
 
                 <div v-else class="">
-                    <div
-                        v-if="workflowList.length && !queryText"
-                        class="mx-3 text-xl font-bold text-gray-600"
-                    >
-                        All
-                    </div>
                     <div
                         class="overflow-y-auto"
                         :style="

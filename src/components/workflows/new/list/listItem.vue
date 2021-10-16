@@ -9,15 +9,7 @@
         "
     >
         <div
-            class="
-                flex
-                items-start
-                flex-1
-                px-3
-                py-4
-                border-b border-transparent
-                w-96
-            "
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent  w-96"
             :class="{ ' border-gray-200': !isSelected }"
         >
             <a-checkbox
@@ -28,42 +20,56 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="
-                    box-border
-                    flex flex-col flex-1
-                    overflow-hidden
-                    gap-y-1
-                    lg:pr-16
-                "
+                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
-                <div class="flex items-center flex-none">
-                    <span
-                        class="
-                            pl-1
-                            text-sm
-                            tracking-wider
-                            text-gray-700
-                            uppercase
-                        "
-                        >WORKFLOW TEMPLATE</span
-                    >
+                <div class="flex items-center gap-x-3">
+                    <div class="flex text-sm text-gray-500">
+                        <div class="mr-2">
+                            <img
+                                src="/src/assets/images/source/snowflake.png"
+                                class="flex-none w-auto h-3.5 mb-0.5"
+                            />
+                        </div>
+                        <span class="text-gray-500">Workflow</span>
+                    </div>
+                    <div style="color: rgb(196, 196, 196)">•</div>
+                    <div class="flex text-sm text-gray-500">
+                        <span class="text-gray-500">Metadata</span>
+                    </div>
                 </div>
-
                 <div class="flex items-center mb-0 overflow-hidden">
-                    <span
-                        class="
-                            flex-shrink
-                            mb-0
-                            overflow-hidden
-                            text-base
-                            font-bold
-                            truncate
-                            text-primary
-                            overflow-ellipsis
-                            whitespace-nowrap
+                    <router-link
+                        :class="
+                            cssClasses?.textSize
+                                ? cssClasses?.textSize
+                                : 'text-xl'
                         "
-                        >{{ item.workflowtemplate.metadata.name }}</span
+                        :to="`/workflows/${item.workflowtemplate.metadata.name}/monitor`"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
+                        {{ item.workflowtemplate.metadata.name }}
+                    </router-link>
+                </div>
+                <div class="flex items-center gap-x-3">
+                    <div class="flex text-sm text-gray-500">
+                        <span class="text-gray-500"> 2dajuumnr-xmvlm</span>
+                    </div>
+                    <div
+                        v-if="item.metadata?.labels['created-by']"
+                        style="color: rgb(196, 196, 196)"
+                    >
+                        •
+                    </div>
+                    <div
+                        class="flex items-center text-sm text-gray-500 gap-x-1"
+                    >
+                        <AtlanIcon icon="User" />
+                        <span>Creators name</span>
+                    </div>
+                    <div style="color: rgb(196, 196, 196)">•</div>
+                    <div class="flex text-sm text-gray-500">
+                        <span class="text-gray-500">Scheduled</span>
+                    </div>
                 </div>
             </div>
         </div>

@@ -85,6 +85,16 @@
                 </span>
             </button>
             <button
+                class="w-full mr-2 menu-item"
+                :class="{ active: 'platform' === page }"
+                @click="handleClick('platform')"
+            >
+                <span class="flex items-center">
+                    <atlan-icon icon="Shield" class="h-4 mr-3 text-primary" />
+                    Platform Center
+                </span>
+            </button>
+            <button
                 v-for="item in ['Help & Community', 'Feedback']"
                 :key="item"
                 class="mr-2 menu-item"

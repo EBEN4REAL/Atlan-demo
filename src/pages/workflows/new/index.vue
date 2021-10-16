@@ -1,7 +1,13 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AtlanBtn
                 class="m-2"
@@ -117,7 +123,7 @@
             </div>
         </div>
 
-        <div class="border-l border-gray-300 preview-container">
+        <div class="flex flex-col border-l border-gray-300 preview-container">
             <SetupPreview v-if="selected" :selected-workflow="selected" />
         </div>
     </div>
@@ -205,14 +211,14 @@
             const {
                 workflowList,
                 loadMore,
-                totalCount,
+                filter_record,
                 isLoading,
                 filterList,
                 mutate,
             } = useWorkflowTemplates(false)
 
             const isLoadMore = computed(
-                () => totalCount.value > workflowList.value.length
+                () => filter_record.value > workflowList.value.length
             )
 
             if (!workflowList.value.length) mutate()

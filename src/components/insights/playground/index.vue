@@ -85,12 +85,12 @@
                 <pane
                     :max-size="95.5"
                     :size="100 - outputPaneSize"
-                    min-size="45"
+                    min-size="30"
                     class="overflow-x-hidden"
                 >
                     <Editor
                 /></pane>
-                <pane min-size="4.5" :size="outputPaneSize" max-size="53">
+                <pane min-size="4.5" :size="outputPaneSize" max-size="80">
                     <ResultsPane
                 /></pane>
             </splitpanes>

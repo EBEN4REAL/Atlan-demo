@@ -320,7 +320,7 @@
                         >
                             <div
                                 class="pl-2 ml-24"
-                                @click="() => actionClick('add', item)"
+                                @click.stop="() => actionClick('add', item)"
                             >
                                 <a-tooltip placement="top">
                                     <template #title

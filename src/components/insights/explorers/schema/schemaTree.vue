@@ -74,7 +74,6 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import { KeyMaps } from '~/api/keyMap'
 
-
     export default defineComponent({
         components: {
             LoadingView,
@@ -204,11 +203,4 @@
     // :global(.ant-tree-treenode-switcher-close:hover) {
     //     background-color: #e5e5e5 !important;
     // }
-</style>
-<style lang="less" module>
-    .queryTreeStyles {
-        :global(.ant-tree-switcher_open) {
-            transform: rotate(90deg);
-        }
-    }
 </style>

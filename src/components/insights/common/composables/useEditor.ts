@@ -198,7 +198,6 @@ export function useEditor(
                 el.push(obj)
             })
         })
-        console.log(el, 'el')
         // older moustacheDecorations needed
         decorations = editorInstance?.deltaDecorations(decorations, el)
     }
@@ -214,7 +213,6 @@ export function useEditor(
                 const t = editorInstance.getModel().findMatches(v[i])
                 matches.push({ matches: t, token: v[i] })
             }
-            console.log(matches, 'matches')
             return matches
         }
     }

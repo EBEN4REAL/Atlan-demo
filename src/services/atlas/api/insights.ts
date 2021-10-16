@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { KeyMaps } from '../atlas_keyMaps'
-import { useAPIAsyncState, useAPIPromise } from '~/api/useAPI'
+import { useAPIAsyncState, useAPIPromise } from '~/services/api/useAPI'
 
 import {
     BasicSearchResponse,
@@ -70,7 +70,7 @@ const DeleteEntity = (guid: string) => {
         'DELETE',
         {
             pathVariables: {
-                guid
+                guid,
             },
         }
     )
@@ -82,5 +82,5 @@ export const Insights = {
     CreateSavedQuery,
     GetSavedQuery,
     CreateQueryFolder,
-    DeleteEntity
+    DeleteEntity,
 }

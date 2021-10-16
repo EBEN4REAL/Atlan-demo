@@ -1,6 +1,6 @@
 import { watch, ref, Ref, computed } from 'vue'
 
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { GLOSSARY_LIST } from '~/api/keyMaps/glossary'
 import { Glossary } from '~/types/glossary/glossary.interface'
 

@@ -24,44 +24,23 @@
                     <!-- workflow tyoe -->
                     WORKFLOW
                 </div>
-
-                <div class="flex items-center">
-                    <Tooltip
-                        :tooltip-text="assetData?.name"
-                        classes="mb-0 text-gray-700 font-semibold text-lg"
-                    />
-                </div>
+                <h3 class="text-lg font-bold text-primary">
+                    {{ title }}
+                </h3>
             </div>
+            <div class="flex space-x-2"><UtilityButtons /></div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import Tooltip from '@common/ellipsis/index.vue'
-    // Vue
-    import { defineComponent, computed, inject } from 'vue'
-    // Components
-    import AtlanBtn from '~/components/UI/button.vue'
+    import { defineComponent } from 'vue'
+    import UtilityButtons from '@/workflows/shared/utilityButtons.vue'
 
     export default defineComponent({
         components: {
-            AtlanBtn,
-            Tooltip,
+            UtilityButtons,
         },
-
-        setup() {
-            /** INJECTIONS */
-            const assetDataInjection = inject('selectedAsset')
-
-            /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
-
-            /** METHODS */
-            // useAssetInfo
-
-            return {
-                assetData,
-            }
-        },
+        props: { title: { type: String, default: 'Title here' } },
     })
 </script>

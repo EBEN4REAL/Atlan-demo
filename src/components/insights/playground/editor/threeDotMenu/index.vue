@@ -1,23 +1,24 @@
 <template>
     <div>
         <a-dropdown :trigger="['click']">
-            <a-button
+            <div
                 @click.prevent="toggleButtonState"
-                :class="isActive ? 'border-primary-light' : ''"
                 class="
                     flex
+                    cursor-pointer
                     h-6
                     items-center
                     justify-center
                     py-0.5
                     ml-2
+                    -mr-2
                     px-1
                     border-white
                     text-gray-500
                 "
             >
-                <AtlanIcon class="" icon="KebabMenu"
-            /></a-button>
+                <AtlanIcon class="" icon="KebabMenu" />
+            </div>
             <template #overlay>
                 <!-- w-64 -->
                 <a-menu style="width: 200px" :class="$style.menu_class">

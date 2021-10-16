@@ -1,6 +1,6 @@
 <template>
     <div class="max-h-screen">
-        <div class="h-full overflow-x-hidden">
+        <div class="h-full overflow-x-hidden" :class="$style.schemaTreeStyles">
             <div v-if="treeData.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
@@ -15,6 +15,9 @@
                     :class="$style.tree"
                     @expand="expandNode"
                 >
+                    <template #switcherIcon>
+                        <AtlanIcon icon="Caret" />
+                    </template>
                     <template #title="item">
                         <SchemaTreeItem
                             :item="item"
@@ -71,7 +74,6 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import { KeyMaps } from '~/api/keyMap'
 
-    // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
         components: {
@@ -146,6 +148,15 @@
     }
 </style>
 <style lang="less" module>
+    .schemaTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+        :global(.ant-tree li ul) {
+            padding-left: 16px !important;
+        }
+    }
+
     :global(.ant-tree-title) {
         width: calc(100% - 1.5rem) !important;
     }
@@ -193,4 +204,11 @@
     // :global(.ant-tree-treenode-switcher-close:hover) {
     //     background-color: #e5e5e5 !important;
     // }
+</style>
+<style lang="less" module>
+    .queryTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+    }
 </style>

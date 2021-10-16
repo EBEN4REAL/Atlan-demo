@@ -16,7 +16,7 @@ import {
     UPDATE_GLOSSARY_CATEGORY_FULL,
     UPDATE_GLOSSARY_TERM_FULL,
 } from '~/api/keyMaps/glossary'
-import { useAPI, useAPIPromise } from '../useAPI'
+import { useAPI, useAPIPromise } from '../../services/api/useAPI'
 
 const serviceAlias = 'meta'
 
@@ -124,7 +124,7 @@ const ListTermsForGlossary = (
     config?: IConfig
 ) => {
     const data = getAxiosClient().get(
-        getAPIPath(serviceAlias, `/glossary/${glossaryID}/terms/optimized`),
+        getAPIPath(serviceAlias, `/glossary/${glossaryID}/terms`),
         {
             params,
             ...options,

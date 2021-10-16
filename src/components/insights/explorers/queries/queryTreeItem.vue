@@ -3,16 +3,7 @@
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
-                    class="
-                        flex
-                        content-center
-                        w-full
-                        my-auto
-                        overflow-hidden
-                        text-sm
-                        leading-5
-                        text-gray-700
-                    "
+                    class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
                     <!--FOLDER NODE -->
                     <a-dropdown
@@ -38,7 +29,7 @@
                         </div>
                         <template #overlay>
                             <a-menu>
-                                <a-menu-item key="rename"
+                                <a-menu-item key="rename" @click="renameFolder"
                                     >Rename Folder</a-menu-item
                                 >
                                 <a-menu-item key="newQuery" @click="newQuery"
@@ -73,7 +64,7 @@
                         </template>
                         <div class="relative flex w-full z py-1.5">
                             <div class="flex w-full">
-                                <span class="text-sm leading-5 tracking-wide">{{
+                                <span class="text-sm leading-5 tracking-wide pl-6">{{
                                     item.title
                                 }}</span>
                                 <div class="ml-1 mt-0.5">
@@ -164,7 +155,7 @@
                     <!--Empty NODE -->
                     <div
                         v-else-if="item.typeName === 'Empty'"
-                        class="text-sm text-gray-500 font-bold"
+                        class="text-sm font-bold text-gray-500"
                     >
                         {{ item.title }}
                     </div>
@@ -201,6 +192,7 @@
     import { Classification } from '~/api/atlas/classification'
     import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
     import { Insights } from '~/services/atlas/api/insights'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { QueryItemPopover, StatusBadge },
@@ -304,6 +296,9 @@
 
                 watch([isLoading], () => {
                     if (isLoading.value == false && !error.value) {
+                        useAddEvent('insights', 'folder', 'space_changed', {
+                            finalSpace: 'public',
+                        })
                         message.success({
                             content: `${item.value?.attributes?.name} was made public!`,
                         })
@@ -311,12 +306,16 @@
                     }
                 })
             }
+            const renameFolder = () => {
+                useAddEvent('insights', 'folder', 'renamed', undefined)
+            }
 
             const deleteFolder = () => {
                 const { data, error } = Insights.DeleteEntity(item.value.guid)
 
                 watch([data, error], ([newData, newError]) => {
                     if (newData && !newError) {
+                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })
@@ -329,6 +328,7 @@
                 })
             }
             return {
+                renameFolder,
                 deleteFolder,
                 publishFolder,
                 newQuery,

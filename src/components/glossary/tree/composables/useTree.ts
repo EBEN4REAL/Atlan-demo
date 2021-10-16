@@ -9,7 +9,7 @@ import { Components } from '~/api/atlas/client'
 import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 import useGlossaryList from '~/components/glossary/tree/composables/useGlossaryList'
 
-import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
 import store from '~/utils/storage'
 
 // composables
@@ -149,13 +149,23 @@ const useTree = (
      */
     const initTreeData = async (guid?: string) => {
         if (guid) {
-            const categoryList = await GlossaryApi.ListCategoryForGlossary(
-                guid,
-                {}
-            ) // all categories in a glossary
-            const termsList = await GlossaryApi.ListTermsForGlossary(guid, {
-                limit: defaultLimit,
-            }) // root level terms
+            let categoryList;
+            try{
+                categoryList = await GlossaryApi.ListCategoryForGlossary(
+                    guid,
+                    {}
+                ) // all categories in a glossary
+            } catch {
+                categoryList = []
+            }
+            let termsList;
+            try {
+                termsList = await GlossaryApi.ListTermsForGlossary(guid, {
+                    limit: defaultLimit,
+                }) // root level terms
+            } catch {
+                termsList = []
+            }
 
             categoryMap[guid] = categoryList
             treeData.value = []

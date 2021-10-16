@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 import { UPLOAD_IMAGE } from '~/api/keyMaps/auth/image';
-import { useAPI } from '~/api/useAPI';
+import { useAPI } from '~/services/api/useAPI';
 
 interface uploadImageData {
     id: string;

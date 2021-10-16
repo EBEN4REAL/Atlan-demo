@@ -4,7 +4,7 @@ import { IConfig } from 'swrv'
 import { AsyncStateOptions } from '@vueuse/core'
 import { getAPIPath, getAxiosClient } from '~/api'
 import { SearchParameters } from '~/types/atlas/attributes'
-import { useAPI } from '../useAPI'
+import { useAPI } from '../../services/api/useAPI'
 
 import { BASIC_SEARCH, SAVED_SEARCH } from '~/api/keyMaps/search'
 import { Components } from './client'

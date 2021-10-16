@@ -11,7 +11,7 @@
                 :is-selected="item.guid === selectedAssetId"
                 :score="score[item.guid]"
                 :projection="projection"
-                :show-check-box="true"
+                :show-check-box="projection?.includes('enableCheckbox')"
                 :bulk-select-mode="
                     bulkSelectedAssets && bulkSelectedAssets.length
                         ? true
@@ -22,7 +22,7 @@
                         (listItem) => listItem.guid === item.guid
                     ) > -1
                 "
-                @click="handlePreview(item)"
+                @click="handleCardClicked(item)"
                 @listItem:check="(e, item) => updateBulkSelectedAssets(item)"
             ></ListItem>
         </template>
@@ -33,13 +33,32 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        py-2
+                        transition-all
+                        duration-300
+                        bg-white
+                        rounded-full
+                        text-primary
+                    "
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="
+                                m-0
+                                mr-1
+                                overflow-hidden
+                                text-sm
+                                transition-all
+                                duration-300
+                                overflow-ellipsis
+                                whitespace-nowrap
+                            "
                         >
                             Load more
                         </p>
@@ -81,122 +100,134 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, ref, toRefs, watch, Ref } from 'vue'
-import ListItem from './listItem.vue'
-import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-import { assetInterface } from '~/types/assets/asset.interface'
-import useBulkUpdateStore from '~/store/bulkUpdate'
+    import { defineComponent, SetupContext, ref, toRefs, watch, Ref } from 'vue'
+    import ListItem from './listItem.vue'
+    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import useBulkUpdateStore from '~/store/bulkUpdate'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export default defineComponent({
-    name: 'AssetList',
-    components: {
-        ListItem,
-        VirtualList,
-    },
-    props: {
-        list: {
-            type: Array,
-            required: false,
-            default() {
-                return []
+    export default defineComponent({
+        name: 'AssetList',
+        components: {
+            ListItem,
+            VirtualList,
+        },
+        props: {
+            list: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
+            },
+            score: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
+            projection: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
+            },
+            isLoading: {
+                type: Boolean,
+                required: true,
+                default: () => false,
+            },
+            isLoadMore: {
+                type: Boolean,
+                required: true,
+                default: () => false,
+            },
+            autoSelect: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            typename: {
+                type: String,
             },
         },
-        score: {
-            type: Object,
-            required: false,
-            default() {
-                return {}
-            },
-        },
-        projection: {
-            type: Array,
-            required: false,
-            default() {
-                return []
-            },
-        },
-        isLoading: {
-            type: Boolean,
-            required: true,
-            default: () => false,
-        },
-        isLoadMore: {
-            type: Boolean,
-            required: true,
-            default: () => false,
-        },
-        autoSelect: {
-            type: Boolean,
-            required: false,
-            default: () => false,
-        },
-        typename: {
-            type: String,
-        },
-    },
-    emits: ['preview', 'loadMore', 'update:autoSelect'],
-    setup(props, { emit }) {
-        const { list, autoSelect, typename } = toRefs(props)
-        const selectedAssetId = ref('')
-        const shouldReSelect = false
-        function handlePreview(item: any) {
-            selectedAssetId.value = item.guid
-            emit('preview', item)
-        }
-        const store = useBulkUpdateStore()
-        const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
-        const updateBulkSelectedAssets = (listItem) => {
-            const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                (item) => item?.guid === listItem?.guid
+        emits: ['preview', 'loadMore', 'update:autoSelect'],
+        setup(props, { emit }) {
+            const { list, autoSelect, typename } = toRefs(props)
+            const selectedAssetId = ref('')
+            const shouldReSelect = false
+            function handlePreview(item: any) {
+                selectedAssetId.value = item.guid
+                emit('preview', item)
+            }
+
+            const handleCardClicked = (item: any) => {
+                // add event
+                const idx = props.list.findIndex((el) => el.guid === item.guid)
+                useAddEvent('discovery', 'asset_card', 'clicked', {
+                    click_index: idx,
+                })
+                handlePreview(item)
+            }
+            const store = useBulkUpdateStore()
+            const bulkSelectedAssets: Ref<assetInterface[]> = ref([])
+            const updateBulkSelectedAssets = (listItem) => {
+                const itemIndex = bulkSelectedAssets?.value?.findIndex(
+                    (item) => item?.guid === listItem?.guid
+                )
+                if (itemIndex >= 0)
+                    bulkSelectedAssets.value.splice(itemIndex, 1)
+                else bulkSelectedAssets.value.push(listItem)
+                store.setBulkMode(!!bulkSelectedAssets.value.length)
+                store.setBulkSelectedAssets(bulkSelectedAssets.value)
+            }
+            watch(store, () => {
+                if (!store.bulkSelectedAssets?.length || !store.isBulkMode)
+                    bulkSelectedAssets.value = []
+            })
+
+            // select first asset automatically conditionally acc to  autoSelect prop
+            watch(
+                list,
+                () => {
+                    if (autoSelect.value) {
+                        if (list.value.length) handlePreview(list.value[0])
+                    } else emit('update:autoSelect', true)
+                },
+                { immediate: true }
             )
-            if (itemIndex >= 0) bulkSelectedAssets.value.splice(itemIndex, 1)
-            else bulkSelectedAssets.value.push(listItem)
-            store.setBulkMode(!!bulkSelectedAssets.value.length)
-            store.setBulkSelectedAssets(bulkSelectedAssets.value)
-        }
-        watch(store, () => {
-            if (!store.bulkSelectedAssets?.length || !store.isBulkMode)
-                bulkSelectedAssets.value = []
-        })
 
-        // select first asset automatically conditionally acc to  autoSelect prop
-        watch(
-            list,
-            () => {
-                if (autoSelect.value) {
-                    if (list.value.length) handlePreview(list.value[0])
-                } else emit('update:autoSelect', true)
-            },
-            { immediate: true }
-        )
+            // if (autoSelect.value) {
+            //     watch(typename, () => {
+            //         shouldReSelect = true
+            //     })
 
-        // if (autoSelect.value) {
-        //     watch(typename, () => {
-        //         shouldReSelect = true
-        //     })
+            //     watch(
+            //         () => list.value?.length || 0,
+            //         (len, lastLen) => {
+            //             if (len > 0 && (lastLen === 0 || lastLen > len))
+            //                 shouldReSelect = true
 
-        //     watch(
-        //         () => list.value?.length || 0,
-        //         (len, lastLen) => {
-        //             if (len > 0 && (lastLen === 0 || lastLen > len))
-        //                 shouldReSelect = true
+            //             if (shouldReSelect) {
+            //                 handlePreview(list.value[0])
+            //                 shouldReSelect = false
+            //             }
+            //         },
+            //         { immediate: true }
+            //     )
+            // }
 
-        //             if (shouldReSelect) {
-        //                 handlePreview(list.value[0])
-        //                 shouldReSelect = false
-        //             }
-        //         },
-        //         { immediate: true }
-        //     )
-        // }
-
-        return {
-            handlePreview,
-            selectedAssetId,
-            list,
-            bulkSelectedAssets,
-            updateBulkSelectedAssets,
-        }
-    },
-})
+            return {
+                handlePreview,
+                selectedAssetId,
+                list,
+                bulkSelectedAssets,
+                updateBulkSelectedAssets,
+                handleCardClicked,
+            }
+        },
+    })
 </script>

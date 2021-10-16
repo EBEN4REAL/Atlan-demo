@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white">
+    <div class="flex flex-col items-center w-full h-full bg-white query-explorer">
         <div class="w-full p-4 pb-0 rounded">
             <Connector
                 :connector="connector"
@@ -30,7 +30,7 @@
                                     : ''
                             "
                             @click="() => onSelectQueryType('personal')"
-                            >Personal</span
+                            >Private</span
                         >
                         <span
                             class="cursor-pointer hover:text-primary-400"
@@ -166,6 +166,7 @@
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -199,8 +200,8 @@
                 useConnector()
             const connector = ref(
                 getConnectorName(
-                    activeInlineTab.value.explorer.schema.connectors
-                        .attributeValue
+                    activeInlineTab.value?.explorer?.schema?.connectors
+                        ?.attributeValue
                 )
             )
             const { focusEditor } = useEditor()
@@ -265,8 +266,9 @@
                         let parentFolder
                         if (guid === 'root') {
                             parentFolder =
-                                document.getElementsByClassName('ant-tree')[0]
-                                    ?.parentNode
+                                document.querySelector('.query-explorer  .ant-tree')
+                                    ?.parentNode ?? document.querySelector('.query-explorer  .query-tree-root-div')
+                                    console.log(parentFolder)
                         } else {
                             parentFolder = document.getElementsByClassName(
                                 getRelevantTreeData().parentGuid.value
@@ -277,7 +279,7 @@
                         if (!ul) {
                             // if the parentFolder does not have any children, it won't contain a ul element either. So create one and append it
                             ul = document.createElement('ul')
-                            parentFolder.appendChild(ul)
+                            parentFolder.prepend(ul)
                         }
                         const li = document.createElement('li')
 
@@ -294,33 +296,41 @@
                             )
                             watch(data, async (newData) => {
                                 if (newData) {
+                                    useAddEvent(
+                                        'insights',
+                                        'folder',
+                                        'created',
+                                        newFolderName.value
+                                    )
                                     newFolderName.value = ''
-                                    if (savedQueryType.value === 'personal') {
-                                        await per_refetchNode(
-                                            getRelevantTreeData().parentGuid
-                                                .value,
-                                            'queryFolder'
-                                        )
-                                        ul.removeChild(li)
-                                        await all_refetchNode(
-                                            getRelevantTreeData().parentGuid
-                                                .value,
-                                            'queryFolder'
-                                        )
-                                    }
-                                    if (savedQueryType.value === 'all') {
-                                        await all_refetchNode(
-                                            getRelevantTreeData().parentGuid
-                                                .value,
-                                            'queryFolder'
-                                        )
-                                        ul.removeChild(li)
-                                        await per_refetchNode(
-                                            getRelevantTreeData().parentGuid
-                                                .value,
-                                            'queryFolder'
-                                        )
-                                    }
+                                    setTimeout(async () => {
+                                        if (savedQueryType.value === 'personal') {
+                                            await per_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                            ul.removeChild(li)
+                                            await all_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                        }
+                                        if (savedQueryType.value === 'all') {
+                                            await all_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                            ul.removeChild(li)
+                                            await per_refetchNode(
+                                                getRelevantTreeData().parentGuid
+                                                    .value,
+                                                'queryFolder'
+                                            )
+                                        }
+                                    }, 500)
                                 }
                             })
                         }
@@ -464,6 +474,8 @@
                 if (newActiveInlineTab) {
                     connector.value =
                         newActiveInlineTab?.explorer?.queries?.connectors?.connector
+                } else {
+                    connector.value = undefined
                 }
             })
             const saveQuery = async (saveQueryData: {

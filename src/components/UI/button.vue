@@ -1,6 +1,7 @@
 <template>
     <button
         :class="[size, color, padding]"
+        :disabled="disabled"
         class="flex items-center justify-center flex-none gap-x-1 atlan-btn"
     >
         <slot name="prefix" />
@@ -33,6 +34,11 @@
                 required: false,
             },
             bold: {
+                type: Boolean,
+                default: () => false,
+                required: false,
+            },
+            disabled: {
                 type: Boolean,
                 default: () => false,
                 required: false,
@@ -110,6 +116,12 @@
             &:active {
                 box-shadow: 0px 3px 4px 0px #00000033 inset;
             }
+        }
+
+        &:disabled {
+            @apply opacity-70 text-opacity-70;
+            @apply cursor-not-allowed;
+            box-shadow: none !important;
         }
     }
 </style>

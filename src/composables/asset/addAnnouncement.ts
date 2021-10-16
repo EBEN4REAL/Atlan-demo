@@ -12,33 +12,30 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
 
     const bannerType: WritableComputedRef<string> = computed({
         get: () =>
-            banner.value.username ||
-            selectedAsset.value?.attributes?.banner?.attributes?.username
+            selectedAsset.value?.attributes?.bannerType
             || "information"
         ,
         set: (newValue: string) => {
-            banner.value.username = newValue
-            banner.value.timestamp = Date.now()
+            banner.value.type = newValue
             body.value = getBody()
         },
     })
-    const bannerMessage: WritableComputedRef<string> = computed({
-        get: () => selectedAsset.value?.attributes?.bannerMessage,
+    const bannerDescription: WritableComputedRef<string> = computed({
+        get: () => selectedAsset.value?.attributes?.bannerDescription,
         set: (newValue: string) => {
-            banner.value.message = newValue
+            banner.value.description = newValue
             body.value = getBody()
         },
     })
-    /*  const bannerHeader: WritableComputedRef<string> = computed({
-         get: () =>
-             banner.value.message ||
-             selectedAsset.value?.attributes?.banner?.message ,
-            
-         set: (newValue: string) => {
-             banner.value.message = newValue
-             body.value = getBody()
-         },
-     }) */
+    const bannerTitle: WritableComputedRef<string> = computed({
+        get: () =>
+            selectedAsset.value?.attributes?.bannerTitle,
+
+        set: (newValue: string) => {
+            banner.value.title = newValue
+            body.value = getBody()
+        },
+    })
 
     const getBody = () => ({
         entities: [
@@ -49,9 +46,9 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
                     qualifiedName:
                         selectedAsset.value.attributes?.qualifiedName,
                     name: selectedAsset.value.attributes?.name,
-                    banner: banner.value,
-
-                    bannerMessage: banner.value.message,
+                    bannerType: banner.value.type,
+                    bannerTitle: banner.value.title,
+                    bannerDescription: banner.value.description,
                     bannerUpdatedAt: Date.now(),
                     bannerUpdatedBy: username,
                     tenantId: selectedAsset.value.attributes?.tenantId,
@@ -75,9 +72,12 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
         if (!error.value && state && isReady.value) {
             isLoading.value = false
             isCompleted.value = false
-            selectedAsset.value.attributes.banner = banner.value
-            selectedAsset.value.attributes.bannerMessage =
-                banner.value.message
+            selectedAsset.value.attributes.bannerType =
+                banner.value.type
+            selectedAsset.value.attributes.bannerTitle =
+                banner.value.title
+            selectedAsset.value.attributes.bannerDescription =
+                banner.value.description
             selectedAsset.value.attributes.bannerUpdatedAt = Date.now()
             selectedAsset.value.attributes.bannerUpdatedBy =
                 username as unknown as string
@@ -95,7 +95,8 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
     return {
         handleCancel,
         bannerType,
-        bannerMessage,
+        bannerDescription,
+        bannerTitle,
         state,
         update,
         isReady,

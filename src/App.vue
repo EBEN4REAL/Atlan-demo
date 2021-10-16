@@ -11,7 +11,7 @@
     import useConnectionsList from './composables/bots/useConnectionList'
 
     import { CONNECTION_FETCH_LIST } from './constant/cache'
-    import { useTenantStore } from './store/tenants'
+    import { useTenantStore } from './services/keycloak/tenant/store'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import  useCheckAccess  from '~/services/access/useCheckAccess' 
 

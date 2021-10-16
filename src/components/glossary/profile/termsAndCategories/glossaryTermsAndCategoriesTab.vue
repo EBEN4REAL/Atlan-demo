@@ -209,7 +209,6 @@
                 'status',
                 'description',
                 'owners',
-                // 'heirarchy',
                 'linkedAssets',
             ])
             const {
@@ -224,6 +223,7 @@
 
             const projectionOptions = [
                 { value: 'categories', label: 'Categories' },
+                { value: 'checkbox', label: 'Checkbox' },
                 { value: 'classifications', label: 'Classifications' },
                 { value: 'description', label: 'Description' },
                 { value: 'linkedAssets', label: 'Linked Assets' },

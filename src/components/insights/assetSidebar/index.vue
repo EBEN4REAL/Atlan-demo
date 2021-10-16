@@ -1,11 +1,14 @@
 <template>
-    <!-- <div class="w-full h-full placeholder">
+    <!-- <div
+        class="w-full h-full placeholder"
+        v-if="selectedAsset && !activeInlineTab?.isSaved"
+    >
         <div class="flex items-center justify-between w-full p-3">
             <span
                 v-if="activeInlineTab && activeInlineTab?.assetSidebar"
                 class="font-bold text-gray"
             >
-                {{ activeInlineTab.assetSidebar.title }}
+                Save Query first
             </span>
             <span
                 class="flex items-center justify-center"
@@ -13,10 +16,6 @@
             >
                 <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
             </span>
-        </div>
-        <div class="flex flex-col items-center justify-center w-full h-full">
-            <p>Asset Sidebar</p>
-            <p>Tab - {{ activeInlineTab.label }}</p>
         </div>
     </div> -->
     <div class="z-20 flex flex-col bg-white">

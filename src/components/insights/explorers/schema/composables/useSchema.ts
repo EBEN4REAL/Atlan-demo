@@ -4,7 +4,8 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 export function useSchema() {
     const mixClassificationsAndTerms = (
         classifications: any[],
-        terms: any[]
+        terms: any[],
+        includeClassifications: boolean = true
     ) => {
         const mix = []
         let i = 0,
@@ -15,11 +16,12 @@ export function useSchema() {
         while (i < clength && j < tlength) {
             if (k % 2 == 0) {
                 // classifications does not have displayText property
-                mix.push({
-                    ...classifications[i],
-                    type: 'classification',
-                    displayText: classifications[i].typeName,
-                })
+                includeClassifications &&
+                    mix.push({
+                        ...classifications[i],
+                        type: 'classification',
+                        displayText: classifications[i].typeName,
+                    })
                 i++
             } else {
                 // terms already have displayText property

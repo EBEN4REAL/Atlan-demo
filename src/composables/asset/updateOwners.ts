@@ -2,6 +2,8 @@ import { computed, ref, WritableComputedRef, watch, Ref } from 'vue'
 import updateAsset from '../utils/updateAsset'
 import whoami from '../user/whoami'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
+import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
 export default function updateOwners(selectedAsset: Ref<assetInterface>) {
     const { username } = whoami()
@@ -105,6 +107,17 @@ export default function updateOwners(selectedAsset: Ref<assetInterface>) {
         localOwnerGroups.value = ownerGroups
         body.value = getBody()
         execute()
+
+        // event sent on owners description
+        if (
+            selectedAsset.value?.typeName === 'AtlasGlossary' ||
+            selectedAsset.value?.typeName === 'AtlasGlossaryTerm' ||
+            selectedAsset.value?.typeName === 'AtlasGlossaryCategory'
+        )
+            useAddEvent('gtc', 'metadata', 'owners_updated', {
+                gtc_type: assetTypeLabel[selectedAsset.value?.typeName],
+            })
+        else useAddEvent('discovery', 'metadata', 'owners_updated', undefined)
     }
 
     watch(state, () => {

@@ -156,7 +156,7 @@
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import whoami from '~/composables/user/whoami'
     import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
-    import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+    import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
 
     import { List } from '~/constant/status'
     import {

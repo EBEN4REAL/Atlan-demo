@@ -1,7 +1,7 @@
 import { ref, Ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from '~/services/api/useAPI'
 import {
     SavedQueryResponse,
     SavedQuery,

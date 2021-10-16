@@ -27,6 +27,7 @@ export const GET_CATEGORY_TERMS = 'GET_CATEGORY_TERMS';
 
 export const GET_TERM_LINKED_ASSETS = 'GET_TERM_LINKED_ASSETS';
 export const ASSIGN_TERM_LINKED_ASSETS = 'ASSIGN_TERM_LINKED_ASSETS';
+export const BULK_LINK_TERMS = 'BULK_LINK_TERMS';
 export const UNLINK_TERM_ASSETS = 'UNLINK_TERM_ASSETS';
 export const GTC_SEARCH = 'GTC_SEARCH';
 export const GLOSSARY_LIST = 'GLOSSARY_LIST';
@@ -60,6 +61,7 @@ const groupsMap: Record<string, (...params:any) => string> = {
 
     [GET_TERM_LINKED_ASSETS]: () => getAPIPath('meta', `/search/basic`),
     [ASSIGN_TERM_LINKED_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),
+    [BULK_LINK_TERMS]: () => getAPIPath('meta', `/glossary/terms/assignedEntities`),
     [UNLINK_TERM_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),
     [GTC_SEARCH]: () => getAPIPath('meta', `/search/basic`),
     [GLOSSARY_LIST]: () => getAPIPath('meta', `/search/basic`),

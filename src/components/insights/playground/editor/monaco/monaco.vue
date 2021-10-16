@@ -34,6 +34,7 @@
     } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
+    import { getLightAtlanTheme } from './customTheme'
 
     const turndownService = new TurndownService({})
 
@@ -49,6 +50,7 @@
         props: {},
 
         setup(props, { emit }) {
+            const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -196,6 +198,10 @@
             /* ----------------------------------------------------- */
             onMounted(() => {
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
+                    glyphMargin: false,
+                    folding: false,
+                    lineDecorationsWidth: 8,
+                    lineNumbersMinChars: 2,
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
@@ -216,20 +222,25 @@
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
-                editor?.getModel().onDidChangeContent(async (event) => {
+                editor?.getModel().onDidChangeContent((event) => {
                     const text = editor?.getValue()
                     onEditorContentChange(event, text)
                     const changes = event?.changes[0]
-                    // const lastTypedCharacter = event?.changes[0]?.text
-                    const suggestions = useAutoSuggestions(
-                        changes,
-                        editor,
-                        activeInlineTab
-                    ) as Promise<{
-                        suggestions: suggestionKeywordInterface[]
-                        incomplete: boolean
-                    }>
-                    triggerAutoCompletion(suggestions)
+                    const lastTypedCharacter = event?.changes[0]?.text
+                    console.log(changes, 'changes')
+                    /* Preventing network request when pasting name of table */
+                    if (lastTypedCharacter.length < 3) {
+                        const suggestions = useAutoSuggestions(
+                            changes,
+                            editor,
+                            activeInlineTab,
+                            cancelTokenSource
+                        ) as Promise<{
+                            suggestions: suggestionKeywordInterface[]
+                            incomplete: boolean
+                        }>
+                        triggerAutoCompletion(suggestions)
+                    }
                 })
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)
@@ -280,7 +291,8 @@
                         const suggestions = useAutoSuggestions(
                             changes,
                             editor,
-                            activeInlineTab
+                            activeInlineTab,
+                            cancelTokenSource
                         ) as Promise<{
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
@@ -319,7 +331,7 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .monacoeditor {
         min-height: 90%;
     }

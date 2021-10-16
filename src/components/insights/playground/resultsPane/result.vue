@@ -1,7 +1,14 @@
 <template>
     <div class="relative w-full h-full p-3 overflow-hidden rounded">
         <div
-            class="relative flex justify-center overflow-x-auto rounded  table_height"
+            class="
+                relative
+                flex
+                justify-center
+                overflow-x-auto
+                rounded
+                table_height
+            "
         >
             <a-table
                 class="w-full overflow-x-auto"
@@ -13,7 +20,16 @@
             />
         </div>
         <div
-            class="absolute left-0 flex w-full bg-white border-t  bottom_footer h-7"
+            class="
+                absolute
+                left-0
+                flex
+                w-full
+                bg-white
+                border-t
+                bottom_footer
+                h-7
+            "
             v-if="activeInlineTab.playground.editor.columnList.length > 0"
         >
             <div class="flex items-center px-3 text-gray-500">
@@ -30,7 +46,7 @@
                     class="w-1 h-1 mx-2 bg-gray-500 rounded-full"
                 ></div>
                 <span v-if="queryExecutionTime > 0" class="mr-2">
-                    Execution Time: {{ queryExecutionTime }}ms
+                    Took Time: {{ queryExecutionTime }}ms
                 </span>
                 <!-- -------------------------------------------- -->
             </div>

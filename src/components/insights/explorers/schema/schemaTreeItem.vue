@@ -1,22 +1,26 @@
 <template>
     <div class="w-full group py-1.5">
         <div class="flex justify-between w-full overflow-hidden">
-            <div class="flex w-full m-0">
-                <div
-                    class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
-                >
-                    <a-popover placement="rightTop">
-                        <template #content>
-                            <div>
-                                <SchemaTreeItemPopover :item="item" />
-                            </div>
-                        </template>
+            <!-- Popover Allowed -->
+            <div
+                class="flex w-full m-0"
+                v-if="isPopoverAllowed(item?.typeName)"
+            >
+                <a-popover placement="rightTop">
+                    <template #content>
+                        <div>
+                            <SchemaTreeItemPopover :item="item" />
+                        </div>
+                    </template>
+                    <div
+                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    >
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
                             class="relative flex items-center justify-between w-full  z"
                         >
-                            <div class="flex w-full">
+                            <div class="relative parent-ellipsis-container">
                                 <component
                                     :is="dataTypeImage(item)"
                                     class="
@@ -24,15 +28,26 @@
                                         w-auto
                                         h-4
                                         mr-1
-                                        mt-0.5
+                                        -mt-0.5
                                         text-gray-500
                                     "
                                 ></component>
                                 <span
-                                    class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
+                                    class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                                 >
                                     {{ title(item) }}
                                 </span>
+                                <StatusBadge
+                                    v-if="certificateStatus(item)"
+                                    :key="item?.guid"
+                                    :show-no-status="false"
+                                    :status-id="certificateStatus(item)"
+                                    class="
+                                        ml-1.5
+                                        mb-1
+                                        parent-ellipsis-container-extension
+                                    "
+                                ></StatusBadge>
                             </div>
                             <div
                                 class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
@@ -116,29 +131,51 @@
                                     class="flex items-center"
                                     v-if="isPrimary(item)"
                                 >
-                                    <a-tooltip>
-                                        <template #title>Pkey</template>
+                                    <div class="flex items-center mr-2">
                                         <AtlanIcon
                                             icon="PrimaryKey"
                                             class="w-4 h-4 my-auto mr-1  primary-key-color"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
+                                        >
+                                        </AtlanIcon>
+                                        <span class="primary-key-color"
+                                            >Pkey</span
+                                        >
+                                    </div>
                                 </div>
                                 <span> {{ dataType(item) }}</span>
                             </div>
                         </div>
                         <!------------------------------->
                         <!--For Others -->
-                        <div v-else class="relative flex w-full z">
+                        <div v-else class="parent-ellipsis-container">
                             <AtlanIcon
                                 :icon="assetType(item)"
-                                class="w-4 h-4 my-auto mr-1"
+                                class="
+                                    w-4
+                                    h-4
+                                    mr-1.5
+                                    -mt-0.5
+                                    parent-ellipsis-container-extension
+                                "
                             ></AtlanIcon>
+
                             <span
-                                class="mb-0 text-sm leading-5 tracking-wide  nooverflow"
+                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                             >
                                 {{ title(item) }}
                             </span>
+                            <StatusBadge
+                                v-if="certificateStatus(item)"
+                                :key="item?.guid"
+                                :show-no-status="false"
+                                :status-id="certificateStatus(item)"
+                                class="
+                                    ml-1.5
+                                    mb-1
+                                    parent-ellipsis-container-extension
+                                "
+                            ></StatusBadge>
+
                             <div
                                 class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                                 :class="
@@ -236,7 +273,73 @@
                             </div>
                         </div>
                         <!------------------------------->
-                    </a-popover>
+                    </div>
+                </a-popover>
+            </div>
+            <!-- ---------------- -->
+            <div class="flex w-full m-0" v-else>
+                <div
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                >
+                    <!--For Others -->
+                    <div class="parent-ellipsis-container">
+                        <AtlanIcon
+                            :icon="assetType(item)"
+                            class="
+                                w-4
+                                h-4
+                                mr-1.5
+                                -mt-0.5
+                                parent-ellipsis-container-extension
+                            "
+                        ></AtlanIcon>
+
+                        <span
+                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                        >
+                            {{ title(item) }}
+                        </span>
+                        <StatusBadge
+                            v-if="certificateStatus(item)"
+                            :key="item?.guid"
+                            :show-no-status="false"
+                            :status-id="certificateStatus(item)"
+                            class="
+                                ml-1.5
+                                mb-1
+                                parent-ellipsis-container-extension
+                            "
+                        ></StatusBadge>
+                        <div
+                            class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            :class="
+                                item?.selected
+                                    ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                    : 'bg-gradient-to-l from-gray-light via-gray-light'
+                            "
+                        >
+                            <div
+                                class="pl-2 ml-24"
+                                @click="() => actionClick('add', item)"
+                            >
+                                <a-tooltip placement="top">
+                                    <template #title
+                                        >Place name in SQL</template
+                                    >
+                                    <AtlanIcon
+                                        icon="AddAssetName"
+                                        class="w-4 h-4 my-auto"
+                                        :class="
+                                            item?.selected
+                                                ? 'tree-light-color'
+                                                : 'bg-gray-light'
+                                        "
+                                    ></AtlanIcon>
+                                </a-tooltip>
+                            </div>
+                        </div>
+                    </div>
+                    <!------------------------------->
                 </div>
             </div>
         </div>
@@ -264,9 +367,10 @@
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import StatusBadge from '@common/badge/status/index.vue'
 
     export default defineComponent({
-        components: { SchemaTreeItemPopover },
+        components: { SchemaTreeItemPopover, StatusBadge },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -283,9 +387,11 @@
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
+            const popoverAllowed = ['Column', 'Table']
+            const isPopoverAllowed = (typeName: string) => {
+                return popoverAllowed.includes(typeName)
+            }
 
-            const editorInstance = toRaw(editorInstanceRef.value)
-            const monacoInstance = toRaw(monacoInstanceRef.value)
             const selectionObject: Ref<any> = ref({
                 startLineNumber: 1,
                 startColumnNumber: 1,
@@ -299,6 +405,7 @@
                 dataType,
                 assetType,
                 title,
+                certificateStatus,
             } = useAssetInfo()
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { focusEditor, setSelection } = useEditor()
@@ -327,11 +434,11 @@
                         saveQueryDataInLocalStorage
                     )
                     setSelection(
-                        editorInstance,
-                        monacoInstance,
+                        toRaw(editorInstanceRef.value),
+                        toRaw(monacoInstanceRef.value),
                         selectionObject.value
                     )
-                    focusEditor(editorInstance)
+                    focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
             // const selectAndFocus=()={
@@ -341,8 +448,9 @@
             const actionClick = (action: string, t: assetInterface) => {
                 switch (action) {
                     case 'add': {
+                        const editorInstance = toRaw(editorInstanceRef.value)
                         editorInstance.trigger('keyboard', 'type', {
-                            text: `${t.title}`,
+                            text: `${title(t)}`,
                         })
                         break
                     }
@@ -353,7 +461,11 @@
                         const prevText =
                             activeInlineTabCopy.playground.editor.text
                         // new text
-                        const newQuery = `\/* {{${item.value?.title}}} preview *\/\nSELECT * FROM \"${item.value?.title}\" LIMIT 50;\n`
+                        const newQuery = `\/* {{${title(
+                            item.value
+                        )}}} preview *\/\nSELECT * FROM \"${title(
+                            item.value
+                        )}\" LIMIT 50;\n`
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
                         modifyActiveInlineTab(activeInlineTabCopy, inlineTabs)
@@ -388,7 +500,9 @@
             }
 
             return {
+                isPopoverAllowed,
                 activeInlineTab,
+                certificateStatus,
                 isPrimary,
                 title,
                 assetType,
@@ -406,14 +520,18 @@
     .tree-container {
         overflow: hidden;
     }
-    .nooverflow {
-        display: inline-block;
-        overflow: hidden !important;
-        overflow-wrap: normal;
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
         text-overflow: ellipsis;
-        white-space: nowrap !important;
-        width: 0;
-        min-width: 100%;
+        overflow: hidden;
+    }
+    .parent-ellipsis-container-extension {
+        flex-shrink: 0;
     }
     .popover-width {
         min-width: 440px;
@@ -436,6 +554,9 @@
     .from-tree-light-color {
         --tw-gradient-from: #dbe9fe !important;
     }
+    .tree-select-full {
+        width: 120%;
+    }
 
     /* ------------------------------- */
 </style>
@@ -444,6 +565,9 @@
         // min-width: 440px !important;
         max-width: none !important;
         // min-height: 228px !important;
+    }
+    :global(.ant-tree li) {
+        @apply pt-0 pb-0 !important;
     }
 </style>
 

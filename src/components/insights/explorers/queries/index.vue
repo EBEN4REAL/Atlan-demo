@@ -30,7 +30,7 @@
                                     : ''
                             "
                             @click="() => onSelectQueryType('personal')"
-                            >Personal</span
+                            >Private</span
                         >
                         <span
                             class="cursor-pointer hover:text-primary-400"
@@ -200,8 +200,8 @@
                 useConnector()
             const connector = ref(
                 getConnectorName(
-                    activeInlineTab.value.explorer.schema.connectors
-                        .attributeValue
+                    activeInlineTab.value?.explorer?.schema?.connectors
+                        ?.attributeValue
                 )
             )
             const { focusEditor } = useEditor()
@@ -474,6 +474,8 @@
                 if (newActiveInlineTab) {
                     connector.value =
                         newActiveInlineTab?.explorer?.queries?.connectors?.connector
+                } else {
+                    connector.value = undefined
                 }
             })
             const saveQuery = async (saveQueryData: {

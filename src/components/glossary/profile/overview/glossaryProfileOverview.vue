@@ -1,5 +1,7 @@
 <template>
     <div class="w-full p-0 mb-6">
+        <Announcements :asset="entity" class="mb-5" />
+        <SummaryWidget :entity="entity" />
         <Readme
             class="min-w-full"
             :placeholder="placeholder"
@@ -14,6 +16,8 @@
     import { defineComponent, computed, PropType } from 'vue'
 
     import Readme from '@/common/readme/index.vue'
+    import SummaryWidget from '@/glossary/profile/overview/summaryWidget.vue'
+    import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
 
     import {
         Glossary,
@@ -22,7 +26,7 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { Readme },
+        components: { Readme, SummaryWidget, Announcements },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,

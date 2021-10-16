@@ -145,7 +145,7 @@ export function useSSE({
                         } catch (err) {
                             if (typeof eventSource.onerror === 'function') {
                                 console.log('subscribe error')
-                                eventSource.onerror(err)
+                                eventSource.onerror = () => reject(err)
                             }
                         }
                         handler(data, e)

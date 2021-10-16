@@ -9,7 +9,7 @@ export const KeyMaps = {
         SAVED_SEARCH: () => getAPIPath('meta', '/search/saved'),
         GET_ASSET_RELATIONSHIP: () =>
             getAPIPath('meta', '/search/relationship'),
-        PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
+        PREVIEW_TABLE: () => getAPIPath('sql', '/query/preview'),
         GET_ENTITY: ({ guid }: PathParams) =>
             getAPIPath('meta', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>

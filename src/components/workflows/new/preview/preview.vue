@@ -1,49 +1,75 @@
 <template>
-    <Loader v-if="configLoading"></Loader>
-    <ErrorView
-        v-else-if="!configLoading && configMapError"
-        :error="configMapError"
-    ></ErrorView>
+    <PreviewHeader
+        :name="selectedWorkflow.name"
+        type="workflow template"
+        :show-utility-buttons="false"
+        :icon="images.icon"
+        :logo="images.logo"
+    />
+    <a-modal
+        v-model:visible="visible"
+        title="Create Workflow"
+        :class="$style.input"
+        :closable="false"
+    >
+        <a-input
+            v-model:value="workflowName"
+            :placeholder="`Untitled Workflow`"
+            class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+        ></a-input>
+        <template #footer>
+            <div class="flex items-center justify-end space-x-3">
+                <a-button @click="visible = false">Cancel</a-button>
+                <a-button
+                    type="primary"
+                    :loading="isLoading"
+                    @click="handleCreate"
+                    >Create</a-button
+                >
+            </div>
+        </template>
+    </a-modal>
 
-    <template v-else>
-        <PreviewHeader
-            :name="workflowName"
-            type="workflow template"
-            :show-utility-buttons="false"
-        />
-        <div class="">
-            <a-modal
-                v-model:visible="visible"
-                title="Create Workflow"
-                :class="$style.input"
+    <div class="flex-grow">
+        <Loader v-if="configLoading"></Loader>
+        <ErrorView
+            v-else-if="!configLoading && configMapError"
+            :error="configMapError"
+        ></ErrorView>
+        <template v-else>
+            <div
+                class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
             >
-                <p>Name:</p>
-                <a-input v-model:value="workflowName"></a-input>
-                <template #footer>
-                    <div class="flex items-center justify-end space-x-3">
-                        <a-button @click="visible = false">Cancel</a-button>
-                        <a-button
-                            type="primary"
-                            :loading="isLoading"
-                            @click="handleCreate"
-                            >Create</a-button
-                        >
+                Overview
+            </div>
+            <div
+                class="w-full px-5 mt-2 overflow-y-auto"
+                style="max-height: calc(100vh - 14rem)"
+            >
+                <span v-for="(v, k) in overview" :key="v" class="mb-2">
+                    <div
+                        class="mb-1 text-sm tracking-wide text-gray-500 capitalize "
+                    >
+                        {{ k.split('/')[k.split('/').length - 1] }}:
                     </div>
-                </template>
-            </a-modal>
-        </div>
-        <div class="w-full">
-            <AtlanButton
-                class="absolute bottom-0 m-2"
-                size="sm"
-                color="primary"
-                padding="compact"
-                @click="handleSetupWorkflow"
-            >
-                Setup
-            </AtlanButton>
-        </div>
-    </template>
+                    <div v-linkified class="mb-0 text-gray-700 break-all">
+                        {{ v }}
+                    </div>
+                </span>
+            </div>
+        </template>
+    </div>
+    <!-- <div class=""> -->
+    <AtlanButton
+        class="m-2"
+        size="sm"
+        color="primary"
+        padding="compact"
+        @click="handleSetupWorkflow"
+    >
+        Use this template <AtlanIcon icon="ArrowRight" class="inline" />
+    </AtlanButton>
+    <!-- </div> -->
 </template>
 
 <script lang="ts">
@@ -62,6 +88,7 @@
     import { useRouter } from 'vue-router'
     import Loader from '@common/loaders/page.vue'
     import ErrorView from '@common/error/index.vue'
+    import { message } from 'ant-design-vue'
     import {
         createWorkflow,
         getWorkflowConfigMap,
@@ -74,6 +101,7 @@
         components: {
             AtlanButton,
             ErrorView,
+            message,
             Loader,
             PreviewHeader,
         },
@@ -125,14 +153,33 @@
                 false
             )
             const handleCreate = () => {
+                visible.value = false
+                message.loading({
+                    content: 'Creating new workflow ...',
+                    key: `${workflowName.value}`,
+                })
                 mutate()
 
                 watch([data, error], (v) => {
                     if (data.value && !error.value) {
-                        visible.value = false
+                        message.success({
+                            content: `${workflowName.value} created!`,
+                            key: `${workflowName.value}`,
+                            duration: 2,
+                        })
                         router.push(
                             `/workflows/${data.value.metadata.name}/setup`
                         )
+                    } else if (error.value) {
+                        const errMsg = error.value?.response?.data?.message
+                        message.error({
+                            content: `${
+                                errMsg ||
+                                `Failed to create workflow: "${workflowName.value}"`
+                            }`,
+                            key: `${workflowName.value}`,
+                            duration: 5,
+                        })
                     }
                 })
             }
@@ -144,6 +191,27 @@
                 changeName: mutateConfigMap,
             } = getWorkflowConfigMap(selectedWorkflow.value.name, true)
 
+            const overview = computed(() => {
+                const info = {
+                    ...(configMap.value?.items?.length &&
+                        configMap.value?.items[0]?.data),
+                }
+                delete info.templates
+                delete info.uiConfig
+                delete info.logo
+                delete info.icon
+                return info || {}
+            })
+
+            const images = computed(() => ({
+                icon:
+                    configMap.value?.items?.length &&
+                    configMap.value?.items[0]?.data.icon,
+                logo:
+                    configMap.value?.items?.length &&
+                    configMap.value?.items[0]?.data.logo,
+            }))
+
             function init() {
                 mutateConfigMap(selectedWorkflow.value.name)
             }
@@ -151,6 +219,7 @@
             watch(selectedWorkflow, init, { deep: true })
 
             return {
+                overview,
                 handleSetupWorkflow,
                 handleCreate,
                 configMap,
@@ -158,6 +227,7 @@
                 configMapError,
                 configLoading,
                 body,
+                images,
                 visible,
                 workflowName,
             }
@@ -215,9 +285,9 @@
                 .focus-visible) {
             @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
         }
-        // :global(.ant-input) {
-        //     @apply shadow-none outline-none px-0 border-0 !important;
-        // }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
         :global(.ant-modal-header) {
             @apply border-0 border-t-0 border-b-0 px-4  !important;
         }

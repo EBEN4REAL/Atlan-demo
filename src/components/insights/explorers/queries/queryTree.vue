@@ -1,6 +1,7 @@
-TR<template>
+TR
+<template>
     <div class="max-h-screen" :class="$style.queryTreeStyles">
-        <div class="h-full query-tree-root-div">
+        <div class="h-full overflow-x-hidden">
             <div v-if="treeData.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
@@ -45,7 +46,7 @@ TR<template>
             </div>
             <div
                 v-else-if="!treeData.length"
-                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500 mt-14"
+                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
                 <AtlanIcon icon="EmptyGlossary" class="h-40" />
             </div>
@@ -165,7 +166,61 @@ TR<template>
 <style lang="less" module>
     .queryTreeStyles {
         :global(.ant-tree-switcher_open) {
-            transform: rotate(90deg)
+            transform: rotate(90deg);
         }
+        :global(.ant-tree-title) {
+            width: calc(100% - 1.5rem) !important;
+        }
+        :global(.ant-tree li ul) {
+            padding-left: 16px !important;
+        }
+        :global(.ant-tree .ant-tree-title) {
+            @apply pt-0 pb-0 !important;
+        }
+        :global(.ant-tree .ant-tree-title) {
+            @apply pl-0 pr-0 !important;
+        }
+        :global(.ant-tree.ant-tree-block-node
+                li
+                .ant-tree-node-content-wrapper) {
+            @apply w-full !important;
+        }
+        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+            @apply bg-gray-light;
+        }
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+            @apply bg-gray-light;
+        }
+        // :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
+        //         > .ant-tree-switcher_open) {
+        //     background-color: rgba(219, 234, 254, 1) !important;
+        //     height: 32px !important;
+        //     justify-content: center;
+        //     display: inline-flex !important;
+        //     align-items: center;
+        // }
+        // :global(.ant-tree li .ant-tree-node-content-wrapper) {
+        //     border-radius: 0px !important;
+        // }
+        // :global(.ant-tree-treenode-switcher-close.ant-tree-treenode-selected
+        //         > .ant-tree-switcher_open) {
+        //     background-color: rgba(219, 234, 254, 1) !important;
+        //     height: 32px !important;
+        //     justify-content: center;
+        //     display: inline-flex !important;
+        //     align-items: center;
+        // }
+        // :global(.ant-tree-switcher) {
+        //     @apply pl-5 pr-2 !important;
+        // }
+        // :global(.ant-tree-treenode-switcher-close:hover) {
+        //     background-color: #e5e5e5 !important;
+        // }
+        // :global(.ant-tree-treenode-switcher-close:hover) {
+        //     background-color: #e5e5e5 !important;
+        // }
     }
 </style>

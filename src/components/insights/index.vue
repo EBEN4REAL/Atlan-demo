@@ -278,7 +278,7 @@
                 transform: translateY(-50%);
                 width: 2px;
                 height: 100%;
-                @apply z-50 !important;
+                z-index: 1000000;
             }
             &:after {
                 content: '';
@@ -287,12 +287,25 @@
                 left: 50%;
                 @apply bg-transparent;
                 -webkit-transition: background-color 0.3s;
+                z-index: 1000000;
                 transition: background-color 0.3s;
                 transform: translateY(-50%);
-                width: 5px;
+                width: 10px;
                 height: 100%;
                 margin-left: 0px;
             }
+        }
+        &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            @apply bg-transparent;
+            z-index: 1000000;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 100%;
+            margin-left: 0px;
         }
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter) {

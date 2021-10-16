@@ -93,12 +93,9 @@
             </PillGroup>
         </div> -->
 
-        <div class="">
-            <p class="mb-1 text-gray-700">Owned by</p>
-            <div
-                class="flex items-center justify-between mb-3"
-                v-if="ownerList.length > 0"
-            >
+        <div class="" v-if="ownerList.length > 0">
+            <p class="mb-1 text-gray-700">Owned By</p>
+            <div class="flex items-center justify-between">
                 <PillGroup
                     :data="ownerList"
                     label-key="username"
@@ -156,11 +153,8 @@
                     </template>
                 </PillGroup>
             </div>
-            <p class="m-0 mb-1 text-sm text-gray-500" v-else>
-                {{ 'None' }}
-            </p>
         </div>
-        <div class="flex justify-end w-full text-primary">
+        <div class="flex justify-end w-full mt-3 text-primary">
             <div class="flex items-center cursor-pointer" @click="oSidebar">
                 View in sidebar
                 <AtlanIcon icon="ArrowRight" class="ml-1"></AtlanIcon>

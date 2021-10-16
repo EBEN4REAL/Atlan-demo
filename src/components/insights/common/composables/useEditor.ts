@@ -66,20 +66,20 @@ export function useEditor(
         })
     }
     function moustacheInterpolator(query, variables) {
-        query.match(/{{\s*[\w\.]+\s*}}/g).map((x) => {
+        query.match(/{{\s*[\w\.]+\s*}}/gm).map((x) => {
             query = query.replace(x, (a) => {
                 const temp = a.match(/[\w\.]+/)[0]
                 return variables[temp]
             })
         })
-        if (/{{\s*[\w\.]+\s*}}/g.test(query)) {
+        if (/{{\s*[\w\.]+\s*}}/gm.test(query)) {
             return moustacheInterpolator(query, variables)
         }
         return query
     }
     function removeMoustacheSpaces(text) {
-        let t = text.replace('{ { ', '{{')
-        t = t.replace(' } }', '}}')
+        let t = text.replaceAll('{ { ', '{{')
+        t = t.replaceAll(' } }', '}}')
         return t
     }
     function semicolonSeparateQuery(query: string) {

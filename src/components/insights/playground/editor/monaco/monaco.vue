@@ -378,7 +378,9 @@
 </style>
 <style lang="less">
     .moustacheDecoration {
-        @apply bg-purple-200 text-purple-700 !important;
+        // @apply font-semibold;
+        color: #d77252 !important;
+        background-color: #faf1ef !important;
     }
     .ghostCursor {
         position: relative;

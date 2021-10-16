@@ -522,6 +522,7 @@ export function useSavedQuery(
 
         const uuidv4 = generateUUID()
         const connectorName = getConnectorName(attributeValue) ?? ''
+        console.log(connectorName, 'connectorName')
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''

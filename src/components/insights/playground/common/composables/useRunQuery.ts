@@ -32,7 +32,7 @@ export default function useProject() {
                 columnList.value.push({
                     title: col.columnName.split('_').join(' '),
                     dataIndex: col.columnName,
-                    width: '9vw',
+                    width: 'auto',
                     key: col.columnName,
                 })
             })

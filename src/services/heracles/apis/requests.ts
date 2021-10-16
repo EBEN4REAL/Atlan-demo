@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
 import { Ref } from 'vue'
 import { IRequestActionBody, RequestAttributes } from '~/types/atlas/requests'
-import { useAPIPromise, useAPIAsyncState } from '~/api/useAPI'
+import { useAPIPromise, useAPIAsyncState } from '~/services/api/useAPI'
 import { heracles_keymap } from '../heracles_keymap'
 
 export const getRequests = (params?: any, options?: AxiosRequestConfig) => {

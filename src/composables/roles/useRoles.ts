@@ -1,6 +1,6 @@
 import { watch, computed } from "vue";
 import swrvState from "~/composables/utils/swrvState";
-import { useAPI } from "~/api/useAPI";
+import { useAPI } from "~/services/api/useAPI";
 
 let memberCountList = [];
 

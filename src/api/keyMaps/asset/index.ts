@@ -12,7 +12,7 @@ const groupsMap: Record<string, (...params: any) => string> = {
     [BASIC_SEARCH]: () => getAPIPath('meta', '/search/basic'),
     [GET_ASSET_RELATIONSHIP]: () =>
         getAPIPath('meta', '/search/relationship'),
-    [PREVIEW_TABLE]: () => getAPIPath('query', '/preview'),
+    [PREVIEW_TABLE]: () => getAPIPath('sql', '/query/preview'),
     [GET_ENTITY]: ({ guid }) =>
         getAPIPath('meta', `/entity/guid/${guid}`),
 }

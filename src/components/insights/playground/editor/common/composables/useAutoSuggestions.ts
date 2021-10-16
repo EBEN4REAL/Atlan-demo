@@ -5,7 +5,7 @@ import { useMapping, nextKeywords } from './useMapping'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
-import { HEKA_SERVICE_API } from '~/services/heka/index'
+import HEKA_SERVICE_API from '~/services/heka/index'
 import {
     autosuggestionEntityColumn,
     autosuggestionResponse,

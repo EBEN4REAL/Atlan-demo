@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { ref, Ref, watch, computed, reactive } from 'vue'
-import { useAPIPromise } from '~/api/useAPI';
+import { useAPIPromise } from '~/services/api/useAPI';
 
 export default function useFormGenerator(formConfig, formRef, emit) {
   const processedSchema = ref([])

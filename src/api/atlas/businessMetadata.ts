@@ -2,7 +2,7 @@ import { ref } from "vue";
 import { UPDATE_ASSET_BUSINESS_METADATA , GET_BUSINESS_METADATA , ADD_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
 
 
-import { useAPI } from "../useAPI";
+import { useAPI } from "../../services/api/useAPI";
 
 const saveAssetBMUpdateChanges = (guid: any, payload: any) => useAPI(UPDATE_ASSET_BUSINESS_METADATA, "POST",
         { params: { isOverwrite: true }, pathVariables: { guid }, cache: undefined, body: payload }

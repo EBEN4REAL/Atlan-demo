@@ -185,8 +185,8 @@
             },
         },
         setup(props) {
-            const activeKey = ref(['1'])
-            const tabActiveKey = ref('info')
+            const activeKey = ref()
+            const tabActiveKey = ref()
 
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode = inject<any>('updateTreeNode')
@@ -213,11 +213,13 @@
 
             const store = useAccessStore()
             const permissionMap = {
-                AtlasGlossary: "UPDATE_GLOSSARY",
+                AtlasGlossary: 'UPDATE_GLOSSARY',
                 AtlasGlossaryCategory: 'UPDATE_CATEGORY',
-                AtlasGlossaryTerm: 'UPDATE_TERM'
+                AtlasGlossaryTerm: 'UPDATE_TERM',
             }
-            const userHasEditPermission = computed(() => store.checkPermission(permissionMap[props.entity.typeName]))
+            const userHasEditPermission = computed(() =>
+                store.checkPermission(permissionMap[props.entity.typeName])
+            )
             const updateEntityAndTree = (
                 selectedAsset: Glossary | Category | Term
             ) => {
@@ -271,7 +273,7 @@
                 refreshEntity,
                 updateEntityAndTree,
                 tabActiveKey,
-                userHasEditPermission
+                userHasEditPermission,
             }
         },
     })

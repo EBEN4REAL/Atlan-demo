@@ -5,7 +5,7 @@ import {
     BasicSearchResponse,
 } from '~/types/insights/savedQuery.interface'
 
-import { useAPIPromise } from '~/api/useAPI'
+import { useAPIPromise } from '~/services/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 
 const useLoadQueryTree = () => {

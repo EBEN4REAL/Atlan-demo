@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 export default function useEntityRelationships(guid) {
     const relationshipAssets = ref([])

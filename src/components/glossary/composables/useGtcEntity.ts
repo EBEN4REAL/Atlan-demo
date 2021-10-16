@@ -1,6 +1,6 @@
 import { watch, ref, Ref, computed, isRef, WritableComputedRef } from 'vue'
 
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { GET_GTC_ENTITY } from '~/api/keyMaps/glossary'
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
@@ -72,6 +72,11 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             'tenantId',
             'anchor',
             'linkedAssets',
+            'bannerDescription',
+            'bannerTitle',
+            'bannerType',
+            'bannerUpdatedAt',
+            'bannerUpdatedBy',
             ...bmProjection.value,
             ...relatedTerms,
             ...BaseAttributes,

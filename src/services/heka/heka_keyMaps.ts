@@ -6,4 +6,7 @@ export const KeyMaps = {
         RUN_QUERY: ({ params }: PathParams) =>
             getAPIPath('api/sql/query', `/stream?${params}`),
     },
+    asset: {
+        PREVIEW_TABLE: () => 'query/preview',
+    },
 }

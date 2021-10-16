@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from "axios";
 import { getAPIPath, getAxiosClient } from '~/api'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { GET_TENANT } from '@services/keycloak/tenant/tenant_keymap'
 
 const serviceAlias = 'service'

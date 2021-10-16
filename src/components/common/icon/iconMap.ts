@@ -102,8 +102,10 @@ import InsightsActive from '~/assets/images/icons/insights_active.svg'
 import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
+import RunHistory from '~/assets/images/icons/run-history.svg'
 
 export default {
+    RunHistory,
     RunSuccess,
     RunFailed,
     Metadata,

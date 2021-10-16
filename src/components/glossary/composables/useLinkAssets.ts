@@ -1,4 +1,4 @@
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 import {
     ASSIGN_TERM_LINKED_ASSETS,

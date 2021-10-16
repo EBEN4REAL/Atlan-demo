@@ -18,7 +18,7 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import UtilityButtons from './utilityButtons.vue'
+    import UtilityButtons from '@/workflows/shared/utilityButtons.vue'
 
     export default defineComponent({
         components: { UtilityButtons },

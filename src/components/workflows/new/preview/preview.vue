@@ -6,7 +6,11 @@
     ></ErrorView>
 
     <template v-else>
-        <div></div>
+        <PreviewHeader
+            :name="workflowName"
+            type="workflow template"
+            :show-utility-buttons="false"
+        />
         <div class="">
             <a-modal
                 v-model:visible="visible"
@@ -63,6 +67,7 @@
         getWorkflowConfigMap,
     } from '~/composables/workflow/useWorkFlowList'
     import AtlanButton from '@/UI/button.vue'
+    import PreviewHeader from '@/workflows/shared/previewHeader.vue'
 
     export default defineComponent({
         name: 'SetupWorkflowPreview',
@@ -70,6 +75,7 @@
             AtlanButton,
             ErrorView,
             Loader,
+            PreviewHeader,
         },
         props: {
             selectedWorkflow: {

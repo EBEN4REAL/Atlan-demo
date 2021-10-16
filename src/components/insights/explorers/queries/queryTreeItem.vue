@@ -54,13 +54,13 @@
                                                     'personal'
                                                 "
                                                 key="public"
-                                                @click="publishFolder"
+                                                @click="showPublishPopover = true"
                                                 >Make folder public</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
-                                                @click="deleteFolder"
+                                                @click="showDeletePopover = true"
                                                 >Delete Folder</a-menu-item
                                             >
                                         </a-menu>
@@ -75,7 +75,7 @@
                     v-else-if="item.typeName === 'Empty'"
                     class="text-sm font-bold text-gray-500"
                 >
-                    {{ title(item) }}
+                    {{ item.title }}
                 </div>
                 <!------------------------------->
                 <!-- Popover Allowed -->
@@ -147,7 +147,20 @@
                 <!-- ---------------- -->
             </div>
         </div>
+
     </div>
+        <a-popover :visible="showDeletePopover" placement="right">
+            <template #content>
+                <TreeDeletePopover :item="item" @cancel="showDeletePopover = false" @delete="deleteFolder" />
+            </template>
+            <div class="m-0 p-0 w-0"></div>
+        </a-popover>
+        <a-popover :visible="showPublishPopover" placement="right">
+            <template #content>
+                <PublishFolderPopover :item="item" @cancel="showPublishPopover = false" @publish="publishFolder" />
+            </template>
+            <div class="m-0 p-0 w-0"></div>
+        </a-popover>
 </template>
 
 <script lang="ts">
@@ -169,6 +182,8 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
+    import PublishFolderPopover from '~/components/insights/common/publishFolderPopover.vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -180,7 +195,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { QueryItemPopover, StatusBadge },
+        components: { QueryItemPopover, StatusBadge, TreeDeletePopover, PublishFolderPopover },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -227,6 +242,8 @@
                 inlineTabs,
                 activeInlineTab
             )
+            const showDeletePopover = ref(false)
+            const showPublishPopover = ref(false)
 
             const actionClick = (action: string, t: assetInterface) => {
                 /* Here t->enity->assetInfo */
@@ -328,6 +345,8 @@
                 dataTypeImage,
                 actionClick,
                 dataTypeImageForColumn,
+                showDeletePopover,
+                showPublishPopover
             }
         },
     })

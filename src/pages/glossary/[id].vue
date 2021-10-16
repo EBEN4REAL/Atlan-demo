@@ -30,7 +30,7 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="px-5 mt-4">
+                        <div class="px-5 mt-5">
                             <div v-if="isNewGlossary" class="mb-4">
                                 <p
                                     class="p-0 mb-1 text-sm leading-5 text-gray-700 "

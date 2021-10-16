@@ -8,8 +8,9 @@
             ]"
         >
             <div class="mb-3 text-base font-bold text-gray-700">Readme</div>
+            {{ readmeDescription }}
             <div v-if="editable" class="flex align-items-center">
-                <a-button class="mr-2" @click="editable = false">Save</a-button>
+                <a-button class="mr-2" @click="handleSave">Save</a-button>
 
                 <!-- <a-dropdown
                     v-model:visible="templateNameDropdown"
@@ -129,9 +130,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, onMounted, watch, computed } from 'vue'
 
     import Editor from '@/common/editor/index.vue'
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
+    import useUpdateReadme from '@/common/readme/useUpdateReadme'
 
     export default defineComponent({
         components: {
@@ -157,8 +164,13 @@
                 required: false,
                 default: true,
             },
+            entity: {
+                type: Object as PropType<Glossary | Category | Term>,
+                required: true,
+                default: () => {},
+            },
         },
-        setup() {
+        setup(props) {
             const editable = ref(false)
             const editor = ref()
             const editorContent = ref('')
@@ -166,6 +178,9 @@
             const templateName = ref('')
             const newTemplateName = ref('')
             const templateNameDropdown = ref(false)
+            const readmeDescription = computed(
+                () => props.entity?.attributes?.readme?.attributes?.description
+            )
 
             const templateList = ref([
                 {
@@ -181,7 +196,6 @@
             ])
 
             const onUpdate = (content: string, json: Record<string, any>) => {
-                console.log(content)
                 editorContent.value = content
             }
 
@@ -217,6 +231,7 @@
                 // if (!editorContent.value || editorContent.value === '<p></p>') {
                 //     showTemplatesModal.value = true
                 // }
+                editorContent.value = readmeDescription.value
             }
 
             // const newTemplate = () => {
@@ -226,6 +241,36 @@
                 showTemplatesModal.value = false
                 templateName.value = ''
             }
+            const handleSave = () => {
+                console.log(editorContent.value)
+                editable.value = false
+                const { isCompleted, isLoading, update } = useUpdateReadme(
+                    props?.entity?.attributes?.readme,
+                    editorContent.value
+                )
+                console.log(isCompleted, isLoading, update)
+                update()
+            }
+
+            watch(
+                readmeDescription,
+                () => {
+                    console.log(readmeDescription.value)
+                    editorContent.value = readmeDescription.value
+                },
+                { immediate: true }
+            )
+            // onMounted(() => {
+            //     console.log(
+            //         props.entity?.attributes?.readme?.attributes?.description
+            //     )
+            //     if (
+            //         props.entity?.attributes?.readme?.attributes?.description
+            //             ?.length
+            //     ) {
+            //         editor.value = console.log(editorContent.value)
+            //     }
+            // })
 
             return {
                 editable,
@@ -241,7 +286,9 @@
                 saveAsTemplate,
                 startEdit,
                 startBlank,
+                handleSave,
                 showTemplatesModal,
+                readmeDescription,
             }
         },
     })

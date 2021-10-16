@@ -1,10 +1,10 @@
 <template>
     <div class="w-full p-0 mb-6">
-        {{ entity?.attributes?.readme }}
         <Readme
             class="min-w-full"
             :placeholder="placeholder"
             :parent-asset-id="guid"
+            :entity="entity"
             :showBorders="false"
             :showPaddingX="false"
         />

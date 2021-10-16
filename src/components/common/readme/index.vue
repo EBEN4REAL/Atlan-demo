@@ -139,6 +139,7 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import useUpdateReadme from '@/common/readme/useUpdateReadme'
+    import useCreateReadme from '@/common/readme/useCreateReadme'
 
     export default defineComponent({
         components: {
@@ -244,12 +245,21 @@
             const handleSave = () => {
                 console.log(editorContent.value)
                 editable.value = false
-                const { isCompleted, isLoading, update } = useUpdateReadme(
-                    props?.entity?.attributes?.readme,
-                    editorContent.value
-                )
-                console.log(isCompleted, isLoading, update)
-                update()
+                if (readmeDescription.value?.length) {
+                    const { isCompleted, isLoading, update } = useUpdateReadme(
+                        props?.entity?.attributes?.readme,
+                        editorContent.value
+                    )
+                    console.log(isCompleted, isLoading, update)
+                    update()
+                } else {
+                    console.log('creating new readme')
+                    const { createReadme } = useCreateReadme(
+                        props?.entity,
+                        editorContent.value
+                    )
+                    createReadme()
+                }
             }
 
             watch(

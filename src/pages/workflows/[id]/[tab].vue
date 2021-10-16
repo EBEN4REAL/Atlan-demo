@@ -121,7 +121,7 @@
             ]
 
             const selected = ref(null)
-            const selectedDag = ref(null)
+            const selectedDag = ref('')
 
             /** UTILS */
             const router = useRouter()

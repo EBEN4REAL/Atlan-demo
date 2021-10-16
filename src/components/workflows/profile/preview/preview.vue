@@ -3,9 +3,9 @@
         <div v-if="formConfig[selectedDag]" class="flex flex-col h-full">
             <div class="flex-grow m-3">
                 <FormBuilder
+                    ref="formRef"
                     :config="formConfig[selectedDag]"
                     @change="handleChange"
-                    ref="formRef"
                 />
             </div>
             <AtlanButton
@@ -77,13 +77,13 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
+    import { message } from 'ant-design-vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import FormBuilder from '@/common/formGenerator/index.vue'
     import { updateWorkflowByName } from '~/composables/workflow/useWorkFlowList'
     import emptyScreen from '~/assets/images/empty_search.png'
-    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'ProfileWorkflowPreview',

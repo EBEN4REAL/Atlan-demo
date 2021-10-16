@@ -1,6 +1,6 @@
 <template>
     <div class="px-3 py-3 mb-3 bg-gray-100">
-        <div class="flex overflow-x-auto">
+        <div class="flex items-end overflow-x-auto">
             <div class="add-variable-btn">
                 <a-button
                     class="
@@ -8,10 +8,11 @@
                         items-center
                         border-none
                         justify-between
-                        mr-2
                         py-0.5
                         px-2
+                        mr-2
                         btn-shadow
+                        add-btn
                     "
                     @click="onAddVariable"
                 >
@@ -22,134 +23,194 @@
                         class="m-0 ml-1"
                         v-if="sqlVariables && sqlVariables?.length == 0"
                     >
-                        Add
+                        Add variable
                     </p>
                 </a-button>
             </div>
             <div
                 v-for="variable in sqlVariables"
                 :key="variable.key"
-                class="flex mx-1 bg-white border rounded variable-wrapper"
+                class="flex flex-col mx-1"
             >
-                <div class="flex items-center px-2">
-                    <a-dropdown
-                        :visible="customVariableOpenKey === variable.key"
-                        :trigger="['click']"
-                    >
-                        <span
-                            class="flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
-                            @click="() => openDropdown(variable)"
+                <p
+                    class="
+                        mb-0.5
+                        text-sm text-gray-700
+                        bg-gray-100
+                        cursor-default
+                    "
+                >
+                    {{ variable.name }}
+                </p>
+
+                <a-input
+                    class="h-8 group"
+                    style="width: 158px"
+                    v-model:value="variable.value"
+                    :placeholder="`Enter a ${variable.type}`"
+                >
+                    <template #suffix>
+                        <a-dropdown
+                            :visible="customVariableOpenKey === variable.key"
+                            :trigger="['click']"
                         >
-                            <fa icon="fal cog" class="" />
-                        </span>
-                        <template #overlay>
-                            <a-menu>
-                                <div class="px-4 py-2">
-                                    <span
-                                        class="absolute right-0 flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
-                                        @click="
-                                            () => onDeleteVariable(variable)
-                                        "
-                                    >
-                                        <fa icon="fal trash-alt" class="" />
-                                    </span>
-                                    <a-form
-                                        layout="vertical"
-                                        :model="variable"
-                                        ref="formRef"
-                                    >
-                                        <a-form-item label="Name" name="name">
-                                            <a-input
-                                                v-model:value="variable.name"
-                                                placeholder="new_variable"
-                                            />
-                                        </a-form-item>
-                                        <a-form-item label="Type" name="type">
-                                            <a-select
-                                                v-model:value="variable.type"
-                                            >
-                                                <a-select-option value="string"
-                                                    >STRING</a-select-option
-                                                >
-                                                <a-select-option value="number"
-                                                    >NUMBER</a-select-option
-                                                >
-                                                <a-select-option value="boolean"
-                                                    >BOOLEAN</a-select-option
-                                                >
-                                                <a-select-option value="query"
-                                                    >QUERY</a-select-option
-                                                >
-                                            </a-select>
-                                        </a-form-item>
-                                        <!-- <a-form-item
-                                            label="Saved Queries"
-                                            name="saved_queries"
-                                            v-if="
-                                                variable.formState.type ===
-                                                'query'
-                                            "
+                            <div class="p-1 rounded hover:bg-gray-100">
+                                <AtlanIcon
+                                    @click="() => openDropdown(variable)"
+                                    class="w-4 h-4 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100"
+                                    icon="Settings"
+                                />
+                            </div>
+                            <template #overlay>
+                                <a-menu>
+                                    <div class="p-4" style="width: 215px">
+                                        <div
+                                            class="flex items-center justify-between mb-3 "
                                         >
-                                            <a-select
-                                                v-model:value="
-                                                    savedQuery[0].name
+                                            <span
+                                                class="font-bold text-gray-700"
+                                            >
+                                                {{ variable.name }}
+                                            </span>
+                                            <div class="flex items-center">
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onCopyVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 mr-4 text-gray-500 cursor-pointer "
+                                                    icon="CopyOutlined"
+                                                />
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onDeleteVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 text-gray-500 cursor-pointer "
+                                                    icon="Delete"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            <a-form
+                                                layout="vertical"
+                                                :model="variable"
+                                                ref="formRef"
+                                            >
+                                                <a-form-item
+                                                    label="Variable name"
+                                                    class="mb-4 text-gray-700  tex-sm"
+                                                    name="name"
+                                                >
+                                                    <a-input
+                                                        v-model:value="
+                                                            variable.name
+                                                        "
+                                                        placeholder="new_variable"
+                                                    />
+                                                </a-form-item>
+                                                <a-form-item
+                                                    label="Variable type"
+                                                    class="mb-4 text-gray-700  tex-sm"
+                                                    name="type"
+                                                >
+                                                    <a-select
+                                                        v-model:value="
+                                                            variable.type
+                                                        "
+                                                    >
+                                                        <a-select-option
+                                                            value="string"
+                                                            >String</a-select-option
+                                                        >
+                                                        <a-select-option
+                                                            value="number"
+                                                            >Number</a-select-option
+                                                        >
+                                                        <a-select-option
+                                                            value="boolean"
+                                                            >Boolean</a-select-option
+                                                        >
+                                                        <!-- <a-select-option
+                                                            value="query"
+                                                            >QUERY</a-select-option
+                                                        > -->
+                                                    </a-select>
+                                                </a-form-item>
+                                                <!-- <a-form-item
+                                                label="Saved Queries"
+                                                name="saved_queries"
+                                                v-if="
+                                                    variable.formState.type ===
+                                                    'query'
                                                 "
                                             >
-                                                <a-select-option
-                                                    :key="option.name"
-                                                    v-for="option in savedQuery"
-                                                    :value="option.name"
-                                                    >{{
-                                                        option.value
-                                                    }}</a-select-option
+                                                <a-select
+                                                    v-model:value="
+                                                        savedQuery[0].name
+                                                    "
                                                 >
-                                            </a-select>
-                                        </a-form-item> -->
-                                        <a-form-item
-                                            label="Default Value"
-                                            name="value"
-                                        >
-                                            <a-input
-                                                v-model:value="variable.value"
-                                                placeholder=""
-                                            />
-                                        </a-form-item>
-                                    </a-form>
-                                    <div class="flex justify-between">
-                                        <a-button
-                                            class="flex items-center justify-between mr-2 "
-                                            @click="() => cancelEdit(variable)"
-                                        >
-                                            Cancel
-                                        </a-button>
-                                        <a-button
-                                            type="primary"
-                                            class="flex items-center justify-between ml-2 "
-                                            @click="
-                                                () => onSaveVariable(variable)
-                                            "
-                                        >
-                                            Save
-                                        </a-button>
+                                                    <a-select-option
+                                                        :key="option.name"
+                                                        v-for="option in savedQuery"
+                                                        :value="option.name"
+                                                        >{{
+                                                            option.value
+                                                        }}</a-select-option
+                                                    >
+                                                </a-select>
+                                            </a-form-item> -->
+                                                <a-form-item
+                                                    label="Default value"
+                                                    class="text-gray-700 tex-sm"
+                                                    name="value"
+                                                >
+                                                    <a-input
+                                                        v-model:value="
+                                                            variable.value
+                                                        "
+                                                        placeholder=""
+                                                    />
+                                                </a-form-item>
+                                            </a-form>
+                                            <div
+                                                class="flex justify-between mt-6 "
+                                            >
+                                                <a-button
+                                                    class="flex items-center justify-center mr-2 "
+                                                    style="width: 84px"
+                                                    @click="
+                                                        () =>
+                                                            cancelEdit(variable)
+                                                    "
+                                                >
+                                                    Cancel
+                                                </a-button>
+                                                <a-button
+                                                    type="primary"
+                                                    class="flex items-center justify-center ml-2 "
+                                                    style="width: 84px"
+                                                    @click="
+                                                        () =>
+                                                            onSaveVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                >
+                                                    Save
+                                                </a-button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </a-menu>
-                        </template>
-                    </a-dropdown>
-                    <p class="mb-0 text-gray-500 cursor-default">
-                        {{ variable.name }}
-                    </p>
-                </div>
-                <div
-                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br  bg-primary"
-                >
-                    <p
-                        class="mb-0 truncate cursor-default variable-value"
-                        :class="variable.value === '' ? 'mr-4' : 'mr-0'"
-                    >
-                        {{ variable.value }}
-                    </p>
-                </div>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                    </template>
+                </a-input>
             </div>
         </div>
     </div>
@@ -161,6 +222,8 @@
     import { editor } from 'monaco-editor'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {},
@@ -224,8 +287,15 @@
                 )
                 closeDropdown()
             }
-
+            const onCopyVariable = (variable: CustomVaribaleInterface) => {
+                const variabelAsText = `{{${variable.name}}}`
+                copyToClipboard(variabelAsText)
+                message.info({
+                    content: 'Copied!',
+                })
+            }
             return {
+                onCopyVariable,
                 onDeleteVariable,
                 cancelEdit,
                 customVariableOpenKey,
@@ -244,6 +314,20 @@
 <style lang="less" scoped>
     .btn-shadow {
         box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    .text-hover {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .add-btn {
+        min-width: 32px;
+        height: 32px;
+    }
+</style>
+<style lang="less" module>
+    .input_style {
+        @apply relative !important;
     }
 </style>
 

@@ -1,16 +1,4 @@
 <template>
-    <CreateGlossaryModal
-        :event-context="eventContext"
-        :visible="createGlossaryModalVisble"
-        @success="handleSuccess"
-        @closeModal="handleCloseModal"
-    />
-    <UpdateGlossaryModal
-        :event-context="eventContext"
-        :visible="updateGlossaryModalVisble"
-        @success="handleSuccess"
-        @closeModal="handleCloseModal"
-    />
     <splitpanes class="w-full h-full default-theme" v-if="!isHome">
         <!-- glossary sidebar -->
         <pane
@@ -55,9 +43,6 @@
     import { useRouter } from 'vue-router'
 
     // components
-    import GlossaryTree from '@common/tree/glossary/index.vue'
-    import CreateGlossaryModal from '@common/tree/glossary/createGlossaryModal.vue'
-    import UpdateGlossaryModal from '@common/tree/glossary/updateGlossaryModal.vue'
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
@@ -76,10 +61,7 @@
 
     export default defineComponent({
         components: {
-            GlossaryTree,
             glossaryTree,
-            CreateGlossaryModal,
-            UpdateGlossaryModal,
         },
         props: ['id', 'class'],
         setup(props, { emit }) {
@@ -89,13 +71,6 @@
 
             // data
             const router = useRouter()
-
-            const parentGlossaryGuid = ref<string | undefined>('')
-
-            const createGlossaryModalVisble = ref(false)
-            const updateGlossaryModalVisble = ref(false)
-            const glossaryTreeRef = ref()
-            const eventContext = ref({})
 
             // computed
             const isHome = computed(
@@ -126,29 +101,6 @@
                 reOrderNodes,
             } = useTree(emit, true, isHome)
 
-            // methods
-            const handleOpenModal = (context: Record<string, string>) => {
-                createGlossaryModalVisble.value = true
-                eventContext.value = context
-            }
-
-            const handleOpenUpdateModal = (context: Record<string, string>) => {
-                updateGlossaryModalVisble.value = true
-                eventContext.value = context
-            }
-
-            const handleCloseModal = () => {
-                createGlossaryModalVisble.value = false
-                updateGlossaryModalVisble.value = false
-                eventContext.value = {}
-            }
-
-            const handleSuccess = () => {
-                setTimeout(() => {
-                    glossaryTreeRef.value.refreshTree()
-                }, 2000)
-            }
-
             // * Get all available BMs and save on storez
             const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
@@ -172,10 +124,6 @@
             provide('refetchGlossaryList', refetchGlossaryList)
             provide('reorderTreeNodes', reOrderNodes)
             return {
-                handleOpenModal,
-                handleCloseModal,
-                handleOpenUpdateModal,
-                handleSuccess,
                 backToHome,
                 backToGlossary,
                 onLoadData,
@@ -183,12 +131,7 @@
                 selectNode,
                 dragAndDropNode,
                 collapseAll,
-                createGlossaryModalVisble,
-                updateGlossaryModalVisble,
-                eventContext,
-                glossaryTreeRef,
                 currentGuid,
-                parentGlossaryGuid,
                 glossaryList,
                 treeData,
                 loadedKeys,

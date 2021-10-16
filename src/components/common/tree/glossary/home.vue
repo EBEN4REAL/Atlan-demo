@@ -18,10 +18,6 @@
         >
             <div class="flex flex-row justify-between">
                 {{ glossary.name }}
-                <Fa
-                    class="w-auto h-3 text-white group-hover:text-primary"
-                    icon="fal external-link-alt"
-                />
             </div>
         </div>
     </div>

@@ -25,16 +25,10 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="px-5 mt-4">
+                        <div class="px-5 mt-5">
                             <div v-if="isNewTerm" class="mb-4">
                                 <p
-                                    class="
-                                        p-0
-                                        mb-1
-                                        text-sm
-                                        leading-5
-                                        text-gray-700
-                                    "
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
                                 >
                                     Name
                                 </p>
@@ -52,7 +46,11 @@
                                     >
                                 </div>
                             </div>
-                            <GlossaryProfileOverview :entity="term" />
+                            <GlossaryProfileOverview
+                                :entity="term"
+                                :header-reached-top="headerReachedTop"
+                                @firstCardReachedTop="handleFirstCardReachedTop"
+                            />
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Assets">

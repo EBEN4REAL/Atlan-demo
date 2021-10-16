@@ -8,7 +8,6 @@
             ]"
         >
             <div class="mb-3 text-base font-bold text-gray-700">Readme</div>
-            {{ readmeDescription }}
             <div v-if="editable" class="flex align-items-center">
                 <a-button class="mr-2" @click="handleSave">Save</a-button>
 
@@ -74,6 +73,7 @@
                 showPaddingX ? 'px-7' : '',
             ]"
             :editable="editable"
+            :content="entity?.attributes?.readme?.attributes?.description"
             @onEditorContentUpdate="onUpdate"
         />
         <a-modal

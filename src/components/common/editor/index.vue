@@ -351,7 +351,7 @@
             float: left;
             pointer-events: none;
             height: 0;
-            @apply text-gray;
+            @apply text-gray-500;
         }
     }
 </style>

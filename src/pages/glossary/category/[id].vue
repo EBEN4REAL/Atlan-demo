@@ -50,7 +50,11 @@
                                     >
                                 </div>
                             </div>
-                            <GlossaryProfileOverview :entity="category" />
+                            <GlossaryProfileOverview
+                                :entity="category"
+                                :header-reached-top="headerReachedTop"
+                                @firstCardReachedTop="handleFirstCardReachedTop"
+                            />
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Terms & Categories">

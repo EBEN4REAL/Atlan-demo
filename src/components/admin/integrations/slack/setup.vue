@@ -6,7 +6,9 @@
         <div
             class="absolute top-0 left-0 w-full h-full  confetti-wrapper confetti-right"
         ></div>
-        <div class="flex flex-col items-center justify-center h-full p-8">
+        <div
+            class="flex flex-col items-center justify-center w-full h-full p-8"
+        >
             <span class="mb-6 text-2xl font-bold z-1"
                 >Connect Atlan with Slack</span
             >
@@ -49,18 +51,18 @@ export default defineComponent({
     setup() {
         const features: Ref<Array<Feature>> = ref([])
         features.value = [
-            {
-                title: 'Receive chat notifications directly into Slack',
-                icon: '💬',
-            },
+            // {
+            //     title: 'Receive chat notifications directly into Slack',
+            //     icon: '💬',
+            // },
             {
                 title: 'Share asset profile, terms, queries with your team',
                 icon: '🚀',
             },
-            {
-                title: 'Get updates whenever there are changes in a Term or Asset',
-                icon: '🗂',
-            },
+            // {
+            //     title: 'Get updates whenever there are changes in a Term or Asset',
+            //     icon: '🗂',
+            // },
         ]
 
         return {

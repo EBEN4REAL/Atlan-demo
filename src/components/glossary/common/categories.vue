@@ -194,7 +194,7 @@
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
-    import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+    import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
 
     //types
     import {

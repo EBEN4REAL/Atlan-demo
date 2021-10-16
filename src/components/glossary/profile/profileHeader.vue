@@ -10,7 +10,7 @@
                 <span
                     v-show="entity?.typeName !== 'AtlasGlossary'"
                     class="mr-1 text-sm cursor-pointer hover:underline"
-                    @click="redirectToProfile"
+                    @click="redirectToProfile('AtlasGlossary', entity?.attributes?.anchor?.guid)"
                 >
                     {{
                         entity?.attributes?.anchor?.uniqueAttributes
@@ -72,7 +72,7 @@
                     <span
                         v-show="entity?.typeName !== 'AtlasGlossary'"
                         class="mr-1 text-sm text-gray-500 cursor-pointer  hover:underline"
-                        @click="redirectToProfile"
+                        @click="redirectToProfile('AtlasGlossary', entity?.attributes?.anchor?.guid)"
                     >
                         {{
                             entity?.attributes?.anchor?.uniqueAttributes
@@ -181,6 +181,7 @@
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
+    import redirect from '@/glossary/utils/redirectToProfile';
 
     export default defineComponent({
         components: {
@@ -240,11 +241,7 @@
                     0
             )
             // methods
-            const redirectToProfile = () => {
-                router.push(
-                    `/glossary/${props.entity?.attributes?.anchor?.guid}`
-                )
-            }
+            const redirectToProfile = redirect(router)
             const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin
                 if (props.entity?.typeName !== 'AtlasGlossary') {

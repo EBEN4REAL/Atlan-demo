@@ -74,7 +74,6 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import { KeyMaps } from '~/api/keyMap'
 
-    // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
         components: {

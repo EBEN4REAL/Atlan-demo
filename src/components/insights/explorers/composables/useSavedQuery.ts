@@ -48,8 +48,11 @@ export function useSavedQuery(
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery.guid,
-            updateTime: savedQuery.updateTime,
-            updatedBy: savedQuery.updatedBy,
+            updateTime:
+                savedQuery?.updateTime ??
+                savedQuery.attributes.__modificationTimestamp,
+            updatedBy:
+                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
             connectionId: savedQuery.attributes.connectionId,
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,

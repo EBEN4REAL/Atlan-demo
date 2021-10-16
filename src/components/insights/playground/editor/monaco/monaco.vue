@@ -36,6 +36,7 @@
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
     import { createAtlanTheme } from './customTheme'
     import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
+    import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 
     const turndownService = new TurndownService({})
 
@@ -56,6 +57,9 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const sqlVariables = inject('sqlVariables') as Ref<
+                CustomVaribaleInterface[]
+            >
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorPos = inject('editorPos') as Ref<{
                 column: number
@@ -67,11 +71,14 @@
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const {
+                toggleGhostCursor,
                 onEditorContentChange,
                 formatter,
                 setEditorPos,
                 setEditorFocusedState,
-            } = useEditor(tabs, activeInlineTab)
+                findCustomVariableMatches,
+                changeMoustacheTemplateColor,
+            } = useEditor(tabs, activeInlineTab, sqlVariables)
 
             const entityFilters = {
                 condition: 'OR',
@@ -209,6 +216,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
                     theme: 'atlan-light',
+                    fontSize: 12,
                     minimap: {
                         enabled: false,
                     },
@@ -222,11 +230,22 @@
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
+                const matches = findCustomVariableMatches(
+                    editor,
+                    activeInlineTab.value.playground.editor.text
+                )
+                changeMoustacheTemplateColor(editor, monaco, matches)
+
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
                 editor?.getModel().onDidChangeContent((event) => {
                     const text = editor?.getValue()
-                    onEditorContentChange(event, text)
+                    onEditorContentChange(event, text, editor)
+                    const matches = findCustomVariableMatches(
+                        editor,
+                        activeInlineTab.value.playground.editor.text
+                    )
+                    changeMoustacheTemplateColor(editor, monaco, matches)
                     const changes = event?.changes[0]
                     const lastTypedCharacter = event?.changes[0]?.text
                     console.log(changes, 'changes')
@@ -248,8 +267,12 @@
                     setEditorPos(editor, editorPos)
                     setEditorFocusedState(true, editorFocused)
                 })
-                editor?.onDidBlurEditorText(() => {
+                editor?.onDidBlurEditorWidget(() => {
                     setEditorFocusedState(false, editorFocused)
+                    toggleGhostCursor(true, editor, monaco, editorPos)
+                })
+                editor?.onDidFocusEditorWidget(() => {
+                    toggleGhostCursor(false, editor, monaco, editorPos)
                 })
                 setEditorFocusedState(true, editorFocused)
                 editor?.focus()
@@ -287,8 +310,13 @@
                     editor?.setModel(model)
                     editor.getModel().onDidChangeContent(async (event) => {
                         const text = editor.getValue()
-                        onEditorContentChange(event, text)
+                        onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
+                        const matches = findCustomVariableMatches(
+                            editor,
+                            activeInlineTab.value.playground.editor.text
+                        )
+                        changeMoustacheTemplateColor(editor, monaco, matches)
                         // const lastTypedCharacter = event?.changes[0]?.text
                         const suggestions = useAutoSuggestions(
                             changes,
@@ -311,8 +339,12 @@
                         setEditorPos(editor, editorPos)
                     })
                     editor?.focus()
-                    editor?.onDidBlurEditorText(() => {
+                    editor?.onDidBlurEditorWidget(() => {
                         setEditorFocusedState(false, editorFocused)
+                        toggleGhostCursor(true, editor, monaco, editorPos)
+                    })
+                    editor?.onDidFocusEditorWidget(() => {
+                        toggleGhostCursor(false, editor, monaco, editorPos)
                     })
                     emit('editorInstance', editor, monaco)
                 }
@@ -339,5 +371,24 @@
     }
     .editor_wrapper {
         overflow: hidden;
+    }
+    .c {
+        font-family: 'Courier New', Courier, monospace;
+    }
+</style>
+<style lang="less">
+    .moustacheDecoration {
+        @apply bg-purple-200 text-purple-700 !important;
+    }
+    .ghostCursor {
+        position: relative;
+    }
+    .ghostCursor::after {
+        position: absolute;
+        content: '';
+        width: 2px !important;
+        @apply bg-gray-400;
+        top: -10%;
+        height: 120%;
     }
 </style>

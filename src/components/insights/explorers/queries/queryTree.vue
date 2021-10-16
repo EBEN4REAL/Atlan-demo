@@ -73,8 +73,6 @@ TR
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
 
-    // import { Glossary } from '~/api/atlas/glossary'
-
     export default defineComponent({
         components: {
             LoadingView,

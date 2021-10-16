@@ -31,7 +31,7 @@
                     <a-menu-item
                         v-if="showLinks"
                         key="profileLink"
-                        @click="redirectToProfile"
+                        @click="redirectToProfile(entity.typeName, entity.guid)"
                     >
                         <div class="flex items-center">
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
@@ -401,6 +401,7 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import { useAccessStore } from '~/services/access/accessStore'
+    import redirect from '@/glossary/utils/redirectToProfile';
 
     export default defineComponent({
         components: {
@@ -570,14 +571,7 @@
                         props.entity.guid
                     )
             }
-            const redirectToProfile = () => {
-                if (props.entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryCategory')
-                    router.push(`/glossary/category/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${props.entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
 
             // update tree on archive or create new entity
             const updateTree = (selectedAsset: Glossary | Category | Term) => {

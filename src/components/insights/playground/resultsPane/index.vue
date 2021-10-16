@@ -19,7 +19,7 @@
                     </template>
                 </a-tab-pane>
             </a-tabs> -->
-            <div class="mt-2 mr-2">
+            <!-- <div class="mt-2 mr-2">
                 <a-input
                     v-model:value="searchText"
                     :class="$style.input_class"
@@ -32,7 +32,7 @@
                         />
                     </template>
                 </a-input>
-            </div>
+            </div> -->
             <!-- For Clear button -->
             <!-- <div class="mt-2 mr-3">
                 <a-button

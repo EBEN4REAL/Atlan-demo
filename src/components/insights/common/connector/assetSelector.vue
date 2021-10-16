@@ -71,7 +71,7 @@
                 entityFilters: props.filters,
                 attributes: ['name', 'displayName'],
                 // sortBy: 'name',
-                // aggregationAttributes: ['__typeName.keyword'],
+                aggregationAttributes: ['__typeName.keyword'],
                 sortOrder: 'ASCENDING',
             }
 

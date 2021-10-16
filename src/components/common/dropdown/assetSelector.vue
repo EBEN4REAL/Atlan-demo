@@ -1,7 +1,7 @@
 <template>
     <a-select
         :value="modelValue"
-        style="width: 100%"
+        style="width: 100%; border-radius: 8px"
         :class="$style.connector"
         @change="handleChange"
         :placeholder="placeholder"
@@ -69,8 +69,8 @@
                 entityFilters: filters.value,
                 attributes: ['name', 'displayName'],
                 // sortBy: 'name',
-                // aggregationAttributes: ['__typeName.keyword'],
-                // sortOrder: 'ASCENDING',
+                aggregationAttributes: ['__typeName.keyword'],
+                sortOrder: 'ASCENDING',
             }
 
             const { list, replaceBody, data, isLoading } = useAssetListing(
@@ -119,7 +119,8 @@
 <style lang="less" module>
     .connector {
         :global(.ant-select-selector) {
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+            @apply rounded-lg !important;
         }
     }
 </style>

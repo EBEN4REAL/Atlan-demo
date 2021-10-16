@@ -202,7 +202,7 @@ export default function useAssetInfo() {
         attributes(asset)?.ownerUsers?.split(',') || []
 
     const certificateStatus = (asset: assetInterface) => {
-        attributes(asset)?.certificateStatus
+        return attributes(asset)?.certificateStatus
     }
 
     const getHierarchy = (asset: assetInterface) => {

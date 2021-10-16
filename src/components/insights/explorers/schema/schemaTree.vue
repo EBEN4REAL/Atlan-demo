@@ -18,7 +18,6 @@
                     <template #switcherIcon>
                         <AtlanIcon icon="Caret" />
                     </template>
-
                     <template #title="item">
                         <SchemaTreeItem
                             :item="item"
@@ -151,7 +150,7 @@
 <style lang="less" module>
     .schemaTreeStyles {
         :global(.ant-tree-switcher_open) {
-            transform: rotate(90deg)
+            transform: rotate(90deg);
         }
         :global(.ant-tree li ul) {
             padding-left: 16px !important;
@@ -205,4 +204,11 @@
     // :global(.ant-tree-treenode-switcher-close:hover) {
     //     background-color: #e5e5e5 !important;
     // }
+</style>
+<style lang="less" module>
+    .queryTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+    }
 </style>

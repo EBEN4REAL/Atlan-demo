@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 
-export default function useFormGenerator(formConfig, formRef, emit) {
+export default function useFormGenerator(formConfig, formRef, emit, dV) {
   const processedSchema = ref([])
   const privateTypes = ['object', 'array', 'group']
 
@@ -142,6 +142,8 @@ export default function useFormGenerator(formConfig, formRef, emit) {
         })
       }
     })
+
+    testModal.value = { ...testModal.value, ...dV }
   }
 
 

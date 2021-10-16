@@ -6,7 +6,6 @@
         :model="valueObject"
         :rules="getRules(formModel)"
     >
-        <!-- <a-button @click="validate">Validate</a-button> -->
         <span class="grid grid-cols-2 gap-x-8">
             <div
                 v-for="(f, x) in formModel"
@@ -168,6 +167,11 @@
             error: {
                 type: Boolean,
             },
+            defaultValues: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change'],
         setup(props, { emit }) {
@@ -184,7 +188,7 @@
                 isRequiredField,
                 handleFormSubmit,
                 init,
-            } = useFormGenerator(configX, formRef, emit)
+            } = useFormGenerator(configX, formRef, emit, props.defaultValues)
 
             watch(configX, () => {
                 init()

@@ -767,7 +767,6 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
 
-    // import { Glossary } from '~/api/atlas/glossary'
     import { Glossary } from '~/types/glossary/glossary.interface'
 
     // composables
@@ -779,8 +778,6 @@
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
-
-    // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
         components: {

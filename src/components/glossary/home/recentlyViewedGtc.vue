@@ -22,7 +22,7 @@
                         cursor-pointer
                         rounded-2xl
                     "
-                    @click="redirectToProfile(item)"
+                    @click="redirectToProfile(item?.typeName, item?.guid)"
                 >
                     <atlan-icon
                         :icon="
@@ -50,6 +50,7 @@
     // utils
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import redirect from '@/glossary/utils/redirectToProfile';
 
     export default defineComponent({
         components: { LoadingView },
@@ -71,13 +72,7 @@
                     offset: 0,
                 })
             }, 400)
-            const redirectToProfile = (entity) => {
-                if (entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${entity.guid}`)
-                else if (entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${entity.guid}`)
-                else router.push(`/glossary/category/${entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
 
             return {
                 entities,

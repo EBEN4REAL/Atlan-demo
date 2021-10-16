@@ -1,94 +1,99 @@
 <template>
-    <div v-if="isLoading && glossary?.guid !== id">
-        <LoadingView />
+    <div v-if="id === '-1' || !userHasAccess">
+        <NoAccessPage />
     </div>
-    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div
-            class="w-2/3 h-full"
-            ref="scrollDiv"
-            :class="{
-                'overflow-y-auto': !headerReachedTop,
-                ' border-r': store.bulkSelectedAssets.length,
-            }"
-            @scroll="handleScroll"
-        >
-            <!-- top section -->
-            <ProfileHeader
-                :title="title"
-                :entity="glossary"
-                :isNewEntity="isNewGlossary"
-                :statusMessage="statusMessage"
-                :statusObject="statusObject"
-                :shortDescription="shortDescription"
-                :headerReachedTop="headerReachedTop"
-            />
-            <!-- tabs start here  -->
-            <div class="m-0">
-                <a-tabs
-                    v-model:activeKey="currentTab"
-                    default-active-key="1"
-                    class="border-0"
-                >
-                    <a-tab-pane key="1" tab="Overview">
-                        <div class="px-5 mt-5">
-                            <div v-if="isNewGlossary" class="mb-4">
-                                <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
-                                >
-                                    Name
-                                </p>
-                                <div class="flex">
-                                    <a-input
-                                        v-model:value="newName"
-                                        style="width: 200px"
-                                    />
-                                    <a-button
-                                        v-if="newName"
-                                        class="ml-4"
-                                        type="primary"
-                                        @click="updateTitle"
-                                        >Submit</a-button
-                                    >
-                                </div>
-                            </div>
-                            <GlossaryProfileOverview :entity="glossary" />
-                        </div>
-                    </a-tab-pane>
-                    <a-tab-pane key="2" tab="Terms & Categories">
-                        <GlossaryTermsAndCategoriesTab
-                            :qualified-name="qualifiedName"
-                            :display-text="title"
-                            :guid="glossary?.guid"
-                            :type="glossary?.typeName"
-                            :show-preview-panel="currentTab === '2'"
-                            :headerReachedTop="headerReachedTop"
-                            @entityPreview="handleCategoryOrTermPreview"
-                            @firstCardReachedTop="handleFirstCardReachedTop"
-                            @bulkSelectChange="updateBulkSelection"
-                        />
-                    </a-tab-pane>
-                    <!-- Hide for GA -->
-                    <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
-                    <a-tab-pane key="5" tab="Access Control">
-                        Permissions
-                    </a-tab-pane> -->
-                </a-tabs>
-            </div>
+    <div v-else>
+        <div v-if="isLoading && glossary?.guid !== id">
+            <LoadingView />
         </div>
-        <div id="sidePanel" class="relative w-1/3">
-            <SidePanel
-                v-if="
-                    !store.bulkSelectedAssets ||
-                    !store.bulkSelectedAssets.length
-                "
-                :entity="glossary"
-            />
-            <BulkSidebar
-                v-else
-                :bulk-selected-assets="store.bulkSelectedAssets"
-                @closeBulkMode="handleCloseBulk"
-            ></BulkSidebar>
-            <BulkNotification class="fixed bottom-0 right-0" />
+        <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+            <div
+                class="w-2/3 h-full"
+                ref="scrollDiv"
+                :class="{
+                    'overflow-y-auto': !headerReachedTop,
+                    ' border-r': store.bulkSelectedAssets.length,
+                }"
+                @scroll="handleScroll"
+            >
+                <!-- top section -->
+                <ProfileHeader
+                    :title="title"
+                    :entity="glossary"
+                    :isNewEntity="isNewGlossary"
+                    :statusMessage="statusMessage"
+                    :statusObject="statusObject"
+                    :shortDescription="shortDescription"
+                    :headerReachedTop="headerReachedTop"
+                />
+                <!-- tabs start here  -->
+                <div class="m-0">
+                    <a-tabs
+                        v-model:activeKey="currentTab"
+                        default-active-key="1"
+                        class="border-0"
+                    >
+                        <a-tab-pane key="1" tab="Overview">
+                            <div class="px-5 mt-4">
+                                <div v-if="isNewGlossary" class="mb-4">
+                                    <p
+                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    >
+                                        Name
+                                    </p>
+                                    <div class="flex">
+                                        <a-input
+                                            v-model:value="newName"
+                                            style="width: 200px"
+                                        />
+                                        <a-button
+                                            v-if="newName"
+                                            class="ml-4"
+                                            type="primary"
+                                            @click="updateTitle"
+                                            >Submit</a-button
+                                        >
+                                    </div>
+                                </div>
+                                <GlossaryProfileOverview :entity="glossary" />
+                            </div>
+                        </a-tab-pane>
+                        <a-tab-pane key="2" tab="Terms & Categories">
+                            <GlossaryTermsAndCategoriesTab
+                                :qualified-name="qualifiedName"
+                                :display-text="title"
+                                :guid="glossary?.guid"
+                                :type="glossary?.typeName"
+                                :show-preview-panel="currentTab === '2'"
+                                :headerReachedTop="headerReachedTop"
+                                @entityPreview="handleCategoryOrTermPreview"
+                                @firstCardReachedTop="handleFirstCardReachedTop"
+                                @bulkSelectChange="updateBulkSelection"
+                            />
+                        </a-tab-pane>
+                        <!-- Hide for GA -->
+                        <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                        <a-tab-pane key="5" tab="Access Control">
+                            Permissions
+                        </a-tab-pane> -->
+                    </a-tabs>
+                </div>
+            </div>
+            <div id="sidePanel" class="relative w-1/3">
+                <SidePanel
+                    v-if="
+                        !store.bulkSelectedAssets ||
+                        !store.bulkSelectedAssets.length
+                    "
+                    :entity="glossary"
+                />
+                <BulkSidebar
+                    v-else
+                    :bulk-selected-assets="store.bulkSelectedAssets"
+                    @closeBulkMode="handleCloseBulk"
+                ></BulkSidebar>
+                <BulkNotification class="fixed bottom-0 right-0" />
+            </div>
         </div>
     </div>
 </template>
@@ -113,6 +118,7 @@
     import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
     import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
+    import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -128,6 +134,8 @@
         Term,
     } from '~/types/glossary/glossary.interface'
 
+    import { useAccessStore } from '~/services/access/accessStore'
+
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
@@ -137,6 +145,7 @@
             ProfileHeader,
             BulkSidebar,
             BulkNotification,
+            NoAccessPage
         },
         props: {
             id: {
@@ -156,6 +165,8 @@
             const headerReachedTop = ref(false)
             const temp = ref(false) // flag for sticky header
 
+            const accessStore = useAccessStore()
+
             const router = useRouter()
             const {
                 entity: glossary,
@@ -172,6 +183,7 @@
             const isNewGlossary = computed(
                 () => title.value === 'Untitled Glossary'
             )
+            const userHasAccess = computed(() => accessStore.checkPermission('READ_GLOSSARY'));
 
             // const {
             //     terms: glossaryTerms,
@@ -221,9 +233,6 @@
             const handlClosePreviewPanel = () => {
                 previewEntity.value = undefined
                 showPreviewPanel.value = false
-            }
-            const redirectToProfile = () => {
-                router.push(`/glossary`)
             }
             const updateTitle = () => {
                 updateEntity('glossary', glossary.value?.guid ?? '', {
@@ -309,12 +318,12 @@
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
-                redirectToProfile,
                 updateTitle,
                 handleScroll,
                 handleFirstCardReachedTop,
                 handleCloseBulk,
                 store,
+                userHasAccess
             }
         },
     })

@@ -5,21 +5,23 @@
     >
         <template #title>
             <div>
-            <div v-if="data?.attributes?.description" class="description">{{data?.attributes?.description}}</div>
-            <div class="footer">
-            <div class="icon-badge">
-                <StatusBadge
-                    :key="data.guid"
-                    :show-no-status="false"
-                    :status-id="status(data)"
-                    class="flex-none mb-0.5 ml-1"
-                />
-                {{status(data)?.toLowerCase()}}
-            </div>
-            <div class="mr-10-cs icon-badge">
-                {{data?.attributes?.certificateUpdatedBy}}
-            </div>
-            </div>
+              <div v-if="data?.attributes?.description" class="px-3 mb-3">
+                {{data?.attributes?.description}}
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center icon-badge gap-1.5">
+                    <StatusBadge
+                        :key="data.guid"
+                        :show-no-status="false"
+                        :status-id="status(data)"
+                        class="flex-none mb-0.5 ml-1"
+                    />
+                    {{status(data)?.toLowerCase()}}
+                </div>
+                <div class="mr-4 icon-badge">
+                    {{data?.attributes?.certificateUpdatedBy}}
+                </div>
+              </div>
             </div>
         </template>
         <StatusBadge
@@ -64,27 +66,9 @@
 
 <style lang="less">
   .toolTips-badge {
-    // transform: translateY(40px) translateX(-10px);
-    // transition: none!important;
-    .mr-10-cs {
-      margin-right: 10px;
-    }
     .icon-badge  {
-      display: flex;
-      align-items: center;
-      gap: 5px;
       border-radius: 4px;
       text-transform: capitalize;
-    }
-    .footer{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .description{
-      margin-bottom: 10px;
-      padding: 0 6px;
-      font-size: 12px;
     }
     .ant-tooltip-inner {
         font-size: 12px;

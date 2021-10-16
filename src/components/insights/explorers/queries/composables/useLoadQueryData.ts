@@ -67,7 +67,7 @@ const useLoadQueryData = ({
                 criterion: [],
             },
             // sortBy: 'name',
-            // sortOrder: 'ASCENDING',
+            sortOrder: 'ASCENDING',
         }
         if (connector.value) {
             body.value.entityFilters.criterion.push({

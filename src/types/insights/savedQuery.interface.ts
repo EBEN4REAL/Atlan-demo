@@ -20,7 +20,7 @@ export type Attributes = {
     qualifiedName: string
     userDescription?: string
     isSnippet?: boolean
-    integrationName?: string
+    connectorName?: string
     connectionQualifiedName: string
     connectionId: string
     defaultSchemaQualifiedName: string

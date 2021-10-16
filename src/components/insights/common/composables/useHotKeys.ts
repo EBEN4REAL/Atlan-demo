@@ -15,9 +15,9 @@ export function useHotKeys() {
         } else assetSidebarPaneSizeParam.value = 0
     }
     function resultsPaneSizeToggle(outputPaneSizeParam: Ref<any>) {
-        if (outputPaneSizeParam.value == 0) {
+        if (outputPaneSizeParam.value <= 10) {
             outputPaneSizeParam.value = outputPaneSize.value
-        } else outputPaneSizeParam.value = 0
+        } else outputPaneSizeParam.value = 4.5
     }
 
     return {

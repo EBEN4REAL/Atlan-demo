@@ -13,7 +13,7 @@
                         <div class="relative w-4 h-4 mr-2 overflow-hidden">
                             <div class="absolute absolute-center">
                                 <AtlanIcon
-                                    icon="PublicFolder"
+                                    icon="FolderClosed"
                                     class="h-4 m-0 -ml-0.5 -mt-0.5"
                                 />
                             </div>
@@ -107,7 +107,7 @@
                     />
                     <span>Terms</span>
                 </div>
-                <div
+                <!-- <div
                     class="
                         flex
                         items-center
@@ -124,19 +124,23 @@
                         class="h-4 m-0 mr-1.5 -mt-0.5 text-pink-400"
                     />
                     <span>Classifications</span>
-                </div>
-                <div>
+                </div> -->
+                <!-- <div>
                     <a-checkbox
                         v-model:checked="isSQLSnippet"
                         class="text-xs text-gray-500"
                         >Make SQL snippet</a-checkbox
                     >
-                </div>
-                <div class="flex justify-end flex-1">
-                    <a-button class="" @click="closeModal">Cancel</a-button>
+                </div> -->
+                <div
+                    class="flex items-center justify-end flex-1 text-gray-700 cursor-pointer "
+                >
+                    <div @click="closeModal" class="hover:text-primary">
+                        Cancel
+                    </div>
                     <a-button
                         @click="createSaveQuery"
-                        type="primary"
+                        type="primary border-none"
                         class="flex items-center justify-between ml-4"
                         :loading="saveQueryLoading"
                     >

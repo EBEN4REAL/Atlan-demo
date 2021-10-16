@@ -468,6 +468,9 @@
         :global(.ant-tabs-bar) {
             @apply m-0 bg-gray-light !important;
         }
+        :global(.ant-tabs-nav .ant-tabs-tab-active) {
+            @apply text-white !important;
+        }
     }
     // :global(.ant-modal-wrap) {
     //     /* Overrriding modals z-index so that it appears above menu */

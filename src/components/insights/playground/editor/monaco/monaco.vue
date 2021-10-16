@@ -34,7 +34,8 @@
     } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
-    import { getLightAtlanTheme } from './customTheme'
+    import { createAtlanTheme } from './customTheme'
+    import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
 
     const turndownService = new TurndownService({})
 
@@ -197,6 +198,8 @@
             )
             /* ----------------------------------------------------- */
             onMounted(() => {
+                createAtlanTheme(monaco)
+                // atlanThemeLight
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     glyphMargin: false,
                     folding: false,
@@ -205,8 +208,7 @@
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
-                    theme: 'vs',
-
+                    theme: 'atlan-light',
                     minimap: {
                         enabled: false,
                     },

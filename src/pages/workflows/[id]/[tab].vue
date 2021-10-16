@@ -133,9 +133,9 @@
 
             const formConfig = computed(() => {
                 if (data.value?.uiConfig?.length) {
-                    const configCopy =
+                    let configCopy =
                         data.value.uiConfig[0]?.data?.uiConfig || '{}'
-                    configCopy
+                    configCopy = configCopy
                         .replace(/\\n/g, '\\n')
                         .replace(/\\'/g, "\\'")
                         .replace(/\\"/g, '\\"')

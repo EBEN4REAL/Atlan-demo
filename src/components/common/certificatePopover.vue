@@ -1,67 +1,49 @@
 <template>
-    <a-tooltip
-      placement="topLeft" 
-      :overlayClassName="`toolTips-badge ${status(data)?.toLowerCase()}`" 
-    >
-        <template #title>
-            <div>
-              <div v-if="data?.attributes?.description" class="px-3 mb-3">
-                {{data?.attributes?.description}}
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center icon-badge gap-1.5">
-                    <StatusBadge
-                        :key="data.guid"
-                        :show-no-status="false"
-                        :status-id="status(data)"
-                        class="flex-none mb-0.5 ml-1"
-                    />
-                    {{status(data)?.toLowerCase()}}
-                </div>
-                <div class="mr-4 icon-badge">
-                    {{data?.attributes?.certificateUpdatedBy}}
-                </div>
-              </div>
-            </div>
-        </template>
-        <StatusBadge
-            :key="data.guid"
-            :show-no-status="false"
-            :status-id="status(data)"
-            class="flex-none mb-0.5 ml-1"
-        />
-    </a-tooltip>
+  <a-tooltip
+    placement="topLeft" 
+    :overlayClassName="`toolTips-badge ${status(data)?.toLowerCase()}`" 
+  >
+    <template #title>
+      <div>
+        <div v-if="data?.attributes?.description" class="px-3 mb-3">
+          {{data?.attributes?.description}}
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center icon-badge gap-1.5">
+            <StatusBadge
+              :key="data.guid"
+              :show-no-status="false"
+              :status-id="status(data)"
+              class="flex-none mb-0.5 ml-1"
+            />
+            {{status(data)?.toLowerCase()}}
+          </div>
+          <div class="mr-4 icon-badge">
+            {{data?.attributes?.certificateUpdatedBy}}
+          </div>
+        </div>
+      </div>
+    </template>
+    <StatusBadge
+      :key="data.guid"
+      :show-no-status="false"
+      :status-id="status(data)"
+      class="flex-none mb-0.5 ml-1"
+    />
+  </a-tooltip>
 </template>
 
-<script lang="ts">
-    import { defineComponent, PropType } from "vue";
-    import { Components } from '~/api/atlas/client'
-    import StatusBadge from '@common/badge/status/index.vue'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
-    export default defineComponent({
-        components: {
-            StatusBadge
-        },
-        props: {
-            data: {
-                type: Object as PropType<Components.Schemas.AtlasEntityHeader>,
-                required: false,
-                default(): Components.Schemas.AtlasEntityHeader {
-                    return {}
-                },
-            }
-        },
-        setup() {
-            const {
-                status
-            } = useAssetInfo()
-          
-            return {
-                status
-            }
-        }
+<script setup lang="ts">
+  import { defineProps, PropType } from "vue"
+  import StatusBadge from '@common/badge/status/index.vue'
+  import useAssetInfo from '~/composables/asset/useAssetInfo'
+  import { assetInterface } from '~/types/assets/asset.interface'
+    
+  defineProps<{
+    data?: PropType<assetInterface>
+  }>()
 
-    })
+  const { status } = useAssetInfo()
 </script>
 
 <style lang="less">

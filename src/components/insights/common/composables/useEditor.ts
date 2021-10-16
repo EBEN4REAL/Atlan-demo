@@ -38,15 +38,15 @@ export function useEditor(
                 {},
                 activeInlineTab.value
             )
-            const res: CustomVaribaleInterface[] = isSqlVariablesChanged(
-                editorText,
-                sqlVariables,
-                event,
-                editorInstance
-            )
-            /* If there are any array changes show them here */
-            setSqlVariables(sqlVariables, res)
-            activeInlineTabCopy.playground.editor.variables = res
+            // const res: CustomVaribaleInterface[] = isSqlVariablesChanged(
+            //     editorText,
+            //     sqlVariables,
+            //     event,
+            //     editorInstance
+            // )
+            // /* If there are any array changes show them here */
+            // setSqlVariables(sqlVariables, res)
+            // activeInlineTabCopy.playground.editor.variables = res
             activeInlineTabCopy.playground.editor.text = editorText
             modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
         }
@@ -181,18 +181,22 @@ export function useEditor(
         monacoInstance: any,
         matches: any
     ) => {
-        const el = matches.map((t) => {
-            const s = t[0]?.range ?? []
+        let el = []
+        matches.forEach((t) => {
             const token = t.token
-            return {
-                range: new monacoInstance.Range(
-                    s.startLineNumber,
-                    s.startColumn,
-                    s.endLineNumber,
-                    s.startColumn + token.length
-                ),
-                options: { inlineClassName: 'moustacheDecoration' },
-            }
+            t.matches.forEach((d) => {
+                const s = d?.range
+                const obj = {
+                    range: new monacoInstance.Range(
+                        s.startLineNumber,
+                        s.startColumn,
+                        s.endLineNumber,
+                        s.startColumn + token.length
+                    ),
+                    options: { inlineClassName: 'moustacheDecoration' },
+                }
+                el.push(obj)
+            })
         })
         console.log(el, 'el')
         // older moustacheDecorations needed
@@ -208,9 +212,9 @@ export function useEditor(
         if (editorInstance) {
             for (let i = 0; i < v?.length; i++) {
                 const t = editorInstance.getModel().findMatches(v[i])
-                matches.push({ ...t, token: v[i] })
-                console.log(t, 'position', v[i])
+                matches.push({ matches: t, token: v[i] })
             }
+            console.log(matches, 'matches')
             return matches
         }
     }

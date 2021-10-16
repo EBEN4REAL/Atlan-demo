@@ -51,7 +51,7 @@ export function wordToEditorKeyword(
             words.push(keyword)
         }
         const s = sqlKeywords.filter((keyword) =>
-            keyword.label.includes(currentWord.toUpperCase())
+            keyword.label.includes(currentWord?.toUpperCase())
         )
         resolve({
             suggestions: [...words, ...s],
@@ -101,7 +101,7 @@ export function entitiesToEditorKeyword(
                 }
             }
             const s = sqlKeywords.filter((keyword) =>
-                keyword.label.includes(currentWord.toUpperCase())
+                keyword.label.includes(currentWord?.toUpperCase())
             )
             resolve({
                 suggestions: [...words, ...s],
@@ -114,7 +114,7 @@ export function entitiesToEditorKeyword(
 function getLocalSQLSugggestions(currentWord: string) {
     const sqlKeywords = getSqlKeywords()
     let suggestions = sqlKeywords.filter((keyword) =>
-        keyword.label.includes(currentWord.toUpperCase())
+        keyword.label.includes(currentWord?.toUpperCase())
     )
     return Promise.resolve({
         suggestions: suggestions,

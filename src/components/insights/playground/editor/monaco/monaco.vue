@@ -317,17 +317,22 @@
                             activeInlineTab.value.playground.editor.text
                         )
                         changeMoustacheTemplateColor(editor, monaco, matches)
-                        // const lastTypedCharacter = event?.changes[0]?.text
-                        const suggestions = useAutoSuggestions(
-                            changes,
-                            editor,
-                            activeInlineTab,
-                            cancelTokenSource
-                        ) as Promise<{
-                            suggestions: suggestionKeywordInterface[]
-                            incomplete: boolean
-                        }>
-                        triggerAutoCompletion(suggestions)
+                        const lastTypedCharacter = event?.changes[0]?.text
+                        if (
+                            lastTypedCharacter.length === 1 &&
+                            lastTypedCharacter.match(/[^0-9a-zA-Z]/gim)
+                        ) {
+                            const suggestions = useAutoSuggestions(
+                                changes,
+                                editor,
+                                activeInlineTab,
+                                cancelTokenSource
+                            ) as Promise<{
+                                suggestions: suggestionKeywordInterface[]
+                                incomplete: boolean
+                            }>
+                            triggerAutoCompletion(suggestions)
+                        }
                     })
                     const range = editor?.getModel().getFullModelRange()
                     const position = {

@@ -158,14 +158,17 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                     isVariableAlreadyThere.type = isVariableAlreadyThere.type
                     newSqlVariables.push(isVariableAlreadyThere)
                 } else {
-                    /* This is newly created variable from editor */
-                    const new_variable: CustomVaribaleInterface = {
-                        name: varName,
-                        key: generateUUID(),
-                        type: 'string',
-                        value: '',
+                    const t = sqlVariables.value.find((s) => s.name === varName)
+                    if (!t) {
+                        /* This is newly created variable from editor */
+                        const new_variable: CustomVaribaleInterface = {
+                            name: varName,
+                            key: generateUUID(),
+                            type: 'string',
+                            value: '',
+                        }
+                        newSqlVariables.push(new_variable)
                     }
-                    newSqlVariables.push(new_variable)
                 }
             }
             return newSqlVariables
@@ -177,7 +180,8 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
     ) {
         const newSqlVariables = JSON.parse(
             JSON.stringify(
-                toRaw(activeInlineTab.value).playground.editor.variables
+                toRaw(activeInlineTab.value)?.playground?.editor?.variables ??
+                    []
             )
         )
         console.log('initializarion', activeInlineTab.value)

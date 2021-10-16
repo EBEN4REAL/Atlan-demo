@@ -28,13 +28,10 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
                 body,
             }
         )
-        console.log(data, error, isLoading)
         watch(data, () => {
-            console.log(data)
             selectedAsset.value.attributes.readme = {
                 ...data.value.mutatedEntities.CREATE[0],
             }
-            console.log(selectedAsset.value)
         })
         return { data, error, isLoading }
     }

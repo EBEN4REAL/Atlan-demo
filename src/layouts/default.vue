@@ -80,6 +80,7 @@
                 connections: '/connections',
                 workflows: '/workflows',
                 admin: '/admin',
+                platform: '/platform',
                 404: '/404',
             }
             const curPath = computed(() => currentRoute.value.path)

@@ -6,7 +6,7 @@
         :class="{ 'overflow-y-auto ': headerReachedTop }"
         :style="headerReachedTop ? 'max-height: calc(100vh - 220px)' : ''"
     >
-        <Announcements :asset="entity" class="mb-5" />
+        <Announcements :asset="entity" class="mb-3" />
         <SummaryWidget :entity="entity" />
         <Readme
             class="min-w-full mb-5"

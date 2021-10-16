@@ -39,7 +39,6 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
 
     watch(state, () => {
         isLoading.value = false
-        console.log(state)
     })
 
     return {

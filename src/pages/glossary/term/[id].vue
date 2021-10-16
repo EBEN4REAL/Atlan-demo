@@ -1,83 +1,93 @@
 <template>
-    <div v-if="isLoading && term?.guid !== id">
-        <LoadingView />
+    <div v-if="id === '-1' || !userHasAccess">
+        <NoAccessPage />
     </div>
-    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div
-            ref="scrollDiv"
-            class="w-2/3 h-full"
-            @scroll="handleScroll"
-            :class="{ 'overflow-y-auto': !headerReachedTop }"
-        >
-            <ProfileHeader
-                :title="title"
-                :entity="term"
-                :isNewEntity="isNewTerm"
-                :statusMessage="statusMessage"
-                :statusObject="statusObject"
-                :shortDescription="shortDescription"
-                :headerReachedTop="headerReachedTop"
-            />
-            <div class="m-0">
-                <a-tabs
-                    v-model:activeKey="currentTab"
-                    default-active-key="1"
-                    class="border-0"
-                >
-                    <a-tab-pane key="1" tab="Overview">
-                        <div class="px-5 mt-5">
-                            <div v-if="isNewTerm" class="mb-4">
-                                <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
-                                >
-                                    Name
-                                </p>
-                                <div class="flex">
-                                    <a-input
-                                        v-model:value="newName"
-                                        style="width: 200px"
-                                    />
-                                    <a-button
-                                        v-if="newName"
-                                        class="ml-4"
-                                        type="primary"
-                                        @click="updateTitle"
-                                        >Submit</a-button
-                                    >
-                                </div>
-                            </div>
-                            <GlossaryProfileOverview
-                                :entity="term"
-                                :header-reached-top="headerReachedTop"
-                                @firstCardReachedTop="handleFirstCardReachedTop"
-                            />
-                        </div>
-                    </a-tab-pane>
-                    <a-tab-pane key="2" tab="Assets">
-                        <div :class="$style.tabClasses">
-                            <LinkedAssetsTab
-                                :term-qualified-name="qualifiedName"
-                                :term-guid="id"
-                                :show-preview-panel="currentTab === '2'"
-                                :header-reached-top="headerReachedTop"
-                                @preview="handlePreview"
-                                @firstCardReachedTop="handleFirstCardReachedTop"
-                            />
-                        </div>
-                    </a-tab-pane>
-                    <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
-                    <a-tab-pane key="5" tab="Access Control">
-                        Permissions
-                    </a-tab-pane> -->
-                </a-tabs>
-            </div>
+    <div v-else>
+        <div v-if="isLoading && term?.guid !== id">
+            <LoadingView />
         </div>
-        <div id="sidePanel" class="relative w-1/3 h-full">
-            <GtcPreview
-                :entity="term"
-                :preview="false"
-                @updateAsset="refetch"
-            />
+        <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+            <div
+                ref="scrollDiv"
+                class="w-2/3"
+                @scroll="handleScroll"
+                :class="{ 'overflow-y-auto': !headerReachedTop }"
+                :style="!headerReachedTop ? 'height: 100vh ' : ''"
+            >
+                <ProfileHeader
+                    :title="title"
+                    :entity="term"
+                    :isNewEntity="isNewTerm"
+                    :statusMessage="statusMessage"
+                    :statusObject="statusObject"
+                    :shortDescription="shortDescription"
+                    :headerReachedTop="headerReachedTop"
+                />
+                <div class="m-0">
+                    <a-tabs
+                        v-model:activeKey="currentTab"
+                        default-active-key="1"
+                        class="border-0"
+                    >
+                        <a-tab-pane key="1" tab="Overview">
+                            <div class="px-5 mt-4">
+                                <div v-if="isNewTerm" class="mb-4">
+                                    <p
+                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    >
+                                        Name
+                                    </p>
+                                    <div class="flex">
+                                        <a-input
+                                            v-model:value="newName"
+                                            style="width: 200px"
+                                        />
+                                        <a-button
+                                            v-if="newName"
+                                            class="ml-4"
+                                            type="primary"
+                                            @click="updateTitle"
+                                            >Submit</a-button
+                                        >
+                                    </div>
+                                </div>
+                                <GlossaryProfileOverview
+                                    :entity="term"
+                                    :header-reached-top="headerReachedTop"
+                                    @firstCardReachedTop="
+                                        handleFirstCardReachedTop
+                                    "
+                                />
+                            </div>
+                        </a-tab-pane>
+                        <a-tab-pane key="2" tab="Assets">
+                            <div :class="$style.tabClasses">
+                                <LinkedAssetsTab
+                                    :term-qualified-name="qualifiedName"
+                                    :term-guid="id"
+                                    :show-preview-panel="currentTab === '2'"
+                                    :header-reached-top="headerReachedTop"
+                                    @preview="handlePreview"
+                                    @firstCardReachedTop="
+                                        handleFirstCardReachedTop
+                                    "
+                                />
+                            </div>
+                        </a-tab-pane>
+                        <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                        <a-tab-pane key="5" tab="Access Control">
+                            Permissions
+                        </a-tab-pane> -->
+                    </a-tabs>
+                </div>
+            </div>
+            <div id="sidePanel" class="relative w-1/3 h-full">
+                <GtcPreview
+                    :entity="term"
+                    :preview="false"
+                    @updateAsset="refetch"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -92,6 +102,7 @@
     import GtcPreview from '~/components/glossary/sidebar/gtcPreview.vue'
     import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
     import LoadingView from '@common/loaders/page.vue'
+    import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -99,7 +110,9 @@
 
     // assets
     import { Term } from '~/types/glossary/glossary.interface'
+
     import useBusinessMetadataStore from '~/store/businessMetadata'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         components: {
@@ -108,6 +121,7 @@
             GtcPreview,
             ProfileHeader,
             LoadingView,
+            NoAccessPage,
         },
         props: {
             id: {
@@ -139,9 +153,14 @@
                 refetch,
             } = useGTCEntity<Term>('term', guid, guid.value)
 
-            const store = useBusinessMetadataStore()
+            const accessStore = useAccessStore()
             const BMListLoaded = computed(
                 () => store.getBusinessMetadataListLoaded
+            )
+
+            const store = useBusinessMetadataStore()
+            const userHasAccess = computed(() =>
+                accessStore.checkPermission('READ_TERM')
             )
 
             // ? Re fetch after bm projection loads or first fetch after  bm projection loads ?
@@ -182,9 +201,6 @@
                     name: newName.value,
                 })
             }
-            const redirectToProfile = () => {
-                router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
-            }
             const handleScroll = () => {
                 if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
                     headerReachedTop.value = true
@@ -211,7 +227,6 @@
             provide('refreshEntity', refetch)
 
             return {
-                redirectToProfile,
                 term,
                 currentTab,
                 error,
@@ -234,6 +249,7 @@
                 headerReachedTop,
                 handleScroll,
                 handleFirstCardReachedTop,
+                userHasAccess,
             }
         },
     })

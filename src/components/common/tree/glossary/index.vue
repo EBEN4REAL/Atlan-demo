@@ -78,14 +78,12 @@
     import { Modal } from 'ant-design-vue'
 
     import { defineComponent, watch, computed, ref } from 'vue'
-    import { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
     import { useRouter } from 'vue-router'
     import fetchGlossaryList from '~/components/glossary/composables/fetchGlossaryList'
     import useGlossaryTree from '~/components/glossary/composables/useGlossaryTree'
     import handleTreeExpand from '~/composables/tree/handleTreeExpand'
-    import { Glossary } from '~/api/atlas/glossary'
+    import { Glossary } from '~/services/atlas/glossary/glossary_api'
     import GlossaryContextMenu from './glossaryContextMenu.vue'
-    import { toRefs } from '@vueuse/core'
 
     export default defineComponent({
         components: { Emoji, GlossaryContextMenu },

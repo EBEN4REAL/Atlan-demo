@@ -251,17 +251,14 @@
                 templateName.value = ''
             }
             const handleSave = () => {
-                console.log(editorContent.value)
                 editable.value = false
                 if (readmeDescription.value?.length) {
                     const { isCompleted, isLoading, update } = useUpdateReadme(
                         props?.entity?.attributes?.readme,
                         editorContent.value
                     )
-                    console.log(isCompleted, isLoading, update)
                     update()
                 } else {
-                    console.log('creating new readme')
                     const { createReadme } = useCreateReadme(
                         entity,
                         editorContent.value
@@ -270,14 +267,6 @@
                 }
             }
 
-            watch(
-                readmeDescription,
-                () => {
-                    console.log(readmeDescription.value)
-                    editorContent.value = readmeDescription.value
-                },
-                { immediate: true }
-            )
             // onMounted(() => {
             //     console.log(
             //         props.entity?.attributes?.readme?.attributes?.description

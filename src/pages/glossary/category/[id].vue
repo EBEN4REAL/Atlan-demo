@@ -1,91 +1,99 @@
 <template>
-    <div v-if="isLoading && category?.guid !== id">
-        <LoadingView />
+    <div v-if="id === '-1' || !userHasAccess">
+        <NoAccessPage />
     </div>
-    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div
-            class="w-2/3 h-full"
-            ref="scrollDiv"
-            :class="{
-                'overflow-y-auto': !headerReachedTop,
-                ' border-r': bulkSelectedAssets.length,
-            }"
-            @scroll="handleScroll"
-        >
-            <ProfileHeader
-                :title="title"
-                :entity="category"
-                :isNewEntity="isNewCategory"
-                :statusMessage="statusMessage"
-                :statusObject="statusObject"
-                :shortDescription="shortDescription"
-                :headerReachedTop="headerReachedTop"
-            />
-
-            <div class="m-0">
-                <a-tabs
-                    v-model:activeKey="currentTab"
-                    default-active-key="1"
-                    class="border-0"
-                >
-                    <a-tab-pane key="1" tab="Overview">
-                        <div class="px-5 mt-5">
-                            <div v-if="isNewCategory" class="mb-4">
-                                <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
-                                >
-                                    Name
-                                </p>
-                                <div class="flex">
-                                    <a-input
-                                        v-model:value="newName"
-                                        style="width: 200px"
-                                    />
-                                    <a-button
-                                        v-if="newName"
-                                        class="ml-4"
-                                        type="primary"
-                                        @click="updateTitle"
-                                        >Submit</a-button
-                                    >
-                                </div>
-                            </div>
-                            <GlossaryProfileOverview
-                                :entity="category"
-                                :header-reached-top="headerReachedTop"
-                                @firstCardReachedTop="handleFirstCardReachedTop"
-                            />
-                        </div>
-                    </a-tab-pane>
-                    <a-tab-pane key="2" tab="Terms & Categories">
-                        <GlossaryTermsAndCategoriesTab
-                            :qualified-name="parentGlossaryQualifiedName"
-                            :display-text="title"
-                            :guid="guid"
-                            :headerReachedTop="headerReachedTop"
-                            :show-preview-panel="currentTab === '2'"
-                            type="AtlasGlossaryCategory"
-                            @entityPreview="handleCategoryOrTermPreview"
-                            @firstCardReachedTop="handleFirstCardReachedTop"
-                            @bulkSelectChange="updateBulkSelection"
-                        />
-                    </a-tab-pane>
-                    <!-- <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
-                    <a-tab-pane key="5" tab="Access Control">
-                        Access Control
-                    </a-tab-pane> -->
-                </a-tabs>
-            </div>
+    <div v-else>
+        <div v-if="isLoading && category?.guid !== id">
+            <LoadingView />
         </div>
-        <div id="sidePanel" class="relative w-1/3 h-full">
-            <SidePanel
-                v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
-                :entity="category"
-            />
-            <BulkSidebar
-                v-else
-                :bulk-selected-assets="bulkSelectedAssets"
-            ></BulkSidebar>
+        <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+            <div
+                class="w-2/3"
+                ref="scrollDiv"
+                :class="{
+                    'overflow-y-auto': !headerReachedTop,
+                    ' border-r': bulkSelectedAssets.length,
+                }"
+                :style="!headerReachedTop ? 'height: 100vh ' : ''"
+                @scroll="handleScroll"
+            >
+                <ProfileHeader
+                    :title="title"
+                    :entity="category"
+                    :isNewEntity="isNewCategory"
+                    :statusMessage="statusMessage"
+                    :statusObject="statusObject"
+                    :shortDescription="shortDescription"
+                    :headerReachedTop="headerReachedTop"
+                />
+
+                <div class="m-0">
+                    <a-tabs
+                        v-model:activeKey="currentTab"
+                        default-active-key="1"
+                        class="border-0"
+                    >
+                        <a-tab-pane key="1" tab="Overview">
+                            <div class="px-5 mt-4">
+                                <div v-if="isNewCategory" class="mb-4">
+                                    <p
+                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    >
+                                        Name
+                                    </p>
+                                    <div class="flex">
+                                        <a-input
+                                            v-model:value="newName"
+                                            style="width: 200px"
+                                        />
+                                        <a-button
+                                            v-if="newName"
+                                            class="ml-4"
+                                            type="primary"
+                                            @click="updateTitle"
+                                            >Submit</a-button
+                                        >
+                                    </div>
+                                </div>
+                                <GlossaryProfileOverview
+                                    :entity="category"
+                                    :header-reached-top="headerReachedTop"
+                                    @firstCardReachedTop="
+                                        handleFirstCardReachedTop
+                                    "
+                                />
+                            </div>
+                        </a-tab-pane>
+                        <a-tab-pane key="2" tab="Terms & Categories">
+                            <GlossaryTermsAndCategoriesTab
+                                :qualified-name="parentGlossaryQualifiedName"
+                                :display-text="title"
+                                :guid="guid"
+                                :headerReachedTop="headerReachedTop"
+                                :show-preview-panel="currentTab === '2'"
+                                type="AtlasGlossaryCategory"
+                                @entityPreview="handleCategoryOrTermPreview"
+                                @firstCardReachedTop="handleFirstCardReachedTop"
+                                @bulkSelectChange="updateBulkSelection"
+                            />
+                        </a-tab-pane>
+                        <!-- <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
+                        <a-tab-pane key="5" tab="Access Control">
+                            Access Control
+                        </a-tab-pane> -->
+                    </a-tabs>
+                </div>
+            </div>
+            <div id="sidePanel" class="relative w-1/3 h-full">
+                <SidePanel
+                    v-if="!bulkSelectedAssets || !bulkSelectedAssets.length"
+                    :entity="category"
+                />
+                <BulkSidebar
+                    v-else
+                    :bulk-selected-assets="bulkSelectedAssets"
+                ></BulkSidebar>
+            </div>
         </div>
     </div>
 </template>
@@ -109,6 +117,7 @@
     import SidePanel from '~/components/glossary/sidebar/profileSidePanel.vue'
     import GlossaryTermsAndCategoriesTab from '~/components/glossary/profile/termsAndCategories/glossaryTermsAndCategoriesTab.vue'
     import ProfileHeader from '~/components/glossary/profile/profileHeader.vue'
+    import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -118,6 +127,8 @@
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'
 
+    import { useAccessStore } from '~/services/access/accessStore'
+
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
@@ -126,6 +137,7 @@
             SidePanel,
             ProfileHeader,
             BulkSidebar,
+            NoAccessPage,
         },
         props: {
             id: {
@@ -182,6 +194,11 @@
                 () => title.value === 'Untitled Category'
             )
 
+            const accessStore = useAccessStore()
+            const userHasAccess = computed(() =>
+                accessStore.checkPermission('READ_CATEGORY')
+            )
+
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
@@ -195,11 +212,6 @@
                 updateEntity('category', category.value?.guid ?? '', {
                     name: newName.value,
                 })
-            }
-            const redirectToProfile = () => {
-                router.push(
-                    `/glossary/${category.value?.attributes?.anchor?.guid}`
-                )
             }
             const handleScroll = () => {
                 if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
@@ -265,11 +277,11 @@
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
                 updateTitle,
-                redirectToProfile,
                 handleScroll,
                 handleFirstCardReachedTop,
                 updateBulkSelection,
                 bulkSelectedAssets,
+                userHasAccess,
             }
         },
     })

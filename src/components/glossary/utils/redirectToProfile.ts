@@ -1,14 +1,17 @@
-import { useRouter } from 'vue-router'
+import { Router, useRouter } from 'vue-router'
 
-export default function redirectToProfile(
-    entityType: String,
+export default (router: Router) => (
+    typeName: String,
     guid: String
-): void {
-    console.log(useRouter())
-    const router = useRouter()
-    console.log(router)
-    if (entityType === 'AtlasGlossaryCategory')
-        router.push(`/glossary/category/${guid}`)
-    else if (entityType === 'AtlasGlossaryTerm')
-        router.push(`/glossary/term/${guid}`)
+): void  => {
+    if(guid !== '-1' && guid) {
+        // Add Popup to tell user they dont have access to entity
+
+        if (typeName === 'AtlasGlossary')
+            router.push(`/glossary/${guid}`)
+        else if (typeName === 'AtlasGlossaryCategory')
+            router.push(`/glossary/category/${guid}`)
+        else if (typeName === 'AtlasGlossaryTerm')
+            router.push(`/glossary/term/${guid}`)
+    }
 }

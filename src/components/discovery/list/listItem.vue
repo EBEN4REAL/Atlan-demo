@@ -208,7 +208,7 @@ import HierarchyBar from '@common/badge/hierarchy.vue'
 import StatusBadge from '@common/badge/status/index.vue'
 import { computed, defineComponent, PropType, Ref, ref } from 'vue'
 import Pill from '@/UI/pill/pill.vue'
-import CertificatePopover from '@/UI/certificatePopover.vue'
+import CertificatePopover from '~/components/common/certificatePopover.vue'
 import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
 
 import AssetLogo from '@/common/icon/assetIcon.vue'

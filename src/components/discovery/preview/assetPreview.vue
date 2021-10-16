@@ -140,7 +140,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
-    import CertificatePopover from '@/UI/certificatePopover.vue'
+    import CertificatePopover from '~/components/common/certificatePopover.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'

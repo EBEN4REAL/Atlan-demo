@@ -58,7 +58,7 @@
             </div>
             <div v-else class="mt-4">
                 <div
-                    v-for="group in groupList.value"
+                    v-for="group in groupList"
                     :key="group.id"
                     class="py-2 border-b border-gray-100"
                 >

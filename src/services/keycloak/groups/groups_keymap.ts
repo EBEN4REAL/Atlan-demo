@@ -9,15 +9,15 @@ export const REMOVE_MEMBERS_FROM_GROUP = 'REMOVE_MEMBERS_FROM_GROUP'
 export const ADD_MEMBERS_TO_GROUP = 'ADD_MEMBERS_TO_GROUP'
 
 const groupsMap: Record<string, (...params: any) => string> = {
-    [LIST_GROUPS]: () => getAPIPath('auth/tenants/default', '/groups'),
-    [GET_GROUP]: () => getAPIPath('auth/tenants/default', `/groups`),
-    [UPDATE_GROUP]: ({ id }) => getAPIPath('auth/tenants/default', `/groups/${id}`),
-    [DELETE_GROUP]: ({ id }) => getAPIPath('auth/tenants/default', `/groups/${id}/delete`),
-    [CREATE_GROUP]: () => getAPIPath('auth/tenants/default', `/groups`),
+    [LIST_GROUPS]: () => getAPIPath('service', '/groups'),
+    [GET_GROUP]: () => getAPIPath('service', `/groups`),
+    [UPDATE_GROUP]: ({ id }) => getAPIPath('service', `/groups/${id}`),
+    [DELETE_GROUP]: ({ id }) => getAPIPath('service', `/groups/${id}/delete`),
+    [CREATE_GROUP]: () => getAPIPath('service', `/groups`),
     [REMOVE_MEMBERS_FROM_GROUP]: ({ id }) =>
-        getAPIPath('auth/tenants/default', `/groups/${id}/members/remove`),
+        getAPIPath('service', `/groups/${id}/members/remove`),
     [ADD_MEMBERS_TO_GROUP]: ({ id }) =>
-        getAPIPath('auth/tenants/default', `/groups/${id}/members`),
+        getAPIPath('service', `/groups/${id}/members`),
 }
 
 export default groupsMap

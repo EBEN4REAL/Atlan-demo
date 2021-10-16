@@ -1,6 +1,6 @@
 
 import { ref, computed, watch } from 'vue'
-import { useAPIPromise } from '~/api/useAPI';
+import { useAPIPromise } from '~/services/api/useAPI';
 import { createDebounce } from "~/composables/utils/debounce";
 
 export default function useAsyncSelector(

@@ -2,7 +2,7 @@ import { getAPIPath, getAxiosClient } from '~/api'
 
 import { AxiosRequestConfig } from 'axios'
 import {  RequestAttributes } from '~/types/atlas/requests'
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from '~/services/api/useAPI'
 import { heracles_keymap } from '~/services/heracles/heracles_keymap'
 
 const serviceAlias = 'heka/api/query'

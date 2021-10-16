@@ -1,6 +1,6 @@
 import { watch, ref, Ref, computed, isRef, WritableComputedRef } from 'vue'
 
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { GET_GTC_ENTITY } from '~/api/keyMaps/glossary'
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'

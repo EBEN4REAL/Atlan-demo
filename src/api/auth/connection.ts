@@ -5,7 +5,7 @@ import { AsyncStateOptions } from "@vueuse/core";
 import { getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
 
-import { useAPIAsyncState, useAPIPromise } from "../useAPI";
+import { useAPIAsyncState, useAPIPromise } from "../../services/api/useAPI";
 import { KeyMaps } from '../keyMap';
 
 const serviceAlias = "auth";

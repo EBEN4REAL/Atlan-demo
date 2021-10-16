@@ -1,7 +1,7 @@
 import { ref, onMounted, watch, computed, toRefs } from "vue";
 import useSWRV from "swrv";
 import swrvState from "~/composables/utils/swrvState";
-import { useAPI } from "~/api/useAPI";
+import { useAPI } from "~/services/api/useAPI";
 import { pluralizeString } from "~/composables/utils/string-operations.ts";
 import { roleMap } from "~/constant/role";
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";

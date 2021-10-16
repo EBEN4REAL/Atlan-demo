@@ -1,6 +1,6 @@
 import { ref, watch, inject } from 'vue'
 
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import {
     UPDATE_GLOSSARY,
     UPDATE_GLOSSARY_CATEGORY,

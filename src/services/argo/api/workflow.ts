@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
 import { getAPIPath, getAxiosClient } from '~/api'
 import { KeyMaps } from '~/api/keyMap'
-import { useAPISWRV, useAPIAsyncState } from '~/api/useAPI'
+import { useAPISWRV, useAPIAsyncState } from '~/services/api/useAPI'
 
 const serviceAlias = 'auth/argo'
 

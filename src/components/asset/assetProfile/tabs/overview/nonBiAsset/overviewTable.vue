@@ -21,7 +21,7 @@
     import { defineComponent, watch, ref, inject, computed } from 'vue'
 
     // API
-    import { useAPI } from '~/api/useAPI'
+    import { useAPI } from '~/services/api/useAPI'
 
     export default defineComponent({
         emits: ['preview'],

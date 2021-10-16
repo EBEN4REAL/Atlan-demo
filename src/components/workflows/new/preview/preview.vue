@@ -101,7 +101,6 @@
         components: {
             AtlanButton,
             ErrorView,
-            message,
             Loader,
             PreviewHeader,
         },

@@ -4,7 +4,7 @@
 
     <div v-if="data?.asset" class="flex w-full h-full">
         <div class="flex flex-col w-full">
-            <Header :title="templateName" class="px-5 pt-3 bg-white" />
+            <Header :title="selected.name" class="px-5 pt-3 bg-white" />
 
             <a-tabs
                 :active-key="activeKey"
@@ -228,7 +228,6 @@
 
             return {
                 emit,
-                id,
                 activeKey,
                 selected,
                 tabs,

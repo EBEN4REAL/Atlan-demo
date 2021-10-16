@@ -495,7 +495,11 @@
                 setEditorInstanceFxn(editorInstanceParam, monacoInstanceParam)
             }
             const updateQuery = () => {
-                updateSavedQuery(editorInstance, isUpdating)
+                updateSavedQuery(
+                    editorInstance,
+                    isUpdating,
+                    activeInlineTab.value
+                )
             }
 
             const copyURL = () => {
@@ -512,14 +516,14 @@
             const saveQuery = (saveQueryData: any) => {
                 saveQueryToDatabase(
                     saveQueryData,
-                    editorInstance,
                     saveQueryLoading,
                     showSaveQueryModal,
                     saveModalRef,
                     router,
                     'personal',
                     saveQueryData.parentQF,
-                    saveQueryData.parentGuid
+                    saveQueryData.parentGuid,
+                    activeInlineTab.value
                 )
             }
             const formatDocument = () => {

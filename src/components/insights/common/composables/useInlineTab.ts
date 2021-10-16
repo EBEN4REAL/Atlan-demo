@@ -82,7 +82,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         } else {
             if (tabsArray.value.length > 0) {
                 activeInlineTabKey.value = tabsArray.value[0].key
-                if (tabsArray.value[lastIndex].queryId)
+                if (tabsArray.value[0]?.queryId)
                     pushGuidToURL(tabsArray.value[0].queryId)
                 else pushGuidToURL()
             } else {

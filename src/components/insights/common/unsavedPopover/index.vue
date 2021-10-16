@@ -20,6 +20,7 @@
                 class="px-5 text-sm rounded"
                 style="width: 100px"
                 type="primary"
+                :loading="isSaving"
                 @click="save"
                 >Save</a-button
             >
@@ -42,9 +43,13 @@
                 }>,
                 required: true,
             },
+            isSaving: {
+                type: Boolean,
+                required: true,
+            },
         },
         setup(props, { emit }) {
-            const { unsavedPopover } = toRefs(props)
+            const { unsavedPopover, isSaving } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -55,6 +60,7 @@
                 emit('saveTab', unsavedPopover.value.key)
             }
             return {
+                isSaving,
                 close,
                 save,
                 unsavedPopover,

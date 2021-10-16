@@ -107,7 +107,6 @@ export function useSavedQuery(
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             activeInlineTabKey.value = newTab.queryId
             /* ----------------------------- */
-            debugger
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {
@@ -124,37 +123,38 @@ export function useSavedQuery(
     /* Involved network requests */
     const updateSavedQuery = (
         editorInstance: Ref<any>,
-        isUpdating: Ref<boolean>
+        isUpdating: Ref<boolean>,
+        activeInlineTab: activeInlineTabInterface
     ) => {
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
-            activeInlineTab.value
+            activeInlineTab
         )
 
         const attributeValue =
-            activeInlineTab.value.explorer.schema.connectors.attributeValue
+            activeInlineTab?.explorer.schema.connectors.attributeValue
         const attributeName =
-            activeInlineTab.value.explorer.schema.connectors.attributeName
+            activeInlineTab?.explorer.schema.connectors.attributeName
         const connectorName = getConnectorName(attributeValue)
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionName = getConnectorName(attributeValue)
-        const name = activeInlineTab.value.label
-        const certificateStatus = activeInlineTab.value.status
-        const description = activeInlineTab.value.description
-        const isSQLSnippet = activeInlineTab.value.isSQLSnippet
+        const name = activeInlineTab?.label
+        const certificateStatus = activeInlineTab?.status
+        const description = activeInlineTab?.description
+        const isSQLSnippet = activeInlineTab?.isSQLSnippet
         const editorInstanceRaw = toRaw(editorInstance.value)
         /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
-        const qualifiedName = activeInlineTab.value.qualifiedName
+        const qualifiedName = activeInlineTab?.qualifiedName
         const rawQuery = editorInstanceRaw?.getValue()
         const compiledQuery = getParsedQuery(
-            activeInlineTab.value.playground.editor.variables,
+            activeInlineTab?.playground.editor.variables,
             editorInstanceRaw?.getValue() as string
         )
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
         const variablesSchemaBase64 = serializeQuery(
-            activeInlineTab.value.playground.editor.variables
+            activeInlineTab?.playground.editor.variables
         )
         const body = ref({
             entity: {
@@ -218,23 +218,24 @@ export function useSavedQuery(
     }
     const saveQueryToDatabase = async (
         saveQueryData: any,
-        editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
         type: 'personal' | 'all',
         parentFolderQF: string,
-        parentFolderGuid: string
+        parentFolderGuid: string,
+        activeInlineTab: activeInlineTabInterface,
+        Callback?: Function,
+        routeToGuid: boolean = true
     ) => {
-        const editorInstanceRaw = toRaw(editorInstance.value)
         const attributeValue =
-            activeInlineTab.value.explorer.schema.connectors.attributeValue
+            activeInlineTab?.explorer.schema.connectors.attributeValue
         const attributeName =
-            activeInlineTab.value.explorer.schema.connectors.attributeName
+            activeInlineTab?.explorer.schema.connectors.attributeName
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
-            activeInlineTab.value
+            activeInlineTab
         )
         activeInlineTabCopy.isSaved = true
         activeInlineTabCopy.label = saveQueryData.title
@@ -250,16 +251,16 @@ export function useSavedQuery(
         const description = saveQueryData.description
         const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
-        const rawQuery = editorInstanceRaw?.getValue()
+        const rawQuery = activeInlineTab.playground.editor.text
         const compiledQuery = getParsedQuery(
-            activeInlineTab.value.playground.editor.variables,
-            editorInstanceRaw?.getValue() as string
+            activeInlineTab?.playground.editor.variables,
+            rawQuery as string
         )
         const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
         const variablesSchemaBase64 = serializeQuery(
-            activeInlineTab.value.playground.editor.variables
+            activeInlineTab?.playground.editor.variables
         )
 
         const body = ref<Record<string, any>>({
@@ -328,18 +329,23 @@ export function useSavedQuery(
                     saveModalRef.value?.clearData()
                     const guid = data.value.mutatedEntities.CREATE[0].guid
                     console.log(data.value, 'saved')
-                    if (guid) router.push(`/insights?id=${guid}`)
-                    activeInlineTabCopy.queryId = guid
                     /* Not present in response */
                     activeInlineTabCopy.updateTime = Date.now()
                     activeInlineTabCopy.updatedBy = username.value
                     /* ----------------------------------------------- */
+                    activeInlineTabCopy.queryId = guid
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
+                    if (routeToGuid) {
+                        if (guid) router.push(`/insights?id=${guid}`)
+                    }
+                    if (Callback) Callback()
                 } else {
                     console.log(error.value.toString())
                     message.error({
                         content: `Error in saving query!`,
                     })
+                    /* Saving error in errorRef */
+                    if (Callback) Callback(error)
                 }
             }
         })

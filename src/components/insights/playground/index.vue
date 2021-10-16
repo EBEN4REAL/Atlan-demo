@@ -71,6 +71,7 @@
                                         @closeTab="closeTabConfirm"
                                         @saveTab="saveTabConfirm"
                                         :unsavedPopover="unsavedPopover"
+                                        :isSaving="isSaving"
                                     />
                                 </a-menu>
                             </template>
@@ -95,19 +96,28 @@
             </splitpanes>
         </div>
         <NoActiveInlineTab v-else />
+        <SaveQueryModal
+            v-model:showSaveQueryModal="showSaveQueryModal"
+            :saveQueryLoading="saveQueryLoading"
+            :ref="
+                (el) => {
+                    saveModalRef = el
+                }
+            "
+            @onSaveQuery="saveQueryOnCloseTab"
+        />
     </div>
 </template>
 
 <script lang="ts">
     import {
+        watch,
+        ComputedRef,
         defineComponent,
-        toRefs,
         computed,
         Ref,
         inject,
         ref,
-        onMounted,
-        onUnmounted,
     } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
@@ -115,13 +125,21 @@
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useRouter } from 'vue-router'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
-        components: { Editor, ResultsPane, NoActiveInlineTab, UnsavedPopover },
+        components: {
+            Editor,
+            ResultsPane,
+            NoActiveInlineTab,
+            UnsavedPopover,
+            SaveQueryModal,
+        },
         props: {
             activeInlineTabKey: {
                 type: String,
@@ -130,9 +148,17 @@
         },
         setup(props, { emit }) {
             const router = useRouter()
+            const isSaving = ref(false)
+            const showSaveQueryModal = ref(false)
+            const saveCloseTabKey = ref()
+            const saveQueryLoading = ref(false)
+            const saveModalRef = ref()
+            const saveQueryData = ref()
+
             const { queryRun } = useRunQuery()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
+
             const unsavedPopover = ref({
                 show: false,
                 key: undefined,
@@ -141,13 +167,19 @@
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
+            const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const isActiveInlineTabSaved = computed(
                 () => activeInlineTab.value.isSaved
+            )
+            const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
+                tabs,
+                activeInlineTab,
+                activeInlineTabKey
             )
             const handleAdd = () => {
                 const key = String(new Date().getTime())
@@ -215,6 +247,7 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
+                router.push(`/insights`)
             }
             const pushGuidToURL = (guid: string | undefined) => {
                 if (guid) router.push(`/insights?id=${guid}`)
@@ -249,6 +282,9 @@
                     }
                 }
             }
+            const openSaveQueryModal = () => {
+                showSaveQueryModal.value = true
+            }
             const closeTabConfirm = (key: string) => {
                 console.log(key, 'close')
                 inlineTabRemove(
@@ -260,10 +296,77 @@
                 unsavedPopover.value.key = undefined
                 unsavedPopover.value.show = false
             }
+            const saveQueryOnCloseTab = (saveQueryDataParam: any) => {
+                saveQueryData.value = saveQueryDataParam
+                const key = saveCloseTabKey.value
+                let tabData: activeInlineTabInterface | undefined
+                tabs.value.forEach((tab) => {
+                    if (tab.key === key) {
+                        tabData = tab
+                    }
+                })
+                const tabRemoveCallbackFunction = (error: any) => {
+                    if (!error) {
+                        inlineTabRemove(
+                            key as string,
+                            tabs,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+                        saveCloseTabKey.value = undefined
+                    }
+                }
+                if (saveQueryData.value) {
+                    saveQueryToDatabase(
+                        saveQueryData.value,
+                        saveQueryLoading,
+                        showSaveQueryModal,
+                        saveModalRef,
+                        router,
+                        'personal',
+                        saveQueryData.value.parentQF,
+                        saveQueryData.value.parentGuid,
+                        tabData as activeInlineTabInterface,
+                        tabRemoveCallbackFunction,
+                        false
+                    )
+                }
+            }
             const saveTabConfirm = (key: string) => {
+                /* Saving the key */
+                saveCloseTabKey.value = key
+                let tabData: activeInlineTabInterface | undefined
+                tabs.value.forEach((tab) => {
+                    if (tab.key === key) {
+                        tabData = tab
+                    }
+                })
+
+                if (tabData?.queryId) {
+                    /* If this tab already saved to database */
+                    updateSavedQuery(editorInstance, isSaving, tabData)
+                    inlineTabRemove(
+                        key as string,
+                        tabs,
+                        activeInlineTabKey,
+                        pushGuidToURL
+                    )
+                } else {
+                    /* If this tab need to save into database */
+                    unsavedPopover.value.key = undefined
+                    unsavedPopover.value.show = false
+                    openSaveQueryModal()
+                }
+
                 console.log('save', key)
             }
+
             return {
+                saveModalRef,
+                saveQueryLoading,
+                showSaveQueryModal,
+                openSaveQueryModal,
+                saveQueryOnCloseTab,
                 saveTabConfirm,
                 closeTabConfirm,
                 unsavedPopover,
@@ -366,6 +469,10 @@
             @apply m-0 bg-gray-light !important;
         }
     }
+    // :global(.ant-modal-wrap) {
+    //     /* Overrriding modals z-index so that it appears above menu */
+    //     z-index: 1100 !important;
+    // }
 </style>
 <route lang="yaml">
 meta:

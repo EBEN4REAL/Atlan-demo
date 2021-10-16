@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full pb-4">
+    <div class="w-full pb-5">
         <span class="pb-4 text-base font-bold capitalize">
             {{ assetTypeLabel[entity?.typeName] }} Summary
         </span>
@@ -29,7 +29,6 @@
                 v-if="entity.guid"
                 :selected-asset="entity"
                 :editPermission="userHasEditPermission"
-                @update:selected-asset="refreshEntity"
             />
         </div>
         <div class="flex mt-4 space-x-48">

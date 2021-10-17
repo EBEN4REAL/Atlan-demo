@@ -118,6 +118,7 @@
                         :info-tab-data="selectedAsset"
                         :page="page"
                         :selected-asset="selectedAsset"
+                        :userPermission="userPermission"
                         :is-loaded="isLoaded"
                         @change="handleChange"
                     ></component>
@@ -210,10 +211,9 @@
             const router = useRouter()
 
             const { evaluatePermissions } = useCheckAccess()
-
-            const { response: userHasEditPermission } = evaluatePermissions(
-                [selectedAsset.value],
-                ['ENTITY_UPDATE']
+            const { data: userPermission } = evaluatePermissions(
+                selectedAsset.value,
+                'ENTITY_UPDATE'
             )
 
             const dataMap: { [id: string]: any } = ref({})
@@ -286,7 +286,6 @@
             function init() {
                 isLoaded.value = false
                 infoTabData.value = selectedAsset.value
-                console.log(userHasEditPermission.value.value)
             }
             watch(() => selectedAsset.value.guid, init)
             const name = computed(() => selectedAsset.value.attributes?.name)
@@ -297,6 +296,7 @@
                 tabHeights,
                 isLoaded,
                 infoTabData,
+                userPermission,
                 title,
                 assetTypeLabel,
                 dataMap,

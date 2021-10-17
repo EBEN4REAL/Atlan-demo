@@ -4,7 +4,7 @@
 
     <div v-if="data?.asset" class="flex w-full h-full">
         <div class="flex flex-col w-full">
-            <Header class="px-5 pt-3 bg-white" />
+            <Header :title="selected.name" class="px-5 pt-3 bg-white" />
 
             <a-tabs
                 :active-key="activeKey"
@@ -121,7 +121,7 @@
             ]
 
             const selected = ref(null)
-            const selectedDag = ref(null)
+            const selectedDag = ref('')
 
             /** UTILS */
             const router = useRouter()
@@ -133,9 +133,9 @@
 
             const formConfig = computed(() => {
                 if (data.value?.uiConfig?.length) {
-                    const configCopy =
+                    let configCopy =
                         data.value.uiConfig[0]?.data?.uiConfig || '{}'
-                    configCopy
+                    configCopy = configCopy
                         .replace(/\\n/g, '\\n')
                         .replace(/\\'/g, "\\'")
                         .replace(/\\"/g, '\\"')
@@ -228,7 +228,6 @@
 
             return {
                 emit,
-                id,
                 activeKey,
                 selected,
                 tabs,

@@ -1,5 +1,5 @@
 import { ref, Ref, ComputedRef, computed, watch } from 'vue'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 import { GTC_SEARCH } from '~/api/keyMaps/glossary'
 

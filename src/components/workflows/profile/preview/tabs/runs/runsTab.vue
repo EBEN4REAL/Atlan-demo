@@ -1,86 +1,48 @@
 <template>
     <div
         v-if="isLoading"
-        class="flex items-center justify-center text-sm leading-none"
+        class="flex items-center justify-center h-full text-sm leading-none"
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
     <template v-else-if="runList?.length">
-        <div
-            v-for="(r, x) in runList"
-            :key="x"
-            class="
-                flex
-                items-center
-                gap-3
-                px-4
-                py-2
-                cursor-pointer
-                hover:bg-gray-50
-            "
-            :class="{ 'bg-blue-50': currRunId === r.uid }"
-            @click="loadRunGraph(r.uid)"
-        >
-            <AtlanIcon
-                :icon="r.phase === 'Success' ? 'RunSuccess' : 'RunFailed'"
-            />
-            <div class="">
-                <div
-                    class="
-                        text-base
-                        truncate
-                        overflow-ellipsis
-                        whitespace-nowrap
-                    "
-                    :class="{ 'font-bold': currRunId === r.uid }"
-                >
-                    <span>
-                        {{ r.name }}
-                    </span>
-                    <a-spin
-                        class="ml-2"
-                        v-if="isLoadingRunGraph && currRunId === r.uid"
-                    />
-                </div>
-                <div>
-                    <p>
-                        <span class="mb-1 text-sm tracking-wide text-gray-500">
-                            2m 32s
-                        </span>
-                        <span
-                            class="
-                                mb-1
-                                text-sm
-                                tracking-wide
-                                text-gray-500
-                                capitalize
-                            "
-                        >
-                            {{ timeAgo(r.finished_at) }}</span
-                        >
-                    </p>
-                </div>
-            </div>
+        <div class="flex px-4 mt-4 mb-4">
+            <a-input-search
+                v-model:value="searchText"
+                placeholder="Search Members"
+                class="mr-1"
+                size="default"
+                :allow-clear="true"
+            ></a-input-search>
+            <a-button class="p-2 ml-2 rounded">
+                <AtlanIcon icon="FilterDot" class="h-4" />
+            </a-button>
         </div>
+        <RunCard
+            v-for="(r, x) in searchText ? filterList(searchText) : runList"
+            :key="x"
+            :r="r"
+            :curr-run-id="currRunId"
+            :is-loading="isLoadingRunGraph"
+            :select-enabled="true"
+            @select="loadRunGraph"
+        />
     </template>
-    <div v-else class="flex flex-col items-center">
-        <img :src="emptyScreen" alt="No Runs" class="w-2/5 m-auto mb-4" />
-        <span class="text-gray-500">No runs found</span>
-    </div>
+    <EmptyView v-else empty="No Runs Available" />
 </template>
 
 <script lang="ts">
     import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
 
-    import { useTimeAgo } from '@vueuse/core'
-    import emptyScreen from '~/assets/images/empty_search.png'
+    import EmptyView from '@common/empty/index.vue'
+
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
-    import { timeDiffCalc } from '~/utils/date'
+    import RunCard from '@/workflows/shared/runCard.vue'
 
     export default defineComponent({
-        components: {},
+        components: { RunCard, EmptyView },
         props: {
             selectedWorkflow: {
                 type: Object as PropType<assetInterface>,
@@ -94,14 +56,10 @@
         setup(props, { emit }) {
             const { selectedWorkflow: item } = toRefs(props)
 
-            const { runList, error, isLoading, reFetch } = useArchivedRunList(
-                '',
-                false
-            )
+            const searchText = ref('')
 
-            function timeAgo(time: number) {
-                return useTimeAgo(time).value
-            }
+            const { runList, error, isLoading, reFetch, filterList } =
+                useArchivedRunList('', false)
 
             const isLoadingRunGraph = ref(false)
             const currRunId = ref('')
@@ -134,13 +92,12 @@
             )
 
             return {
+                filterList,
                 item,
-                timeDiffCalc,
+                searchText,
                 runList,
                 error,
                 isLoading,
-                timeAgo,
-                emptyScreen,
                 emit,
                 loadRunGraph,
                 isLoadingRunGraph,

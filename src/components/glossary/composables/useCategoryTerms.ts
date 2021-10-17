@@ -1,6 +1,6 @@
 import { ref, Ref, watch } from 'vue';
 
-import { useAPI } from "~/api/useAPI"
+import { useAPI } from "~/services/api/useAPI"
 import { GET_CATEGORY_TERMS } from "~/api/keyMaps/glossary"
 import { Components } from "~/api/atlas/client";
 

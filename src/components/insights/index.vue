@@ -1,10 +1,10 @@
 <template>
-    <div class="flex h-full">
+    <div class="flex h-full" id="fullScreenId">
         <!--Sidebar navigation pane start -->
-        <div class="py-3 bg-white border-r sidebar-nav">
+        <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="flex flex-col items-center text-xs  my-7 sidebar-nav-icon"
+                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -13,12 +13,17 @@
                         class="w-6 h-6"
                         :class="activeTabId === tab.id ? 'text-primary' : ''"
                     />
-                    <p
-                        class="mt-2 mb-0 text-gray"
+                    <!-- <p
+                        class="mt-1 mb-0 text-xs text-gray"
                         :class="activeTabId === tab.id ? 'text-primary' : ''"
                     >
                         {{ tab.name }}
-                    </p>
+                    </p> -->
+                    <div
+                        class="absolute top-0 right-0 h-full"
+                        style="width: 3px"
+                        :class="activeTabId === tab.id ? 'bg-primary' : ''"
+                    ></div>
                 </div>
             </template>
         </div>
@@ -106,6 +111,7 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     // import { useConnector } from './common/composables/useConnector'
     import { useHotKeys } from './common/composables/useHotKeys'
+    import { useFullScreen } from './common/composables/useFullScreen'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
@@ -133,6 +139,7 @@
             } = useSpiltPanes()
             // TODO: will be used for HOTKEYs
             const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
+            const { fullSreenState } = useFullScreen()
 
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
@@ -170,6 +177,7 @@
                     monacoInstance.value = monacoInstanceParam
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
+
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -182,6 +190,7 @@
                 monacoInstance: monacoInstance,
                 outputPaneSize: outputPaneSize,
                 queryExecutionTime: queryExecutionTime,
+                fullSreenState: fullSreenState,
                 setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
@@ -214,11 +223,12 @@
                 }
             }
             onMounted(() => {
-                window.addEventListener('keypress', _keyListener)
+                window.addEventListener('keydown', _keyListener)
             })
             onUnmounted(() => {
-                window.removeEventListener('keypress', _keyListener)
+                window.removeEventListener('keydown', _keyListener)
             })
+
             return {
                 activeTab,
                 activeTabId,
@@ -388,8 +398,12 @@
     .explorer_splitpane {
         width: 20.75rem;
     }
-    .sidebar-nav-icon:first-child {
-        @apply mt-0 !important;
+    // .sidebar-nav-icon:first-child {
+    //     @apply pt-2 !important;
+    // }
+    .sidebar-nav-icon {
+        padding-top: 16px;
+        padding-bottom: 16px;
     }
     .sidebar-nav {
         /* 60px */

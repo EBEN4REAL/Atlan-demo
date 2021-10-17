@@ -2,7 +2,7 @@ import { Ref } from 'vue'
 import { AxiosRequestConfig } from "axios";
 import { AsyncStateOptions } from '@vueuse/core'
 import { Components } from "./client";
-import { useAPIAsyncState } from '../useAPI';
+import { useAPIAsyncState } from '../../services/api/useAPI';
 import { KeyMaps } from '../keyMap';
 
 

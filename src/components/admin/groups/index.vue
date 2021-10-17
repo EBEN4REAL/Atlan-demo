@@ -75,7 +75,7 @@
                             text-primary
                         "
                     >
-                        <div class="truncate max-w-3/4">{{ group.name }}</div>
+                        <div class="truncate max-w-3/4 mr-2">{{ group.name }}</div>
                         <div
                             v-if="group.isDefault === 'true'"
                             class="

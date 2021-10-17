@@ -1,22 +1,28 @@
 <template>
-    <div class="flex items-center justify-center w-full h-full text-2xl">
-        <CustomRadioButton
-            v-model:data="selected"
-            class="pb-4 border-b"
-            :list="template.map((l) => ({ id: l, label: l }))"
-            @change="handleInputChange"
-        ></CustomRadioButton>
+    <div class="flex items-center justify-center w-full h-full gap-5">
+        <div
+            v-for="d in template"
+            :key="d"
+            class="p-3 cursor-pointer rounded-3xl bg-blue-50"
+            :class="
+                selected === d
+                    ? 'border-primary border-2'
+                    : 'border-primary-focus border'
+            "
+            @click="handleInputChange(d)"
+        >
+            {{ d }}
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
     import { defineComponent, computed, ref, toRefs } from 'vue'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
-        components: { CustomRadioButton },
+        components: {},
         props: {
             uiConfig: {
                 type: Object,
@@ -34,8 +40,9 @@
                 return []
             })
 
-            const handleInputChange = () => {
-                emit('change', selected.value, 'dag')
+            const handleInputChange = (d) => {
+                selected.value = d
+                emit('change', d, 'dag')
             }
 
             return { selected, template, handleInputChange }

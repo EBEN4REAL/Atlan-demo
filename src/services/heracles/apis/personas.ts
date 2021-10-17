@@ -1,4 +1,4 @@
-import { useAPIAsyncState, useAPIPromise } from '~/api/useAPI'
+import { useAPIAsyncState, useAPIPromise } from '~/services/api/useAPI'
 import { heracles_keymap } from '../heracles_keymap'
 import { IPersona } from '~/types/accessPolicies/personas'
 

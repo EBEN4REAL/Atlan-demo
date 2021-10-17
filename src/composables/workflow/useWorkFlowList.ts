@@ -49,7 +49,7 @@ export function useArchivedRunList(
     })
 
     const filterList = (text) =>
-        runList.value.filter((wf) => wf.metadata.name.includes(text))
+        runList.value.filter((wf) => wf.name.toLowerCase().includes(text.toLowerCase()))
 
 
     const reFetch = (name) => {
@@ -69,10 +69,12 @@ export function useWorkflowTemplates(
 
     const workflowList = ref([])
     const totalCount = ref()
+    const filter_record = ref()
     watch(data, () => {
         if (!data?.value?.records) return;
         console.log('useWorkflowTemplates', data.value.records)
         totalCount.value = data.value.total_record
+        filter_record.value = data.value.filter_record
         workflowList.value.push(...data.value.records)
     })
 
@@ -86,7 +88,7 @@ export function useWorkflowTemplates(
     const filterList = (text) =>
         workflowList.value.filter((wf) => wf.name.includes(text))
 
-    return { workflowList, loadMore, totalCount, error, isLoading, filterList, mutate }
+    return { workflowList, loadMore, filter_record, totalCount, error, isLoading, filterList, mutate }
 }
 
 export function useWorkflowTemplateByName(name, immediate: boolean = true) {

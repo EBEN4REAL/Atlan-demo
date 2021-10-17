@@ -197,6 +197,7 @@
                             message.error(
                                 'Unable to create group, please try again.'
                             )
+                            createGroupLoading.value = false
                         }
                     },
                     { immediate: true }

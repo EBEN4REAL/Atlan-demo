@@ -5,7 +5,7 @@ import useSWRV from 'swrv'
 import { fetcher, getAPIPath } from '~/api'
 import swrvState from '~/composables/utils/swrvState'
 import { getFormattedGroup } from '~/composables/group/formatGroup'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 export const useGroup = (groupListAPIParams: {
     limit: number

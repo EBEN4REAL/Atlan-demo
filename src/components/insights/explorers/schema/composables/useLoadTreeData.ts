@@ -8,7 +8,7 @@ import {
 } from '~/types/insights/table.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
-import { useAPIPromise } from '~/api/useAPI'
+import { useAPIPromise } from '~/services/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
@@ -48,7 +48,7 @@ const useLoadTreeData = () => {
             ],
         },
         // sortBy: 'name',
-        // sortOrder: 'ASCENDING',
+        sortOrder: 'ASCENDING',
     })
 
     const getDatabaseForConnection = async (

@@ -89,6 +89,11 @@ import Pencil from '~/assets/images/icons/pencil.svg'
 import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
+import Cross from '~/assets/images/icons/cross.svg'
+import FullScreen from '~/assets/images/icons/fullscreen.svg'
+import ExitFullScreen from '~/assets/images/icons/exit-fullscreen.svg'
+import SidebarTrigger from '~/assets/images/icons/sidebar-trigger.svg'
+import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
 import RunSuccess from '~/assets/images/icons/run-success.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
@@ -97,8 +102,11 @@ import InsightsActive from '~/assets/images/icons/insights_active.svg'
 import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
+import RunHistory from '~/assets/images/icons/run-history.svg'
+import Slack from '~/assets/images/integrations/slack.svg'
 
 export default {
+    RunHistory,
     RunSuccess,
     RunFailed,
     Metadata,
@@ -191,10 +199,16 @@ export default {
     Caret,
     Check,
     Dots,
+    Cross,
+    SidebarTrigger,
+    OutputpaneTrigger,
+    FullScreen,
+    ExitFullScreen,
     WorkflowsActive,
     WorkflowsInactive,
     InsightsActive,
     InsightsInactive,
     AssetsActive,
     AssetsInactive,
+    Slack,
 }

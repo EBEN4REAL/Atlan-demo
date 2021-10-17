@@ -97,12 +97,6 @@
 
                 <div v-else class="">
                     <div
-                        v-if="workflowList.length && !queryText"
-                        class="mx-3 text-xl font-bold text-gray-600"
-                    >
-                        All
-                    </div>
-                    <div
                         class="overflow-y-auto"
                         :style="
                             queryText || true
@@ -129,7 +123,7 @@
             </div>
         </div>
 
-        <div class="border-l border-gray-300 preview-container">
+        <div class="flex flex-col border-l border-gray-300 preview-container">
             <SetupPreview v-if="selected" :selected-workflow="selected" />
         </div>
     </div>
@@ -217,14 +211,14 @@
             const {
                 workflowList,
                 loadMore,
-                totalCount,
+                filter_record,
                 isLoading,
                 filterList,
                 mutate,
             } = useWorkflowTemplates(false)
 
             const isLoadMore = computed(
-                () => totalCount.value > workflowList.value.length
+                () => filter_record.value > workflowList.value.length
             )
 
             if (!workflowList.value.length) mutate()

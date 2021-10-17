@@ -1,4 +1,9 @@
 import { Insights } from './api/insights'
-export const HEKA_SERVICE_API = {
-    Insights: Insights,
+import { Assets } from './api/assets'
+
+const HEKA_SERVICE_API = {
+    Insights,
+    Assets
 }
+
+export default HEKA_SERVICE_API

@@ -4,7 +4,7 @@ import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 import { Components } from '~/api/atlas/client'
 
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import {
     CREATE_GLOSSARY,
     CREATE_GLOSSARY_CATEGORY,

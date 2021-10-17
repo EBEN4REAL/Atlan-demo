@@ -55,7 +55,35 @@
             v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
             @dropdownVisibleChange="handleDropdownVisibleChange"
-        />
+        >
+            <template #dropdownRender="{ menuNode: menu }">
+                <v-nodes :vnodes="menu" />
+                <template v-if="allowCreate">
+                    <a-divider style="margin: 4px 0" />
+                    <div
+                        style="padding: 4px 8px; cursor: pointer"
+                        @mousedown="(e) => e.preventDefault()"
+                        @click="handleCreateNew"
+                    >
+                        {{ createNewLabel || 'Create More' }}
+                    </div>
+                </template>
+            </template>
+        </a-select>
+        <a-modal
+            v-model:visible="createNewVisibility"
+            title="Basic Modal"
+            width="60%"
+            :closable="false"
+        >
+            <div class="overflow-y-scroll" style="height: 65vh">
+                <FormGenerator :config="newConfig" />
+            </div>
+            <template #footer>
+                <a-button @click="handleClose">Close</a-button>
+            </template>
+        </a-modal>
+
         <a-input-number
             v-if="dataType === 'number'"
             :value="modelValue"
@@ -112,13 +140,19 @@
 
 <script lang="ts">
     import dayjs from 'dayjs'
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
 
     export default defineComponent({
         components: {
             UserSelector,
+            // formGenerator,
+            FormGenerator: defineAsyncComponent(
+                () => import('@/common/formGenerator/index.vue')
+            ),
+            // formModal,
+            VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
             modelValue: {
@@ -140,6 +174,11 @@
                 default(): string {
                     return ''
                 },
+            },
+            createNewLabel: {
+                type: String,
+                required: false,
+                default: '',
             },
             placeholder: {
                 type: String,
@@ -186,6 +225,18 @@
                     return false
                 },
             },
+            allowCreate: {
+                type: Boolean,
+                required: false,
+                default(): boolean {
+                    return false
+                },
+            },
+            getFormConfig: {
+                type: Object,
+                require: false,
+                default: () => null,
+            },
             requestConfig: {
                 type: Object,
                 require: false,
@@ -223,26 +274,33 @@
             const {
                 loadData,
                 asyncData,
+                newConfig,
                 loadingData: loading,
                 letAsyncSelectDisabled,
                 shouldRefetch,
+                handleCreateNew,
+                createNewVisibility,
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
-                props.valueObject
+                props.valueObject,
+                props?.getFormConfig
             )
 
-            // if (props.dataType === 'asyncSelect') {
-            //     watch(letAsyncSelectDisabled.value, (v) => {
-            //         if (!v) loadData()
-            //     })
-            // }
             const handleDropdownVisibleChange = (open) => {
                 if (open && shouldRefetch.value) loadData()
             }
 
+            const handleClose = () => {
+                createNewVisibility.value = false
+                loadData()
+            }
             return {
                 loadData,
+                handleClose,
+                createNewVisibility,
+                newConfig,
+                handleCreateNew,
                 handleDropdownVisibleChange,
                 asyncData,
                 loading,
@@ -320,3 +378,11 @@
         },
     })
 </script>
+
+<style lang="less">
+    .ant-modal {
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        padding-bottom: 0px !important;
+    }
+</style>

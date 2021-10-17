@@ -1,7 +1,7 @@
 import { watch, ref, inject } from 'vue';
 import { useRouter } from 'vue-router'
 
-import { useAPI } from "~/api/useAPI"
+import { useAPI } from "~/services/api/useAPI"
 import { DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"
 
 const useDeleteGlossary = () => {

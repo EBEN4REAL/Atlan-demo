@@ -29,12 +29,12 @@ export default function useAssetInfo() {
 
         const found = attributes(asset)?.integrationName
             ? SourceList.find(
-                  (src) => src.id === attributes(asset)?.integrationName
-              )
+                (src) => src.id === attributes(asset)?.integrationName
+            )
             : SourceList.find(
-                  (src) =>
-                      src.id === attributes(asset)?.qualifiedName.split('/')[1]
-              )
+                (src) =>
+                    src.id === attributes(asset)?.qualifiedName.split('/')[1]
+            )
 
         if (found) img = found.image
 
@@ -202,7 +202,7 @@ export default function useAssetInfo() {
         attributes(asset)?.ownerUsers?.split(',') || []
 
     const certificateStatus = (asset: assetInterface) => {
-        attributes(asset)?.certificateStatus
+        return attributes(asset)?.certificateStatus
     }
 
     const getHierarchy = (asset: assetInterface) => {
@@ -333,17 +333,17 @@ export default function useAssetInfo() {
             },
             attributes(asset).isPublished
                 ? {
-                      id: 'tableauPublishedDatasource',
-                      label: 'Published Datasource',
-                      value: attributes(asset).datasourceName,
-                      icon: 'TableauPublishedDatasource',
-                  }
+                    id: 'tableauPublishedDatasource',
+                    label: 'Published Datasource',
+                    value: attributes(asset).datasourceName,
+                    icon: 'TableauPublishedDatasource',
+                }
                 : {
-                      id: 'tableauEmbeddedDatasource',
-                      label: 'Embedded Datasource',
-                      value: attributes(asset).datasourceName,
-                      icon: 'TableauEmbeddedDatasource',
-                  },
+                    id: 'tableauEmbeddedDatasource',
+                    label: 'Embedded Datasource',
+                    value: attributes(asset).datasourceName,
+                    icon: 'TableauEmbeddedDatasource',
+                },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',

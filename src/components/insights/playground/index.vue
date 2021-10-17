@@ -90,7 +90,7 @@
                 >
                     <Editor
                 /></pane>
-                <pane min-size="4.5" :size="outputPaneSize" max-size="80">
+                <pane min-size="4.5" :size="outputPaneSize" max-size="70">
                     <ResultsPane
                 /></pane>
             </splitpanes>

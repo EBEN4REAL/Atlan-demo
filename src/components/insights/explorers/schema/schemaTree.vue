@@ -44,10 +44,10 @@
             </div>
             <div
                 v-else-if="!treeData.length"
-                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
                 <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
-                <p class="mt-2 mb-0 text-base text-gray-700">
+                <p class="mt-6 mb-0 text-base text-gray-700">
                     No schemas available
                 </p>
             </div>
@@ -148,6 +148,9 @@
     .tree-container {
         overflow: hidden;
     }
+    .no-schema-icon {
+        @apply w-32 !important;
+    }
 </style>
 <style lang="less" module>
     .schemaTreeStyles {
@@ -206,7 +209,4 @@
     // :global(.ant-tree-treenode-switcher-close:hover) {
     //     background-color: #e5e5e5 !important;
     // }
-    .no-schema-icon {
-        @apply w-32 !important;
-    }
 </style>

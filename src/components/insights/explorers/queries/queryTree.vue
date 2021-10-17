@@ -1,7 +1,7 @@
 TR
 <template>
     <div class="max-h-screen" :class="$style.queryTreeStyles">
-        <div class="h-full overflow-x-hidden">
+        <div class="h-full overflow-x-hidden query-tree-root-div">
             <div v-if="treeData.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
@@ -67,6 +67,7 @@ TR
                 </div>
                 <div>
                     <a-button
+                        @click="toggleCreateQueryModal"
                         class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
                     >
                         <span
@@ -77,6 +78,7 @@ TR
                     >
                     <p class="my-2 text-sm text-base text-gray-500">OR</p>
                     <a-button
+                        @click="createFolderInput"
                         class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
                     >
                         <span
@@ -118,6 +120,7 @@ TR
             StatusBadge,
             QueryTreeItem,
         },
+        emits: ['toggleCreateQueryModal', 'createFolderInput'],
         props: {
             treeData: {
                 type: Object as PropType<TreeDataItem[]>,
@@ -189,8 +192,16 @@ TR
                 })
                 return bool
             }
+            const toggleCreateQueryModal = () => {
+                emit('toggleCreateQueryModal')
+            }
+            const createFolderInput = () => {
+                emit('createFolderInput')
+            }
 
             return {
+                createFolderInput,
+                toggleCreateQueryModal,
                 savedQueryType,
                 StatusList,
                 isSavedQueryOpened,

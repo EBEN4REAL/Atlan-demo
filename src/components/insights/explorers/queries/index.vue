@@ -71,6 +71,8 @@
                     class="w-full h-full bg-white"
                 >
                     <query-tree
+                        @toggleCreateQueryModal="toggleCreateQueryModal"
+                        @createFolderInput="createFolderInput"
                         :savedQueryType="savedQueryType"
                         :tree-data="per_treeData"
                         :on-load-data="per_onLoadData"
@@ -87,6 +89,8 @@
                     class="w-full h-full bg-white"
                 >
                     <query-tree
+                        @toggleCreateQueryModal="toggleCreateQueryModal"
+                        @createFolderInput="createFolderInput"
                         :savedQueryType="savedQueryType"
                         :tree-data="all_treeData"
                         :on-load-data="all_onLoadData"

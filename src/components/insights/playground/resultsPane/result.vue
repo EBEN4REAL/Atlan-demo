@@ -74,7 +74,6 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import LoadingView from '@common/loaders/page.vue'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         components: {
@@ -98,6 +97,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
@@ -122,6 +122,7 @@
                 )
             }
             return {
+                outputPaneSize,
                 rowCount,
                 getRowsCount,
                 rowCountRunning,

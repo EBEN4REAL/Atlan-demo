@@ -57,6 +57,7 @@
             class="w-full"
             :show-borders="false"
             :show-padding-x="false"
+            :entity="assetData"
             :parent-asset-id="assetData"
         />
         <Resources :asset="assetData" />

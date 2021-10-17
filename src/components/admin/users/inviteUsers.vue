@@ -12,8 +12,10 @@
                     <a-select-option
                         v-for="role in roleList"
                         :key="role.id"
-                        :value="role.code"
-                        >{{ role.name }}</a-select-option
+                        :value="role.name"
+                        ><span class="capitalize">{{
+                            role.name
+                        }}</span></a-select-option
                     >
                 </a-select>
             </template>
@@ -57,7 +59,8 @@ export default defineComponent({
         const emails = ref([
             {
                 value: '',
-                role: '$member',
+                role: 'member',
+                label:'Member'
             },
         ])
         const loading = ref(false)
@@ -71,7 +74,8 @@ export default defineComponent({
                 emails.value = [
                     {
                         value: '',
-                        role: '$member',
+                        role: 'member',
+                        label:'Member'
                     },
                 ]
             }
@@ -81,7 +85,8 @@ export default defineComponent({
                 ...emails.value,
                 {
                     value: '',
-                    role: '$member',
+                    role: 'member',
+                    label:'Member'
                 },
             ]
         }
@@ -89,7 +94,7 @@ export default defineComponent({
             console.log(email)
             const roleObj =
                 roleList.value && roleList.value.length
-                    ? roleList.value.find((role) => role.code === email.role)
+                    ? roleList.value.find((role) => role.name === email.role)
                     : {}
 
             return roleObj.id || ''
@@ -99,7 +104,7 @@ export default defineComponent({
             const requestPayload = ref({
                 users: emails.value.map((email) => ({
                     email: email.value,
-                    roleName: email.role,
+                    roleName: `$${email.role}`,
                     roleId: getRoleId(email),
                 })),
             })

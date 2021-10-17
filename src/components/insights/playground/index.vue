@@ -172,7 +172,6 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const isActiveInlineTabSaved = computed(
                 () => activeInlineTab.value.isSaved
             )
@@ -219,6 +218,10 @@
                             dataList: [],
                             columnList: [],
                             variables: [],
+                            limitRows: {
+                                checked: false,
+                                rowsCount: -1,
+                            },
                         },
                         resultsPane: {
                             activeTab:
@@ -226,6 +229,8 @@
                                     ?.activeTab ?? 0,
                             result: {
                                 title: `${key} Result`,
+                                isQueryRunning: '',
+                                queryErrorObj: {},
                             },
                             metadata: {},
                             queries: {},
@@ -371,7 +376,6 @@
                 closeTabConfirm,
                 unsavedPopover,
                 isActiveInlineTabSaved,
-                isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,

@@ -60,29 +60,29 @@ export default function useProject() {
         message.error(error.errorMessage)
     }
     const queryRun = (
-        activeInlineTab: activeInlineTabInterface,
+        activeInlineTab: Ref<activeInlineTabInterface>,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
-        isQueryRunning: Ref<string>,
-        queryErrorObj: Ref<any>,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
-        getRowsCount: boolean = false
+        getRowsCount?: Function
     ) => {
         const attributeValue =
-            activeInlineTab.explorer.schema.connectors.attributeValue
+            activeInlineTab.value.explorer.schema.connectors.attributeValue
         let queryText
         if (getRowsCount) {
             queryText = `SELECT COUNT(*) as count from (${getParsedQuery(
-                activeInlineTab.playground.editor.variables,
-                activeInlineTab.playground.editor.text
+                activeInlineTab.value.playground.editor.variables,
+                activeInlineTab.value.playground.editor.text
             )})`
         } else {
             queryText = getParsedQuery(
-                activeInlineTab.playground.editor.variables,
-                activeInlineTab.playground.editor.text
+                activeInlineTab.value.playground.editor.variables,
+                activeInlineTab.value.playground.editor.text
             )
         }
-
-        isQueryRunning.value = 'loading'
+        if (getRowsCount === undefined) {
+            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                'loading'
+        }
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))
         /* -------- NOTE -----------
@@ -122,7 +122,10 @@ export default function useProject() {
         watch([isLoading, error], () => {
             console.log(isLoading.value, error.value, 'request log')
             try {
-                isQueryRunning.value = !isLoading.value ? 'success' : 'loading'
+                if (getRowsCount === undefined) {
+                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                        !isLoading.value ? 'success' : 'loading'
+                }
                 if (!isLoading.value && error.value === undefined) {
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
@@ -146,7 +149,11 @@ export default function useProject() {
                                 // for closing the connection
                                 eventSource.close()
                             }
-                            isQueryRunning.value = 'success'
+                            if (getRowsCount === undefined) {
+                                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                                    'success'
+                            }
+                            if (getRowsCount) getRowsCount('success')
                         }
                         if (message?.details?.status === 'error') {
                             if (eventSource?.close) {
@@ -154,9 +161,14 @@ export default function useProject() {
                                 console.log('coonectio closed')
                                 eventSource.close()
                             }
+                            if (getRowsCount === undefined) {
+                                activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                                    message
+                                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                                    'error'
+                            }
                             /* Assging error obj */
-                            queryErrorObj.value = message
-                            isQueryRunning.value = 'error'
+                            if (getRowsCount) getRowsCount('error')
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -186,7 +198,10 @@ export default function useProject() {
                     setColumns(columnList, [])
                     setRows(dataList, columnList, [])
                     getData([], [], -1)
-                    isQueryRunning.value = 'error'
+                    if (getRowsCount === undefined) {
+                        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                            'error'
+                    }
                 }
             } catch (e) {
                 if (eventSource?.close) {

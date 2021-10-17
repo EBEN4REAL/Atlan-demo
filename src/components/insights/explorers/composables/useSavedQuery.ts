@@ -79,6 +79,10 @@ export function useSavedQuery(
                     variables: decodeBase64Data(
                         savedQuery.attributes.variablesSchemaBase64
                     ) as CustomVaribaleInterface[],
+                    limitRows: {
+                        checked: false,
+                        rowsCount: -1,
+                    },
                 },
                 resultsPane: {
                     activeTab:
@@ -86,6 +90,8 @@ export function useSavedQuery(
                             .activeTab ?? 0,
                     result: {
                         title: savedQuery.attributes.name,
+                        isQueryRunning: '',
+                        queryErrorObj: {},
                     },
                     metadata: {},
                     queries: {},

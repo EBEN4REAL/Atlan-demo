@@ -4,7 +4,13 @@
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
+                    class="
+                        relative
+                        flex flex-col
+                        items-center
+                        text-xs
+                        sidebar-nav-icon
+                    "
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -159,8 +165,7 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
-            const { isQueryRunning, queryExecutionTime, queryErrorObj } =
-                useRunQuery()
+            const { queryExecutionTime, queryErrorObj } = useRunQuery()
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -194,7 +199,6 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
-                isQueryRunning: isQueryRunning,
                 queryErrorObj: queryErrorObj,
                 editorInstance: editorInstance,
                 editorConfig: editorConfig,

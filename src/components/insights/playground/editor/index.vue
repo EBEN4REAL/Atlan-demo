@@ -448,7 +448,11 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
+            const isQueryRunning = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning
+            )
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const isUpdating: Ref<boolean> = ref(false)
             const openSaveQueryModal = () => {
@@ -476,13 +480,7 @@
             }
             const run = () => {
                 useAddEvent('insights', 'query', 'run', undefined)
-                queryRun(
-                    activeInlineTab.value,
-                    getData,
-                    isQueryRunning,
-                    queryErrorObj,
-                    limitRows
-                )
+                queryRun(activeInlineTab, getData, limitRows)
             }
 
             const setInstance = (

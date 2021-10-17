@@ -143,6 +143,7 @@
         defineComponent,
         Ref,
         inject,
+        computed,
         PropType,
         toRefs,
         watch,
@@ -178,12 +179,20 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
-            const queryErrorObj = inject('queryErrorObj') as Ref<any>
+            const queryErrorObj = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .queryErrorObj
+            )
             const rowCountErrObj = ref()
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
+            const isQueryRunning = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning
+            )
             watch(queryExecutionTime, () => {
                 rowCount.value = -1
             })
@@ -194,15 +203,12 @@
                     rowCount.value = dataList[0].COUNT
                 }
             }
+            const cllback = (status: string) => {
+                rowCountRunning.value = status
+            }
             const getRowsCount = () => {
-                queryRun(
-                    activeInlineTab.value,
-                    getData,
-                    rowCountRunning,
-                    queryErrorObj,
-                    undefined,
-                    true
-                )
+                rowCountRunning.value = 'loading'
+                queryRun(activeInlineTab, getData, undefined, cllback)
             }
             return {
                 queryErrorObj,

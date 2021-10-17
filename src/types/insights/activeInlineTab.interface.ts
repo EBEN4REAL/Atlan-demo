@@ -45,6 +45,8 @@ export interface activeInlineTabInterface {
             activeTab: number
             result: {
                 title: string
+                isQueryRunning: string
+                queryErrorObj: any
             }
             metadata: Object
             queries: Object

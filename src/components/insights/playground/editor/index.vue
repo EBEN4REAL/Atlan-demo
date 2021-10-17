@@ -336,7 +336,7 @@
                                 />
                             </a-tooltip>
                         </div>
-                        <div class="ml-2" @click="toggleAssetPreview">
+                        <!-- <div class="ml-2" @click="toggleAssetPreview">
                             <a-tooltip>
                                 <template #title>Toggle asset preview</template>
 
@@ -345,7 +345,7 @@
                                     class="w-4 h-4 text-gray-500"
                                 />
                             </a-tooltip>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

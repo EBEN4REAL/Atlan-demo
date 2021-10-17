@@ -98,6 +98,10 @@ export default function useProject() {
             ),
             length: 10,
         }
+        /* This means it is a saved query */
+        if (activeInlineTab.value?.queryId) {
+            params.savedQueryId = activeInlineTab.value?.queryId
+        }
         /* Adding a limit param if limit rows is checked and limit is passed*/
         if (limitRows?.value && limitRows?.value?.checked)
             params['limit'] = limitRows.value.rowsCount

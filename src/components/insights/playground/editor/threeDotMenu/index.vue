@@ -248,7 +248,9 @@
                         <a-menu-item>Sans serif</a-menu-item>
                     </a-sub-menu> -->
                     <hr />
-                    <a-menu-item>Duplicate query</a-menu-item>
+                    <a-menu-item @click="duplicateQuery"
+                        >Duplicate query</a-menu-item
+                    >
                     <a-menu-item>Edit saved query</a-menu-item>
                     <a-menu-item>Delete</a-menu-item>
                     <hr />
@@ -260,15 +262,31 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, inject, Ref, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        ComputedRef,
+        inject,
+        Ref,
+        toRaw,
+    } from 'vue'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         components: {},
         props: {},
         setup(props) {
+            const router = useRouter()
             const { setEditorTheme, setTabSpaces, setFontSizes } = useEditor()
+            const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
+            const { inlineTabAdd } = useInlineTab()
+
             const themeAlias = {
                 vs: 'Light',
                 'vs-dark': 'Dark',
@@ -291,6 +309,16 @@
             const selectedKeys = ref([editorConfig.value.theme])
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
+            const tabsArray = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
+
             const isActive = ref(false)
             const toggleButtonState = () => {
                 isActive.value = !isActive.value
@@ -312,8 +340,27 @@
                     fontSize
                 )
             }
+            const duplicateQuery = () => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                const label = `Copy ${activeInlineTabCopy.label}`
+                activeInlineTabCopy.label = label
+                /* IMP TO RESET */
+                activeInlineTabCopy.key = String(new Date().getTime())
+                activeInlineTabCopy.isSaved = false
+                activeInlineTabCopy.queryId = undefined
+
+                /* CAREFUL:-------Order is important here------ */
+                inlineTabAdd(activeInlineTabCopy, tabsArray, activeInlineTabKey)
+                activeInlineTabKey.value = activeInlineTabCopy.key
+                /* ----------------------------- */
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
+                router.push(`/insights`)
+            }
 
             return {
+                duplicateQuery,
                 fontSizeChange,
                 isThisFontSizeActive,
                 isThisTabActive,

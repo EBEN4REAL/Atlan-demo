@@ -139,7 +139,12 @@ export default function useProject() {
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
-                    console.error('Failed to connect to server', error.value)
+                    console.log(
+                        'Failed to connect to server',
+                        error.value,
+                        'error'
+                    )
+
                     if (error.value?.status && error.value?.statusText) {
                         message.error({
                             content: `${error.value.status} ${error.value.statusText}!`,

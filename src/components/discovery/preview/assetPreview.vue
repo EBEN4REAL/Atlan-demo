@@ -2,14 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="
-                    fixed
-                    z-10
-                    px-0
-                    border-r-0
-                    rounded-none rounded-l
-                    -left-5
-                "
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -81,13 +74,7 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :show-no-status="false"
-                    :status-id="selectedAsset?.attributes?.certificateStatus"
-                    class="ml-1.5 mb-1"
-                ></StatusBadge>
+                  <CertificatePopover :data="selectedAsset" />
             </div>
         </div>
         <a-tabs
@@ -114,15 +101,7 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            px-5
-                            py-3
-                            font-semibold
-                            text-gray-700 text-md
-                        "
+                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700 text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -161,6 +140,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
+    import CertificatePopover from '~/components/common/certificatePopover.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
@@ -198,6 +178,7 @@
             businessMetadataTab: defineAsyncComponent(
                 () => import('./tabs/businessMetadata/businessMetadataTab.vue')
             ),
+            CertificatePopover,
         },
         props: {
             selectedAsset: {

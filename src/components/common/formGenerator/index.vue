@@ -45,6 +45,7 @@
                                 </a-popover>
                                 <a-form-item :name="c.id">
                                     <DynamicInput
+                                        v-if="valueObject"
                                         v-model="valueObject[c.id]"
                                         :data-type="c.type"
                                         :date-time-type="c.dateTimeType"
@@ -59,10 +60,10 @@
                                         :limit-after="c.limitAfter"
                                         :limit-before="c.limitBefore"
                                         :allow-custom="c.allowCustom"
+                                        :valueObject="valueObject"
                                         v-bind="
                                             f.type === 'asyncSelect'
                                                 ? {
-                                                      valueObject,
                                                       allowCreate:
                                                           c?.allowCreate,
                                                       getFormConfig:
@@ -102,6 +103,7 @@
                     </a-popover>
                     <a-form-item :name="f.id">
                         <DynamicInput
+                            v-if="valueObject"
                             v-model="valueObject[f.id]"
                             :data-type="f.type"
                             :date-time-type="f.dateTimeType"
@@ -117,10 +119,10 @@
                             :limit-after="f.limitAfter"
                             :limit-before="f.limitBefore"
                             :allow-custom="f.allowCustom"
+                            :valueObject="valueObject"
                             v-bind="
                                 f.type === 'asyncSelect'
                                     ? {
-                                          valueObject,
                                           allowCreate: f.allowCreate,
                                           getFormConfig: f.getFormConfig,
                                           createNewLabel: f.createNewLabel,
@@ -151,13 +153,22 @@
 
 <script>
     import DynamicInput from '@common/input/dynamic.vue'
-    import { defineComponent, ref, watch, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        computed,
+        defineAsyncComponent,
+    } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import useFormGenerator from './useFormGenerator'
 
     export default defineComponent({
         name: 'FormBuilder',
-        components: { DynamicInput, CustomRadioButton },
+        components: {
+            DynamicInput,
+            CustomRadioButton,
+        },
         props: {
             config: {
                 required: true,

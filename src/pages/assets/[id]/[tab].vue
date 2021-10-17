@@ -81,6 +81,7 @@
     import useAsset from '~/composables/asset/useAsset'
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useCheckAccess from '~/services/access/useCheckAccess'
 
     // Constants
     import { AssetTypeList } from '~/constant/assetType'
@@ -117,6 +118,8 @@
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
+            const userHasEditPermission = ref<boolean>(true)
+
             const biTabs = [
                 {
                     id: 1,
@@ -163,6 +166,8 @@
             /** UTILS */
             const router = useRouter()
             const route = useRoute()
+
+            const { evaluatePermissions } = useCheckAccess()
 
             /** COMPUTED */
             const id = computed(() => route?.params?.id || '')
@@ -240,8 +245,16 @@
                     watch(response, () => {
                         data.value.asset = response.value?.entities?.[0]
                         data.value.error = error.value
-                        if (data.value?.asset?.guid !== '-1')
+                        if (data.value?.asset?.guid !== '-1') {
                             handlePreview(data.value?.asset)
+                        }
+
+                        const { data: userPermission } = evaluatePermissions(
+                            data.value?.asset,
+                            'ENTITY_UPDATE'
+                        )
+                        userHasEditPermission.value =
+                            userPermission.value[0]?.allowed
                     })
                 }
             }
@@ -268,6 +281,8 @@
 
             /** PROVIDER */
             provide('assetData', data.value)
+            provide('editPermissionForProfile', userHasEditPermission.value)
+
             // TODO: remove after fixing hierarchy bug
             // provide('parentForBIAsset', parentForBIAsset)
 

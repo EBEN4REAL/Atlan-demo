@@ -180,7 +180,6 @@
                 [selectedAsset, page],
                 () => {
                     const infoTab = useInfoPanels(page, selectedAsset)
-                    console.log(userHasEditPermission.value)
                     if (infoTab) {
                         const panels = [...infoTab?.panels]
                         const properties = infoTab?.properties

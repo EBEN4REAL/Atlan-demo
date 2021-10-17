@@ -9,6 +9,7 @@
                 :data="classificationsList"
                 label-key="typeName"
                 popover-trigger="hover"
+                :read-only="!editPermission"
                 @add="toggleLinkClassificationPopover"
                 @delete="unLinkClassification"
                 @select="handleSelect"
@@ -51,7 +52,10 @@
             trigger="click"
         >
             <div v-if="asset.classifications?.length < 1">
-                <div @click.stop="toggleLinkClassificationPopover">
+                <div
+                    v-if="editPermission"
+                    @click.stop="toggleLinkClassificationPopover"
+                >
                     <div
                         class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                     >
@@ -59,6 +63,11 @@
                             <fa icon="fal plus" />
                         </span> -->
                         <span class="text-xs">Add classifications</span>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="flex items-center text-gray-500 cursor-pointer">
+                        <span class="text-xs">No classifications</span>
                     </div>
                 </div>
             </div>
@@ -269,6 +278,11 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         components: { PillGroup, ClassificationInfoCard },

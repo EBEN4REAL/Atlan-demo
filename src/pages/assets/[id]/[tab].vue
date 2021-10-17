@@ -49,6 +49,7 @@
                                 refs[tab.id] = el
                             }
                         "
+                        :user-has-edit-permission="userHasEditPermission"
                         class="bg-transparent"
                         @preview="handlePreview"
                     ></component>
@@ -118,7 +119,7 @@
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
-            const userHasEditPermission = ref<boolean>(true)
+            const userHasEditPermission = ref<any>({})
 
             const biTabs = [
                 {
@@ -253,8 +254,7 @@
                             data.value?.asset,
                             'ENTITY_UPDATE'
                         )
-                        userHasEditPermission.value =
-                            userPermission.value[0]?.allowed
+                        userHasEditPermission.value = { userPermission }
                     })
                 }
             }
@@ -281,7 +281,6 @@
 
             /** PROVIDER */
             provide('assetData', data.value)
-            provide('editPermissionForProfile', userHasEditPermission.value)
 
             // TODO: remove after fixing hierarchy bug
             // provide('parentForBIAsset', parentForBIAsset)
@@ -297,6 +296,7 @@
                 data,
                 selectBiTab,
                 selectNonBiTab,
+                userHasEditPermission,
             }
         },
     })

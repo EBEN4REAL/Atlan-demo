@@ -130,12 +130,14 @@
                 </div>
                 <div>
                     <a-dropdown trigger="click" placement="bottomRight">
-                        <a-button
-                            v-show="showKebabMenu"
-                            class="px-2 bg-transparent border-transparent shadow-none  hover:border-current"
-                        >
-                            <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
-                        </a-button>
+                        <div v-if="editPermission">
+                            <a-button
+                                v-show="showKebabMenu"
+                                class="px-2 bg-transparent border-transparent shadow-none  hover:border-current"
+                            >
+                                <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
+                            </a-button>
+                        </div>
                         <template #overlay>
                             <a-menu
                                 mode="vertical"
@@ -227,12 +229,14 @@
                 </div>
                 <div>
                     <a-dropdown trigger="click" placement="bottomRight">
-                        <a-button
-                            v-show="showKebabMenu"
-                            class="px-2 ml-2 bg-transparent border-transparent shadow-none  hover:border-current"
-                        >
-                            <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
-                        </a-button>
+                        <div v-if="editPermission">
+                            <a-button
+                                v-show="showKebabMenu"
+                                class="px-2 ml-2 bg-transparent border-transparent shadow-none  hover:border-current"
+                            >
+                                <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
+                            </a-button>
+                        </div>
                         <template #overlay>
                             <a-menu
                                 mode="vertical"
@@ -274,6 +278,11 @@
             asset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         setup(props) {

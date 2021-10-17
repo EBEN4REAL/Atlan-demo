@@ -39,14 +39,17 @@
                     </template>
                 </a-tree>
             </div>
-            <div v-else-if="isLoading">
+            <div v-else-if="isLoading" class="flex items-center justify-center">
                 <LoadingView />
             </div>
             <div
                 v-else-if="!treeData.length"
                 class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
-                <AtlanIcon icon="EmptyGlossary" class="h-40" />
+                <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
+                <p class="mt-2 mb-0 text-base text-gray-700">
+                    No schemas available
+                </p>
             </div>
         </div>
     </div>
@@ -203,4 +206,7 @@
     // :global(.ant-tree-treenode-switcher-close:hover) {
     //     background-color: #e5e5e5 !important;
     // }
+    .no-schema-icon {
+        @apply w-32 !important;
+    }
 </style>

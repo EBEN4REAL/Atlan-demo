@@ -71,6 +71,7 @@
                     class="w-full h-full bg-white"
                 >
                     <query-tree
+                        :savedQueryType="savedQueryType"
                         :tree-data="per_treeData"
                         :on-load-data="per_onLoadData"
                         :select-node="per_selectNode"
@@ -86,6 +87,7 @@
                     class="w-full h-full bg-white"
                 >
                     <query-tree
+                        :savedQueryType="savedQueryType"
                         :tree-data="all_treeData"
                         :on-load-data="all_onLoadData"
                         :select-node="all_selectNode"

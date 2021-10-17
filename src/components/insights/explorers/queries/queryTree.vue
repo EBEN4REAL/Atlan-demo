@@ -46,16 +46,53 @@ TR
             </div>
             <div
                 v-else-if="!treeData.length"
-                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
-                <AtlanIcon icon="EmptyGlossary" class="h-40" />
+                <div class="flex flex-col items-center justify-center">
+                    <AtlanIcon
+                        v-if="savedQueryType === 'personal'"
+                        icon="NoSavedQueriesPersonal"
+                        class="h-32 no-svaved-query-icon text-primary"
+                    />
+                    <AtlanIcon
+                        v-else
+                        icon="NoSavedQueriesAll"
+                        class="h-32 no-svaved-query-icon text-primary"
+                    />
+                    <p
+                        class="my-2 mb-0 mb-6 text-base text-gray-700  max-width-text"
+                    >
+                        Your {{ savedQueryType }} queries will appear here
+                    </p>
+                </div>
+                <div>
+                    <a-button
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
+                    >
+                        <span
+                            ><AtlanIcon
+                                icon="NewQuery"
+                                class="h-4 m-0 mr-1 -mt-0.5" /></span
+                        >Create a new query</a-button
+                    >
+                    <p class="my-2 text-sm text-base text-gray-500">OR</p>
+                    <a-button
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
+                    >
+                        <span
+                            ><AtlanIcon
+                                icon="NewFolder"
+                                class="h-4 m-0 mr-1 -mt-0.5" /></span
+                        >Create a new folder</a-button
+                    >
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, PropType, inject, Ref } from 'vue'
+    import { defineComponent, PropType, inject, Ref, toRefs } from 'vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
     // components
@@ -86,6 +123,10 @@ TR
                 type: Object as PropType<TreeDataItem[]>,
                 required: true,
                 default: () => {},
+            },
+            savedQueryType: {
+                type: Object as PropType<string>,
+                required: true,
             },
             onLoadData: {
                 type: Function,
@@ -124,6 +165,7 @@ TR
             },
         },
         setup(props, { emit }) {
+            const { savedQueryType } = toRefs(props)
             // data
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -149,6 +191,7 @@ TR
             }
 
             return {
+                savedQueryType,
                 StatusList,
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
@@ -192,33 +235,13 @@ TR
         :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
             @apply bg-gray-light;
         }
-        // :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
-        //         > .ant-tree-switcher_open) {
-        //     background-color: rgba(219, 234, 254, 1) !important;
-        //     height: 32px !important;
-        //     justify-content: center;
-        //     display: inline-flex !important;
-        //     align-items: center;
-        // }
-        // :global(.ant-tree li .ant-tree-node-content-wrapper) {
-        //     border-radius: 0px !important;
-        // }
-        // :global(.ant-tree-treenode-switcher-close.ant-tree-treenode-selected
-        //         > .ant-tree-switcher_open) {
-        //     background-color: rgba(219, 234, 254, 1) !important;
-        //     height: 32px !important;
-        //     justify-content: center;
-        //     display: inline-flex !important;
-        //     align-items: center;
-        // }
-        // :global(.ant-tree-switcher) {
-        //     @apply pl-5 pr-2 !important;
-        // }
-        // :global(.ant-tree-treenode-switcher-close:hover) {
-        //     background-color: #e5e5e5 !important;
-        // }
-        // :global(.ant-tree-treenode-switcher-close:hover) {
-        //     background-color: #e5e5e5 !important;
-        // }
+    }
+</style>
+<style lang="less" scoped>
+    .no-svaved-query-icon {
+        @apply w-32 !important;
+    }
+    .max-width-text {
+        max-width: 216px;
     }
 </style>

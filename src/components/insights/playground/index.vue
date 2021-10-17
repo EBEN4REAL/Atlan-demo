@@ -95,7 +95,7 @@
                 /></pane>
             </splitpanes>
         </div>
-        <NoActiveInlineTab v-else />
+        <NoActiveInlineTab @handleAdd="handleAdd" v-else />
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"

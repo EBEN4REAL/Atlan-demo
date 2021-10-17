@@ -4,6 +4,12 @@
             class="relative flex justify-center overflow-x-auto rounded  table_height"
         >
             <a-table
+                v-if="
+                    activeInlineTab.playground.editor.columnList.length > 0 ||
+                    isQueryRunning === 'loading'
+                        ? true
+                        : false
+                "
                 class="w-full overflow-x-auto"
                 :loading="isQueryRunning === 'loading' ? true : false"
                 :class="$style.result_tab"
@@ -11,6 +17,15 @@
                 :scroll="{ x: 500 }"
                 :columns="activeInlineTab.playground.editor.columnList"
             />
+            <div
+                v-else
+                class="flex flex-col items-center justify-center w-full h-full"
+            >
+                <AtlanIcon icon="NoDataInsights" class="h-32 text-white w-36" />
+                <p class="mt-4 mb-0 text-base text-gray-700">
+                    Your results will appear here
+                </p>
+            </div>
         </div>
         <div
             class="absolute left-0 flex w-full bg-white border-t  bottom_footer h-7"
@@ -59,6 +74,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import LoadingView from '@common/loaders/page.vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         components: {
@@ -121,7 +137,7 @@
         background-color: #f4f4f4;
     }
     .table_height {
-        height: 85%;
+        height: 100%;
     }
     .bottom_footer {
         bottom: 10%;

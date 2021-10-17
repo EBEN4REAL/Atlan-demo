@@ -58,12 +58,7 @@
                     >
                         {{ title(item) }}
                     </router-link>
-                    <StatusBadge
-                        :key="item.guid"
-                        :show-no-status="false"
-                        :status-id="status(item)"
-                        class="flex-none mb-0.5 ml-1"
-                    ></StatusBadge>
+                    <CertificatePopover :data="item" />
                 </div>
 
                 <!-- Info bar -->
@@ -219,6 +214,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { computed, defineComponent, PropType, Ref, ref } from 'vue'
     import Pill from '@/UI/pill/pill.vue'
+    import CertificatePopover from '~/components/common/certificatePopover.vue'
     import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
 
     import AssetLogo from '@/common/icon/assetIcon.vue'
@@ -236,6 +232,7 @@
             Pill,
             ThreeDotMenu,
             ScrollStrip,
+            CertificatePopover,
         },
         props: {
             item: {

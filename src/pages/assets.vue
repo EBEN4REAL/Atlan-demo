@@ -95,7 +95,7 @@
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
-                console.log(selectedItem)
+                console.log('selected', selectedItem)
             }
             const page = computed(() =>
                 isItem.value ? 'profile' : 'discovery'

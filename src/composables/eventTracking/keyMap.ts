@@ -32,6 +32,44 @@ const keyMap = {
                 action: 'discovery_metadata_terms_updated',
             },
         },
+        search: {
+            changed: 'discovery_search_changed',
+        },
+        asset_profile: {
+            navigated: {
+                action: 'discovery_asset_profile_navigated',
+                properties: (props) => ({ from: props.from }),
+            },
+        },
+        bulk: {
+            update: {
+                action: 'discovery_bulk_updated',
+                properties: (props) => ({
+                    total_assets: props.total_assets,
+                    num_owners: props.num_owners,
+                    num_classifications: props.num_classifications,
+                    num_terms: props.num_terms,
+                }),
+            },
+        },
+        saved_search: {
+            deleted: {
+                action: 'discovery_saved_search_deleted',
+                properties: (props) => ({ facets: props.facets }),
+            },
+            clicked: {
+                action: 'discovery_saved_search_clicked',
+                properties: (props) => ({ facets: props.facets }),
+            },
+            updated: {
+                action: 'discovery_saved_search_updated',
+                properties: (props) => ({ facets: props.facets }),
+            },
+            created: {
+                action: 'discovery_saved_search_created',
+                properties: (props) => ({ facets: props.facets }),
+            },
+        },
     },
     gtc: {
         metadata: {
@@ -66,6 +104,14 @@ const keyMap = {
             created: {
                 action: 'gtc_glossary_created',
             },
+        },
+        tree: {
+            searched: {
+                action: 'gtc_tree_searched',
+            },
+        },
+        tree_search_result: {
+            action: 'gtc_search_result_clicked',
         },
     },
     insights: {

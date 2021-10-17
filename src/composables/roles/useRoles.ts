@@ -13,10 +13,9 @@ const getMemberCount = (id) => {
 };
 const getFormattedRole = (role: any) => {
   const localRole = {
-    id: role.id,
-    code: role.name,
-    name: role.description,
-    memberCount: getMemberCount(role.id),
+    id: role.roleId,
+    name: role.roleName.substring(1), // remove $ from name
+    memberCount: getMemberCount(role.roleId),
   };
   return localRole;
 };
@@ -35,9 +34,9 @@ export default function useRoles() {
   });
   const { state, STATES } = swrvState(data, error, isValidating);
   const roleList = computed(() => {
-    if (data.value && data?.value?.results) {
-      const roles = data.value.results.filter((role) =>
-        role.name.startsWith("$")
+    if (data.value && data.value.length) {
+      const roles = data.value.filter((role) =>
+        role.roleName.startsWith("$")
       );
       return roles.map((role: any) => getFormattedRole(role));
     }

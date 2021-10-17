@@ -26,6 +26,13 @@ export default function useAsset({
         includeClassificationAttributes: true,
         includeSubClassifications: true,
         includeSubTypes: true,
+        relationAttributes: [
+            'readme',
+            'displayText',
+            'name',
+            'description',
+            'shortDescription',
+        ],
         attributes: [
             'owner',
             'expert',

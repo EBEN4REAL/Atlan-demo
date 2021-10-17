@@ -74,13 +74,7 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :show-no-status="false"
-                    :status-id="selectedAsset?.attributes?.certificateStatus"
-                    class="ml-1.5 mb-1"
-                ></StatusBadge>
+                <CertificatePopover :data="selectedAsset" />
             </div>
         </div>
         <a-tabs
@@ -147,6 +141,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
+    import CertificatePopover from '~/components/common/certificatePopover.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
@@ -185,6 +180,7 @@
             businessMetadataTab: defineAsyncComponent(
                 () => import('./tabs/businessMetadata/businessMetadataTab.vue')
             ),
+            CertificatePopover,
         },
         props: {
             selectedAsset: {

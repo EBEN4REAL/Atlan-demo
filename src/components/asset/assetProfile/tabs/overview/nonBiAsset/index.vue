@@ -59,6 +59,7 @@
             :show-padding-x="false"
             :entity="assetData"
             :parent-asset-id="assetData"
+            :edit-permission="editPermission"
         />
         <Resources :asset="assetData" />
     </div>

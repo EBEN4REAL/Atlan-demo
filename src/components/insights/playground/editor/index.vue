@@ -125,40 +125,6 @@
                                 </template>
                                 Run</a-button
                             >
-                            <!-- <a-dropdown :trigger="['click']">
-                                <div
-                                    class="
-                                        flex
-                                        w-5
-                                        items-center
-                                        run-three-dot
-                                        bg-primary
-                                        justify-between
-                                        rounded-none rounded-tr rounded-br
-                                        h-6
-                                        py-0.5
-                                    "
-                                >
-                                    <AtlanIcon
-                                        class="text-white"
-                                        icon="KebabMenu"
-                                    />
-                                </div>
-                                <template #overlay>
-                                    <a-menu>
-                                        <div class="p-2">
-                                            <a-checkbox
-                                                v-model:checked="
-                                                    limitRows.checked
-                                                "
-                                                >Limit to
-                                                {{ limitRows.rowsCount }}
-                                                rows</a-checkbox
-                                            >
-                                        </div>
-                                    </a-menu>
-                                </template>
-                            </a-dropdown> -->
                         </div>
                         <a-button
                             v-if="
@@ -178,8 +144,11 @@
                             :loading="isUpdating"
                             :class="isUpdating ? 'px-4.5' : 'px-2'"
                             :disabled="
-                                activeInlineTab.queryId &&
-                                activeInlineTab.isSaved
+                                !canUserUpdateQuery(
+                                    activeInlineTab.attributes?.owner
+                                ) ||
+                                (activeInlineTab.queryId &&
+                                    activeInlineTab.isSaved)
                             "
                             @click="updateQuery"
                         >
@@ -189,6 +158,7 @@
 
                             Update
                         </a-button>
+
                         <div
                             v-else-if="
                                 activeInlineTab.queryId &&
@@ -356,8 +326,6 @@
 <script lang="ts">
     import {
         computed,
-        onMounted,
-        onUnmounted,
         defineComponent,
         inject,
         Ref,
@@ -392,6 +360,7 @@
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useAccess } from '~/components/insights/common/composables/useAccess'
 
     export default defineComponent({
         components: {
@@ -408,6 +377,7 @@
             const router = useRouter()
 
             // TODO: will be used for HOTKEYs
+            const { canUserUpdateQuery } = useAccess()
             const { resultsPaneSizeToggle } = useHotKeys()
             const { queryRun, modifyQueryExecutionTime } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
@@ -431,7 +401,6 @@
             >
 
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
-            const queryErrorObj = inject('queryErrorObj') as Ref<any>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
@@ -581,6 +550,7 @@
 
             /* ------------------------------------------ */
             return {
+                canUserUpdateQuery,
                 toggleAssetPreview,
                 tFullScreen,
                 fullSreenState,

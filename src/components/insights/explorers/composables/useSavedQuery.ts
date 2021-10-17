@@ -43,6 +43,7 @@ export function useSavedQuery(
         /* --------NOTE- TEMPERORY FIX-------*/
 
         const newTab: activeInlineTabInterface = {
+            attributes: savedQuery.attributes,
             label: savedQuery.attributes.name ?? '',
             key: savedQuery?.guid,
             favico: 'https://atlan.com/favicon.ico',

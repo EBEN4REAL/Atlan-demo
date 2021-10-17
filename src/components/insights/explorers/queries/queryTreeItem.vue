@@ -54,13 +54,17 @@
                                                     'personal'
                                                 "
                                                 key="public"
-                                                @click="showPublishPopover = true"
+                                                @click="
+                                                    showPublishPopover = true
+                                                "
                                                 >Make folder public</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
-                                                @click="showDeletePopover = true"
+                                                @click="
+                                                    showDeletePopover = true
+                                                "
                                                 >Delete Folder</a-menu-item
                                             >
                                         </a-menu>
@@ -111,7 +115,7 @@
                                 "
                             ></StatusBadge>
                             <div
-                                class="absolute right-6 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  right-6 margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -160,10 +164,18 @@
                                                 @click="renameFolder"
                                                 >Rename Query</a-menu-item
                                             >
+
                                             <a-menu-item
+                                                v-if="
+                                                    canUserDeleteFolder(
+                                                        item?.attributes?.owner
+                                                    )
+                                                "
                                                 key="deleteFolder"
                                                 class="text-red-600"
-                                                @click="showDeletePopover = true"
+                                                @click="
+                                                    showDeletePopover = true
+                                                "
                                                 >Delete Query</a-menu-item
                                             >
                                         </a-menu>
@@ -177,18 +189,25 @@
                 <!-- ---------------- -->
             </div>
         </div>
-
     </div>
-        <a-popover :visible="showDeletePopover" placement="right" >
-            <template #content>
-                <TreeDeletePopover :item="item" @cancel="showDeletePopover = false" @delete="() => delteItem(item.typeName)" />
-            </template>
-        </a-popover>
-        <a-popover :visible="showPublishPopover" placement="right">
-            <template #content>
-                <PublishFolderPopover :item="item" @cancel="showPublishPopover = false" @publish="publishFolder" />
-            </template>
-        </a-popover>
+    <a-popover :visible="showDeletePopover" placement="right">
+        <template #content>
+            <TreeDeletePopover
+                :item="item"
+                @cancel="showDeletePopover = false"
+                @delete="() => delteItem(item.typeName)"
+            />
+        </template>
+    </a-popover>
+    <a-popover :visible="showPublishPopover" placement="right">
+        <template #content>
+            <PublishFolderPopover
+                :item="item"
+                @cancel="showPublishPopover = false"
+                @publish="publishFolder"
+            />
+        </template>
+    </a-popover>
 </template>
 
 <script lang="ts">
@@ -208,6 +227,7 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
 
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { useAccess } from '~/components/insights/common/composables/useAccess'
     import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
@@ -223,7 +243,12 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { QueryItemPopover, StatusBadge, TreeDeletePopover, PublishFolderPopover },
+        components: {
+            QueryItemPopover,
+            StatusBadge,
+            TreeDeletePopover,
+            PublishFolderPopover,
+        },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -236,6 +261,7 @@
             },
         },
         setup(props) {
+            const { canUserDeleteFolder } = useAccess()
             const { expandedKeys, item } = toRefs(props)
             const {
                 isPrimary,
@@ -337,10 +363,12 @@
             }
             const renameFolder = () => {
                 useAddEvent('insights', 'folder', 'renamed', undefined)
-                const orignalName = item.value.attributes.name;
-                const parentNode = document.getElementsByClassName(`${item.value.qualifiedName}`)[0]
-                
-                const childNode = parentNode?.firstChild as HTMLElement;
+                const orignalName = item.value.attributes.name
+                const parentNode = document.getElementsByClassName(
+                    `${item.value.qualifiedName}`
+                )[0]
+
+                const childNode = parentNode?.firstChild as HTMLElement
                 childNode?.classList?.add('hidden')
 
                 const input = document.createElement('input')
@@ -349,12 +377,11 @@
                     `outline-none border py-0 px-1 rounded mx-0 my-1 w-auto`
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
-                
+
                 parentNode?.prepend(input)
                 input.focus()
                 input.value = ''
-                input.value =  item.value.attributes?.name
-
+                input.value = item.value.attributes?.name
 
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
@@ -362,13 +389,13 @@
                         childNode?.classList?.remove('hidden')
                     }
                     if (e.key === 'Enter') {
-                        if(input.value && input.value !== orignalName) {
+                        if (input.value && input.value !== orignalName) {
                             item.value.attributes.name = input.value
                             const { data, error } = Insights.CreateSavedQuery({
                                 entity: item.value.entity,
                             })
                             watch(error, (newError) => {
-                                if(newError) {
+                                if (newError) {
                                     item.value.attributes.name = orignalName
                                 }
                             })
@@ -381,22 +408,20 @@
                     }
                 })
                 input.addEventListener('blur', (e) => {
-                    if(input.value) {
+                    if (input.value) {
                         item.value.attributes.name = input.value
                         const { data, error } = Insights.CreateSavedQuery({
-                                entiy: item.value.entity,
-                            })
+                            entiy: item.value.entity,
+                        })
                         watch(error, (newError) => {
-                            if(newError) {
+                            if (newError) {
                                 item.value.attributes.name = orignalName
                             }
                         })
                     }
                     try {
                         parentNode?.removeChild(input)
-                    } catch {
-
-                    }
+                    } catch {}
                     childNode?.classList?.remove('hidden')
                 })
             }
@@ -419,6 +444,7 @@
                 })
             }
             return {
+                canUserDeleteFolder,
                 certificateStatus,
                 renameFolder,
                 delteItem,
@@ -436,7 +462,7 @@
                 actionClick,
                 dataTypeImageForColumn,
                 showDeletePopover,
-                showPublishPopover
+                showPublishPopover,
             }
         },
     })

@@ -33,7 +33,7 @@ export default function useAssetInfo() {
             )
             : SourceList.find(
                 (src) =>
-                    src.id === attributes(asset)?.qualifiedName.split('/')[1]
+                    src.id === attributes(asset)?.qualifiedName?.split('/')[1]
             )
 
         if (found) img = found.image
@@ -78,8 +78,8 @@ export default function useAssetInfo() {
             : getCountString(attributes(asset).rowCount)
     const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
         let connectorsName: undefined | string = undefined
-        const values = qualifiedName.split('/')
-        if (values.length > 1) {
+        const values = qualifiedName?.split('/')
+        if (values?.length > 1) {
             connectorsName = values[1]
         }
         return connectorsName

@@ -2,7 +2,7 @@
     <a-checkbox-group
         v-model:value="data.checked"
         class="w-full py-1 pb-6"
-        @change="$emit('change', $event)"
+        @change="handleChange"
     >
         <div class="flex flex-col w-full">
             <template v-for="item in list" :key="item.id">
@@ -27,6 +27,7 @@
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
     import { Collapse } from '~/types'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         props: {
@@ -40,15 +41,23 @@
             },
         },
         emits: ['change'],
-        setup(props) {
+        setup(props, { emit }) {
             const list = computed(() => List)
             const checkedValues = ref([])
             const { data } = toRefs(props)
+            const handleChange = () => {
+                emit('change')
+                useAddEvent('discovery', 'facet', 'changed', {
+                    filter_type: 'status',
+                    count: data.value?.checked?.length,
+                })
+            }
 
             return {
                 data,
                 list,
                 checkedValues,
+                handleChange,
             }
         },
     })

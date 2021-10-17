@@ -105,6 +105,7 @@
     import { Collapse } from '~/types'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'Classifications',
@@ -163,6 +164,11 @@
             ]
 
             const handleChange = () => {
+                useAddEvent('discovery', 'facet', 'changed', {
+                    filter_type: 'classifications',
+                    count: data.value?.checked?.length,
+                })
+
                 emit('change')
             }
 

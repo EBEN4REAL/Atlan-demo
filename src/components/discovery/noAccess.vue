@@ -1,5 +1,7 @@
 <template>
-    <div class="flex items-center justify-center h-full text-lg text-gray-700">
+    <div
+        class="flex items-center justify-center w-full h-full mx-auto text-lg text-gray-700 "
+    >
         <slot></slot>
     </div>
 </template>

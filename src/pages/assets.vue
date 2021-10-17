@@ -52,7 +52,6 @@
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
-    import useCheckAccess from '~/services/access/useCheckAccess'
     import NoAccessPage from '@/discovery/noAccess.vue'
 
     export interface initialFiltersType {
@@ -91,8 +90,6 @@
                     Object.keys(router.currentRoute.value?.query)[0]
                 ),
             }
-
-            const { evaluatePermissions } = useCheckAccess()
 
             router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)

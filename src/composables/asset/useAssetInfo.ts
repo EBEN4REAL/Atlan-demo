@@ -10,19 +10,19 @@ import { formatDateTime } from '~/utils/date'
 import { getCountString, getSizeString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
-    const attributes = (asset: assetInterface) => asset.attributes
+    const attributes = (asset: assetInterface) => asset?.attributes
     const title = (asset: assetInterface) => attributes(asset)?.name ?? ''
     const status = (asset: assetInterface) =>
-        attributes(asset).certificateStatus
-    const assetType = (asset: assetInterface) => asset.typeName
-    const assetState = (asset: assetInterface) => asset.status.toLowerCase()
+        attributes(asset)?.certificateStatus
+    const assetType = (asset: assetInterface) => asset?.typeName
+    const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
     const assetTypeLabel = (asset: assetInterface) => {
         const found = AssetTypeList.find((d) => d.id === assetType(asset))
         return found?.label
     }
     const description = (asset: assetInterface) =>
         attributes(asset).userDescription || attributes(asset).description
-    const isPrimary = (asset: assetInterface) => attributes(asset).isPrimary
+    const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -43,7 +43,7 @@ export default function useAssetInfo() {
     const databaseLogo = (asset: assetInterface) => {
         let img = ''
         const found = SourceList.find(
-            (src) => src.id === attributes(asset).integrationName
+            (src) => src.id === attributes(asset)?.integrationName
         )
         if (found) {
             const database = found.hierarchy.find(
@@ -56,7 +56,7 @@ export default function useAssetInfo() {
     const schemaLogo = (asset: assetInterface) => {
         let img = ''
         const found = SourceList.find(
-            (src) => src.id === attributes(asset).integrationName
+            (src) => src.id === attributes(asset)?.integrationName
         )
         if (found) {
             const schema = found.hierarchy.find(
@@ -68,7 +68,7 @@ export default function useAssetInfo() {
     }
 
     const integrationName = (asset: assetInterface) => {
-        const name = attributes(asset).integrationName
+        const name = attributes(asset)?.integrationName
         return name.charAt(0).toUpperCase() + name.slice(1)
     }
 
@@ -168,7 +168,7 @@ export default function useAssetInfo() {
     }
 
     const lastCrawled = (asset: assetInterface) =>
-        useTimeAgo(attributes(asset).connectionLastSyncedAt).value
+        useTimeAgo(attributes(asset)?.connectionLastSyncedAt).value
 
     const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
@@ -206,7 +206,7 @@ export default function useAssetInfo() {
     }
 
     const getHierarchy = (asset: assetInterface) => {
-        const assetType = AssetTypeList.find((a) => a.id == asset.typeName)
+        const assetType = AssetTypeList.find((a) => a.id == asset?.typeName)
         const relations: any[] = []
 
         if (assetType) {

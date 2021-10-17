@@ -21,7 +21,7 @@
                 v-else
                 class="flex flex-col items-center justify-center w-full h-full"
             >
-                <AtlanIcon icon="NoDataInsights" class="h-32 text-white w-36" />
+                <AtlanIcon icon="NoDataInsights" class="text-white h-36 w-36" />
                 <p class="mt-4 mb-0 text-base text-gray-700">
                     Your results will appear here
                 </p>

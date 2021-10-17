@@ -1,5 +1,10 @@
 <template>
-    <component :is="componentType" :data="testData"></component>
+    <component
+        class="h-full"
+        :is="componentType"
+        :data="testData"
+        :options="data?.componentData.graphOptions"
+    ></component>
 </template>
 
 <script lang="ts">
@@ -14,64 +19,56 @@
 
     import { formatDateTime } from '~/utils/date'
 
+    const Bar = defineAsyncComponent({
+        loader: () => import('@/reporting/graph/bar.vue'),
+    })
+
     export default defineComponent({
-        name: 'Home',
+        components: {
+            Bar,
+        },
         props: {
-            id: {
-                type: String,
-                required: false,
-            },
-            label: {
-                type: String,
-                required: false,
-            },
-            payload: {
+            data: {
                 type: Object,
                 required: false,
             },
         },
-        components: {
-            Bar: defineAsyncComponent(
-                () => import('@/reporting/graphs/bar.vue')
-            ),
-        },
         setup(props, { emit }) {
-            const { payload, id } = toRefs(props)
-            console.log(id.value)
-            console.log(payload.value)
+            const { data } = toRefs(props)
 
             const componentType = computed(() => {
                 if (
-                    payload.value?.graphType &&
-                    payload.value?.component !== ''
+                    data.value?.componentData.graphType &&
+                    data.value?.component !== ''
                 ) {
-                    return payload.value.graphType
+                    return data.value.componentData.graphType
                 }
                 return 'default'
             })
 
-            console.log(id.value)
             const { aggregations } = useIndexSearch(
-                payload.value?.query,
-                id.value
+                data.value?.componentData.query,
+                data.value?.id.value
             )
-
             const testData = computed(() => {
-                const agg = aggregations.value[payload.value.aggregationKey]
+                const agg =
+                    aggregations.value[
+                        data.value?.componentData.dataOptions?.aggregationKey
+                    ]
                 const buckets = agg?.buckets
-
                 const keyMap = buckets?.map((i) => {
-                    if (payload.value.keyConfig.type.toUpperCase() === 'DATE') {
+                    if (
+                        data.value.componentData.dataOptions.keyConfig.type.toUpperCase() ===
+                        'DATE'
+                    ) {
                         return formatDateTime(i.key, {
                             month: 'short',
                             day: 'numeric',
                         })
                     }
-
                     return i.key
                 })
                 const valueMap = buckets?.map((i) => i.doc_count)
-
                 return {
                     labels: keyMap,
                     datasets: [
@@ -88,8 +85,7 @@
                     ],
                 }
             })
-
-            return { payload, componentType, testData }
+            return { data, componentType, testData }
         },
     })
 </script>

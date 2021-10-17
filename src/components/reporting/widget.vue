@@ -1,11 +1,19 @@
 <template>
-    <div :class="data.class" :key="data.id">
-        {{ data.label }}
+    <div :class="data.class" :key="data.id" class="flex flex-col">
+        <div class="flex items-center" v-if="data.showHeader">
+            <p class="mr-1 text-sm font-semibold text-gray-700">
+                {{ data?.label }}
+            </p>
+            <a-tooltip placement="right">
+                <template #title>{{ data?.info }}</template>
+
+                <AtlanIcon icon="Info" class="w-4 h-4 my-auto"></AtlanIcon>
+            </a-tooltip>
+        </div>
         <component
             :is="componentType"
-            :id="data.id"
-            :label="data.label"
-            :payload="data.componentData"
+            :data="data"
+            class="flex-grow"
         ></component>
     </div>
 </template>
@@ -16,11 +24,20 @@
         defineAsyncComponent,
         defineComponent,
         PropType,
-        ref,
         toRefs,
     } from 'vue'
 
     import { Widget } from '~/types/reporting/Dashboard'
+
+    const Graph = defineAsyncComponent({
+        loader: () => import('@/reporting/widgets/graph.vue'),
+    })
+    const Default = defineAsyncComponent({
+        loader: () => import('@/reporting/widgets/default.vue'),
+    })
+    const Summary = defineAsyncComponent({
+        loader: () => import('@/reporting/widgets/summary.vue'),
+    })
 
     export default defineComponent({
         name: 'Home',
@@ -33,10 +50,9 @@
             },
         },
         components: {
-            Graph: defineAsyncComponent(() => import('./widgets/graph.vue')),
-            Default: defineAsyncComponent(
-                () => import('./widgets/default.vue')
-            ),
+            Graph,
+            Default,
+            Summary,
         },
         setup(props, { emit }) {
             const { data } = toRefs(props)

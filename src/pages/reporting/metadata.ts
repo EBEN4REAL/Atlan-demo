@@ -1,11 +1,73 @@
+// eslint-disable-next-line import/prefer-default-export
 export const Metadata = {
-    id: 'Connection',
-    label: 'Connection',
+    id: 'metadata',
+    label: 'Metadata Overview',
     widgets: [
         {
-            id: 'Widget A',
-            label: 'Widget A',
-            class: 'col-span-4 h-64 border border-gray-light',
+            id: 'summary-assets',
+
+            label: 'Summary',
+            info: 'New Assets created',
+            showHeader: false,
+            class: 'col-span-6 h-40 border border-light p-3 rounded ',
+            component: 'summary',
+            componentData: {
+                query: {
+                    size: 0,
+                    aggs: {
+                        group_by_date: {
+                            date_histogram: {
+                                field: '__timestamp',
+                                calendar_interval: 'day',
+                                time_zone:
+                                    Intl.DateTimeFormat().resolvedOptions()
+                                        .timeZone,
+                            },
+                        },
+                    },
+                },
+                graphType: 'bar',
+                graphOptions: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                            },
+
+                            title: {
+                                display: true,
+                                text: 'Date',
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                        },
+                    },
+                },
+                dataOptions: {
+                    aggregationKey: 'group_by_date',
+                    keyConfig: {
+                        type: 'Date',
+                    },
+                },
+            },
+        },
+        {
+            id: 'new-assets',
+            label: 'New Assets Distribution',
+            info: 'New Assets created',
+            class: 'col-span-6 h-64',
             component: 'graph',
             componentData: {
                 query: {
@@ -15,46 +77,55 @@ export const Metadata = {
                             date_histogram: {
                                 field: '__timestamp',
                                 calendar_interval: 'day',
+                                time_zone:
+                                    Intl.DateTimeFormat().resolvedOptions()
+                                        .timeZone,
                             },
                         },
                     },
                 },
-                keyConfig: {
-                    type: 'Date',
-                },
-                aggregationKey: 'group_by_date',
                 graphType: 'bar',
-                filter: [],
-            },
-        },
-        {
-            id: 'Widget B',
-            label: 'Widget B',
-            class: 'col-span-4 h-64 border border-gray-light',
-            component: 'graph',
-            componentData: {
-                query: {
-                    size: 0,
-                    aggs: {
-                        group_by_type: {
-                            terms: {
-                                field: '__typeName',
+                graphOptions: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                            },
+
+                            title: {
+                                display: true,
+                                text: 'Date',
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
                             },
                         },
                     },
                 },
-                keyConfig: {
-                    type: 'String',
+                dataOptions: {
+                    aggregationKey: 'group_by_date',
+                    keyConfig: {
+                        type: 'Date',
+                    },
                 },
-                aggregationKey: 'group_by_type',
-                graphType: 'bar',
-                filter: [],
             },
         },
         {
-            id: 'Widget C',
-            label: 'Widget C',
-            class: 'col-span-4 h-64 border border-gray-light',
+            id: 'update-assets',
+            label: 'Updated Assets',
+            info: 'Assets Updated',
+            class: 'col-span-6 h-64',
             component: 'graph',
             componentData: {
                 query: {
@@ -62,18 +133,50 @@ export const Metadata = {
                     aggs: {
                         group_by_date: {
                             date_histogram: {
-                                field: '__timestamp',
+                                field: '__timestamp.date',
                                 calendar_interval: 'day',
+                                time_zone:
+                                    Intl.DateTimeFormat().resolvedOptions()
+                                        .timeZone,
                             },
                         },
                     },
                 },
-                keyConfig: {
-                    type: 'Date',
-                },
-                aggregationKey: 'group_by_date',
                 graphType: 'bar',
-                filter: [],
+                graphOptions: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                            },
+
+                            title: {
+                                display: true,
+                                text: 'Date',
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                        },
+                    },
+                },
+                dataOptions: {
+                    aggregationKey: 'group_by_date',
+                    keyConfig: {
+                        type: 'Date',
+                    },
+                },
             },
         },
     ],

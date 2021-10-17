@@ -35,7 +35,6 @@
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
     import { createAtlanTheme } from './customTheme'
-    import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 
     const turndownService = new TurndownService({})
@@ -111,13 +110,13 @@
                     }
                 }
             }
-
-            const now = ref(true)
-            const { list } = fetchColumnList('', now, entityFilters, [
-                'Column.dataType.keyword',
-            ])
-            // const { list } = fetchColumnList('', now, entityFilters)
-            console.log(list)
+            const findAndChangeCustomVariablesColor = () => {
+                const matches = findCustomVariableMatches(
+                    editor,
+                    activeInlineTab.value.playground.editor.text
+                )
+                changeMoustacheTemplateColor(editor, monaco, matches)
+            }
 
             monaco.languages.register({ id: 'atlansql' })
 
@@ -125,20 +124,6 @@
                 'atlansql',
                 languageTokens
             )
-            const setCurrentPosition = (position: any) => {
-                currentPosition.value = position
-            }
-            const getCurrentPosition = () => {
-                return currentPosition.value
-            }
-            function randStr(len = 7) {
-                let s = ''
-                while (s.length < len)
-                    s += Math.random()
-                        .toString(36)
-                        .substr(2, len - s.length)
-                return s
-            }
 
             const triggerAutoCompletion = (
                 promise: Promise<{
@@ -241,11 +226,9 @@
                 editor?.getModel().onDidChangeContent((event) => {
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
-                    const matches = findCustomVariableMatches(
-                        editor,
-                        activeInlineTab.value.playground.editor.text
-                    )
-                    changeMoustacheTemplateColor(editor, monaco, matches)
+                    /* ------------- custom variable color change */
+                    findAndChangeCustomVariablesColor()
+                    /* ------------------------------------------ */
                     const changes = event?.changes[0]
                     const lastTypedCharacter = event?.changes[0]?.text
                     console.log(changes, 'changes')
@@ -308,15 +291,16 @@
                     )
 
                     editor?.setModel(model)
+                    /* ------------- custom variable color change */
+                    findAndChangeCustomVariablesColor()
+                    /* ------------------------------------------ */
                     editor.getModel().onDidChangeContent(async (event) => {
                         const text = editor.getValue()
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
-                        const matches = findCustomVariableMatches(
-                            editor,
-                            activeInlineTab.value.playground.editor.text
-                        )
-                        changeMoustacheTemplateColor(editor, monaco, matches)
+                        /* ------------- custom variable color change */
+                        findAndChangeCustomVariablesColor()
+                        /* ------------------------------------------ */
                         const lastTypedCharacter = event?.changes[0]?.text
                         if (
                             lastTypedCharacter.length === 1 &&

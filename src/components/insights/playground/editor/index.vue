@@ -431,6 +431,7 @@
             >
 
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
+            const queryErrorObj = inject('queryErrorObj') as Ref<any>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
@@ -441,7 +442,6 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
-            const { setFullScreenState } = useFullScreen()
 
             const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
                 inlineTabs,
@@ -454,10 +454,6 @@
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
-            const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
-                inlineTabs,
-                activeInlineTab
-            )
 
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
@@ -484,6 +480,7 @@
                     activeInlineTab.value,
                     getData,
                     isQueryRunning,
+                    queryErrorObj,
                     limitRows
                 )
             }

@@ -24,6 +24,7 @@ export default function useProject() {
     const dataList = ref([])
     const isQueryRunning = ref('')
     const queryExecutionTime = ref(-1)
+    const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         if (columns.length > 0) {
@@ -32,7 +33,7 @@ export default function useProject() {
                 columnList.value.push({
                     title: col.columnName.split('_').join(' '),
                     dataIndex: col.columnName,
-                    width: '9vw',
+                    width: 'fit-content',
                     key: col.columnName,
                 })
             })
@@ -55,11 +56,14 @@ export default function useProject() {
             dataList.value.push(tmp)
         })
     }
-
+    const handleSSEError = (error: any) => {
+        message.error(error.errorMessage)
+    }
     const queryRun = (
         activeInlineTab: activeInlineTabInterface,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
         isQueryRunning: Ref<string>,
+        queryErrorObj: Ref<any>,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         getRowsCount: boolean = false
     ) => {
@@ -122,6 +126,12 @@ export default function useProject() {
                 if (!isLoading.value && error.value === undefined) {
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
+                        console.log(
+                            message,
+                            'message',
+                            message?.status === 'error',
+                            typeof message
+                        )
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
@@ -136,6 +146,17 @@ export default function useProject() {
                                 // for closing the connection
                                 eventSource.close()
                             }
+                            isQueryRunning.value = 'success'
+                        }
+                        if (message?.details?.status === 'error') {
+                            if (eventSource?.close) {
+                                // for closing the connection
+                                console.log('coonectio closed')
+                                eventSource.close()
+                            }
+                            /* Assging error obj */
+                            queryErrorObj.value = message
+                            isQueryRunning.value = 'error'
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -154,9 +175,9 @@ export default function useProject() {
                             eventSource.close()
                         }
                     } else {
-                        message.error({
-                            content: `Something went wrong!`,
-                        })
+                        // message.error({
+                        //     content: `Something went wrong!`,
+                        // })
                         if (eventSource?.close) {
                             // for closing the connection in case of error
                             eventSource.close()
@@ -183,6 +204,7 @@ export default function useProject() {
     }
 
     return {
+        queryErrorObj,
         modifyQueryExecutionTime,
         queryExecutionTime,
         isQueryRunning,

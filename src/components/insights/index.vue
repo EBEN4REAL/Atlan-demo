@@ -159,7 +159,8 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
-            const { isQueryRunning, queryExecutionTime } = useRunQuery()
+            const { isQueryRunning, queryExecutionTime, queryErrorObj } =
+                useRunQuery()
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -194,6 +195,7 @@
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
                 isQueryRunning: isQueryRunning,
+                queryErrorObj: queryErrorObj,
                 editorInstance: editorInstance,
                 editorConfig: editorConfig,
                 monacoInstance: monacoInstance,

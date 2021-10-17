@@ -50,7 +50,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :options="asyncData"
             :loading="loading"
-            :disabled="letAsyncSelectDisabled"
+            :disabled="letAsyncSelectDisabled || disabled"
             :placeholder="placeholder"
             v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
@@ -173,6 +173,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false,
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
             dataType: {
                 type: String,

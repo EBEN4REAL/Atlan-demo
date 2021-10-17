@@ -77,7 +77,7 @@ export const KeyMaps = {
             ASSET_ACCESS: () => getAPIPath('auth', '/access/evaluate'),
         },
         role: {
-            LIST_ROLES: () => getAPIPath('auth', '/roles'),
+            LIST_ROLES: () => getAPIPath('service', '/workspaceroles?type=default'),
         },
         tenant: {
             GET_TENANT: () => getAPIPath('service', '/tenants/default'),

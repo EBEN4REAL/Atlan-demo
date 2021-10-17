@@ -160,7 +160,10 @@
                     </template>
                     <div class="flex items-center justify-between w-full mt-4">
                         <div
-                            v-if="!showCreateClassificationPopover"
+                            v-if="
+                                !showCreateClassificationPopover &&
+                                userHasCreatingPermission
+                            "
                             class="inline-flex flex-1 text-sm text-gray-700"
                         >
                             Or create a
@@ -259,6 +262,7 @@
     import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         props: {
@@ -288,6 +292,12 @@
             const showAddClassificationBtn = ref(false)
 
             const isDrawerVisible = ref(false)
+
+            const store = useAccessStore()
+
+            const userHasCreatingPermission = computed(() =>
+                store.checkPermission('CREATE_CLASSIFICATION')
+            )
 
             /* classifications fxns */
             function getAvailableClassificationsForLink(
@@ -767,6 +777,7 @@
                 isDrawerVisible,
                 handleSelect,
                 previewClassification,
+                userHasCreatingPermission,
             }
         },
     })

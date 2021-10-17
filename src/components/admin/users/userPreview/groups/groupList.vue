@@ -48,7 +48,7 @@
     <div v-else class="pl-4 mt-4 overflow-auto">
       <a-checkbox-group class="w-full">
         <div class="flex flex-col w-full">
-          <template v-for="group in groupList.value" :key="group.id">
+          <template v-for="group in groupList" :key="group.id">
             <a-checkbox
               :value="group.id"
               class="flex items-center w-full py-2 border-b border-gray-100"
@@ -145,7 +145,7 @@ export default defineComponent({
     };
     const showLoadMore = computed(() => getIsLoadMore(
         // TODO: check if there's a better way access memberList and not use ref in a ref
-        groupList.value.value.length,
+        groupList.value.length,
         groupListAPIParams.offset,
         groupListAPIParams.limit,
         searchText.value ? filteredGroupsCount.value : totalGroupsCount.value

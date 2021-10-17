@@ -1,9 +1,9 @@
 <template>
-    <div class="relative w-full h-full p-3 overflow-hidden rounded">
+    <div class="relative w-full h-full overflow-hidden rounded">
         <div
-            class="relative flex justify-center overflow-x-auto rounded  table_height"
+            class="relative flex flex-col justify-start w-full overflow-x-auto rounded  table_height"
         >
-            <a-table
+            <!-- <a-table
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 ||
                     isQueryRunning === 'loading'
@@ -16,7 +16,46 @@
                 :data-source="activeInlineTab.playground.editor.dataList"
                 :scroll="{ x: 500 }"
                 :columns="activeInlineTab.playground.editor.columnList"
-            />
+            /> -->
+            <table
+                class="relative block w-full p-0 m-0 overflow-auto table-height"
+                v-if="
+                    activeInlineTab.playground.editor.columnList.length > 0 ||
+                    isQueryRunning === 'loading'
+                        ? true
+                        : false
+                "
+            >
+                <thead>
+                    <tr>
+                        <th
+                            v-for="(col, index) in activeInlineTab.playground
+                                .editor.columnList"
+                            :key="index"
+                            class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                        >
+                            {{ col.title }}
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr
+                        v-for="(row, index) in activeInlineTab.playground.editor
+                            .dataList"
+                        :key="index"
+                    >
+                        <td
+                            v-for="(rowData, index) in row"
+                            :key="index"
+                            class="px-4 py-2 text-xs text-gray-700 truncate bg-white border  border-gray-light"
+                        >
+                            {{ rowData }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div
                 v-else
                 class="flex flex-col items-center justify-center w-full h-full"
@@ -26,36 +65,43 @@
                     Your results will appear here
                 </p>
             </div>
-        </div>
-        <div
-            class="absolute left-0 flex w-full bg-white border-t  bottom_footer h-7"
-            v-if="activeInlineTab.playground.editor.columnList.length > 0"
-        >
-            <div class="flex items-center px-3 text-gray-500">
-                <span class="mr-2">
-                    {{
-                        activeInlineTab.playground.editor.columnList.length
-                    }}&nbsp;Columns
-                </span>
-                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
-                <div
-                    class="flex items-center justify-center mx-2"
-                    v-if="rowCountRunning == 'loading'"
-                >
-                    <div class="loader"></div>
+            <div
+                class="left-0 flex w-full bg-white border-t bottom_footer h-7"
+                v-if="activeInlineTab.playground.editor.columnList.length > 0"
+            >
+                <div class="flex items-center px-3 text-gray-500">
+                    <span class="mr-2">
+                        {{
+                            activeInlineTab.playground.editor.columnList.length
+                        }}&nbsp;Columns
+                    </span>
+                    <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
+                    <div
+                        class="flex items-center justify-center mx-2"
+                        v-if="rowCountRunning == 'loading'"
+                    >
+                        <div class="loader"></div>
+                    </div>
+                    <span
+                        class="mr-2 cursor-pointer"
+                        @click="getRowsCount"
+                        v-else
+                        >{{
+                            rowCount < 0
+                                ? 'Get rows count '
+                                : `${rowCount} rows`
+                        }}
+                    </span>
+                    <!-- Execution Time will be shown when it is >0 -->
+                    <div
+                        v-if="queryExecutionTime > 0"
+                        class="w-1 h-1 mx-2 bg-gray-500 rounded-full"
+                    ></div>
+                    <span v-if="queryExecutionTime > 0" class="mr-2">
+                        Took Time: {{ queryExecutionTime }}ms
+                    </span>
+                    <!-- -------------------------------------------- -->
                 </div>
-                <span class="mr-2 cursor-pointer" @click="getRowsCount" v-else
-                    >{{ rowCount < 0 ? 'Get rows count ' : `${rowCount} rows` }}
-                </span>
-                <!-- Execution Time will be shown when it is >0 -->
-                <div
-                    v-if="queryExecutionTime > 0"
-                    class="w-1 h-1 mx-2 bg-gray-500 rounded-full"
-                ></div>
-                <span v-if="queryExecutionTime > 0" class="mr-2">
-                    Took Time: {{ queryExecutionTime }}ms
-                </span>
-                <!-- -------------------------------------------- -->
             </div>
         </div>
     </div>
@@ -74,10 +120,12 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import LoadingView from '@common/loaders/page.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
             LoadingView,
+            Tooltip,
         },
         props: {
             dataList: {
@@ -134,6 +182,10 @@
     })
 </script>
 <style lang="less" scoped>
+    .table-height {
+        height: 80%;
+    }
+
     .placeholder {
         background-color: #f4f4f4;
     }
@@ -141,7 +193,7 @@
         height: 100%;
     }
     .bottom_footer {
-        bottom: 10%;
+        height: 8%;
     }
     .loader {
         font-size: 10px;
@@ -224,6 +276,26 @@
         100% {
             -webkit-transform: rotate(360deg);
             transform: rotate(360deg);
+        }
+    }
+
+    table {
+        td,
+        th {
+            max-width: 150px;
+            min-width: 150px;
+        }
+        tbody {
+            font-family: Hack-Regular;
+            font-weight: 400;
+            src: url('~/assets/fonts/hack/Hack-Regular.ttf') format('ttf');
+        }
+
+        td:first-child,
+        th:first-child {
+            @apply bg-gray-100 text-center !important;
+            width: 35px;
+            min-width: 35px;
         }
     }
 </style>

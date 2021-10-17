@@ -14,14 +14,10 @@
                 hover:bg-primary-light
                 hover:text-primary
             "
-            @click="() => redirectToProfile(glossary.guid)"
+            @click="() => redirectToProfile('AtlasGlossary', glossary.guid)"
         >
             <div class="flex flex-row justify-between">
                 {{ glossary.name }}
-                <Fa
-                    class="w-auto h-3 text-white group-hover:text-primary"
-                    icon="fal external-link-alt"
-                />
             </div>
         </div>
     </div>
@@ -30,8 +26,9 @@
 <script lang="ts">
 import { defineComponent, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import redirect from '@/glossary/utils/redirectToProfile';
 
-import { Glossary } from '~/api/atlas/glossary'
+import { Glossary } from '~/services/atlas/glossary/glossary_api'
 
 export default defineComponent({
     props: {},
@@ -39,9 +36,7 @@ export default defineComponent({
         const { data: glossaryList, loading, error, mutate } = Glossary.List()
         const router = useRouter()
 
-        const redirectToProfile = (guid: string) => {
-            router.push(`/glossary/${guid}`)
-        }
+        const redirectToProfile = redirect(router)
 
         return {
             glossaryList,

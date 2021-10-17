@@ -12,7 +12,7 @@ import {
     INVITE_USERS,
 } from '@services/keycloak/users/users_keymap'
 import { getAPIPath, getAxiosClient } from '~/api'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 const serviceAlias = 'service'
 

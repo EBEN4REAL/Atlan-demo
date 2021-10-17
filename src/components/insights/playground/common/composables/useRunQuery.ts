@@ -1,6 +1,6 @@
 import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
-import { KeyMaps } from '~/api/keyMap'
+import { KeyMaps } from '~/services/heka/heka_keyMaps'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
@@ -60,7 +60,7 @@ export default function useProject() {
         activeInlineTab: activeInlineTabInterface,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
         isQueryRunning: Ref<string>,
-        limitRows: Ref<{ checked: boolean; rowsCount: number }>
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>
     ) => {
         const attributeValue =
             activeInlineTab.explorer.schema.connectors.attributeValue
@@ -85,8 +85,9 @@ export default function useProject() {
             ),
             length: 10,
         }
-        /* Adding a limit param if limit rows is checked */
-        if (limitRows.value.checked) params['limit'] = limitRows.value.rowsCount
+        /* Adding a limit param if limit rows is checked and limit is passed*/
+        if (limitRows?.value && limitRows?.value?.checked)
+            params['limit'] = limitRows.value.rowsCount
 
         let search_prms = generateQueryStringParamsFromObj(params)
 
@@ -100,28 +101,32 @@ export default function useProject() {
             error,
             isLoading,
         } = useSSE({
-            path: KeyMaps.query.RUN_QUERY,
+            path: KeyMaps.insights.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
         })
 
         watch([isLoading, error], () => {
+            console.log(isLoading.value, error.value, 'request log')
             try {
                 isQueryRunning.value = !isLoading.value ? 'success' : 'loading'
                 if (!isLoading.value && error.value === undefined) {
-                    const { subscribe, close } = sse.value
+                    const { subscribe } = sse.value
                     subscribe('', (message: any) => {
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
                             setRows(dataList, columnList, message.rows)
-                        if (message?.status === 'completed') {
+                        if (message?.details.status === 'completed') {
                             getData(
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),
-                                message?.executionTime
+                                message?.details.executionTime
                             )
-                            close()
+                            if (eventSource?.close) {
+                                // for closing the connection
+                                eventSource.close()
+                            }
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {

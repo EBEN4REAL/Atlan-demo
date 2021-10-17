@@ -1,8 +1,8 @@
 /* eslint-disable no-prototype-builtins */
-import { ref, Ref, watch, computed, reactive } from 'vue'
-import { useAPIPromise } from '~/api/useAPI';
+import { ref } from 'vue'
+import { useAPIPromise } from '~/services/api/useAPI';
 
-export default function useFormGenerator(formConfig, formRef) {
+export default function useFormGenerator(formConfig, formRef, emit, dV) {
   const processedSchema = ref([])
   const privateTypes = ['object', 'array', 'group']
 
@@ -31,13 +31,31 @@ export default function useFormGenerator(formConfig, formRef) {
         const rCopy = r;
         if (rCopy.hasOwnProperty('enabled')) {
           rCopy.enabled = true;
-          rCopy.typeName = getPrivateTypeName(schema.type);
+          if (getPrivateTypeName(schema.type))
+            rCopy.typeName = getPrivateTypeName(schema.type);
         }
         return rCopy;
       })
     }
 
+
+    if (schema.type === 'checkbox') {
+      schema.options = schema.options.map(o => ({ value: o.id || o.value, label: o.label || o.id }))
+    }
+
     return schema;
+  }
+
+  const getPrivateTypeName = (t) => {
+    const typeMap = {
+      number: 'integer',
+      text: 'string',
+      textArea: 'string',
+      pattern: 'regexp',
+      password: 'string',
+      dateTime: 'date',
+    }
+    return typeMap[t] || null
   }
 
   const expandGroups = (fModal) => {
@@ -50,19 +68,6 @@ export default function useFormGenerator(formConfig, formRef) {
       }
     })
     return fields
-  }
-
-
-  const getPrivateTypeName = (t) => {
-    const typeMap = {
-      number: 'integer',
-      text: 'string',
-      textArea: 'string',
-      pattern: 'regexp',
-      password: 'string',
-      dateTime: 'date',
-    }
-    return typeMap[t] || t
   }
 
   // improve this to go deeper than 1 level
@@ -103,35 +108,43 @@ export default function useFormGenerator(formConfig, formRef) {
   const testModal = ref({});
   const getValueFromSchemaData = (id) => testModal.value[id]
 
-  formConfig.value.forEach((f) => {
+  const init = () => {
+    testModal.value = {}
+    processedSchema.value = []
 
-    if (!privateTypes.includes(f.type)) {
-      const o = preProcessSchema(f)
-      processedSchema.value.push(o)
-      testModal.value[o.id] = o.value
-    } else if (f.type === 'group') {
-      const pf = { ...f, children: f.children.map(f => preProcessSchema(f)) }
-      processedSchema.value.push(pf)
-      f.children.forEach(c => {
-        const t = preProcessSchema(c)
-        testModal.value[t.id] = t.value
-      })
-    } else {
-      expandOther(f).forEach(o => {
-        if (o.type === 'group') {
-          const po = { ...o, children: o.children.map(c => preProcessSchema(c)) }
-          processedSchema.value.push(po)
-          po.children.forEach(c => {
-            testModal.value[c.id] = c.value
-          })
-        } else {
-          const x = preProcessSchema(o)
-          processedSchema.value.push(x)
-          testModal.value[x.id] = x.value
-        }
-      })
-    }
-  })
+
+    formConfig.value.forEach((f) => {
+
+      if (!privateTypes.includes(f.type)) {
+        const o = preProcessSchema(f)
+        processedSchema.value.push(o)
+        testModal.value[o.id] = o.value
+      } else if (f.type === 'group') {
+        const pf = { ...f, children: f.children.map(f => preProcessSchema(f)) }
+        processedSchema.value.push(pf)
+        f.children.forEach(c => {
+          const t = preProcessSchema(c)
+          testModal.value[t.id] = t.value
+        })
+      } else {
+        expandOther(f).forEach(o => {
+          if (o.type === 'group') {
+            const po = { ...o, children: o.children.map(c => preProcessSchema(c)) }
+            processedSchema.value.push(po)
+            po.children.forEach(c => {
+              testModal.value[c.id] = c.value
+            })
+          } else {
+            const x = preProcessSchema(o)
+            processedSchema.value.push(x)
+            testModal.value[x.id] = x.value
+          }
+        })
+      }
+    })
+
+    testModal.value = { ...testModal.value, ...dV }
+  }
 
 
 
@@ -205,11 +218,9 @@ export default function useFormGenerator(formConfig, formRef) {
             temp[f.id] = val
           }
         })
-
-
       }
     })
-    console.log('FinalConfigGenerated: ')
+    emit('change', temp)
     console.table(temp)
     return temp
   }
@@ -269,6 +280,7 @@ export default function useFormGenerator(formConfig, formRef) {
   }
 
   const getGridClass = (type) => {
+    return 'col-span-full'
     const fullCol = ['group', 'toggle', 'boolean']
     if (fullCol.includes(type)) return 'col-span-full'
     return ''
@@ -329,8 +341,11 @@ export default function useFormGenerator(formConfig, formRef) {
     finalConfigObject(processedSchema.value)
   }
 
+  init()
+
   return {
     validate,
+    init,
     getRules,
     testModal,
     handleInputChange,

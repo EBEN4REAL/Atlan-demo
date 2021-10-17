@@ -173,7 +173,7 @@
             const filters: Ref<string[]> = ref([])
             const columnsList: Ref<assetInterface[]> = ref([])
             const certificationFilters: Ref<string[]> = ref([])
-            const sortOrder = ref('Column.order|ascending')
+            const sortOrder = ref('order|ascending')
             const clearAllFilters = ref<boolean>(false)
             const columnFromUrl: Ref<assetInterface[]> = ref([])
             const { columnCount } = useAssetInfo()
@@ -265,7 +265,7 @@
             const getDataType = (type: string) => {
                 let label = ''
                 dataTypeList.forEach((i) => {
-                    if (i.type.includes(type)) label = i.label
+                    if (i.type.includes(type.toUpperCase())) label = i.label
                 })
                 return label
             }

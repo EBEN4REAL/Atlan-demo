@@ -1,18 +1,29 @@
 <template>
-    <div class="w-full p-0 mb-6">
+    <div
+        ref="scrollDiv"
+        class="w-full p-0 mb-6"
+        @scroll="handleScroll"
+        :class="{ 'overflow-y-auto ': headerReachedTop }"
+        :style="headerReachedTop ? 'max-height: calc(100vh - 220px)' : ''"
+    >
+        <Announcements :asset="entity" class="mb-3" />
+        <SummaryWidget :entity="entity" />
         <Readme
-            class="min-w-full"
+            class="min-w-full mb-5"
             :placeholder="placeholder"
             :parent-asset-id="guid"
+            :entity="entity"
             :showBorders="false"
             :showPaddingX="false"
         />
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, PropType } from 'vue'
+    import { defineComponent, computed, PropType, ref } from 'vue'
 
     import Readme from '@/common/readme/index.vue'
+    import SummaryWidget from '@/glossary/profile/overview/summaryWidget.vue'
+    import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
 
     import {
         Glossary,
@@ -21,17 +32,23 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { Readme },
+        components: { Readme, SummaryWidget, Announcements },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
                 required: true,
                 default: () => {},
             },
+            headerReachedTop: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        setup(props) {
-            const placeholder = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Aliquam rutrum blandit nisi. Quisque eget nisi eu sem cursus venenatis.`
+        emits: ['firstCardReachedTop'],
+        setup(props, { emit }) {
+            const placeholder = `Add readme...`
+            const scrollDiv = ref(null)
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
             )
@@ -57,6 +74,11 @@ Aliquam rutrum blandit nisi. Quisque eget nisi eu sem cursus venenatis.`
             const showTermCountComputed = computed(
                 () => props.entity?.typeName !== 'AtlasGlossaryTerm'
             )
+            const handleScroll = (e) => {
+                if (scrollDiv.value?.scrollTop < 2) {
+                    emit('firstCardReachedTop')
+                }
+            }
 
             return {
                 shortDescription,
@@ -66,6 +88,8 @@ Aliquam rutrum blandit nisi. Quisque eget nisi eu sem cursus venenatis.`
                 showCategoryCountComputed,
                 showTermCountComputed,
                 placeholder,
+                handleScroll,
+                scrollDiv,
             }
         },
     })

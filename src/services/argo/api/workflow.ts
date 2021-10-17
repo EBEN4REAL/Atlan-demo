@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
 import { getAPIPath, getAxiosClient } from '~/api'
 import { KeyMaps } from '~/api/keyMap'
-import { useAPISWRV, useAPIAsyncState } from '~/api/useAPI'
+import { useAPISWRV, useAPIAsyncState } from '~/services/api/useAPI'
 
 const serviceAlias = 'auth/argo'
 
@@ -39,6 +39,17 @@ const getWorkflowTemplates = ({ immediate, options, params }) =>
         { immediate }
     )
 
+const getWorkflowConfigMap = ({ immediate, options, params }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.WORKFLOW_CONFIG_MAP,
+        'GET',
+        {
+            options,
+            params
+        },
+        { immediate }
+    )
+
 const getWorkflowByName = (name, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW_BY_NAME,
@@ -52,13 +63,40 @@ const getWorkflowByName = (name, { immediate, options }) =>
         { immediate }
     )
 
-const getArchivedWorkflowList = (params, { immediate, options }) =>
+const updateWorkflowByName = (name, body, { immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.ARCHIVED_WORKFLOW,
+        KeyMaps.workflow.WORKFLOW_UPDATE_BY_NAME,
+        'POST',
+        {
+            options,
+            body,
+            pathVariables: {
+                name,
+            },
+        },
+        { immediate }
+    )
+
+const getWorkflowTemplateByName = (name, { immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.WORKFLOW_TEMPLATE_NAME,
         'GET',
         {
             options,
-            params,
+            pathVariables: {
+                name,
+            },
+        },
+        { immediate }
+    )
+
+const getArchivedRunList = (pathVariables, { immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
+        'GET',
+        {
+            options,
+            pathVariables,
         },
         { immediate }
     )
@@ -76,12 +114,27 @@ const getArchivedWorkflowRun = (guid, { immediate, options }) =>
         { immediate }
     )
 
+const createWorkflow = ({ body, immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.CREATE_WORKFLOW,
+        'POST',
+        {
+            body,
+            options
+        },
+        { immediate }
+    )
+
 export const Workflows = {
     URL,
     List,
-    getArchivedWorkflowList,
+    getArchivedRunList,
+    updateWorkflowByName,
     getWorkflowByName,
     getWorkflows,
+    createWorkflow,
     getArchivedWorkflowRun,
-    getWorkflowTemplates
+    getWorkflowTemplates,
+    getWorkflowConfigMap,
+    getWorkflowTemplateByName
 }

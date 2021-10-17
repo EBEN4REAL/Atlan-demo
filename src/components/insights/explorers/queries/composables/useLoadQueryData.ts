@@ -6,7 +6,7 @@ import {
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
 
-import { useAPIPromise } from '~/api/useAPI'
+import { useAPIPromise } from '~/services/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
@@ -66,12 +66,12 @@ const useLoadQueryData = ({
                 condition: 'AND',
                 criterion: [],
             },
-            sortBy: 'name',
+            // sortBy: 'name',
             sortOrder: 'ASCENDING',
         }
         if (connector.value) {
             body.value.entityFilters.criterion.push({
-                attributeName: 'connectorName',
+                attributeName: 'connectionName',
                 attributeValue: connector.value,
                 operator: 'eq',
             })

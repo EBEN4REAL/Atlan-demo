@@ -52,7 +52,7 @@
     <div v-else class="pl-4 mt-2 overflow-auto">
       <a-checkbox-group class="w-full">
         <div class="flex flex-col w-full" :style="userListStyle">
-          <template v-for="user in userList.value" :key="user.id">
+          <template v-for="user in userList" :key="user.id">
             <a-checkbox
               :value="user.id"
               class="flex items-center w-full py-2 border-b border-gray-100"
@@ -177,7 +177,7 @@ export default defineComponent({
     };
     const showLoadMore = computed(() => getIsLoadMore(
         // TODO: check if there's a better way access memberList and not use ref in a ref
-        userList.value.value.length,
+        userList.value.length,
         userListAPIParams.offset,
         userListAPIParams.limit,
         filteredUserCount.value // filtered value because we are filtering users in the getUsers API call and getting only the users that have email_verified as true.
@@ -196,7 +196,7 @@ export default defineComponent({
       }
       context.emit("updateSelectedUsers", selectedIds.value);
     };
-    const imageUrl = (username: any) => `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
+    const imageUrl = (username: any) => `${window.location.origin}/api/service/avatars/${username}`;
     return {
       searchText,
       showLoadMore,

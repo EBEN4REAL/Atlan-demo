@@ -1,4 +1,4 @@
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from '~/services/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { Ref } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'

@@ -37,13 +37,19 @@
                 @click="handleClick('home')"
             >
                 <span class="flex items-center">
-                    <atlan-icon icon="Home" class="h-4 mr-2 text-primary" />
+                    <atlan-icon
+                        icon="Home"
+                        class="h-4 mr-2"
+                        :class="{
+                            'text-primary': page === '/' || page === 'home',
+                        }"
+                    />
                     Home
                 </span>
             </button>
 
             <!-- workspaces -->
-            <div class="mt-4 mb-3 text-xs font-bold text-gray-500">
+            <div class="px-3 mt-4 mb-3 text-xs font-bold text-gray-500">
                 WORKSPACE
             </div>
             <!-- pages -->
@@ -56,7 +62,12 @@
                 @click="handleClick(nav.path)"
             >
                 <span class="flex items-center">
-                    <atlan-icon :icon="nav.icon" class="h-4 mr-2" />
+                    <atlan-icon
+                        :icon="
+                            nav.path !== page ? nav?.inActiveIcon : nav?.icon
+                        "
+                        class="h-4 mr-2"
+                    />
                     {{ nav.label }}
                 </span>
             </button>
@@ -75,12 +86,22 @@
             </button>
             <button
                 class="w-full mr-2 menu-item"
-                :class="{ active: 'reporting' === page }"
+                :class="{ active: 'platform' === page }"
                 @click="handleClick('reporting')"
             >
                 <span class="flex items-center">
                     <atlan-icon icon="Shield" class="h-4 mr-3 text-primary" />
                     Reporting Center
+                </span>
+            </button>
+            <button
+                class="w-full mr-2 menu-item"
+                :class="{ active: 'platform' === page }"
+                @click="handleClick('platform')"
+            >
+                <span class="flex items-center">
+                    <atlan-icon icon="Shield" class="h-4 mr-3 text-primary" />
+                    Platform Center
                 </span>
             </button>
             <button
@@ -124,10 +145,30 @@
             const esc = keys.Escape
             const { username, name } = whoami()
             const navKeys = [
-                { path: 'assets', label: 'Assets', icon: 'Search' },
-                { path: 'glossary', label: 'Glossary', icon: 'FolderOpen' },
-                { path: 'insights', label: 'Insights', icon: 'Queries' },
-                { path: 'workflows', label: 'Workflows', icon: 'Lineage' },
+                {
+                    path: 'assets',
+                    label: 'Assets',
+                    icon: 'AssetsActive',
+                    inActiveIcon: 'AssetsInactive',
+                },
+                {
+                    path: 'glossary',
+                    label: 'Glossary',
+                    icon: 'Glossary',
+                    inActiveIcon: 'GlossaryInactive',
+                },
+                {
+                    path: 'insights',
+                    label: 'Insights',
+                    icon: 'InsightsActive',
+                    inActiveIcon: 'InsightsInactive',
+                },
+                {
+                    path: 'workflows',
+                    label: 'Workflows',
+                    icon: 'WorkflowsActive',
+                    inActiveIcon: 'WorkflowsInactive',
+                },
             ]
 
             function handleClick(key: string) {

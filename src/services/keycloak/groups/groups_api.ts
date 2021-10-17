@@ -7,7 +7,7 @@ import {
     CREATE_GROUP,
 } from '@services/keycloak/groups/groups_keymap'
 import { getAPIPath, getAxiosClient } from '~/api'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 const serviceAlias = 'service'
 

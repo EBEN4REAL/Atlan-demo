@@ -1,6 +1,6 @@
-<template>
+TR<template>
     <div class="max-h-screen" :class="$style.queryTreeStyles">
-        <div class="h-full">
+        <div class="h-full query-tree-root-div">
             <div v-if="treeData.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
@@ -45,7 +45,7 @@
             </div>
             <div
                 v-else-if="!treeData.length"
-                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500 mt-14"
             >
                 <AtlanIcon icon="EmptyGlossary" class="h-40" />
             </div>
@@ -71,8 +71,6 @@
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
-
-    // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
         components: {

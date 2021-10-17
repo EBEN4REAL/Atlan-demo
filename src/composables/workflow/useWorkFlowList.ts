@@ -32,43 +32,49 @@ export function useWorkflowSearchList(
     return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate }
 }
 
-export function useArchivedWorkflowList(
-    labelSelector,
+export function useArchivedRunList(
+    workflowName,
     immediate: boolean = true
 ) {
-    const param = computed(() => ({
-        'listOptions.labelSelector': labelSelector.value,
-        'listOptions.limit': 100,
-    }))
-
+    const pathVariables = ref({
+        name: workflowName
+    })
     const { data, error, isLoading, mutate } =
-        Workflows.getArchivedWorkflowList(param, { immediate, options: {} })
+        Workflows.getArchivedRunList(pathVariables, { immediate, options: {} })
 
-    const workflowList = ref([])
+    const runList = ref([])
     watch(data, () => {
-        console.log('useArchivedWorkflowList', data.value.items)
-        workflowList.value = data.value?.items
+        console.log('useArchivedRunList', data.value)
+        runList.value = data.value
     })
 
     const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.metadata.name.includes(text))
+        runList.value.filter((wf) => wf.name.toLowerCase().includes(text.toLowerCase()))
 
-    return { workflowList, error, isLoading, filterList, mutate }
+
+    const reFetch = (name) => {
+        pathVariables.value.name = name
+        mutate()
+    }
+
+    return { runList, error, isLoading, filterList, mutate, reFetch }
 }
 
 export function useWorkflowTemplates(
     immediate: boolean = true
 ) {
-    const params = ref({ limit: 10, offset: 0 })
+    const params = ref({ limit: 10, offset: 0, labelSelector: "com.atlan.orchestration/verified=true" })
     const { data, error, isLoading, mutate } =
         Workflows.getWorkflowTemplates({ immediate, options: {}, params })
 
     const workflowList = ref([])
     const totalCount = ref()
+    const filter_record = ref()
     watch(data, () => {
         if (!data?.value?.records) return;
         console.log('useWorkflowTemplates', data.value.records)
         totalCount.value = data.value.total_record
+        filter_record.value = data.value.filter_record
         workflowList.value.push(...data.value.records)
     })
 
@@ -79,12 +85,25 @@ export function useWorkflowTemplates(
         mutate()
     }
 
-
-
     const filterList = (text) =>
         workflowList.value.filter((wf) => wf.name.includes(text))
 
-    return { workflowList, loadMore, totalCount, error, isLoading, filterList, mutate }
+    return { workflowList, loadMore, filter_record, totalCount, error, isLoading, filterList, mutate }
+}
+
+export function useWorkflowTemplateByName(name, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } =
+        Workflows.getWorkflowTemplateByName(name, {
+            immediate,
+            options: {},
+        })
+
+    return {
+        data,
+        error,
+        isLoading,
+        mutate,
+    }
 }
 
 export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
@@ -115,4 +134,44 @@ export function useWorkflowByName(name, immediate: boolean = true) {
         isLoading,
         mutate,
     }
+}
+
+export function updateWorkflowByName(name, body, immediate: boolean = true) {
+    const { data, error, isLoading, isReady, mutate } =
+        Workflows.updateWorkflowByName(name, body, {
+            immediate,
+            options: {},
+        })
+
+    return {
+        workflow: data,
+        error,
+        isLoading,
+        isReady,
+        mutate,
+    }
+}
+
+
+export function getWorkflowConfigMap(name, immediate: boolean = true) {
+    const params = ref({ labelSelector: `com.atlan.orchestration/workflow-template-name=${name},com.atlan.orchestration/type=package` })
+    // const params = computed(() => ({
+    //     'name': `${name.value}` // `com.atlan.orchestration/workflow-template-name=${label}`
+    // }))
+    // const params = ref({ labelSelector: "" })
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap({ immediate, options: {}, params })
+
+    const changeName = (n) => {
+        params.value.labelSelector = `com.atlan.orchestration/workflow-template-name=${n},com.atlan.orchestration/type=package`
+        mutate()
+    }
+
+    return { data, error, isLoading, mutate, changeName }
+}
+
+export function createWorkflow(body, immediate: boolean = true) {
+
+    const { data, error, isLoading, mutate } = Workflows.createWorkflow({ body, immediate, options: {} })
+
+    return { data, error, isLoading, mutate }
 }

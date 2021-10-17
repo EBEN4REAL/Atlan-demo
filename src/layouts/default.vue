@@ -4,6 +4,7 @@
             <div class="h-full px-4 bg-white border-b">
                 <NavMenu
                     :page="activeKey[0]"
+                    :is-sidebar-active="showNavbar"
                     @change="handleChange"
                     @toggleNavbar="handleToggleNavbar"
                 />
@@ -35,7 +36,7 @@
                 <div v-else style="min-width: 264px">
                     <SidePanel :page="activeKey[0]" @change="handleChange" />
                 </div>
-                <div class="w-full">
+                <div class="w-full" @click="handleClick">
                     <router-view />
                 </div>
             </a-layout-content>
@@ -80,6 +81,7 @@
                 workflows: '/workflows',
                 reporting: '/reporting',
                 admin: '/admin',
+                platform: '/platform',
                 404: '/404',
             }
             const curPath = computed(() => currentRoute.value.path)
@@ -113,7 +115,9 @@
                     closeNavbar()
                 }
             })
-
+            const handleClick = () => {
+                if (showNavbar.value) showNavbar.value = false
+            }
             watch(curPath, () => {
                 updatePaths()
             })
@@ -128,6 +132,7 @@
                 showNavbar,
                 currentRoute,
                 closeNavbar,
+                handleClick,
             }
         },
     })

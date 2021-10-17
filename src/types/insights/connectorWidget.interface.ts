@@ -1,4 +1,4 @@
 export interface connectorsWidgetInterface {
-    attributeName: string
-    attributeValue: string
+    attributeName: string | undefined
+    attributeValue: string | undefined
 }

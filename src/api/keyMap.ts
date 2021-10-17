@@ -9,12 +9,12 @@ export const KeyMaps = {
         SAVED_SEARCH: () => getAPIPath('meta', '/search/saved'),
         GET_ASSET_RELATIONSHIP: () =>
             getAPIPath('meta', '/search/relationship'),
-        PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
+        PREVIEW_TABLE: () => getAPIPath('sql', '/query/preview'),
         GET_ENTITY: ({ guid }: PathParams) =>
             getAPIPath('meta', `/entity/guid/${guid}`),
         GET_PREVIEW: ({ imageId }: PathParams) =>
             `/api/${getAPIPath('/auth', imageId)}`,
-        BULK_UPDATE_ASSETS: () => getAPIPath('auth/atlas', '/entity/bulk'),
+        BULK_UPDATE_ASSETS: () => getAPIPath('meta', '/entity/bulk'),
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -31,7 +31,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${entityGuid}/classifications`),
         // supports n:n linking i.e. n entities -> n classifications; only caveat: we need to send the existing clsfs as well as newly added otherwise they'll be removed
         BULK_LINK_CLASSIFICATION: () =>
-            getAPIPath('auth/atlas', `/entity/bulk/setClassifications`),
+            getAPIPath('meta', `/entity/bulk/setClassifications`),
     },
     lineage: {
         GET_LINEAGE: ({ guid, depth, direction }: PathParams) =>
@@ -80,9 +80,11 @@ export const KeyMaps = {
             LIST_ROLES: () => getAPIPath('auth', '/roles'),
         },
         tenant: {
-            GET_TENANT: () => getAPIPath('auth', ''),
+            GET_TENANT: () => getAPIPath('service', '/tenants/default'),
+            UPDATE_TENANT: () => getAPIPath('service', '/tenants/default'),
             TEST_SMTP_CONFIG: () => getAPIPath('auth', '/smtp/test'),
             UPDATE_SMTP: () => getAPIPath('auth', ''),
+            CREATE_LOGO: () => getAPIPath('service', '/logo'),
         },
         user: {
             LIST_USERS: () => getAPIPath('auth', '/users'),
@@ -107,11 +109,6 @@ export const KeyMaps = {
                 getAPIPath('auth', `/users/${id}/delete`),
             /** FIXME: Not implemented properly */
             INVITE_USERS: ({ id }: PathParams) => getAPIPath('auth', `/users`),
-        },
-        requests: {
-            LIST_REQUESTS: () => getAPIPath('auth', '/requests'),
-            ACT_ON_REQUEST: ({ id }: PathParams) =>
-                getAPIPath('auth', `/requests/${id}/action`),
         },
     },
     BM: {
@@ -169,6 +166,8 @@ export const KeyMaps = {
                 `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
+        BULK_LINK_TERMS: () =>
+            getAPIPath('meta', `/glossary/terms/assignedEntities`),
         health: {
             PING_USER: () => getHealthPath('auth', '/debug/health'),
         },
@@ -207,11 +206,18 @@ export const KeyMaps = {
     },
     workflow: {
         WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflows/${name}`),
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
-        ARCHIVED_WORKFLOW_RUN: ({ guid }: PathParams) =>
-            getAPIPath('/service', `/archived-workflows/${guid}`),
+        ARCHIVED_WORKFLOW_RUN: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflows/${name}/runs/archived`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
+        WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflowtemplates/${name}`),
         WORKFLOW_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
+        WORKFLOW_CONFIG_MAP: () =>
+            getAPIPath('/service', `/configmap`)
+
     },
 }

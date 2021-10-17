@@ -1,6 +1,6 @@
 import { reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { Components } from '~/api/atlas/client'
 import { GET_ASSET_AUDIT } from '~/api/keyMaps/asset/index'
 

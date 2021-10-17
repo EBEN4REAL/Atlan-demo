@@ -122,7 +122,7 @@
                 (content: string, json: Record<string, any>) => {
                     emit('onEditorContentUpdate', content, json)
                 },
-                200
+                500
             )
 
             const CustomImage = Image.extend({
@@ -351,7 +351,7 @@
             float: left;
             pointer-events: none;
             height: 0;
-            @apply text-gray;
+            @apply text-gray-500;
         }
     }
 </style>

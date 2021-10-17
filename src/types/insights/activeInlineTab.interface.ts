@@ -1,4 +1,3 @@
-import { number } from '~/assets/images/dataType/number.svg'
 import { CustomVaribaleInterface } from './customVariable.interface'
 import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 import { assetInterface } from '~/types/assets/asset.interface'
@@ -37,6 +36,10 @@ export interface activeInlineTabInterface {
                 key: any
             }>
             variables: CustomVaribaleInterface[]
+            limitRows: {
+                checked: boolean
+                rowsCount: number
+            }
         }
         resultsPane: {
             activeTab: number

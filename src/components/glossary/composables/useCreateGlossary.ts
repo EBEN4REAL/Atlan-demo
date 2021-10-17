@@ -4,12 +4,13 @@ import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 import { Components } from '~/api/atlas/client'
 
-import { useAPI } from '~/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import {
     CREATE_GLOSSARY,
     CREATE_GLOSSARY_CATEGORY,
     CREATE_GLOSSARY_TERM,
 } from '~/api/keyMaps/glossary'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 import useUpdateGtcEntity from './useUpdateGtcEntity'
 
@@ -76,6 +77,8 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                useAddEvent('gtc', 'glossary', 'created', undefined)
+
                 message.success({
                     content: `${title} created!`,
                     key: `${title}`,
@@ -138,6 +141,7 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                useAddEvent('gtc', 'category', 'created', undefined)
                 message.success({
                     content: `${title} created!`,
                     key: `${title}`,
@@ -219,6 +223,7 @@ const useCreateGlossary = () => {
         watch(data, (newData) => {
             console.log(data)
             if (newData?.guid) {
+                useAddEvent('gtc', 'term', 'created', undefined)
                 message.success({
                     content: `${title} created!`,
                     key: `${title}`,

@@ -31,12 +31,9 @@ export interface assetInterface {
         sourceUpdatedAt: string
         tenantId: string
         viewDefinition: string
-        banner?: {
-            message: string
-            username: string
-            timestamp: number
-        }
-        bannerMessage: string
+        bannerDescription: string
+        bannerTitle: string
+        bannerType: string
         bannerUpdatedAt: number
         bannerUpdatedBy: string
 

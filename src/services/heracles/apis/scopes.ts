@@ -1,10 +1,10 @@
-import { useAPIAsyncState } from '~/api/useAPI'
+import { useAPIAsyncState } from '~/services/api/useAPI'
 import { IScopes } from '~/types/accessPolicies/scopes'
-import { KeyMaps } from '../keyMaps'
+import { heracles_keymap } from '../heracles_keymap'
 
 const getScopes = () =>
     useAPIAsyncState<{ scopes: IScopes[] }>(
-        KeyMaps.personas.LIST_SCOPES,
+        heracles_keymap.personas.LIST_SCOPES,
         'GET',
         {
             params: { type: 'scopeUniverse' },

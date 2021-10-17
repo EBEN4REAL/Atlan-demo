@@ -31,7 +31,7 @@
                                     >*</sup
                                 >
 
-                                <a-popover title="Help" v-if="c.helpText">
+                                <a-popover v-if="c.helpText" title="Help">
                                     <template #content>
                                         <div
                                             class="text-gray-500"
@@ -45,7 +45,6 @@
                                 </a-popover>
                                 <a-form-item :name="c.id">
                                     <DynamicInput
-                                        v-if="valueObject"
                                         v-model="valueObject[c.id]"
                                         :data-type="c.type"
                                         :date-time-type="c.dateTimeType"
@@ -60,7 +59,7 @@
                                         :limit-after="c.limitAfter"
                                         :limit-before="c.limitBefore"
                                         :allow-custom="c.allowCustom"
-                                        :valueObject="valueObject"
+                                        :value-object="valueObject"
                                         v-bind="
                                             f.type === 'asyncSelect'
                                                 ? {
@@ -103,7 +102,6 @@
                     </a-popover>
                     <a-form-item :name="f.id">
                         <DynamicInput
-                            v-if="valueObject"
                             v-model="valueObject[f.id]"
                             :data-type="f.type"
                             :date-time-type="f.dateTimeType"
@@ -119,7 +117,7 @@
                             :limit-after="f.limitAfter"
                             :limit-before="f.limitBefore"
                             :allow-custom="f.allowCustom"
-                            :valueObject="valueObject"
+                            :value-object="valueObject"
                             v-bind="
                                 f.type === 'asyncSelect'
                                     ? {
@@ -153,13 +151,7 @@
 
 <script>
     import DynamicInput from '@common/input/dynamic.vue'
-    import {
-        defineComponent,
-        ref,
-        watch,
-        computed,
-        defineAsyncComponent,
-    } from 'vue'
+    import { defineComponent, ref, watch, computed } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import useFormGenerator from './useFormGenerator'
 

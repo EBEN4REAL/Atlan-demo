@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full group">
+    <div :class="`w-full group ${item.qualifiedName}`">
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
@@ -54,13 +54,13 @@
                                                     'personal'
                                                 "
                                                 key="public"
-                                                @click="publishFolder"
+                                                @click="showPublishPopover = true"
                                                 >Make folder public</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
-                                                @click="deleteFolder"
+                                                @click="showDeletePopover = true"
                                                 >Delete Folder</a-menu-item
                                             >
                                         </a-menu>
@@ -75,7 +75,7 @@
                     v-else-if="item.typeName === 'Empty'"
                     class="text-sm font-bold text-gray-500"
                 >
-                    {{ title(item) }}
+                    {{ item.title }}
                 </div>
                 <!------------------------------->
                 <!-- Popover Allowed -->
@@ -111,7 +111,7 @@
                                 "
                             ></StatusBadge>
                             <div
-                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute right-6 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -140,6 +140,36 @@
                                     </a-tooltip>
                                 </div>
                             </div>
+                            <div
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            >
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    @click.stop="() => {}"
+                                >
+                                    <div class="pl-2">
+                                        <AtlanIcon
+                                            icon="KebabMenu"
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </div>
+                                    <template #overlay>
+                                        <a-menu>
+                                            <a-menu-item
+                                                key="rename"
+                                                @click="renameFolder"
+                                                >Rename Query</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                key="deleteFolder"
+                                                class="text-red-600"
+                                                @click="showDeletePopover = true"
+                                                >Delete Query</a-menu-item
+                                            >
+                                        </a-menu>
+                                    </template>
+                                </a-dropdown>
+                            </div>
                         </div>
                         <!------------------------------->
                     </div>
@@ -147,7 +177,18 @@
                 <!-- ---------------- -->
             </div>
         </div>
+
     </div>
+        <a-popover :visible="showDeletePopover" placement="right" >
+            <template #content>
+                <TreeDeletePopover :item="item" @cancel="showDeletePopover = false" @delete="() => delteItem(item.typeName)" />
+            </template>
+        </a-popover>
+        <a-popover :visible="showPublishPopover" placement="right">
+            <template #content>
+                <PublishFolderPopover :item="item" @cancel="showPublishPopover = false" @publish="publishFolder" />
+            </template>
+        </a-popover>
 </template>
 
 <script lang="ts">
@@ -169,6 +210,8 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
+    import PublishFolderPopover from '~/components/insights/common/publishFolderPopover.vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -180,7 +223,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { QueryItemPopover, StatusBadge },
+        components: { QueryItemPopover, StatusBadge, TreeDeletePopover, PublishFolderPopover },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -227,6 +270,8 @@
                 inlineTabs,
                 activeInlineTab
             )
+            const showDeletePopover = ref(false)
+            const showPublishPopover = ref(false)
 
             const actionClick = (action: string, t: assetInterface) => {
                 /* Here t->enity->assetInfo */
@@ -292,9 +337,71 @@
             }
             const renameFolder = () => {
                 useAddEvent('insights', 'folder', 'renamed', undefined)
+                const orignalName = item.value.attributes.name;
+                const parentNode = document.getElementsByClassName(`${item.value.qualifiedName}`)[0]
+                
+                const childNode = parentNode?.firstChild as HTMLElement;
+                childNode?.classList?.add('hidden')
+
+                const input = document.createElement('input')
+                input.setAttribute(
+                    'class',
+                    `outline-none border py-0 px-1 rounded mx-0 my-1 w-auto`
+                )
+                input.classList.add(`${item.value.qualifiedName}-rename-input`)
+                
+                parentNode?.prepend(input)
+                input.focus()
+                input.value = ''
+                input.value =  item.value.attributes?.name
+
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        parentNode?.removeChild(input)
+                        childNode?.classList?.remove('hidden')
+                    }
+                    if (e.key === 'Enter') {
+                        if(input.value && input.value !== orignalName) {
+                            item.value.attributes.name = input.value
+                            const { data, error } = Insights.CreateSavedQuery({
+                                entity: item.value.entity,
+                            })
+                            watch(error, (newError) => {
+                                if(newError) {
+                                    item.value.attributes.name = orignalName
+                                }
+                            })
+                        }
+                        input.value = ''
+                        try {
+                            parentNode?.removeChild(input)
+                        } catch {}
+                        childNode?.classList?.remove('hidden')
+                    }
+                })
+                input.addEventListener('blur', (e) => {
+                    if(input.value) {
+                        item.value.attributes.name = input.value
+                        const { data, error } = Insights.CreateSavedQuery({
+                                entiy: item.value.entity,
+                            })
+                        watch(error, (newError) => {
+                            if(newError) {
+                                item.value.attributes.name = orignalName
+                            }
+                        })
+                    }
+                    try {
+                        parentNode?.removeChild(input)
+                    } catch {
+
+                    }
+                    childNode?.classList?.remove('hidden')
+                })
             }
 
-            const deleteFolder = () => {
+            const delteItem = (type: 'Query' | 'QueryFolder') => {
                 const { data, error } = Insights.DeleteEntity(item.value.guid)
 
                 watch([data, error], ([newData, newError]) => {
@@ -305,7 +412,7 @@
                         })
                         refetchParentNode(
                             props.item.guid,
-                            'queryFolder',
+                            type === 'Query' ? 'query' : 'queryFolder',
                             savedQueryType.value
                         )
                     }
@@ -314,7 +421,7 @@
             return {
                 certificateStatus,
                 renameFolder,
-                deleteFolder,
+                delteItem,
                 publishFolder,
                 newQuery,
                 savedQueryType,
@@ -328,6 +435,8 @@
                 dataTypeImage,
                 actionClick,
                 dataTypeImageForColumn,
+                showDeletePopover,
+                showPublishPopover
             }
         },
     })

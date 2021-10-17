@@ -21,6 +21,7 @@
     <div class="z-20 flex flex-col bg-white">
         <AssetPreview
             v-if="selectedAsset"
+            :mutateTooltip="true"
             :selectedAsset="selectedAsset"
             @asset-mutation="() => {}"
             page="discovery"

@@ -299,7 +299,12 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if (parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+        if (
+            parentFolderQF &&
+            parentFolderGuid &&
+            parentFolderQF !== 'root' &&
+            parentFolderGuid !== 'root'
+        ) {
             body.value.entity.attributes.parentFolderQualifiedName =
                 parentFolderQF
             body.value.entity.relationshipAttributes = {

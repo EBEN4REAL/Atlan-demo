@@ -2,14 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="
-                    fixed
-                    z-10
-                    px-0
-                    border-r-0
-                    rounded-none rounded-l
-                    -left-5
-                "
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -71,7 +64,14 @@
                     ></component
                 ></a-tooltip>
 
+                <div
+                    class="text-base font-bold cursor-pointer  truncated text-primary hover:underline"
+                    v-if="mutateTooltip"
+                >
+                    {{ selectedAsset.attributes?.name }}
+                </div>
                 <Tooltip
+                    v-else
                     :tooltip-text="selectedAsset.attributes?.name"
                     classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
@@ -114,15 +114,7 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            px-5
-                            py-3
-                            font-semibold
-                            text-gray-700 text-md
-                        "
+                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -212,10 +204,15 @@
                 type: Boolean,
                 required: false,
             },
+            mutateTooltip: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
-            const { selectedAsset, page } = toRefs(props)
+            const { selectedAsset, page, mutateTooltip } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             const { assetTypeLabel, title, certificateStatus, assetType } =
                 useAssetInfo()
@@ -299,6 +296,7 @@
             onMounted(init)
 
             return {
+                mutateTooltip,
                 name,
                 tabHeights,
                 isLoaded,

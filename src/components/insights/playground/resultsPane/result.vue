@@ -24,7 +24,7 @@
                 <AtlanIcon icon="queryErorrIllus" class="w-36 h-28" />
                 <div
                     style="width: 300px"
-                    class="flex flex-col items-center justify-center mt-4"
+                    class="flex flex-col items-center justify-center mt-2"
                 >
                     <p class="mb-0 text-base text-center text-gray-700">
                         {{ queryErrorObj?.errorMessage }}

@@ -103,6 +103,7 @@ import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
+import Slack from '~/assets/images/integrations/slack.svg'
 
 export default {
     RunHistory,
@@ -209,4 +210,5 @@ export default {
     InsightsInactive,
     AssetsActive,
     AssetsInactive,
+    Slack,
 }

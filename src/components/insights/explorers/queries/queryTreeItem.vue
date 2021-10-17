@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full group">
+    <div :class="`w-full group ${item.qualifiedName}`">
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
@@ -179,7 +179,7 @@
         </div>
 
     </div>
-        <a-popover :visible="showDeletePopover" placement="right">
+        <a-popover :visible="showDeletePopover" placement="right" >
             <template #content>
                 <TreeDeletePopover :item="item" @cancel="showDeletePopover = false" @delete="() => delteItem(item.typeName)" />
             </template>
@@ -337,6 +337,68 @@
             }
             const renameFolder = () => {
                 useAddEvent('insights', 'folder', 'renamed', undefined)
+                const orignalName = item.value.attributes.name;
+                const parentNode = document.getElementsByClassName(`${item.value.qualifiedName}`)[0]
+                
+                const childNode = parentNode?.firstChild as HTMLElement;
+                childNode?.classList?.add('hidden')
+
+                const input = document.createElement('input')
+                input.setAttribute(
+                    'class',
+                    `outline-none border py-0 px-1 rounded mx-0 my-1 w-auto`
+                )
+                input.classList.add(`${item.value.qualifiedName}-rename-input`)
+                
+                parentNode?.prepend(input)
+                input.focus()
+                input.value = ''
+                input.value =  item.value.attributes?.name
+
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        parentNode?.removeChild(input)
+                        childNode?.classList?.remove('hidden')
+                    }
+                    if (e.key === 'Enter') {
+                        if(input.value && input.value !== orignalName) {
+                            item.value.attributes.name = input.value
+                            const { data, error } = Insights.CreateSavedQuery({
+                                entity: item.value.entity,
+                            })
+                            watch(error, (newError) => {
+                                if(newError) {
+                                    item.value.attributes.name = orignalName
+                                }
+                            })
+                        }
+                        input.value = ''
+                        try {
+                            parentNode?.removeChild(input)
+                        } catch {}
+                        childNode?.classList?.remove('hidden')
+                    }
+                })
+                input.addEventListener('blur', (e) => {
+                    if(input.value) {
+                        item.value.attributes.name = input.value
+                        const { data, error } = Insights.CreateSavedQuery({
+                                entiy: item.value.entity,
+                            })
+                        watch(error, (newError) => {
+                            if(newError) {
+                                item.value.attributes.name = orignalName
+                            }
+                        })
+                    }
+                    try {
+                        parentNode?.removeChild(input)
+                    } catch {
+
+                    }
+                    childNode?.classList?.remove('hidden')
+                })
             }
 
             const delteItem = (type: 'Query' | 'QueryFolder') => {

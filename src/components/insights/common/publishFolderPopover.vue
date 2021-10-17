@@ -18,7 +18,6 @@
             >
             <a-button
                 class="px-5 text-sm rounded"
-                style="width: 100px"
                 type="primary"
                 :loading="isSaving"
                 @click="publishItem"

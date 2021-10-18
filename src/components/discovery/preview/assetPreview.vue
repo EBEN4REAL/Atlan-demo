@@ -63,7 +63,6 @@
                         class="w-4 h-4 mb-1 mr-1"
                     ></component
                 ></a-tooltip>
-
                 <div
                     class="text-base font-bold cursor-pointer  truncated text-primary hover:underline"
                     v-if="mutateTooltip"
@@ -81,13 +80,10 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :show-no-status="false"
-                    :status-id="selectedAsset?.attributes?.certificateStatus"
-                    class="ml-1.5 mb-1"
-                ></StatusBadge>
+                <CertificatePopover
+                    v-if="!mutateTooltip"
+                    :data="selectedAsset"
+                />
             </div>
         </div>
         <a-tabs
@@ -125,6 +121,7 @@
                         :info-tab-data="selectedAsset"
                         :page="page"
                         :selected-asset="selectedAsset"
+                        :userPermission="userPermission"
                         :is-loaded="isLoaded"
                         @change="handleChange"
                     ></component>
@@ -153,12 +150,15 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
+    // import CertificatePopover from '~/components/common/certificatePopover.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
     import { copyToClipboard } from '~/utils/clipboard'
+    import useCheckAccess from '~/services/access/useCheckAccess'
+    import CertificatePopover from '~/components/common/certificatePopover.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -190,6 +190,7 @@
             businessMetadataTab: defineAsyncComponent(
                 () => import('./tabs/businessMetadata/businessMetadataTab.vue')
             ),
+            CertificatePopover,
         },
         props: {
             selectedAsset: {
@@ -219,6 +220,12 @@
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
             const router = useRouter()
+
+            const { evaluatePermissions } = useCheckAccess()
+            const { data: userPermission } = evaluatePermissions(
+                selectedAsset.value,
+                'ENTITY_UPDATE'
+            )
 
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
@@ -301,6 +308,7 @@
                 tabHeights,
                 isLoaded,
                 infoTabData,
+                userPermission,
                 title,
                 assetTypeLabel,
                 dataMap,

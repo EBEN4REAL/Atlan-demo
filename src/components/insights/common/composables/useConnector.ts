@@ -88,10 +88,11 @@ export function useConnector() {
 
     const getSchemaQualifiedName = (attributeValue) => {
         let attributeValues: string[]
-        let schemaQualifiedName: string | undefined
+        let schemaQualifiedName: string | undefined = ''
         if (attributeValue) {
             attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 3) {
+
+            if (attributeValues.length > 4) {
                 schemaQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}/${attributeValues[3]}/${attributeValues[4]}`
             }
         }
@@ -124,6 +125,25 @@ export function useConnector() {
         return name
     }
 
+    const getConnectorsDataFromQualifiedNames = (
+        connectionQualifiedName: string,
+        defaultSchemaQualifiedName: string
+    ) => {
+        const connectors: connectorsWidgetInterface = {
+            attributeName: undefined,
+            attributeValue: undefined,
+        }
+
+        if (defaultSchemaQualifiedName) {
+            connectors.attributeName = 'defaultSchemaQualifiedName'
+            connectors.attributeValue = defaultSchemaQualifiedName
+        } else if (connectionQualifiedName) {
+            connectors.attributeName = 'connectionQualifiedName'
+            connectors.attributeValue = connectionQualifiedName
+        }
+        return connectors
+    }
+
     return {
         getSchemaName,
         getDatabaseName,
@@ -133,5 +153,6 @@ export function useConnector() {
         getSchemaQualifiedName,
         getDatabaseQualifiedName,
         setConnectorsDataInInlineTab,
+        getConnectorsDataFromQualifiedNames,
     }
 }

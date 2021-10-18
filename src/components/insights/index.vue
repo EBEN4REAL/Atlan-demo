@@ -111,13 +111,11 @@
     import { useInlineTab } from './common/composables/useInlineTab'
     import { useEditor } from './common/composables/useEditor'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
-    // import { useConnector } from './common/composables/useConnector'
     import { useHotKeys } from './common/composables/useHotKeys'
     import { useFullScreen } from './common/composables/useFullScreen'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
 
     export default defineComponent({
@@ -159,7 +157,6 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
-            const { queryExecutionTime, queryErrorObj } = useRunQuery()
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -198,13 +195,11 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
-                queryErrorObj: queryErrorObj,
                 editorInstance: editorInstance,
                 editorConfig: editorConfig,
                 monacoInstance: monacoInstance,
                 sqlVariables: sqlVariables,
                 outputPaneSize: outputPaneSize,
-                queryExecutionTime: queryExecutionTime,
                 fullSreenState: fullSreenState,
                 setEditorInstance: setEditorInstance,
             }

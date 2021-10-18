@@ -376,7 +376,7 @@
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
             const { resultsPaneSizeToggle } = useHotKeys()
-            const { queryRun, modifyQueryExecutionTime } = useRunQuery()
+            const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
             const { toggleFullScreenMode } = useFullScreen()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
@@ -428,7 +428,6 @@
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
                 console.log(queryExecutionTime, executionTime, 'extime')
-                modifyQueryExecutionTime(queryExecutionTime, executionTime)
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))

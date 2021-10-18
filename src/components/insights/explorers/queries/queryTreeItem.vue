@@ -110,7 +110,7 @@
                                 :status-id="certificateStatus(item)"
                                 class="
                                     ml-1.5
-                                    mb-1
+                                    -mt-0.5
                                     parent-ellipsis-container-extension
                                 "
                             ></StatusBadge>

@@ -15,10 +15,15 @@
                     >Add variable</p>
                 </a-button>
             </div>
-            <div v-if="sqlVariables && sqlVariables.length === 0" class="flex items-center mb-1">
-                <span class="flex items-center justify-center text-gray-500">
+            <div v-if="sqlVariables && sqlVariables.length === 0" class="flex items-center mb-1 ml-2">
+                <!-- <span class="flex items-center justify-center text-gray-500">
                     <fa icon="fal bolt" class="text-base" />
-                </span>
+                </span> -->
+                <AtlanIcon
+                    @click=""
+                    class="w-4 h-4 text-gray-500"
+                    icon="Flash"
+                />
                 <p class="text-sm text-gray-500 ml-0.5">
                     Create variables to make values interactive.
                     <span

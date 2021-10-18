@@ -113,6 +113,7 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import Flash from '~/assets/images/icons/flash.svg'
 
 export default {
     queryErorrIllus,
@@ -229,4 +230,5 @@ export default {
     Settings,
     Delete,
     Slack,
+    Flash
 }

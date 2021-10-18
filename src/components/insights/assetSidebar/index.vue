@@ -30,7 +30,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ComputedRef, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        ComputedRef,
+        computed,
+        ref,
+        watch,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
@@ -44,17 +52,19 @@
             ) as ComputedRef<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { closeAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
-            const selectedAsset: Ref<any> = ref(undefined)
-
-            watch(
-                activeInlineTab,
-                () => {
-                    selectedAsset.value = {
-                        ...activeInlineTab.value?.assetSidebar?.assetInfo,
-                    }
-                },
-                { immediate: true }
+            const selectedAsset: Ref<any> = computed(
+                () => activeInlineTab.value?.assetSidebar?.assetInfo
             )
+
+            // watch(
+            //     activeInlineTab,
+            //     () => {
+            //         selectedAsset.value = {
+            //             ...activeInlineTab.value?.assetSidebar?.assetInfo,
+            //         }
+            //     },
+            //     { immediate: true }
+            // )
 
             return {
                 selectedAsset,

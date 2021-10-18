@@ -80,7 +80,13 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-                <CertificatePopover :data="selectedAsset" />
+
+                <StatusBadge
+                    :key="selectedAsset.guid"
+                    :show-no-status="false"
+                    :status-id="selectedAsset?.attributes?.certificateStatus"
+                    class="ml-1.5 mb-1"
+                ></StatusBadge>
             </div>
         </div>
         <a-tabs

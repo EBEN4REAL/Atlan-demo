@@ -144,11 +144,8 @@
                             :loading="isUpdating"
                             :class="isUpdating ? 'px-4.5' : 'px-2'"
                             :disabled="
-                                !canUserUpdateQuery(
-                                    activeInlineTab.attributes?.owner
-                                ) ||
-                                (activeInlineTab.queryId &&
-                                    activeInlineTab.isSaved)
+                                activeInlineTab.queryId &&
+                                activeInlineTab.isSaved
                             "
                             @click="updateQuery"
                         >

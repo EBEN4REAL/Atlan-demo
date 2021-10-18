@@ -50,7 +50,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :options="asyncData"
             :loading="loading"
-            :disabled="letAsyncSelectDisabled"
+            :disabled="letAsyncSelectDisabled || disabled"
             :placeholder="placeholder"
             v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
@@ -140,7 +140,13 @@
 
 <script lang="ts">
     import dayjs from 'dayjs'
-    import { defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
+    import {
+        defineAsyncComponent,
+        toRefs,
+        defineComponent,
+        PropType,
+        ref,
+    } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
 
@@ -167,6 +173,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false,
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
             dataType: {
                 type: String,
@@ -271,6 +282,8 @@
         },
         emits: ['update:modelValue', 'change', 'blur'],
         setup(props) {
+            const { valueObject } = toRefs(props)
+
             const {
                 loadData,
                 asyncData,
@@ -283,7 +296,7 @@
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
-                props.valueObject,
+                valueObject,
                 props?.getFormConfig
             )
 

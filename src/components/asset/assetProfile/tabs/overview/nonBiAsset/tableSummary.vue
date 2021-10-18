@@ -35,6 +35,7 @@
                 <Description
                     v-if="assetData.guid"
                     :selected-asset="assetData"
+                    :edit-permission="editPermission"
                     @update:selected-asset="mutateAsset"
                 />
             </div>
@@ -49,6 +50,7 @@
                 <Status
                     v-if="assetData.guid"
                     :selected-asset="assetData"
+                    :edit-permission="editPermission"
                     @update:selected-asset="mutateAsset"
                 />
             </div>
@@ -56,6 +58,7 @@
             <Owners
                 v-if="assetData.guid"
                 :selected-asset="assetData"
+                :edit-permission="editPermission"
                 @update:selected-asset="mutateAsset"
             />
         </div>
@@ -80,6 +83,13 @@
 
     export default defineComponent({
         components: { RowInfoHoverCard, Description, Status, Owners },
+        props: {
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+        },
         setup() {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')

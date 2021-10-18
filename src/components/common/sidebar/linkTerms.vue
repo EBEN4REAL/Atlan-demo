@@ -6,6 +6,7 @@
             <PillGroup
                 :data="pillTerms"
                 label-key="displayText"
+                :read-only="!editPermission"
                 @add="toggleLinkTermPopover"
                 @delete="unLinkTerm"
             >
@@ -23,17 +24,16 @@
             trigger="click"
         >
             <div v-if="pillTerms.length < 1">
-                <div @click.stop="toggleLinkTermPopover">
+                <div v-if="editPermission" @click.stop="toggleLinkTermPopover">
                     <div
-                        class="
-                            flex
-                            items-center
-                            cursor-pointer
-                            text-primary
-                            hover:text-primary hover:underline
-                        "
+                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                     >
                         <span class="text-xs">Add Terms</span>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="flex items-center text-gray-500 cursor-pointer">
+                        <span class="text-xs">No Terms</span>
                     </div>
                 </div>
             </div>
@@ -113,6 +113,11 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['update:selectedAsset'],

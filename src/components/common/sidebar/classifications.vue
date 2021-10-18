@@ -9,6 +9,7 @@
                 :data="classificationsList"
                 label-key="typeName"
                 popover-trigger="hover"
+                :read-only="!editPermission"
                 @add="toggleLinkClassificationPopover"
                 @delete="unLinkClassification"
                 @select="handleSelect"
@@ -51,7 +52,10 @@
             trigger="click"
         >
             <div v-if="asset.classifications?.length < 1">
-                <div @click.stop="toggleLinkClassificationPopover">
+                <div
+                    v-if="editPermission"
+                    @click.stop="toggleLinkClassificationPopover"
+                >
                     <div
                         class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                     >
@@ -59,6 +63,11 @@
                             <fa icon="fal plus" />
                         </span> -->
                         <span class="text-xs">Add classifications</span>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="flex items-center text-gray-500 cursor-pointer">
+                        <span class="text-xs">No classifications</span>
                     </div>
                 </div>
             </div>
@@ -160,7 +169,10 @@
                     </template>
                     <div class="flex items-center justify-between w-full mt-4">
                         <div
-                            v-if="!showCreateClassificationPopover"
+                            v-if="
+                                !showCreateClassificationPopover &&
+                                userHasCreatingPermission
+                            "
                             class="inline-flex flex-1 text-sm text-gray-700"
                         >
                             Or create a
@@ -259,12 +271,18 @@
     import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         components: { PillGroup, ClassificationInfoCard },
@@ -288,6 +306,12 @@
             const showAddClassificationBtn = ref(false)
 
             const isDrawerVisible = ref(false)
+
+            const store = useAccessStore()
+
+            const userHasCreatingPermission = computed(() =>
+                store.checkPermission('CREATE_CLASSIFICATION')
+            )
 
             /* classifications fxns */
             function getAvailableClassificationsForLink(
@@ -767,6 +791,7 @@
                 isDrawerVisible,
                 handleSelect,
                 previewClassification,
+                userHasCreatingPermission,
             }
         },
     })

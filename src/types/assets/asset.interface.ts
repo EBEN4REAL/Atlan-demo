@@ -64,5 +64,6 @@ export interface assetInterface {
     meanings: { displayText: string }[]
     status: string
     typeName: string
+    entityGuid: string
     qualifiedName: string
 }

@@ -1,10 +1,14 @@
 <template>
     <div class="w-full px-5">
         <!-- <Terms :selectedAsset="selectedAsset" /> -->
-        <Classification :selected-asset="selectedAsset" />
+        <Classification
+            :selected-asset="selectedAsset"
+            :edit-permission="userHasEditPermission"
+        />
         <div class="mt-2">
             <LinkTerms
                 :selected-asset="selectedAsset"
+                :edit-permission="userHasEditPermission"
                 @update:selected-asset="mutateSelectedAsset"
             />
             <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
@@ -25,6 +29,10 @@
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            userHasEditPermission: {
+                type: Boolean,
                 required: true,
             },
         },

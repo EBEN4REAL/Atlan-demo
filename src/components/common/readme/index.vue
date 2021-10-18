@@ -60,7 +60,12 @@
                     >Cancel</a-button
                 >
             </div>
-            <a-button v-else type="link" class="text-sm" @click="startEdit">
+            <a-button
+                v-if="editPermission && !editable"
+                type="link"
+                class="text-sm"
+                @click="startEdit"
+            >
                 <fa icon="fa pencil" class="mx-2 text-xs" />
                 Edit
             </a-button>
@@ -176,6 +181,11 @@
                 type: Object as PropType<Glossary | Category | Term>,
                 required: true,
                 default: () => {},
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         setup(props) {

@@ -4,10 +4,10 @@
         style="padding: 2rem 1.25rem 2rem 3.75rem"
     >
         <!-- Announcements -->
-        <Announcements :asset="assetData" />
+        <Announcements :asset="assetData" :edit-permission="editPermission" />
 
         <!-- Table Summary -->
-        <tableSummary />
+        <tableSummary :edit-permission="editPermission" />
 
         <!-- Column and Table Preview-->
         <div class="w-full">
@@ -59,6 +59,7 @@
             :show-padding-x="false"
             :entity="assetData"
             :parent-asset-id="assetData"
+            :edit-permission="editPermission"
         />
         <Resources :asset="assetData" />
     </div>
@@ -104,6 +105,13 @@
                         '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewTable.vue'
                     )
             ),
+        },
+        props: {
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup() {
             const activePreviewTabKey: Ref<'column-preview' | 'table-preview'> =

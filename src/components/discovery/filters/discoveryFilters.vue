@@ -144,6 +144,7 @@
     import { List } from './filters'
     import useFilterPayload from './useFilterPayload'
     import useFilterUtils from './useFilterUtils'
+    import { useClassificationStore } from '~/components/admin/classifications/_store'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -412,8 +413,14 @@
                         return facetFiltersData.slice(0, 3).join(', ')
                     }
                     case 'classifications': {
-                        const facetFiltersData =
-                            dataMap.value[filterId]?.checked || []
+                        const facetFiltersData = dataMap.value[
+                            filterId
+                        ]?.checked?.map(
+                            (clsf: string) =>
+                                useClassificationStore().getClasificationByName(
+                                    clsf
+                                )?.displayName
+                        )
                         if (facetFiltersData.length > 3) {
                             return `${facetFiltersData
                                 .slice(0, 3)

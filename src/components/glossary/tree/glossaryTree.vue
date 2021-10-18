@@ -637,6 +637,8 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
 
+    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+
     export default defineComponent({
         components: {
             LoadingView,
@@ -790,25 +792,6 @@
                     })
                 }
             }, 300)
-
-            // to get correct icon from type and status
-            const getEntityStatusIcon = (
-                type: String,
-                certificateStatus: String
-            ): String => {
-                if (
-                    certificateStatus === undefined ||
-                    certificateStatus === '' ||
-                    certificateStatus === 'is_null' ||
-                    certificateStatus === null
-                )
-                    return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
-                return `${type?.charAt(0).toUpperCase()}${type?.slice(
-                    1
-                )}${certificateStatus
-                    ?.charAt(0)
-                    .toUpperCase()}${certificateStatus?.slice(1).toLowerCase()}`
-            }
 
             watch(home, () => {
                 searchQuery.value = ''

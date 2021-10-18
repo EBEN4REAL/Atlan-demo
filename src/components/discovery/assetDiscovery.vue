@@ -119,7 +119,10 @@
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
     import useFilterUtils from './filters/useFilterUtils'
-    import useDiscoveryDSL from './useDiscoveryDSL'
+    import {
+        generateAggregationDSL,
+        generateAssetQueryDSL,
+    } from './useDiscoveryDSL'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -153,18 +156,6 @@
             // const events = tracking.getEventsName()
             const isAggregate = ref(true)
 
-            // Clean Stuff
-            // const AllFilters: Ref = ref({
-            //     facetsFilters: {},
-            //     searchText: '',
-            //     selectedTab: 'Catalog',
-            //     sortOrder: 'default',
-            //     state: 'active',
-            //     ...decodeQuery(
-            //         Object.keys(router.currentRoute.value?.query)[0]
-            //     ),
-            // })
-
             // Temporary, not saved in url
             const limit = ref(20)
             const offset = ref(0)
@@ -178,7 +169,7 @@
 
             const termNames = ref<string[]>([])
 
-            // Initialize
+            // Initialization via IIFE
             ;(() => {
                 const qry = decodeQuery(
                     Object.keys(router.currentRoute.value?.query)[0]
@@ -250,7 +241,7 @@
                 let sum = 0
                 assetTypeList.value?.forEach((element) => {
                     if (assetTypeMap.value?.[element.id]) {
-                        sum += assetTypeMap.value[element.id]
+                        sum += assetTypeMap.value?.[element.id]
                     }
                 })
                 return sum
@@ -260,7 +251,7 @@
                 if (selectedTab.value == 'Catalog') {
                     return totalSum.value
                 }
-                return assetTypeMap.value[selectedTab.value]
+                return assetTypeMap.value?.[selectedTab.value]
             })
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
@@ -287,7 +278,6 @@
 
             const updateBody = () => {
                 const initialBody = {
-                    // typeName: assetTypeListString.value,
                     relationAttributes: [
                         'readme',
                         'displayText',
@@ -298,7 +288,11 @@
                     dsl: {
                         size: limit.value,
                         from: offset.value,
-                        ...useDiscoveryDSL(facets.value),
+                        ...generateAssetQueryDSL(
+                            facets.value,
+                            queryText.value,
+                            selectedTab.value
+                        ),
                     },
                     attributes: [
                         ...BaseAttributes,
@@ -306,14 +300,6 @@
                         ...tableauAttributes,
                         ...BMAttributeProjection.value,
                     ],
-                }
-
-                if (selectedTab.value !== 'Catalog') {
-                    // initialBody.entityFilters.criterion.push({
-                    //     attributeName: '__typeName',
-                    //     attributeValue: selectedTab.value,
-                    //     operator: 'eq',
-                    // })
                 }
 
                 if (state.value) {
@@ -341,11 +327,14 @@
                     // delete initialBody.sortBy
                     // delete initialBody.sortOrder
                 }
-                if (queryText.value) {
-                    // initialBody.query = queryText.value
-                }
                 replaceBody(initialBody)
-                if (isAggregate.value) refreshAggregation(initialBody)
+                if (isAggregate.value)
+                    refreshAggregation({
+                        dsl: generateAggregationDSL(
+                            facets.value,
+                            queryText.value
+                        ),
+                    })
             }
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
@@ -353,7 +342,7 @@
                 const routerOptions: Record<string, any> = {
                     facets: generateFacetConfigForRouter(),
                 }
-                if (queryText.value) routerOptions.searchText = queryText.value
+                if (queryText.value) routerOptions.queryText = queryText.value
                 if (selectedTab.value !== 'Catalog')
                     routerOptions.selectedTab = selectedTab.value
                 if (sortOrder.value !== 'default')
@@ -453,7 +442,6 @@
                 assetTypeList,
                 assetTypeMap,
                 isAggregate,
-                replaceBody,
                 handleSearchChange,
                 projection,
                 handleChangePreferences,

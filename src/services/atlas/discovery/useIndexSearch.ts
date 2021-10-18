@@ -8,8 +8,9 @@ export default function useIndexSearch(
     cacheSuffx?: string | '',
     immediate?: boolean
 ) {
+    const cancelTokenSource: CancelTokenSource = axios.CancelToken.source()
     const axiosOpts: AxiosRequestConfig = {
-        // cancelToken: axios.CancelToken.source()?.token,
+        cancelToken: cancelTokenSource?.token,
     }
 
     // const body = ref(initialBody)
@@ -22,12 +23,6 @@ export default function useIndexSearch(
         { immediate, resetOnExecute: false }
     )
 
-    const refresh = () => {
-        mutate()
-    }
-
-    const query = (queryText: string) => {}
-
     const replaceBody = (payload: any) => {
         body.value = payload
         mutate()
@@ -37,8 +32,6 @@ export default function useIndexSearch(
         data,
         isLoading,
         error,
-        query,
-        refresh,
         replaceBody,
         body,
         mutate,

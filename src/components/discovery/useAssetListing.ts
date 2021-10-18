@@ -1,9 +1,6 @@
-import axios from 'axios'
-import useAssetSearchList from './useSearchList'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { computed, Ref, ref, watch } from 'vue'
 import { AssetTypeList } from '~/constant/assetType'
-import { BaseAttributes, tableauAttributes } from '~/constant/projection'
 import useIndexSearch from '~/services/atlas/discovery/useIndexSearch'
 
 export function useAssetListing(
@@ -12,7 +9,7 @@ export function useAssetListing(
     cacheSuffx?: string | ''
 ) {
     const list: Ref<assetInterface[]> = ref([])
-    const { query, replaceBody, body, isReady, error, data } = useIndexSearch(
+    const { replaceBody, body, isReady, error, data } = useIndexSearch(
         {},
         '',
         immediate
@@ -41,7 +38,6 @@ export function useAssetListing(
         data,
         list,
         isLoading,
-        query,
         replaceBody,
         body,
         mutateAssetInList,
@@ -53,18 +49,6 @@ export function useAssetAggregation(
     typeName?: string,
     immediate: boolean = true
 ) {
-    const baseQuery = {
-        size: 0,
-        aggs: {
-            typename: {
-                terms: {
-                    field: '__typeName.keyword',
-                    size: 20,
-                },
-            },
-        },
-    }
-
     const {
         replaceBody,
         data,
@@ -99,12 +83,7 @@ export function useAssetAggregation(
         return sum
     })
 
-    function refreshAggregation(newBody: any) {
-        // const newCriterion = newBody?.entityFilters?.criterion?.filter(
-        //     (item) => item.attributeName !== '__typeName'
-        // )
-        let query = { ...newBody }
-        query.dsl = { ...newBody.dsl, ...baseQuery }
+    function refreshAggregation(query: any) {
         replaceBody(query)
     }
 

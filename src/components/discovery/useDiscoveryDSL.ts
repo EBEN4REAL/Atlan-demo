@@ -1,6 +1,6 @@
 import bodybuilder from 'bodybuilder'
 
-export default function useDiscoveryDSL(filters: Record<string, any>) {
+export function useDiscoveryDSL(filters: Record<string, any>) {
     const query = bodybuilder()
     Object.keys(filters ?? {}).forEach((mkey) => {
         const fltrObj = filters[mkey]
@@ -48,5 +48,35 @@ export default function useDiscoveryDSL(filters: Record<string, any>) {
             }
         }
     })
-    return query.build()
+    return query
+}
+
+export function generateAssetQueryDSL(
+    facets: Record<string, any>,
+    queryText: string,
+    assetType: string
+) {
+    const dsl = useDiscoveryDSL(facets)
+    if (queryText) {
+        dsl.orQuery('match', 'Asset.name', queryText)
+        dsl.orQuery('match', '__typeName', queryText)
+    }
+    if (assetType !== 'Catalog') {
+        dsl.filter('term', '__typeName.keyword', assetType)
+    }
+    return dsl.build()
+}
+
+export function generateAggregationDSL(
+    facets: Record<string, any>,
+    queryText: string
+) {
+    const dsl = useDiscoveryDSL(facets)
+    if (queryText) {
+        dsl.orQuery('match', 'Asset.name', queryText)
+        dsl.orQuery('match', '__typeName', queryText)
+    }
+    dsl.aggregation('terms', '__typeName.keyword', { size: 20 }, 'typename')
+    dsl.size(0)
+    return dsl.build()
 }

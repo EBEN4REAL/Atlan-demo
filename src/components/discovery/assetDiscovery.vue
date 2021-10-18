@@ -250,8 +250,8 @@
 
             const totalSum = computed(() => {
                 let sum = 0
-                assetTypeList.value.forEach((element) => {
-                    if (assetTypeMap.value[element.id]) {
+                assetTypeList.value?.forEach((element) => {
+                    if (assetTypeMap.value?.[element.id]) {
                         sum += assetTypeMap.value[element.id]
                     }
                 })
@@ -290,8 +290,6 @@
             const updateBody = () => {
                 const initialBody = {
                     // typeName: assetTypeListString.value,
-                    // size: limit.value,
-                    // offset: offset.value,
                     relationAttributes: [
                         'readme',
                         'displayText',
@@ -299,7 +297,11 @@
                         'description',
                         'shortDescription',
                     ],
-                    dsl: useDiscoveryDSL(filters.value),
+                    dsl: {
+                        size: limit.value,
+                        from: offset.value,
+                        ...useDiscoveryDSL(filters.value),
+                    },
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
@@ -307,7 +309,6 @@
                         ...BMAttributeProjection.value,
                     ],
                 }
-                initialBody.dsl.size = 20
 
                 if (selectedTab.value !== 'Catalog') {
                     // initialBody.entityFilters.criterion.push({

@@ -28,7 +28,7 @@ export function useAssetListing(
     }
 
     watch(data, () => {
-        if (body?.value?.offset > 0) {
+        if (body?.value?.dsl.from > 0) {
             list.value = list.value.concat(data?.value?.entities)
         } else if (data.value?.entities) {
             list.value = data.value?.entities
@@ -53,31 +53,32 @@ export function useAssetAggregation(
     typeName?: string,
     immediate: boolean = true
 ) {
-    const aggregationCancelTokenSource = axios.CancelToken.source()
     const baseQuery = {
-        limit: 1,
-        offset: 0,
-        excludeDeletedEntities: true,
-        aggregationAttributes: ['__typeName.keyword'],
-        typeName,
+        size: 0,
+        aggs: {
+            typename: {
+                terms: {
+                    field: '__typeName.keyword',
+                    size: 20,
+                },
+            },
+        },
     }
 
     const {
-        isLoading: isAggregateLoading,
         replaceBody,
         data,
-    } = useAssetSearchList(
-        baseQuery,
-        '',
-        immediate,
-        aggregationCancelTokenSource
-    )
+        isLoading: isAggregateLoading,
+    } = useIndexSearch({}, '', immediate)
 
     const assetTypeMap = computed(() => {
-        if (data.value?.aggregations) {
-            return data.value?.aggregations['__typeName.keyword']
-        }
-        return {}
+        return data.value?.aggregations?.typename?.buckets.reduce(
+            (acc, bct: { key: string; doc_count: number }) => {
+                acc[bct.key] = bct.doc_count
+                return acc
+            },
+            {}
+        )
     })
 
     const assetTypeList = computed(() => {
@@ -99,19 +100,12 @@ export function useAssetAggregation(
     })
 
     function refreshAggregation(newBody: any) {
-        const newCriterion = newBody?.entityFilters?.criterion?.filter(
-            (item) => item.attributeName !== '__typeName'
-        )
-        replaceBody({
-            ...baseQuery,
-            query: newBody.query,
-            typeName: newBody.typeName,
-            termName: newBody.termName,
-            entityFilters: {
-                condition: newBody?.entityFilters?.condition,
-                criterion: newCriterion,
-            },
-        })
+        // const newCriterion = newBody?.entityFilters?.criterion?.filter(
+        //     (item) => item.attributeName !== '__typeName'
+        // )
+        let query = { ...newBody }
+        query.dsl = { ...newBody.dsl, ...baseQuery }
+        replaceBody(query)
     }
 
     return {

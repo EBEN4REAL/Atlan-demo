@@ -13,11 +13,7 @@ export default function useIndexSearch(
     }
 
     // const body = ref(initialBody)
-    const body = ref({
-        query: {
-            size: 20,
-        },
-    })
+    const body = ref({})
 
     const { data, mutate, error, isLoading, isReady } = useAPIAsyncState<any>(
         KeyMaps.ES.INDEX_SEARCH,

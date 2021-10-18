@@ -413,15 +413,14 @@
                         return facetFiltersData.slice(0, 3).join(', ')
                     }
                     case 'classifications': {
-                        const facetFiltersData = dataMap.value[
-                            filterId
-                        ]?.checked?.map(
-                            (clsf: string) =>
-                                useClassificationStore().getClasificationByName(
-                                    clsf
-                                )?.displayName
-                        )
-                        if (facetFiltersData.length > 3) {
+                        const facetFiltersData =
+                            dataMap.value[filterId]?.checked?.map(
+                                (clsf: string) =>
+                                    useClassificationStore().getClasificationByName(
+                                        clsf
+                                    )?.displayName
+                            ) ?? []
+                        if (facetFiltersData.length || 0 > 3) {
                             return `${facetFiltersData
                                 .slice(0, 3)
                                 .join(', ')} +${

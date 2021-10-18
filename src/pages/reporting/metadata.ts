@@ -15,9 +15,6 @@ export const Metadata = {
                     size: 0,
                     aggs: {
                         group_by_state: {
-                            meta: {
-                                ACTIVE: 'Active',
-                            },
                             terms: {
                                 field: '__state',
                                 size: 20,
@@ -317,6 +314,260 @@ export const Metadata = {
                 },
                 dataOptions: {
                     aggregationKey: 'group_by_connector',
+                },
+            },
+        },
+        {
+            id: 'connection-assets',
+            label: 'Top 5 Connections',
+            info: 'Asset Types',
+            showHeader: true,
+            class: 'col-span-6 border border-light px-5 py-3 rounded h-64',
+            component: 'graph',
+            componentData: {
+                query: {
+                    size: 0,
+                    query: {
+                        bool: {
+                            filter: [
+                                {
+                                    bool: {
+                                        must_not: [
+                                            {
+                                                term: {
+                                                    'Asset.connectionName': '',
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    aggs: {
+                        group_by_connector: {
+                            terms: {
+                                field: 'Asset.connectionName',
+                                size: 50,
+                            },
+                        },
+                    },
+                },
+                graphType: 'bar',
+                graphOptions: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        datalabels: {
+                            backgroundColor: '#fff',
+
+                            borderColor: '#f4f6fd',
+                            borderRadius: 25,
+                            borderWidth: 0.5,
+                            color: '#5277d7',
+                            // backgroundColor: function (context) {
+                            //     return context.dataset.backgroundColor
+                            // },
+
+                            clamp: true,
+                            padding: {
+                                top: 0,
+                                bottom: 0,
+                            },
+
+                            formatter: Math.round,
+                            offset: 20,
+
+                            anchor: 'center',
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                            ticks: {
+                                display: true,
+                            },
+                        },
+                    },
+                },
+                dataOptions: {
+                    aggregationKey: 'group_by_connector',
+                },
+            },
+        },
+        {
+            id: 'classification-assets',
+            label: 'Top 5 classifications',
+            info: 'Asset Types',
+            showHeader: true,
+            class: 'col-span-6 border border-light px-5 py-3 rounded h-64',
+            component: 'graph',
+            componentData: {
+                query: {
+                    size: 0,
+                    aggs: {
+                        group_by_traits: {
+                            terms: {
+                                field: '__traitNames',
+                                size: 20,
+                            },
+                        },
+                    },
+                },
+                graphType: 'bar',
+                graphOptions: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        datalabels: {
+                            backgroundColor: '#fff',
+
+                            borderColor: '#f4f6fd',
+                            borderRadius: 25,
+                            borderWidth: 0.5,
+                            color: '#5277d7',
+                            // backgroundColor: function (context) {
+                            //     return context.dataset.backgroundColor
+                            // },
+
+                            clamp: true,
+                            padding: {
+                                top: 0,
+                                bottom: 0,
+                            },
+
+                            formatter: Math.round,
+                            offset: 20,
+
+                            anchor: 'center',
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                            ticks: {
+                                display: true,
+                            },
+                        },
+                    },
+                },
+                dataOptions: {
+                    aggregationKey: 'group_by_traits',
+                },
+            },
+        },
+        {
+            id: 'created-assets',
+            label: 'Top 5 classifications',
+            info: 'Asset Types',
+            showHeader: true,
+            class: 'col-span-6 border border-light px-5 py-3 rounded h-64',
+            component: 'graph',
+            componentData: {
+                query: {
+                    size: 0,
+                    aggs: {
+                        group_by_traits: {
+                            terms: {
+                                field: '__createdBy',
+                                size: 5,
+                            },
+                        },
+                    },
+                },
+                graphType: 'bar',
+                graphOptions: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        datalabels: {
+                            backgroundColor: '#fff',
+
+                            borderColor: '#f4f6fd',
+                            borderRadius: 25,
+                            borderWidth: 0.5,
+                            color: '#5277d7',
+                            // backgroundColor: function (context) {
+                            //     return context.dataset.backgroundColor
+                            // },
+
+                            clamp: true,
+                            padding: {
+                                top: 0,
+                                bottom: 0,
+                            },
+
+                            formatter: Math.round,
+                            offset: 20,
+
+                            anchor: 'center',
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                            ticks: {
+                                display: true,
+                            },
+                        },
+                    },
+                },
+                dataOptions: {
+                    aggregationKey: 'group_by_traits',
                 },
             },
         },

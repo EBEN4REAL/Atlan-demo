@@ -32,10 +32,15 @@
         loader: () => import('@/reporting/graph/pie.vue'),
     })
 
+    const Line = defineAsyncComponent({
+        loader: () => import('@/reporting/graph/line.vue'),
+    })
+
     export default defineComponent({
         components: {
             Bar,
             Pie,
+            Line,
         },
         props: {
             data: {

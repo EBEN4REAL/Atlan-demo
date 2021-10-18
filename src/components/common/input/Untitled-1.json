@@ -1,0 +1,116 @@
+[
+    {
+        "id": "text",
+        "label": "text"
+    },
+    {
+        "type": "asyncSelect",
+        "label": "Select or Create Credentials",
+        "id": "credentialGuid",
+        "requestConfig": {
+            "url": "http://{{domain}}/api/service/credentials",
+            "method": "GET",
+            "params": {
+                "connector": "snowflake"
+            },
+            "addFormValues": [],
+            "body": {}
+        },
+        "responseConfig": {
+            "rootPath": ".records",
+            "labelPath": "{{.name}} {{.connectorType}}",
+            "valuePath": ".id"
+        },
+        "allowCreate": true,
+        "rules": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": "this is required"
+            }
+        ],
+        "createNewLabel": "Create New Crendetial",
+        "getFormConfig": {
+            "requestConfig": {
+                "url": "http://{{domain}}/api/service/configmap?labelSelector=com.atlan.orchestration.credential/source=snowflake",
+                "method": "GET",
+                "params": {},
+                "body": {}
+            },
+            "rootPath": ".items[0].data.uiConfig"
+        }
+    },
+    {
+        "type": "asyncTreeSelect",
+        "id": "dbschma",
+        "label": "Select DB and Schema",
+        "requestConfig": {
+            "url": "http://{{domain}}/api/sql/metadata/databases",
+            "method": "POST",
+            "params": {},
+            "addFormValues": [],
+            "body": {
+                "className": "net.snowflake.client.jdbc.SnowflakeDriver",
+                "url": "jdbc:snowflake://jv22371.ap-south-1.aws.snowflakecomputing.com?loginTimeout=5&networkTimeout=5&application=atlan",
+                "host": "jv22371.ap-south-1.aws.snowflakecomputing.com",
+                "port": 443,
+                "connector": "snowflake",
+                "username": "atlanadmin",
+                "password": "Atlan#2020",
+                "authType": "basic",
+                "extra": {
+                    "role": "ACCOUNTADMIN",
+                    "warehouse": "COMPUTE_WH",
+                    "queryTimeout": "5"
+                },
+                "driverProperties": {
+                    "username": "atlanadmin",
+                    "password": "Atlan#2020"
+                }
+            }
+        },
+        "responseConfig": {
+            "rootPath": ".results",
+            "labelPath": "{{.TABLE_CATALOG}}",
+            "valuePath": ".TABLE_CATALOG"
+        },
+        "requestConfig_2": {
+            "url": "http://{{domain}}/api/sql/metadata/schemas/{{parent}}",
+            "method": "POST",
+            "params": {},
+            "addFormValues": [],
+            "body": {
+                "className": "net.snowflake.client.jdbc.SnowflakeDriver",
+                "url": "jdbc:snowflake://jv22371.ap-south-1.aws.snowflakecomputing.com?loginTimeout=5&networkTimeout=5&application=atlan",
+                "host": "jv22371.ap-south-1.aws.snowflakecomputing.com",
+                "port": 443,
+                "connector": "snowflake",
+                "username": "atlanadmin",
+                "password": "Atlan#2020",
+                "authType": "basic",
+                "schemaIncludePattern": [
+                    "t"
+                ],
+                "schemaExcludePattern": [
+                    "^c",
+                    "^i",
+                    "^a"
+                ],
+                "extra": {
+                    "role": "ACCOUNTADMIN",
+                    "warehouse": "COMPUTE_WH",
+                    "queryTimeout": "5"
+                },
+                "driverProperties": {
+                    "username": "atlanadmin",
+                    "password": "Atlan#2020"
+                }
+            }
+        },
+        "responseConfig_2": {
+            "rootPath": ".results",
+            "labelPath": "{{.TABLE_SCHEM}}",
+            "valuePath": ".TABLE_SCHEM"
+        }
+    }
+]

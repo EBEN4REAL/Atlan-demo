@@ -1,7 +1,5 @@
-
 import { ref, computed, watch } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
-
 
 export default function useAsyncSelector(
     reqConfig: { url?: any; method?: any; params?: any; addFormValues: Array; body: Object },
@@ -63,6 +61,7 @@ export default function useAsyncSelector(
         asyncData.value = data;
 
     }
+
     const getParsedBody = (keys) => {
         console.log('keys', keys)
         const { body } = reqConfig
@@ -184,6 +183,7 @@ export default function useAsyncSelector(
 
     return {
         loadData,
+        loadDataError,
         newConfig,
         asyncData,
         shouldRefetch,

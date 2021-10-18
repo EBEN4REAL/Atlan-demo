@@ -37,13 +37,13 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -91,6 +91,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useAssetsStore from '~/store/assets'
 
     export default defineComponent({
         name: 'AssetList',
@@ -142,6 +143,7 @@
         emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
             const { list, autoSelect, typename } = toRefs(props)
+            const storeAssets = useAssetsStore()
             const selectedAssetId = ref('')
             const shouldReSelect = false
             function handlePreview(item: any) {
@@ -150,6 +152,7 @@
                     emit('preview', item)
                 } else {
                     selectedAssetId.value = item.guid
+                    storeAssets.setSelectedAsset(item.value)
                     emit('preview', item)
                 }
             }

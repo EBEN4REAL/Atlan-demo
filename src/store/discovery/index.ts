@@ -3,7 +3,7 @@ import { state } from './state'
 import actions from './actions'
 import getters from './getters'
 
-const useBulkUpdateStore = defineStore({
+const useDiscoveryStore = defineStore({
     // name of the store
     // it is used in devtools and allows restoring state
     id: 'discovery',
@@ -13,4 +13,4 @@ const useBulkUpdateStore = defineStore({
     // optional actions
     actions,
 })
-export default useBulkUpdateStore
+export default useDiscoveryStore

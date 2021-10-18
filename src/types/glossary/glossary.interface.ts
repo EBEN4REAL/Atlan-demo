@@ -21,7 +21,7 @@ interface GlossaryAttributes extends BaseAttributes {
     qualifiedName: string
     name: string
     shortDescription?: string
-    certificateStatus?: 'DRAFT' | 'VERIFIED' | 'issue'
+    certificateStatus?: 'DRAFT' | 'VERIFIED' | 'ISSUE'
     assetStatusMessage: string
     certificateUpdatedBy?: string
     certificateUpdatedAt?: 0

@@ -23,12 +23,12 @@
                     >/</span
                 >
                 <AtlanIcon
-                    v-if="entity.typeName === 'AtlasGlossaryTerm'"
+                    v-if="entity?.typeName === 'AtlasGlossaryTerm'"
                     icon="Term"
                     class="h-5 m-0 mr-2"
                 />
                 <AtlanIcon
-                    v-if="entity.typeName === 'AtlasGlossaryCategory'"
+                    v-if="entity?.typeName === 'AtlasGlossaryCategory'"
                     icon="Category"
                     class="h-5 m-0 mr-2"
                 />
@@ -44,28 +44,28 @@
 
             <div v-if="!headerReachedTop" class="flex items-center">
                 <AtlanIcon
-                    v-if="entity.typeName === 'AtlasGlossary'"
+                    v-if="entity?.typeName === 'AtlasGlossary'"
                     icon="Glossary"
                     class="h-5 m-0 mr-2"
                 />
                 <AtlanIcon
-                    v-if="entity.typeName === 'AtlasGlossaryTerm'"
+                    v-if="entity?.typeName === 'AtlasGlossaryTerm'"
                     icon="Term"
                     class="h-5 m-0 mr-2"
                 />
                 <AtlanIcon
-                    v-if="entity.typeName === 'AtlasGlossaryCategory'"
+                    v-if="entity?.typeName === 'AtlasGlossaryCategory'"
                     icon="Category"
                     class="h-5 m-0 mr-2"
                 />
 
                 <span class="mr-3 text-sm">{{
-                    assetTypeLabel[entity.typeName].toUpperCase()
+                    assetTypeLabel[entity?.typeName]?.toUpperCase()
                 }}</span>
                 <div
                     v-if="
-                        entity.typeName === 'AtlasGlossaryCategory' ||
-                        entity.typeName === 'AtlasGlossaryTerm'
+                        entity?.typeName === 'AtlasGlossaryCategory' ||
+                        entity?.typeName === 'AtlasGlossaryTerm'
                     "
                     class="flex items-center"
                 >
@@ -132,7 +132,7 @@
                     <span
                         v-if="isNewEntity"
                         class="mr-2 text-xl italic leading-6 text-gray-500"
-                        >Untitled {{ assetTypeLabel[entity.typeName] }}
+                        >Untitled {{ assetTypeLabel[entity?.typeName] }}
                     </span>
                     <a-popover
                         v-if="statusMessage"

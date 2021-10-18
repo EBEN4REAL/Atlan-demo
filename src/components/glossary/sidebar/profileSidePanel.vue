@@ -185,8 +185,8 @@
             },
         },
         setup(props) {
-            const activeKey = ref()
-            const tabActiveKey = ref()
+            const activeKey = ref('1')
+            const tabActiveKey = ref('info')
 
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode = inject<any>('updateTreeNode')

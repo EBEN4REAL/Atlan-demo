@@ -161,7 +161,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        term.displayText
+                                        term?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="term.attributes.shortDescription"
@@ -201,7 +201,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        category.displayText
+                                        category?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="
@@ -237,7 +237,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        glossary.displayText
+                                        glossary?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="
@@ -269,7 +269,7 @@
                             class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
                         >
                             <div class="flex flex-row justify-between">
-                                {{ glossary.displayText }}
+                                {{ glossary?.displayText }}
                                 <!-- <Fa
                             class="w-auto h-3 text-white group-hover:text-primary"
                             icon="fal external-link-alt"
@@ -535,7 +535,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        term.displayText
+                                        term?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="term.attributes.shortDescription"
@@ -575,7 +575,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        category.displayText
+                                        category?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="

@@ -206,6 +206,11 @@
                         enabled: false,
                     },
                     automaticLayout: true,
+                    overviewRulerLanes: 0,
+                    scrollbar: {
+                        horizontal: 'hidden',
+                    },
+                    wordWrap: 'on',
                     quickSuggestions: {
                         other: true,
                         comments: false,

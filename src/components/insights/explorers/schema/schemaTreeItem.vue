@@ -64,7 +64,7 @@
                                 >
                                     <a-tooltip placement="top">
                                         <template #title
-                                            >Place name in SQL</template
+                                            >Place name in editor</template
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
@@ -191,7 +191,7 @@
                                 >
                                     <a-tooltip placement="top">
                                         <template #title
-                                            >Place name in SQL</template
+                                            >Place name in editor</template
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
@@ -323,7 +323,7 @@
                             >
                                 <a-tooltip placement="top">
                                     <template #title
-                                        >Place name in SQL</template
+                                        >Place name in editor</template
                                     >
                                     <AtlanIcon
                                         icon="AddAssetName"
@@ -449,7 +449,7 @@
                     case 'add': {
                         const editorInstance = toRaw(editorInstanceRef.value)
                         editorInstance.trigger('keyboard', 'type', {
-                            text: `${title(t)}`,
+                            text: ` ${title(t)}`,
                         })
                         break
                     }

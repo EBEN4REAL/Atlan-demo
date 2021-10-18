@@ -449,7 +449,7 @@
                     case 'add': {
                         const editorInstance = toRaw(editorInstanceRef.value)
                         editorInstance.trigger('keyboard', 'type', {
-                            text: ` ${title(t)}`,
+                            text: `${title(t)} `,
                         })
                         break
                     }

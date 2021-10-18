@@ -290,8 +290,8 @@
             const updateBody = () => {
                 const initialBody = {
                     // typeName: assetTypeListString.value,
-                    limit: limit.value,
-                    offset: offset.value,
+                    // size: limit.value,
+                    // offset: offset.value,
                     relationAttributes: [
                         'readme',
                         'displayText',
@@ -299,15 +299,15 @@
                         'description',
                         'shortDescription',
                     ],
-                    query: useDiscoveryDSL(filters.value),
+                    dsl: useDiscoveryDSL(filters.value),
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...tableauAttributes,
                         ...BMAttributeProjection.value,
                     ],
-                    aggregationAttributes: [],
                 }
+                initialBody.dsl.size = 20
 
                 if (selectedTab.value !== 'Catalog') {
                     // initialBody.entityFilters.criterion.push({

@@ -188,7 +188,7 @@
             const sortOrder = ref('default')
             const state = ref('active')
             const facets = computed(() => AllFilters.value?.facetsFilters)
-
+            const termNames = ref<string[]>([])
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
 
             // Get All Disoverable Asset Types
@@ -407,8 +407,8 @@
                 updateBody()
                 setRouterOptions()
             }
-            const termNameChange = (termQName: string) => {
-                termName.value = termQName
+            const termNameChange = (termQNames: string[]) => {
+                termNames.value = termQNames
                 isAggregate.value = true
                 updateBody()
                 // setRouterOptions()

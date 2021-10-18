@@ -307,8 +307,8 @@
                 refresh()
             }
 
-            const handleTermChange = (termName: string) => {
-                emit('termNameChange', termName)
+            const handleTermChange = (termNames: string[]) => {
+                emit('termNameChange', termNames)
             }
 
             const setConnector = (payload: any) => {

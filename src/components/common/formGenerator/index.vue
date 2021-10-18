@@ -48,6 +48,10 @@
                                         :multiple="c?.isMultivalued"
                                         :request-config="c?.requestConfig"
                                         :response-config="c?.responseConfig"
+                                        :other-api-config="{
+                                            req: c?.requestConfig_2,
+                                            res: c?.responseConfig_2,
+                                        }"
                                         :limit-after="c.limitAfter"
                                         :limit-before="c.limitBefore"
                                         :allow-custom="c.allowCustom"
@@ -113,6 +117,10 @@
                             :multiple="f?.isMultivalued"
                             :request-config="f?.requestConfig"
                             :response-config="f?.responseConfig"
+                            :other-api-config="{
+                                req: f?.requestConfig_2,
+                                res: f?.responseConfig_2,
+                            }"
                             :limit-after="f.limitAfter"
                             :limit-before="f.limitBefore"
                             :allow-custom="f.allowCustom"

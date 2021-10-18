@@ -11,6 +11,7 @@
         computed,
         defineAsyncComponent,
         defineComponent,
+        ref,
         toRefs,
     } from 'vue'
 
@@ -24,6 +25,7 @@
     import useIndexSearch from '~/composables/reporting/useIndexSearch'
 
     import { formatDateTime } from '~/utils/date'
+    import useLogSearch from '~/composables/reporting/useLogSearch'
 
     const Bar = defineAsyncComponent({
         loader: () => import('@/reporting/graph/bar.vue'),
@@ -36,11 +38,16 @@
         loader: () => import('@/reporting/graph/line.vue'),
     })
 
+    const Scatter = defineAsyncComponent({
+        loader: () => import('@/reporting/graph/scatter.vue'),
+    })
+
     export default defineComponent({
         components: {
             Bar,
             Pie,
             Line,
+            Scatter,
         },
         props: {
             data: {
@@ -61,18 +68,50 @@
                 return 'default'
             })
 
-            const { aggregations } = useIndexSearch(
-                data.value?.componentData.query,
-                data.value?.id,
-                true
-            )
+            console.log('sdasdasd', data?.value.queryIndex)
+            let dataAPI
+            if (data?.value.queryIndex === 'logs') {
+                dataAPI = useLogSearch(
+                    data.value?.componentData.query,
+                    data.value?.id,
+                    true
+                )
+            } else {
+                dataAPI = useIndexSearch(
+                    data.value?.componentData.query,
+                    data.value?.id,
+                    true
+                )
+            }
+
+            const { aggregations } = dataAPI
+
             const testData = computed(() => {
                 const agg =
                     aggregations.value[
                         data.value?.componentData.dataOptions?.aggregationKey
                     ]
                 const buckets = agg?.buckets
-                const keyMap = buckets?.map((i) => {
+
+                if (data.value?.componentData.graphType === 'scatter') {
+                    const temp = []
+                    buckets?.forEach((element) => {
+                        temp.push({
+                            x: element.doc_count,
+                            y: element.key,
+                        })
+                    })
+
+                    return {
+                        labels: 'keyMap',
+                        datasets: [
+                            {
+                                data: temp,
+                            },
+                        ],
+                    }
+                }
+                const keyMap = buckets?.map((i, index) => {
                     if (
                         data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
                         'DATE'
@@ -84,6 +123,21 @@
                                 Intl.DateTimeFormat().resolvedOptions()
                                     .timeZone,
                         })
+                    }
+                    if (
+                        data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
+                        'RANGE'
+                    ) {
+                        if (
+                            data.value.componentData.dataOptions.keyConfig
+                                ?.interval
+                        ) {
+                            // const diff =
+                            //     i.key -
+                            //     data?.value?.componentData.dataOptions.keyConfig
+                            //         ?.interval
+                            return `${i.key}`
+                        }
                     }
                     return i.key
                 })

@@ -13,6 +13,7 @@
                 >
                     <a-menu-item-group title="Metadata">
                         <a-menu-item key="overview">Overview</a-menu-item>
+                        <a-menu-item key="query">Query</a-menu-item>
 
                         <!-- <a-menu-item key="integrations">Integrations</a-menu-item> -->
                         <!-- <a-menu-item key="billing">Billing & License</a-menu-item> -->
@@ -37,7 +38,22 @@
 
     export default defineComponent({
         setup() {
-            return {}
+            const router = useRouter()
+            const route = useRoute()
+
+            const handleClick = ({ key }) => {
+                router.push(`/reporting/${key}`)
+            }
+
+            const initialRoute = route.path.split('/').slice(-1)
+            const current = ref(
+                initialRoute[0] === 'reporting' ? ['overview'] : initialRoute
+            )
+
+            return {
+                handleClick,
+                current,
+            }
         },
     })
 </script>

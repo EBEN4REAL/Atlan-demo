@@ -84,8 +84,9 @@ const useCreateGlossary = () => {
                     key: `${title}`,
                     duration: 2,
                 })
-
-                redirectToProfile('glossary', newData.guid)
+                setTimeout(() => {
+                    redirectToProfile('glossary', newData.guid)
+                }, 500)
             }
         })
         watch([createError, isValidating], ([newError, newValidating]) => {

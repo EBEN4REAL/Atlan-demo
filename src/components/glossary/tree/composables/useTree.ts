@@ -72,7 +72,7 @@ const useTree = (
         false
     )
 
-    const { glossaryList, refetch: refetchGlossaryList } = useGlossaryList()
+    const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
 
     const returnTreeDataItemAttributes = (
         item:
@@ -406,12 +406,13 @@ const useTree = (
         guid: string
         entity?: Glossary | Category | Term
         name?: string
-        certificateStatus?: string
+        certificateStatus?: "DRAFT" | "VERIFIED" | "ISSUE"
         ownerGroups: string
         ownerUsers?: string
         shortDescription?: string
     }) => {
         const currentParents = nodeToParentKeyMap[guid]
+        updateGlossaryStatusInList(guid, certificateStatus ?? entity?.attributes?.certificateStatus)
         if (
             currentParents === 'root' ||
             (typeof currentParents !== 'string' &&

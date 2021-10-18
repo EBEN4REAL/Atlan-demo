@@ -3,10 +3,10 @@
         <NoAccessPage />
     </div>
     <div v-else>
-        <div v-if="isLoading && glossary?.guid !== id">
+        <div v-if="!glossary || (isLoading && glossary?.guid !== id)">
             <LoadingView />
         </div>
-        <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+        <div v-else-if="glossary" class="flex flex-row h-full" :class="$style.tabClasses">
             <div
                 class="w-2/3"
                 ref="scrollDiv"

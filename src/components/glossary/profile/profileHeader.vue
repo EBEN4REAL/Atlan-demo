@@ -10,12 +10,14 @@
                 <span
                     v-show="entity?.typeName !== 'AtlasGlossary'"
                     class="mr-1 text-sm cursor-pointer hover:underline"
-                    @click="redirectToProfile('AtlasGlossary', entity?.attributes?.anchor?.guid)"
+                    @click="
+                        redirectToProfile(
+                            'AtlasGlossary',
+                            entity?.attributes?.anchor?.guid
+                        )
+                    "
                 >
-                    {{
-                        entity?.attributes?.anchor?.uniqueAttributes
-                            ?.qualifiedName
-                    }}
+                    {{ entity?.attributes?.anchor?.attributes?.name }}
                 </span>
                 <span v-show="entity?.typeName !== 'AtlasGlossary'" class="mx-1"
                     >/</span
@@ -72,12 +74,14 @@
                     <span
                         v-show="entity?.typeName !== 'AtlasGlossary'"
                         class="mr-1 text-sm text-gray-500 cursor-pointer  hover:underline"
-                        @click="redirectToProfile('AtlasGlossary', entity?.attributes?.anchor?.guid)"
+                        @click="
+                            redirectToProfile(
+                                'AtlasGlossary',
+                                entity?.attributes?.anchor?.guid
+                            )
+                        "
                     >
-                        {{
-                            entity?.attributes?.anchor?.uniqueAttributes
-                                ?.qualifiedName
-                        }}
+                        {{ entity?.attributes?.anchor?.attributes?.name }}
                     </span>
                 </div>
             </div>
@@ -181,7 +185,7 @@
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
-    import redirect from '@/glossary/utils/redirectToProfile';
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         components: {

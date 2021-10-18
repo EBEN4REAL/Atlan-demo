@@ -1,10 +1,10 @@
 <template>
     <div class="relative w-full h-full bg-white rounded">
-        <div class="w-full h-full px-3 overflow-x-hidden rounded">
-            <div class="flex items-center justify-between w-full my-2">
+        <div class="w-full h-full overflow-x-hidden rounded">
+            <div class="flex items-center justify-between w-full px-3 my-2">
                 <div class="flex items-center text-base">
                     <div
-                        class="flex items-center mr-4"
+                        class="flex items-center mr-3"
                         v-if="activeInlineTab?.queryId"
                     >
                         <span class="mr-1">{{ activeInlineTab?.label }}</span>
@@ -125,40 +125,6 @@
                                 </template>
                                 Run</a-button
                             >
-                            <!-- <a-dropdown :trigger="['click']">
-                                <div
-                                    class="
-                                        flex
-                                        w-5
-                                        items-center
-                                        run-three-dot
-                                        bg-primary
-                                        justify-between
-                                        rounded-none rounded-tr rounded-br
-                                        h-6
-                                        py-0.5
-                                    "
-                                >
-                                    <AtlanIcon
-                                        class="text-white"
-                                        icon="KebabMenu"
-                                    />
-                                </div>
-                                <template #overlay>
-                                    <a-menu>
-                                        <div class="p-2">
-                                            <a-checkbox
-                                                v-model:checked="
-                                                    limitRows.checked
-                                                "
-                                                >Limit to
-                                                {{ limitRows.rowsCount }}
-                                                rows</a-checkbox
-                                            >
-                                        </div>
-                                    </a-menu>
-                                </template>
-                            </a-dropdown> -->
                         </div>
                         <a-button
                             v-if="
@@ -189,6 +155,7 @@
 
                             Update
                         </a-button>
+
                         <div
                             v-else-if="
                                 activeInlineTab.queryId &&
@@ -336,7 +303,7 @@
                                 />
                             </a-tooltip>
                         </div>
-                        <div class="ml-2" @click="toggleAssetPreview">
+                        <!-- <div class="ml-2" @click="toggleAssetPreview">
                             <a-tooltip>
                                 <template #title>Toggle asset preview</template>
 
@@ -345,7 +312,7 @@
                                     class="w-4 h-4 text-gray-500"
                                 />
                             </a-tooltip>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -356,8 +323,6 @@
 <script lang="ts">
     import {
         computed,
-        onMounted,
-        onUnmounted,
         defineComponent,
         inject,
         Ref,
@@ -392,6 +357,7 @@
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useAccess } from '~/components/insights/common/composables/useAccess'
 
     export default defineComponent({
         components: {
@@ -408,6 +374,7 @@
             const router = useRouter()
 
             // TODO: will be used for HOTKEYs
+            const { canUserUpdateQuery } = useAccess()
             const { resultsPaneSizeToggle } = useHotKeys()
             const { queryRun, modifyQueryExecutionTime } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
@@ -441,23 +408,22 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
-            const { setFullScreenState } = useFullScreen()
 
             const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
                 inlineTabs,
                 activeInlineTab,
                 activeInlineTabKey
             )
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
+            const isQueryRunning = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning
+            )
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const isUpdating: Ref<boolean> = ref(false)
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
-            const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
-                inlineTabs,
-                activeInlineTab
-            )
 
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
@@ -480,12 +446,7 @@
             }
             const run = () => {
                 useAddEvent('insights', 'query', 'run', undefined)
-                queryRun(
-                    activeInlineTab.value,
-                    getData,
-                    isQueryRunning,
-                    limitRows
-                )
+                queryRun(activeInlineTab, getData, limitRows)
             }
 
             const setInstance = (
@@ -586,6 +547,7 @@
 
             /* ------------------------------------------ */
             return {
+                canUserUpdateQuery,
                 toggleAssetPreview,
                 tFullScreen,
                 fullSreenState,

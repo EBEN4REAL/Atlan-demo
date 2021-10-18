@@ -256,7 +256,7 @@
                         :isActive="tabActiveKey === 'activity'"
                     />
                 </template>
-                <div class="h-screen overflow-auto pb-52">
+                <div class="h-screen pb-48 overflow-auto">
                     <Activity :selected-asset="entity" />
                 </div>
             </a-tab-pane>
@@ -315,7 +315,7 @@
     //  utils
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     import { copyToClipboard } from '~/utils/clipboard'
-    import redirect from '@/glossary/utils/redirectToProfile';
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
@@ -433,7 +433,7 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
-                message.info({
+                message.success({
                     content: 'Copied!',
                 })
             }

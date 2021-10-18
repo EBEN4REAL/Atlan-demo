@@ -320,7 +320,7 @@
                         >
                             <div
                                 class="pl-2 ml-24"
-                                @click="() => actionClick('add', item)"
+                                @click.stop="() => actionClick('add', item)"
                             >
                                 <a-tooltip placement="top">
                                     <template #title
@@ -352,6 +352,7 @@
         PropType,
         toRefs,
         ComputedRef,
+        computed,
         Ref,
         inject,
         toRaw,
@@ -386,7 +387,6 @@
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const popoverAllowed = ['Column', 'Table']
             const isPopoverAllowed = (typeName: string) => {
                 return popoverAllowed.includes(typeName)
@@ -474,7 +474,7 @@
                         selectionObject.value.endLineNumber = 2
                         selectionObject.value.endColumnNumber =
                             newQuery.length + 1 // +1 for semicolon
-                        queryRun(activeInlineTabCopy, getData, isQueryRunning)
+                        queryRun(activeInlineTab, getData)
 
                         break
                     }

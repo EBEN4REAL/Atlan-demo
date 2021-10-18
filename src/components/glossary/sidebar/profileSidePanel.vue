@@ -14,7 +14,7 @@
                     />
                 </template>
 
-                <div class="h-screen pt-4 pb-24 overflow-auto">
+                <div class="h-screen pt-2 pb-64 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
                         :bordered="false"
@@ -112,7 +112,7 @@
                         :isActive="tabActiveKey === 'activity'"
                     />
                 </template>
-                <div class="h-screen overflow-auto">
+                <div class="h-screen pb-16 overflow-auto">
                     <Activity :selectedAsset="entity" />
                 </div>
             </a-tab-pane>

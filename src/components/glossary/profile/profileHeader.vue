@@ -260,7 +260,7 @@
                     copyToClipboard(text)
                 }
 
-                message.info({
+                message.success({
                     content: 'Copied!',
                 })
             }

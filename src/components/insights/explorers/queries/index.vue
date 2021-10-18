@@ -1,5 +1,7 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white query-explorer">
+    <div
+        class="flex flex-col items-center w-full h-full bg-white query-explorer"
+    >
         <div class="w-full p-4 pb-0 rounded">
             <Connector
                 :connector="connector"
@@ -61,7 +63,7 @@
             </div>
             <div
                 v-if="!searchQuery?.length"
-                class="relative w-full h-full p-3 pt-0 overflow-y-auto  scrollable-container"
+                class="relative w-full h-full px-4 pt-0 overflow-y-auto  scrollable-container"
             >
                 <!--explorer pane start -->
                 <div
@@ -69,6 +71,9 @@
                     class="w-full h-full bg-white"
                 >
                     <query-tree
+                        @toggleCreateQueryModal="toggleCreateQueryModal"
+                        @createFolderInput="createFolderInput"
+                        :savedQueryType="savedQueryType"
                         :tree-data="per_treeData"
                         :on-load-data="per_onLoadData"
                         :select-node="per_selectNode"
@@ -84,6 +89,9 @@
                     class="w-full h-full bg-white"
                 >
                     <query-tree
+                        @toggleCreateQueryModal="toggleCreateQueryModal"
+                        @createFolderInput="createFolderInput"
+                        :savedQueryType="savedQueryType"
                         :tree-data="all_treeData"
                         :on-load-data="all_onLoadData"
                         :select-node="all_selectNode"
@@ -266,9 +274,13 @@
                         let parentFolder
                         if (guid === 'root') {
                             parentFolder =
-                                document.querySelector('.query-explorer  .ant-tree')
-                                    ?.parentNode ?? document.querySelector('.query-explorer  .query-tree-root-div')
-                                    console.log(parentFolder)
+                                document.querySelector(
+                                    '.query-explorer  .ant-tree'
+                                )?.parentNode ??
+                                document.querySelector(
+                                    '.query-explorer  .query-tree-root-div'
+                                )
+                            console.log(parentFolder)
                         } else {
                             parentFolder = document.getElementsByClassName(
                                 getRelevantTreeData().parentGuid.value
@@ -304,7 +316,9 @@
                                     )
                                     newFolderName.value = ''
                                     setTimeout(async () => {
-                                        if (savedQueryType.value === 'personal') {
+                                        if (
+                                            savedQueryType.value === 'personal'
+                                        ) {
                                             await per_refetchNode(
                                                 getRelevantTreeData().parentGuid
                                                     .value,
@@ -330,7 +344,7 @@
                                                 'queryFolder'
                                             )
                                         }
-                                    }, 500)
+                                    }, 1000)
                                 }
                             })
                         }

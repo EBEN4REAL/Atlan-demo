@@ -1,8 +1,10 @@
 import { CustomVaribaleInterface } from './customVariable.interface'
 import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 import { assetInterface } from '~/types/assets/asset.interface'
+import { Attributes } from '~/types/insights/savedQuery.interface'
 
 export interface activeInlineTabInterface {
+    attributes: Attributes
     key: string
     label: String
     isSaved: boolean
@@ -45,6 +47,8 @@ export interface activeInlineTabInterface {
             activeTab: number
             result: {
                 title: string
+                isQueryRunning: string
+                queryErrorObj: any
             }
             metadata: Object
             queries: Object

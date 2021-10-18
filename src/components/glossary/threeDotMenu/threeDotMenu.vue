@@ -82,7 +82,7 @@
                             </template>
                             <template #trigger>
                                 <div class="flex items-center">
-                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
+                                    <AtlanIcon icon="Pencil" class="m-0 mr-2" />
                                     <p class="p-0 m-0 capitalize">
                                         Edit
                                         {{ assetTypeLabel[entity?.typeName] }}
@@ -523,7 +523,7 @@
                     assetTypeLabel[props.entity?.typeName]
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
-                message.info({
+                message.success({
                     content: 'Copied!',
                 })
             }

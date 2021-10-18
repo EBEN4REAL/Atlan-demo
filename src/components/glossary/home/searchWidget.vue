@@ -11,14 +11,16 @@
                 @change="onSearch"
             />
             <template #overlay>
-                <a-menu class="overflow-y-auto max-h-48">
+                <a-menu class="overflow-y-auto max-h-56">
                     <a-menu-item v-if="isLoading">
                         <LoadingView />
                     </a-menu-item>
                     <template v-for="item in entities" v-else :key="item.guid">
                         <a-menu-item
                             class="flex items-center py-2"
-                            @click="redirectToProfile(item?.typeName, item?.guid)"
+                            @click="
+                                redirectToProfile(item?.typeName, item?.guid)
+                            "
                         >
                             <div class="flex flex-col py-1 ml-3">
                                 <span class="flex items-center space-x-2"
@@ -33,9 +35,41 @@
                                         class="p-0 ml-2"
                                     ></StatusBadge>
                                 </span>
-                                <span class="text-xs text-gray-500">
-                                    Parent glossary name goes here
-                                </span>
+                                <div class="flex items-cener mt-0.5">
+                                    <span class="text-xs text-gray-500"
+                                        >{{
+                                            assetTypeLabel[
+                                                item?.typeName
+                                            ].toUpperCase()
+                                        }}
+                                    </span>
+                                    <div
+                                        class="w-1 h-1 mx-2 mt-1 bg-gray-500 rounded-full "
+                                    ></div>
+                                    <span
+                                        v-if="
+                                            item?.typeName !==
+                                                'AtlasGlossary' &&
+                                            item?.attributes?.anchor?.attributes
+                                                ?.name?.length
+                                        "
+                                        class="text-xs text-gray-500"
+                                    >
+                                        {{
+                                            item?.attributes?.anchor?.attributes
+                                                ?.name
+                                        }}
+                                        Glossary
+                                    </span>
+                                    <span v-else class="text-xs text-gray-500">
+                                        {{ item?.attributes?.terms?.length }}
+                                        Terms,
+                                        {{
+                                            item?.attributes?.categories?.length
+                                        }}
+                                        Categories
+                                    </span>
+                                </div>
                             </div>
                             <template #icon>
                                 <atlan-icon
@@ -84,7 +118,8 @@
     // composables
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     // utils
-    import redirect from '@/glossary/utils/redirectToProfile';
+    import redirect from '@/glossary/utils/redirectToProfile'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         components: {
@@ -114,6 +149,7 @@
                 searchQuery,
                 redirectToProfile,
                 isLoading,
+                assetTypeLabel,
             }
         },
     })

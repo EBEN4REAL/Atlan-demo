@@ -61,6 +61,14 @@ export default function useGtcSearch(
             includeClassificationAttributes: true,
             includeSubClassifications: true,
             includeSubTypes: true,
+            relationAttributes: [
+                'readme',
+                'displayText',
+                'name',
+                'description',
+                'shortDescription',
+            ],
+
             attributes: [
                 ...projection,
                 'database',
@@ -76,6 +84,7 @@ export default function useGtcSearch(
                 'anchor',
                 'ownerUsers',
                 'ownerGroups',
+                'readme',
                 'assignedEntities',
                 ...bmProjection.value,
                 ...relatedTerms,

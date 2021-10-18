@@ -24,11 +24,29 @@ export default function useAsyncSelector(
 
 
         const data = root.map((o: any) => {
-            let label = o;
-            const labelPathParts = labelPath.split('.').slice(1)
-            labelPathParts.forEach((p: string | number) => {
-                label = label[p]
-            })
+            // labelPath - {{.name}} - a - {{.attribute.displayName}}
+            const r = /\{\{(\.\w*?)\}\}/g
+            const varArr = labelPath.match(r);
+            let label = '';
+            if (varArr?.length) {
+                label = labelPath
+                varArr.forEach(p => {
+                    const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
+                    let word = o;
+                    pathParts.forEach((pp: string) => {
+                        word = word[pp]
+                    })
+                    label = label.replace(p, word)
+                })
+            } else {
+                label = o;
+                const labelPathParts = labelPath.split('.').slice(1)
+                labelPathParts.forEach((p: string) => {
+                    label = label[p]
+                })
+            }
+
+
 
             let value = o;
             const valuePathParts = valuePath.split('.').slice(1)

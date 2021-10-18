@@ -48,7 +48,9 @@
                             hover:underline
                             overflow-ellipsis
                         "
-                        @click="redirectToProfile(entity?.typeName, entity?.guid)"
+                        @click="
+                            redirectToProfile(entity?.typeName, entity?.guid)
+                        "
                     >
                         {{ entity?.displayText }}
                     </span>
@@ -187,7 +189,7 @@
     } from '~/types/glossary/glossary.interface'
 
     import { List as StatusList } from '~/constant/status'
-    import redirect from '@/glossary/utils/redirectToProfile';
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         components: { ThreeDotMenu, Tooltip, ScrollStrip, Pill },
@@ -243,7 +245,7 @@
                     const catQualifiedName =
                         props.entity?.attributes?.categories?.map(
                             (category) =>
-                                category?.displayText ?? category?.guid
+                                category?.attributes?.name ?? category?.guid
                         )
                     return catQualifiedName
                 }

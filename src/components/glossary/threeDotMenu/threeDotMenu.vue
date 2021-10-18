@@ -523,7 +523,7 @@
                     assetTypeLabel[props.entity?.typeName]
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
-                message.info({
+                message.success({
                     content: 'Copied!',
                 })
             }

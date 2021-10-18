@@ -64,7 +64,6 @@
                                             text-gray-700
                                             cursor-pointer
                                             text-bold
-                                            hover:bg-gray-light
                                         "
                                         @mousedown="(e) => e.preventDefault()"
                                     >
@@ -320,14 +319,14 @@
                                 "
                             >
                                 <span
-                                    class="flex my-auto text-xs font-bold leading-3 "
+                                    class="flex my-auto text-sm font-bold leading-3 "
                                     :class="{
                                         'text-primary':
                                             currentGuid ===
                                             parentGlossary?.guid,
                                     }"
                                 >
-                                    GLOSSARY
+                                    {{ parentGlossary?.displayText ?? parentGlossary?.attributes?.name }}
                                 </span>
                             </div>
                         </div>

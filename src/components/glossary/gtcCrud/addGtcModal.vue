@@ -453,7 +453,9 @@
                         )
                         watch(data, (newData) => {
                             if (newData) {
-                                emit('onAddGlossary')
+                                setTimeout(() => {
+                                    emit('onAddGlossary')
+                                }, 500)
                             }
                         })
                     }

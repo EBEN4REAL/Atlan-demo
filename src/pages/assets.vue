@@ -66,8 +66,7 @@
             BulkNotification,
         },
         setup() {
-            const storeDiscovery = useDiscoveryStore()
-            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             useHead({
                 title: 'Assets',
             })
@@ -111,6 +110,8 @@
             if (!isClassificationInitializedInStore()) {
                 initializeClassificationsInStore()
             }
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (page.value === 'discovery')
                     assetDiscovery.value.mutateAssetInList(updatedAsset)

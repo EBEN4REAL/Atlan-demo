@@ -1,13 +1,28 @@
 /* eslint-disable no-prototype-builtins */
-import { computed, ref } from 'vue'
+import { computed, ref, Ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
+import { Schema, ProcessedSchema, ProcessedRule } from './builder.interface'
 
-export default function useFormGenerator(formConfig, formRef, emit, dV) {
-  const processedSchema = ref([])
-  const privateTypes = ['object', 'array', 'group']
 
-  const preProcessSchema = (s: object) => {
-    const schema = { ...s }
+
+export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef: Ref, emit, dV) {
+  const processedSchema: Ref<ProcessedSchema[]> = ref([])
+  const privateTypes: String[] = ['object', 'array', 'group']
+
+  const getPrivateTypeName = (t) => {
+    const typeMap = {
+      number: 'integer',
+      text: 'string',
+      textArea: 'string',
+      pattern: 'regexp',
+      password: 'string',
+      dateTime: 'date',
+    }
+    return typeMap[t] || null
+  }
+
+  const preProcessSchema = (s: Schema) => {
+    const schema: Schema = { ...s }
     const falseDefault = ['exclude', 'allowCustom', 'isMultivalued', 'stringified'];
     if (schema.hasOwnProperty('default'))
       schema.value = schema.default
@@ -26,7 +41,7 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
         schema[d] = false
     })
 
-    if (schema.rules.length) {
+    if (schema?.rules?.length) {
       schema.rules.map(r => {
         const rCopy = r;
         if (rCopy.hasOwnProperty('enabled')) {
@@ -39,27 +54,16 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     }
 
 
-    if (schema.type === 'checkbox') {
+    if (schema.type === 'checkbox' && schema.options) {
       schema.options = schema.options.map(o => ({ value: o.id || o.value, label: o.label || o.id }))
     }
-
     return schema;
   }
 
-  const getPrivateTypeName = (t) => {
-    const typeMap = {
-      number: 'integer',
-      text: 'string',
-      textArea: 'string',
-      pattern: 'regexp',
-      password: 'string',
-      dateTime: 'date',
-    }
-    return typeMap[t] || null
-  }
+
 
   const expandGroups = (fModal) => {
-    let fields = []
+    let fields: Schema[] = []
     fModal.forEach((f) => {
       if (f.type === 'group') {
         fields = [...fields, ...f.children]
@@ -72,35 +76,36 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
 
   // improve this to go deeper than 1 level
   //* expands fields of type object schema, array <> flattens it
-  const expandOther = (schema) => {
-    let children = []
+  const expandOther = (schema: Schema) => {
+    let children: ProcessedSchema[] = []
     const parent = schema.id
     const parentType = schema.type
 
-    schema.children.forEach((s) => {
-      // only 1 level nested check
-      if (s.type === 'group') {
-        children = [
-          ...children,
-          {
-            ...s,
-            children: [
-              ...s.children.map((a) => ({
-                ...a,
-                parent,
-                parentType,
-              })),
-            ],
-          },
-        ]
-      } else {
-        children.push(
-          {
-            ...s, parent, parentType,
-          }
-        )
-      }
-    })
+    if (schema.children)
+      schema.children.forEach((s: Schema) => {
+        // only 1 level nested check
+        if (s.type === 'group') {
+          children = [
+            ...children,
+            {
+              ...s,
+              children: [
+                ...(s.children && s.children.map((a) => ({
+                  ...a,
+                  parent,
+                  parentType,
+                })) || []),
+              ],
+            },
+          ]
+        } else {
+          children.push(
+            {
+              ...s, parent, parentType,
+            }
+          )
+        }
+      })
     return children
   }
 
@@ -117,24 +122,26 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     formConfig.value.forEach((f) => {
 
       if (!privateTypes.includes(f.type)) {
-        const o = preProcessSchema(f)
+        const o: ProcessedSchema = preProcessSchema(f)
         processedSchema.value.push(o)
         testModal.value[o.id] = o.value
       } else if (f.type === 'group') {
-        const pf = { ...f, children: f.children.map(f => preProcessSchema(f)) }
+        const pf = { ...f, ...(f.children && { children: f.children.map((fs: Schema) => preProcessSchema(fs)) } || {}) }
         processedSchema.value.push(pf)
-        f.children.forEach(c => {
-          const t = preProcessSchema(c)
-          testModal.value[t.id] = t.value
-        })
+        if (f.children)
+          f.children.forEach(c => {
+            const t = preProcessSchema(c)
+            testModal.value[t.id] = t.value
+          })
       } else {
         expandOther(f).forEach(o => {
           if (o.type === 'group') {
-            const po = { ...o, children: o.children.map(c => preProcessSchema(c)) }
+            const po = { ...o, ...(o.children && { children: o.children.map(c => preProcessSchema(c)) } || {}) }
             processedSchema.value.push(po)
-            po.children.forEach(c => {
-              testModal.value[c.id] = c.value
-            })
+            if (po.children)
+              po.children.forEach(c => {
+                testModal.value[c.id] = c.value
+              })
           } else {
             const x = preProcessSchema(o)
             processedSchema.value.push(x)
@@ -177,7 +184,7 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     // ? modal won't have any type object or array, but groups
     const temp = {}
 
-    modal.forEach(f => {
+    modal.forEach((f: ProcessedSchema) => {
       if (f.exclude) return;
       if (f.type !== 'group') {
         // ? if conditional field is hidden dont add
@@ -185,6 +192,8 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
 
         let val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
         if (f.includeAll) val = f.includeAllVal
+        if (f.stringifyValue) val = JSON.stringify(val)
+
         if (typeof val === 'undefined' || val === null) return;
         // ? no groups
         if (f.parent) {
@@ -201,38 +210,42 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
         }
       } else {
         // ? groups
-        f.children.forEach(f => {
-          if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
-          let val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id, f.includeAll)
-          if (f.includeAll) val = f.includeAllVal
+        f.children.forEach((fi: ProcessedSchema) => {
+          if (fi.conditional && fi.conditional.refValue !== getValueFromSchemaData(fi.conditional.refID)) return;
+          let val = fi.type === 'template' ? generateTemplateValue(fi.template, fi.id, fi.isStringified) : getValueFromSchemaData(fi.id, fi.includeAll)
+          if (fi.includeAll) val = fi.includeAllVal
+          if (fi.stringifyValue) val = JSON.stringify(val)
+
           if (typeof val === 'undefined' || val === null) return;
           // ? no groups
-          if (f.parent) {
-            if (f.parentType === 'object') {
-              temp[f.parent] = { ...(temp[f.parent] || {}) }
-              temp[f.parent][f.id] = val
-            } else if (f.parentType === 'array') {
+          if (fi.parent) {
+            if (fi.parentType === 'object') {
+              temp[fi.parent] = { ...(temp[fi.parent] || {}) }
+              temp[fi.parent][fi.id] = val
+            } else if (fi.parentType === 'array') {
               // handdle array
-              temp[f.parent] = [...(temp[f.parent] || [])]
-              temp[f.parent].push({ key: f.id, value: val })
+              temp[fi.parent] = [...(temp[fi.parent] || [])]
+              temp[fi.parent].push({ key: fi.id, value: val })
             }
           } else {
-            temp[f.id] = val
+            temp[fi.id] = val
           }
         })
       }
     })
     emit('change', temp)
-    console.table(temp)
+    // eslint-disable-next-line no-console
+    console.table({ config: temp })
     return temp
   }
 
 
   // rules
   //* get rule object based on antDesign rules guide
-  const getRule = (raw) => {
-    const r = {};
-    // eslint-disable-next-line no-prototype-builtins
+
+
+  const getRule = (raw): ProcessedRule | false => {
+    const r: ProcessedRule = {};
     if (!raw.enabled) return false;
     r.message = raw.errorMessage || '';
     r.trigger = 'change';
@@ -252,7 +265,7 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
   const getRules = computed(() => {
     const rulesObj = {};
     expandGroups(processedSchema.value).forEach(f => {
-      if (f.rules.length && !f.includeAll) {
+      if (f?.rules?.length && !f.includeAll) {
         rulesObj[f.id] = []
         f.rules.forEach(r => {
           const rule = getRule(r)
@@ -300,7 +313,14 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
   const isRequiredField = (f) => f?.rules?.find(r => r.type === 'required')?.enabled ?? false
 
 
-  const submitStatus = ref({
+  interface SubmitStatus {
+    loading: boolean;
+    success: boolean | null;
+    error: boolean | null;
+    successMessage: string;
+    errorMessage: string;
+  }
+  const submitStatus: Ref<SubmitStatus> = ref({
     loading: false,
     success: null,
     error: null,
@@ -326,7 +346,6 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
       if (parsedUrl.includes('{{domain}}'))
         parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
       const response = await useAPIPromise(parsedUrl, method, { params, body: finalConfigObject(processedSchema.value) })
-      console.log(response)
       submitStatus.value.success = true;
       submitStatus.value.successMessage = f.apiConfig?.successMessage || 'success'
     } catch (e) {

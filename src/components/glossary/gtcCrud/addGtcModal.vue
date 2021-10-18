@@ -456,7 +456,9 @@
                         watch(data, (newData) => {
                             if (newData) {
                                 if (refreshEntity) refreshEntity()
-                                emit('onAddGlossary')
+                                setTimeout(() => {
+                                    emit('onAddGlossary')
+                                }, 500)
                             }
                         })
                     }

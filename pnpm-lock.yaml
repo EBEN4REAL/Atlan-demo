@@ -52,6 +52,7 @@ specifiers:
   axios: ^0.23.0
   babel-loader: ^8.2.2
   chart.js: ^3.5.1
+  chartjs-plugin-datalabels: ^2.0.0
   cron-parser: ^4.1.0
   cross-env: ^7.0.3
   dayjs: ^1.10.7
@@ -147,6 +148,7 @@ dependencies:
   ant-design-vue: 2.2.8_8612dc571a800641003b6ef0ef757662
   axios: 0.23.0
   chart.js: 3.5.1
+  chartjs-plugin-datalabels: 2.0.0_chart.js@3.5.1
   cron-parser: 4.1.0
   dayjs: 1.10.7
   emoji-mart-vue-fast: 10.0.1_vue@3.2.20
@@ -3981,6 +3983,14 @@ packages:
 
   /chart.js/3.5.1:
     resolution: {integrity: sha512-m5kzt72I1WQ9LILwQC4syla/LD/N413RYv2Dx2nnTkRS9iv/ey1xLTt0DnPc/eWV4zI+BgEgDYBIzbQhZHc/PQ==}
+    dev: false
+
+  /chartjs-plugin-datalabels/2.0.0_chart.js@3.5.1:
+    resolution: {integrity: sha512-WBsWihphzM0Y8fmQVm89+iy99mmgejmj5/jcsYqwxSioLRL/zqJ4Scv/eXq5ZqvG3TpojlGzZLeaOaSvDm7fwA==}
+    peerDependencies:
+      chart.js: ^3.0.0
+    dependencies:
+      chart.js: 3.5.1
     dev: false
 
   /chokidar/3.5.2:

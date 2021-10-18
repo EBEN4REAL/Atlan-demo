@@ -5,127 +5,45 @@ export const Metadata = {
     widgets: [
         {
             id: 'summary-assets',
-
             label: 'Summary',
             info: 'New Assets created',
             showHeader: false,
-            class: 'col-span-6 h-40 border border-light p-3 rounded ',
+            class: 'col-span-4 h-40 border border-light px-5 py-3 rounded ',
             component: 'summary',
             componentData: {
                 query: {
                     size: 0,
                     aggs: {
-                        group_by_date: {
-                            date_histogram: {
-                                field: '__timestamp',
-                                calendar_interval: 'day',
-                                time_zone:
-                                    Intl.DateTimeFormat().resolvedOptions()
-                                        .timeZone,
+                        group_by_state: {
+                            meta: {
+                                ACTIVE: 'Active',
+                            },
+                            terms: {
+                                field: '__state',
+                                size: 20,
                             },
                         },
-                    },
-                },
-                graphType: 'bar',
-                graphOptions: {
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false,
-                        },
-                        title: {
-                            display: false,
-                        },
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false,
-                            },
-
-                            title: {
-                                display: true,
-                                text: 'Date',
-                            },
-                        },
-                        y: {
-                            grid: {
-                                display: false,
+                        sum_state: {
+                            sum_bucket: {
+                                buckets_path: 'group_by_state._count',
                             },
                         },
                     },
                 },
                 dataOptions: {
-                    aggregationKey: 'group_by_date',
-                    keyConfig: {
-                        type: 'Date',
-                    },
+                    aggregationKey: 'group_by_state',
+                    subAggregationKey: 'group_by_time',
+                    sumAggregationValue: 'sum_state',
+                    sumAggregationValueDataType: 'int',
                 },
             },
         },
         {
             id: 'new-assets',
-            label: 'New Assets Distribution',
-            info: 'New Assets created',
-            class: 'col-span-6 h-64',
-            component: 'graph',
-            componentData: {
-                query: {
-                    size: 0,
-                    aggs: {
-                        group_by_date: {
-                            date_histogram: {
-                                field: '__timestamp',
-                                calendar_interval: 'day',
-                                time_zone:
-                                    Intl.DateTimeFormat().resolvedOptions()
-                                        .timeZone,
-                            },
-                        },
-                    },
-                },
-                graphType: 'bar',
-                graphOptions: {
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false,
-                        },
-                        title: {
-                            display: false,
-                        },
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false,
-                            },
-
-                            title: {
-                                display: true,
-                                text: 'Date',
-                            },
-                        },
-                        y: {
-                            grid: {
-                                display: false,
-                            },
-                        },
-                    },
-                },
-                dataOptions: {
-                    aggregationKey: 'group_by_date',
-                    keyConfig: {
-                        type: 'Date',
-                    },
-                },
-            },
-        },
-        {
-            id: 'update-assets',
-            label: 'Updated Assets',
-            info: 'Assets Updated',
-            class: 'col-span-6 h-64',
+            label: 'New Assets Distribution(last 7 days)',
+            info: 'New Assets (last 7 days)',
+            showHeader: true,
+            class: 'col-span-8 h-40 border border-light px-5 py-3 rounded ',
             component: 'graph',
             componentData: {
                 query: {
@@ -135,6 +53,7 @@ export const Metadata = {
                             date_histogram: {
                                 field: '__timestamp.date',
                                 calendar_interval: 'day',
+                                offset: '-7d',
                                 time_zone:
                                     Intl.DateTimeFormat().resolvedOptions()
                                         .timeZone,
@@ -145,9 +64,32 @@ export const Metadata = {
                 graphType: 'bar',
                 graphOptions: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             display: false,
+                        },
+                        datalabels: {
+                            backgroundColor: '#fff',
+
+                            borderColor: '#f4f6fd',
+                            borderRadius: 25,
+                            borderWidth: 0.5,
+                            color: '#5277d7',
+                            // backgroundColor: function (context) {
+                            //     return context.dataset.backgroundColor
+                            // },
+
+                            clamp: true,
+                            padding: {
+                                top: 0,
+                                bottom: 0,
+                            },
+
+                            formatter: Math.round,
+                            offset: 20,
+
+                            anchor: 'center',
                         },
                         title: {
                             display: false,
@@ -160,12 +102,16 @@ export const Metadata = {
                             },
 
                             title: {
-                                display: true,
+                                display: false,
                                 text: 'Date',
                             },
                         },
                         y: {
                             grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
                                 display: false,
                             },
                         },
@@ -176,6 +122,201 @@ export const Metadata = {
                     keyConfig: {
                         type: 'Date',
                     },
+                },
+            },
+        },
+        {
+            id: 'type-assets',
+            label: 'SQL Asset Types',
+            info: 'Asset Types',
+            showHeader: true,
+            class: 'col-span-6 border border-light px-5 py-3 rounded h-64',
+
+            component: 'graph',
+            componentData: {
+                query: {
+                    size: 0,
+                    query: {
+                        terms: {
+                            '__typeName.keyword': [
+                                'Table',
+                                'Column',
+                                'Database',
+                                'Schema',
+                                'View',
+                                'MaterialisedView',
+                                'ParititionTable',
+                            ],
+                        },
+                    },
+                    aggs: {
+                        group_by_typename: {
+                            terms: {
+                                field: '__typeName.keyword',
+                                size: 50,
+                            },
+                        },
+                    },
+                },
+                graphType: 'bar',
+                graphOptions: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        datalabels: {
+                            backgroundColor: '#fff',
+
+                            borderColor: '#f4f6fd',
+                            borderRadius: 25,
+                            borderWidth: 0.5,
+                            color: '#5277d7',
+                            // backgroundColor: function (context) {
+                            //     return context.dataset.backgroundColor
+                            // },
+
+                            clamp: true,
+                            padding: {
+                                top: 0,
+                                bottom: 0,
+                            },
+
+                            formatter: Math.round,
+                            offset: 20,
+
+                            anchor: 'center',
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+
+                            title: {
+                                display: false,
+                                text: 'Date',
+                            },
+                            ticks: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                            ticks: {
+                                display: true,
+                            },
+                        },
+                    },
+                },
+                dataOptions: {
+                    aggregationKey: 'group_by_typename',
+                },
+            },
+        },
+        {
+            id: 'connector-assets',
+            label: 'Top 5 Sources',
+            info: 'Asset Types',
+            showHeader: true,
+            class: 'col-span-6 border border-light px-5 py-3 rounded h-64',
+
+            component: 'graph',
+            componentData: {
+                query: {
+                    size: 0,
+                    query: {
+                        bool: {
+                            filter: [
+                                {
+                                    bool: {
+                                        must_not: [
+                                            {
+                                                term: {
+                                                    'Asset.connectorName': '',
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    aggs: {
+                        group_by_connector: {
+                            terms: {
+                                field: 'Asset.connectorName',
+                                size: 50,
+                            },
+                        },
+                    },
+                },
+                graphType: 'bar',
+                graphOptions: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        datalabels: {
+                            backgroundColor: '#fff',
+
+                            borderColor: '#f4f6fd',
+                            borderRadius: 25,
+                            borderWidth: 0.5,
+                            color: '#5277d7',
+                            // backgroundColor: function (context) {
+                            //     return context.dataset.backgroundColor
+                            // },
+
+                            clamp: true,
+                            padding: {
+                                top: 0,
+                                bottom: 0,
+                            },
+
+                            formatter: Math.round,
+                            offset: 20,
+
+                            anchor: 'center',
+                        },
+                        title: {
+                            display: false,
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                            ticks: {
+                                display: true,
+                            },
+                        },
+                    },
+                },
+                dataOptions: {
+                    aggregationKey: 'group_by_connector',
                 },
             },
         },

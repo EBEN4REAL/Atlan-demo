@@ -22,16 +22,19 @@ export default function useIndexSearch(
     if (isLocalStorage) {
         asyncOptions.cache = new LocalStorageCache()
     }
-    if (cancelTokenSource) {
-        asyncOptions.cancelToken = cancelTokenSource.value.token
-    }
+    // if (cancelTokenSource) {
+    //     asyncOptions.cancelToken = cancelTokenSource.value.token
+    // }
+
+    console.log('cache', cacheSuffx)
+
     const cachekey = ref(`index_search${cacheSuffx}`)
 
     const { data, mutate, error, isLoading, isValidating } =
         Discovery.IndexSearch(
             {
                 body: {
-                    query: queryDSL,
+                    dsl: queryDSL,
                 },
                 options: asyncOptions,
             },

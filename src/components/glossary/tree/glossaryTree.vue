@@ -868,11 +868,12 @@
             const searchQuery = ref<string>()
             const home = toRef(props, 'isHome')
             const parentGlossary = toRef(props, 'parentGlossary')
+            const glossaryList = toRef(props, 'glossaryList')
             const currentGlossaryGuid = ref<string>(
                 parentGlossary.value?.guid ?? 'all'
             )
             const glossaryContextDropdown = computed(() => {
-                const list = props.glossaryList.map((glossary) => ({
+                const list = glossaryList.value.map((glossary) => ({
                     value: glossary.guid,
                     label: glossary.attributes.name,
                     status: glossary.attributes.certificateStatus,

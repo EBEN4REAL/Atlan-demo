@@ -171,7 +171,7 @@
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
             const temp = ref(false) // flag for sticky header
-
+            const landByRedirect = false;
             const accessStore = useAccessStore()
 
             const router = useRouter()

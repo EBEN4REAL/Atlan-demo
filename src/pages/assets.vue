@@ -32,7 +32,10 @@
                 :page="page"
                 @asset-mutation="propagateToAssetList"
             ></AssetPreview>
-            <NoAccessPage v-else>You don't have access to this</NoAccessPage>
+            <NoAccessPage v-else
+                >Oops, looks like you don’t have<br />access to view this
+                asset!</NoAccessPage
+            >
         </div>
         <BulkNotification class="fixed bottom-0 right-0" />
     </div>

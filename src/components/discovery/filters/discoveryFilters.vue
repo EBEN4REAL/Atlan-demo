@@ -505,7 +505,7 @@
                 refresh()
             }
 
-            emit('initialize', filterMap.value)
+            emit('initialize', dataMap.value)
 
             console.log(dynamicList, 'list')
             return {

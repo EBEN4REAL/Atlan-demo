@@ -94,16 +94,7 @@
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
-    import {
-        computed,
-        defineComponent,
-        onMounted,
-        ref,
-        watch,
-        toRefs,
-        PropType,
-        Ref,
-    } from 'vue'
+    import { computed, defineComponent, ref, watch, Ref } from 'vue'
     import { useRouter } from 'vue-router'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
@@ -123,14 +114,14 @@
     } from '~/constant/projection'
     // TODO: Uncomment all tracing related code
     // import useTracking from '~/modules/tracking'
-    import { initialFiltersType } from '~/pages/assets.vue'
 
-    import { serializeQuery } from '~/utils/helper/routerHelper'
+    import { decodeQuery, serializeQuery } from '~/utils/helper/routerHelper'
 
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
+    import useDiscoveryDSL from './useDiscoveryDSL'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -146,18 +137,6 @@
             SearchAndFilter,
         },
         props: {
-            initialFilters: {
-                type: Object as PropType<initialFiltersType>,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-            termName: {
-                type: String,
-                required: false,
-                default: undefined,
-            },
             showFilters: {
                 type: Boolean,
                 required: false,
@@ -167,9 +146,7 @@
         emits: ['preview'],
         setup(props, { emit }) {
             // initializing the discovery store
-            const { initialFilters } = toRefs(props)
             const router = useRouter()
-
             // Asset filter component ref
             const assetFilterRef = ref()
             const autoSelect = ref(true)
@@ -179,7 +156,16 @@
             const isAggregate = ref(true)
 
             // Clean Stuff
-            const AllFilters: Ref = ref({ ...initialFilters.value })
+            const AllFilters: Ref = ref({
+                facetsFilters: {},
+                searchText: '',
+                selectedTab: 'Catalog',
+                sortOrder: 'default',
+                state: 'active',
+                ...decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                ),
+            })
 
             const selectedTab = computed({
                 get: () => AllFilters.value.selectedTab || 'Catalog',
@@ -194,11 +180,9 @@
                 },
             })
 
-            const termName = ref<string | undefined>()
-
             // This is the actual filter body
             // FIXME: Can we make it a computed property?
-            const filters = ref([])
+            const filters = ref({})
             const limit = ref(20)
             const offset = ref(0)
             const sortOrder = ref('default')
@@ -305,10 +289,7 @@
 
             const updateBody = () => {
                 const initialBody = {
-                    typeName: assetTypeListString.value,
-                    termName: props.termName ?? termName.value,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
+                    // typeName: assetTypeListString.value,
                     limit: limit.value,
                     offset: offset.value,
                     relationAttributes: [
@@ -318,12 +299,7 @@
                         'description',
                         'shortDescription',
                     ],
-                    entityFilters: {
-                        condition: 'AND',
-                        criterion: Array.isArray(filters?.value)
-                            ? [...filters.value]
-                            : [],
-                    },
+                    query: useDiscoveryDSL(filters.value),
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
@@ -334,40 +310,40 @@
                 }
 
                 if (selectedTab.value !== 'Catalog') {
-                    initialBody.entityFilters.criterion.push({
-                        attributeName: '__typeName',
-                        attributeValue: selectedTab.value,
-                        operator: 'eq',
-                    })
+                    // initialBody.entityFilters.criterion.push({
+                    //     attributeName: '__typeName',
+                    //     attributeValue: selectedTab.value,
+                    //     operator: 'eq',
+                    // })
                 }
 
                 if (state.value) {
-                    if (state.value === 'all') {
-                        initialBody.excludeDeletedEntities = false
-                    } else if (state.value === 'archived') {
-                        initialBody.excludeDeletedEntities = false
-                        initialBody.entityFilters.criterion.push({
-                            attributeName: '__state',
-                            attributeValue: 'DELETED',
-                            operator: 'eq',
-                        })
-                    } else {
-                        initialBody.excludeDeletedEntities = true
-                    }
+                    // if (state.value === 'all') {
+                    //     initialBody.excludeDeletedEntities = false
+                    // } else if (state.value === 'archived') {
+                    //     initialBody.excludeDeletedEntities = false
+                    //     initialBody.entityFilters.criterion.push({
+                    //         attributeName: '__state',
+                    //         attributeValue: 'DELETED',
+                    //         operator: 'eq',
+                    //     })
+                    // } else {
+                    //     initialBody.excludeDeletedEntities = true
+                    // }
                 }
 
                 if (sortOrder.value !== 'default') {
-                    const split = sortOrder.value.split('|')
-                    if (split.length > 1) {
-                        initialBody.sortBy = split[0]
-                        initialBody.sortOrder = split[1].toUpperCase()
-                    }
+                    // const split = sortOrder.value.split('|')
+                    // if (split.length > 1) {
+                    //     initialBody.sortBy = split[0]
+                    //     initialBody.sortOrder = split[1].toUpperCase()
+                    // }
                 } else {
-                    delete initialBody.sortBy
-                    delete initialBody.sortOrder
+                    // delete initialBody.sortBy
+                    // delete initialBody.sortOrder
                 }
                 if (queryText.value) {
-                    initialBody.query = queryText.value
+                    // initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
                 if (isAggregate.value) refreshAggregation(initialBody)
@@ -425,7 +401,7 @@
                 filterMapData: Record<string, Components.Schemas.FilterCriteria>
             ) => {
                 AllFilters.value.facetsFilters = filterMapData
-                filters.value = payload
+                filters.value = filterMapData
                 offset.value = 0
                 isAggregate.value = true
                 updateBody()
@@ -478,7 +454,6 @@
                 autoSelect,
                 handleClearFiltersFromList,
                 assetFilterRef,
-                initialFilters,
                 AllFilters,
                 initialTabs,
                 searchScoreList,

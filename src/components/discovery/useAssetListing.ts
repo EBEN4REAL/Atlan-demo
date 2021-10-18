@@ -1,41 +1,21 @@
 import axios from 'axios'
 import useAssetSearchList from './useSearchList'
 import { assetInterface } from '~/types/assets/asset.interface'
-import { computed } from 'vue'
+import { computed, Ref, ref, watch } from 'vue'
 import { AssetTypeList } from '~/constant/assetType'
 import { BaseAttributes, tableauAttributes } from '~/constant/projection'
+import useIndexSearch from '~/services/atlas/discovery/useIndexSearch'
 
 export function useAssetListing(
     typeName?: string,
     immediate: boolean = true,
     cacheSuffx?: string | ''
 ) {
-    const cancelTokenSource = axios.CancelToken.source()
-
-    const {
-        query,
-        replaceBody,
-        body,
-        list,
-        searchScoreList,
-        isReady,
-        error,
-        data,
-    } = useAssetSearchList(
-        {
-            typeName: typeName || 'Catalog',
-            excludeDeletedEntities: true,
-            includeClassificationAttributes: false,
-            includeSubClassifications: false,
-            includeSubTypes: true,
-            limit: 100,
-            offset: 0,
-            attributes: [...BaseAttributes, ...tableauAttributes],
-            entityFilters: {},
-        },
+    const list: Ref<assetInterface[]> = ref([])
+    const { query, replaceBody, body, isReady, error, data } = useIndexSearch(
+        {},
         '',
-        immediate,
-        cancelTokenSource
+        immediate
     )
 
     const isLoading = computed(() => !isReady.value && !error.value)
@@ -47,6 +27,16 @@ export function useAssetListing(
         if (idx > -1) list.value[idx] = updatedAsset
     }
 
+    watch(data, () => {
+        if (body?.value?.offset > 0) {
+            list.value = list.value.concat(data?.value?.entities)
+        } else if (data.value?.entities) {
+            list.value = data.value?.entities
+        } else {
+            list.value = []
+        }
+    })
+
     return {
         data,
         list,
@@ -55,7 +45,7 @@ export function useAssetListing(
         replaceBody,
         body,
         mutateAssetInList,
-        searchScoreList,
+        searchScoreList: [],
     }
 }
 

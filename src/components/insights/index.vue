@@ -4,13 +4,7 @@
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="
-                        relative
-                        flex flex-col
-                        items-center
-                        text-xs
-                        sidebar-nav-icon
-                    "
+                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -186,6 +180,11 @@
                 editorInstanceParam: any,
                 monacoInstanceParam?: any
             ) => {
+                console.log(
+                    editorInstanceParam,
+                    monacoInstanceParam,
+                    'settingInstance'
+                )
                 editorInstance.value = editorInstanceParam
                 if (monacoInstanceParam)
                     monacoInstance.value = monacoInstanceParam

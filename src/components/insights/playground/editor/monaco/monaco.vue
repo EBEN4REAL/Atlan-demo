@@ -233,18 +233,16 @@
                     const lastTypedCharacter = event?.changes[0]?.text
                     console.log(changes, 'changes')
                     /* Preventing network request when pasting name of table */
-                    if (lastTypedCharacter.length < 3) {
-                        const suggestions = useAutoSuggestions(
-                            changes,
-                            editor,
-                            activeInlineTab,
-                            cancelTokenSource
-                        ) as Promise<{
-                            suggestions: suggestionKeywordInterface[]
-                            incomplete: boolean
-                        }>
-                        triggerAutoCompletion(suggestions)
-                    }
+                    const suggestions = useAutoSuggestions(
+                        changes,
+                        editor,
+                        activeInlineTab,
+                        cancelTokenSource
+                    ) as Promise<{
+                        suggestions: suggestionKeywordInterface[]
+                        incomplete: boolean
+                    }>
+                    triggerAutoCompletion(suggestions)
                 })
                 editor?.onDidChangeCursorPosition(() => {
                     setEditorPos(editor, editorPos)
@@ -301,22 +299,16 @@
                         /* ------------- custom variable color change */
                         findAndChangeCustomVariablesColor()
                         /* ------------------------------------------ */
-                        const lastTypedCharacter = event?.changes[0]?.text
-                        if (
-                            lastTypedCharacter.length === 1 &&
-                            lastTypedCharacter.match(/[^0-9a-zA-Z]/gim)
-                        ) {
-                            const suggestions = useAutoSuggestions(
-                                changes,
-                                editor,
-                                activeInlineTab,
-                                cancelTokenSource
-                            ) as Promise<{
-                                suggestions: suggestionKeywordInterface[]
-                                incomplete: boolean
-                            }>
-                            triggerAutoCompletion(suggestions)
-                        }
+                        const suggestions = useAutoSuggestions(
+                            changes,
+                            editor,
+                            activeInlineTab,
+                            cancelTokenSource
+                        ) as Promise<{
+                            suggestions: suggestionKeywordInterface[]
+                            incomplete: boolean
+                        }>
+                        triggerAutoCompletion(suggestions)
                     })
                     const range = editor?.getModel().getFullModelRange()
                     const position = {
@@ -326,6 +318,10 @@
                     editor?.setPosition(position)
                     editor?.onDidChangeCursorPosition(() => {
                         setEditorPos(editor, editorPos)
+                    })
+                    editor?.onDidChangeCursorPosition(() => {
+                        setEditorPos(editor, editorPos)
+                        setEditorFocusedState(true, editorFocused)
                     })
                     editor?.focus()
                     editor?.onDidBlurEditorWidget(() => {

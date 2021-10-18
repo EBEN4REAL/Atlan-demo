@@ -62,7 +62,8 @@
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                     :editPermission="userHasEditPermission"
-                                    @update:selected-asset="refreshEntity"
+                                    @update:selected-asset="updateEntityAndTree
+                                    "
                                 />
                                 <Owners
                                     v-if="entity.guid"

@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="!noPermissions"
-        class="group-hover:opacity-100"
+        class="group-hover:opacity-100 leading-5"
         :class="{
             'opacity-100': isVisible,
             'opacity-0 treeMode': treeMode,
@@ -11,7 +11,10 @@
         <a-dropdown
             v-model:visible="isVisible"
             :trigger="treeMode ? ['click'] : ['click']"
-            :class="treeMode ? $style.treeMode : ''"
+            :class="{
+                [$style.treeMode] : treeMode,
+                [$style.threeDotMenu]: true
+            }"
             @click.stop="() => {}"
         >
             <a-button
@@ -27,7 +30,7 @@
                 <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
             </a-button>
             <template #overlay>
-                <a-menu>
+                <a-menu :class="$style.threeDotMenu">
                     <a-menu-item
                         v-if="showLinks"
                         key="profileLink"
@@ -362,7 +365,7 @@
         ref,
         PropType,
         inject,
-        onMounted,
+        toRefs,
         watch,
         computed,
     } from 'vue'
@@ -436,6 +439,10 @@
         emits: ['unlinkAsset'],
         setup(props, context) {
             // data
+            const { entity } = toRefs(props)
+            watch(entity, (ne) => {
+                console.log('bruh', ne)
+            })
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
@@ -637,5 +644,15 @@
 <style lang="less" module>
     .treeMode {
         @apply bg-black bg-opacity-0 !important;
+    }
+    .threeDotMenu {
+        :global(.ant-dropdown-menu-item) {
+            padding: 9px 16px !important;
+            margin: 0;
+        }
+        :global( .ant-dropdown-menu-submenu-title) {
+            padding: 9px 16px !important;
+            margin: 0;
+        }
     }
 </style>

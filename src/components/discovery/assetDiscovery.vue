@@ -10,10 +10,9 @@
                         assetFilterRef = el
                     }
                 "
-                :initial-filters="AllFilters"
+                :facets="facets"
                 @refresh="handleFilterChange"
                 @termNameChange="termNameChange"
-                @initialize="handleFilterInit"
             ></AssetFilters>
         </div>
 
@@ -119,7 +118,6 @@
 
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
-    import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
     import useDiscoveryDSL from './useDiscoveryDSL'
 
@@ -156,47 +154,47 @@
             const isAggregate = ref(true)
 
             // Clean Stuff
-            const AllFilters: Ref = ref({
-                facetsFilters: {},
-                searchText: '',
-                selectedTab: 'Catalog',
-                sortOrder: 'default',
-                state: 'active',
-                ...decodeQuery(
-                    Object.keys(router.currentRoute.value?.query)[0]
-                ),
-            })
+            // const AllFilters: Ref = ref({
+            //     facetsFilters: {},
+            //     searchText: '',
+            //     selectedTab: 'Catalog',
+            //     sortOrder: 'default',
+            //     state: 'active',
+            //     ...decodeQuery(
+            //         Object.keys(router.currentRoute.value?.query)[0]
+            //     ),
+            // })
 
-            const selectedTab = computed({
-                get: () => AllFilters.value.selectedTab || 'Catalog',
-                set: (val) => {
-                    AllFilters.value.selectedTab = val
-                },
-            })
-            const queryText = computed({
-                get: () => AllFilters.value.searchText,
-                set: (val) => {
-                    AllFilters.value.searchText = val
-                },
-            })
-
-            // This is the actual filter body
-            // FIXME: Can we make it a computed property?
-            const filters = ref({})
+            // Temporary, not saved in url
             const limit = ref(20)
             const offset = ref(0)
+
+            // Permanents
+            const selectedTab = ref('Catalog')
+            const queryText = ref('')
             const sortOrder = ref('default')
             const state = ref('active')
-            const facets = computed(() => AllFilters.value?.facetsFilters)
+            const facets = ref({})
+
             const termNames = ref<string[]>([])
-            const { generateFacetConfigForRouter } = useFilterUtils(facets)
+
+            // Initialize
+            ;(() => {
+                const qry = decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                )
+                if (qry.selectedTab) selectedTab.value = qry.selectedTab
+                if (qry.queryText) queryText.value = qry.queryText
+                if (qry.sortOrder) sortOrder.value = qry.sortOrder
+                if (qry.state) state.value = qry.state
+                if (qry.facets) facets.value = qry.facets
+            })()
 
             // Get All Disoverable Asset Types
             const initialTabs: Ref<string[]> = computed(() =>
                 useFilteredTabs({
-                    connector: AllFilters.value?.facetsFilters?.connector,
-                    category:
-                        AllFilters.value?.facetsFilters?.assetCategory?.checked,
+                    connector: facets.value?.connector,
+                    category: facets.value?.assetCategory?.checked,
                 })
             )
 
@@ -300,7 +298,7 @@
                     dsl: {
                         size: limit.value,
                         from: offset.value,
-                        ...useDiscoveryDSL(filters.value),
+                        ...useDiscoveryDSL(facets.value),
                     },
                     attributes: [
                         ...BaseAttributes,
@@ -350,11 +348,11 @@
                 if (isAggregate.value) refreshAggregation(initialBody)
             }
 
+            const { generateFacetConfigForRouter } = useFilterUtils(facets)
             const setRouterOptions = () => {
                 const routerOptions: Record<string, any> = {
-                    facetsFilters: generateFacetConfigForRouter(),
+                    facets: generateFacetConfigForRouter(),
                 }
-                console.log(routerOptions)
                 if (queryText.value) routerOptions.searchText = queryText.value
                 if (selectedTab.value !== 'Catalog')
                     routerOptions.selectedTab = selectedTab.value
@@ -397,12 +395,8 @@
                 updateBody()
             }
 
-            const handleFilterChange = (
-                payload: any,
-                filterMapData: Record<string, Components.Schemas.FilterCriteria>
-            ) => {
-                AllFilters.value.facetsFilters = filterMapData
-                filters.value = filterMapData
+            const handleFilterChange = (filterMapData: Record<string, any>) => {
+                facets.value = filterMapData
                 offset.value = 0
                 isAggregate.value = true
                 updateBody()
@@ -413,10 +407,6 @@
                 isAggregate.value = true
                 updateBody()
                 // setRouterOptions()
-            }
-
-            const handleFilterInit = (payload: any) => {
-                filters.value = payload
             }
 
             const handlePreview = (item) => {
@@ -455,7 +445,6 @@
                 autoSelect,
                 handleClearFiltersFromList,
                 assetFilterRef,
-                AllFilters,
                 initialTabs,
                 searchScoreList,
                 list,
@@ -473,6 +462,7 @@
                 handleFilterChange,
                 handlePreview,
                 queryText,
+                facets,
                 totalCount,
                 assetlist,
                 isLoadMore,
@@ -484,9 +474,7 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
-                filters,
                 assetTypeListString,
-                handleFilterInit,
                 termNameChange,
             }
         },

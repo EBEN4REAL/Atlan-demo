@@ -9,18 +9,18 @@
         </div>
         <div class="flex items-center">
             <div v-if="totalAppliedFiltersCount">
-                <SaveFilterModal
+                <!-- <SaveFilterModal
                     :applied-filters="filterMap"
                     @savedFilterAdded="handleSavedFilterAdded"
                 >
                     <template #trigger>
                         <div
-                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
+                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
                         >
                             Save
                         </div>
                     </template>
-                </SaveFilterModal>
+                </SaveFilterModal> -->
             </div>
             <div
                 v-if="totalAppliedFiltersCount"
@@ -142,7 +142,6 @@
     import { List as StatusList } from '~/constant/status'
     import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
-    import useFilterPayload from './useFilterPayload'
     import useFilterUtils from './useFilterUtils'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
 
@@ -188,7 +187,7 @@
                     return {}
                 },
             },
-            filtersList: {
+            facets: {
                 type: Object,
                 required: false,
                 default() {
@@ -199,7 +198,6 @@
         emits: ['refresh', 'initialize', 'termNameChange'],
         setup(props, { emit }) {
             const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
-            // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref('dirty_')
             const updateSavedFilters: Ref<boolean> = ref(false)
@@ -218,58 +216,35 @@
             })
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({
-                connector: props.initialFilters?.facetsFilters?.connector || {},
-                saved: props.initialFilters?.facetsFilters?.saved || {
+                connector: props.facets?.connector || {},
+                saved: props.facets?.saved || {
                     checked: undefined,
                 },
-                assetCategory: props.initialFilters?.facetsFilters
-                    ?.assetCategory || { checked: undefined },
-                status: props.initialFilters?.facetsFilters?.status || {
+                assetCategory: props.facets?.assetCategory || {
+                    checked: undefined,
+                },
+                status: props.facets?.status || {
                     checked: undefined,
                 },
                 classifications: {
                     noClassificationsAssigned: false,
-                    checked:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.checked,
-                    operator:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.condition || 'OR',
-                    addedBy:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.addedBy || 'all',
+                    checked: props.facets?.classifications?.checked,
+                    operator: props.facets?.classifications?.condition || 'OR',
+                    addedBy: props.facets?.classifications?.addedBy || 'all',
                 },
                 owners: {
-                    userValue:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.userValue || [],
-                    groupValue:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.groupValue || [],
+                    userValue: props.facets?.owners?.userValue || [],
+                    groupValue: props.facets?.owners?.groupValue || [],
                     noOwnerAssigned:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.noOwnerAssigned || false,
+                        props.facets?.owners?.noOwnerAssigned || false,
                 },
                 advanced: {
-                    applied:
-                        props.initialFilters?.facetsFilters?.advanced?.applied,
+                    applied: props.facets?.advanced?.applied,
                 },
             })
 
-            const { payload: filterMap } = useFilterPayload(dataMap)
             const { isFilterApplied, totalAppliedFiltersCount } =
                 useFilterUtils(dataMap)
-
-            // function setAppliedFiltersCount() {
-            //     let count = 0
-            //     const filterMapKeys = Object.keys(filterMap.value)
-            //     filterMapKeys?.forEach((id) => {
-            //         if (filterMap[id]?.criterion?.length > 0) {
-            //             return (count += 1)
-            //         }
-            //     })
-            //     totalAppliedFiltersCount.value = count
-            // }
 
             // ? watching for bmDataList to be computed
             watch(
@@ -280,8 +255,7 @@
                         dataMap.value[b] = {
                             applied: {
                                 ...dataMap.value[b]?.applied,
-                                ...props.initialFilters?.facetsFilters?.[b]
-                                    ?.applied,
+                                ...props.facets?.[b]?.applied,
                             },
                         }
                     })
@@ -293,7 +267,7 @@
             )
 
             const refresh = () => {
-                emit('refresh', filterMap.value, dataMap.value)
+                emit('refresh', dataMap.value)
             }
             const handleChange = () => {
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
@@ -511,8 +485,6 @@
                 refresh()
             }
 
-            emit('initialize', dataMap.value)
-
             console.log(dynamicList, 'list')
             return {
                 resetAllFilters,
@@ -523,7 +495,6 @@
                 handleChange,
                 isFilterApplied,
                 dirtyTimestamp,
-                filterMap,
                 handleClear,
                 dynamicList,
                 bmFiltersList,

@@ -82,11 +82,14 @@ export default function useProject() {
 
         const params = {
             sql: query,
-            defaultSchema: getSchemaWithDataSourceName(attributeValue),
             dataSourceName: encodeURIComponent(
                 getConnectionQualifiedName(attributeValue) as string
             ),
             length: 10,
+        }
+        /* This means it is a saved query */
+        if (getSchemaWithDataSourceName(attributeValue)) {
+            params.defaultSchema = getSchemaWithDataSourceName(attributeValue)
         }
         /* This means it is a saved query */
         if (activeInlineTab.value?.queryId) {

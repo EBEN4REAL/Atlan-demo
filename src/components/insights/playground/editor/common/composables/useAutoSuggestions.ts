@@ -10,7 +10,7 @@ import {
     autosuggestionEntityColumn,
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
-import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
+import axios from 'axios'
 
 export interface suggestionKeywordInterface {
     label: string
@@ -63,7 +63,12 @@ export function wordToEditorKeyword(
 export function entitiesToEditorKeyword(
     response: Promise<autosuggestionResponse>,
     type: string,
-    currentWord: string
+    currentWord: string,
+    connectorsInfo: {
+        connectionQualifiedName: string | undefined
+        databaseName: string | undefined
+        schemaName: string | undefined
+    }
 ) {
     const sqlKeywords = getSqlKeywords()
     return new Promise((resolve) => {
@@ -75,12 +80,23 @@ export function entitiesToEditorKeyword(
                 let keyword
                 switch (type) {
                     case 'TABLE': {
+                        /* When Schema Or database not selected TableQN will be used */
+                        let insertText = entities[i].name
+                        let label = entities[i].name
+                        if (!connectorsInfo.schemaName) {
+                            insertText = entities[i].tableQN as string
+                            label = entities[i].tableQN as string
+                        } else if (!connectorsInfo.databaseName) {
+                            insertText = entities[i].tableQN as string
+                            label = entities[i].tableQN as string
+                        }
+
                         keyword = {
-                            label: entities[i].name,
+                            label: label,
                             detail: `${type}`, // TABLE,
                             kind: monaco.languages.CompletionItemKind.Field,
                             documentation: `Some descripiton for ${type}`,
-                            insertText: `${entities[i].name}`,
+                            insertText: insertText,
                         }
                         words.push(keyword)
                     }
@@ -154,9 +170,13 @@ async function getSuggestionsUsingType(
     const body = {
         dataSourceName: connectorsInfo.connectionQualifiedName,
         assetType: type === 'TABLE' ? 'Table' : 'Column',
-        catalog: connectorsInfo.databaseName,
-        schema: connectorsInfo.schemaName,
         prefix: currentWord,
+    }
+    if (connectorsInfo.databaseName) {
+        body.catalog = connectorsInfo.databaseName
+    }
+    if (connectorsInfo.schemaName) {
+        body.schema = connectorsInfo.schemaName
     }
 
     switch (type) {
@@ -181,7 +201,8 @@ async function getSuggestionsUsingType(
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
                     type,
-                    currentWord
+                    currentWord,
+                    connectorsInfo
                 )
 
                 return suggestionsPromise
@@ -203,7 +224,8 @@ async function getSuggestionsUsingType(
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
                     type,
-                    currentWord
+                    currentWord,
+                    connectorsInfo
                 )
 
                 return suggestionsPromise
@@ -260,6 +282,7 @@ export async function useAutoSuggestions(
         databaseName,
         schemaName,
     }
+    console.log(connectorsInfo, 'connectorsInfo')
 
     const editorText: string = editorInstance?.getValue()
     /* Getting the text till cursor pos because we hav to generate the tokens */

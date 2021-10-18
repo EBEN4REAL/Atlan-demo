@@ -91,7 +91,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import useAssetsStore from '~/store/assets'
+    import useAssetsStore from '~/store/discovery'
 
     export default defineComponent({
         name: 'AssetList',

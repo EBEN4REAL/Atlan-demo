@@ -12,113 +12,138 @@
             </a-button>
         </div>
         <div v-if="page !== 'profile'" class="p-5 border-b">
-            <div class="flex items-center justify-between mb-0 text-sm">
+            <div v-if="selectedAsset.guid === '-1'" class="mb-0 text-sm">
                 <AssetLogo :asset="selectedAsset" variant="md" />
+                <div class="flex items-center w-full">
+                    <Tooltip
+                        :tooltip-text="selectedAsset.displayText"
+                        classes="font-bold text-base cursor-pointer text-gray-700"
+                        placement="left"
+                    />
+                    <AtlanIcon icon="Lock" class="mb-1 ml-1" />
+                </div>
+            </div>
+            <div v-else>
+                <div class="flex items-center justify-between mb-0 text-sm">
+                    <AssetLogo :asset="selectedAsset" variant="md" />
 
-                <div class="flex space-x-2">
-                    <a-button-group>
-                        <a-tooltip
-                            placement="left"
-                            :mouse-enter-delay="0.5"
-                            title="Copy asset profile link"
-                        >
-                            <a-button
-                                class="w-8 h-8"
-                                size="small"
-                                @click="handleCopyProfileLink"
-                                ><AtlanIcon icon="Share" /></a-button
-                        ></a-tooltip>
-                        <a-tooltip
-                            placement="bottom"
-                            :mouse-enter-delay="0.5"
-                            title="Open profile"
-                        >
-                            <a-button
-                                class="w-8 h-8"
-                                size="small"
-                                @click="handleOpenProfile"
+                    <div class="flex space-x-2">
+                        <a-button-group>
+                            <a-tooltip
+                                placement="left"
+                                :mouse-enter-delay="0.5"
+                                title="Copy asset profile link"
                             >
-                                <AtlanIcon icon="External" /> </a-button
-                        ></a-tooltip>
-                        <!-- <a-button class="w-8 h-8" size="small">
+                                <a-button
+                                    class="w-8 h-8"
+                                    size="small"
+                                    @click="handleCopyProfileLink"
+                                    ><AtlanIcon icon="Share" /></a-button
+                            ></a-tooltip>
+                            <a-tooltip
+                                placement="bottom"
+                                :mouse-enter-delay="0.5"
+                                title="Open profile"
+                            >
+                                <a-button
+                                    class="w-8 h-8"
+                                    size="small"
+                                    @click="handleOpenProfile"
+                                >
+                                    <AtlanIcon icon="External" /> </a-button
+                            ></a-tooltip>
+                            <!-- <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="Bookmark" />
                         </a-button> -->
-                    </a-button-group>
+                        </a-button-group>
+                    </div>
                 </div>
-            </div>
 
-            <div class="flex items-center w-full">
-                <a-tooltip
-                    placement="left"
-                    :mouse-enter-delay="0.5"
-                    :title="getDataType(selectedAsset?.attributes?.dataType)"
-                >
-                    <component
-                        :is="
-                            images[
-                                getDataType(selectedAsset?.attributes?.dataType)
-                            ]
+                <div class="flex items-center w-full">
+                    <a-tooltip
+                        placement="left"
+                        :mouse-enter-delay="0.5"
+                        :title="
+                            getDataType(selectedAsset?.attributes?.dataType)
                         "
-                        v-if="isColumnAsset(selectedAsset)"
-                        class="w-4 h-4 mb-1 mr-1"
-                    ></component
-                ></a-tooltip>
+                    >
+                        <component
+                            :is="
+                                images[
+                                    getDataType(
+                                        selectedAsset?.attributes?.dataType
+                                    )
+                                ]
+                            "
+                            v-if="isColumnAsset(selectedAsset)"
+                            class="w-4 h-4 mb-1 mr-1"
+                        ></component
+                    ></a-tooltip>
 
-                <Tooltip
-                    :tooltip-text="selectedAsset.attributes?.name"
-                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
-                    placement="left"
-                    :route-to="
-                        isColumnAsset(selectedAsset)
-                            ? `/${getColumnUrl(selectedAsset)}`
-                            : `/assets/${selectedAsset.guid}/overview`
-                    "
-                />
-                <CertificatePopover :data="selectedAsset" />
+                    <Tooltip
+                        :tooltip-text="selectedAsset.attributes?.name"
+                        classes="font-bold text-base cursor-pointer text-primary hover:underline"
+                        placement="left"
+                        :route-to="
+                            isColumnAsset(selectedAsset)
+                                ? `/${getColumnUrl(selectedAsset)}`
+                                : `/assets/${selectedAsset.guid}/overview`
+                        "
+                    />
+                    <CertificatePopover :data="selectedAsset" />
+                </div>
             </div>
         </div>
-        <a-tabs
-            v-model:activeKey="activeKey"
-            :class="$style.previewtab"
-            tab-position="left"
-        >
-            <a-tab-pane
-                v-for="(tab, index) in filteredTabs"
-                :key="index"
-                class="overflow-y-auto"
+        <div v-if="selectedAsset.guid !== '-1'">
+            <a-tabs
+                v-model:activeKey="activeKey"
+                :class="$style.previewtab"
+                tab-position="left"
             >
-                <template #tab>
-                    <SidePanelTabHeaders
-                        :title="tab.tooltip"
-                        :icon="tab.icon"
-                        :isActive="activeKey === index"
-                    />
-                </template>
-
-                <div
-                    class="flex flex-col"
-                    :style="{ height: tabHeights[page] }"
+                <a-tab-pane
+                    v-for="(tab, index) in filteredTabs"
+                    :key="index"
+                    class="overflow-y-auto"
                 >
-                    <div
-                        v-if="tab.tooltip !== 'Activity'"
-                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
-                    >
-                        {{ tab.tooltip }}
-                    </div>
+                    <template #tab>
+                        <SidePanelTabHeaders
+                            :title="tab.tooltip"
+                            :icon="tab.icon"
+                            :isActive="activeKey === index"
+                        />
+                    </template>
 
-                    <component
-                        :is="tab.component"
-                        :component-data="dataMap[tab.id]"
-                        :info-tab-data="selectedAsset"
-                        :page="page"
-                        :selected-asset="selectedAsset"
-                        :user-permission="userPermission"
-                        :is-loaded="isLoaded"
-                        @change="handleChange"
-                    ></component>
-                </div>
-            </a-tab-pane>
-        </a-tabs>
+                    <div
+                        class="flex flex-col"
+                        :style="{ height: tabHeights[page] }"
+                    >
+                        <div
+                            v-if="tab.tooltip !== 'Activity'"
+                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                        >
+                            {{ tab.tooltip }}
+                        </div>
+
+                        <component
+                            :is="tab.component"
+                            :component-data="dataMap[tab.id]"
+                            :info-tab-data="selectedAsset"
+                            :page="page"
+                            :selected-asset="selectedAsset"
+                            :user-permission="userPermission"
+                            :is-loaded="isLoaded"
+                            @change="handleChange"
+                        ></component>
+                    </div>
+                </a-tab-pane>
+            </a-tabs>
+        </div>
+        <div v-else :style="{ height: tabHeights[page] }">
+            <NoAccessPage
+                >Oops, looks like you don’t have<br />access to view this
+                asset!</NoAccessPage
+            >
+        </div>
     </div>
 </template>
 
@@ -149,6 +174,7 @@
     import { images, dataTypeList } from '~/constant/datatype'
     import { copyToClipboard } from '~/utils/clipboard'
     import useCheckAccess from '~/services/access/useCheckAccess'
+    import NoAccessPage from '@/discovery/noAccess.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -157,6 +183,7 @@
             AssetLogo,
             StatusBadge,
             SidePanelTabHeaders,
+            NoAccessPage,
             AtlanButton,
             info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
             columns: defineAsyncComponent(

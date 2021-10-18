@@ -32,10 +32,6 @@
                 :page="page"
                 @asset-mutation="propagateToAssetList"
             ></AssetPreview>
-            <NoAccessPage v-else
-                >Oops, looks like you don’t have<br />access to view this
-                asset!</NoAccessPage
-            >
         </div>
         <BulkNotification class="fixed bottom-0 right-0" />
     </div>
@@ -55,7 +51,6 @@
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
-    import NoAccessPage from '@/discovery/noAccess.vue'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -68,7 +63,6 @@
             AssetDiscovery,
             BulkSidebar,
             BulkNotification,
-            NoAccessPage,
         },
         setup() {
             useHead({

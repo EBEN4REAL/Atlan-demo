@@ -100,7 +100,7 @@
             </template>
         </a-dropdown>
         <span
-            class="flex items-center self-end mt-2 cursor-pointer text-primary"
+            class="flex items-center self-end mt-2 font-bold cursor-pointer  text-primary"
             @click="redirectToProfile(entities[0]?.typeName, entities[0]?.guid)"
             >Browse all Glossaries
             <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />

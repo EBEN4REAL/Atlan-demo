@@ -40,8 +40,10 @@ const useLoadQueryData = ({
         'classifications',
 
         'connectorName',
+        'connectionId',
         'connectionQualifiedName',
         'parentFolderQualifiedName',
+        'defaultSchemaQualifiedName',
         'parentFolder',
         'columns', //TODO: queries
         'folder',

@@ -8,8 +8,7 @@
         <a-checkbox
             v-if="projection.includes('checkbox')"
             :checked="isChecked"
-            class="mt-1 ml-2 opacity-0 group-hover:opacity-100"
-            :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+            class="mt-1 ml-2"
             @click.stop
             @change="(e) => $emit('listItem:check', e, entity)"
         />

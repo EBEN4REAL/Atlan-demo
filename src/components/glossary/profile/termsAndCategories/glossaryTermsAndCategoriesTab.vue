@@ -387,7 +387,7 @@
     }
     .drawerClasses {
         :global(.ant-drawer-wrapper-body) {
-            @apply bg-gray-100 !important;
+            @apply bg-gray-100 border-r !important;
         }
     }
 </style>

@@ -6,7 +6,11 @@
         <div v-if="!glossary || (isLoading && glossary?.guid !== id)">
             <LoadingView />
         </div>
-        <div v-else-if="glossary" class="flex flex-row h-full" :class="$style.tabClasses">
+        <div
+            v-else-if="glossary"
+            class="flex flex-row h-full"
+            :class="$style.tabClasses"
+        >
             <div
                 class="w-2/3"
                 ref="scrollDiv"
@@ -67,6 +71,7 @@
                         </a-tab-pane>
                         <a-tab-pane key="2" tab="Terms & Categories">
                             <GlossaryTermsAndCategoriesTab
+                                id="terms-and-categories"
                                 :qualified-name="qualifiedName"
                                 :display-text="title"
                                 :guid="glossary?.guid"
@@ -75,7 +80,6 @@
                                 :headerReachedTop="headerReachedTop"
                                 @entityPreview="handleCategoryOrTermPreview"
                                 @firstCardReachedTop="handleFirstCardReachedTop"
-                                @bulkSelectChange="updateBulkSelection"
                             />
                         </a-tab-pane>
                         <!-- Hide for GA -->
@@ -171,7 +175,7 @@
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
             const temp = ref(false) // flag for sticky header
-            const landByRedirect = false;
+            const landByRedirect = false
             const accessStore = useAccessStore()
 
             const router = useRouter()

@@ -34,7 +34,19 @@
                         @click="redirectToProfile(entity.typeName, entity.guid)"
                     >
                         <div class="flex items-center">
-                            <AtlanIcon icon="Link" class="m-0 mr-2" />
+                            <atlan-icon
+                                v-if="entity?.typeName === 'AtlasGlossaryTerm'"
+                                icon="OpenTermProfile"
+                                class="w-auto mr-2"
+                            />
+                            <atlan-icon
+                                v-if="
+                                    entity?.typeName === 'AtlasGlossaryCategory'
+                                "
+                                icon="OpenCategoryProfile"
+                                class="w-auto mr-2"
+                            />
+
                             <p class="p-0 m-0">
                                 Go to
                                 {{ assetTypeLabel[entity?.typeName] }}
@@ -434,6 +446,7 @@
             )
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
+            const refreshEntity = inject<() => void>('refreshEntity', () => {})
             const showCategories = ref(false)
             const refetchGlossaryTree = inject<
                 (
@@ -481,6 +494,7 @@
                 )
                 if (handleFetchListInj) handleFetchListInj(props.entity)
                 watch(data, () => {
+                    if (refreshEntity) refreshEntity()
                     if (refetchGlossaryTree) {
                         if (
                             props.entity?.typeName === 'AtlasGlossaryCategory'

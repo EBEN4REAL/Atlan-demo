@@ -23,7 +23,7 @@
                 @gtcCardClicked="handleGtcCardClicked"
             />
         </template>
-        <template #footer>
+        <template #footer v-if="list?.length > 40">
             <div class="flex items-center justify-center">
                 <button
                     :disabled="isLoading"

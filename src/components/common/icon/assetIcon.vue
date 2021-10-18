@@ -46,7 +46,7 @@
             const { asset, selected } = toRefs(prop)
             const { logo } = useAssetInfo()
             const color = computed(() => (selected.value ? '#fff' : '#fff'))
-            const text = computed(() => asset.value.typeName)
+            const text = computed(() => asset.value?.typeName)
             const logoSrc = computed(() => logo(asset.value))
             return { color, logoSrc, text }
         },

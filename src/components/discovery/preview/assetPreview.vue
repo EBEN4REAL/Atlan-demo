@@ -2,7 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l -left-5"
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -74,7 +74,7 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-                  <CertificatePopover :data="selectedAsset" />
+                <CertificatePopover :data="selectedAsset" />
             </div>
         </div>
         <a-tabs
@@ -101,7 +101,7 @@
                 >
                     <div
                         v-if="tab.tooltip !== 'Activity'"
-                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700 text-md"
+                        class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
@@ -112,6 +112,7 @@
                         :info-tab-data="selectedAsset"
                         :page="page"
                         :selected-asset="selectedAsset"
+                        :userPermission="userPermission"
                         :is-loaded="isLoaded"
                         @change="handleChange"
                     ></component>
@@ -147,6 +148,7 @@
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
     import { copyToClipboard } from '~/utils/clipboard'
+    import useCheckAccess from '~/services/access/useCheckAccess'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -203,6 +205,12 @@
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
             const router = useRouter()
+
+            const { evaluatePermissions } = useCheckAccess()
+            const { data: userPermission } = evaluatePermissions(
+                selectedAsset.value,
+                'ENTITY_UPDATE'
+            )
 
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
@@ -284,6 +292,7 @@
                 tabHeights,
                 isLoaded,
                 infoTabData,
+                userPermission,
                 title,
                 assetTypeLabel,
                 dataMap,

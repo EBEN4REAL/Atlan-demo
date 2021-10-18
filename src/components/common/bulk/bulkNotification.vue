@@ -82,73 +82,73 @@
 </template>
 
 <script lang="ts">
-import { watch } from 'vue'
-import useBulkUpdateStore from '~/store/bulkUpdate'
+    import { watch } from 'vue'
+    import useBulkUpdateStore from '~/store/bulkUpdate'
 
-export default {
-    name: 'BulkNotification',
-    props: {},
-    setup() {
-        const store = useBulkUpdateStore()
-        const getStatusIcon = (state) => {
-            if (state === 'loading') return 'CircleLoader'
-            if (state === 'error') return 'Cancel'
-            if (state === 'success') return 'Check'
-            return ''
-        }
-        const getIconClass = (state) => {
-            if (state === 'loading') return 'text-primary'
-            if (state === 'error') return 'text-error'
-            if (state === 'success') return 'text-success'
-            return ''
-        }
-        watch(
-            () => store.updateStatus,
-            () => {
-                if (
-                    store.getFinalStatus === 'success' ||
-                    store.getFinalStatus === 'error'
-                )
-                    setTimeout(() => {
-                        store.setBulkMode(false)
-                        store.setBulkSelectedAssets([])
-                        store.setShowNotifcation(false)
-                        store.setUpdateStatus({
-                            updateCertification: {
-                                status: '',
-                                didChange: false,
-                                changeLog: {},
-                            },
-                            updateOwners: {
-                                status: '',
-                                didChange: false,
-                                changeLog: {},
-                            },
-                            linkTerms: {
-                                status: '',
-                                didChange: false,
-                                changeLog: {},
-                            },
-                            linkClassifications: {
-                                status: '',
-                                didChange: false,
-                                changeLog: {},
-                            },
-                        })
-                    }, 3000)
+    export default {
+        name: 'BulkNotification',
+        props: {},
+        setup() {
+            const store = useBulkUpdateStore()
+            const getStatusIcon = (state) => {
+                if (state === 'loading') return 'CircleLoader'
+                if (state === 'error') return 'Cancel'
+                if (state === 'success') return 'Check'
+                return ''
             }
-        )
-        return {
-            store,
-            getStatusIcon,
-            getIconClass,
-        }
-    },
-}
+            const getIconClass = (state) => {
+                if (state === 'loading') return 'text-primary'
+                if (state === 'error') return 'text-error'
+                if (state === 'success') return 'text-success'
+                return ''
+            }
+            watch(
+                () => store.updateStatus,
+                () => {
+                    if (
+                        store.getFinalStatus === 'success' ||
+                        store.getFinalStatus === 'error'
+                    )
+                        setTimeout(() => {
+                            store.setBulkMode(false)
+                            store.setBulkSelectedAssets([])
+                            store.setShowNotifcation(false)
+                            store.setUpdateStatus({
+                                updateCertification: {
+                                    status: '',
+                                    didChange: false,
+                                    changeLog: {},
+                                },
+                                updateOwners: {
+                                    status: '',
+                                    didChange: false,
+                                    changeLog: {},
+                                },
+                                linkTerms: {
+                                    status: '',
+                                    didChange: false,
+                                    changeLog: {},
+                                },
+                                linkClassifications: {
+                                    status: '',
+                                    didChange: false,
+                                    changeLog: {},
+                                },
+                            })
+                        }, 3000)
+                }
+            )
+            return {
+                store,
+                getStatusIcon,
+                getIconClass,
+            }
+        },
+    }
 </script>
 
 <style lang="less" scoped>
-.notification-wrapper {
-    min-width: 18rem;
-}
+    .notification-wrapper {
+        min-width: 18rem;
+    }
 </style>

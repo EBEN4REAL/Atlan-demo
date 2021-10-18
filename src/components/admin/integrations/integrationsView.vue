@@ -1,5 +1,5 @@
 <template>
-    <ExplorerLayout title="Integrations" sub-title="Manage your integrations">
+    <ExplorerLayout title="Integrations">
         <template #sidebar>
             <ExplorerList
                 v-model:selected="selectedIntegrationId"
@@ -13,7 +13,15 @@
                             isSelected ? 'text-primary font-bold' : 'text-gray'
                         "
                     >
-                        {{ item.name }}
+                        <!--FIXME: computed property to add slack icon; wasn't working for some reason-->
+                        <div class="flex">
+                            <img
+                                src="../../../assets/images/integrations/slack.svg"
+                                class="self-center mr-2 integration-icon"
+                                alt="Slack logo"
+                            />
+                            <span class="mt-0.5"> {{ item.name }}</span>
+                        </div>
                     </span>
                 </template>
             </ExplorerList>
@@ -28,7 +36,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref } from 'vue'
+import { defineComponent, ref, Ref, computed } from 'vue'
+import slack from '~/assets/images/integrations/slack.svg'
 import ExplorerLayout from '@/admin/explorerLayout.vue'
 import ExplorerList from '@/admin/common/explorerList.vue'
 import IntegrationPreview from '@/admin/integrations/integrationPreview.vue'
@@ -36,6 +45,7 @@ import IntegrationPreview from '@/admin/integrations/integrationPreview.vue'
 interface IntegrationItem {
     name: string
     id: string
+    image: string
 }
 export default defineComponent({
     name: 'IntegrationsView',
@@ -50,17 +60,23 @@ export default defineComponent({
             {
                 name: 'Slack',
                 id: 'slack',
+                image: slack,
             },
         ])
         // Add logic to change integration preview when more integrations come
         const selectedIntegrationId = 'slack'
+
         return {
             integrationsList,
             selectedIntegrationId,
+            slack,
         }
     },
 })
 </script>
 
-<style>
+<style lang="less" scoped>
+.integration-icon {
+    height: 1rem;
+}
 </style>

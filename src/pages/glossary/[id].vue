@@ -8,12 +8,13 @@
         </div>
         <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
             <div
-                class="w-2/3 h-full"
+                class="w-2/3"
                 ref="scrollDiv"
                 :class="{
                     'overflow-y-auto': !headerReachedTop,
                     ' border-r': store.bulkSelectedAssets.length,
                 }"
+                :style="!headerReachedTop ? 'height: 100vh ' : ''"
                 @scroll="handleScroll"
             >
                 <!-- top section -->
@@ -55,7 +56,13 @@
                                         >
                                     </div>
                                 </div>
-                                <GlossaryProfileOverview :entity="glossary" />
+                                <GlossaryProfileOverview
+                                    :entity="glossary"
+                                    :header-reached-top="headerReachedTop"
+                                    @firstCardReachedTop="
+                                        handleFirstCardReachedTop
+                                    "
+                                />
                             </div>
                         </a-tab-pane>
                         <a-tab-pane key="2" tab="Terms & Categories">
@@ -145,7 +152,7 @@
             ProfileHeader,
             BulkSidebar,
             BulkNotification,
-            NoAccessPage
+            NoAccessPage,
         },
         props: {
             id: {
@@ -183,7 +190,9 @@
             const isNewGlossary = computed(
                 () => title.value === 'Untitled Glossary'
             )
-            const userHasAccess = computed(() => accessStore.checkPermission('READ_GLOSSARY'));
+            const userHasAccess = computed(() =>
+                accessStore.checkPermission('READ_GLOSSARY')
+            )
 
             // const {
             //     terms: glossaryTerms,
@@ -323,7 +332,7 @@
                 handleFirstCardReachedTop,
                 handleCloseBulk,
                 store,
-                userHasAccess
+                userHasAccess,
             }
         },
     })

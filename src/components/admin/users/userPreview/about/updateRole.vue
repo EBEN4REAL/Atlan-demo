@@ -40,7 +40,7 @@
                         v-for="role in roles"
                         :key="role.id"
                         :value="role.id"
-                        >{{ role.name }}</a-select-option
+                        ><span class="capitalize">{{ role.name }}</span></a-select-option
                     >
                 </a-select>
                 <div class="flex items-center justify-between max-w-full mt-1">

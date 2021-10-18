@@ -1,8 +1,8 @@
 /* eslint-disable no-prototype-builtins */
-import { ref, Ref, watch, computed, reactive } from 'vue'
+import { ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 
-export default function useFormGenerator(formConfig, formRef, emit) {
+export default function useFormGenerator(formConfig, formRef, emit, dV) {
   const processedSchema = ref([])
   const privateTypes = ['object', 'array', 'group']
 
@@ -31,13 +31,31 @@ export default function useFormGenerator(formConfig, formRef, emit) {
         const rCopy = r;
         if (rCopy.hasOwnProperty('enabled')) {
           rCopy.enabled = true;
-          rCopy.typeName = getPrivateTypeName(schema.type);
+          if (getPrivateTypeName(schema.type))
+            rCopy.typeName = getPrivateTypeName(schema.type);
         }
         return rCopy;
       })
     }
 
+
+    if (schema.type === 'checkbox') {
+      schema.options = schema.options.map(o => ({ value: o.id || o.value, label: o.label || o.id }))
+    }
+
     return schema;
+  }
+
+  const getPrivateTypeName = (t) => {
+    const typeMap = {
+      number: 'integer',
+      text: 'string',
+      textArea: 'string',
+      pattern: 'regexp',
+      password: 'string',
+      dateTime: 'date',
+    }
+    return typeMap[t] || null
   }
 
   const expandGroups = (fModal) => {
@@ -50,19 +68,6 @@ export default function useFormGenerator(formConfig, formRef, emit) {
       }
     })
     return fields
-  }
-
-
-  const getPrivateTypeName = (t) => {
-    const typeMap = {
-      number: 'integer',
-      text: 'string',
-      textArea: 'string',
-      pattern: 'regexp',
-      password: 'string',
-      dateTime: 'date',
-    }
-    return typeMap[t] || t
   }
 
   // improve this to go deeper than 1 level
@@ -137,6 +142,8 @@ export default function useFormGenerator(formConfig, formRef, emit) {
         })
       }
     })
+
+    testModal.value = { ...testModal.value, ...dV }
   }
 
 
@@ -211,8 +218,6 @@ export default function useFormGenerator(formConfig, formRef, emit) {
             temp[f.id] = val
           }
         })
-
-
       }
     })
     emit('change', temp)

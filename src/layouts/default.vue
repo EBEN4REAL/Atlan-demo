@@ -79,7 +79,9 @@
                 insights: '/insights',
                 connections: '/connections',
                 workflows: '/workflows',
+                reporting: '/reporting',
                 admin: '/admin',
+                platform: '/platform',
                 404: '/404',
             }
             const curPath = computed(() => currentRoute.value.path)

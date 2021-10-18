@@ -58,7 +58,7 @@
             </div>
             <div v-else class="mt-4 overflow-y-auto member-list-height">
                 <div
-                    v-for="user in memberList.value"
+                    v-for="user in memberList"
                     :key="user.id"
                     class="py-2 border-b border-gray-100"
                 >
@@ -220,7 +220,7 @@ export default defineComponent({
         const showLoadMore = computed(() =>
             getIsLoadMore(
                 // TODO: check if there's a better way access memberList and not use ref in a ref
-                memberList.value.value.length,
+                memberList.value.length,
                 memberListParams.params.offset,
                 memberListParams.params.limit,
                 searchText.value

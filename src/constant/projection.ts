@@ -201,4 +201,5 @@ export const BasicSearchAttributes = [
     'databaseQualifiedName',
     'isPrimary',
     'isPartition',
+    'readme',
 ]

@@ -8,12 +8,13 @@
         </div>
         <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
             <div
-                class="w-2/3 h-full"
+                class="w-2/3"
                 ref="scrollDiv"
                 :class="{
                     'overflow-y-auto': !headerReachedTop,
                     ' border-r': bulkSelectedAssets.length,
                 }"
+                :style="!headerReachedTop ? 'height: 100vh ' : ''"
                 @scroll="handleScroll"
             >
                 <ProfileHeader
@@ -54,7 +55,13 @@
                                         >
                                     </div>
                                 </div>
-                                <GlossaryProfileOverview :entity="category" />
+                                <GlossaryProfileOverview
+                                    :entity="category"
+                                    :header-reached-top="headerReachedTop"
+                                    @firstCardReachedTop="
+                                        handleFirstCardReachedTop
+                                    "
+                                />
                             </div>
                         </a-tab-pane>
                         <a-tab-pane key="2" tab="Terms & Categories">
@@ -130,7 +137,7 @@
             SidePanel,
             ProfileHeader,
             BulkSidebar,
-            NoAccessPage
+            NoAccessPage,
         },
         props: {
             id: {
@@ -188,7 +195,9 @@
             )
 
             const accessStore = useAccessStore()
-            const userHasAccess = computed(() => accessStore.checkPermission('READ_CATEGORY'));
+            const userHasAccess = computed(() =>
+                accessStore.checkPermission('READ_CATEGORY')
+            )
 
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
@@ -272,7 +281,7 @@
                 handleFirstCardReachedTop,
                 updateBulkSelection,
                 bulkSelectedAssets,
-                userHasAccess
+                userHasAccess,
             }
         },
     })

@@ -3,16 +3,16 @@
         <NoAccessPage />
     </div>
     <div v-else>
-
         <div v-if="isLoading && term?.guid !== id">
             <LoadingView />
         </div>
         <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
             <div
                 ref="scrollDiv"
-                class="w-2/3 h-full"
+                class="w-2/3"
                 @scroll="handleScroll"
                 :class="{ 'overflow-y-auto': !headerReachedTop }"
+                :style="!headerReachedTop ? 'height: 100vh ' : ''"
             >
                 <ProfileHeader
                     :title="title"
@@ -33,13 +33,7 @@
                             <div class="px-5 mt-4">
                                 <div v-if="isNewTerm" class="mb-4">
                                     <p
-                                        class="
-                                            p-0
-                                            mb-1
-                                            text-sm
-                                            leading-5
-                                            text-gray-700
-                                        "
+                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
                                     >
                                         Name
                                     </p>
@@ -57,7 +51,13 @@
                                         >
                                     </div>
                                 </div>
-                                <GlossaryProfileOverview :entity="term" />
+                                <GlossaryProfileOverview
+                                    :entity="term"
+                                    :header-reached-top="headerReachedTop"
+                                    @firstCardReachedTop="
+                                        handleFirstCardReachedTop
+                                    "
+                                />
                             </div>
                         </a-tab-pane>
                         <a-tab-pane key="2" tab="Assets">
@@ -68,7 +68,9 @@
                                     :show-preview-panel="currentTab === '2'"
                                     :header-reached-top="headerReachedTop"
                                     @preview="handlePreview"
-                                    @firstCardReachedTop="handleFirstCardReachedTop"
+                                    @firstCardReachedTop="
+                                        handleFirstCardReachedTop
+                                    "
                                 />
                             </div>
                         </a-tab-pane>
@@ -119,7 +121,7 @@
             GtcPreview,
             ProfileHeader,
             LoadingView,
-            NoAccessPage
+            NoAccessPage,
         },
         props: {
             id: {
@@ -157,7 +159,9 @@
             )
 
             const store = useBusinessMetadataStore()
-            const userHasAccess = computed(() => accessStore.checkPermission('READ_TERM'));
+            const userHasAccess = computed(() =>
+                accessStore.checkPermission('READ_TERM')
+            )
 
             // ? Re fetch after bm projection loads or first fetch after  bm projection loads ?
             watch(
@@ -245,7 +249,7 @@
                 headerReachedTop,
                 handleScroll,
                 handleFirstCardReachedTop,
-                userHasAccess
+                userHasAccess,
             }
         },
     })

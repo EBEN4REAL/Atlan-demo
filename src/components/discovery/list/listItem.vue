@@ -2,7 +2,7 @@
 <template>
     <div class="flex flex-col mx-3 my-1">
         <div
-            class="flex items-start flex-1 px-3 py-6 transition-all duration-300 border rounded  hover:shadow hover:border-none"
+            class="flex items-start flex-1 px-3 py-6 transition-all duration-300 border rounded hover:shadow hover:border-none"
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
@@ -19,7 +19,7 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
+                class="box-border flex flex-col flex-1 overflow-hidden gap-y-1 lg:pr-16"
             >
                 <!-- Asset type + Hierarchy bar -->
                 <div class="flex items-center text-gray-500 gap-x-2">
@@ -48,16 +48,11 @@
                                 ? getColumnUrl(item)
                                 : `/assets/${item.guid}/overview`
                         "
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
-                    <StatusBadge
-                        :key="item.guid"
-                        :show-no-status="false"
-                        :status-id="status(item)"
-                        class="flex-none mb-0.5 ml-1"
-                    ></StatusBadge>
+                     <CertificatePopover :data="item" />
                 </div>
 
                 <!-- Info bar -->
@@ -213,6 +208,7 @@ import HierarchyBar from '@common/badge/hierarchy.vue'
 import StatusBadge from '@common/badge/status/index.vue'
 import { computed, defineComponent, PropType, Ref, ref } from 'vue'
 import Pill from '@/UI/pill/pill.vue'
+import CertificatePopover from '~/components/common/certificatePopover.vue'
 import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
 
 import AssetLogo from '@/common/icon/assetIcon.vue'
@@ -230,6 +226,7 @@ export default defineComponent({
         Pill,
         ThreeDotMenu,
         ScrollStrip,
+        CertificatePopover
     },
     props: {
         item: {
@@ -307,6 +304,7 @@ export default defineComponent({
             ownerGroups,
             ownerUsers,
         } = useAssetInfo()
+        
 
         function getTruncatedUsers(arr: string[], wordCount: number = 30) {
             const strSize: number[] = [0]

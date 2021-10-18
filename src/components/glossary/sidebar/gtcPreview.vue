@@ -365,7 +365,7 @@
         emits: ['closePreviewPanel', 'updateAsset'],
         setup(props, context) {
             const router = useRouter()
-            const activeKey = ref('1')
+            const activeKey = ref('details')
             const tabActiveKey = ref('info')
             const updateTreeNode = inject<any>('updateTreeNode')
             // computed

@@ -85,17 +85,17 @@
                 <pane
                     :max-size="95.5"
                     :size="100 - outputPaneSize"
-                    min-size="45"
+                    min-size="30"
                     class="overflow-x-hidden"
                 >
                     <Editor
                 /></pane>
-                <pane min-size="4.5" :size="outputPaneSize" max-size="53">
+                <pane min-size="4.5" :size="outputPaneSize" max-size="70">
                     <ResultsPane
                 /></pane>
             </splitpanes>
         </div>
-        <NoActiveInlineTab v-else />
+        <NoActiveInlineTab @handleAdd="handleAdd" v-else />
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
@@ -172,7 +172,6 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const isActiveInlineTabSaved = computed(
                 () => activeInlineTab.value.isSaved
             )
@@ -219,6 +218,10 @@
                             dataList: [],
                             columnList: [],
                             variables: [],
+                            limitRows: {
+                                checked: false,
+                                rowsCount: -1,
+                            },
                         },
                         resultsPane: {
                             activeTab:
@@ -226,6 +229,8 @@
                                     ?.activeTab ?? 0,
                             result: {
                                 title: `${key} Result`,
+                                isQueryRunning: '',
+                                queryErrorObj: {},
                             },
                             metadata: {},
                             queries: {},
@@ -371,7 +376,6 @@
                 closeTabConfirm,
                 unsavedPopover,
                 isActiveInlineTabSaved,
-                isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
@@ -467,6 +471,9 @@
         }
         :global(.ant-tabs-bar) {
             @apply m-0 bg-gray-light !important;
+        }
+        :global(.ant-tabs-nav .ant-tabs-tab-active) {
+            @apply text-white !important;
         }
     }
     // :global(.ant-modal-wrap) {

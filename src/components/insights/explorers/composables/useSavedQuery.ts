@@ -37,19 +37,23 @@ export function useSavedQuery(
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedNameValues =
             savedQuery.attributes.defaultSchemaQualifiedName?.split('.') ?? [
-                'schemaQualifiedName',
-                'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                undefined,
+                undefined,
             ]
         /* --------NOTE- TEMPERORY FIX-------*/
 
         const newTab: activeInlineTabInterface = {
+            attributes: savedQuery.attributes,
             label: savedQuery.attributes.name ?? '',
             key: savedQuery?.guid,
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery.guid,
-            updateTime: savedQuery.updateTime,
-            updatedBy: savedQuery.updatedBy,
+            updateTime:
+                savedQuery?.updateTime ??
+                savedQuery.attributes.__modificationTimestamp,
+            updatedBy:
+                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
             connectionId: savedQuery.attributes.connectionId,
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
@@ -76,6 +80,10 @@ export function useSavedQuery(
                     variables: decodeBase64Data(
                         savedQuery.attributes.variablesSchemaBase64
                     ) as CustomVaribaleInterface[],
+                    limitRows: {
+                        checked: false,
+                        rowsCount: -1,
+                    },
                 },
                 resultsPane: {
                     activeTab:
@@ -83,6 +91,8 @@ export function useSavedQuery(
                             .activeTab ?? 0,
                     result: {
                         title: savedQuery.attributes.name,
+                        isQueryRunning: '',
+                        queryErrorObj: {},
                     },
                     metadata: {},
                     queries: {},
@@ -290,7 +300,12 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        if (parentFolderQF !== 'root' && parentFolderGuid !== 'root') {
+        if (
+            parentFolderQF &&
+            parentFolderGuid &&
+            parentFolderQF !== 'root' &&
+            parentFolderGuid !== 'root'
+        ) {
             body.value.entity.attributes.parentFolderQualifiedName =
                 parentFolderQF
             body.value.entity.relationshipAttributes = {
@@ -519,6 +534,7 @@ export function useSavedQuery(
 
         const uuidv4 = generateUUID()
         const connectorName = getConnectorName(attributeValue) ?? ''
+        console.log(connectorName, 'connectorName')
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''

@@ -8,6 +8,12 @@
                     v-model:value="currentGlossaryGuid"
                     :options="glossaryContextDropdown"
                 >
+                    <template #suffixIcon>
+                        <atlan-icon
+                            icon="ChevronDown"
+                            class="w-auto h-4 mb-2"
+                        />
+                    </template>
                     <template #option="{ value, label, status }">
                         <hr v-if="value === 'createNewGlossary'" />
                         <span

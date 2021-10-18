@@ -82,7 +82,7 @@
             const termCount = computed(() => {
                 if (
                     props.entity?.typeName === 'AtlasGlossary' ||
-                    props.entity.typeName === 'AtlasGlossaryCategory'
+                    props.entity?.typeName === 'AtlasGlossaryCategory'
                 ) {
                     return props.entity?.attributes?.terms?.length
                 }
@@ -101,7 +101,7 @@
                 AtlasGlossaryTerm: 'UPDATE_TERM',
             }
             const userHasEditPermission = computed(() =>
-                store.checkPermission(permissionMap[props.entity.typeName])
+                store.checkPermission(permissionMap[props.entity?.typeName])
             )
             const updateEntityAndTree = (
                 selectedAsset: Glossary | Category | Term

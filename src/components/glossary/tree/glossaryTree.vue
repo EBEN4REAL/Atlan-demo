@@ -7,6 +7,7 @@
                 <a-select
                     v-model:value="currentGlossaryGuid"
                     :options="glossaryContextDropdown"
+                    dropdownClassName="pr-0.5"
                 >
                     <template #suffixIcon>
                         <atlan-icon

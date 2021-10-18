@@ -191,12 +191,12 @@
         setup(props) {
             const editable = ref(false)
             const editor = ref()
-            const editorContent = ref(entity?.attributes?.readme?.attributes?.description ?? '')
             const showTemplatesModal = ref(false)
             const templateName = ref('')
             const newTemplateName = ref('')
             const templateNameDropdown = ref(false)
             const { entity } = toRefs(props)
+            const editorContent = ref(entity?.attributes?.readme?.attributes?.description ?? '')
             const readmeDescription = computed(
                 () => entity?.attributes?.readme?.attributes?.description
             )

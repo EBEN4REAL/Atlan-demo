@@ -33,13 +33,15 @@ const useCheckAccess = () => {
                 if (Array.isArray(actions)) {
                     actions.forEach((action) => {
                         body.entities.push({
-                            ...asset,
+                            typeName: asset.typeName,
+                            entityGuid: asset.guid,
                             action
                         })
                     })
                 } else {
                     body.entities.push({
-                        ...asset,
+                        typeName: asset.typeName,
+                        entityGuid: asset.guid,
                         action: actions
                     })
                 }
@@ -48,13 +50,15 @@ const useCheckAccess = () => {
             if (Array.isArray(actions)) {
                 actions.forEach((action) => {
                     body.entities.push({
-                        ...assets,
+                        typeName: assets.typeName,
+                        entityGuid: assets.guid,
                         action
                     })
                 })
             } else {
                 body.entities.push({
-                    ...assets,
+                    typeName: assets.typeName,
+                    entityGuid: assets.guid,
                     action: actions
                 })
             }
@@ -96,7 +100,7 @@ const useCheckAccess = () => {
             })
         })
 
-        return { data }
+        return { data, response }
     }
 
 

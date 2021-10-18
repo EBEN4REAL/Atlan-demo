@@ -112,7 +112,7 @@
                         :info-tab-data="selectedAsset"
                         :page="page"
                         :selected-asset="selectedAsset"
-                        :userPermission="userPermission"
+                        :user-permission="userPermission"
                         :is-loaded="isLoaded"
                         @change="handleChange"
                     ></component>

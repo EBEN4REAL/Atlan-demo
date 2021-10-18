@@ -80,7 +80,7 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig) {
         try {
             const response = await useAPIPromise(parsedUrl, method, { params, body })
             // eslint-disable-next-line no-param-reassign
-            n.dataRef.children = [...getData(response)].map(r => ({ value: r.value, title: r.label, children: undefined, isLeaf: true, key: r.value }));
+            n.dataRef.children = [...getData(response)].map(r => ({ pid: n.value, value: r.value, title: r.label, children: undefined, isLeaf: true, key: r.value }));
         } catch (e) {
             console.log(e)
         }

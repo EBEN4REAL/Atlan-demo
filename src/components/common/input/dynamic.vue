@@ -95,6 +95,7 @@
             :tree-data="treeData"
             placeholder="Please select"
             :load-data="onLoadData"
+            @change="handleSelect"
             @click="handleDropdownVisibleChange"
         />
 
@@ -304,7 +305,7 @@
             },
         },
         emits: ['update:modelValue', 'change', 'blur'],
-        setup(props) {
+        setup(props, { emit }) {
             const { valueObject } = toRefs(props)
 
             const {
@@ -351,8 +352,35 @@
                 { immediate: false }
             )
 
+            const handleSelect = (v, n, e) => {
+                const { allCheckedNodes } = e
+                const result = {}
+                allCheckedNodes.forEach((n) => {
+                    // if pid dont exists it is db else it is schema
+                    const db =
+                        n?.props?.pid ||
+                        n.node?.props?.pid ||
+                        n?.props?.value ||
+                        n?.node?.props?.value ||
+                        null
+                    const schema =
+                        n?.node?.props?.pid || n?.props?.pid
+                            ? n?.node?.props?.value || n?.props?.value
+                            : null
+
+                    if (result[db] && schema)
+                        result[db] = [...result[db], schema]
+                    else if (schema) result[db] = [schema]
+                    else result[db] = []
+                })
+
+                emit('update:modelValue', result)
+                emit('change', result)
+            }
+
             return {
                 treeData,
+                handleSelect,
                 value,
                 onLoadData,
                 loadData,

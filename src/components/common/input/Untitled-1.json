@@ -42,6 +42,7 @@
     },
     {
         "type": "asyncTreeSelect",
+        "stringifyValue": true,
         "id": "dbschma",
         "label": "Select DB and Schema",
         "requestConfig": {

@@ -66,12 +66,13 @@ export default function useAsyncSelector(
         console.log('keys', keys)
         const { body } = reqConfig
 
-        const addFormValues = { ...body }
+        const b = { ...body }
+        if (!keys) return b
         keys.forEach(k => {
-            addFormValues[k] = valueObject.value[k]
+            b[k] = valueObject.value[k]
         })
-        console.log('getParsedBody', addFormValues)
-        return addFormValues
+        console.log('getParsedBody', b)
+        return b
     }
 
     const newConfig = ref(null);
@@ -151,8 +152,8 @@ export default function useAsyncSelector(
     const letAsyncSelectDisabled = computed(() => {
         if (!reqConfig) return false;
         const { addFormValues } = reqConfig;
-        if (addFormValues.length && !valueObject.value) return true
-        const valueMissing = addFormValues.some((e: string) => (valueObject.value[e] == null) || (valueObject.value[e] === ""))
+        if (addFormValues?.length && !valueObject.value) return true
+        const valueMissing = addFormValues?.some((e: string) => (valueObject.value[e] == null) || (valueObject.value[e] === ""))
         return valueMissing
     })
 
@@ -165,10 +166,11 @@ export default function useAsyncSelector(
         if (!reqConfig || !valueObject.value) return []
         const { addFormValues } = reqConfig;
         const temp = []
-        addFormValues.forEach(element => {
-            if (valueObject.value[element])
-                temp.push(valueObject.value[element]);
-        });
+        if (addFormValues)
+            addFormValues.forEach(element => {
+                if (valueObject.value[element])
+                    temp.push(valueObject.value[element]);
+            });
         return temp
     })
     // const debouncer = createDebounce()

@@ -42,7 +42,6 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     if (schema.type === 'checkbox') {
       schema.options = schema.options.map(o => ({ value: o.id || o.value, label: o.label || o.id }))
     }
-
     return schema;
   }
 

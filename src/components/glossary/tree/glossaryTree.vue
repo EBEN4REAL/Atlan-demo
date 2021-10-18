@@ -127,11 +127,13 @@
 
             <div v-if="isHome" class="h-screen px-2 py-4">
                 <div class="flex flex-col px-2 pb-2">
-                    <a-input-search
+                    <SearchAndFilter
                         v-model:value="searchQuery"
                         placeholder="Search accross Glossaries"
+                        size="minimal"
                         @change="onSearch"
-                    ></a-input-search>
+                        class="w-full"
+                    />
                 </div>
                 <div
                     v-if="searchResults?.length && searchQuery?.length"
@@ -285,8 +287,8 @@
             </div>
 
             <div v-else class="flex flex-col h-screen">
-                <div class="flex p-4 pb-0 pr-3 searchArea">
-                    <a-input-search
+                <div class="flex px-4 pt-2 pb-0 pr-3 searchArea">
+                    <SearchAndFilter
                         v-model:value="searchQuery"
                         :placeholder="
                             currentGuid &&
@@ -295,8 +297,10 @@
                                 ? `Search in ${parentGlossary?.displayText}`
                                 : 'Search'
                         "
+                        size="minimal"
                         @change="onSearch"
-                    ></a-input-search>
+                        class="w-full"
+                    />
                     <!-- Hide for GA -->
                     <!-- <a-button class="flex items-center w-8 h-8 p-2 rounded">
                     <AtlanIcon icon="Filter" />
@@ -325,14 +329,17 @@
                                 "
                             >
                                 <span
-                                    class="flex my-auto text-sm font-bold leading-3 "
+                                    class="flex py-2 my-auto text-sm font-bold leading-3 truncate "
                                     :class="{
                                         'text-primary':
                                             currentGuid ===
                                             parentGlossary?.guid,
                                     }"
                                 >
-                                    {{ parentGlossary?.displayText ?? parentGlossary?.attributes?.name }}
+                                    {{
+                                        parentGlossary?.displayText ??
+                                        parentGlossary?.attributes?.name
+                                    }}
                                 </span>
                             </div>
                         </div>
@@ -629,6 +636,7 @@
     import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     import { Glossary } from '~/types/glossary/glossary.interface'
 
@@ -652,6 +660,7 @@
             AtlanBtn,
             Tooltip,
             AddGtcModal,
+            SearchAndFilter,
             VNodes: (_, { attrs }) => {
                 return attrs.vnodes
             },

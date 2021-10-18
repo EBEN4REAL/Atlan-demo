@@ -20,9 +20,9 @@
             v-if="dataType === 'date'"
             :default-value="modelValue"
             :placeholder="placeholder"
-            @change="handleChange"
             :disabled-date="disabledDate"
             format="MM-DD-YYYY"
+            @change="handleChange"
         ></component>
         <a-time-picker
             v-if="dataType === 'time'"
@@ -33,14 +33,14 @@
         <a-checkbox-group
             v-if="dataType === 'checkbox'"
             :checked="modelValue"
-            @change="handleChange"
             :options="options"
+            @change="handleChange"
         ></a-checkbox-group>
         <a-radio-group
             v-if="dataType === 'radioButton'"
             :value="modelValue"
-            @change="handleChange"
             :options="options"
+            @change="handleChange"
         ></a-radio-group>
         <!-- End of Coninuted types -->
         <a-select
@@ -83,6 +83,23 @@
                 <a-button @click="handleClose">Close</a-button>
             </template>
         </a-modal>
+
+        <!-- async tree select start -->
+        <a-tree-select
+            v-if="dataType === 'asyncTreeSelect'"
+            v-model:value="value"
+            :multiple="true"
+            :tree-checkable="true"
+            style="width: 100%"
+            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            :tree-data="treeData"
+            placeholder="Please select"
+            :load-data="onLoadData"
+            @change="handleSelect"
+            @click="handleDropdownVisibleChange"
+        />
+
+        <!-- async tree select end -->
 
         <a-input-number
             v-if="dataType === 'number'"
@@ -146,9 +163,11 @@
         defineComponent,
         PropType,
         ref,
+        watch,
     } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
+    import useAsyncTreeSelect from './useAsyncTreeSelect'
 
     export default defineComponent({
         components: {
@@ -245,17 +264,22 @@
             },
             getFormConfig: {
                 type: Object,
-                require: false,
+                required: false,
                 default: () => null,
             },
             requestConfig: {
                 type: Object,
-                require: false,
+                required: false,
                 default: () => null,
             },
             responseConfig: {
                 type: Object,
-                require: false,
+                required: false,
+                default: () => null,
+            },
+            otherApiConfig: {
+                type: Object,
+                required: false,
                 default: () => null,
             },
             dateTimeType: {
@@ -281,7 +305,7 @@
             },
         },
         emits: ['update:modelValue', 'change', 'blur'],
-        setup(props) {
+        setup(props, { emit }) {
             const { valueObject } = toRefs(props)
 
             const {
@@ -289,6 +313,7 @@
                 asyncData,
                 newConfig,
                 loadingData: loading,
+                loadDataError: error,
                 letAsyncSelectDisabled,
                 shouldRefetch,
                 handleCreateNew,
@@ -300,6 +325,12 @@
                 props?.getFormConfig
             )
 
+            const { onLoadData, treeData, init } = useAsyncTreeSelect(
+                asyncData,
+                props.otherApiConfig.req,
+                props.otherApiConfig.res
+            )
+
             const handleDropdownVisibleChange = (open) => {
                 if (open && shouldRefetch.value) loadData()
             }
@@ -308,7 +339,50 @@
                 createNewVisibility.value = false
                 loadData()
             }
+
+            const value = ref(null)
+
+            watch(
+                [loading, error],
+                () => {
+                    if (!loading.value && !error.value) {
+                        init()
+                    }
+                },
+                { immediate: false }
+            )
+
+            const handleSelect = (v, n, e) => {
+                const { allCheckedNodes } = e
+                const result = {}
+                allCheckedNodes.forEach((n) => {
+                    // if pid dont exists it is db else it is schema
+                    const db =
+                        n?.props?.pid ||
+                        n.node?.props?.pid ||
+                        n?.props?.value ||
+                        n?.node?.props?.value ||
+                        null
+                    const schema =
+                        n?.node?.props?.pid || n?.props?.pid
+                            ? n?.node?.props?.value || n?.props?.value
+                            : null
+
+                    if (result[db] && schema)
+                        result[db] = [...result[db], schema]
+                    else if (schema) result[db] = [schema]
+                    else result[db] = []
+                })
+
+                emit('update:modelValue', result)
+                emit('change', result)
+            }
+
             return {
+                treeData,
+                handleSelect,
+                value,
+                onLoadData,
                 loadData,
                 handleClose,
                 createNewVisibility,

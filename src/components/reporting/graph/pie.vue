@@ -1,13 +1,14 @@
 <template>
-    <BarChart :chartData="data" :options="options" />
+    <p>Pie</p>
+    <PieChart :chartData="data" :options="options" />
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRef, toRefs } from 'vue'
-    import { BarChart } from 'vue-chart-3'
+    import { PieChart } from 'vue-chart-3'
 
     export default defineComponent({
-        components: { BarChart },
+        components: { PieChart },
         props: {
             data: {
                 type: Object,
@@ -20,9 +21,7 @@
         },
         setup(props) {
             const { data, options } = toRefs(props)
-
-            console.log('bar', data)
-
+            console.log('pie')
             return { data, options }
         },
     })

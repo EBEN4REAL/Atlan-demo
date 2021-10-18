@@ -42,7 +42,6 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     if (schema.type === 'checkbox') {
       schema.options = schema.options.map(o => ({ value: o.id || o.value, label: o.label || o.id }))
     }
-
     return schema;
   }
 
@@ -185,6 +184,8 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
 
         let val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
         if (f.includeAll) val = f.includeAllVal
+        if (f.stringifyValue) val = JSON.stringify(val)
+
         if (typeof val === 'undefined' || val === null) return;
         // ? no groups
         if (f.parent) {
@@ -205,6 +206,8 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
           if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
           let val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id, f.includeAll)
           if (f.includeAll) val = f.includeAllVal
+          if (f.stringifyValue) val = JSON.stringify(val)
+
           if (typeof val === 'undefined' || val === null) return;
           // ? no groups
           if (f.parent) {

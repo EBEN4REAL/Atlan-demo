@@ -1,13 +1,13 @@
 <template>
-    <BarChart :chartData="data" :options="options" />
+    <LineChart :chartData="data" :options="options" />
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRef, toRefs } from 'vue'
-    import { BarChart } from 'vue-chart-3'
+    import { LineChart } from 'vue-chart-3'
 
     export default defineComponent({
-        components: { BarChart },
+        components: { LineChart },
         props: {
             data: {
                 type: Object,

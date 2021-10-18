@@ -1,13 +1,16 @@
 <template>
-    <BarChart :chartData="data" :options="options" />
+    <p>scatter</p>
+
+    {{ data }}
+    <ScatterChart :chartData="data" :options="options" />
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRef, toRefs } from 'vue'
-    import { BarChart } from 'vue-chart-3'
+    import { ScatterChart } from 'vue-chart-3'
 
     export default defineComponent({
-        components: { BarChart },
+        components: { ScatterChart },
         props: {
             data: {
                 type: Object,
@@ -20,9 +23,6 @@
         },
         setup(props) {
             const { data, options } = toRefs(props)
-
-            console.log('bar', data)
-
             return { data, options }
         },
     })

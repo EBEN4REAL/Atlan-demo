@@ -4,9 +4,9 @@ import { IConfig } from 'swrv'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 // import { Search } from '~/api2/search'
-import { Discovery } from '~/services/atlas/discovery'
+import { Logs } from '~/services/heracles/logs'
 
-export default function useIndexSearch(
+export default function useLogSearch(
     queryDSL: any,
     cacheSuffx?: string | '',
     isLocalStorage?: boolean,
@@ -26,20 +26,17 @@ export default function useIndexSearch(
     //     asyncOptions.cancelToken = cancelTokenSource.value.token
     // }
 
-    console.log('cache', cacheSuffx)
-
     const cachekey = ref(`index_search${cacheSuffx}`)
 
-    const { data, mutate, error, isLoading, isValidating } =
-        Discovery.IndexSearch(
-            {
-                body: {
-                    dsl: queryDSL,
-                },
-                options: asyncOptions,
+    const { data, mutate, error, isLoading, isValidating } = Logs.QueryLogs(
+        {
+            body: {
+                ...queryDSL,
             },
-            cachekey
-        )
+            options: asyncOptions,
+        },
+        cachekey
+    )
     const entities = ref([])
 
     const aggregations = ref({})

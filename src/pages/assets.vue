@@ -115,7 +115,7 @@
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (page.value === 'discovery')
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
-                storeDiscovery.selectedAsset(updatedAsset)
+                storeDiscovery.setSelectedAsset(updatedAsset)
                 updateProfile.value = true
             }
             const store = useBulkUpdateStore()

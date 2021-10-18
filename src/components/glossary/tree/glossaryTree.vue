@@ -354,7 +354,10 @@
                             <div
                                 class="flex flex-col justify-center p-2 bg-opacity-0 "
                             >
-                                <AtlanIcon icon="Add" />
+                                <AddCta
+                                    class="w-7 h-7 ml-0.5"
+                                    :entity="parentGlossary"
+                                />                   
                             </div>
                             <div
                                 class="flex flex-col justify-center mt-1 bg-opacity-0 "
@@ -628,6 +631,7 @@
     // components
     import LoadingView from '@common/loaders/section.vue'
     import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+    import AddCta from '~/components/glossary/tree/addCta.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
 
@@ -647,6 +651,7 @@
 
     export default defineComponent({
         components: {
+            AddCta,
             LoadingView,
             ThreeDotMenu,
             AtlanIcon,

@@ -440,9 +440,6 @@
         setup(props, context) {
             // data
             const { entity } = toRefs(props)
-            watch(entity, (ne) => {
-                console.log('bruh', ne)
-            })
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()

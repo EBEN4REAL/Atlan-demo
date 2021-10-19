@@ -6,6 +6,7 @@ import { Glossary } from '~/types/glossary/glossary.interface'
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { BasicSearchResponse } from '~/types/insights/table.interface'
 
 const useGlossaryList = (isHome?: Ref<boolean>) => {
     const body = ref({})
@@ -36,7 +37,7 @@ const useGlossaryList = (isHome?: Ref<boolean>) => {
         error,
         isValidating: isLoading,
         mutate,
-    } = useAPI<any>(GLOSSARY_LIST, 'POST', {
+    } = useAPI<BasicSearchResponse<Glossary>>(GLOSSARY_LIST, 'POST', {
         cache: true,
         dependantFetchingKey: isHome,
         body,
@@ -46,15 +47,22 @@ const useGlossaryList = (isHome?: Ref<boolean>) => {
     })
 
     const glossaryList = computed(() =>
-        data.value?.entities ? (data.value?.entities as Glossary[]) : undefined
+        data.value?.entities ? (data.value?.entities ) : undefined
     )
 
     const refetch = () => {
         body.value = getBody()
         mutate()
     }
+    const updateGlossaryStatusInList = (glossaryGuid: string, certificateStatus: "DRAFT" | "VERIFIED" | "ISSUE" | undefined) => {
+        const index = data.value?.entities?.findIndex((glossary) => glossary.guid === glossaryGuid);
+        if((index || index === 0) && data.value && data.value.entities && data.value.entities[index]) {
+            data.value.entities[index].attributes.certificateStatus = certificateStatus;
+        } 
 
-    return { glossaryList, error, isLoading, refetch }
+    }
+
+    return { glossaryList, error, isLoading, refetch, updateGlossaryStatusInList }
 }
 
 export default useGlossaryList

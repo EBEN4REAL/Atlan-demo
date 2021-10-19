@@ -55,7 +55,7 @@ export function useConnector() {
         let connectionQualifiedName: string | undefined
         if (attributeValue) {
             attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 1) {
+            if (attributeValues.length > 2) {
                 connectionQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}`
             }
         }
@@ -68,7 +68,7 @@ export function useConnector() {
         let databaseQualifiedName: string | undefined
         if (attributeValue) {
             attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 2) {
+            if (attributeValues.length > 3) {
                 databaseQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}/${attributeValues[3]}`
             }
         }
@@ -79,7 +79,7 @@ export function useConnector() {
         let databaseQualifiedName: string | undefined
         if (attributeValue) {
             attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 2) {
+            if (attributeValues.length > 3) {
                 databaseQualifiedName = `${attributeValues[3]}`
             }
         }
@@ -88,10 +88,11 @@ export function useConnector() {
 
     const getSchemaQualifiedName = (attributeValue) => {
         let attributeValues: string[]
-        let schemaQualifiedName: string | undefined
+        let schemaQualifiedName: string | undefined = ''
         if (attributeValue) {
             attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 3) {
+
+            if (attributeValues.length > 4) {
                 schemaQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}/${attributeValues[3]}/${attributeValues[4]}`
             }
         }
@@ -103,7 +104,7 @@ export function useConnector() {
         let schemaQualifiedName: string | undefined
         if (attributeValue) {
             attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 3) {
+            if (attributeValues.length > 4) {
                 schemaQualifiedName = `${attributeValues[4]}`
             }
         }
@@ -116,12 +117,31 @@ export function useConnector() {
         let name: string | undefined
         if (attributeValue) {
             attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 3) {
+            if (attributeValues.length > 4) {
                 name = `${attributeValues[3]}.${attributeValues[4]}`
             }
         }
 
         return name
+    }
+
+    const getConnectorsDataFromQualifiedNames = (
+        connectionQualifiedName: string,
+        defaultSchemaQualifiedName: string
+    ) => {
+        const connectors: connectorsWidgetInterface = {
+            attributeName: undefined,
+            attributeValue: undefined,
+        }
+
+        if (defaultSchemaQualifiedName) {
+            connectors.attributeName = 'defaultSchemaQualifiedName'
+            connectors.attributeValue = defaultSchemaQualifiedName
+        } else if (connectionQualifiedName) {
+            connectors.attributeName = 'connectionQualifiedName'
+            connectors.attributeValue = connectionQualifiedName
+        }
+        return connectors
     }
 
     return {
@@ -133,5 +153,6 @@ export function useConnector() {
         getSchemaQualifiedName,
         getDatabaseQualifiedName,
         setConnectorsDataInInlineTab,
+        getConnectorsDataFromQualifiedNames,
     }
 }

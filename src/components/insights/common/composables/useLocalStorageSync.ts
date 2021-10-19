@@ -15,6 +15,9 @@ export function useLocalStorageSync() {
                 const t = JSON.parse(JSON.stringify(tab))
                 t.playground.editor.dataList = []
                 t.playground.editor.columnList = []
+                t.playground.resultsPane.result.isQueryRunning = ''
+                t.playground.resultsPane.result.executionTime = -1
+                t.playground.resultsPane.result.totalRowsCount = -1
                 return t
             })
             localStorage.setItem(

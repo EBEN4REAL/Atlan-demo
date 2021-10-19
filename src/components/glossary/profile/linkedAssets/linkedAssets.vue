@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full pb-6">
+    <div class="w-full pb-6" :class="$style.tabClasses">
         <GlossaryAssetDiscovery
             :show-filters="false"
             :initial-filters="initialFilters"
@@ -28,6 +28,7 @@
                     :selected-asset="selectedAsset"
                     :show-cross-icon="true"
                     @closeSidebar="handleClosePreviewPanel"
+                    :class="$style.tabClasses"
                 ></AssetPreview>
             </a-drawer>
         </teleport>
@@ -116,3 +117,11 @@
         },
     })
 </script>
+
+<style lang="less" module>
+    .tabClasses {
+        :global(.ant-tabs-bar) {
+            @apply px-0 mb-0 !important;
+        }
+    }
+</style>

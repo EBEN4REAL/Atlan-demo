@@ -21,7 +21,7 @@
                 v-if="!selectedUser.group_count"
                 class="flex flex-col items-center justify-center"
             >
-                <div class="text-center">
+                <div class="text-center mt-6">
                     <p class="text-lg">This user is not part of any group.</p>
                 </div>
             </div>

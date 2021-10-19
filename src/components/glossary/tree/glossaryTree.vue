@@ -42,9 +42,8 @@
                             <span>{{ label }}</span>
                         </span>
                         <span v-else @click.stop="">
- 
                             <AddGtcModal
-                                entityType="glossary"
+                                entity-type="glossary"
                                 @onAddGlossary="refetchGlossaryList"
                             >
                                 <template #header>
@@ -53,27 +52,40 @@
                                             icon="Glossary"
                                             class="h-4 m-0 mr-2"
                                         />
-                                        <span class="text-xs font-bold text-gray-700">
+                                        <span
+                                            class="
+                                                text-xs
+                                                font-bold
+                                                text-gray-700
+                                            "
+                                        >
                                             New glossary
                                         </span>
                                     </div>
                                 </template>
                                 <template #trigger>
                                     <div
-                                        class="py-0.5
-                                        mt-2
-                                        flex flex-row
-                                        items-center
-                                        content-center
-                                        my-auto text-sm leading-5 text-gray-700 cursor-pointer text-bold hover:bg-gray-light"
+                                        class="
+                                            py-0.5
+                                            mt-2
+                                            flex flex-row
+                                            items-center
+                                            content-center
+                                            my-auto
+                                            text-sm
+                                            leading-5
+                                            text-gray-700
+                                            cursor-pointer
+                                            text-bold
+                                            hover:bg-gray-light
+                                        "
                                         @mousedown="(e) => e.preventDefault()"
                                     >
-                                        <AtlanIcon icon="Add" class="mr-2" /> 
+                                        <AtlanIcon icon="Add" class="mr-2" />
                                         <span>{{ label }}</span>
                                     </div>
                                 </template>
                             </AddGtcModal>
-                            
                         </span>
                         <hr v-if="value === 'all'" />
                     </template>
@@ -309,7 +321,8 @@
                                 cursor-pointer
                                 h-9
                                 group
-                                hover:bg-primary-light hover:text-primary
+                                hover:bg-primary-light
+                                hover:text-primary
                             "
                         >
                             <div class="flex flex-row justify-between">
@@ -444,8 +457,8 @@
                                 <ThreeDotMenu
                                     class="w-7 h-7 ml-0.5"
                                     :entity="parentGlossary"
-                                    :showLinks="false"
-                                    :treeMode="true"
+                                    :show-links="false"
+                                    :tree-mode="true"
                                 />
                             </div>
                         </div>
@@ -462,21 +475,21 @@
                         :class="$style.treeStyles"
                     >
                         <a-tree
-                            :expandedKeys="expandedKeys"
-                            :selectedKeys="selectedKeys"
-                            :loadedKeys="loadedKeys"
+                            :expanded-keys="expandedKeys"
+                            :selected-keys="selectedKeys"
+                            :loaded-keys="loadedKeys"
                             :tree-data="treeData"
                             :load-data="onLoadData"
                             :draggable="true"
                             :block-node="true"
                             :auto-expand-parent="false"
+                            class="h-full"
                             @select="selectNode"
                             @expand="expandNode"
                             @drop="dragAndDrop"
-                            class="h-full"
                         >
                             <template #switcherIcon>
-                                <AtlanIcon icon="Caret" />
+                                <AtlanIcon icon="CaretRight" />
                                 !
                             </template>
 
@@ -558,7 +571,7 @@
                                             </div>
 
                                             <ThreeDotMenu
-                                                :treeMode="true"
+                                                :tree-mode="true"
                                                 :visible="false"
                                                 :entity="{
                                                     guid: entity.guid,
@@ -747,325 +760,321 @@
     </div>
 </template>
 <script lang="ts">
-    // library
-    import {
-        defineComponent,
-        computed,
-        PropType,
-        ref,
-        toRef,
-        watch,
-        inject,
-    } from 'vue'
-    import { useRouter } from 'vue-router'
-    import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
-    import { useDebounceFn } from '@vueuse/core'
+// library
+import {
+    defineComponent,
+    computed,
+    PropType,
+    ref,
+    toRef,
+    watch,
+    inject,
+} from 'vue'
+import { useRouter } from 'vue-router'
+import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
+import { useDebounceFn } from '@vueuse/core'
 
-    // components
-    import LoadingView from '@common/loaders/section.vue'
-    import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
-    import Tooltip from '@/common/ellipsis/index.vue'
-    import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
+// components
+import LoadingView from '@common/loaders/section.vue'
+import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+import Tooltip from '@/common/ellipsis/index.vue'
+import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
 
-    // import { Glossary } from '~/api/atlas/glossary'
-    import { Glossary } from '~/types/glossary/glossary.interface'
+// import { Glossary } from '~/api/atlas/glossary'
+import { Glossary } from '~/types/glossary/glossary.interface'
 
-    // composables
-    import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
-    import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
-    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+// composables
+import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
+import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
-    // constant
-    import { List as StatusList } from '~/constant/status'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import AtlanBtn from '~/components/UI/button.vue'
+// constant
+import { List as StatusList } from '~/constant/status'
+import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+import AtlanBtn from '~/components/UI/button.vue'
 
-    // import { Glossary } from '~/api/atlas/glossary'
+// import { Glossary } from '~/api/atlas/glossary'
 
-    export default defineComponent({
-        components: {
-            LoadingView,
-            ThreeDotMenu,
-            AtlanIcon,
-            AtlanBtn,
-            Tooltip,
-            AddGtcModal,
-            VNodes: (_, { attrs }) => {
-                return attrs.vnodes
-            },
+export default defineComponent({
+    components: {
+        LoadingView,
+        ThreeDotMenu,
+        AtlanIcon,
+        AtlanBtn,
+        Tooltip,
+        AddGtcModal,
+        VNodes: (_, { attrs }) => attrs.vnodes,
+    },
+    props: {
+        glossaryList: {
+            type: Object as PropType<Glossary[]>,
+            required: true,
+            default: () => [],
         },
-        props: {
-            glossaryList: {
-                type: Object as PropType<Glossary[]>,
-                required: true,
-                default: () => [],
-            },
-            isHome: {
-                type: Boolean,
-                required: true,
-                default: true,
-            },
-            treeData: {
-                type: Object as PropType<TreeDataItem[]>,
-                required: true,
-                default: () => {},
-            },
-            onLoadData: {
-                type: Function,
-                required: false,
-                default: () => {},
-            },
-            dragAndDrop: {
-                type: Function,
-                required: false,
-                default: () => {},
-            },
-            expandNode: {
-                type: Function,
-                required: false,
-                default: () => {},
-            },
-            collapseAll: {
-                type: Function,
-                required: false,
-                default: () => {},
-            },
-            selectNode: {
-                type: Function,
-                required: false,
-                default: () => {},
-            },
-            parentGlossary: {
-                type: Object as PropType<Glossary>,
-                required: false,
-                default: () => {},
-            },
-            isLoading: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            currentGuid: {
-                type: String,
-                required: true,
-                default: '',
-            },
-            loadedKeys: {
-                type: Array as PropType<string[]>,
-                required: true,
-                default: () => [],
-            },
-            selectedKeys: {
-                type: Array as PropType<string[]>,
-                required: true,
-                default: () => [],
-            },
-            expandedKeys: {
-                type: Array as PropType<string[]>,
-                required: true,
-                default: () => [],
-            },
+        isHome: {
+            type: Boolean,
+            required: true,
+            default: true,
         },
-        setup(props, { emit }) {
-            // data
-            const searchQuery = ref<string>()
-            const home = toRef(props, 'isHome')
-            const parentGlossary = toRef(props, 'parentGlossary')
-            const currentGlossaryGuid = ref<string>(
-                parentGlossary.value?.guid ?? 'all'
-            )
-            const glossaryContextDropdown = computed(() => {
-                const list = props.glossaryList.map((glossary) => ({
-                    value: glossary.guid,
-                    label: glossary.attributes.name,
-                    status: glossary.attributes.certificateStatus,
-                }))
-                list.unshift({ label: 'All Glossaries', value: 'all' })
-                list.push({
-                    label: 'Create New Glossary',
-                    value: 'createNewGlossary',
+        treeData: {
+            type: Object as PropType<TreeDataItem[]>,
+            required: true,
+            default: () => {},
+        },
+        onLoadData: {
+            type: Function,
+            required: false,
+            default: () => {},
+        },
+        dragAndDrop: {
+            type: Function,
+            required: false,
+            default: () => {},
+        },
+        expandNode: {
+            type: Function,
+            required: false,
+            default: () => {},
+        },
+        collapseAll: {
+            type: Function,
+            required: false,
+            default: () => {},
+        },
+        selectNode: {
+            type: Function,
+            required: false,
+            default: () => {},
+        },
+        parentGlossary: {
+            type: Object as PropType<Glossary>,
+            required: false,
+            default: () => {},
+        },
+        isLoading: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        currentGuid: {
+            type: String,
+            required: true,
+            default: '',
+        },
+        loadedKeys: {
+            type: Array as PropType<string[]>,
+            required: true,
+            default: () => [],
+        },
+        selectedKeys: {
+            type: Array as PropType<string[]>,
+            required: true,
+            default: () => [],
+        },
+        expandedKeys: {
+            type: Array as PropType<string[]>,
+            required: true,
+            default: () => [],
+        },
+    },
+    setup(props, { emit }) {
+        // data
+        const searchQuery = ref<string>()
+        const home = toRef(props, 'isHome')
+        const parentGlossary = toRef(props, 'parentGlossary')
+        const currentGlossaryGuid = ref<string>(
+            parentGlossary.value?.guid ?? 'all'
+        )
+        const glossaryContextDropdown = computed(() => {
+            const list = props.glossaryList.map((glossary) => ({
+                value: glossary.guid,
+                label: glossary.attributes.name,
+                status: glossary.attributes.certificateStatus,
+            }))
+            list.unshift({ label: 'All Glossaries', value: 'all' })
+            list.push({
+                label: 'Create New Glossary',
+                value: 'createNewGlossary',
+            })
+            return list
+        })
+
+        const refetchGlossaryList = inject('refetchGlossaryList')
+
+        const { createTerm, createCategory, createGlossary } =
+            useCreateGlossary()
+
+        const router = useRouter()
+
+        const parentGlossaryQualifiedName = computed(() =>
+            home.value
+                ? ''
+                : props?.parentGlossary?.attributes?.qualifiedName ?? ''
+        )
+
+        const {
+            entities: searchResults,
+            terms: searchTerms,
+            categories: searchCategories,
+            glossaries: searchGlossaries,
+            isLoading: searchLoading,
+            fetchAssetsPaginated: searchAssetsPaginated,
+        } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
+
+        // methods
+        const redirectToProfile = (type: string, guid: string) => {
+            if (type === 'glossary') router.push(`/glossary/${guid}`)
+            else router.push(`/glossary/${type}/${guid}`)
+        }
+        const backToHome = () => router.push('/glossary')
+
+        const createNewTerm = () => {
+            createTerm(props.parentGlossary?.guid ?? '')
+        }
+        const createNewCategory = () => {
+            createCategory(props.parentGlossary?.guid ?? '')
+        }
+
+        const onSearch = useDebounceFn(() => {
+            if (searchQuery.value?.length) {
+                searchAssetsPaginated({
+                    query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
+                    offset: 0,
                 })
-                return list
-            })
+            }
+        }, 300)
 
-            const refetchGlossaryList = inject('refetchGlossaryList')
-
-            const { createTerm, createCategory, createGlossary } =
-                useCreateGlossary()
-
-            const router = useRouter()
-
-            const parentGlossaryQualifiedName = computed(() =>
-                home.value
-                    ? ''
-                    : props?.parentGlossary?.attributes?.qualifiedName ?? ''
+        // to get correct icon from type and status
+        const getEntityStatusIcon = (
+            type: String,
+            certificateStatus: String
+        ): String => {
+            if (
+                certificateStatus === undefined ||
+                certificateStatus === '' ||
+                certificateStatus === 'is_null'
             )
+                return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
 
-            const {
-                entities: searchResults,
-                terms: searchTerms,
-                categories: searchCategories,
-                glossaries: searchGlossaries,
-                isLoading: searchLoading,
-                fetchAssetsPaginated: searchAssetsPaginated,
-            } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
+            return `${type?.charAt(0).toUpperCase()}${type?.slice(
+                1
+            )}${certificateStatus?.charAt(0).toUpperCase()}${certificateStatus
+                ?.slice(1)
+                .toLowerCase()}`
+        }
 
-            // methods
-            const redirectToProfile = (type: string, guid: string) => {
-                if (type === 'glossary') router.push(`/glossary/${guid}`)
-                else router.push(`/glossary/${type}/${guid}`)
+        watch(home, () => {
+            searchQuery.value = ''
+        })
+        watch(currentGlossaryGuid, (newGuid) => {
+            if (newGuid && newGuid !== parentGlossary.value?.guid) {
+                if (newGuid === 'all') router.push(`/glossary`)
+                else redirectToProfile('glossary', newGuid)
             }
-            const backToHome = () => router.push('/glossary')
+        })
 
-            const createNewTerm = () => {
-                createTerm(props.parentGlossary?.guid ?? '')
-            }
-            const createNewCategory = () => {
-                createCategory(props.parentGlossary?.guid ?? '')
-            }
+        watch(parentGlossary, (newParentGlossary) => {
+            currentGlossaryGuid.value = newParentGlossary.guid
+        })
 
-            const onSearch = useDebounceFn(() => {
-                if (searchQuery.value?.length) {
-                    searchAssetsPaginated({
-                        query: `${
-                            searchQuery.value ? `${searchQuery.value}` : ''
-                        }`,
-                        offset: 0,
-                    })
-                }
-            }, 300)
-
-            // to get correct icon from type and status
-            const getEntityStatusIcon = (
-                type: String,
-                certificateStatus: String
-            ): String => {
-                if (
-                    certificateStatus === undefined ||
-                    certificateStatus === '' ||
-                    certificateStatus === 'is_null'
-                )
-                    return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
-
-                return `${type?.charAt(0).toUpperCase()}${type?.slice(
-                    1
-                )}${certificateStatus
-                    ?.charAt(0)
-                    .toUpperCase()}${certificateStatus?.slice(1).toLowerCase()}`
-            }
-
-            watch(home, () => {
-                searchQuery.value = ''
-            })
-            watch(currentGlossaryGuid, (newGuid) => {
-                if (newGuid && newGuid !== parentGlossary.value?.guid) {
-                    if (newGuid === 'all') router.push(`/glossary`)
-                    else redirectToProfile('glossary', newGuid)
-                }
-            })
-
-            watch(parentGlossary, (newParentGlossary) => {
-                currentGlossaryGuid.value = newParentGlossary.guid
-            })
-
-            return {
-                redirectToProfile,
-                backToHome,
-                createNewCategory,
-                createNewTerm,
-                createTerm,
-                createGlossary,
-                createCategory,
-                StatusList,
-                getEntityStatusIcon,
-                glossaryContextDropdown,
-                // selectedKeys,
-                // expandedKeys,
-                // expandNode,
-                // selectNode,
-                searchQuery,
-                searchResults,
-                searchTerms,
-                searchCategories,
-                searchGlossaries,
-                searchLoading,
-                searchAssetsPaginated,
-                onSearch,
-                currentGlossaryGuid,
-                refetchGlossaryList,
-            }
-        },
-    })
+        return {
+            redirectToProfile,
+            backToHome,
+            createNewCategory,
+            createNewTerm,
+            createTerm,
+            createGlossary,
+            createCategory,
+            StatusList,
+            getEntityStatusIcon,
+            glossaryContextDropdown,
+            // selectedKeys,
+            // expandedKeys,
+            // expandNode,
+            // selectNode,
+            searchQuery,
+            searchResults,
+            searchTerms,
+            searchCategories,
+            searchGlossaries,
+            searchLoading,
+            searchAssetsPaginated,
+            onSearch,
+            currentGlossaryGuid,
+            refetchGlossaryList,
+        }
+    },
+})
 </script>
 <style lang="less" module>
-    .createDropdownStyles {
-        :global(.ant-dropdown-menu-item) {
-            @apply m-0 p-1 text-sm leading-5 rounded;
+.createDropdownStyles {
+    :global(.ant-dropdown-menu-item) {
+        @apply m-0 p-1 text-sm leading-5 rounded;
+    }
+}
+
+.glossaryTree {
+    background-color: #fafafa;
+
+    :global(.ant-select) {
+        min-width: 236px;
+        width: 100%;
+        @apply m-0 p-0;
+    }
+
+    :global(.ant-input-search) {
+        min-width: 196px;
+        height: 32px;
+    }
+
+    .tree-glossary-actions {
+        .treeMode {
+            @apply bg-opacity-100 !important;
         }
     }
 
-    .glossaryTree {
-        background-color: #fafafa;
+    .treeStyles {
+        max-height: calc(100vh - 11rem) !important;
 
-        :global(.ant-select) {
-            min-width: 236px;
-            width: 100%;
-            @apply m-0 p-0;
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+        :global(.ant-tree-node-selected) {
+            @apply bg-black bg-opacity-5 text-primary font-bold !important;
+            color: blue !important;
         }
 
-        :global(.ant-input-search) {
-            min-width: 196px;
-            height: 32px;
-        }
+        :global(.ant-tree-title) {
+            @apply pl-1 !important;
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+            // max-height: 28px !important;
 
-        .tree-glossary-actions {
-            .treeMode {
-                @apply bg-opacity-100 !important;
+            &:hover {
+                @apply bg-black bg-opacity-5 !important;
             }
         }
-
-        .treeStyles {
-            max-height: calc(100vh - 11rem) !important;
-
-            :global(.ant-tree-switcher_open) {
-                transform: rotate(90deg);
-            }
-            :global(.ant-tree-node-selected) {
-                @apply bg-black bg-opacity-5 text-primary font-bold !important;
-                color: blue !important;
-            }
-
-            :global(.ant-tree-title) {
-                @apply pl-1 !important;
-                padding-top: 4px !important;
-                padding-bottom: 4px !important;
-                // max-height: 28px !important;
-
-                &:hover {
-                    @apply bg-black bg-opacity-5 !important;
-                }
-            }
-            // :global(.ant-tree-treenode-switcher-close) {
-            //     max-height: 28px !important;
-            // }
-            // :global(.ant-tree-treenode-switcher-open) {
-            //     li {
-            //         max-height: 28px !important;
-            //     }
-            // }
-            :global(.ant-tree-node-content-wrapper) {
-                @apply mb-2 border-0;
-            }
+        // :global(.ant-tree-treenode-switcher-close) {
+        //     max-height: 28px !important;
+        // }
+        // :global(.ant-tree-treenode-switcher-open) {
+        //     li {
+        //         max-height: 28px !important;
+        //     }
+        // }
+        :global(.ant-tree-node-content-wrapper) {
+            @apply mb-2 border-0;
         }
     }
-    .parentGroup {
+}
+.parentGroup {
+    :global(.parent-group-hover) {
+        @apply opacity-0 !important;
+    }
+    &:hover {
         :global(.parent-group-hover) {
-            @apply opacity-0 !important;
-        }
-        &:hover {
-            :global(.parent-group-hover) {
-                @apply opacity-100 !important;
-            }
+            @apply opacity-100 !important;
         }
     }
+}
 </style>

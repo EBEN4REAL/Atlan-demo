@@ -9,9 +9,9 @@
         </p>
 
         <a-radio-group v-model:value="selectedRole" class="min-w-full">
-            <a-radio v-for="role in roles" :key="role.id" :value="role.id"><span class="capitalize">{{
-                role.name
-            }}</span></a-radio>
+            <a-radio v-for="role in roles" :key="role.id" :value="role.id"
+                ><span class="capitalize">{{ role.name }}</span>
+            </a-radio>
         </a-radio-group>
 
         <div class="flex justify-end mt-3">

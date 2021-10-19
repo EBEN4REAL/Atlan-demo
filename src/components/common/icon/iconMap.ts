@@ -86,7 +86,6 @@ import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
 import Pencil from '~/assets/images/icons/pencil.svg'
-import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
 import RunSuccess from '~/assets/images/icons/run-success.svg'
@@ -98,6 +97,8 @@ import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
+import CaretLeft from '~/assets/images/icons/caret-left.svg'
+import CaretRight from '~/assets/images/icons/caret-right.svg'
 
 export default {
     RunHistory,
@@ -190,7 +191,7 @@ export default {
     GlossaryDraft,
     MultipleStatus,
     Pencil,
-    Caret,
+    CaretRight,
     Check,
     Dots,
     WorkflowsActive,
@@ -199,4 +200,5 @@ export default {
     InsightsInactive,
     AssetsActive,
     AssetsInactive,
+    CaretLeft,
 }

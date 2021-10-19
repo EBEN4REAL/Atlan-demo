@@ -16,7 +16,7 @@ export default function getUserGroups(groupListAPIParams: {
     isValidating,
   } = useSWRV(
     [
-      getAPIPath("auth", `/users/${groupListAPIParams.userId}/groups`),
+      getAPIPath("service", `/users/${groupListAPIParams.userId}/groups`),
       groupListAPIParams.params,
       {},
     ],

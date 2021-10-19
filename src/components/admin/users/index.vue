@@ -1,8 +1,5 @@
 <template>
-    <DefaultLayout
-        title="Manage Members"
-        sub-title="Add, remove and manage their roles"
-    >
+    <DefaultLayout title="Manage Users">
         <!-- <a-badge
             :number-style="{ backgroundColor: '#5277D7' }"
             :count="filteredUserCount"
@@ -233,17 +230,17 @@
                                     "
                                     ><template #title
                                         ><div
-                                            class="
-                                                flex
-                                                items-center
-                                                justify-between
-                                            "
+                                            class="flex items-center justify-between "
                                         >
                                             <span>Change Role</span
                                             ><a-button
                                                 type="text"
+                                                class="pr-0  hover:bg-transparent"
                                                 @click="closeChangeRolePopover"
-                                                ><fa icon="fal times"></fa
+                                                ><AtlanIcon
+                                                    icon="Cancel"
+                                                    class="h-3"
+                                                ></AtlanIcon
                                             ></a-button>
                                         </div>
                                     </template>
@@ -324,453 +321,454 @@
     </DefaultLayout>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, reactive, computed, watch } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
-    import { message } from 'ant-design-vue'
-    import DefaultLayout from '@/admin/defaultLayout.vue'
-    import ErrorView from '@common/error/index.vue'
-    import { User } from '@services/keycloak/users/users_api'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import useUsers from '~/composables/user/useUsers'
-    import InvitationListTable from './invitationListTable.vue'
-    import whoami from '~/composables/user/whoami'
-    import Avatar from '~/components/common/avatar.vue'
-    import {
-        getNameInitials,
-        getNameInTitleCase,
-    } from '~/composables//utils/string-operations'
-    import ChangeRole from './changeRole.vue'
-    import InviteUsers from './inviteUsers.vue'
-    import useRoles from '~/composables/roles/useRoles'
-    import { useTenantStore } from '~/services/keycloak/tenant/store'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
+import { message } from 'ant-design-vue'
+import ErrorView from '@common/error/index.vue'
+import { User } from '@services/keycloak/users/users_api'
+import DefaultLayout from '@/admin/defaultLayout.vue'
+import { useUserPreview } from '~/composables/user/showUserPreview'
+import useUsers from '~/composables/user/useUsers'
+import InvitationListTable from './invitationListTable.vue'
+import whoami from '~/composables/user/whoami'
+import Avatar from '~/components/common/avatar.vue'
+import {
+    getNameInitials,
+    getNameInTitleCase,
+} from '~/composables//utils/string-operations'
+import ChangeRole from './changeRole.vue'
+import InviteUsers from './inviteUsers.vue'
+import useRoles from '~/composables/roles/useRoles'
+import { useTenantStore } from '~/services/keycloak/tenant/store'
 
-    export default defineComponent({
-        components: {
-            InvitationListTable,
-            ChangeRole,
-            InviteUsers,
-            Avatar,
-            ErrorView,
-            DefaultLayout,
-        },
+export default defineComponent({
+    components: {
+        InvitationListTable,
+        ChangeRole,
+        InviteUsers,
+        Avatar,
+        ErrorView,
+        DefaultLayout,
+    },
 
-        setup() {
-            const tenantStore = useTenantStore()
-            const loginWithEmailAllowed = ref(
-                tenantStore?.tenant?.loginWithEmailAllowed ?? false
+    setup() {
+        const tenantStore = useTenantStore()
+        const loginWithEmailAllowed = ref(
+            tenantStore?.tenant?.loginWithEmailAllowed ?? false
+        )
+        const listType = ref('users')
+        const searchText = ref('')
+        const showChangeRolePopover = ref<boolean>(false)
+        const showInviteUserModal = ref(false)
+        const showUserPreview = ref(false)
+        const statusFilterValue = ref<string>('')
+        const { username: currentUserUsername } = whoami()
+
+        const invitationComponentRef = ref(null)
+        const userListAPIParams: any = reactive({
+            limit: 15,
+            offset: 0,
+            sort: 'first_name',
+            filter: { $and: [{ email_verified: true }] },
+        })
+
+        const { userList, filteredUserCount, getUserList, state, STATES } =
+            useUsers(userListAPIParams)
+
+        const selectedUserId = ref('')
+        const selectedUser = computed(() => {
+            let activeUserObj = {}
+            if (userList && userList.value && userList.value.length)
+                activeUserObj = userList.value.find(
+                    (user: any) => user.id === selectedUserId.value
+                )
+            return activeUserObj
+        })
+        const selectedInvite = ref({})
+
+        const pagination = computed(() => ({
+            total: filteredUserCount.value,
+            pageSize: userListAPIParams.limit,
+            current: userListAPIParams.offset / userListAPIParams.limit + 1,
+        }))
+
+        // fetch roles- need this to find role id when changing user/invite role
+        const { roleList } = useRoles()
+
+        const searchUserList = () => {
+            const localFilterParams = userListAPIParams.filter.$and
+            const searchFilterIndex = localFilterParams.findIndex(
+                (filter: any) =>
+                    // eslint-disable-next-line no-prototype-builtins
+                    filter.hasOwnProperty('$or')
             )
-            const listType = ref('users')
-            const searchText = ref('')
-            const showChangeRolePopover = ref<boolean>(false)
-            const showInviteUserModal = ref(false)
-            const showUserPreview = ref(false)
-            const statusFilterValue = ref<string>('')
-            const { username: currentUserUsername } = whoami()
-
-            const invitationComponentRef = ref(null)
-            const userListAPIParams: any = reactive({
-                limit: 15,
-                offset: 0,
-                sort: 'first_name',
-                filter: { $and: [{ email_verified: true }] },
-            })
-
-            const { userList, filteredUserCount, getUserList, state, STATES } =
-                useUsers(userListAPIParams)
-
-            const selectedUserId = ref('')
-            const selectedUser = computed(() => {
-                let activeUserObj = {}
-                if (userList && userList.value && userList.value.length)
-                    activeUserObj = userList.value.find(
-                        (user: any) => user.id === selectedUserId.value
-                    )
-                return activeUserObj
-            })
-            const selectedInvite = ref({})
-
-            const pagination = computed(() => ({
-                total: filteredUserCount.value,
-                pageSize: userListAPIParams.limit,
-                current: userListAPIParams.offset / userListAPIParams.limit + 1,
-            }))
-
-            // fetch roles- need this to find role id when changing user/invite role
-            const { roleList } = useRoles()
-
-            const searchUserList = () => {
-                const localFilterParams = userListAPIParams.filter.$and
-                const searchFilterIndex = localFilterParams.findIndex(
-                    (filter: any) =>
-                        // eslint-disable-next-line no-prototype-builtins
-                        filter.hasOwnProperty('$or')
-                )
-                if (searchFilterIndex > -1) {
-                    localFilterParams.splice(searchFilterIndex, 1)
-                }
-                if (searchText.value) {
-                    userListAPIParams.filter = {
-                        $and: [
-                            ...localFilterParams,
-                            {
-                                $or: searchText.value
-                                    ? [
-                                          {
-                                              first_name: {
-                                                  $ilike: `%${searchText.value}%`,
-                                              },
+            if (searchFilterIndex > -1) {
+                localFilterParams.splice(searchFilterIndex, 1)
+            }
+            if (searchText.value) {
+                userListAPIParams.filter = {
+                    $and: [
+                        ...localFilterParams,
+                        {
+                            $or: searchText.value
+                                ? [
+                                      {
+                                          first_name: {
+                                              $ilike: `%${searchText.value}%`,
                                           },
-                                          {
-                                              last_name: {
-                                                  $ilike: `%${searchText.value}%`,
-                                              },
+                                      },
+                                      {
+                                          last_name: {
+                                              $ilike: `%${searchText.value}%`,
                                           },
-                                          {
-                                              username: {
-                                                  $ilike: `%${searchText.value}%`,
-                                              },
+                                      },
+                                      {
+                                          username: {
+                                              $ilike: `%${searchText.value}%`,
                                           },
-                                      ]
-                                    : [],
-                            },
-                        ],
-                    }
-                    userListAPIParams.offset = 0
-                } else {
-                    userListAPIParams.filter = {
-                        $and: [...localFilterParams],
-                    }
-                }
-                getUserList()
-            }
-
-            const handleSearch = useDebounceFn(() => {
-                if (listType.value === 'users') searchUserList()
-            }, 600)
-
-            const handleTableChange = (filters: any, sorter: any) => {
-                // add filters
-                // let allFilters: any = [];
-                // if (Object.keys(filters).length) {
-                //   let filterKeys = Object.keys(filters);
-                //   filterKeys.forEach((key) => {
-                //     filters[key].forEach((value: any) =>
-                //       allFilters.push(JSON.parse(value))
-                //     );
-                //   });
-                //   let localFilterParams = [...userListAPIParams.filter.$and];
-                //   let enabledFilterIndex = localFilterParams.findIndex((filter) => {
-                //     // eslint-disable-next-line no-prototype-builtins
-                //     return filter.hasOwnProperty("enabled");
-                //   });
-                //   if (enabledFilterIndex > -1) {
-                //     localFilterParams.splice(enabledFilterIndex, 1);
-                //   }
-                //   if (allFilters && allFilters.length) {
-                //     userListAPIParams.filter = {
-                //       $and: [...localFilterParams, ...allFilters],
-                //     };
-                //     userListAPIParams.offset = 0;
-                //   } else {
-                //     userListAPIParams.filter = {
-                //       $and: [...localFilterParams],
-                //     };
-                //   }
-                // }
-                // add sort
-                if (Object.keys(sorter).length) {
-                    let sortValue = 'first_name'
-                    if (sorter.order && sorter.column && sorter.column.sortKey)
-                        sortValue = `${sorter.order === 'descend' ? '-' : ''}${
-                            sorter.column.sortKey
-                        }`
-                    userListAPIParams.sort = sortValue
-                }
-                // modify offset
-                // const offset = (pagination.current - 1) * userListAPIParams.limit;
-                // userListAPIParams.offset = offset;
-                // fetch groups
-                getUserList()
-            }
-            // BEGIN: USER PREVIEW
-            const {
-                showPreview,
-                showUserPreview: openPreview,
-                setUserUniqueAttribute,
-            } = useUserPreview()
-            const showUserPreviewDrawer = (user: any) => {
-                setUserUniqueAttribute(user.id)
-                openPreview()
-                selectedUserId.value = user.id
-            }
-
-            // END: USER PREVIEW
-            const handleChangeRole = (user: any) => {
-                if (listType.value === 'users') selectedUserId.value = user.id
-                else Object.assign(selectedInvite.value, user)
-
-                showChangeRolePopover.value = true
-            }
-            const closeChangeRolePopover = () => {
-                showChangeRolePopover.value = false
-                selectedUserId.value = ''
-            }
-            const handleInviteUsers = () => {
-                showInviteUserModal.value = true
-            }
-            const closeInviteUserModal = () => {
-                showInviteUserModal.value = false
-            }
-            const getEnableDisablePopoverContent = (
-                user: any,
-                action: 'enable' | 'disable'
-            ) => {
-                if (user.role !== 'admin')
-                    return `Are you sure you want to ${action} ${
-                        user.name || user.username || user.email || ''
-                    }?`
-                return `Admins cannot ${action} other admins. If you still wish to perform this action, downgrade the user's role to Member/Data Steward and then enable the user.`
-            }
-
-            const confirmEnableDisablePopover = async (user: any) => {
-                if (user.role !== 'admin') {
-                    const requestPayload = ref({
-                        enabled: !user.enabled,
-                    })
-                    const { data, isReady, error, isLoading } = User.UpdateUser(
-                        user.id,
-                        requestPayload
-                    )
-                    watch([data, isReady, error, isLoading], () => {
-                        if (isReady && !error.value && !isLoading.value) {
-                            getUserList()
-                            message.success(
-                                `User ${user.enabled ? 'Disabled' : 'Enabled'}`
-                            )
-                        } else if (error && error.value) {
-                            message.error(
-                                `Unable to ${
-                                    user.enabled ? 'disable' : 'enable'
-                                } user. Try again.`
-                            )
-                        }
-                    })
-                }
-            }
-
-            const toggleUserInvitationList = () => {
-                if (listType.value === 'users') {
-                    listType.value = 'invitations'
-                } else {
-                    listType.value = 'users'
-                    getUserList()
-                }
-            }
-            const reloadTable = () => {
-                if (listType.value === 'users') getUserList()
-                if (
-                    listType.value === 'invitations' &&
-                    invitationComponentRef.value
-                )
-                    invitationComponentRef.value.getInvitationList()
-            }
-
-            watch(showPreview, () => {
-                if (!showPreview.value) reloadTable()
-            })
-
-            const handleUpdateRole = () => {
-                message.success('User role updated.')
-                closeChangeRolePopover()
-                reloadTable()
-            }
-            const handleErrorUpdateRole = () => {
-                message.error(
-                    'Unable to update role for the user. Please try again.'
-                )
-                closeChangeRolePopover()
-                reloadTable()
-            }
-            const handleInviteSent = () => {
-                if (
-                    listType.value === 'invitations' &&
-                    invitationComponentRef.value
-                )
-                    invitationComponentRef.value.getInvitationList()
-                closeInviteUserModal()
-            }
-
-            const nameCase = (name: string) => {
-                if (name) {
-                    const nameCaseArray: string[] = []
-                    const split = name.split(' ')
-                    split.forEach((element) => {
-                        nameCaseArray.push(
-                            element.charAt(0).toUpperCase() +
-                                element.substr(1).toLowerCase()
-                        )
-                    })
-                    return nameCaseArray.join(' ')
-                }
-                return name
-            }
-            const imageUrl = (username: any) =>
-                `${window.location.origin}/api/service/avatars/${username}`
-            const handleStatusFilterChange = () => {
-                console.log(statusFilterValue.value)
-                const localFilterParams = [...userListAPIParams.filter.$and]
-                const enabledFilterIndex = localFilterParams.findIndex(
-                    (filter) =>
-                        // eslint-disable-next-line no-prototype-builtins
-                        filter.hasOwnProperty('enabled')
-                )
-                if (enabledFilterIndex > -1) {
-                    localFilterParams.splice(enabledFilterIndex, 1)
-                }
-                if (statusFilterValue.value) {
-                    userListAPIParams.filter = {
-                        $and: [
-                            ...localFilterParams,
-                            statusFilterValue.value === 'enabled'
-                                ? { enabled: true }
-                                : { enabled: false },
-                        ],
-                    }
-                } else {
-                    userListAPIParams.filter = {
-                        $and: [...localFilterParams],
-                    }
+                                      },
+                                  ]
+                                : [],
+                        },
+                    ],
                 }
                 userListAPIParams.offset = 0
-                getUserList()
-            }
-            const resetStatusFilter = () => {
-                statusFilterValue.value = ''
-                const localFilterParams = [...userListAPIParams.filter.$and]
-                const enabledFilterIndex = localFilterParams.findIndex(
-                    (filter) =>
-                        // eslint-disable-next-line no-prototype-builtins
-                        filter.hasOwnProperty('enabled')
-                )
-                if (enabledFilterIndex > -1) {
-                    localFilterParams.splice(enabledFilterIndex, 1)
-                }
+            } else {
                 userListAPIParams.filter = {
                     $and: [...localFilterParams],
                 }
-                userListAPIParams.offset = 0
-                getUserList()
             }
-            const handlePagination = (page: number) => {
-                // modify offset
-                const offset = (page - 1) * userListAPIParams.limit
-                userListAPIParams.offset = offset
-                getUserList()
-            }
-            const isCurrentUser = (username: string) =>
-                username === currentUserUsername.value
-            return {
-                searchText,
-                handleSearch,
-                handleTableChange,
-                showUserPreviewDrawer,
+            getUserList()
+        }
 
-                toggleUserInvitationList,
-                getNameInitials,
-                getNameInTitleCase,
-                listType,
-                pagination,
-                userList,
-                selectedUser,
-                showUserPreview,
-                state,
-                STATES,
-                loginWithEmailAllowed,
-                showChangeRolePopover,
-                handleChangeRole,
-                closeChangeRolePopover,
-                handleUpdateRole,
-                handleErrorUpdateRole,
-                invitationComponentRef,
-                closeInviteUserModal,
-                showInviteUserModal,
-                handleInviteUsers,
-                handleInviteSent,
-                reloadTable,
-                nameCase,
-                imageUrl,
-                statusFilterValue,
-                handleStatusFilterChange,
-                resetStatusFilter,
-                handlePagination,
-                filteredUserCount,
-                isCurrentUser,
-                showPreview,
-                selectedInvite,
-                roleList,
-                getUserList,
-                getEnableDisablePopoverContent,
-                confirmEnableDisablePopover,
-                selectedUserId,
+        const handleSearch = useDebounceFn(() => {
+            if (listType.value === 'users') searchUserList()
+        }, 600)
+
+        const handleTableChange = (
+            pagination: any,
+            filters: any,
+            sorter: any
+        ) => {
+            // add filters
+            // let allFilters: any = [];
+            // if (Object.keys(filters).length) {
+            //   let filterKeys = Object.keys(filters);
+            //   filterKeys.forEach((key) => {
+            //     filters[key].forEach((value: any) =>
+            //       allFilters.push(JSON.parse(value))
+            //     );
+            //   });
+            //   let localFilterParams = [...userListAPIParams.filter.$and];
+            //   let enabledFilterIndex = localFilterParams.findIndex((filter) => {
+            //     // eslint-disable-next-line no-prototype-builtins
+            //     return filter.hasOwnProperty("enabled");
+            //   });
+            //   if (enabledFilterIndex > -1) {
+            //     localFilterParams.splice(enabledFilterIndex, 1);
+            //   }
+            //   if (allFilters && allFilters.length) {
+            //     userListAPIParams.filter = {
+            //       $and: [...localFilterParams, ...allFilters],
+            //     };
+            //     userListAPIParams.offset = 0;
+            //   } else {
+            //     userListAPIParams.filter = {
+            //       $and: [...localFilterParams],
+            //     };
+            //   }
+            // }
+            // add sort
+            if (Object.keys(sorter).length) {
+                let sortValue = 'first_name'
+                if (sorter.order && sorter.column && sorter.column.sortKey)
+                    sortValue = `${sorter.order === 'descend' ? '-' : ''}${
+                        sorter.column.sortKey
+                    }`
+                userListAPIParams.sort = sortValue
             }
-        },
-        data() {
-            return {
-                columns: [
-                    {
-                        title: 'User',
-                        key: 'user',
-                        sorter: true,
-                        width: 320,
-                        slots: { customRender: 'name' },
-                        sortKey: 'first_name',
-                    },
-                    {
-                        title: 'Role',
-                        key: 'role',
-                        sorter: false,
-                        width: 150,
-                        slots: { customRender: 'role' },
-                        dataIndex: 'role_object.name',
-                    },
-                    {
-                        title: 'Groups',
-                        key: 'group',
-                        sorter: true,
-                        width: 150,
-                        slots: { customRender: 'group' },
-                        sortKey: 'group_count',
-                        dataIndex: 'group_count_string',
-                    },
-                    {
-                        title: 'Status',
-                        key: 'status',
-                        slots: { customRender: 'status' },
-                        // dataIndex: "status_object.status",
-                        // filters: [
-                        //   { text: "Active", value: JSON.stringify({ enabled: true }) },
-                        //   { text: "Disabled", value: JSON.stringify({ enabled: false }) },
-                        //   // { text: "Locked", value: JSON.stringify({ locked: true }) },
-                        // ],
-                        filterMultiple: false,
-                        width: 150,
-                    },
-                    {
-                        title: 'Actions',
-                        width: 120,
-                        slots: { customRender: 'actions' },
-                    },
-                ],
+            // modify offset
+            // const offset = (pagination.current - 1) * userListAPIParams.limit;
+            // userListAPIParams.offset = offset;
+            // fetch groups
+            getUserList()
+        }
+        // BEGIN: USER PREVIEW
+        const {
+            showPreview,
+            showUserPreview: openPreview,
+            setUserUniqueAttribute,
+        } = useUserPreview()
+        const showUserPreviewDrawer = (user: any) => {
+            setUserUniqueAttribute(user.id)
+            openPreview()
+            selectedUserId.value = user.id
+        }
+
+        // END: USER PREVIEW
+        const handleChangeRole = (user: any) => {
+            if (listType.value === 'users') selectedUserId.value = user.id
+            else Object.assign(selectedInvite.value, user)
+
+            showChangeRolePopover.value = true
+        }
+        const closeChangeRolePopover = () => {
+            showChangeRolePopover.value = false
+            selectedUserId.value = ''
+        }
+        const handleInviteUsers = () => {
+            showInviteUserModal.value = true
+        }
+        const closeInviteUserModal = () => {
+            showInviteUserModal.value = false
+        }
+        const getEnableDisablePopoverContent = (
+            user: any,
+            action: 'enable' | 'disable'
+        ) => {
+            if (user.role !== 'admin')
+                return `Are you sure you want to ${action} ${
+                    user.name || user.username || user.email || ''
+                }?`
+            return `Admins cannot ${action} other admins. If you still wish to perform this action, downgrade the user's role to Member/Data Steward and then enable the user.`
+        }
+
+        const confirmEnableDisablePopover = async (user: any) => {
+            if (user.role !== 'admin') {
+                const requestPayload = ref({
+                    enabled: !user.enabled,
+                })
+                const { data, isReady, error, isLoading } = User.UpdateUser(
+                    user.id,
+                    requestPayload
+                )
+                watch([data, isReady, error, isLoading], () => {
+                    if (isReady && !error.value && !isLoading.value) {
+                        getUserList()
+                        message.success(
+                            `User ${user.enabled ? 'Disabled' : 'Enabled'}`
+                        )
+                    } else if (error && error.value) {
+                        message.error(
+                            `Unable to ${
+                                user.enabled ? 'disable' : 'enable'
+                            } user. Try again.`
+                        )
+                    }
+                })
             }
-        },
-    })
+        }
+
+        const toggleUserInvitationList = () => {
+            if (listType.value === 'users') {
+                listType.value = 'invitations'
+            } else {
+                listType.value = 'users'
+                getUserList()
+            }
+        }
+        const reloadTable = () => {
+            if (listType.value === 'users') getUserList()
+            if (
+                listType.value === 'invitations' &&
+                invitationComponentRef.value
+            )
+                invitationComponentRef.value.getInvitationList()
+        }
+
+        watch(showPreview, () => {
+            if (!showPreview.value) reloadTable()
+        })
+
+        const handleUpdateRole = () => {
+            message.success('User role updated.')
+            closeChangeRolePopover()
+            reloadTable()
+        }
+        const handleErrorUpdateRole = () => {
+            message.error(
+                'Unable to update role for the user. Please try again.'
+            )
+            closeChangeRolePopover()
+            reloadTable()
+        }
+        const handleInviteSent = () => {
+            if (
+                listType.value === 'invitations' &&
+                invitationComponentRef.value
+            )
+                invitationComponentRef.value.getInvitationList()
+            closeInviteUserModal()
+        }
+
+        const nameCase = (name: string) => {
+            if (name) {
+                const nameCaseArray: string[] = []
+                const split = name.split(' ')
+                split.forEach((element) => {
+                    nameCaseArray.push(
+                        element.charAt(0).toUpperCase() +
+                            element.substr(1).toLowerCase()
+                    )
+                })
+                return nameCaseArray.join(' ')
+            }
+            return name
+        }
+        const imageUrl = (username: any) =>
+            `${window.location.origin}/api/service/avatars/${username}`
+        const handleStatusFilterChange = () => {
+            console.log(statusFilterValue.value)
+            const localFilterParams = [...userListAPIParams.filter.$and]
+            const enabledFilterIndex = localFilterParams.findIndex((filter) =>
+                // eslint-disable-next-line no-prototype-builtins
+                filter.hasOwnProperty('enabled')
+            )
+            if (enabledFilterIndex > -1) {
+                localFilterParams.splice(enabledFilterIndex, 1)
+            }
+            if (statusFilterValue.value) {
+                userListAPIParams.filter = {
+                    $and: [
+                        ...localFilterParams,
+                        statusFilterValue.value === 'enabled'
+                            ? { enabled: true }
+                            : { enabled: false },
+                    ],
+                }
+            } else {
+                userListAPIParams.filter = {
+                    $and: [...localFilterParams],
+                }
+            }
+            userListAPIParams.offset = 0
+            getUserList()
+        }
+        const resetStatusFilter = () => {
+            statusFilterValue.value = ''
+            const localFilterParams = [...userListAPIParams.filter.$and]
+            const enabledFilterIndex = localFilterParams.findIndex((filter) =>
+                // eslint-disable-next-line no-prototype-builtins
+                filter.hasOwnProperty('enabled')
+            )
+            if (enabledFilterIndex > -1) {
+                localFilterParams.splice(enabledFilterIndex, 1)
+            }
+            userListAPIParams.filter = {
+                $and: [...localFilterParams],
+            }
+            userListAPIParams.offset = 0
+            getUserList()
+        }
+        const handlePagination = (page: number) => {
+            // modify offset
+            const offset = (page - 1) * userListAPIParams.limit
+            userListAPIParams.offset = offset
+            getUserList()
+        }
+        const isCurrentUser = (username: string) =>
+            username === currentUserUsername.value
+        return {
+            searchText,
+            handleSearch,
+            handleTableChange,
+            showUserPreviewDrawer,
+            toggleUserInvitationList,
+            getNameInitials,
+            getNameInTitleCase,
+            listType,
+            pagination,
+            userList,
+            selectedUser,
+            showUserPreview,
+            state,
+            STATES,
+            loginWithEmailAllowed,
+            showChangeRolePopover,
+            handleChangeRole,
+            closeChangeRolePopover,
+            handleUpdateRole,
+            handleErrorUpdateRole,
+            invitationComponentRef,
+            closeInviteUserModal,
+            showInviteUserModal,
+            handleInviteUsers,
+            handleInviteSent,
+            reloadTable,
+            nameCase,
+            imageUrl,
+            statusFilterValue,
+            handleStatusFilterChange,
+            resetStatusFilter,
+            handlePagination,
+            filteredUserCount,
+            isCurrentUser,
+            showPreview,
+            selectedInvite,
+            roleList,
+            getUserList,
+            getEnableDisablePopoverContent,
+            confirmEnableDisablePopover,
+            selectedUserId,
+        }
+    },
+    data() {
+        return {
+            columns: [
+                {
+                    title: 'User',
+                    key: 'user',
+                    sorter: true,
+                    width: 320,
+                    slots: { customRender: 'name' },
+                    sortKey: 'first_name',
+                },
+                {
+                    title: 'Role',
+                    key: 'role',
+                    sorter: false,
+                    width: 150,
+                    slots: { customRender: 'role' },
+                    dataIndex: 'role_object.name',
+                },
+                {
+                    title: 'Groups',
+                    key: 'group',
+                    sorter: true,
+                    width: 150,
+                    slots: { customRender: 'group' },
+                    sortKey: 'group_count',
+                    dataIndex: 'group_count_string',
+                },
+                {
+                    title: 'Status',
+                    key: 'status',
+                    slots: { customRender: 'status' },
+                    // dataIndex: "status_object.status",
+                    // filters: [
+                    //   { text: "Active", value: JSON.stringify({ enabled: true }) },
+                    //   { text: "Disabled", value: JSON.stringify({ enabled: false }) },
+                    //   // { text: "Locked", value: JSON.stringify({ locked: true }) },
+                    // ],
+                    filterMultiple: false,
+                    width: 150,
+                },
+                {
+                    title: 'Actions',
+                    width: 120,
+                    slots: { customRender: 'actions' },
+                },
+            ],
+        }
+    },
+})
 </script>
 
 <style lang="less" scoped>
-    :global(.ant-popover-content) {
-        --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-            var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    }
+:global(.ant-popover-content) {
+    --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+        var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
 </style>

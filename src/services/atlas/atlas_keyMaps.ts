@@ -14,4 +14,7 @@ export const KeyMaps = {
     readme: {
         CREATE_README: () => getAPIPath('meta', '/entity'),
     },
+    ES: {
+        INDEX_SEARCH: () => getAPIPath('meta', '/search/indexsearch'),
+    },
 }

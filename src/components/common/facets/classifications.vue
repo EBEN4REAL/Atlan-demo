@@ -75,9 +75,8 @@
                                     <span class="mb-0">
                                         {{ item?.displayName }}
                                     </span>
-                                </a-checkbox>    
+                                </a-checkbox>
                             </a-tooltip>
-                            
                         </template>
                     </div>
                 </div>

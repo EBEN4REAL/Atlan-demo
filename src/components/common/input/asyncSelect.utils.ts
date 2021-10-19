@@ -6,6 +6,7 @@
      */
 // eslint-disable-next-line import/prefer-default-export
 export const getStringFromPath = (data: object | Array<any>, path: string) => {
+    if (!path || ['', '.'].includes(path)) return data;
     const arrayReg = /\w*\[\d*\]$/g
     const r = /\{\{(\.\w*?)\}\}/g
     const varArr = path.match(r);

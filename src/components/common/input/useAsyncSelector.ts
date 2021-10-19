@@ -6,7 +6,9 @@ import { getStringFromPath } from './asyncSelect.utils'
 export default function useAsyncSelector(
     reqConfig: ReqConfig,
     resConfig: ResConfig,
-    valueObject: { [x: string]: string; }, getConfig: { rootPath: string, requestConfig: ReqConfig }) {
+    valueObject: { [x: string]: string; },
+    getConfig: { rootPath: string, requestConfig: ReqConfig },
+    gV: string[]) {
     const asyncData = ref()
 
     const setData = (res: any) => {
@@ -24,7 +26,8 @@ export default function useAsyncSelector(
             const value = getStringFromPath(o, valuePath);
             return {
                 value,
-                label
+                label,
+                data: o
             }
         })
 
@@ -170,7 +173,8 @@ export default function useAsyncSelector(
         loadingData,
         handleCreateNew,
         createNewVisibility,
-        letAsyncSelectDisabled
+        letAsyncSelectDisabled,
+        getStringFromPath
     }
 };
 

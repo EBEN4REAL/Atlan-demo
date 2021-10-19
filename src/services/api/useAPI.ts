@@ -164,6 +164,12 @@ export function resolveUrl(
     })
 }
 
+const getUrlWithParams = (url, params) => {
+    let p = isRef(params) ? params.value : params
+    p = new URLSearchParams(p)
+    return p.toString() ? `${url}?${p.toString()}` : url
+}
+
 export function useAPIPromise(
     url: string,
     method: HTTPVerb,
@@ -178,7 +184,7 @@ export function useAPIPromise(
             )
         case 'POST':
             return fetcherPost(
-                url,
+                getUrlWithParams(url, params),
                 isRef(body) ? body.value : body,
                 isRef(options) ? options.value : options
             )

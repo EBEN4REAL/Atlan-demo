@@ -91,7 +91,7 @@
             }
 
             router.currentRoute.value?.query
-            const selected: Ref<assetInterface | undefined> = ref(undefined)
+            // const selected: Ref<assetInterface | undefined> = ref(undefined)
             const page = computed(() =>
                 isItem.value ? 'profile' : 'discovery'
             )

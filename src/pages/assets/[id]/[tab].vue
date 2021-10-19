@@ -103,7 +103,7 @@
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useCheckAccess from '~/services/access/useCheckAccess'
-
+    import useDiscoveryStore from '~/store/discovery'
     // Constants
     import { AssetTypeList } from '~/constant/assetType'
 
@@ -136,6 +136,7 @@
         emits: ['preview'],
         setup(props, context) {
             /** DATA */
+            const storeDiscovery = useDiscoveryStore()
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
@@ -253,7 +254,8 @@
 
             // handlePreview
             const handlePreview = (item) => {
-                context.emit('preview', item)
+                // context.emit('preview', item)
+              storeDiscovery.setSelectedAsset(item)
             }
 
             // fetch

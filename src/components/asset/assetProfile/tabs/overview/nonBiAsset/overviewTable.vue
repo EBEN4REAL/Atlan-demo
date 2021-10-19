@@ -13,7 +13,7 @@
                     <th
                         v-for="(col, index) in tableColumns"
                         :key="index"
-                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border  border-gray-light"
+                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border border-gray-light"
                     >
                         <div class="flex">
                             <component
@@ -34,7 +34,7 @@
                     <td
                         v-for="(rowData, index) in row"
                         :key="index"
-                        class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
+                        class="px-4 py-2 text-xs text-gray-700 bg-white border border-gray-light"
                     >
                         <Tooltip
                             :tooltip-text="rowData"
@@ -56,7 +56,7 @@
 
     // API
     import { useAPI } from '~/services/api/useAPI'
-    import HEKA_SERVICE_API from '~/services/heka/index'
+    // import HEKA_SERVICE_API from '~/services/heka/index'
 
     export default defineComponent({
         components: { Tooltip },

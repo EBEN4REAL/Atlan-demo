@@ -264,11 +264,11 @@
                 nonBiOverview: 'calc(100vh - 9.2rem)',
             }
 
-            function getAssetEntitity(data: Ref): any {
-                if (data.value?.entities.length > 0)
-                    return data.value?.entities[0]
-                return {}
-            }
+            // function getAssetEntitity(data: Ref): any {
+            //     if (data.value?.entities.length > 0)
+            //         return data.value?.entities[0]
+            //     return {}
+            // }
 
             const getDataType = (type: string) => {
                 let label = ''

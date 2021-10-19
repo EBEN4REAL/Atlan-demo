@@ -87,8 +87,8 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        provide,
-        toRefs,
+        provide
+        // toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -105,7 +105,7 @@
     import useCheckAccess from '~/services/access/useCheckAccess'
     import useDiscoveryStore from '~/store/discovery'
     // Constants
-    import { AssetTypeList } from '~/constant/assetType'
+    // import { AssetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         components: {

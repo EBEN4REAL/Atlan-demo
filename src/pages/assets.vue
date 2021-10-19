@@ -38,14 +38,19 @@
 
 <script lang="ts">
     import { useHead } from '@vueuse/head'
-    import { computed, defineComponent, ref, Ref, watch } from 'vue'
+    import { computed,
+        defineComponent, 
+        ref, 
+        Ref
+        // watch 
+    } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    // import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
     import { decodeQuery } from '~/utils/helper/routerHelper'
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import useBulkUpdateStore from '~/store/bulkUpdate'

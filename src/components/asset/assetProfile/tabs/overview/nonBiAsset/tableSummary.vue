@@ -67,7 +67,12 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, inject, computed } from 'vue'
+    import { defineComponent,
+        // watch, 
+        // ref,
+        inject,
+        computed 
+    } from 'vue'
 
     // Components
     import Description from '@common/sidebar/description.vue'

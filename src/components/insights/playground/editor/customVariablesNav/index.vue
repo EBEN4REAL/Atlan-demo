@@ -1,10 +1,20 @@
 <template>
-    <div class="my-2 mb-4">
-        <div class="flex overflow-x-auto">
+    <div class="px-3 py-3 mb-3 bg-gray-100">
+        <div class="flex items-end overflow-x-auto">
             <div class="add-variable-btn">
                 <a-button
-                    class="flex items-center justify-between mr-2 py-0.5 px-2"
-                    @click="addVariable"
+                    class="
+                        flex
+                        items-center
+                        border-none
+                        justify-between
+                        py-0.5
+                        px-2
+                        mr-2
+                        btn-shadow
+                        add-btn
+                    "
+                    @click="onAddVariable"
                 >
                     <span class="flex items-center justify-center">
                         <fa icon="fal plus" class="" />
@@ -13,153 +23,207 @@
                         class="m-0 ml-1"
                         v-if="sqlVariables && sqlVariables?.length == 0"
                     >
-                        Add Variable
+                        Add variable
                     </p>
                 </a-button>
             </div>
             <div
                 v-for="variable in sqlVariables"
                 :key="variable.key"
-                class="flex mx-1 bg-white border rounded variable-wrapper"
+                class="flex flex-col mx-1"
             >
-                <div class="flex items-center px-2">
-                    <a-dropdown
-                        :visible="customVariableOpenKey === variable.key"
-                        :trigger="['click']"
-                    >
-                        <span
-                            class="flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
-                            @click="() => openDropdown(variable)"
+                <p
+                    class="
+                        mb-0.5
+                        text-sm text-gray-700
+                        bg-gray-100
+                        cursor-default
+                    "
+                >
+                    {{ variable.name }}
+                </p>
+
+                <a-input
+                    class="h-8 group"
+                    style="width: 158px"
+                    v-model:value="variable.value"
+                    :placeholder="`Enter a ${variable.type}`"
+                >
+                    <template #suffix>
+                        <a-dropdown
+                            :visible="customVariableOpenKey === variable.key"
+                            :trigger="['click']"
                         >
-                            <fa icon="fal cog" class="" />
-                        </span>
-                        <template #overlay>
-                            <a-menu>
-                                <div class="px-4 py-2">
-                                    <span
-                                        class="absolute right-0 flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
-                                        @click="() => deleteVariable(variable)"
-                                    >
-                                        <fa icon="fal trash-alt" class="" />
-                                    </span>
-                                    <a-form
-                                        layout="vertical"
-                                        :model="variable"
-                                        ref="formRef"
-                                    >
-                                        <a-form-item label="Name" name="name">
-                                            <a-input
-                                                v-model:value="variable.name"
-                                                placeholder="new_variable"
-                                            />
-                                        </a-form-item>
-                                        <a-form-item label="Type" name="type">
-                                            <a-select
-                                                v-model:value="variable.type"
-                                            >
-                                                <a-select-option value="string"
-                                                    >STRING</a-select-option
-                                                >
-                                                <a-select-option value="number"
-                                                    >NUMBER</a-select-option
-                                                >
-                                                <a-select-option value="boolean"
-                                                    >BOOLEAN</a-select-option
-                                                >
-                                                <a-select-option value="query"
-                                                    >QUERY</a-select-option
-                                                >
-                                            </a-select>
-                                        </a-form-item>
-                                        <!-- <a-form-item
-                                            label="Saved Queries"
-                                            name="saved_queries"
-                                            v-if="
-                                                variable.formState.type ===
-                                                'query'
-                                            "
+                            <div class="p-1 rounded hover:bg-gray-100">
+                                <AtlanIcon
+                                    @click="() => openDropdown(variable)"
+                                    class="w-4 h-4 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100"
+                                    icon="Settings"
+                                />
+                            </div>
+                            <template #overlay>
+                                <a-menu>
+                                    <div class="p-4" style="width: 215px">
+                                        <div
+                                            class="flex items-center justify-between mb-3 "
                                         >
-                                            <a-select
-                                                v-model:value="
-                                                    savedQuery[0].name
+                                            <span
+                                                class="font-bold text-gray-700"
+                                            >
+                                                {{ variable.name }}
+                                            </span>
+                                            <div class="flex items-center">
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onCopyVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 mr-4 text-gray-500 cursor-pointer "
+                                                    icon="CopyOutlined"
+                                                />
+                                                <AtlanIcon
+                                                    @click="
+                                                        () =>
+                                                            onDeleteVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                    class="w-4 h-4 text-gray-500 cursor-pointer "
+                                                    icon="Delete"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            <a-form
+                                                layout="vertical"
+                                                :model="variable"
+                                                ref="formRef"
+                                            >
+                                                <a-form-item
+                                                    label="Variable name"
+                                                    class="mb-4 text-gray-700  tex-sm"
+                                                    name="name"
+                                                >
+                                                    <a-input
+                                                        v-model:value="
+                                                            variable.name
+                                                        "
+                                                        placeholder="new_variable"
+                                                    />
+                                                </a-form-item>
+                                                <a-form-item
+                                                    label="Variable type"
+                                                    class="mb-4 text-gray-700  tex-sm"
+                                                    name="type"
+                                                >
+                                                    <a-select
+                                                        v-model:value="
+                                                            variable.type
+                                                        "
+                                                    >
+                                                        <a-select-option
+                                                            value="string"
+                                                            >String</a-select-option
+                                                        >
+                                                        <a-select-option
+                                                            value="number"
+                                                            >Number</a-select-option
+                                                        >
+                                                        <a-select-option
+                                                            value="boolean"
+                                                            >Boolean</a-select-option
+                                                        >
+                                                        <!-- <a-select-option
+                                                            value="query"
+                                                            >QUERY</a-select-option
+                                                        > -->
+                                                    </a-select>
+                                                </a-form-item>
+                                                <!-- <a-form-item
+                                                label="Saved Queries"
+                                                name="saved_queries"
+                                                v-if="
+                                                    variable.formState.type ===
+                                                    'query'
                                                 "
                                             >
-                                                <a-select-option
-                                                    :key="option.name"
-                                                    v-for="option in savedQuery"
-                                                    :value="option.name"
-                                                    >{{
-                                                        option.value
-                                                    }}</a-select-option
+                                                <a-select
+                                                    v-model:value="
+                                                        savedQuery[0].name
+                                                    "
                                                 >
-                                            </a-select>
-                                        </a-form-item> -->
-                                        <a-form-item
-                                            label="Default Value"
-                                            name="value"
-                                        >
-                                            <a-input
-                                                v-model:value="variable.value"
-                                                placeholder=""
-                                            />
-                                        </a-form-item>
-                                    </a-form>
-                                    <div class="flex justify-between">
-                                        <a-button
-                                            class="flex items-center justify-between mr-2 "
-                                            @click="() => cancelEdit(variable)"
-                                        >
-                                            Cancel
-                                        </a-button>
-                                        <a-button
-                                            type="primary"
-                                            class="flex items-center justify-between ml-2 "
-                                            @click="
-                                                () => onSaveVariable(variable)
-                                            "
-                                        >
-                                            Save
-                                        </a-button>
+                                                    <a-select-option
+                                                        :key="option.name"
+                                                        v-for="option in savedQuery"
+                                                        :value="option.name"
+                                                        >{{
+                                                            option.value
+                                                        }}</a-select-option
+                                                    >
+                                                </a-select>
+                                            </a-form-item> -->
+                                                <a-form-item
+                                                    label="Default value"
+                                                    class="text-gray-700 tex-sm"
+                                                    name="value"
+                                                >
+                                                    <a-input
+                                                        v-model:value="
+                                                            variable.value
+                                                        "
+                                                        placeholder=""
+                                                    />
+                                                </a-form-item>
+                                            </a-form>
+                                            <div
+                                                class="flex justify-between mt-6 "
+                                            >
+                                                <a-button
+                                                    class="flex items-center justify-center mr-2 "
+                                                    style="width: 84px"
+                                                    @click="
+                                                        () =>
+                                                            cancelEdit(variable)
+                                                    "
+                                                >
+                                                    Cancel
+                                                </a-button>
+                                                <a-button
+                                                    type="primary"
+                                                    class="flex items-center justify-center ml-2 "
+                                                    style="width: 84px"
+                                                    @click="
+                                                        () =>
+                                                            onSaveVariable(
+                                                                variable
+                                                            )
+                                                    "
+                                                >
+                                                    Save
+                                                </a-button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </a-menu>
-                        </template>
-                    </a-dropdown>
-                    <p class="mb-0 text-gray-500">
-                        {{ variable.name }}
-                    </p>
-                </div>
-                <div
-                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br  bg-primary"
-                >
-                    <p
-                        class="mb-0 truncate variable-value"
-                        :class="variable.value === '' ? 'mr-4' : 'mr-0'"
-                    >
-                        {{ variable.value }}
-                    </p>
-                </div>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                    </template>
+                </a-input>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        Ref,
-        inject,
-        ref,
-        toRaw,
-        ComputedRef,
-        watch,
-        computed,
-    } from 'vue'
+    import { defineComponent, Ref, inject, ref, toRaw, ComputedRef } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { editor } from 'monaco-editor'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {},
@@ -168,9 +232,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
-            ) as Ref<string>
+            const sqlVariables = inject('sqlVariables') as Ref<
+                CustomVaribaleInterface[]
+            >
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const editorInstanceRef = inject(
                 'editorInstance'
@@ -179,29 +243,13 @@
             const editorInstance = toRaw(editorInstanceRef.value)
             const monacoInstance = toRaw(monacoInstanceRef.value)
 
-            const { modifyEditorContent } = useEditor(tabs, activeInlineTab)
-            const { modifyActiveInlineTabEditor } = useInlineTab()
+            const { saveVariable, addVariable, deleteVariable } =
+                useCustomVariable(editorInstance, monacoInstance)
 
             const currVariable: Ref<CustomVaribaleInterface | undefined> = ref()
             const customVariableOpenKey: Ref<string | undefined> =
                 ref(undefined)
-            const sqlVariables: Ref<CustomVaribaleInterface[]> = ref()
-            watch(
-                [activeInlineTabKey],
-                () => {
-                    if (activeInlineTabKey.value) {
-                        sqlVariables.value = JSON.parse(
-                            JSON.stringify(
-                                toRaw(activeInlineTab.value).playground.editor
-                                    .variables
-                            )
-                        )
-                    }
-                },
-                {
-                    immediate: true,
-                }
-            )
+
             const closeDropdown = () => {
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
@@ -214,25 +262,8 @@
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
             }
-            const addVariable = () => {
-                const len = sqlVariables.value.length
-                const key = String(new Date().getTime())
-                const new_variable: CustomVaribaleInterface = {
-                    name: `variable${len}`,
-                    key,
-                    type: 'string',
-                    value: '',
-                }
-                sqlVariables.value.push(new_variable)
-                const currText = editorInstance?.getValue()
-                const text = `${currText} {{variable${len}}}`
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                activeInlineTabCopy.playground.editor.variables =
-                    activeInlineTab.value.playground.editor.variables
-                activeInlineTabCopy.playground.editor.text = text
-                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
-                modifyEditorContent(editorInstance, monacoInstance, text)
+            const onAddVariable = () => {
+                addVariable(activeInlineTab, tabs, sqlVariables)
                 closeDropdown()
             }
 
@@ -241,62 +272,31 @@
                 currVariable.value = { ...variable }
             }
 
-            const deleteVariableFromEditor = (str, regex, updatedName, key) => {
-                let updatedString = str.replace(regex, `${updatedName}`)
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                activeInlineTabCopy.playground.editor.text = updatedString
-                const variables =
-                    activeInlineTabCopy.playground.editor.variables.filter(
-                        (x) => x.key !== key
-                    )
-                sqlVariables.value = variables
-                activeInlineTabCopy.playground.editor.variables = variables
-                activeInlineTabCopy.playground.editor.text = updatedString
-                modifyEditorContent(
-                    editorInstance,
-                    monacoInstance,
-                    updatedString
-                )
-                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
-            }
-
-            const deleteVariable = (variable: CustomVaribaleInterface) => {
-                const editorQuery = editorInstance.getValue()
-                const oldVariableName = variable.name
-                const key: string = variable.key
-                let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
-                deleteVariableFromEditor(editorQuery, reg, '', key)
+            const onDeleteVariable = (variable: CustomVaribaleInterface) => {
+                deleteVariable(activeInlineTab, tabs, variable, sqlVariables)
                 closeDropdown()
             }
 
             const onSaveVariable = (variable: CustomVaribaleInterface) => {
-                const index = sqlVariables.value.findIndex(
-                    (v) => v.key === variable.key
+                saveVariable(
+                    activeInlineTab,
+                    tabs,
+                    variable,
+                    currVariable,
+                    sqlVariables
                 )
-                const oldVariableName = currVariable.value.name
-                let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
-                const editorQuery = editorInstance.getValue()
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                activeInlineTabCopy.playground.editor.variables = toRaw(
-                    sqlVariables.value
-                )
-                let updatedString = editorQuery.replace(
-                    reg,
-                    `{{${variable.name}}}`
-                )
-                activeInlineTabCopy.playground.editor.text = updatedString
-                modifyEditorContent(
-                    editorInstance,
-                    monacoInstance,
-                    updatedString
-                )
-                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
                 closeDropdown()
             }
-
+            const onCopyVariable = (variable: CustomVaribaleInterface) => {
+                const variabelAsText = `{{${variable.name}}}`
+                copyToClipboard(variabelAsText)
+                message.info({
+                    content: 'Copied!',
+                })
+            }
             return {
+                onCopyVariable,
+                onDeleteVariable,
                 cancelEdit,
                 customVariableOpenKey,
                 onSaveVariable,
@@ -304,14 +304,32 @@
                 currVariable,
                 activeInlineTab,
                 openDropdown,
-                addVariable,
+                onAddVariable,
                 deleteVariable,
                 closeDropdown,
             }
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .btn-shadow {
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    .text-hover {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .add-btn {
+        min-width: 32px;
+        height: 32px;
+    }
+</style>
+<style lang="less" module>
+    .input_style {
+        @apply relative !important;
+    }
+</style>
 
 <route lang="yaml">
 meta:

@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 
 export default function useFormGenerator(formConfig, formRef, emit, dV) {
@@ -42,7 +42,6 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     if (schema.type === 'checkbox') {
       schema.options = schema.options.map(o => ({ value: o.id || o.value, label: o.label || o.id }))
     }
-
     return schema;
   }
 
@@ -106,7 +105,8 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
 
 
   const testModal = ref({});
-  const getValueFromSchemaData = (id) => testModal.value[id]
+  const getValueFromSchemaData = (id) =>
+    testModal.value[id]
 
   const init = () => {
     testModal.value = {}
@@ -182,7 +182,10 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
         // ? if conditional field is hidden dont add
         if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
 
-        const val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
+        let val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
+        if (f.includeAll) val = f.includeAllVal
+        if (f.stringifyValue) val = JSON.stringify(val)
+
         if (typeof val === 'undefined' || val === null) return;
         // ? no groups
         if (f.parent) {
@@ -201,8 +204,10 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
         // ? groups
         f.children.forEach(f => {
           if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
+          let val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id, f.includeAll)
+          if (f.includeAll) val = f.includeAllVal
+          if (f.stringifyValue) val = JSON.stringify(val)
 
-          const val = f.type === 'template' ? generateTemplateValue(f.template, f.id, f.isStringified) : getValueFromSchemaData(f.id)
           if (typeof val === 'undefined' || val === null) return;
           // ? no groups
           if (f.parent) {
@@ -247,10 +252,10 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     return r;
   }
 
-  const getRules = (formModel) => {
+  const getRules = computed(() => {
     const rulesObj = {};
-    expandGroups(formModel).forEach(f => {
-      if (f.rules.length) {
+    expandGroups(processedSchema.value).forEach(f => {
+      if (f.rules.length && !f.includeAll) {
         rulesObj[f.id] = []
         f.rules.forEach(r => {
           const rule = getRule(r)
@@ -261,7 +266,7 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
       }
     })
     return rulesObj;
-  }
+  })
 
   // fix for groups
   const handleConditional = () => {
@@ -358,4 +363,3 @@ export default function useFormGenerator(formConfig, formRef, emit, dV) {
     finalConfigObject,
   }
 }
-

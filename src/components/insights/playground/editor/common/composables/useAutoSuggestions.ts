@@ -51,7 +51,7 @@ export function wordToEditorKeyword(
             words.push(keyword)
         }
         const s = sqlKeywords.filter((keyword) =>
-            keyword.label.includes(currentWord.toUpperCase())
+            keyword.label.includes(currentWord?.toUpperCase())
         )
         resolve({
             suggestions: [...words, ...s],
@@ -101,7 +101,7 @@ export function entitiesToEditorKeyword(
                 }
             }
             const s = sqlKeywords.filter((keyword) =>
-                keyword.label.includes(currentWord.toUpperCase())
+                keyword.label.includes(currentWord?.toUpperCase())
             )
             resolve({
                 suggestions: [...words, ...s],
@@ -114,7 +114,7 @@ export function entitiesToEditorKeyword(
 function getLocalSQLSugggestions(currentWord: string) {
     const sqlKeywords = getSqlKeywords()
     let suggestions = sqlKeywords.filter((keyword) =>
-        keyword.label.includes(currentWord.toUpperCase())
+        keyword.label.includes(currentWord?.toUpperCase())
     )
     return Promise.resolve({
         suggestions: suggestions,
@@ -171,12 +171,13 @@ async function getSuggestionsUsingType(
             }
             /* Current Word Should be greater than 1char */
             if (currentWord.length > 1) {
-                const entitiesResponsPromise =
-                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
                 cancelTokenSource.value = axios.CancelToken.source()
-                entitiesResponsPromise.then(() => {
-                    cancelTokenSource.value = undefined
-                })
+                const entitiesResponsPromise =
+                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(
+                        body,
+                        cancelTokenSource
+                    )
+
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
                     type,
@@ -189,17 +190,22 @@ async function getSuggestionsUsingType(
             return getLocalSQLSugggestions(currentWord)
         }
         case 'COLUMN': {
+            if (cancelTokenSource.value !== undefined) {
+                cancelTokenSource.value.cancel()
+            }
             if (currentWord.length > 1) {
+                cancelTokenSource.value = axios.CancelToken.source()
                 const entitiesResponsPromise =
-                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(body)
-                entitiesResponsPromise.then(() => {
-                    cancelTokenSource.value = undefined
-                })
+                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(
+                        body,
+                        cancelTokenSource
+                    )
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
                     type,
                     currentWord
                 )
+
                 return suggestionsPromise
             }
             return getLocalSQLSugggestions(currentWord)
@@ -269,7 +275,7 @@ export async function useAutoSuggestions(
     /* Remove tokens which are special characters */
     tokens = tokens.filter((token) => {
         let t = true
-        t = !token.match(/[-[\]{}()*+?'."\\/^$|#\s]/g) && token !== ''
+        t = !token.match(/[-[\]{}()*+?'."\\/^$|#\s\t]/g) && token !== ''
         return t
     })
     // tokens.push(' ')

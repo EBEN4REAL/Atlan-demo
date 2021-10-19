@@ -5,9 +5,6 @@
 <script lang="ts">
     import { defineComponent, PropType, ref, toRef, toRefs } from 'vue'
     import { BarChart } from 'vue-chart-3'
-    import { Chart, registerables } from 'chart.js'
-
-    Chart.register(...registerables)
 
     export default defineComponent({
         components: { BarChart },
@@ -23,6 +20,8 @@
         },
         setup(props) {
             const { data, options } = toRefs(props)
+
+            console.log('bar', data)
 
             return { data, options }
         },

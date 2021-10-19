@@ -79,8 +79,14 @@
                             class="w-4 h-4 mb-1 mr-1"
                         ></component
                     ></a-tooltip>
-
+                    <div
+                        class="text-base font-bold cursor-pointer  truncated text-primary hover:underline"
+                        v-if="mutateTooltip"
+                    >
+                        {{ selectedAsset.attributes?.name }}
+                    </div>
                     <Tooltip
+                        v-else
                         :tooltip-text="selectedAsset.attributes?.name"
                         classes="font-bold text-base cursor-pointer text-primary hover:underline"
                         placement="left"
@@ -90,7 +96,10 @@
                                 : `/assets/${selectedAsset.guid}/overview`
                         "
                     />
-                    <CertificatePopover :data="selectedAsset" />
+                    <CertificatePopover
+                        v-if="selectedAsset?.guid"
+                        :data="selectedAsset"
+                    />
                 </div>
             </div>
         </div>
@@ -222,10 +231,15 @@
                 type: Boolean,
                 required: false,
             },
+            mutateTooltip: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
-            const { selectedAsset, page } = toRefs(props)
+            const { selectedAsset, page, mutateTooltip } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             const { assetTypeLabel, title, certificateStatus, assetType } =
                 useAssetInfo()
@@ -315,6 +329,7 @@
             onMounted(init)
 
             return {
+                mutateTooltip,
                 name,
                 tabHeights,
                 isLoaded,

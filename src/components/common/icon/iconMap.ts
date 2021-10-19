@@ -104,9 +104,25 @@ import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
+import Settings from '~/assets/images/icons/setings.svg'
+import Delete from '~/assets/images/icons/delete.svg'
+import NoDataInsights from '~/assets/images/icons/results.svg'
+import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
+import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal.svg'
+import AddQuery from '~/assets/images/icons/add-query.svg'
+import NoSchema from '~/assets/images/icons/no-schema.svg'
+import queryErorrIllus from '~/assets/images/icons/queryError.svg'
+import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 
 export default {
+    queryErorrIllus,
+    NoSavedQueriesAll,
+    NoSchema,
+    NoDataInsights,
+    SomethingWrong,
+    NoSavedQueriesPersonal,
+    AddQuery,
     RunHistory,
     RunSuccess,
     RunFailed,
@@ -213,5 +229,7 @@ export default {
     InsightsInactive,
     AssetsActive,
     AssetsInactive,
+    Settings,
+    Delete,
     Slack,
 }

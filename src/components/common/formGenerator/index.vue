@@ -1,11 +1,6 @@
 <template>
     <div v-if="error">Error in form config.</div>
-    <a-form
-        v-else
-        ref="formRef"
-        :model="valueObject"
-        :rules="getRules(formModel)"
-    >
+    <a-form v-else ref="formRef" :model="valueObject" :rules="getRules">
         <span class="grid grid-cols-2 gap-x-8">
             <div
                 v-for="(f, x) in formModel"
@@ -15,9 +10,6 @@
                 <template v-if="f.type === 'group'">
                     <a-collapse default-active-key="1">
                         <a-collapse-panel key="1" :header="f.groupTitle">
-                            <div class="m-3 font-bold col-span-full">
-                                {{ f.groupTitle }}
-                            </div>
                             <div
                                 v-for="(c, i) in f.children"
                                 :key="c.id"
@@ -31,7 +23,7 @@
                                     >*</sup
                                 >
 
-                                <a-popover title="Help" v-if="c.helpText">
+                                <a-popover v-if="c.helpText" title="Help">
                                     <template #content>
                                         <div
                                             class="text-gray-500"
@@ -56,13 +48,17 @@
                                         :multiple="c?.isMultivalued"
                                         :request-config="c?.requestConfig"
                                         :response-config="c?.responseConfig"
+                                        :other-api-config="{
+                                            req: c?.requestConfig_2,
+                                            res: c?.responseConfig_2,
+                                        }"
                                         :limit-after="c.limitAfter"
                                         :limit-before="c.limitBefore"
                                         :allow-custom="c.allowCustom"
+                                        :value-object="valueObject"
                                         v-bind="
                                             f.type === 'asyncSelect'
                                                 ? {
-                                                      valueObject,
                                                       allowCreate:
                                                           c?.allowCreate,
                                                       getFormConfig:
@@ -91,6 +87,12 @@
                 <div v-else class="mb-5 rounded">
                     {{ f.label }}
                     <sup v-if="isRequiredField(f)" class="text-red-600">*</sup>
+                    <a-checkbox
+                        v-if="f.allowIncludeAll"
+                        v-model:checked="f.includeAll"
+                    >
+                        Include All
+                    </a-checkbox>
                     <a-popover v-if="f.helpText" title="Help">
                         <template #content>
                             <div
@@ -100,9 +102,10 @@
                         </template>
                         <fa icon="fal info-circle" class="ml-2 text-xs"></fa>
                     </a-popover>
-                    <a-form-item :name="f.id">
+                    <a-form-item :name="f.id" :rules="null">
                         <DynamicInput
                             v-model="valueObject[f.id]"
+                            :disabled="f.includeAll"
                             :data-type="f.type"
                             :date-time-type="f.dateTimeType"
                             :placeholder="f.placeholder"
@@ -114,13 +117,17 @@
                             :multiple="f?.isMultivalued"
                             :request-config="f?.requestConfig"
                             :response-config="f?.responseConfig"
+                            :other-api-config="{
+                                req: f?.requestConfig_2,
+                                res: f?.responseConfig_2,
+                            }"
                             :limit-after="f.limitAfter"
                             :limit-before="f.limitBefore"
                             :allow-custom="f.allowCustom"
+                            :value-object="valueObject"
                             v-bind="
                                 f.type === 'asyncSelect'
                                     ? {
-                                          valueObject,
                                           allowCreate: f.allowCreate,
                                           getFormConfig: f.getFormConfig,
                                           createNewLabel: f.createNewLabel,
@@ -157,7 +164,10 @@
 
     export default defineComponent({
         name: 'FormBuilder',
-        components: { DynamicInput, CustomRadioButton },
+        components: {
+            DynamicInput,
+            CustomRadioButton,
+        },
         props: {
             config: {
                 required: true,
@@ -190,11 +200,16 @@
                 init,
             } = useFormGenerator(configX, formRef, emit, props.defaultValues)
 
+            const handleIncludeAll = (e, id, v) => {
+                handleInputChange()
+            }
+
             watch(configX, () => {
                 init()
             })
 
             return {
+                handleIncludeAll,
                 handleFormSubmit,
                 init,
                 handleInputChange,

@@ -25,7 +25,6 @@
                             }
                         "
                         :selected-run-id="selectedRunId"
-                        :ui-config="data?.uiConfig"
                         class="bg-transparent"
                         @change="handlePreview"
                     ></component>
@@ -57,7 +56,6 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -71,7 +69,6 @@
     import {
         useWorkflowByName,
         getWorkflowConfigMap,
-        useWorkflowTemplateByName,
     } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
@@ -110,9 +107,12 @@
         },
         emits: ['preview'],
         setup(props, { emit }) {
+            /** DATA */
             const activeKey = ref(1)
             const data = ref({})
-
+            const selected = ref(null)
+            const selectedDag = ref('')
+            const workflowLogsIsOpen = ref(false)
             const refs: { [key: string]: any } = ref({})
             const tabs = [
                 {
@@ -132,15 +132,11 @@
                 },
             ]
 
-            const selected = ref(null)
-            const selectedDag = ref('')
-
             /** UTILS */
             const router = useRouter()
             const route = useRoute()
 
             /** COMPUTED */
-            // ! this is actually name
             const id = computed(() => route?.params?.id || '')
 
             const formConfig = computed(() => {
@@ -161,6 +157,8 @@
                 return {}
             })
 
+            const templateName = computed(() => data.value?.asset?.name)
+
             /** METHODS */
             // selectTab
             const selectTab = (val: number) => {
@@ -178,16 +176,7 @@
                 } else selected.value = item
             }
 
-            const templateName = computed(
-                () =>
-                    data.value?.asset?.workflowtemplate?.spec
-                        ?.workflowTemplateRef?.name ||
-                    data.value.asset.labels[
-                        'com.atlan.orchestration/parent-template-name'
-                    ] ||
-                    ''
-            )
-
+            // fetchUIConfig
             const fetchUIConfig = () => {
                 if (!templateName.value) return
                 const {
@@ -222,6 +211,11 @@
                 })
             }
 
+            /** WATCHERS */
+            watch(id, (n, o) => {
+                if (n && !o) fetch()
+            })
+
             /** LIFECYCLES */
             onMounted(async () => {
                 await fetch()
@@ -237,8 +231,6 @@
             watch(id, (n, o) => {
                 if (n && !o) fetch()
             })
-
-            const workflowLogsIsOpen = ref(false)
 
             return {
                 emit,

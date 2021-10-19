@@ -15,6 +15,10 @@ export interface Getters {
     sortClassifications(
         state: State
     ): (sortingOrder: string) => classificationInterface[]
+
+    getClasificationByName(
+        state: State
+    ): (name: string) => classificationInterface | undefined
 }
 const RESTRICTED_CLASSIFICATION_PREFIX = 'atlan_'
 
@@ -47,15 +51,15 @@ export const getters: GettersTree<State> & Getters = {
         const getClassificationNodeObj = (
             classification: classificationInterface
         ) => ({
-                title: classification.displayName || classification.name,
-                name: classification.name,
-                key: classification.guid,
-                children: [],
-                data: {
-                    ...classification,
-                    type: 'classification',
-                },
-            })
+            title: classification.displayName || classification.name,
+            name: classification.name,
+            key: classification.guid,
+            children: [],
+            data: {
+                ...classification,
+                type: 'classification',
+            },
+        })
 
         // resolves children recursively looking at the hashmap
         const getResolvedChildren = (nameArr: string[]) => {
@@ -108,13 +112,18 @@ export const getters: GettersTree<State> & Getters = {
         transformedClassifications.sort(orderTreeNodesAsc)
         return transformedClassifications
     },
-    getClassificationTree: (state: State): treeClassificationInterface[] => state.classificationTree,
+    getClassificationTree: (state: State): treeClassificationInterface[] =>
+        state.classificationTree,
     getFilteredClassificationsBySeach:
         (state: State) =>
-        (searchText: string): treeClassificationInterface[] => state.classificationTree.filter((classification: any) => classification.title
+        (searchText: string): treeClassificationInterface[] =>
+            state.classificationTree.filter((classification: any) =>
+                classification.title
                     .toLowerCase()
-                    .includes(searchText.toLocaleLowerCase())),
-    getFilteredClassifications: (state: State): classificationInterface[] => state.classifications.filter(
+                    .includes(searchText.toLocaleLowerCase())
+            ),
+    getFilteredClassifications: (state: State): classificationInterface[] =>
+        state.classifications.filter(
             (obj) =>
                 !obj.name
                     .toLowerCase()
@@ -127,37 +136,41 @@ export const getters: GettersTree<State> & Getters = {
             let classifications: classificationInterface[] = []
             switch (sortingOrder) {
                 case 'asc': {
-                    classifications = state.classifications.sort((
-                        classificationA: classificationInterface,
-                        classificationB: classificationInterface
-                    ) => {
-                        const a = classificationA.displayName
-                        const b = classificationB.displayName
-                        if (a < b) {
-                            return -1
+                    classifications = state.classifications.sort(
+                        (
+                            classificationA: classificationInterface,
+                            classificationB: classificationInterface
+                        ) => {
+                            const a = classificationA.displayName
+                            const b = classificationB.displayName
+                            if (a < b) {
+                                return -1
+                            }
+                            if (a > b) {
+                                return 1
+                            }
+                            return 0
                         }
-                        if (a > b) {
-                            return 1
-                        }
-                        return 0
-                    })
+                    )
                     break
                 }
                 case 'dsc': {
-                    classifications = state.classifications.sort((
-                        classificationA: classificationInterface,
-                        classificationB: classificationInterface
-                    ) => {
-                        const a = classificationA.displayName
-                        const b = classificationB.displayName
-                        if (a > b) {
-                            return -1
+                    classifications = state.classifications.sort(
+                        (
+                            classificationA: classificationInterface,
+                            classificationB: classificationInterface
+                        ) => {
+                            const a = classificationA.displayName
+                            const b = classificationB.displayName
+                            if (a > b) {
+                                return -1
+                            }
+                            if (a < b) {
+                                return 1
+                            }
+                            return 0
                         }
-                        if (a < b) {
-                            return 1
-                        }
-                        return 0
-                    })
+                    )
                     break
                 }
                 default: {
@@ -167,4 +180,9 @@ export const getters: GettersTree<State> & Getters = {
             console.log('classifications', classifications)
             return classifications
         },
+
+    getClasificationByName:
+        (state: State) =>
+        (name: string): classificationInterface | undefined =>
+            state.classifications.find((obj) => obj.name === name),
 }

@@ -63,7 +63,7 @@ export const List: CollapseArray = [
         exclude: false,
     },
     {
-        id: 'term',
+        id: 'terms',
         label: 'Term',
         component: 'governance',
         overallCondition: 'OR',

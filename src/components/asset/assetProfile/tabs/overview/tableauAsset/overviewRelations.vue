@@ -81,6 +81,7 @@
         inject,
         computed,
     } from 'vue'
+    import { storeToRefs } from 'pinia'
     // Components
     import AssetTypeItems from '@/discovery/preview/tabs/relations/assetTypeItems.vue'
 
@@ -88,6 +89,8 @@
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
     // Assets
     import emptyScreen from '~/assets/images/empty_search.png'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: { AssetTypeItems },

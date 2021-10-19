@@ -38,9 +38,10 @@
                 <!-- Title bar -->
                 <div
                     v-if="item.guid === '-1'"
-                    class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate  overflow-ellipsis whitespace-nowrap"
+                    class="flex flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate  overflow-ellipsis whitespace-nowrap"
                 >
-                    {{ item.displayText }}
+                    <div>{{ item.displayText }}</div>
+                    <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
                 </div>
                 <div v-else class="flex items-center mb-0 overflow-hidden">
                     <router-link

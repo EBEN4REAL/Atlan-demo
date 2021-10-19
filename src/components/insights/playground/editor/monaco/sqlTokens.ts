@@ -45,6 +45,7 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
     ],
 
     keywords: [
+        '*',
         'ABORT_AFTER_WAIT',
         'ABSENT',
         'ABSOLUTE',

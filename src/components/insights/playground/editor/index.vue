@@ -260,11 +260,15 @@
             >
                 <div class="flex items-center">
                     <!-- <WarehouseConnector /> -->
-                    <div class="">
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            icon="ExplorerTrigger"
+                            class="w-4 h-4 mr-4"
+                        />
                         <!-- <span class="mr-4">
                             Output limit:&nbsp;{{ limitRows.rowsCount }}
                         </span> -->
-                        <div class="">
+                        <div class="flex items-center">
                             <a-checkbox
                                 :class="$style.checkbox_style"
                                 v-model:checked="limitRows.checked"
@@ -289,7 +293,9 @@
                             Col:&nbsp; {{ editorPos.column }}
                         </span>
                     </div>
-                    <span class="ml-2 mr-4"> Spaces:&nbsp;4 </span>
+                    <span class="ml-2 mr-4">
+                        Spaces:&nbsp;{{ editorConfig.tabSpace }}
+                    </span>
                     <div class="flex items-center justify-center">
                         <div class="" @click="togglePane">
                             <a-tooltip>
@@ -345,6 +351,7 @@
     import WarehouseConnector from '~/components/insights/playground/editor/warehouse/index.vue'
     import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
 
     import AtlanBtn from '~/components/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -396,7 +403,9 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
-
+            const editorConfig = inject(
+                'editorConfig'
+            ) as Ref<editorConfigInterface>
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
@@ -546,6 +555,7 @@
 
             /* ------------------------------------------ */
             return {
+                editorConfig,
                 canUserUpdateQuery,
                 toggleAssetPreview,
                 tFullScreen,
@@ -595,9 +605,14 @@
 </style>
 <style lang="less" module>
     .checkbox_style {
+        margin-top: 2.65px;
         :global(.ant-checkbox-inner::after) {
-            width: 6px !important;
-            height: 8px !important;
+            width: 4px !important;
+            height: 7px !important;
+        }
+        :global(.ant-checkbox-inner) {
+            width: 13.5px !important;
+            height: 13px !important;
         }
         :global(.ant-checkbox + span) {
             @apply px-1 !important;

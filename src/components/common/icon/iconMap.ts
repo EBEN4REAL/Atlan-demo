@@ -110,11 +110,15 @@ import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
 import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal.svg'
 import AddQuery from '~/assets/images/icons/add-query.svg'
 import NoSchema from '~/assets/images/icons/no-schema.svg'
+import Issues from '~/assets/images/icons/issues.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 
 export default {
+    Issues,
+    ExplorerTrigger,
     queryErorrIllus,
     NoSavedQueriesAll,
     NoSchema,

@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
             <WorkflowFilters
                 :ref="
@@ -25,14 +25,14 @@
                             :autofocus="true"
                             @change="handleSearchChange"
                         >
-                            <!-- <template #filter>
-                            <Preferences
-                                :default-projection="projection"
-                                @change="handleChangePreferences"
-                                @sort="handleChangeSort"
-                                @state="handleState"
-                            />
-                        </template> -->
+                            <template #filter>
+                                <Preferences
+                                    :default-projection="projection"
+                                    @change="handleChangePreferences"
+                                    @sort="handleChangeSort"
+                                    @state="handleState"
+                                />
+                            </template>
                             <!-- <template #buttonAggregation>
                         <span>({{ projection.length }})</span>
                     </template> -->
@@ -68,9 +68,7 @@
                     v-else
                     v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
-                    :list="
-                        queryText.length ? filterList(queryText) : workflowList
-                    "
+                    :list="workflowList"
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     @preview="handlePreview"
@@ -113,6 +111,7 @@
             DiscoveryPreview,
             AtlanBtn,
             SearchAndFilter,
+            Preferences,
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -163,12 +162,13 @@
                 totalCount,
                 loadMore,
                 mutate,
+                filter_record,
             } = useWorkflowSearchList(false)
 
             if (!workflowList.value.length) mutate()
 
             const isLoadMore = computed(
-                () => totalCount.value > workflowList.value.length
+                () => filter_record.value > workflowList.value.length
             )
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
@@ -204,11 +204,17 @@
             const handleSearchChange = useDebounceFn(() => {
                 // TODO use pagination and recall api
                 setRouterOptions()
-            }, 150)
+                filterList(queryText.value)
+            }, 600)
 
             const updateQuery = () => {
                 // console.log(filters.value)
                 console.log({ ...AllFilters.value.facetsFilters })
+            }
+
+            const handleChangePreferences = (payload: any) => {
+                console.log(payload)
+                // projection.value = payload
             }
 
             const handleFilterChange = (

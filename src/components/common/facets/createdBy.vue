@@ -44,7 +44,7 @@
                             >
                                 <a-checkbox
                                     v-if="item.username"
-                                    :value="item.username"
+                                    :value="item.email"
                                     class="w-full mb-3"
                                 >
                                     <div

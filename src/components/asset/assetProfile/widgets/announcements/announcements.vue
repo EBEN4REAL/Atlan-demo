@@ -37,36 +37,36 @@
                 </template>
 
                 <div
-                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer  max-w-min"
+                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer max-w-min"
                     :class="
-                        announcementType === 'information'
+                        type === 'information'
                             ? 'information-bg'
-                            : announcementType === 'issue'
+                            : type === 'issue'
                             ? 'issue-bg'
-                            : announcementType === 'warning'
+                            : type === 'warning'
                             ? 'warning-bg'
                             : ''
                     "
                 >
                     <component
-                        :is="announcementObject?.icon"
+                        :is="localAnnouncementObject?.icon"
                         class="w-auto h-4"
                     />
 
                     <span class="mb-0 ml-2">
-                        {{ announcementObject?.label }}
+                        {{ localAnnouncementObject?.label }}
                     </span>
                 </div>
             </a-dropdown>
             <a-input
                 ref="titleBar"
-                v-model:value="announcementTitle"
+                v-model:value="title"
                 placeholder="Add Announcement Header..."
                 class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
                 @change="handleTitleUpdate"
             />
             <a-textarea
-                v-model:value="announcementDescription"
+                v-model:value="description"
                 placeholder="Add description..."
                 class="text-gray-500 border-0 shadow-none outline-none"
                 :maxlength="280"
@@ -90,30 +90,27 @@
             </div>
         </div>
         <div v-else>
-            <div
-                v-if="!announcementTitle || announcementTitle === ''"
-                class="flex justify-between"
-            >
+            <div v-if="!title || title === ''" class="flex justify-between">
                 <div>
                     <div
-                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer  max-w-min"
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
                         :class="
-                            announcementType === 'information'
+                            type === 'information'
                                 ? 'information-bg'
-                                : announcementType === 'issue'
+                                : type === 'issue'
                                 ? 'issue-bg'
-                                : announcementType === 'warning'
+                                : type === 'warning'
                                 ? 'warning-bg'
                                 : ''
                         "
                     >
                         <component
-                            :is="announcementObject?.icon"
+                            :is="localAnnouncementObject?.icon"
                             class="w-auto h-4"
                         />
 
                         <span class="mb-0 ml-2">
-                            {{ announcementObject?.label }}
+                            {{ localAnnouncementObject?.label }}
                         </span>
                     </div>
 
@@ -133,7 +130,7 @@
                         <div v-if="editPermission">
                             <a-button
                                 v-show="showKebabMenu"
-                                class="px-2 bg-transparent border-transparent shadow-none  hover:border-current"
+                                class="px-2 bg-transparent border-transparent shadow-none hover:border-current"
                             >
                                 <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                             </a-button>
@@ -162,11 +159,11 @@
                 v-else
                 class="flex justify-between p-4 border rounded"
                 :class="
-                    bannerType === 'information'
+                    announcementType === 'information'
                         ? 'information-bg information-border'
-                        : bannerType === 'issue'
+                        : announcementType === 'issue'
                         ? 'issue-bg issue-border'
-                        : bannerType === 'warning'
+                        : announcementType === 'warning'
                         ? 'warning-bg warning-border'
                         : ''
                 "
@@ -174,23 +171,24 @@
                 <div class="flex">
                     <div>
                         <component
-                            :is="bannerObject?.icon"
+                            :is="announcementObject?.icon"
                             class="w-auto h-4 mt-1 mr-4"
                         />
                     </div>
                     <div>
                         <div class="mb-1 text-lg font-bold text-gray-700">
-                            {{ bannerTitle }}
+                            {{ announcementTitle }}
                         </div>
                         <div class="w-11/12 mb-2 text-gray-500">
-                            {{ bannerDescription }}
+                            {{ announcementMessage }}
                         </div>
                         <div class="flex items-center">
                             <a-popover>
                                 <template #content>
                                     <OwnerInfoCard
                                         :user="
-                                            asset?.attributes?.bannerUpdatedBy
+                                            asset?.attributes
+                                                ?.announcementUpdatedBy
                                         "
                                     />
                                 </template>
@@ -208,21 +206,26 @@
                                             KeyMaps.auth.avatar.GET_AVATAR({
                                                 username:
                                                     asset?.attributes
-                                                        ?.bannerUpdatedBy,
+                                                        ?.announcementUpdatedBy,
                                             })
                                         "
                                         :allow-upload="false"
                                         :avatar-name="
-                                            asset?.attributes?.bannerUpdatedBy
+                                            asset?.attributes
+                                                ?.announcementUpdatedBy
                                         "
                                         avatar-size="small"
                                         :avatar-shape="'circle'"
                                     />
-                                    {{ asset?.attributes?.bannerUpdatedBy }}
+                                    {{
+                                        asset?.attributes?.announcementUpdatedBy
+                                    }}
                                 </div></a-popover
                             >
                             <span class="text-xs text-gray-500">{{
-                                timeAgo(asset?.attributes?.bannerUpdatedAt)
+                                timeAgo(
+                                    asset?.attributes?.announcementUpdatedAt
+                                )
                             }}</span>
                         </div>
                     </div>
@@ -232,7 +235,7 @@
                         <div v-if="editPermission">
                             <a-button
                                 v-show="showKebabMenu"
-                                class="px-2 ml-2 bg-transparent border-transparent shadow-none  hover:border-current"
+                                class="px-2 ml-2 bg-transparent border-transparent shadow-none hover:border-current"
                             >
                                 <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                             </a-button>
@@ -294,21 +297,21 @@
             const {
                 handleCancel,
                 update,
-                bannerType,
-                bannerDescription,
-                bannerTitle,
+                announcementType,
+                announcementMessage,
+                announcementTitle,
                 isCompleted,
                 isLoading,
             } = addAnnouncement(asset)
 
-            const announcementDescription = ref(bannerDescription.value)
-            const announcementType = ref(bannerType.value)
-            const announcementTitle = ref(bannerTitle.value)
+            const description = ref(announcementMessage.value)
+            const type = ref(announcementType.value)
+            const title = ref(announcementTitle.value)
 
             const handleUpdate = () => {
-                bannerDescription.value = announcementDescription.value
-                bannerType.value = announcementType.value
-                bannerTitle.value = announcementTitle.value
+                announcementMessage.value = description.value
+                announcementType.value = type.value
+                announcementTitle.value = title.value
                 editable.value = false
                 update()
             }
@@ -317,22 +320,22 @@
                 handleCancel()
             }
             const handleTextAreaUpdate = (e: any) => {
-                announcementDescription.value = e.target.value
+                description.value = e.target.value
             }
             const handleTitleUpdate = (e: any) => {
-                announcementTitle.value = e.target.value
+                title.value = e.target.value
             }
 
-            const announcementObject = computed(() => {
+            const localAnnouncementObject = computed(() => {
                 const found = AnnouncementList.find(
-                    (item) => item.id === announcementType.value
+                    (item) => item.id === type.value
                 )
 
                 return found
             })
-            const bannerObject = computed(() => {
+            const announcementObject = computed(() => {
                 const found = AnnouncementList.find(
-                    (item) => item.id === bannerType.value
+                    (item) => item.id === announcementType.value
                 )
 
                 return found
@@ -343,7 +346,7 @@
                 titleBar.value?.focus()
             }
             const handleMenuClick = (announcement) => {
-                announcementType.value = announcement.id
+                type.value = announcement.id
             }
 
             const timeAgo = (time: string | number) => useTimeAgo(time).value
@@ -352,19 +355,19 @@
                 editable,
                 AnnouncementList,
                 handleUpdate,
-                bannerObject,
+                announcementObject,
                 onCancel,
                 startEdit,
-                announcementTitle,
-                announcementDescription,
+                title,
+                description,
                 handleMenuClick,
-                announcementType,
-                announcementObject,
+                type,
+                localAnnouncementObject,
                 isLoading,
                 handleTextAreaUpdate,
-                bannerDescription,
-                bannerType,
-                bannerTitle,
+                announcementMessage,
+                announcementType,
+                announcementTitle,
                 timeAgo,
                 KeyMaps,
                 isCompleted,

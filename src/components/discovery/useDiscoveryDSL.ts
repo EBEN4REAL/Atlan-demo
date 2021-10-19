@@ -37,6 +37,12 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 // TODO: Add the classification addedBy filter to the payload
                 break
             }
+            case 'terms': {
+                const terms: string[] = fltrObj
+                if (terms?.length) query.filter('terms', '__meanings', terms)
+
+                break
+            }
             case 'owners': {
                 break
             }
@@ -48,6 +54,7 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
             }
         }
     })
+    query.queryMinimumShouldMatch(1)
     return query
 }
 

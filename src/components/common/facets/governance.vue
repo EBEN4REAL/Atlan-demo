@@ -41,7 +41,7 @@
                 <a-tree
                     v-else
                     :expandedKeys="expandedKeys"
-                    :selectedKeys="selectedKeys"
+                    v-model:selectedKeys="selectedKeys"
                     :loadedKeys="loadedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
@@ -108,10 +108,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import { Components } from '~/api/atlas/client'
-    import { List } from '~/constant/status'
-    import { Collapse } from '~/types'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
     import useTree from '~/components/glossary/tree/composables/useTree'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { useDebounceFn } from '@vueuse/core'
@@ -119,48 +116,50 @@
     import LoadingView from '@common/loaders/section.vue'
     import getEntityStatusIcon from '~/components/glossary/tree/utils/getIcon'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
-import { Term } from '~/types/glossary/glossary.interface'
+    import { Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         props: {
-            item: {
-                type: Object as PropType<Collapse>,
-                required: true,
-            },
             data: {
                 type: Object,
                 required: true,
             },
         },
         components: { LoadingView, SearchAndFilter },
-        emits: ['change'],
+        emits: ['update:data', 'change'],
         setup(props, { emit }) {
-            const list = computed(() => List)
             const searchQuery = ref<string>()
             const checkedTerms = ref([])
+            const selectedKeys = ref([])
             const { data } = toRefs(props)
+
             const onCheck = (_, { checkedNodes }) => {
-                if (checkedNodes.length) {
-                    emit('change', checkedNodes.map((node) => node.props.qualifiedName))
-                } else {
-                    emit('change', undefined)
-                }
+                if (checkedNodes.length)
+                    emit(
+                        'update:data',
+                        checkedNodes.map((node) => node.props.qualifiedName)
+                    )
+                else emit('update:data', undefined)
+
+                emit('change')
             }
             const handleCheckboxChange = () => {
                 console.log(checkedTerms.value, 'bruhh')
                 if (checkedTerms.value?.length)
                     emit(
-                        'change',
-                        checkedTerms.value.map((term: Term) => term.attributes?.qualifiedName),
+                        'update:data',
+                        checkedTerms.value.map(
+                            (term: Term) => term.attributes?.qualifiedName
+                        )
                     )
-                else emit('change', [])
+                else emit('update:data', [])
+                emit('change')
             }
             const {
                 treeData,
                 loadedKeys,
                 onLoadData,
                 isInitingTree,
-                selectedKeys,
                 expandedKeys,
                 expandNode,
                 selectNode,
@@ -177,7 +176,12 @@ import { Term } from '~/types/glossary/glossary.interface'
                 terms: searchTerms,
                 isLoading: searchLoading,
                 fetchAssetsPaginated: searchAssetsPaginated,
-            } = useGtcSearch(ref(undefined), searchQuery, 'AtlasGlossaryTerm', 10)
+            } = useGtcSearch(
+                ref(undefined),
+                searchQuery,
+                'AtlasGlossaryTerm',
+                10
+            )
 
             const onSearch = useDebounceFn(() => {
                 if (searchQuery.value?.length) {
@@ -192,7 +196,6 @@ import { Term } from '~/types/glossary/glossary.interface'
 
             return {
                 data,
-                list,
 
                 getEntityStatusIcon,
                 onCheck,

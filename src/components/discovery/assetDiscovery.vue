@@ -12,7 +12,6 @@
                 "
                 :facets="facets"
                 @refresh="handleFilterChange"
-                @termNameChange="termNameChange"
             ></AssetFilters>
         </div>
 
@@ -391,12 +390,6 @@
                 updateBody()
                 setRouterOptions()
             }
-            const termNameChange = (termQNames: string[]) => {
-                termNames.value = termQNames
-                isAggregate.value = true
-                updateBody()
-                // setRouterOptions()
-            }
 
             const handlePreview = (item) => {
                 emit('preview', item)
@@ -463,7 +456,7 @@
                 setPlaceholder,
                 placeholderLabel,
                 assetTypeListString,
-                termNameChange,
+                termNames,
             }
         },
         data() {

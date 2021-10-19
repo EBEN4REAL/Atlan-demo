@@ -1,6 +1,15 @@
 <template>
     <div
-        class="flex items-center justify-between px-4 py-2 text-sm bg-gray-100 border-b border-gray-300 "
+        class="
+            flex
+            items-center
+            justify-between
+            px-4
+            py-2
+            text-sm
+            bg-gray-100
+            border-b border-gray-300
+        "
     >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
@@ -24,7 +33,14 @@
             </div>
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                class="
+                    text-sm
+                    font-medium
+                    text-gray-500
+                    rounded
+                    cursor-pointer
+                    hover:text-gray-700
+                "
                 @click="resetAllFilters"
             >
                 Reset
@@ -68,7 +84,13 @@
                                 >
                                 <AtlanIcon
                                     icon="ChevronDown"
-                                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                                    class="
+                                        ml-3
+                                        text-gray-500
+                                        transition-transform
+                                        duration-300
+                                        transform
+                                    "
                                     :class="
                                         activeKey.includes(item.id)
                                             ? '-rotate-180'
@@ -77,7 +99,13 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    class="
+                                        ml-auto
+                                        text-xs text-gray-500
+                                        opacity-0
+                                        hover:text-primary
+                                        group-hover:opacity-100
+                                    "
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -100,14 +128,6 @@
                     :item="item"
                     :list="bmDataList[item.id]"
                     @change="handleChange"
-                ></component>
-                <component
-                    v-else-if="item.component === 'governance'"
-                    is="governance"
-                    v-model:data="dataMap[item.id]"
-                    :item="item"
-                    :list="bmDataList[item.id]"
-                    @change="handleTermChange"
                 ></component>
                 <component
                     is="savedFilter"
@@ -180,7 +200,7 @@
             ),
         },
         props: {
-            initialFilters: {
+            filtersList: {
                 type: Object,
                 required: false,
                 default() {
@@ -195,7 +215,7 @@
                 },
             },
         },
-        emits: ['refresh', 'initialize', 'termNameChange'],
+        emits: ['refresh'],
         setup(props, { emit }) {
             const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             const activeKey: Ref<string[]> = ref([])
@@ -241,6 +261,7 @@
                 advanced: {
                     applied: props.facets?.advanced?.applied,
                 },
+                terms: props.facets?.terms,
             })
 
             const { isFilterApplied, totalAppliedFiltersCount } =
@@ -282,10 +303,6 @@
                 refresh()
             }
 
-            const handleTermChange = (termNames: string[]) => {
-                emit('termNameChange', termNames)
-            }
-
             const setConnector = (payload: any) => {
                 dataMap.value.connector = payload
             }
@@ -320,6 +337,10 @@
                             false
                         dataMap.value[filterId].operator = 'OR'
                         dataMap.value[filterId].addedBy = 'all'
+                        break
+                    }
+                    case 'term': {
+                        dataMap.value[filterId].applied = {}
                         break
                     }
                     case 'owners': {
@@ -500,7 +521,6 @@
                 bmFiltersList,
                 bmDataList,
                 setConnector,
-                handleTermChange,
                 handleSavedFilterChange,
                 handleSavedFilterAdded,
                 updateSavedFilters,

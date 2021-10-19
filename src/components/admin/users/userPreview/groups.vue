@@ -1,9 +1,31 @@
 <template>
-    <div class="my-3">
-        <div class="text-lg font-bold">Groups</div>
+    <div class="mb-3">
+        <div class="flex items-center justify-between mb-4">
+            <div class="text-lg font-bold">Groups</div>
+            <div v-if="showUserGroups">
+                <a-button @click="handleAddToGroup">
+                    <div class="flex items-center">
+                        <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
+                        <span>Add to group</span>
+                    </div>
+                </a-button>
+            </div>
+            <div v-else>
+                <a-button
+                    :loading="addToGroupLoading"
+                    type="primary"
+                    :disabled="addToGroupLoading"
+                    @click="addUserToGroups"
+                >
+                    <div class="flex items-center">
+                        <div>Done</div>
+                    </div>
+                </a-button>
+            </div>
+        </div>
         <div v-if="showUserGroups">
             <div class="flex flex-row justify-between">
-                <div>
+                <div class="w-full">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search ${selectedUser.group_count}  groups`"
@@ -12,14 +34,14 @@
                         size="minimal"
                     />
                 </div>
-                <div>
+                <!-- <div>
                     <a-button @click="handleAddToGroup">
                         <div class="flex items-center">
                             <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
                             <span>Add to group</span>
                         </div>
                     </a-button>
-                </div>
+                </div> -->
             </div>
             <div
                 v-if="!selectedUser.group_count"
@@ -54,12 +76,10 @@
                 {{ `No group with name ${searchText} found.` }}
             </div>
             <div v-else class="mt-4">
-                <div
-                    v-for="group in groupList"
-                    :key="group.id"
-                    class="py-2 border-b border-gray-100"
-                >
-                    <div class="flex justify-between group hover:bg-gray-100">
+                <div v-for="group in groupList" :key="group.id" class="">
+                    <div
+                        class="flex items-center justify-between px-3 py-2  group hover:bg-gray-100"
+                    >
                         <div class="flex items-center">
                             <div class="">
                                 <div class="mb-1 text-primary">
@@ -77,12 +97,24 @@
                             </div>
                         </div>
                         <div
+                            v-if="!removeFromGroupLoading[group.id]"
                             class="opacity-0 cursor-pointer  text-error group-hover:opacity-100"
                             @click="() => removeUserFromGroup(group)"
                         >
                             Remove
                         </div>
-                        <div class="font-bold">
+                        <div
+                            v-else
+                            class="flex cursor-default text-error-muted"
+                        >
+                            <fa
+                                style="vertical-align: middle"
+                                icon="fal circle-notch"
+                                class="mr-1 animate-spin"
+                            />
+                            <div>Removing...</div>
+                        </div>
+                        <!-- <div class="font-bold">
                             <div
                                 v-if="removeFromGroupLoading[group.id]"
                                 class="flex cursor-default text-error-muted"
@@ -94,14 +126,14 @@
                                 />
                                 <div>Removing...</div>
                             </div>
-                            <!-- <div
+                            <div
                                 v-else
                                 class="cursor-pointer text-error"
                                 @click="() => removeUserFromGroup(group)"
                             >
                                 Remove
-                            </div> -->
-                        </div>
+                            </div>
+                        </div> -->
                     </div>
                 </div>
                 <div
@@ -125,6 +157,7 @@
                 @showUserGroups="handleShowUserGroups"
                 @addUserToGroups="addUserToGroups"
                 :showBackButton="false"
+                :showAddButton="false"
             />
         </div>
     </div>
@@ -145,13 +178,11 @@ import {
     getNameInTitleCase,
 } from '~/composables//utils/string-operations'
 import { getIsLoadMore } from '~/composables/utils/isLoadMore'
-import AddToGroup from '~/components/admin/users/userPreview/groups/addUserToGroups.vue'
 import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
 export default defineComponent({
     name: 'UserPreviewGroups',
     components: {
-        AddToGroup,
         ErrorView,
         GroupList,
         SearchAndFilter,
@@ -217,30 +248,33 @@ export default defineComponent({
         )
         const addUserToGroups = async () => {
             const groupIds = [...selectedGroupIds.value]
-            const requestPayload = ref({
-                groups: groupIds,
-            })
-            const { data, isReady, error, isLoading } = User.AddGroups(
-                props.selectedUser.id,
-                requestPayload
-            )
-            watch(
-                [data, isReady, error, isLoading],
-                () => {
-                    addToGroupLoading.value = isLoading.value
-                    if (isReady && !error.value && !isLoading.value) {
-                        groupListAPIParams.params.offset = 0
-                        getUserGroupList()
-                        message.success('User added to groups')
-                        showUserGroups.value = true
-                    } else if (error && error.value) {
-                        message.error(
-                            'Unable to add user to groups, please try again.'
-                        )
-                    }
-                },
-                { immediate: true }
-            )
+            if (groupIds && groupIds.length) {
+                const requestPayload = ref({
+                    groups: groupIds,
+                })
+                const { data, isReady, error, isLoading } = User.AddGroups(
+                    props.selectedUser.id,
+                    requestPayload
+                )
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        addToGroupLoading.value = isLoading.value
+                        if (isReady && !error.value && !isLoading.value) {
+                            groupListAPIParams.params.offset = 0
+                            getUserGroupList()
+                            message.success('User added to groups')
+                            showUserGroups.value = true
+                        } else if (error && error.value) {
+                            message.error(
+                                'Unable to add user to groups, please try again.'
+                            )
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
+            showUserGroups.value = true
         }
 
         const removeUserFromGroup = (group: any) => {
@@ -265,6 +299,7 @@ export default defineComponent({
                         message.error(
                             `Failed to remove ${props.selectedUser.name} from  ${group.name}, please try again.`
                         )
+                        removeFromGroupLoading.value[group.id] = false
                     }
                 },
                 { immediate: true }

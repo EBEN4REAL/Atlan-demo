@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="flex flex-row justify-between">
-            <div class="flex">
+            <div class="flex w-full">
                 <a-button
                     v-if="showBackButton"
                     class="mr-3"
@@ -9,15 +9,17 @@
                 >
                     <AtlanIcon icon="CaretLeft" />
                 </a-button>
-                <SearchAndFilter
-                    v-model:value="searchText"
-                    :placeholder="`Search all groups`"
-                    @change="handleSearch"
-                    class="mr-1"
-                    size="minimal"
-                />
+                <div class="w-full">
+                    <SearchAndFilter
+                        v-model:value="searchText"
+                        :placeholder="`Search all groups`"
+                        @change="handleSearch"
+                        class="mr-1"
+                        size="minimal"
+                    />
+                </div>
             </div>
-            <div>
+            <div v-if="showAddButton">
                 <a-button
                     :loading="addToGroupLoading"
                     type="primary"
@@ -49,7 +51,7 @@
                 </div>
             </ErrorView>
         </div>
-        <div v-else class="pl-4 mt-4 overflow-auto">
+        <div v-else class="mt-4 overflow-auto">
             <a-checkbox-group class="w-full">
                 <div class="flex flex-col w-full">
                     <template v-for="group in groupList" :key="group.id">
@@ -124,6 +126,10 @@ export default defineComponent({
             default: false,
         },
         showBackButton: {
+            type: Boolean,
+            default: true,
+        },
+        showAddButton: {
             type: Boolean,
             default: true,
         },

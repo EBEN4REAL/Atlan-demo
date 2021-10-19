@@ -13,12 +13,18 @@
             >
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center ml-1 mr-2">
-                        <span
-                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
-                            @click="handleAdd"
-                        >
-                            <fa icon="fal plus" class="" />
-                        </span>
+                        <a-tooltip placement="bottom">
+                            <template #title
+                                >Add query</template
+                            >
+                             <span
+                                class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
+                                @click="handleAdd"
+                            >
+                                <fa icon="fal plus" class="" />
+                            </span>
+                        </a-tooltip>
+                       
                     </div>
                 </template>
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">

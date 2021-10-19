@@ -4,16 +4,16 @@
         <div
             class="grid gap-y-3 gap-x-16"
             :class="
-                assetData.typeName == 'Table' ||
-                assetData.typeName == 'TablePartition'
+                selectedAsset.typeName == 'Table' ||
+                selectedAsset.typeName == 'TablePartition'
                     ? 'summary-grid-3'
                     : 'summary-grid-2'
             "
         >
             <RowInfoHoverCard
                 v-if="
-                    assetData.typeName == 'Table' ||
-                    assetData.typeName == 'TablePartition'
+                    selectedAsset.typeName == 'Table' ||
+                    selectedAsset.typeName == 'TablePartition'
                 "
                 :row-count="rows"
                 :size-bytes="size"
@@ -33,31 +33,31 @@
             </div>
             <div class="max-w-screen-md">
                 <Description
-                    v-if="assetData.guid"
-                    :selected-asset="assetData"
+                    v-if="selectedAsset.guid"
+                    :selected-asset="selectedAsset"
                     :edit-permission="editPermission"
                     @update:selected-asset="mutateAsset"
                 />
             </div>
             <div
                 :class="
-                    assetData.typeName == 'Table' ||
-                    assetData.typeName == 'TablePartition'
+                    selectedAsset.typeName == 'Table' ||
+                    selectedAsset.typeName == 'TablePartition'
                         ? 'status-grid'
                         : ''
                 "
             >
                 <Status
-                    v-if="assetData.guid"
-                    :selected-asset="assetData"
+                    v-if="selectedAsset.guid"
+                    :selected-asset="selectedAsset"
                     :edit-permission="editPermission"
                     @update:selected-asset="mutateAsset"
                 />
             </div>
 
             <Owners
-                v-if="assetData.guid"
-                :selected-asset="assetData"
+                v-if="selectedAsset.guid"
+                :selected-asset="selectedAsset"
                 :edit-permission="editPermission"
                 @update:selected-asset="mutateAsset"
             />
@@ -67,7 +67,13 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, inject, computed } from 'vue'
+    import { defineComponent,
+        // watch, 
+        // ref,
+        // inject,
+        computed 
+    } from 'vue'
+    import { storeToRefs } from 'pinia'
 
     // Components
     import Description from '@common/sidebar/description.vue'
@@ -80,6 +86,8 @@
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: { RowInfoHoverCard, Description, Status, Owners },
@@ -92,11 +100,14 @@
         },
         setup() {
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
-
+            // const assetData = computed(() => assetDataInjection?.asset)
+            // store
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             const {
                 rowCount,
                 columnCount,
@@ -106,34 +117,34 @@
             } = useAssetInfo()
 
             const rows = computed(() =>
-                assetData.value ? rowCount(assetData.value, true) : '~'
+                selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
             )
             const size = computed(() =>
-                assetData.value ? sizeBytes(assetData.value, false) : '~'
+                selectedAsset.value ? sizeBytes(selectedAsset.value, false) : '~'
             )
 
             const cols = computed(() =>
-                assetData.value ? columnCount(assetData.value, true) : '~'
+                selectedAsset.value ? columnCount(selectedAsset.value, true) : '~'
             )
 
             const sourceUpdated = computed(() =>
-                assetData.value ? sourceUpdatedAt(assetData.value) : ''
+                selectedAsset.value ? sourceUpdatedAt(selectedAsset.value) : ''
             )
             const sourceUpdatedRaw = computed(() =>
-                assetData.value ? sourceUpdatedAt(assetData.value, true) : ''
+                selectedAsset.value ? sourceUpdatedAt(selectedAsset.value, true) : ''
             )
 
             const sourceCreated = computed(() =>
-                assetData.value ? sourceCreatedAt(assetData.value) : ''
+                selectedAsset.value ? sourceCreatedAt(selectedAsset.value) : ''
             )
             const sourceCreatedRaw = computed(() =>
-                assetData.value ? sourceCreatedAt(assetData.value, true) : ''
+                selectedAsset.value ? sourceCreatedAt(selectedAsset.value, true) : ''
             )
 
             const mutateAsset = (updatedAsset: assetInterface) => {}
 
             return {
-                assetData,
+                selectedAsset,
                 rows,
                 cols,
                 sourceUpdated,

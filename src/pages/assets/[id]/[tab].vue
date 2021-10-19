@@ -87,8 +87,8 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        provide,
-        toRefs,
+        // provide
+        // toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -103,9 +103,9 @@
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useCheckAccess from '~/services/access/useCheckAccess'
-
+    import useDiscoveryStore from '~/store/discovery'
     // Constants
-    import { AssetTypeList } from '~/constant/assetType'
+    // import { AssetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         components: {
@@ -136,6 +136,7 @@
         emits: ['preview'],
         setup(props, context) {
             /** DATA */
+            const storeDiscovery = useDiscoveryStore()
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
@@ -253,7 +254,8 @@
 
             // handlePreview
             const handlePreview = (item) => {
-                context.emit('preview', item)
+              // context.emit('preview', item)
+              storeDiscovery.setSelectedAsset(item)
             }
 
             // fetch
@@ -300,7 +302,7 @@
             })
 
             /** PROVIDER */
-            provide('assetData', data.value)
+            // provide('assetData', data.value)
 
             // TODO: remove after fixing hierarchy bug
             // provide('parentForBIAsset', parentForBIAsset)

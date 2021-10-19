@@ -21,7 +21,8 @@
         },
         "saveVariables": {
             "host": ".host",
-            "description": ".description"
+            "description": ".description",
+            "guid": ".id"
         },
         "allowCreate": true,
         "rules": [
@@ -43,18 +44,6 @@
         }
     },
     {
-        "type": "template",
-        "id": "credential-guid",
-        "template": "{{credential.guid}}",
-        "isVisible": false
-    },
-    {
-        "id": "host",
-        "type": "template",
-        "template": "{{.credential.host}}",
-        "isVisible": false
-    },
-    {
         "type": "asyncTreeSelect",
         "stringifyValue": true,
         "id": "include-filter",
@@ -63,7 +52,7 @@
             "url": "http://{{domain}}/api/sql/metadata/databases",
             "method": "POST",
             "params": {
-                "guid": "f897469a-8dd6-4334-9c52-36e182481b2b"
+                "guid": "{{.guid}}"
             },
             "form": {},
             "addFormValues": []
@@ -77,7 +66,7 @@
             "url": "http://{{domain}}/api/sql/metadata/schemas/{{parent}}",
             "method": "POST",
             "params": {
-                "guid": "f897469a-8dd6-4334-9c52-36e182481b2b"
+                "guid": "{{.credential}}"
             },
             "addFormValues": [],
             "body": {

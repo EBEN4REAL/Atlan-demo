@@ -1,14 +1,13 @@
 import { ref, computed, watch } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 import { ReqConfig, ResConfig } from './asyncSelect.interface';
-import { getStringFromPath } from './asyncSelect.utils'
+import { getStringFromPath, genParams } from './asyncSelect.utils'
 
 export default function useAsyncSelector(
     reqConfig: ReqConfig,
     resConfig: ResConfig,
     valueObject: { [x: string]: string; },
-    getConfig: { rootPath: string, requestConfig: ReqConfig },
-    gV: string[]) {
+    getConfig: { rootPath: string, requestConfig: ReqConfig }) {
     const asyncData = ref()
 
     const setData = (res: any) => {
@@ -91,7 +90,7 @@ export default function useAsyncSelector(
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            const response = await useAPIPromise(parsedUrl, method, { params, body })
+            const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body })
             setConfigData(response)
             createNewVisibility.value = true
         } catch (e) {
@@ -117,7 +116,7 @@ export default function useAsyncSelector(
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            const response = await useAPIPromise(parsedUrl, method, { params, body: getParsedBody(addFormValues) })
+            const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body: getParsedBody(addFormValues) })
             setData(response);
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig

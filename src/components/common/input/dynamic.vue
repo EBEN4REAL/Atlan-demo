@@ -333,8 +333,7 @@
                 props.requestConfig,
                 props.responseConfig,
                 valueObject,
-                props?.getFormConfig,
-                props?.globalVariables
+                props?.getFormConfig
             )
 
             const {
@@ -345,7 +344,8 @@
             } = useAsyncTreeSelect(
                 asyncData,
                 props.otherApiConfig.req,
-                props.otherApiConfig.res
+                props.otherApiConfig.res,
+                valueObject
             )
 
             const handleDropdownVisibleChange = (open) => {

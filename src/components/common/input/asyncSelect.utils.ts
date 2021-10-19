@@ -38,3 +38,11 @@ export const getStringFromPath = (data: object | Array<any>, path: string) => {
     }
     return label || path;
 }
+
+export const genParams = (dO, pO) => {
+    const newParamObject = {}
+    Object.entries(pO).forEach(([k, p]: string[]) => {
+        newParamObject[k] = getStringFromPath(dO, p);
+    })
+    return newParamObject;
+}

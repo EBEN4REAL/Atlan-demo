@@ -285,7 +285,7 @@
             return {
                 autoSelect,
                 handleClearFiltersFromList,
-
+                facets,
                 initialTabs,
                 searchScoreList,
                 list,

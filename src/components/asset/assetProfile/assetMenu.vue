@@ -139,8 +139,8 @@
                 required: true,
                 default: () => {},
             },
-            userPermission: {
-                type: Object as PropType<assetInterface>,
+            editPermission: {
+                type: Boolean,
                 required: true,
             },
         },
@@ -148,13 +148,11 @@
             // data
             const isVisible = ref(false)
             const router = useRouter()
-            const editPermission = ref<boolean>(false)
-            const { asset, userPermission } = toRefs(props)
+            const { asset } = toRefs(props)
 
             const closeMenu = () => {
                 isVisible.value = false
             }
-            editPermission.value = userPermission.value[0]?.allowed
 
             function handleCopyProfileLink() {
                 const baseUrl = window.location.origin
@@ -169,7 +167,6 @@
                 isVisible,
                 updateAsset,
                 closeMenu,
-                editPermission,
             }
         },
     })

@@ -50,7 +50,7 @@
 
                     <AssetMenu
                         :asset="assetData"
-                        :userPermission="userPermission"
+                        :editPermission="userHasEditPermission"
                     />
                 </div>
             </div>
@@ -99,7 +99,7 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, inject } from 'vue'
+    import { defineComponent, computed, inject, watch, ref } from 'vue'
     // Components
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
@@ -117,7 +117,12 @@
             StatusBadge,
             AssetMenu,
         },
-
+        props: {
+            userHasEditPermission: {
+                type: Boolean,
+                required: true,
+            },
+        },
         setup(props) {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -128,19 +133,22 @@
             /** METHODS */
             // useAssetInfo
             const { status, title, assetType } = useAssetInfo()
-            const { evaluatePermissions } = useCheckAccess()
+            /*   const { evaluatePermissions } = useCheckAccess()
 
             const { data: userPermission } = evaluatePermissions(
                 assetData.value,
                 'ENTITY_UPDATE'
             )
 
+            watch(userPermission, () => {
+                editPermission.value = userPermission.value[0]?.allowed
+            }) */
+
             return {
                 assetData,
                 status,
                 title,
                 assetType,
-                userPermission,
             }
         },
     })

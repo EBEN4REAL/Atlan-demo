@@ -28,7 +28,12 @@
                     {{ title }}
                 </h3>
             </div>
-            <div class="flex space-x-2"><UtilityButtons /></div>
+            <div class="flex space-x-2">
+                <UtilityButtons />
+                <a-button size="small" @click="$emit('openLogs')"
+                    >Logs</a-button
+                >
+            </div>
         </div>
     </div>
 </template>
@@ -42,5 +47,6 @@
             UtilityButtons,
         },
         props: { title: { type: String, default: 'Title here' } },
+        emits: ['openLogs'],
     })
 </script>

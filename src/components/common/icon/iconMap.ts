@@ -114,6 +114,11 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import Schedule from '~/assets/images/icons/schedule.svg'
+import Delete from '~/assets/images/icons/delete.svg'
+import Minimap from '~/assets/images/icons/minimap.svg'
+import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
+import Minus from '~/assets/images/icons/minus.svg'
 
 export default {
     queryErorrIllus,
@@ -232,4 +237,9 @@ export default {
     Settings,
     Delete,
     Slack,
+    Schedule,
+    Delete,
+    Minimap,
+    FullScreenBoth,
+    Minus,
 }

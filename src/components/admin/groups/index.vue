@@ -67,31 +67,19 @@
                     "
                 >
                     <div
-                        class="
-                            flex
-                            capitalize
-                            truncate
-                            cursor-pointer
-                            text-primary
-                        "
+                        class="flex capitalize truncate cursor-pointer  text-primary"
                     >
-                        <div class="truncate max-w-3/4 mr-2">{{ group.name }}</div>
+                        <div class="mr-2 truncate max-w-3/4">
+                            {{ group.name }}
+                        </div>
                         <div
                             v-if="group.isDefault === 'true'"
-                            class="
-                                px-2
-                                py-1
-                                text-xs
-                                font-bold
-                                bg-blue-100
-                                rounded-full
-                                text-gray
-                            "
+                            class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full  text-gray"
                         >
                             Default
                         </div>
                     </div>
-                    <p class="mb-0 text-gray truncate">
+                    <p class="mb-0 truncate text-gray">
                         {{ group.description }}
                     </p>
                 </div>
@@ -163,268 +151,261 @@
     </DefaultLayout>
 </template>
 <script lang="ts">
-    import { ref, reactive, defineComponent, computed, watch } from 'vue'
-    import DefaultLayout from '@/admin/defaultLayout.vue'
-    import ErrorView from '@common/error/index.vue'
-    import { message } from 'ant-design-vue'
-    import { useDebounceFn } from '@vueuse/core'
-    import { useRouter } from 'vue-router'
-    import { Group } from '@services/keycloak/groups/groups_api'
-    import useGroups from '~/composables/group/useGroups'
-    import GroupPreviewDrawer from './groupPreview/groupPreviewDrawer.vue'
-    import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
+import { ref, reactive, defineComponent, computed, watch } from 'vue'
+import ErrorView from '@common/error/index.vue'
+import { message } from 'ant-design-vue'
+import { useDebounceFn } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import { Group } from '@services/keycloak/groups/groups_api'
+import DefaultLayout from '@/admin/defaultLayout.vue'
+import useGroups from '~/composables/group/useGroups'
+import GroupPreviewDrawer from './groupPreview/groupPreviewDrawer.vue'
+import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
 
-    export default defineComponent({
-        components: {
-            ErrorView,
-            GroupPreviewDrawer,
-            DefaultLayout,
-        },
-        setup(props, context) {
-            const router = useRouter()
-            const defaultTab = ref('about')
-            const showGroupPreview = ref(false)
-            const markAsDefaultLoading = ref(false)
-            const deleteGroupLoading = ref(false)
-            const showActionsDropdown = ref(false)
+export default defineComponent({
+    components: {
+        ErrorView,
+        GroupPreviewDrawer,
+        DefaultLayout,
+    },
+    setup(props, context) {
+        const router = useRouter()
+        const defaultTab = ref('about')
+        const showGroupPreview = ref(false)
+        const markAsDefaultLoading = ref(false)
+        const deleteGroupLoading = ref(false)
+        const showActionsDropdown = ref(false)
 
-            const selectedGroupId = ref('')
-            const groupListAPIParams = reactive({
-                limit: 15,
-                offset: 0,
-                filter: {},
-                sort: '-created_at',
-            })
-            const pagination = computed(() => ({
-                total: Object.keys(groupListAPIParams.filter).length
-                    ? filteredGroupsCount.value
-                    : totalGroupsCount.value,
-                pageSize: groupListAPIParams.limit,
-                current:
-                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
-            }))
-            const {
-                groupList,
-                totalGroupsCount,
-                filteredGroupsCount,
-                getGroupList,
-                state,
-                STATES,
-            } = useGroups(groupListAPIParams)
-            // Logic for search input
-            const searchText = ref<string>('')
-            const onSearch = useDebounceFn(() => {
-                groupListAPIParams.filter = searchText.value
-                    ? {
-                          $or: [
-                              { name: { $ilike: `%${searchText.value}%` } },
-                              {
-                                  attributes: {
-                                      $elemMatch: {
-                                          alias: {
-                                              $ilike: `%${searchText.value}%`,
-                                          },
+        const selectedGroupId = ref('')
+        const groupListAPIParams = reactive({
+            limit: 15,
+            offset: 0,
+            filter: {},
+            sort: '-created_at',
+        })
+        const pagination = computed(() => ({
+            total: Object.keys(groupListAPIParams.filter).length
+                ? filteredGroupsCount.value
+                : totalGroupsCount.value,
+            pageSize: groupListAPIParams.limit,
+            current: groupListAPIParams.offset / groupListAPIParams.limit + 1,
+        }))
+        const {
+            groupList,
+            totalGroupsCount,
+            filteredGroupsCount,
+            getGroupList,
+            state,
+            STATES,
+        } = useGroups(groupListAPIParams)
+        // Logic for search input
+        const searchText = ref<string>('')
+        const onSearch = useDebounceFn(() => {
+            groupListAPIParams.filter = searchText.value
+                ? {
+                      $or: [
+                          { name: { $ilike: `%${searchText.value}%` } },
+                          {
+                              attributes: {
+                                  $elemMatch: {
+                                      alias: {
+                                          $ilike: `%${searchText.value}%`,
                                       },
                                   },
                               },
-                              // { alias: { $ilike: `%${searchText.value}%` } },
-                          ],
-                      }
-                    : {}
+                          },
+                          // { alias: { $ilike: `%${searchText.value}%` } },
+                      ],
+                  }
+                : {}
+            groupListAPIParams.offset = 0
+            getGroupList()
+        }, 600)
+        const handleTableChange = (
+            pagination: any,
+            filters: any,
+            sorter: any
+        ) => {
+            // add sort
+            if (Object.keys(sorter).length) {
+                let sortValue = '-created_at'
+                if (sorter.order && sorter.column && sorter.column.sortKey)
+                    sortValue = `${sorter.order === 'descend' ? '-' : ''}${
+                        sorter.column.sortKey
+                    }`
+                groupListAPIParams.sort = sortValue
                 groupListAPIParams.offset = 0
-                getGroupList()
-            }, 600)
-            const handleTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                // add sort
-                if (Object.keys(sorter).length) {
-                    let sortValue = '-created_at'
-                    if (sorter.order && sorter.column && sorter.column.sortKey)
-                        sortValue = `${sorter.order === 'descend' ? '-' : ''}${
-                            sorter.column.sortKey
-                        }`
-                    groupListAPIParams.sort = sortValue
-                    groupListAPIParams.offset = 0
-                }
-                // modify offset
-                const offset =
-                    (pagination.current - 1) * groupListAPIParams.limit
-                groupListAPIParams.offset = offset
-                // fetch groups
-                getGroupList()
             }
-            const handleAddMembers = (group: any) => {
-                showGroupPreviewDrawer(group, 'members')
-            }
-            const handleGroupClick = (group: any) => {
-                // showGroupPreview.value = true;
-                showGroupPreviewDrawer(group)
-            }
-            const selectedGroup = computed(() => {
-                let activeGroupObj = {}
-                if (groupList && groupList.value && groupList.value.length)
-                    activeGroupObj = groupList.value.find(
-                        (group: any) => group.id === selectedGroupId.value
-                    )
-                return activeGroupObj
-            })
-            const handleClosePreview = () => {
-                defaultTab.value = 'about'
-                showGroupPreview.value = false
-            }
-            const handleDeleteGroup = (groupId: string) => {
-                const { data, isReady, error, isLoading } =
-                    Group.DeleteGroup(groupId)
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        deleteGroupLoading.value = isLoading.value
-                        if (isReady && !error.value && !isLoading.value) {
-                            getGroupList()
-                            message.success('Group Removed')
-                        } else if (error && error.value) {
-                            message.error('Failed, try again')
-                        }
-                    },
-                    { immediate: true }
+            // modify offset
+            const offset = (pagination.current - 1) * groupListAPIParams.limit
+            groupListAPIParams.offset = offset
+            // fetch groups
+            getGroupList()
+        }
+        const handleAddMembers = (group: any) => {
+            showGroupPreviewDrawer(group, 'members')
+        }
+        const handleGroupClick = (group: any) => {
+            // showGroupPreview.value = true;
+            showGroupPreviewDrawer(group)
+        }
+        const selectedGroup = computed(() => {
+            let activeGroupObj = {}
+            if (groupList && groupList.value && groupList.value.length)
+                activeGroupObj = groupList.value.find(
+                    (group: any) => group.id === selectedGroupId.value
                 )
+            return activeGroupObj
+        })
+        const handleClosePreview = () => {
+            defaultTab.value = 'about'
+            showGroupPreview.value = false
+        }
+        const handleDeleteGroup = (groupId: string) => {
+            const { data, isReady, error, isLoading } =
+                Group.DeleteGroup(groupId)
+            watch(
+                [data, isReady, error, isLoading],
+                () => {
+                    deleteGroupLoading.value = isLoading.value
+                    if (isReady && !error.value && !isLoading.value) {
+                        getGroupList()
+                        message.success('Group Removed')
+                    } else if (error && error.value) {
+                        message.error('Failed, try again')
+                    }
+                },
+                { immediate: true }
+            )
+        }
+        // BEGIN: GROUP PREVIEW
+        const {
+            showPreview,
+            showGroupPreview: openPreview,
+            setGroupUniqueAttribute,
+            setDefaultTab,
+        } = useGroupPreview()
+        const showGroupPreviewDrawer = (group: any, activeTabKey = 'about') => {
+            selectedGroupId.value = group.id
+            setDefaultTab(activeTabKey)
+            setGroupUniqueAttribute(group.id)
+            openPreview()
+        }
+        watch(showPreview, () => {
+            if (!showPreview.value) getGroupList()
+        })
+        // END: GROUP PREVIEW
+        const handleToggleDefault = (group: any) => {
+            const requestPayload = ref()
+            requestPayload.value = {
+                attributes: {
+                    isDefault: [
+                        `${group.isDefault === 'true' ? 'false' : 'true'}`,
+                    ],
+                },
             }
-            // BEGIN: GROUP PREVIEW
-            const {
-                showPreview,
-                showGroupPreview: openPreview,
-                setGroupUniqueAttribute,
-                setDefaultTab,
-            } = useGroupPreview()
-            const showGroupPreviewDrawer = (
-                group: any,
-                activeTabKey = 'about'
-            ) => {
-                selectedGroupId.value = group.id
-                setDefaultTab(activeTabKey)
-                setGroupUniqueAttribute(group.id)
-                openPreview()
-            }
-            watch(showPreview, () => {
-                if (!showPreview.value) getGroupList()
-            })
-            // END: GROUP PREVIEW
-            const handleToggleDefault = (group: any) => {
-                const requestPayload = ref()
-                requestPayload.value = {
-                    attributes: {
-                        isDefault: [
-                            `${group.isDefault === 'true' ? 'false' : 'true'}`,
-                        ],
-                    },
-                }
-                const { data, isReady, error, isLoading } = Group.UpdateGroup(
-                    group.id,
-                    requestPayload
-                )
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        markAsDefaultLoading.value = isLoading.value
-                        if (isReady && !error.value && !isLoading.value) {
-                            message.success(
-                                `Group ${
-                                    group.isDefault === 'true'
-                                        ? 'unmarked'
-                                        : 'marked'
-                                } as default`
-                            )
-                            getGroupList()
-                        } else if (error && error.value) {
-                            message.error(
-                                `Unable to ${
-                                    group.isDefault === 'true'
-                                        ? 'unmark'
-                                        : 'mark'
-                                } group as default, please try again`
-                            )
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
-            return {
-                searchText,
-                onSearch,
-                groupList,
-                pagination,
-                handleTableChange,
-                state,
-                STATES,
-                handleGroupClick,
-                showGroupPreview,
-                totalGroupsCount,
-                selectedGroup,
-                handleClosePreview,
-                handleDeleteGroup,
-                getGroupList,
-                handleAddMembers,
-                defaultTab,
-                handleToggleDefault,
-                markAsDefaultLoading,
-                deleteGroupLoading,
-                showActionsDropdown,
-            }
-        },
-        data() {
-            return {
-                dataSource: [],
-                columns: [
-                    {
-                        title: 'Group Name',
-                        key: 'name',
-                        sorter: true,
-                        ellipsis: true,
-                        width: 300,
-                        sortKey: 'alias',
-                        slots: { title: 'customTitle', customRender: 'name' },
-                    },
-                    {
-                        title: 'Created By',
-                        dataIndex: 'createdBy',
-                        key: 'createdBy',
-                    },
-                    {
-                        title: 'Created',
-                        dataIndex: 'createdAtTimeAgo',
-                        key: 'createdAt',
-                        sorter: true,
-                        ellipsis: true,
-                        sortKey: 'created_at',
-                    },
-                    {
-                        title: 'Members',
-                        dataIndex: 'memberCountString',
-                        key: 'memberCountString',
-                        sorter: true,
-                        ellipsis: true,
-                        sortKey: 'user_count',
-                    },
-                    {
-                        title: 'Actions',
+            const { data, isReady, error, isLoading } = Group.UpdateGroup(
+                group.id,
+                requestPayload
+            )
+            watch(
+                [data, isReady, error, isLoading],
+                () => {
+                    markAsDefaultLoading.value = isLoading.value
+                    if (isReady && !error.value && !isLoading.value) {
+                        message.success(
+                            `Group ${
+                                group.isDefault === 'true'
+                                    ? 'unmarked'
+                                    : 'marked'
+                            } as default`
+                        )
+                        getGroupList()
+                    } else if (error && error.value) {
+                        message.error(
+                            `Unable to ${
+                                group.isDefault === 'true' ? 'unmark' : 'mark'
+                            } group as default, please try again`
+                        )
+                    }
+                },
+                { immediate: true }
+            )
+        }
+        return {
+            searchText,
+            onSearch,
+            groupList,
+            pagination,
+            handleTableChange,
+            state,
+            STATES,
+            handleGroupClick,
+            showGroupPreview,
+            totalGroupsCount,
+            selectedGroup,
+            handleClosePreview,
+            handleDeleteGroup,
+            getGroupList,
+            handleAddMembers,
+            defaultTab,
+            handleToggleDefault,
+            markAsDefaultLoading,
+            deleteGroupLoading,
+            showActionsDropdown,
+        }
+    },
+    data() {
+        return {
+            dataSource: [],
+            columns: [
+                {
+                    title: 'Group Name',
+                    key: 'name',
+                    sorter: true,
+                    ellipsis: true,
+                    width: 300,
+                    sortKey: 'alias',
+                    slots: { title: 'customTitle', customRender: 'name' },
+                },
+                {
+                    title: 'Created By',
+                    dataIndex: 'createdBy',
+                    key: 'createdBy',
+                },
+                {
+                    title: 'Created',
+                    dataIndex: 'createdAtTimeAgo',
+                    key: 'createdAt',
+                    sorter: true,
+                    ellipsis: true,
+                    sortKey: 'created_at',
+                },
+                {
+                    title: 'Members',
+                    dataIndex: 'memberCountString',
+                    key: 'memberCountString',
+                    sorter: true,
+                    ellipsis: true,
+                    sortKey: 'user_count',
+                },
+                {
+                    title: 'Actions',
 
-                        slots: { customRender: 'actions' },
-                    },
-                ],
-            }
-        },
-    })
+                    slots: { customRender: 'actions' },
+                },
+            ],
+        }
+    },
+})
 </script>
 <style lang="less">
-    #groupList {
-        th.ant-table-row-cell-last {
-            display: flex;
-            justify-content: center;
-        }
+#groupList {
+    th.ant-table-row-cell-last {
+        display: flex;
+        justify-content: center;
     }
+}
 </style>
 <route lang="yaml">
 meta:

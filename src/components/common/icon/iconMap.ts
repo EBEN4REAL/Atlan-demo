@@ -87,7 +87,6 @@ import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
 import Pencil from '~/assets/images/icons/pencil.svg'
-import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
 import Cross from '~/assets/images/icons/cross.svg'
@@ -104,6 +103,8 @@ import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
+import CaretLeft from '~/assets/images/icons/caret-left.svg'
+import CaretRight from '~/assets/images/icons/caret-right.svg'
 import Settings from '~/assets/images/icons/setings.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -115,7 +116,6 @@ import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
-import Delete from '~/assets/images/icons/delete.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
@@ -220,7 +220,7 @@ export default {
     GlossaryDraft,
     MultipleStatus,
     Pencil,
-    Caret,
+    CaretRight,
     Check,
     Dots,
     Cross,
@@ -234,6 +234,7 @@ export default {
     InsightsInactive,
     AssetsActive,
     AssetsInactive,
+    CaretLeft,
     Settings,
     Delete,
     Slack,

@@ -23,7 +23,12 @@ export function useSavedQuery(
 ) {
     const { username } = whoami()
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-    const { getConnectorName, getConnectionQualifiedName } = useConnector()
+    const {
+        getConnectorName,
+        getConnectionQualifiedName,
+        getSchemaQualifiedName,
+        getConnectorsDataFromQualifiedNames,
+    } = useConnector()
     const { getParsedQuery } = useEditor()
 
     const {
@@ -35,11 +40,15 @@ export function useSavedQuery(
     } = useInlineTab(treeSelectedKeys)
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         /* --------NOTE- TEMPERORY FIX-------*/
-        const defaultSchemaQualifiedNameValues =
-            savedQuery.attributes.defaultSchemaQualifiedName?.split('.') ?? [
-                undefined,
-                undefined,
-            ]
+        const defaultSchemaQualifiedName =
+            savedQuery.attributes.defaultSchemaQualifiedName
+        const connectionQualifiedName =
+            savedQuery.attributes.connectionQualifiedName
+        const connectors = getConnectorsDataFromQualifiedNames(
+            connectionQualifiedName,
+            defaultSchemaQualifiedName
+        )
+        console.log(connectors, 'connectors')
         /* --------NOTE- TEMPERORY FIX-------*/
 
         const newTab: activeInlineTabInterface = {
@@ -61,10 +70,7 @@ export function useSavedQuery(
             status: savedQuery.attributes.certificateStatus as string,
             explorer: {
                 schema: {
-                    connectors: {
-                        attributeName: defaultSchemaQualifiedNameValues[0],
-                        attributeValue: defaultSchemaQualifiedNameValues[1],
-                    },
+                    connectors: connectors,
                 },
                 queries: {
                     connectors: {
@@ -162,7 +168,7 @@ export function useSavedQuery(
             editorInstanceRaw?.getValue() as string
         )
         const defaultSchemaQualifiedName =
-            `${attributeName}.${attributeValue}` ?? ''
+            getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -268,7 +274,7 @@ export function useSavedQuery(
         )
         const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
-            `${attributeName}.${attributeValue}` ?? ''
+            getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -410,7 +416,7 @@ export function useSavedQuery(
         // const compiledQuery = activeInlineTabCopy.playground.editor.text
         const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
-            `${attributeName}.${attributeValue}` ?? ''
+            getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab.value.playground.editor.variables
         )

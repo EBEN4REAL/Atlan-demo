@@ -161,6 +161,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     const refetch = () => {
         body.value = getBody()
         mutate()
+        console.log('refetching')
+        console.log(entity)
     }
 
     return {

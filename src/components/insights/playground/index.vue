@@ -231,6 +231,8 @@
                                 title: `${key} Result`,
                                 isQueryRunning: '',
                                 queryErrorObj: {},
+                                totalRowsCount: -1,
+                                executionTime: -1,
                             },
                             metadata: {},
                             queries: {},

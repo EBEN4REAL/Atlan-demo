@@ -1,6 +1,6 @@
 <template>
     <div class="relative w-full h-full bg-white rounded">
-        <div class="w-full h-full overflow-x-hidden rounded">
+        <div class="w-full h-full overflow-hidden rounded">
             <div class="flex items-center justify-between w-full px-3 my-2">
                 <div class="flex items-center text-base">
                     <div
@@ -256,7 +256,7 @@
             <Monaco @editorInstance="setInstance" />
 
             <div
-                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pb-1 text-xs text-gray-500 bg-white "
+                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
             >
                 <div class="flex items-center">
                     <!-- <WarehouseConnector /> -->
@@ -376,7 +376,7 @@
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
             const { resultsPaneSizeToggle } = useHotKeys()
-            const { queryRun, modifyQueryExecutionTime } = useRunQuery()
+            const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
             const { toggleFullScreenMode } = useFullScreen()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
@@ -428,7 +428,6 @@
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
                 console.log(queryExecutionTime, executionTime, 'extime')
-                modifyQueryExecutionTime(queryExecutionTime, executionTime)
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))

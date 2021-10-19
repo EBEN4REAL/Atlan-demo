@@ -5,8 +5,10 @@ import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
 import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import Reload from '~/assets/images/icons/reload.svg'
+import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import PrimaryKey from '~/assets/images/icons/primary.svg'
+import Lock from '~/assets/images/icons/lock.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
@@ -46,7 +48,6 @@ import GlossaryInactive from '~/assets/images/icons/glossary_inactive.svg'
 import GlossaryDeprecated from '~/assets/images/icons/glossary-deprecated.svg'
 import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
-
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
@@ -114,6 +115,10 @@ import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 import Flash from '~/assets/images/icons/flash.svg'
+import Schedule from '~/assets/images/icons/schedule.svg'
+import Minimap from '~/assets/images/icons/minimap.svg'
+import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
+import Minus from '~/assets/images/icons/minus.svg'
 
 export default {
     queryErorrIllus,
@@ -142,6 +147,7 @@ export default {
     ForeignKey,
     PrimaryKey,
     Share,
+    NoAccess,
     Cancel,
     Filter,
     Reload,
@@ -175,6 +181,7 @@ export default {
     Approve,
     Decline,
     CategoryDraft,
+    Lock,
     EmptyGlossary,
     Glossary,
     GlossaryInactive,
@@ -230,5 +237,9 @@ export default {
     Settings,
     Delete,
     Slack,
-    Flash
+    Flash,
+    Schedule,
+    Minimap,
+    FullScreenBoth,
+    Minus,
 }

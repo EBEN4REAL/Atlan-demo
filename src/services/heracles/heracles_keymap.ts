@@ -1,5 +1,8 @@
 import { getAPIPath, PathParams } from '~/api'
 
+const serviceAlias = 'service'
+
+// eslint-disable-next-line import/prefer-default-export
 export const heracles_keymap = {
     personas: {
         LIST_PERSONAS: () => getAPIPath('/service', '/personas'),

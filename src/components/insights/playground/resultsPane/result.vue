@@ -107,20 +107,15 @@
                         }}&nbsp;Columns
                     </span>
                     <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
-                    <div
+                    <!-- <div
                         class="flex items-center justify-center mx-2"
                         v-if="rowCountRunning == 'loading'"
                     >
                         <div class="loader_16"></div>
-                    </div>
-                    <span
-                        class="mr-2 cursor-pointer"
-                        @click="getRowsCount"
-                        v-else
+                    </div> -->
+                    <span class="mr-2"
                         >{{
-                            rowCount < 0
-                                ? 'Get rows count '
-                                : `${rowCount} rows`
+                            `${activeInlineTab.playground.resultsPane.result.totalRowsCount} rows`
                         }}
                     </span>
                     <!-- Execution Time will be shown when it is >0 -->
@@ -129,7 +124,8 @@
                         class="w-1 h-1 mx-2 bg-gray-500 rounded-full"
                     ></div>
                     <span v-if="queryExecutionTime > 0" class="mr-2">
-                        Took Time: {{ queryExecutionTime }}ms
+                        Took Time:
+                        {{ queryExecutionTime }}ms
                     </span>
                     <!-- -------------------------------------------- -->
                 </div>
@@ -139,18 +135,8 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        Ref,
-        inject,
-        computed,
-        PropType,
-        toRefs,
-        watch,
-        ref,
-    } from 'vue'
+    import { defineComponent, Ref, inject, computed, PropType, ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import LoadingView from '@common/loaders/page.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import ResultsImg from '~/assets/images/insights/results.png'
@@ -171,10 +157,6 @@
             },
         },
         setup(props) {
-            const { queryRun } = useRunQuery()
-            const rowCountRunning = ref('')
-            const rowCount = ref(-1)
-
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -185,39 +167,21 @@
                         .queryErrorObj
             )
             const rowCountErrObj = ref()
-            const queryExecutionTime = inject(
-                'queryExecutionTime'
-            ) as Ref<number>
+            const queryExecutionTime = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .executionTime
+            )
             const isQueryRunning = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning
             )
-            watch(queryExecutionTime, () => {
-                rowCount.value = -1
-            })
-            // callback fxn
-            const getData = (dataList) => {
-                if (dataList.length > 0) {
-                    console.log(dataList, 'countt')
-                    rowCount.value = dataList[0].COUNT
-                }
-            }
-            const cllback = (status: string) => {
-                rowCountRunning.value = status
-            }
-            const getRowsCount = () => {
-                rowCountRunning.value = 'loading'
-                queryRun(activeInlineTab, getData, undefined, cllback)
-            }
             return {
                 queryErrorObj,
                 rowCountErrObj,
                 ResultsImg,
                 outputPaneSize,
-                rowCount,
-                getRowsCount,
-                rowCountRunning,
                 queryExecutionTime,
                 isQueryRunning,
                 activeInlineTab,
@@ -400,13 +364,6 @@
             font-family: Hack !important;
             font-weight: 400;
         }
-
-        // td:first-child,
-        // th:first-child {
-        //     @apply bg-gray-100 text-center !important;
-        //     width: 35px;
-        //     min-width: 35px;
-        // }
     }
 </style>
 <style lang="less" module>

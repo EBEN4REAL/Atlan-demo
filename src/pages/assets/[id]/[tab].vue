@@ -44,6 +44,7 @@
                                     refs[tab.id] = el
                                 }
                             "
+                            :user-has-edit-permission="userHasEditPermission"
                             class="bg-transparent"
                             @preview="handlePreview"
                         ></component>

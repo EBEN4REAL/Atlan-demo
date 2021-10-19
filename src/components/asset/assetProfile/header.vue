@@ -48,7 +48,10 @@
                         </div></a-button
                     >
 
-                    <AssetMenu :asset="assetData" />
+                    <AssetMenu
+                        :asset="assetData"
+                        :userPermission="userPermission"
+                    />
                 </div>
             </div>
         </div>
@@ -102,6 +105,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AssetMenu from './assetMenu.vue'
+    import useCheckAccess from '~/services/access/useCheckAccess'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -114,7 +118,7 @@
             AssetMenu,
         },
 
-        setup() {
+        setup(props) {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
@@ -124,12 +128,19 @@
             /** METHODS */
             // useAssetInfo
             const { status, title, assetType } = useAssetInfo()
+            const { evaluatePermissions } = useCheckAccess()
+
+            const { data: userPermission } = evaluatePermissions(
+                assetData.value,
+                'ENTITY_UPDATE'
+            )
 
             return {
                 assetData,
                 status,
                 title,
                 assetType,
+                userPermission,
             }
         },
     })

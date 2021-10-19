@@ -323,7 +323,6 @@
             function init() {
                 isLoaded.value = false
                 infoTabData.value = selectedAsset.value
-                console.log(userPermission.value)
             }
             watch(() => selectedAsset.value.guid, init)
             const name = computed(() => selectedAsset.value.attributes?.name)

@@ -5,13 +5,7 @@
         placement="bottomRight"
     >
         <a-button
-            class="
-                px-2
-                text-gray-500
-                border-transparent
-                shadow-none
-                hover:border-gray-300 hover:shadow-sm
-            "
+            class="px-2 text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
         >
             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
         </a-button>
@@ -27,7 +21,7 @@
                 </a-menu-item>
                 <a-menu-divider />
 
-                <a-sub-menu key="status">
+                <a-sub-menu key="status" :disabled="!editPermission">
                     <template #title>
                         <div class="flex items-center justify-between">
                             <StatusBadge
@@ -57,7 +51,7 @@
                     </a-menu-item>
                 </a-sub-menu>
 
-                <a-sub-menu key="owner">
+                <a-sub-menu key="owner" :disabled="!editPermission">
                     <template #title>
                         <div class="flex items-center">
                             <AtlanIcon icon="AddUser" />
@@ -145,16 +139,22 @@
                 required: true,
                 default: () => {},
             },
+            userPermission: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
         },
         setup(props, context) {
             // data
             const isVisible = ref(false)
             const router = useRouter()
-            const { asset } = toRefs(props)
+            const editPermission = ref<boolean>(false)
+            const { asset, userPermission } = toRefs(props)
 
             const closeMenu = () => {
                 isVisible.value = false
             }
+            editPermission.value = userPermission.value[0]?.allowed
 
             function handleCopyProfileLink() {
                 const baseUrl = window.location.origin
@@ -169,6 +169,7 @@
                 isVisible,
                 updateAsset,
                 closeMenu,
+                editPermission,
             }
         },
     })

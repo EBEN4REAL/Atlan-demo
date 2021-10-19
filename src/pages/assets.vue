@@ -7,8 +7,7 @@
                         :is="isItem ? 'router-view' : 'AssetDiscovery'"
                         ref="assetDiscovery"
                         :initial-filters="initialFilters"
-                        @preview="handlePreview"
-                    ></component>
+                    />
                 </KeepAlive>
             </div>
         </div>
@@ -51,6 +50,8 @@
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
+    import useDiscoveryStore from '~/store/discovery'
+    import { storeToRefs } from 'pinia'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -65,6 +66,8 @@
             BulkNotification,
         },
         setup() {
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
             useHead({
                 title: 'Assets',
             })
@@ -90,10 +93,6 @@
 
             router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
-            const handlePreview = (selectedItem: assetInterface) => {
-                selected.value = selectedItem
-                console.log('selected', selectedItem)
-            }
             const page = computed(() =>
                 isItem.value ? 'profile' : 'discovery'
             )
@@ -115,7 +114,7 @@
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (page.value === 'discovery')
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
-                handlePreview(updatedAsset)
+                storeDiscovery.selectedAsset(updatedAsset)
                 updateProfile.value = true
             }
             const store = useBulkUpdateStore()
@@ -125,15 +124,14 @@
             }
             return {
                 initialFilters,
-                selected,
-                handlePreview,
+                selected: selectedAsset,
+                // handlePreview,
                 isItem,
                 page,
                 propagateToAssetList,
                 assetDiscovery,
                 handleCloseBulk,
                 store,
-                updateProfile,
             }
         },
     })

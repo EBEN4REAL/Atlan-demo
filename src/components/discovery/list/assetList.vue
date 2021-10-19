@@ -141,13 +141,15 @@
                 type: String,
             },
         },
-        emits: ['preview', 'loadMore', 'update:autoSelect'],
+        emits: [
+          // 'preview', 
+          'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
             const { list, autoSelect, typename } = toRefs(props)
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
             const selectedAssetId = ref('')
-            const shouldReSelect = false
+            // const shouldReSelect = false
             function handlePreview(item: any) {
                 if (item.guid === '-1') {
                     selectedAssetId.value = item.displayText
@@ -155,7 +157,8 @@
                 } else {
                     selectedAssetId.value = item.guid
                     storeDiscovery.setSelectedAsset(item)
-                    emit('preview', item)
+                    
+                    // emit('preview', item) // change emit to pinia action (store)
                 }
             }
 

@@ -41,7 +41,7 @@
                         </span>
                         <span v-else @click.stop="">
                             <AddGtcModal
-                                entity-type="glossary"
+                                entityType="glossary"
                                 @onAddGlossary="refetchGlossaryList"
                             >
                                 <template #header>
@@ -333,10 +333,7 @@
                                             parentGlossary?.guid,
                                     }"
                                 >
-                                    {{
-                                        parentGlossary?.displayText ??
-                                        parentGlossary?.attributes?.name
-                                    }}
+                                    {{ parentGlossary?.displayText ?? parentGlossary?.attributes?.name }}
                                 </span>
                             </div>
                         </div>
@@ -360,7 +357,7 @@
                                 <AddCta
                                     class="w-7 h-7 ml-0.5"
                                     :entity="parentGlossary"
-                                />
+                                />                   
                             </div>
                             <div
                                 class="flex flex-col justify-center mt-1 bg-opacity-0 "
@@ -368,8 +365,8 @@
                                 <ThreeDotMenu
                                     class="w-7 h-7 ml-0.5"
                                     :entity="parentGlossary"
-                                    :show-links="false"
-                                    :tree-mode="true"
+                                    :showLinks="false"
+                                    :treeMode="true"
                                 />
                             </div>
                         </div>
@@ -380,18 +377,18 @@
                         :class="$style.treeStyles"
                     >
                         <a-tree
-                            :expanded-keys="expandedKeys"
-                            :selected-keys="selectedKeys"
-                            :loaded-keys="loadedKeys"
+                            :expandedKeys="expandedKeys"
+                            :selectedKeys="selectedKeys"
+                            :loadedKeys="loadedKeys"
                             :tree-data="treeData"
                             :load-data="onLoadData"
                             :draggable="true"
                             :block-node="true"
                             :auto-expand-parent="false"
-                            class="h-full"
                             @select="selectNode"
                             @expand="expandNode"
                             @drop="dragAndDrop"
+                            class="h-full"
                         >
                             <template #switcherIcon>
                                 <AtlanIcon icon="CaretRight" />
@@ -459,7 +456,7 @@
                                             </div>
 
                                             <ThreeDotMenu
-                                                :tree-mode="true"
+                                                :treeMode="true"
                                                 :visible="false"
                                                 :entity="{
                                                     guid: entity.guid,
@@ -617,19 +614,19 @@
     </div>
 </template>
 <script lang="ts">
-// library
-import {
-    defineComponent,
-    computed,
-    PropType,
-    ref,
-    toRef,
-    watch,
-    inject,
-} from 'vue'
-import { useRouter } from 'vue-router'
-import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
-import { useDebounceFn } from '@vueuse/core'
+    // library
+    import {
+        defineComponent,
+        computed,
+        PropType,
+        ref,
+        toRef,
+        watch,
+        inject,
+    } from 'vue'
+    import { useRouter } from 'vue-router'
+    import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
+    import { useDebounceFn } from '@vueuse/core'
 
     // components
     import LoadingView from '@common/loaders/section.vue'
@@ -640,15 +637,15 @@ import { useDebounceFn } from '@vueuse/core'
 
     import { Glossary } from '~/types/glossary/glossary.interface'
 
-// composables
-import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
-import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
-import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+    // composables
+    import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
+    import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
-// constant
-import { List as StatusList } from '~/constant/status'
-import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-import AtlanBtn from '~/components/UI/button.vue'
+    // constant
+    import { List as StatusList } from '~/constant/status'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
 
@@ -665,10 +662,77 @@ import AtlanBtn from '~/components/UI/button.vue'
                 return attrs.vnodes
             },
         },
-        isHome: {
-            type: Boolean,
-            required: true,
-            default: true,
+        props: {
+            glossaryList: {
+                type: Object as PropType<Glossary[]>,
+                required: true,
+                default: () => [],
+            },
+            isHome: {
+                type: Boolean,
+                required: true,
+                default: true,
+            },
+            treeData: {
+                type: Object as PropType<TreeDataItem[]>,
+                required: true,
+                default: () => {},
+            },
+            onLoadData: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            dragAndDrop: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            expandNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            collapseAll: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            selectNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            parentGlossary: {
+                type: Object as PropType<Glossary>,
+                required: false,
+                default: () => {},
+            },
+            isLoading: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            currentGuid: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            loadedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
+            selectedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
+            expandedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
         },
         setup(props, { emit }) {
             // data
@@ -692,65 +756,53 @@ import AtlanBtn from '~/components/UI/button.vue'
                 })
                 return list
             })
-            return list
-        })
 
-        const refetchGlossaryList = inject('refetchGlossaryList')
+            const refetchGlossaryList = inject('refetchGlossaryList')
 
-        const { createTerm, createCategory, createGlossary } =
-            useCreateGlossary()
+            const { createTerm, createCategory, createGlossary } =
+                useCreateGlossary()
 
-        const router = useRouter()
+            const router = useRouter()
 
-        const parentGlossaryQualifiedName = computed(() =>
-            home.value
-                ? ''
-                : props?.parentGlossary?.attributes?.qualifiedName ?? ''
-        )
-
-        const {
-            entities: searchResults,
-            terms: searchTerms,
-            categories: searchCategories,
-            glossaries: searchGlossaries,
-            isLoading: searchLoading,
-            fetchAssetsPaginated: searchAssetsPaginated,
-        } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
-
-        // methods
-        const redirectToProfile = (type: string, guid: string) => {
-            if (type === 'glossary') router.push(`/glossary/${guid}`)
-            else router.push(`/glossary/${type}/${guid}`)
-        }
-        const backToHome = () => router.push('/glossary')
-
-        const createNewTerm = () => {
-            createTerm(props.parentGlossary?.guid ?? '')
-        }
-        const createNewCategory = () => {
-            createCategory(props.parentGlossary?.guid ?? '')
-        }
-
-        const onSearch = useDebounceFn(() => {
-            if (searchQuery.value?.length) {
-                searchAssetsPaginated({
-                    query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
-                    offset: 0,
-                })
-            }
-        }, 300)
-
-        // to get correct icon from type and status
-        const getEntityStatusIcon = (
-            type: String,
-            certificateStatus: String
-        ): String => {
-            if (
-                certificateStatus === undefined ||
-                certificateStatus === '' ||
-                certificateStatus === 'is_null'
+            const parentGlossaryQualifiedName = computed(() =>
+                home.value
+                    ? ''
+                    : props?.parentGlossary?.attributes?.qualifiedName ?? ''
             )
-                return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
+
+            const {
+                entities: searchResults,
+                terms: searchTerms,
+                categories: searchCategories,
+                glossaries: searchGlossaries,
+                isLoading: searchLoading,
+                fetchAssetsPaginated: searchAssetsPaginated,
+            } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
+
+            // methods
+            const redirectToProfile = (type: string, guid: string) => {
+                if (type === 'glossary') router.push(`/glossary/${guid}`)
+                else router.push(`/glossary/${type}/${guid}`)
+            }
+            const backToHome = () => router.push('/glossary')
+
+            const createNewTerm = () => {
+                createTerm(props.parentGlossary?.guid ?? '')
+            }
+            const createNewCategory = () => {
+                createCategory(props.parentGlossary?.guid ?? '')
+            }
+
+            const onSearch = useDebounceFn(() => {
+                if (searchQuery.value?.length) {
+                    searchAssetsPaginated({
+                        query: `${
+                            searchQuery.value ? `${searchQuery.value}` : ''
+                        }`,
+                        offset: 0,
+                    })
+                }
+            }, 300)
 
             watch(home, () => {
                 searchQuery.value = ''
@@ -766,104 +818,104 @@ import AtlanBtn from '~/components/UI/button.vue'
                 currentGlossaryGuid.value = newParentGlossary.guid
             })
 
-        return {
-            redirectToProfile,
-            backToHome,
-            createNewCategory,
-            createNewTerm,
-            createTerm,
-            createGlossary,
-            createCategory,
-            StatusList,
-            getEntityStatusIcon,
-            glossaryContextDropdown,
-            // selectedKeys,
-            // expandedKeys,
-            // expandNode,
-            // selectNode,
-            searchQuery,
-            searchResults,
-            searchTerms,
-            searchCategories,
-            searchGlossaries,
-            searchLoading,
-            searchAssetsPaginated,
-            onSearch,
-            currentGlossaryGuid,
-            refetchGlossaryList,
-        }
-    },
-})
+            return {
+                redirectToProfile,
+                backToHome,
+                createNewCategory,
+                createNewTerm,
+                createTerm,
+                createGlossary,
+                createCategory,
+                StatusList,
+                getEntityStatusIcon,
+                glossaryContextDropdown,
+                // selectedKeys,
+                // expandedKeys,
+                // expandNode,
+                // selectNode,
+                searchQuery,
+                searchResults,
+                searchTerms,
+                searchCategories,
+                searchGlossaries,
+                searchLoading,
+                searchAssetsPaginated,
+                onSearch,
+                currentGlossaryGuid,
+                refetchGlossaryList,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.createDropdownStyles {
-    :global(.ant-dropdown-menu-item) {
-        @apply m-0 p-1 text-sm leading-5 rounded;
-    }
-}
-
-.glossaryTree {
-    background-color: #fafafa;
-
-    :global(.ant-select) {
-        min-width: 236px;
-        width: 100%;
-        @apply m-0 p-0;
-    }
-
-    :global(.ant-input-search) {
-        min-width: 196px;
-        height: 32px;
-    }
-
-    .tree-glossary-actions {
-        .treeMode {
-            @apply bg-opacity-100 !important;
+    .createDropdownStyles {
+        :global(.ant-dropdown-menu-item) {
+            @apply m-0 p-1 text-sm leading-5 rounded;
         }
     }
 
-    .treeStyles {
-        max-height: calc(100vh - 11rem) !important;
+    .glossaryTree {
+        background-color: #fafafa;
 
-        :global(.ant-tree-switcher_open) {
-            transform: rotate(90deg);
-        }
-        :global(.ant-tree-node-selected) {
-            @apply bg-black bg-opacity-5 text-primary font-bold !important;
-            color: blue !important;
+        :global(.ant-select) {
+            min-width: 236px;
+            width: 100%;
+            @apply m-0 p-0;
         }
 
-        :global(.ant-tree-title) {
-            @apply pl-1 !important;
-            padding-top: 4px !important;
-            padding-bottom: 4px !important;
-            // max-height: 28px !important;
+        :global(.ant-input-search) {
+            min-width: 196px;
+            height: 32px;
+        }
 
-            &:hover {
-                @apply bg-black bg-opacity-5 !important;
+        .tree-glossary-actions {
+            .treeMode {
+                @apply bg-opacity-100 !important;
             }
         }
-        // :global(.ant-tree-treenode-switcher-close) {
-        //     max-height: 28px !important;
-        // }
-        // :global(.ant-tree-treenode-switcher-open) {
-        //     li {
-        //         max-height: 28px !important;
-        //     }
-        // }
-        :global(.ant-tree-node-content-wrapper) {
-            @apply mb-2 border-0;
+
+        .treeStyles {
+            max-height: calc(100vh - 11rem) !important;
+
+            :global(.ant-tree-switcher_open) {
+                transform: rotate(90deg);
+            }
+            :global(.ant-tree-node-selected) {
+                @apply bg-black bg-opacity-5 text-primary font-bold !important;
+                color: blue !important;
+            }
+
+            :global(.ant-tree-title) {
+                @apply pl-1 !important;
+                padding-top: 4px !important;
+                padding-bottom: 4px !important;
+                // max-height: 28px !important;
+
+                &:hover {
+                    @apply bg-black bg-opacity-5 !important;
+                }
+            }
+            // :global(.ant-tree-treenode-switcher-close) {
+            //     max-height: 28px !important;
+            // }
+            // :global(.ant-tree-treenode-switcher-open) {
+            //     li {
+            //         max-height: 28px !important;
+            //     }
+            // }
+            :global(.ant-tree-node-content-wrapper) {
+                @apply mb-2 border-0;
+            }
         }
     }
-}
-.parentGroup {
-    :global(.parent-group-hover) {
-        @apply opacity-0 !important;
-    }
-    &:hover {
+    .parentGroup {
         :global(.parent-group-hover) {
-            @apply opacity-100 !important;
+            @apply opacity-0 !important;
+        }
+        &:hover {
+            :global(.parent-group-hover) {
+                @apply opacity-100 !important;
+            }
         }
     }
-}
 </style>

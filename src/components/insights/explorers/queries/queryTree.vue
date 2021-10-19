@@ -4,9 +4,9 @@ TR
         <div class="h-full overflow-x-hidden query-tree-root-div">
             <div v-if="treeData.length">
                 <a-tree
-                    :expanded-keys="expandedKeys"
-                    :selected-keys="selectedKeys"
-                    :loaded-keys="loadedKeys"
+                    :expandedKeys="expandedKeys"
+                    :selectedKeys="selectedKeys"
+                    :loadedKeys="loadedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
                     :draggable="false"
@@ -21,9 +21,9 @@ TR
 
                     <template #title="item">
                         <QueryTreeItem
-                            v-if="item.title !== 'Load more'"
                             :item="item"
-                            :expanded-keys="expandedKeys"
+                            v-if="item.title !== 'Load more'"
+                            :expandedKeys="expandedKeys"
                         />
                         <div
                             v-else
@@ -67,8 +67,8 @@ TR
                 </div>
                 <div>
                     <a-button
-                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
                         @click="toggleCreateQueryModal"
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
                     >
                         <span
                             ><AtlanIcon
@@ -78,8 +78,8 @@ TR
                     >
                     <p class="my-2 text-sm text-base text-gray-500">OR</p>
                     <a-button
-                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
                         @click="createFolderInput"
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
                     >
                         <span
                             ><AtlanIcon
@@ -93,162 +93,166 @@ TR
     </div>
 </template>
 <script lang="ts">
-// library
-import { defineComponent, PropType, inject, Ref, toRefs } from 'vue'
-import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
+    // library
+    import { defineComponent, PropType, inject, Ref, toRefs } from 'vue'
+    import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
-// components
-import LoadingView from '@common/loaders/section.vue'
-import StatusBadge from '@common/badge/status/index.vue'
-import QueryTreeItem from './queryTreeItem.vue'
+    // components
+    import LoadingView from '@common/loaders/section.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import QueryTreeItem from './queryTreeItem.vue'
 
-// composables
-import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
-import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    // composables
+    import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
 
-// constant
-import { List as StatusList } from '~/constant/status'
-import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-import AtlanBtn from '~/components/UI/button.vue'
+    // constant
+    import { List as StatusList } from '~/constant/status'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import AtlanBtn from '~/components/UI/button.vue'
 
-export default defineComponent({
-    components: {
-        LoadingView,
-        AtlanIcon,
-        AtlanBtn,
-        StatusBadge,
-        QueryTreeItem,
-    },
-    emits: ['toggleCreateQueryModal', 'createFolderInput'],
-    props: {
-        treeData: {
-            type: Object as PropType<TreeDataItem[]>,
-            required: true,
-            default: () => {},
+    export default defineComponent({
+        components: {
+            LoadingView,
+            AtlanIcon,
+            AtlanBtn,
+            StatusBadge,
+            QueryTreeItem,
         },
-        savedQueryType: {
-            type: Object as PropType<string>,
-            required: true,
+        emits: ['toggleCreateQueryModal', 'createFolderInput'],
+        props: {
+            treeData: {
+                type: Object as PropType<TreeDataItem[]>,
+                required: true,
+                default: () => {},
+            },
+            savedQueryType: {
+                type: Object as PropType<string>,
+                required: true,
+            },
+            onLoadData: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            expandNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            selectNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            isLoading: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            loadedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
+            selectedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
+            expandedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
         },
-        onLoadData: {
-            type: Function,
-            required: false,
-            default: () => {},
-        },
-        expandNode: {
-            type: Function,
-            required: false,
-            default: () => {},
-        },
-        selectNode: {
-            type: Function,
-            required: false,
-            default: () => {},
-        },
-        isLoading: {
-            type: Boolean,
-            required: false,
-            default: false,
-        },
-        loadedKeys: {
-            type: Array as PropType<string[]>,
-            required: true,
-            default: () => [],
-        },
-        selectedKeys: {
-            type: Array as PropType<string[]>,
-            required: true,
-            default: () => [],
-        },
-        expandedKeys: {
-            type: Array as PropType<string[]>,
-            required: true,
-            default: () => [],
-        },
-    },
-    setup(props, { emit }) {
-        const { savedQueryType } = toRefs(props)
-        // data
-        const inlineTabs = inject('inlineTabs') as Ref<
-            activeInlineTabInterface[]
-        >
-        const activeInlineTab = inject(
-            'activeInlineTab'
-        ) as Ref<activeInlineTabInterface>
-        const activeInlineTabKey = inject('activeInlineTabKey') as Ref<string>
+        setup(props, { emit }) {
+            const { savedQueryType } = toRefs(props)
+            // data
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
-        const { openSavedQueryInNewTab } = useSavedQuery(
-            inlineTabs,
-            activeInlineTab,
-            activeInlineTabKey
-        )
-        const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
-            let bool = false
-            inlineTabs.value.forEach((tab) => {
-                if (tab.key === savedQuery.id) bool = true
-            })
-            return bool
-        }
-        const toggleCreateQueryModal = () => {
-            emit('toggleCreateQueryModal')
-        }
-        const createFolderInput = () => {
-            emit('createFolderInput')
-        }
+            const { openSavedQueryInNewTab } = useSavedQuery(
+                inlineTabs,
+                activeInlineTab,
+                activeInlineTabKey
+            )
+            const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
+                let bool = false
+                inlineTabs.value.forEach((tab) => {
+                    if (tab.key === savedQuery.id) bool = true
+                })
+                return bool
+            }
+            const toggleCreateQueryModal = () => {
+                emit('toggleCreateQueryModal')
+            }
+            const createFolderInput = () => {
+                emit('createFolderInput')
+            }
 
-        return {
-            createFolderInput,
-            toggleCreateQueryModal,
-            savedQueryType,
-            StatusList,
-            isSavedQueryOpened,
-            openSavedQueryInNewTab,
+            return {
+                createFolderInput,
+                toggleCreateQueryModal,
+                savedQueryType,
+                StatusList,
+                isSavedQueryOpened,
+                openSavedQueryInNewTab,
 
-            // selectedKeys,
-            // expandedKeys,
-            // expandNode,
-            // selectNode,
-        }
-    },
-})
+                // selectedKeys,
+                // expandedKeys,
+                // expandNode,
+                // selectNode,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.queryTreeStyles {
-    :global(.ant-tree-switcher_open) {
-        transform: rotate(90deg);
+    .queryTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+        :global(.ant-tree-title) {
+            width: calc(100% - 1.5rem) !important;
+        }
+        :global(.ant-tree li ul) {
+            padding-left: 16px !important;
+        }
+        :global(.ant-tree .ant-tree-title) {
+            @apply pt-0 pb-0 !important;
+        }
+        :global(.ant-tree .ant-tree-title) {
+            @apply pl-0 pr-0 !important;
+        }
+        :global(.ant-tree.ant-tree-block-node
+                li
+                .ant-tree-node-content-wrapper) {
+            @apply w-full !important;
+        }
+        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+            @apply bg-gray-light;
+        }
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+            @apply bg-gray-light;
+        }
     }
-    :global(.ant-tree-title) {
-        width: calc(100% - 1.5rem) !important;
-    }
-    :global(.ant-tree li ul) {
-        padding-left: 16px !important;
-    }
-    :global(.ant-tree .ant-tree-title) {
-        @apply pt-0 pb-0 !important;
-    }
-    :global(.ant-tree .ant-tree-title) {
-        @apply pl-0 pr-0 !important;
-    }
-    :global(.ant-tree.ant-tree-block-node li .ant-tree-node-content-wrapper) {
-        @apply w-full !important;
-    }
-    :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-        @apply bg-gray-light;
-    }
-    :global(.ant-tree-switcher_open) {
-        transform: rotate(90deg);
-    }
-    :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-        @apply bg-gray-light;
-    }
-}
 </style>
 <style lang="less" scoped>
-.no-svaved-query-icon {
-    @apply w-32 !important;
-}
-.max-width-text {
-    max-width: 216px;
-}
+    .no-svaved-query-icon {
+        @apply w-32 !important;
+    }
+    .max-width-text {
+        max-width: 216px;
+    }
 </style>

@@ -10,7 +10,7 @@ const listPersonas = () =>
         { resetOnExecute: false }
     )
 
-const createPersona = (newPersona: IPersona) =>
+const createPersona = (newPersona: IPersona): Promise<IPersona> =>
     useAPIPromise(heracles_keymap.personas.CREATE_PERSONA(), 'POST', {
         body: newPersona,
     })

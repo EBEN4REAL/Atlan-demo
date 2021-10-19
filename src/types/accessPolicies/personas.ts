@@ -1,16 +1,20 @@
 export interface MetadataPolicies {
     actions: string[]
     assets: string[]
+    connectionId: string
+    allow: boolean
 }
 
 export interface IPersona {
-    id: string
-    displayName: string
+    id?: string
+    name?: string
+    displayName?: string
     description?: string
-    personaName: string
-    metadataPolicies: MetadataPolicies[]
-    orgPolicies: []
-    admins: string[]
+    personaType?: 'persona'
+    users?: string[]
+    groups?: string[]
+    metadataPolicies?: MetadataPolicies[]
+    sqlPolicies?: []
     updatedAt?: string
     updatedBy?: string
     createdAt?: string

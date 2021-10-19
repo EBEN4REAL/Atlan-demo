@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
         >
             <WorkflowFilters
                 :ref="
@@ -206,16 +206,21 @@
                 setRouterOptions()
             }, 150)
 
+            const updateQuery = () => {
+                // console.log(filters.value)
+                console.log({ ...AllFilters.value.facetsFilters })
+            }
+
             const handleFilterChange = (
                 payload: any,
                 filterMapData: Record<string, Components.Schemas.FilterCriteria>
             ) => {
-                // console.log(payload)
+                // console.log(payload, filterMapData)
                 AllFilters.value.facetsFilters = filterMapData
                 filters.value = payload
                 offset.value = 0
                 isAggregate.value = true
-                // updateBody()
+                updateQuery()
                 setRouterOptions()
             }
 

@@ -90,6 +90,7 @@
         watch,
         inject,
         Ref,
+        toRaw,
         onUnmounted,
         onMounted,
     } from 'vue'
@@ -108,14 +109,14 @@
         provideDataInterface,
     } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
+    import { useEditor } from './common/composables/useEditor'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
-    // import { useConnector } from './common/composables/useConnector'
     import { useHotKeys } from './common/composables/useHotKeys'
     import { useFullScreen } from './common/composables/useFullScreen'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
 
     export default defineComponent({
         components: {
@@ -139,6 +140,7 @@
             } = useSpiltPanes()
             // TODO: will be used for HOTKEYs
             const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
+            const { editorConfig } = useEditor()
             const { fullSreenState } = useFullScreen()
 
             const { filteredTabs: tabsList } = useInsightsTabList()
@@ -155,7 +157,6 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
-            const { isQueryRunning, queryExecutionTime } = useRunQuery()
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -167,11 +168,20 @@
             }
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()
+            const { sqlVariables, initializeSqlVariables } = useCustomVariable(
+                toRaw(editorInstance.value),
+                toRaw(monacoInstance.value)
+            )
 
             const setEditorInstance = (
                 editorInstanceParam: any,
                 monacoInstanceParam?: any
             ) => {
+                console.log(
+                    editorInstanceParam,
+                    monacoInstanceParam,
+                    'settingInstance'
+                )
                 editorInstance.value = editorInstanceParam
                 if (monacoInstanceParam)
                     monacoInstance.value = monacoInstanceParam
@@ -185,19 +195,21 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
-                isQueryRunning: isQueryRunning,
                 editorInstance: editorInstance,
+                editorConfig: editorConfig,
                 monacoInstance: monacoInstance,
+                sqlVariables: sqlVariables,
                 outputPaneSize: outputPaneSize,
-                queryExecutionTime: queryExecutionTime,
                 fullSreenState: fullSreenState,
                 setEditorInstance: setEditorInstance,
             }
             useProvide(provideData)
             /*-------------------------------------*/
+            initializeSqlVariables(activeInlineTab)
 
             /* Watchers for syncing in localstorage*/
             watch(activeInlineTabKey, () => {
+                initializeSqlVariables(activeInlineTab)
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })
@@ -289,10 +301,23 @@
                 -webkit-transition: background-color 0.3s;
                 transition: background-color 0.3s;
                 transform: translateY(-50%);
-                width: 5px;
+                width: 10px;
                 height: 100%;
                 margin-left: 0px;
+                @apply z-50 !important;
             }
+        }
+        &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            @apply bg-transparent;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 100%;
+            margin-left: 0px;
+            @apply z-50 !important;
         }
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter) {

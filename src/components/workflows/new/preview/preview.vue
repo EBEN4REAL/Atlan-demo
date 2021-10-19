@@ -136,7 +136,8 @@
                     arguments: {
                         parameters: [
                             ...selectedWorkflow.value?.workflowtemplate?.spec?.arguments?.parameters
-                                .filter((p) => !p.value)
+                                // eslint-disable-next-line no-prototype-builtins
+                                .filter((p) => !p.hasOwnProperty('value'))
                                 .map((e) => ({ name: e.name, value: '' })),
                         ],
                     },
@@ -170,6 +171,7 @@
                             `/workflows/${data.value.metadata.name}/setup`
                         )
                     } else if (error.value) {
+                        console.log({ error: error.value })
                         const errMsg = error.value?.response?.data?.message
                         message.error({
                             content: `${

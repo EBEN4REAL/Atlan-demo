@@ -62,15 +62,21 @@
                             v-for="item in classificationsList"
                             :key="item?.guid + classificationFilterOptionsData"
                         >
-                            <a-checkbox
-                                v-if="item?.displayName"
-                                :value="item.name"
-                                class="w-full mb-3"
+                            <a-tooltip
+                                placement="top"
+                                :mouse-enter-delay="0.5"
+                                :title="item?.displayName"
                             >
-                                <span class="mb-0 truncated">
-                                    {{ item?.displayName }}
-                                </span>
-                            </a-checkbox>
+                                <a-checkbox
+                                    v-if="item?.displayName"
+                                    :value="item.displayName"
+                                    class="w-full mb-3 truncate ..."
+                                >
+                                    <span class="mb-0">
+                                        {{ item?.displayName }}
+                                    </span>
+                                </a-checkbox>
+                            </a-tooltip>
                         </template>
                     </div>
                 </div>

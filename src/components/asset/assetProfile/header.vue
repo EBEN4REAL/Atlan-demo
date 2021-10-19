@@ -1,27 +1,31 @@
 <template>
     <div class="px-5 pt-4">
         <div class="flex items-center justify-between">
-            <div class="flex items-center w-full ml-10 gap-x-2">
+            <div
+                v-if="assetData.guid !== '-1'"
+                class="flex items-center w-full ml-10 gap-x-2"
+            >
                 <!-- asset logo -->
                 <AssetLogo :asset="assetData" variant="" />
                 <HierarchyBar :selected-asset="assetData" />
             </div>
+            <div
+                v-else
+                class="flex items-center w-full ml-10 text-gray-500 gap-x-2"
+            >
+                {{ assetData?.typeName }}
+            </div>
 
             <!-- CTAs -->
-            <div class="flex">
+            <div v-if="assetData.guid !== '-1'" class="flex">
                 <div class="flex text-gray-500">
                     <a-button
                         v-if="
                             ['table', 'view'].includes(
-                                assetType(assetData).toLowerCase()
+                                assetType(assetData)?.toLowerCase()
                             )
                         "
-                        class="
-                            text-gray-500
-                            border-transparent
-                            shadow-none
-                            hover:border-gray-300 hover:shadow-sm
-                        "
+                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -29,13 +33,8 @@
                         </div></a-button
                     >
                     <a-button
-                        v-if="assetType(assetData).includes('Tableau')"
-                        class="
-                            text-gray-500
-                            border-transparent
-                            shadow-none
-                            hover:border-gray-300 hover:shadow-sm
-                        "
+                        v-if="assetType(assetData)?.includes('Tableau')"
+                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -43,12 +42,7 @@
                         </div></a-button
                     >
                     <a-button
-                        class="
-                            text-gray-500
-                            border-transparent
-                            shadow-none
-                            hover:border-gray-300 hover:shadow-sm
-                        "
+                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
                         ><div class="flex">
                             <AtlanIcon icon="Share" class="mt-0.5 mr-2" /> Share
                         </div></a-button
@@ -76,18 +70,25 @@
                     />
                 </a-button>
             </div>
-            <div class="flex items-center">
+            <div v-if="assetData.guid !== '-1'" class="flex items-center">
                 <span
                     class="mb-0 text-lg font-semibold text-gray-700 truncate"
                     >{{ title(assetData) }}</span
                 >
 
                 <StatusBadge
-                    :key="assetData.guid"
+                    :key="assetData?.guid"
                     :show-no-status="false"
                     :status-id="assetData?.attributes?.certificateStatus"
                     class="ml-1.5"
                 ></StatusBadge>
+            </div>
+            <div
+                v-else
+                class="flex mb-0 text-lg font-semibold text-gray-700 truncate"
+            >
+                {{ assetData?.displayText }}
+                <AtlanIcon icon="Lock" class="mt-1 ml-1" />
             </div>
         </div>
     </div>

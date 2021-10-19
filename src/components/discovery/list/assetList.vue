@@ -8,7 +8,11 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="item.guid === selectedAssetId"
+                :is-selected="
+                    item.guid === '-1'
+                        ? item.displayText === selectedAssetId
+                        : item.guid === selectedAssetId
+                "
                 :score="score[item.guid]"
                 :projection="projection"
                 :show-check-box="projection?.includes('enableCheckbox')"
@@ -33,32 +37,13 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        py-2
-                        transition-all
-                        duration-300
-                        bg-white
-                        rounded-full
-                        text-primary
-                    "
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="
-                                m-0
-                                mr-1
-                                overflow-hidden
-                                text-sm
-                                transition-all
-                                duration-300
-                                overflow-ellipsis
-                                whitespace-nowrap
-                            "
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -160,8 +145,13 @@
             const selectedAssetId = ref('')
             const shouldReSelect = false
             function handlePreview(item: any) {
-                selectedAssetId.value = item.guid
-                emit('preview', item)
+                if (item.guid === '-1') {
+                    selectedAssetId.value = item.displayText
+                    emit('preview', item)
+                } else {
+                    selectedAssetId.value = item.guid
+                    emit('preview', item)
+                }
             }
 
             const handleCardClicked = (item: any) => {

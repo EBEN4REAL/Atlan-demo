@@ -294,7 +294,7 @@
         background-color: #f4f4f4;
     }
     .popover-container {
-        width: 440px !important;
+        max-width: 440px !important;
     }
     .horizontal-scrollbar::-webkit-scrollbar {
         width: 0;

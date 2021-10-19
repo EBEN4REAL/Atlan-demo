@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, Ref } from 'vue'
 import { KeyMaps } from '../heka_keyMaps'
 import { useAPIAsyncState, useAPIPromise } from '~/services/api/useAPI'
 
@@ -10,9 +10,15 @@ import {
 import { autosuggestionResponse } from '~/types/insights/autosuggestionEntity.interface'
 import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
 
-const GetAutoSuggestions = (body: Record<string, any>) => {
+const GetAutoSuggestions = (
+    body: Record<string, any>,
+    cancelTokenSource: Ref<any>
+) => {
     return useAPIPromise(KeyMaps.insights.GET_AUTO_SUGGESTIONS(), 'POST', {
         body,
+        options: {
+            cancelToken: cancelTokenSource.value.token,
+        },
     }) as Promise<autosuggestionResponse>
 }
 

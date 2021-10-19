@@ -1,5 +1,5 @@
 <template>
-    <div :class="data.class" :key="data.id" class="flex flex-col">
+    <div class="flex flex-col h-full">
         <div class="flex items-center" v-if="data.showHeader">
             <p class="mr-1 text-sm font-semibold text-gray-700">
                 {{ data?.label }}
@@ -13,7 +13,7 @@
         <component
             :is="componentType"
             :data="data"
-            class="flex-grow"
+            :class="data.showHeader ? 'graph-container' : 'h-full'"
         ></component>
     </div>
 </template>
@@ -45,7 +45,7 @@
             data: {
                 type: Object as PropType<Widget>,
                 default() {
-                    return { id: 'sample', label: 'sample' }
+                    return {}
                 },
             },
         },
@@ -68,3 +68,9 @@
         },
     })
 </script>
+
+<style scoped>
+    .graph-container {
+        height: calc(100% - 10px);
+    }
+</style>

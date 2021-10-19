@@ -36,7 +36,14 @@
                 </div>
 
                 <!-- Title bar -->
-                <div class="flex items-center mb-0 overflow-hidden">
+                <div
+                    v-if="item.guid === '-1'"
+                    class="flex flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate  overflow-ellipsis whitespace-nowrap"
+                >
+                    <div>{{ item.displayText }}</div>
+                    <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
+                </div>
+                <div v-else class="flex items-center mb-0 overflow-hidden">
                     <router-link
                         :class="
                             cssClasses?.textSize
@@ -191,7 +198,6 @@
             <ThreeDotMenu
                 v-if="showThreeDotMenu"
                 :entity="item"
-                class="opacity-0"
                 :visible="false"
                 :show-gtc-crud="false"
                 :show-links="false"

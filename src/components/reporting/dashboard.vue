@@ -5,12 +5,16 @@
         </p>
 
         <div class="grid grid-cols-12 gap-4">
-            <WidgetComponent
+            <div
+                :class="item.class"
+                :style="item.style"
+                class=""
+                :id="item.id"
                 v-for="item in data.widgets"
                 :key="item.id"
-                :data="item"
             >
-            </WidgetComponent>
+                <WidgetComponent :data="item"> </WidgetComponent>
+            </div>
         </div>
     </div>
 </template>
@@ -25,9 +29,9 @@
         components: { WidgetComponent },
         props: {
             data: {
-                type: Object as PropType<Dashboard>,
+                type: Object,
                 default() {
-                    return { id: 'sample', label: 'sample', widgets: [] }
+                    return {}
                 },
             },
         },

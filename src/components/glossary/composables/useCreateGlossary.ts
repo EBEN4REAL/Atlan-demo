@@ -84,12 +84,22 @@ const useCreateGlossary = () => {
                     key: `${title}`,
                     duration: 2,
                 })
-
-                redirectToProfile('glossary', newData.guid)
+                setTimeout(() => {
+                    redirectToProfile('glossary', newData.guid)
+                }, 500)
             }
         })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value
+            const errMsg = createError.value?.response?.data?.errorMessage
+            message.error({
+                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                    1
+                )}`,
+                key: `${title}`,
+                duration: 5,
+            })
+
             isLoading.value = newValidating?.value
         })
         return { data }

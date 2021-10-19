@@ -200,14 +200,13 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         currKey: string,
         newKey: string,
         activeTab: activeInlineTabInterface,
-        activeInlineTabKey: Ref<activeInlineTabKey>
+        activeInlineTabKey: Ref<string>
     ) => {
         const index = tabsArray.value.findIndex((tab) => tab.key === currKey)
         tabsArray.value[index] = activeTab
         tabsArray.value[index].key = newKey
         activeInlineTabKey.value = newKey
         // syncying inline tabarray in localstorage
-        debugger
         syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
     }
 

@@ -60,7 +60,12 @@
                     >Cancel</a-button
                 >
             </div>
-            <a-button v-else type="link" class="text-sm" @click="startEdit">
+            <a-button
+                v-if="editPermission && !editable"
+                type="link"
+                class="text-sm"
+                @click="startEdit"
+            >
                 <fa icon="fa pencil" class="mx-2 text-xs" />
                 Edit
             </a-button>
@@ -177,18 +182,23 @@
                 required: true,
                 default: () => {},
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup(props) {
             const editable = ref(false)
             const editor = ref()
-            const editorContent = ref('')
             const showTemplatesModal = ref(false)
             const templateName = ref('')
             const newTemplateName = ref('')
             const templateNameDropdown = ref(false)
             const { entity } = toRefs(props)
+            const editorContent = ref(entity?.attributes?.readme?.attributes?.description ?? '')
             const readmeDescription = computed(
-                () => props.entity?.attributes?.readme?.attributes?.description
+                () => entity?.attributes?.readme?.attributes?.description
             )
 
             const templateList = ref([
@@ -206,13 +216,14 @@
 
             const onUpdate = (content: string, json: Record<string, any>) => {
                 editorContent.value = content
+                console.log(content, editorContent.value)
             }
 
             const onCancel = () => {
                 if (editor.value) {
                     editor.value.resetEditor()
                 }
-                editorContent.value = editor.value.getEditorContent()?.content
+                editorContent.value = readmeDescription.value
 
                 editable.value = false
             }
@@ -240,7 +251,7 @@
                 // if (!editorContent.value || editorContent.value === '<p></p>') {
                 //     showTemplatesModal.value = true
                 // }
-                editorContent.value = readmeDescription.value
+                // editorContent.value = readmeDescription.value
             }
 
             // const newTemplate = () => {
@@ -252,12 +263,18 @@
             }
             const handleSave = () => {
                 editable.value = false
-                if (readmeDescription.value?.length) {
+                console.log(editorContent.value)
+                if (readmeDescription.value?.length || readmeDescription.value === '') {
                     const { isCompleted, isLoading, update } = useUpdateReadme(
-                        props?.entity?.attributes?.readme,
+                        entity?.attributes?.readme,
                         editorContent.value
                     )
                     update()
+                    watch(isCompleted, (completed) => {
+                        if(completed) {
+                            entity.attributes.readme.attributes.description = editorContent.value
+                        }
+                    })
                 } else {
                     const { createReadme } = useCreateReadme(
                         entity,

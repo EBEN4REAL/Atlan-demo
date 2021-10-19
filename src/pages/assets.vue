@@ -6,7 +6,7 @@
                     <component
                         :is="isItem ? 'router-view' : 'AssetDiscovery'"
                         ref="assetDiscovery"
-                        :initial-filters="initialFilters"
+                        @preview="handlePreview"
                     />
                 </KeepAlive>
             </div>
@@ -79,17 +79,6 @@
             // const initialFilters: initialFiltersType =
             //     getDecodedOptionsFromString(router)
 
-            const initialFilters: Record<string, any> = {
-                facetsFilters: {},
-                searchText: '',
-                selectedTab: 'Catalog',
-                sortOrder: 'default',
-                state: 'active',
-                ...decodeQuery(
-                    Object.keys(router.currentRoute.value?.query)[0]
-                ),
-            }
-
             router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
@@ -137,9 +126,8 @@
                 store.setBulkMode(false)
             }
             return {
-                initialFilters,
                 selected: selectedAsset,
-                // handlePreview,
+                handlePreview,
                 isItem,
                 page,
                 propagateToAssetList,

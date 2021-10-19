@@ -140,7 +140,7 @@
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
-            const userHasEditPermission = ref<any>({})
+            const userHasEditPermission = ref<boolean>(true)
 
             const biTabs = [
                 {

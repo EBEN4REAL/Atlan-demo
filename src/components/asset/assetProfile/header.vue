@@ -99,13 +99,12 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, inject, watch, ref } from 'vue'
+    import { defineComponent, computed, inject } from 'vue'
     // Components
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AssetMenu from './assetMenu.vue'
-    import useCheckAccess from '~/services/access/useCheckAccess'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -133,16 +132,6 @@
             /** METHODS */
             // useAssetInfo
             const { status, title, assetType } = useAssetInfo()
-            /*   const { evaluatePermissions } = useCheckAccess()
-
-            const { data: userPermission } = evaluatePermissions(
-                assetData.value,
-                'ENTITY_UPDATE'
-            )
-
-            watch(userPermission, () => {
-                editPermission.value = userPermission.value[0]?.allowed
-            }) */
 
             return {
                 assetData,

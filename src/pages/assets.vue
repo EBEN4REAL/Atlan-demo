@@ -38,12 +38,7 @@
 
 <script lang="ts">
     import { useHead } from '@vueuse/head'
-    import { computed,
-        defineComponent, 
-        ref, 
-        Ref
-        // watch 
-    } from 'vue'
+    import { computed, defineComponent, ref, Ref, watch, nextTick } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
@@ -79,7 +74,7 @@
             const route = useRoute()
             const isItem = computed(() => route.params.id)
             const updateProfile = ref<boolean>(false)
-
+            const lastUpdatedItem = ref(false)
             const assetDiscovery: Ref<Element | null> = ref(null)
             // const initialFilters: initialFiltersType =
             //     getDecodedOptionsFromString(router)
@@ -96,11 +91,24 @@
             }
 
             router.currentRoute.value?.query
-            // const selected: Ref<assetInterface | undefined> = ref(undefined)
+            const selected: Ref<assetInterface | undefined> = ref(undefined)
+            const handlePreview = (selectedItem: assetInterface) => {
+                selected.value = selectedItem
+                lastUpdatedItem.value = selectedItem
+
+            }
             const page = computed(() =>
                 isItem.value ? 'profile' : 'discovery'
             )
-
+            watch(isItem, (newData) => {
+              if(!newData && lastUpdatedItem){
+                nextTick(() => {
+                  assetDiscovery.value.mutateAssetInList(lastUpdatedItem.value)
+                })
+                // setTimeout(() => {
+                // }, 300);
+              }
+            })
             // * Get all available BMs and save on store
             const { fetchBMonStore } = useBusinessMetadata()
             fetchBMonStore()

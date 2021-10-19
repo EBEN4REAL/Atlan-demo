@@ -49,7 +49,13 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, inject, computed } from 'vue'
+    import { defineComponent,
+        watch,
+        ref,
+        // inject,
+        // computed 
+    } from 'vue'
+    import { storeToRefs } from 'pinia'
 
     import { images, dataTypeList } from '~/constant/datatype'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -57,6 +63,8 @@
     // API
     import { useAPI } from '~/services/api/useAPI'
     // import HEKA_SERVICE_API from '~/services/heka/index'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: { Tooltip },
@@ -66,13 +74,16 @@
             const results = ref<any>([])
 
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
-
+            // const assetData = computed(() => assetDataInjection?.asset)
+            // store
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             const { connectionQualifiedName, databaseName, schemaName, name } =
-                { ...assetData.value.attributes }
+                { ...selectedAsset.value.attributes }
 
             const body = {
                 sql: `select * from ${name}`,

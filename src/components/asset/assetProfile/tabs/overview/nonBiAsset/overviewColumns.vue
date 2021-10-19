@@ -127,7 +127,7 @@
     // Vue
     import {
         defineComponent,
-        inject,
+        // inject,
         watch,
         computed,
         ref,
@@ -137,6 +137,7 @@
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
+    import { storeToRefs } from 'pinia'
 
     // Components
     import DataTypes from '@common/facets/dataType.vue'
@@ -155,6 +156,8 @@
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: {
@@ -179,19 +182,21 @@
             const { columnCount } = useAssetInfo()
 
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** UTILS */
             const route = useRoute()
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
+            // const assetData = computed(() => assetDataInjection?.asset)
             const column = computed(() => route?.query?.column || '')
-
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             const assetQualifiedName = computed(
-                () => assetData.value.attributes?.qualifiedName
+                () => selectedAsset.value.attributes?.qualifiedName
             )
-            const colCount = computed(() => columnCount(assetData.value))
+            const colCount = computed(() => columnCount(selectedAsset.value))
 
             const { list, isLoading, isLoadMore, reFetch, loadMore } =
                 useColumnsList(assetQualifiedName, {

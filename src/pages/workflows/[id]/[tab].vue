@@ -140,19 +140,23 @@
             const id = computed(() => route?.params?.id || '')
 
             const formConfig = computed(() => {
-                if (data.value?.uiConfig?.length) {
-                    let configCopy =
-                        data.value.uiConfig[0]?.data?.uiConfig || '{}'
-                    configCopy = configCopy
-                        .replace(/\\n/g, '\\n')
-                        .replace(/\\'/g, "\\'")
-                        .replace(/\\"/g, '\\"')
-                        .replace(/\\&/g, '\\&')
-                        .replace(/\\r/g, '\\r')
-                        .replace(/\\t/g, '\\t')
-                        .replace(/\\b/g, '\\b')
-                        .replace(/\\f/g, '\\f')
-                    return JSON.parse(configCopy) ?? {}
+                try {
+                    if (data.value?.uiConfig?.length) {
+                        let configCopy =
+                            data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                        configCopy = configCopy
+                            .replace(/\\n/g, '\\n')
+                            .replace(/\\'/g, "\\'")
+                            .replace(/\\"/g, '\\"')
+                            .replace(/\\&/g, '\\&')
+                            .replace(/\\r/g, '\\r')
+                            .replace(/\\t/g, '\\t')
+                            .replace(/\\b/g, '\\b')
+                            .replace(/\\f/g, '\\f')
+                        return JSON.parse(configCopy) ?? {}
+                    }
+                } catch {
+                    return {}
                 }
                 return {}
             })

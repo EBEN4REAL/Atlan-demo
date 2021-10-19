@@ -1,19 +1,20 @@
 <template>
     <div class="flex flex-col w-full h-full bg-white playground-height">
-        <div class="flex text-gray">
+        <div class="flex w-full bg-white text-gray">
             <a-tabs
                 v-model:activeKey="activeInlineTabKey"
                 :class="$style.inline_tabs"
                 hide-add
                 type="editable-card"
-                class="w-full insights-tabs"
+                class="insights-tabs"
                 @change="onTabClick"
                 @edit="onEdit"
+                
             >
                 <template #tabBarExtraContent>
-                    <div class="inline-flex items-center mr-2">
+                    <div class="inline-flex items-center ml-1 mr-2">
                         <span
-                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -30,7 +31,7 @@
                             "
                         >
                             <div
-                                class="flex items-center justify-between  inline_tab"
+                                class="flex items-center justify-between inline_tab"
                             >
                                 <div class="flex items-center text-gray-700">
                                     <span
@@ -394,6 +395,7 @@
     .insights-tabs {
         .ant-tabs-nav-container {
             height: 30px !important;
+            
         }
         .ant-tabs-extra-content {
             line-height: 30px !important;

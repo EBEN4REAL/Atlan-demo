@@ -2,11 +2,11 @@
     <div>
         <div class="mb-2 text-base font-bold text-gray-500">Assets Owned</div>
         <div class="flex flex-col h-full border rounded-lg">
-            <!-- <AssetsWrapper
+            <AssetsWrapper
                 class-name="border"
                 :selected-user="props.selectedUser"
                 :selected-group="props.selectedGroup"
-            /> -->
+            />
             <!-- TODO: Change it  -->
             WIP
         </div>

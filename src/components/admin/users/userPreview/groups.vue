@@ -1,19 +1,23 @@
 <template>
     <div class="my-3">
+        <div class="text-lg font-bold">Groups</div>
         <div v-if="showUserGroups">
             <div class="flex flex-row justify-between">
                 <div>
-                    <a-input-search
+                    <SearchAndFilter
                         v-model:value="searchText"
-                        placeholder="Search Groups"
-                        :allow-clear="true"
-                        class="mr-1"
+                        :placeholder="`Search ${selectedUser.group_count}  groups`"
                         @change="handleSearch"
-                    ></a-input-search>
+                        class="mr-1"
+                        size="minimal"
+                    />
                 </div>
                 <div>
-                    <a-button type="primary" ghost @click="handleAddToGroup">
-                        <fa icon="fal plus" class="mr-2"></fa>Add to group
+                    <a-button @click="handleAddToGroup">
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
+                            <span>Add to group</span>
+                        </div>
                     </a-button>
                 </div>
             </div>
@@ -21,20 +25,13 @@
                 v-if="!selectedUser.group_count"
                 class="flex flex-col items-center justify-center"
             >
-                <div class="text-center mt-6">
+                <div class="mt-6 text-center">
                     <p class="text-lg">This user is not part of any group.</p>
                 </div>
             </div>
             <div
                 v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-                class="
-                    flex flex-col
-                    items-center
-                    justify-center
-                    h-full
-                    mt-3
-                    bg-white
-                "
+                class="flex flex-col items-center justify-center h-full mt-3 bg-white "
             >
                 <ErrorView>
                     <div class="mt-3">
@@ -62,19 +59,28 @@
                     :key="group.id"
                     class="py-2 border-b border-gray-100"
                 >
-                    <div class="flex justify-between">
+                    <div class="flex justify-between group hover:bg-gray-100">
                         <div class="flex items-center">
-                            <div class="ml-2">
-                                <div class="text-gray">
-                                    <span class="mr-2 font-bold">{{
-                                        group.name
-                                    }}</span>
-                                    <span class="font-normal"
-                                        >({{ group.memberCountString }})</span
+                            <div class="">
+                                <div class="mb-1 text-primary">
+                                    <span class="mr-2">{{ group.name }}</span>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    @{{ group.alias
+                                    }}<span
+                                        v-if="group.memberCountString"
+                                        class="text-gray-500"
+                                        ><span class="mx-1">|</span
+                                        >{{ group.memberCountString }}</span
                                     >
                                 </div>
-                                <div class="text-gray">@{{ group.alias }}</div>
                             </div>
+                        </div>
+                        <div
+                            class="opacity-0 cursor-pointer  text-error group-hover:opacity-100"
+                            @click="() => removeUserFromGroup(group)"
+                        >
+                            Remove
                         </div>
                         <div class="font-bold">
                             <div
@@ -88,13 +94,13 @@
                                 />
                                 <div>Removing...</div>
                             </div>
-                            <div
+                            <!-- <div
                                 v-else
                                 class="cursor-pointer text-error"
                                 @click="() => removeUserFromGroup(group)"
                             >
                                 Remove
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -118,6 +124,7 @@
                 @updateSelectedGroups="updateSelectedGroups"
                 @showUserGroups="handleShowUserGroups"
                 @addUserToGroups="addUserToGroups"
+                :showBackButton="false"
             />
         </div>
     </div>
@@ -139,6 +146,7 @@ import {
 } from '~/composables//utils/string-operations'
 import { getIsLoadMore } from '~/composables/utils/isLoadMore'
 import AddToGroup from '~/components/admin/users/userPreview/groups/addUserToGroups.vue'
+import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
 export default defineComponent({
     name: 'UserPreviewGroups',
@@ -146,6 +154,7 @@ export default defineComponent({
         AddToGroup,
         ErrorView,
         GroupList,
+        SearchAndFilter,
     },
     props: {
         selectedUser: {

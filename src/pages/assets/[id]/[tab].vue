@@ -87,7 +87,7 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        provide
+        // provide
         // toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
@@ -302,7 +302,7 @@
             })
 
             /** PROVIDER */
-            provide('assetData', data.value)
+            // provide('assetData', data.value)
 
             // TODO: remove after fixing hierarchy bug
             // provide('parentForBIAsset', parentForBIAsset)

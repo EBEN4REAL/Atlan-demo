@@ -91,7 +91,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import useAssetsStore from '~/store/discovery'
+    import useDiscoveryStore from '~/store/discovery'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'AssetList',
@@ -143,7 +144,8 @@
         emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
             const { list, autoSelect, typename } = toRefs(props)
-            const storeAssets = useAssetsStore()
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
             const selectedAssetId = ref('')
             const shouldReSelect = false
             function handlePreview(item: any) {
@@ -152,7 +154,7 @@
                     emit('preview', item)
                 } else {
                     selectedAssetId.value = item.guid
-                    storeAssets.setSelectedAsset(item.value)
+                    storeDiscovery.setSelectedAsset(item)
                     emit('preview', item)
                 }
             }
@@ -220,6 +222,7 @@
                 bulkSelectedAssets,
                 updateBulkSelectedAssets,
                 handleCardClicked,
+                selectedAsset
             }
         },
     })

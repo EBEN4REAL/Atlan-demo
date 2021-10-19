@@ -2,7 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -184,6 +184,8 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import useCheckAccess from '~/services/access/useCheckAccess'
     import NoAccessPage from '@/discovery/noAccess.vue'
+    import useDiscoveryStore from '~/store/discovery'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -239,14 +241,15 @@
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
-            const { selectedAsset, page, mutateTooltip } = toRefs(props)
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            const { page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             const { assetTypeLabel, title, certificateStatus, assetType } =
                 useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
             const router = useRouter()
-
             const { evaluatePermissions } = useCheckAccess()
             const { data: userPermission } = evaluatePermissions(
                 selectedAsset.value,

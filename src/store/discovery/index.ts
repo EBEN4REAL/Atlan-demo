@@ -6,7 +6,7 @@ import getters from './getters'
 const useBulkUpdateStore = defineStore({
     // name of the store
     // it is used in devtools and allows restoring state
-    id: 'assets',
+    id: 'discovery',
     // a function that returns a fresh state
     state: () => state,
     getters,

@@ -6,7 +6,6 @@
                     <component
                         :is="isItem ? 'router-view' : 'AssetDiscovery'"
                         ref="assetDiscovery"
-                        @preview="handlePreview"
                     />
                 </KeepAlive>
             </div>
@@ -70,29 +69,31 @@
             useHead({
                 title: 'Assets',
             })
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
             const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
             const updateProfile = ref<boolean>(false)
-            const lastUpdatedItem = ref(false)
+            // const lastUpdatedItem = ref(false)
             const assetDiscovery: Ref<Element | null> = ref(null)
             // const initialFilters: initialFiltersType =
             //     getDecodedOptionsFromString(router)
 
             router.currentRoute.value?.query
-            const selected: Ref<assetInterface | undefined> = ref(undefined)
-            const handlePreview = (selectedItem: assetInterface) => {
-                selected.value = selectedItem
-                lastUpdatedItem.value = selectedItem
+            // const selected: Ref<assetInterface | undefined> = ref(undefined)
+            // const handlePreview = (selectedItem: assetInterface) => {
+            //     selected.value = selectedItem
+            //     lastUpdatedItem.value = selectedItem
 
-            }
+            // }
             const page = computed(() =>
                 isItem.value ? 'profile' : 'discovery'
             )
             watch(isItem, (newData) => {
-              if(!newData && lastUpdatedItem){
+              if(!newData){
                 nextTick(() => {
-                  assetDiscovery.value.mutateAssetInList(lastUpdatedItem.value)
+                  assetDiscovery.value.mutateAssetInList(selectedAsset.value)
                 })
                 // setTimeout(() => {
                 // }, 300);
@@ -112,8 +113,6 @@
             if (!isClassificationInitializedInStore()) {
                 initializeClassificationsInStore()
             }
-            const storeDiscovery = useDiscoveryStore()
-            const { selectedAsset } = storeToRefs(storeDiscovery)
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (page.value === 'discovery')
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
@@ -127,7 +126,7 @@
             }
             return {
                 selected: selectedAsset,
-                handlePreview,
+                // handlePreview,
                 isItem,
                 page,
                 propagateToAssetList,

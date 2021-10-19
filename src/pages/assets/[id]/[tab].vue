@@ -254,7 +254,7 @@
 
             // handlePreview
             const handlePreview = (item) => {
-              context.emit('preview', item)
+              // context.emit('preview', item)
               storeDiscovery.setSelectedAsset(item)
             }
 

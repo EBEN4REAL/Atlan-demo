@@ -1,6 +1,6 @@
 <template>
     <div class="text-sm text-gray-500">
-        <p class="mb-1 text-sm">Terms</p>
+        <p class="mb-2 text-sm">Terms</p>
         <!-- shown in side bar  -->
         <div v-if="pillTerms.length > 0" class="flex flex-wrap items-center">
             <PillGroup

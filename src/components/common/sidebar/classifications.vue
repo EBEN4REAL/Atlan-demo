@@ -1,6 +1,6 @@
 <template>
     <div class="text-sm text-gray-500">
-        <p class="mb-1 text-sm">Classifications</p>
+        <p class="mb-2 text-sm">Classifications</p>
         <div
             v-if="asset.classifications?.length > 0"
             class="flex flex-wrap items-center"

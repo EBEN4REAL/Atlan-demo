@@ -15,7 +15,7 @@
                     <div class="inline-flex items-center ml-1 mr-2">
                         <a-tooltip placement="bottom">
                             <template #title
-                                >Add query</template
+                                >New query</template
                             >
                              <span
                                 class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"

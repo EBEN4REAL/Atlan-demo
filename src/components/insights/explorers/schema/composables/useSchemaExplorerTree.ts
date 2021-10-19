@@ -210,8 +210,9 @@ const useTree = ({
                     'root'
                 )
             }
+        } else if (!connectionQualifiedName) {
+            treeData.value = []
         }
-
         isInitingTree.value = false
     }
 

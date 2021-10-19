@@ -42,7 +42,8 @@
                     :page="page"
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
-                    :tableauProperties="tableauProperties ?? []"
+                    :tableau-properties="tableauProperties ?? []"
+                    :user-has-edit-permission="userHasEditPermission"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -114,6 +115,10 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            userPermission: {
+                type: Object as PropType<any>,
+                required: true,
+            },
             isLoaded: {
                 type: Boolean,
             },
@@ -127,7 +132,11 @@
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
-            const { selectedAsset, page } = toRefs(props)
+            const { selectedAsset, page, userPermission } = toRefs(props)
+
+            const userHasEditPermission = ref<boolean>(
+                userPermission.value[0]?.allowed
+            )
 
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
@@ -146,6 +155,7 @@
 
                 return ['assetDetails', 'linkedAsset']
             }
+
             function setUserDefaultCollapseOrderInInfoTab(
                 activeKeyOrder: string[]
             ) {
@@ -170,7 +180,6 @@
                 [selectedAsset, page],
                 () => {
                     const infoTab = useInfoPanels(page, selectedAsset)
-
                     if (infoTab) {
                         const panels = [...infoTab?.panels]
                         const properties = infoTab?.properties
@@ -185,6 +194,7 @@
             return {
                 tableauProperties,
                 handleCollapseChange,
+                userHasEditPermission,
                 dynamicList,
                 activeKey,
                 refMap,

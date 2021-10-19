@@ -8,14 +8,7 @@
                 <div v-if="editPermission" @click.stop="toggleCategoriesTree">
                     <div
                         v-if="mode === 'edit'"
-                        class="
-                            flex
-                            items-center
-                            cursor-pointer
-                            text-primary
-                            hover:text-primary
-                            hover:underline
-                        "
+                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                     >
                         <!-- <span class="flex items-center text-xs">
                                 <fa icon="fal plus" />
@@ -31,8 +24,8 @@
             </div>
             <PillGroup
                 v-else-if="mode === 'edit'"
-                :data="existingCategories"
-                label-key="guid"
+                :data="pillCategories"
+                label-key="label"
                 :readOnly="!editPermission"
                 @add="toggleCategoriesTree"
             >
@@ -46,7 +39,7 @@
                 @click.stop="toggleCategoriesTree"
             >
                 <span class="flex">
-                    <AtlanIcon icon="Category" class="mr-2 my-auto" />
+                    <AtlanIcon icon="Category" class="my-auto mr-2" />
                     {{
                         existingCategories.length > 0
                             ? existingCategories.length
@@ -68,7 +61,7 @@
     >
         <template #content :class="$style.popover">
             <div
-                class="flex flex-col overflow-y-auto w-64"
+                class="flex flex-col w-64 overflow-y-auto"
                 :class="$style.treeSelect"
             >
                 <a-tree-select
@@ -90,18 +83,10 @@
                     size="small"
                 />
                 <div class="">
-                    <div id="renderDropdown" class="mt-4 max-h-64 z-10"></div>
+                    <div id="renderDropdown" class="z-10 mt-4 max-h-64"></div>
 
                     <div
-                        class="
-                            z-30
-                            space-x-4
-                            mt-4
-                            absolute
-                            flex
-                            justify-around
-                            mx-auto
-                        "
+                        class="absolute z-30 flex justify-around mx-auto mt-4 space-x-4 "
                     >
                         <a-button
                             class="popover-button"
@@ -125,7 +110,7 @@
 
     <div v-if="mode === 'threeDotMenu'" :class="$style.popover">
         <div
-            class="flex flex-col overflow-y-auto w-64"
+            class="flex flex-col w-64 overflow-y-auto"
             :class="$style.treeSelect"
         >
             <a-tree-select
@@ -147,18 +132,10 @@
                 size="small"
             />
             <div class="">
-                <div id="renderDropdown" class="mt-4 max-h-64 z-10"></div>
+                <div id="renderDropdown" class="z-10 mt-4 max-h-64"></div>
 
                 <div
-                    class="
-                        z-30
-                        space-x-4
-                        mt-4
-                        absolute
-                        flex
-                        justify-around
-                        mx-auto
-                    "
+                    class="absolute z-30 flex justify-around mx-auto mt-4 space-x-4 "
                 >
                     <a-button
                         class="popover-button"
@@ -194,7 +171,7 @@
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
-    import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+    import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
 
     //types
     import {
@@ -213,270 +190,271 @@
         isLeaf?: boolean
     }
 
-export default defineComponent({
-    components: { PillGroup },
-    props: {
-        glossaryQualifiedName: {
-            type: String,
-            required: true,
-            default: '',
+    export default defineComponent({
+        components: { PillGroup },
+        props: {
+            glossaryQualifiedName: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            termGuid: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            term: {
+                type: Object as PropType<Term>,
+                required: false,
+                default: () => {},
+            },
+            categories: {
+                type: Object as PropType<RelatedEntity[]>,
+                required: true,
+                default: () => [],
+            },
+            mode: {
+                type: String as PropType<'edit' | 'create' | 'threeDotMenu'>,
+                required: true,
+                default: 'create',
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
-        termGuid: {
-            type: String,
-            required: false,
-            default: '',
-        },
-        term: {
-            type: Object as PropType<Term>,
-            required: false,
-            default: () => {},
-        },
-        categories: {
-            type: Object as PropType<RelatedEntity[]>,
-            required: true,
-            default: () => [],
-        },
-        mode: {
-            type: String as PropType<'edit' | 'create' | 'threeDotMenu'>,
-            required: true,
-            default: 'create',
-        },
-        editPermission: {
-            type: Boolean,
-            required: false,
-            default: true,
-        },
-    },
-    emits: ['updateCategories'],
-    setup(props, { emit }) {
-        const existingCategories = ref(props.categories)
-        const term = toRef(props, 'term')
-        const selectedCategories = ref<{ value: string; label?: string }[]>(
-            existingCategories.value.map((category) => ({
-                value: category.guid,
-                label: category.guid,
-            }))
-        )
-
-        const showAddCategoriesTree = ref(false)
-        const parentGlossaryQualifiedName = computed(
-            () => props.glossaryQualifiedName
-        )
-        const treeData = ref<TreeDataItem[]>([])
-        const isUpdateButtonLoading = ref(false)
-
-        const refreshEntity = inject<() => void>('refreshEntity')
-        const reorderTreeNodes =
-            inject<
-                (
-                    guid: string,
-                    fromGuid?: string,
-                    toGuid?: string,
-                    categories?: { categoryGuid: string }[]
-                ) => void
-            >('reorderTreeNodes')
-
-        const toggleCategoriesTree = () => {
-            showAddCategoriesTree.value = !showAddCategoriesTree.value
-        }
-        const {
-            categories,
-            isLoading: searchLoading,
-            fetchAssets: fetchCategories,
-        } = useGtcSearch(
-            parentGlossaryQualifiedName,
-            ref(true),
-            'AtlasGlossaryCategory'
-        )
-
-        const cancelCategoriesUpdate = () => {
-            selectedCategories.value = existingCategories.value.map(
-                (category) => ({
+        emits: ['updateCategories'],
+        setup(props, { emit }) {
+            const existingCategories = ref(props.categories)
+            const term = toRef(props, 'term')
+            const selectedCategories = ref<{ value: string; label?: string }[]>(
+                existingCategories.value.map((category) => ({
                     value: category.guid,
-                    label: category.guid,
-                })
+                    label: category?.attributes?.name,
+                }))
             )
-            showAddCategoriesTree.value = false
-        }
-        const handleUpdate = () => {
-            const newCategories = selectedCategories.value.map((category) => ({
-                categoryGuid: category.value,
-            }))
-            const addedCategories = newCategories.filter(
-                (category) =>
-                    !existingCategories.value.find(
-                        (existing) => existing.guid === category.categoryGuid
-                    )
+            const pillCategories = computed(() =>
+                existingCategories.value.map((category) => ({
+                    label: category?.attributes?.name,
+                }))
             )
-            const removedCategories = existingCategories.value.filter(
-                (category) =>
-                    !newCategories.find(
-                        (newCat) => newCat.categoryGuid === category.guid
-                    )
+            const showAddCategoriesTree = ref(false)
+            const parentGlossaryQualifiedName = computed(
+                () => props.glossaryQualifiedName
+            )
+            const treeData = ref<TreeDataItem[]>([])
+            const isUpdateButtonLoading = ref(false)
+
+            const refreshEntity = inject<() => void>('refreshEntity')
+            const reorderTreeNodes =
+                inject<
+                    (
+                        guid: string,
+                        fromGuid?: string,
+                        toGuid?: string,
+                        categories?: { categoryGuid: string }[]
+                    ) => void
+                >('reorderTreeNodes')
+
+            const toggleCategoriesTree = () => {
+                showAddCategoriesTree.value = !showAddCategoriesTree.value
+            }
+            const {
+                categories,
+                isLoading: searchLoading,
+                fetchAssets: fetchCategories,
+            } = useGtcSearch(
+                parentGlossaryQualifiedName,
+                ref(true),
+                'AtlasGlossaryCategory'
             )
 
-            if (
-                (props.mode === 'edit' || props.mode === 'threeDotMenu') &&
-                props.term
-            ) {
-                const { data: updateData, updateEntity } = useUpdateGtcEntity()
-                isUpdateButtonLoading.value = true
-
-                const { data, error, isLoading } =
-                    GlossaryApi.UpdateGlossaryTerm(props.termGuid, {
-                        // ...props.term.attributes,
-                        // ...props.term,
-                        // qualifiedName: props.term.attributes.qualifiedName,
-                        name: props.term.attributes.name,
-                        shortDescription:
-                            props.term.attributes.shortDescription,
-                        assetStatus: props.term.attributes.assetStatus,
-                        assetStatusMessage:
-                            props.term.attributes.assetStatusMessage,
-                        assetStatusUpdatedBy:
-                            props.term.attributes.assetStatusUpdatedBy,
-                        assetStatusUpdatedAt:
-                            props.term.attributes.assetStatusUpdatedAt,
-                        ownerUsers: props.term.attributes.ownerUsers,
-                        ownerGroups: props.term.attributes.ownerGroups,
-                        anchor: {
-                            glossaryGuid: props.term.attributes.anchor.guid,
-                        },
-                        typeName: props.term.typeName,
-                        categories: newCategories,
+            const cancelCategoriesUpdate = () => {
+                selectedCategories.value = existingCategories.value.map(
+                    (category) => ({
+                        value: category.guid,
+                        label: category.guid,
                     })
-                watch(data, (newData) => {
-                    if (newData?.guid) {
-                        showAddCategoriesTree.value = false
-                        isUpdateButtonLoading.value = false
-                        if (refreshEntity) refreshEntity()
-                        console.log('whaaa', reorderTreeNodes)
-                        if (reorderTreeNodes) {
-                            addedCategories.forEach((category) => {
-                                reorderTreeNodes(
-                                    props.termGuid,
-                                    undefined,
-                                    category.categoryGuid,
-                                    newCategories
-                                )
-                            })
-                            removedCategories.forEach((category) => {
-                                reorderTreeNodes(
-                                    props.termGuid,
-                                    category.guid,
-                                    undefined,
-                                    newCategories
-                                )
-                            })
-                        }
-                    }
-                })
-            } else if (props.mode === 'create') {
-                emit(
-                    'updateCategories',
-                    newCategories,
-                    addedCategories,
-                    removedCategories
                 )
                 showAddCategoriesTree.value = false
-                existingCategories.value = selectedCategories.value.map(
+            }
+            const handleUpdate = () => {
+                const newCategories = selectedCategories.value.map(
                     (category) => ({
-                        guid: category.value,
-                        typeName: 'AtlasGlossaryCategory',
-                        uniqueAttributes: {
-                            qualifiedName: category.value,
-                        },
+                        categoryGuid: category.value,
                     })
                 )
-            }
-        }
-        const convertCategoriesToTree = (categories: Category[]) => {
-            categories.forEach((category) => {
-                treeData.value.push({
-                    ...category,
-                    id: category.guid ?? '',
-                    pId: category.attributes?.parentCategory?.guid ?? 0,
-                    value: category.guid ?? '',
-                    title: category.displayText ?? '',
-                    isLeaf: !category.attributes?.childrenCategories?.length
-                        ? true
-                        : false,
-                })
-            })
-        }
-        const onLoadData = (treeNode: any) => {
-            return new Promise((resolve: (value?: unknown) => void) => {
-                const { id } = treeNode.dataRef
-                setTimeout(() => {
-                    console.log(
-                        treeNode,
-                        treeNode.dataRef.children,
-                        !treeNode.dataRef.children
-                    )
-                    categories.value.forEach((category: Category) => {
-                        if (category.attributes.parentCategory === id) {
-                            console.log(id)
-                            if (!treeNode.dataRef.children)
-                                treeNode.dataRef.children = []
-                            treeData.value.push({
-                                ...category,
-                                id: category.guid ?? '',
-                                pId: id,
-                                value: category.guid ?? '',
-                                title: category.displayText ?? '',
-                                isLeaf: false,
-                            })
+                const addedCategories = newCategories.filter(
+                    (category) =>
+                        !existingCategories.value.find(
+                            (existing) =>
+                                existing.guid === category.categoryGuid
+                        )
+                )
+                const removedCategories = existingCategories.value.filter(
+                    (category) =>
+                        !newCategories.find(
+                            (newCat) => newCat.categoryGuid === category.guid
+                        )
+                )
+
+                if (
+                    (props.mode === 'edit' || props.mode === 'threeDotMenu') &&
+                    props.term
+                ) {
+                    const { data: updateData, updateEntity } =
+                        useUpdateGtcEntity()
+                    isUpdateButtonLoading.value = true
+
+                    const { data, error, isLoading } =
+                        GlossaryApi.UpdateGlossaryTerm(props.termGuid, {
+                            // ...props.term.attributes,
+                            // ...props.term,
+                            // qualifiedName: props.term.attributes.qualifiedName,
+                            name: props.term.attributes.name,
+                            shortDescription:
+                                props.term.attributes.shortDescription,
+                            assetStatus: props.term.attributes.assetStatus,
+                            assetStatusMessage:
+                                props.term.attributes.assetStatusMessage,
+                            assetStatusUpdatedBy:
+                                props.term.attributes.assetStatusUpdatedBy,
+                            assetStatusUpdatedAt:
+                                props.term.attributes.assetStatusUpdatedAt,
+                            ownerUsers: props.term.attributes.ownerUsers,
+                            ownerGroups: props.term.attributes.ownerGroups,
+                            anchor: {
+                                glossaryGuid: props.term.attributes.anchor.guid,
+                            },
+                            typeName: props.term.typeName,
+                            categories: newCategories,
+                        })
+                    watch(data, (newData) => {
+                        if (newData?.guid) {
+                            showAddCategoriesTree.value = false
+                            isUpdateButtonLoading.value = false
+                            if (refreshEntity) refreshEntity()
+                            console.log('whaaa', reorderTreeNodes)
+                            if (reorderTreeNodes) {
+                                addedCategories.forEach((category) => {
+                                    reorderTreeNodes(
+                                        props.termGuid,
+                                        undefined,
+                                        category.categoryGuid,
+                                        newCategories
+                                    )
+                                })
+                                removedCategories.forEach((category) => {
+                                    reorderTreeNodes(
+                                        props.termGuid,
+                                        category.guid,
+                                        undefined,
+                                        newCategories
+                                    )
+                                })
+                            }
                         }
                     })
-                    resolve()
-                }, 300)
-            })
-        }
-
-        watch(categories, (newCategories) => {
-            convertCategoriesToTree(newCategories as Category[])
-        })
-        watch(term, (newTerm) => {
-            existingCategories.value = newTerm?.attributes?.categories ?? []
-            selectedCategories.value = existingCategories.value.map(
-                (category) => ({
-                    value: category.guid,
-                    label: category.guid,
+                } else if (props.mode === 'create') {
+                    emit(
+                        'updateCategories',
+                        newCategories,
+                        addedCategories,
+                        removedCategories
+                    )
+                    showAddCategoriesTree.value = false
+                    existingCategories.value = selectedCategories.value.map(
+                        (category) => ({
+                            guid: category.value,
+                            typeName: 'AtlasGlossaryCategory',
+                            uniqueAttributes: {
+                                qualifiedName: category.value,
+                            },
+                        })
+                    )
+                }
+            }
+            const convertCategoriesToTree = (categories: Category[]) => {
+                categories.forEach((category) => {
+                    treeData.value.push({
+                        ...category,
+                        id: category.guid ?? '',
+                        pId: category.attributes?.parentCategory?.guid ?? 0,
+                        value: category.guid ?? '',
+                        title: category.displayText ?? '',
+                        isLeaf: !category.attributes?.childrenCategories?.length
+                            ? true
+                            : false,
+                    })
                 })
-            )
-        })
+            }
+            const onLoadData = (treeNode: any) => {
+                return new Promise((resolve: (value?: unknown) => void) => {
+                    const { id } = treeNode.dataRef
+                    setTimeout(() => {
+                        console.log(
+                            treeNode,
+                            treeNode.dataRef.children,
+                            !treeNode.dataRef.children
+                        )
+                        categories.value.forEach((category: Category) => {
+                            if (category.attributes.parentCategory === id) {
+                                console.log(id)
+                                if (!treeNode.dataRef.children)
+                                    treeNode.dataRef.children = []
+                                treeData.value.push({
+                                    ...category,
+                                    id: category.guid ?? '',
+                                    pId: id,
+                                    value: category.guid ?? '',
+                                    title: category.displayText ?? '',
+                                    isLeaf: false,
+                                })
+                            }
+                        })
+                        resolve()
+                    }, 300)
+                })
+            }
 
-        const getPopupContainer = (trigger) => {
-            return trigger.parentNode.querySelector('#renderDropdown')
-        }
+            watch(categories, (newCategories) => {
+                convertCategoriesToTree(newCategories as Category[])
+            })
+            watch(term, (newTerm) => {
+                existingCategories.value = newTerm?.attributes?.categories ?? []
+                selectedCategories.value = existingCategories.value.map(
+                    (category) => ({
+                        value: category.guid,
+                        label: category.guid,
+                    })
+                )
+            })
 
-        return {
-            getPopupContainer,
-            existingCategories,
-            showAddCategoriesTree,
-            categories,
-            treeData,
-            toggleCategoriesTree,
-            onLoadData,
-            selectedCategories,
-            cancelCategoriesUpdate,
-            handleUpdate,
-            isUpdateButtonLoading,
-            TreeSelect,
-        }
-    },
-})
+            const getPopupContainer = (trigger) => {
+                return trigger.parentNode.querySelector('#renderDropdown')
+            }
+
+            return {
+                getPopupContainer,
+                existingCategories,
+                showAddCategoriesTree,
+                categories,
+                treeData,
+                toggleCategoriesTree,
+                onLoadData,
+                selectedCategories,
+                cancelCategoriesUpdate,
+                handleUpdate,
+                isUpdateButtonLoading,
+                TreeSelect,
+                pillCategories,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.categories {
-}
-.popover {
-    max-height: 600px;
-    padding: 1rem;
-}
-.treeSelect {
-    div {
-        position: relative !important;
+    .categories {
     }
     .popover {
         max-height: 600px;
@@ -486,15 +464,23 @@ export default defineComponent({
         div {
             position: relative !important;
         }
-        :global(.ant-select-tree-dropdown) {
-            top: 0 !important;
+        .popover {
+            max-height: 600px;
+            padding: 1rem;
+        }
+        .treeSelect {
+            div {
+                position: relative !important;
+            }
+            :global(.ant-select-tree-dropdown) {
+                top: 0 !important;
+            }
+        }
+        .popoverButton {
+            min-width: 104px !important;
         }
     }
     .popoverButton {
         min-width: 104px !important;
     }
-}
-.popoverButton {
-    min-width: 104px !important;
-}
 </style>

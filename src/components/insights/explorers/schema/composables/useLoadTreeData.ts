@@ -48,7 +48,7 @@ const useLoadTreeData = () => {
             ],
         },
         // sortBy: 'name',
-        // sortOrder: 'ASCENDING',
+        sortOrder: 'ASCENDING',
     })
 
     const getDatabaseForConnection = async (

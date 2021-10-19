@@ -117,8 +117,8 @@ const useAssetAudit = (params: any, guid: string) => {
         typeof parsedDetails === 'object'
             ? parsedDetails?.typeName ?? ''
             : typeof parsedDetails === 'string'
-            ? parsedDetails
-            : ''
+                ? parsedDetails
+                : ''
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
@@ -130,7 +130,7 @@ const useAssetAudit = (params: any, guid: string) => {
         }
         if ('attributes' in logs) {
             const { attributes } = logs
-            const owners = 'ownerUsers' in attributes
+            const owners = 'ownerUsers' in attributes || 'ownerGroups' in attributes
             const experts = 'expertUsers' in attributes
             const status = 'certificateUpdatedAt' in attributes
             const userDescription =
@@ -138,13 +138,24 @@ const useAssetAudit = (params: any, guid: string) => {
                 'shortDescription' in attributes
 
             if (owners) {
-                const users = attributes.ownerUsers.split(',')
-                if (attributes.ownerUsers === '') {
+                let users = [];
+                let groups = [];
+
+                if (attributes.ownerUsers) {
+                    users = attributes.ownerUsers.split(',')
+                    users = users.map(user => ({ name: user, type: "user" }));
+                }
+                if (attributes.ownerGroups) {
+                    groups = attributes.ownerGroups.split(',')
+                    groups = groups.map(group => ({ name: group, type: "group" }));
+                }
+                if (attributes.ownerUsers === '' && attributes.ownerGroups === '') {
                     data.displayValue = 'owners'
                     return data
                 }
+
                 data.displayValue = 'owners'
-                data.value = users
+                data.value = [...users, ...groups]
                 return data
             }
             if (experts) {

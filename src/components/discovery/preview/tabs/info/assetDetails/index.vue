@@ -44,18 +44,21 @@
         <Description
             v-if="selectedAsset.guid"
             :selected-asset="selectedAsset"
+            :edit-permission="userHasEditPermission"
             @update:selected-asset="mutateSelectedAsset"
         />
 
         <Owners
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
             :selected-asset="selectedAsset"
+            :edit-permission="userHasEditPermission"
             @update:selected-asset="mutateSelectedAsset"
         />
 
         <Status
             v-if="selectedAsset.guid"
             :selected-asset="selectedAsset"
+            :edit-permission="userHasEditPermission"
             @update:selected-asset="mutateSelectedAsset"
         />
     </div>
@@ -86,6 +89,10 @@
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            userHasEditPermission: {
+                type: Boolean,
                 required: true,
             },
             page: {

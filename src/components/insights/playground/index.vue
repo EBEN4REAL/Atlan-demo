@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full bg-white">
+    <div class="flex flex-col w-full h-full bg-white playground-height">
         <div class="flex text-gray">
             <a-tabs
                 v-model:activeKey="activeInlineTabKey"
@@ -22,37 +22,60 @@
                 </template>
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
                     <template #tab>
-                        <div
-                            class="flex items-center justify-between inline_tab"
+                        <a-dropdown
+                            :trigger="['click']"
+                            :visible="
+                                unsavedPopover.show &&
+                                unsavedPopover.key === tab.key
+                            "
                         >
-                            <div class="flex items-center">
-                                <span
-                                    class="
-                                        text-sm
-                                        truncate
-                                        ...
-                                        inline_tab_label
-                                    "
-                                    >{{ tab.label }}</span
-                                >
-                            </div>
                             <div
-                                v-if="!tab.isSaved"
-                                class="flex items-center mr-2 unsaved-dot"
+                                class="flex items-center justify-between  inline_tab"
                             >
+                                <div class="flex items-center text-gray-700">
+                                    <span
+                                        class="
+                                            text-sm
+                                            truncate
+                                            ...
+                                            inline_tab_label
+                                        "
+                                        :class="
+                                            tab.key !== activeInlineTabKey
+                                                ? 'text-gray-500'
+                                                : ''
+                                        "
+                                        >{{ tab.label }}</span
+                                    >
+                                </div>
                                 <div
-                                    class="
-                                        w-1.5
-                                        h-1.5
-                                        rounded-full
-                                        bg-primary
-                                        -mt-0.5
-                                        absolute
-                                        right-2.5
-                                    "
-                                ></div>
+                                    v-if="!tab.isSaved"
+                                    class="flex items-center mr-2 unsaved-dot"
+                                >
+                                    <div
+                                        class="
+                                            w-1.5
+                                            h-1.5
+                                            rounded-full
+                                            bg-primary
+                                            -mt-0.5
+                                            absolute
+                                            right-2.5
+                                        "
+                                    ></div>
+                                </div>
                             </div>
-                        </div>
+                            <template #overlay>
+                                <a-menu>
+                                    <UnsavedPopover
+                                        @closeTab="closeTabConfirm"
+                                        @saveTab="saveTabConfirm"
+                                        :unsavedPopover="unsavedPopover"
+                                        :isSaving="isSaving"
+                                    />
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
                     </template>
                 </a-tab-pane>
             </a-tabs>
@@ -60,32 +83,41 @@
         <div v-if="activeInlineTabKey" class="w-full h-full">
             <splitpanes horizontal :push-other-panes="false">
                 <pane
-                    :max-size="100"
+                    :max-size="95.5"
                     :size="100 - outputPaneSize"
-                    min-size="45"
+                    min-size="30"
                     class="overflow-x-hidden"
                 >
                     <Editor
                 /></pane>
-                <pane min-size="0" :size="outputPaneSize" max-size="45">
+                <pane min-size="4.5" :size="outputPaneSize" max-size="70">
                     <ResultsPane
                 /></pane>
             </splitpanes>
         </div>
-        <NoActiveInlineTab v-else />
+        <NoActiveInlineTab @handleAdd="handleAdd" v-else />
+        <SaveQueryModal
+            v-model:showSaveQueryModal="showSaveQueryModal"
+            :saveQueryLoading="saveQueryLoading"
+            :ref="
+                (el) => {
+                    saveModalRef = el
+                }
+            "
+            @onSaveQuery="saveQueryOnCloseTab"
+        />
     </div>
 </template>
 
 <script lang="ts">
     import {
+        watch,
+        ComputedRef,
         defineComponent,
-        toRefs,
         computed,
         Ref,
         inject,
         ref,
-        onMounted,
-        onUnmounted,
     } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
@@ -93,12 +125,21 @@
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
+    import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useRouter } from 'vue-router'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
-        components: { Editor, ResultsPane, NoActiveInlineTab },
+        components: {
+            Editor,
+            ResultsPane,
+            NoActiveInlineTab,
+            UnsavedPopover,
+            SaveQueryModal,
+        },
         props: {
             activeInlineTabKey: {
                 type: String,
@@ -107,21 +148,37 @@
         },
         setup(props, { emit }) {
             const router = useRouter()
+            const isSaving = ref(false)
+            const showSaveQueryModal = ref(false)
+            const saveCloseTabKey = ref()
+            const saveQueryLoading = ref(false)
+            const saveModalRef = ref()
+            const saveQueryData = ref()
+
             const { queryRun } = useRunQuery()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
+            const unsavedPopover = ref({
+                show: false,
+                key: undefined,
+            })
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
+            const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const isActiveInlineTabSaved = computed(
                 () => activeInlineTab.value.isSaved
+            )
+            const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
+                tabs,
+                activeInlineTab,
+                activeInlineTabKey
             )
             const handleAdd = () => {
                 const key = String(new Date().getTime())
@@ -157,15 +214,14 @@
                     },
                     playground: {
                         editor: {
-                            text:
-                                activeInlineTab.value?.playground?.editor
-                                    .text ??
-                                'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
+                            text: '',
                             dataList: [],
                             columnList: [],
-                            variables:
-                                activeInlineTab.value?.playground?.editor
-                                    .variables ?? [],
+                            variables: [],
+                            limitRows: {
+                                checked: false,
+                                rowsCount: -1,
+                            },
                         },
                         resultsPane: {
                             activeTab:
@@ -173,6 +229,10 @@
                                     ?.activeTab ?? 0,
                             result: {
                                 title: `${key} Result`,
+                                isQueryRunning: '',
+                                queryErrorObj: {},
+                                totalRowsCount: -1,
+                                executionTime: -1,
                             },
                             metadata: {},
                             queries: {},
@@ -194,6 +254,7 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
+                router.push(`/insights`)
             }
             const pushGuidToURL = (guid: string | undefined) => {
                 if (guid) router.push(`/insights?id=${guid}`)
@@ -208,17 +269,115 @@
                     handleAdd()
                 } else {
                     console.log(targetKey)
+                    let crossedTabState: boolean = false
+                    tabs.value.forEach((tab) => {
+                        if (tab.key === targetKey) {
+                            crossedTabState = tab.isSaved
+                        }
+                    })
+                    /* If it is unsaved then show popover confirm */
+                    if (!crossedTabState) {
+                        unsavedPopover.value.key = targetKey as string
+                        unsavedPopover.value.show = true
+                    } else {
+                        inlineTabRemove(
+                            targetKey as string,
+                            tabs,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+                    }
+                }
+            }
+            const openSaveQueryModal = () => {
+                showSaveQueryModal.value = true
+            }
+            const closeTabConfirm = (key: string) => {
+                console.log(key, 'close')
+                inlineTabRemove(
+                    key as string,
+                    tabs,
+                    activeInlineTabKey,
+                    pushGuidToURL
+                )
+                unsavedPopover.value.key = undefined
+                unsavedPopover.value.show = false
+            }
+            const saveQueryOnCloseTab = (saveQueryDataParam: any) => {
+                saveQueryData.value = saveQueryDataParam
+                const key = saveCloseTabKey.value
+                let tabData: activeInlineTabInterface | undefined
+                tabs.value.forEach((tab) => {
+                    if (tab.key === key) {
+                        tabData = tab
+                    }
+                })
+                const tabRemoveCallbackFunction = (error: any) => {
+                    if (!error) {
+                        inlineTabRemove(
+                            key as string,
+                            tabs,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+                        saveCloseTabKey.value = undefined
+                    }
+                }
+                if (saveQueryData.value) {
+                    saveQueryToDatabase(
+                        saveQueryData.value,
+                        saveQueryLoading,
+                        showSaveQueryModal,
+                        saveModalRef,
+                        router,
+                        'personal',
+                        saveQueryData.value.parentQF,
+                        saveQueryData.value.parentGuid,
+                        tabData as activeInlineTabInterface,
+                        tabRemoveCallbackFunction,
+                        false
+                    )
+                }
+            }
+            const saveTabConfirm = (key: string) => {
+                /* Saving the key */
+                saveCloseTabKey.value = key
+                let tabData: activeInlineTabInterface | undefined
+                tabs.value.forEach((tab) => {
+                    if (tab.key === key) {
+                        tabData = tab
+                    }
+                })
+
+                if (tabData?.queryId) {
+                    /* If this tab already saved to database */
+                    updateSavedQuery(editorInstance, isSaving, tabData)
                     inlineTabRemove(
-                        targetKey as string,
+                        key as string,
                         tabs,
                         activeInlineTabKey,
                         pushGuidToURL
                     )
+                } else {
+                    /* If this tab need to save into database */
+                    unsavedPopover.value.key = undefined
+                    unsavedPopover.value.show = false
+                    openSaveQueryModal()
                 }
+
+                console.log('save', key)
             }
+
             return {
+                saveModalRef,
+                saveQueryLoading,
+                showSaveQueryModal,
+                openSaveQueryModal,
+                saveQueryOnCloseTab,
+                saveTabConfirm,
+                closeTabConfirm,
+                unsavedPopover,
                 isActiveInlineTabSaved,
-                isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
@@ -239,6 +398,7 @@
         .ant-tabs-extra-content {
             line-height: 30px !important;
         }
+
         .ant-tabs-tab {
             height: 100%;
             border-radius: 0px !important;
@@ -248,6 +408,7 @@
             border-top: 0px !important;
             padding: 0 12px !important;
             height: 30px !important;
+            @apply bg-gray-light !important;
 
             > div {
                 height: 100%;
@@ -255,6 +416,7 @@
 
             &.ant-tabs-tab-active {
                 border-bottom: 1px solid !important;
+                @apply bg-white !important;
             }
             .ant-tabs-close-x {
                 visibility: hidden;
@@ -310,9 +472,16 @@
             @apply flex items-center !important;
         }
         :global(.ant-tabs-bar) {
-            @apply m-0 !important;
+            @apply m-0 bg-gray-light !important;
+        }
+        :global(.ant-tabs-nav .ant-tabs-tab-active) {
+            @apply text-white !important;
         }
     }
+    // :global(.ant-modal-wrap) {
+    //     /* Overrriding modals z-index so that it appears above menu */
+    //     z-index: 1100 !important;
+    // }
 </style>
 <route lang="yaml">
 meta:

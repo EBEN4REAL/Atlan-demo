@@ -8,8 +8,7 @@
         <a-checkbox
             v-if="projection.includes('checkbox')"
             :checked="isChecked"
-            class="mt-1 ml-2 opacity-0 group-hover:opacity-100"
-            :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+            class="mt-1 ml-2"
             @click.stop
             @change="(e) => $emit('listItem:check', e, entity)"
         />
@@ -48,7 +47,9 @@
                             hover:underline
                             overflow-ellipsis
                         "
-                        @click="redirectToProfile"
+                        @click="
+                            redirectToProfile(entity?.typeName, entity?.guid)
+                        "
                     >
                         {{ entity?.displayText }}
                     </span>
@@ -154,7 +155,6 @@
         <!-- three dot menu -->
         <ThreeDotMenu
             :entity="entity"
-            :redirectToProfile="redirectToProfile"
             :visible="false"
             class="mt-1 opacity-0"
         />
@@ -188,6 +188,7 @@
     } from '~/types/glossary/glossary.interface'
 
     import { List as StatusList } from '~/constant/status'
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         components: { ThreeDotMenu, Tooltip, ScrollStrip, Pill },
@@ -243,7 +244,7 @@
                     const catQualifiedName =
                         props.entity?.attributes?.categories?.map(
                             (category) =>
-                                category?.displayText ?? category?.guid
+                                category?.attributes?.name ?? category?.guid
                         )
                     return catQualifiedName
                 }
@@ -299,14 +300,7 @@
                     (name) => name.length
                 )
             }
-            const redirectToProfile = () => {
-                if (props.entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryCategory')
-                    router.push(`/glossary/category/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${props.entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
 
             return {
                 statusObject,

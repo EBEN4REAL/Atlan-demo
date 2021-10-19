@@ -1,11 +1,14 @@
 <template>
-    <!-- <div class="w-full h-full placeholder">
+    <!-- <div
+        class="w-full h-full placeholder"
+        v-if="selectedAsset && !activeInlineTab?.isSaved"
+    >
         <div class="flex items-center justify-between w-full p-3">
             <span
                 v-if="activeInlineTab && activeInlineTab?.assetSidebar"
                 class="font-bold text-gray"
             >
-                {{ activeInlineTab.assetSidebar.title }}
+                Save Query first
             </span>
             <span
                 class="flex items-center justify-center"
@@ -14,14 +17,11 @@
                 <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
             </span>
         </div>
-        <div class="flex flex-col items-center justify-center w-full h-full">
-            <p>Asset Sidebar</p>
-            <p>Tab - {{ activeInlineTab.label }}</p>
-        </div>
     </div> -->
     <div class="z-20 flex flex-col bg-white">
         <AssetPreview
             v-if="selectedAsset"
+            :mutateTooltip="true"
             :selectedAsset="selectedAsset"
             @asset-mutation="() => {}"
             page="discovery"
@@ -30,7 +30,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ComputedRef, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        ComputedRef,
+        computed,
+        ref,
+        watch,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
@@ -44,17 +52,19 @@
             ) as ComputedRef<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { closeAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
-            const selectedAsset: Ref<any> = ref(undefined)
-
-            watch(
-                activeInlineTab,
-                () => {
-                    selectedAsset.value = {
-                        ...activeInlineTab.value?.assetSidebar?.assetInfo,
-                    }
-                },
-                { immediate: true }
+            const selectedAsset: Ref<any> = computed(
+                () => activeInlineTab.value?.assetSidebar?.assetInfo
             )
+
+            // watch(
+            //     activeInlineTab,
+            //     () => {
+            //         selectedAsset.value = {
+            //             ...activeInlineTab.value?.assetSidebar?.assetInfo,
+            //         }
+            //     },
+            //     { immediate: true }
+            // )
 
             return {
                 selectedAsset,

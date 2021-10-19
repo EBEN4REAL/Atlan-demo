@@ -26,7 +26,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         if (localStorageInlineTabs.length > 0) {
             return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
-        return inlineTabsDemoData
+        return []
     }
 
     const isInlineTabAlreadyOpened = (
@@ -82,7 +82,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         } else {
             if (tabsArray.value.length > 0) {
                 activeInlineTabKey.value = tabsArray.value[0].key
-                if (tabsArray.value[lastIndex].queryId)
+                if (tabsArray.value[0]?.queryId)
                     pushGuidToURL(tabsArray.value[0].queryId)
                 else pushGuidToURL()
             } else {
@@ -200,7 +200,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         currKey: string,
         newKey: string,
         activeTab: activeInlineTabInterface,
-        activeInlineTabKey: Ref<activeInlineTabKey>
+        activeInlineTabKey: Ref<string>
     ) => {
         const index = tabsArray.value.findIndex((tab) => tab.key === currKey)
         tabsArray.value[index] = activeTab

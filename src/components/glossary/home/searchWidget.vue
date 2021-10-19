@@ -11,14 +11,16 @@
                 @change="onSearch"
             />
             <template #overlay>
-                <a-menu class="overflow-y-auto max-h-48">
+                <a-menu class="overflow-y-auto max-h-56">
                     <a-menu-item v-if="isLoading">
                         <LoadingView />
                     </a-menu-item>
                     <template v-for="item in entities" v-else :key="item.guid">
                         <a-menu-item
                             class="flex items-center py-2"
-                            @click="redirectToProfile(item)"
+                            @click="
+                                redirectToProfile(item?.typeName, item?.guid)
+                            "
                         >
                             <div class="flex flex-col py-1 ml-3">
                                 <span class="flex items-center space-x-2"
@@ -33,9 +35,41 @@
                                         class="p-0 ml-2"
                                     ></StatusBadge>
                                 </span>
-                                <span class="text-xs text-gray-500">
-                                    Parent glossary name goes here
-                                </span>
+                                <div class="flex items-cener mt-0.5">
+                                    <span class="text-xs text-gray-500"
+                                        >{{
+                                            assetTypeLabel[
+                                                item?.typeName
+                                            ].toUpperCase()
+                                        }}
+                                    </span>
+                                    <div
+                                        class="w-1 h-1 mx-2 mt-1 bg-gray-500 rounded-full "
+                                    ></div>
+                                    <span
+                                        v-if="
+                                            item?.typeName !==
+                                                'AtlasGlossary' &&
+                                            item?.attributes?.anchor?.attributes
+                                                ?.name?.length
+                                        "
+                                        class="text-xs text-gray-500"
+                                    >
+                                        {{
+                                            item?.attributes?.anchor?.attributes
+                                                ?.name
+                                        }}
+                                        Glossary
+                                    </span>
+                                    <span v-else class="text-xs text-gray-500">
+                                        {{ item?.attributes?.terms?.length }}
+                                        Terms,
+                                        {{
+                                            item?.attributes?.categories?.length
+                                        }}
+                                        Categories
+                                    </span>
+                                </div>
                             </div>
                             <template #icon>
                                 <atlan-icon
@@ -66,8 +100,8 @@
             </template>
         </a-dropdown>
         <span
-            class="flex items-center self-end mt-2 cursor-pointer text-primary"
-            @click="redirectToProfile(entities[0])"
+            class="flex items-center self-end mt-2 font-bold cursor-pointer  text-primary"
+            @click="redirectToProfile(entities[0]?.typeName, entities[0]?.guid)"
             >Browse all Glossaries
             <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
         </span>
@@ -83,6 +117,9 @@
     import LoadingView from '@common/loaders/page.vue'
     // composables
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+    // utils
+    import redirect from '@/glossary/utils/redirectToProfile'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         components: {
@@ -104,14 +141,7 @@
                     offset: 0,
                 })
             }, 400)
-            const redirectToProfile = (entity) => {
-                console.log(entity)
-                if (entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${entity.guid}`)
-                else if (entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${entity.guid}`)
-                else router.push(`/glossary/category/${entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
 
             return {
                 entities,
@@ -119,6 +149,7 @@
                 searchQuery,
                 redirectToProfile,
                 isLoading,
+                assetTypeLabel,
             }
         },
     })

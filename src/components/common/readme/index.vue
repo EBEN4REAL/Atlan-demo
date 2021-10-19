@@ -9,7 +9,7 @@
         >
             <div class="mb-3 text-base font-bold text-gray-700">Readme</div>
             <div v-if="editable" class="flex align-items-center">
-                <a-button class="mr-2" @click="editable = false">Save</a-button>
+                <a-button class="mr-2" @click="handleSave">Save</a-button>
 
                 <!-- <a-dropdown
                     v-model:visible="templateNameDropdown"
@@ -60,7 +60,12 @@
                     >Cancel</a-button
                 >
             </div>
-            <a-button v-else type="link" class="text-sm" @click="startEdit">
+            <a-button
+                v-if="editPermission && !editable"
+                type="link"
+                class="text-sm"
+                @click="startEdit"
+            >
                 <fa icon="fa pencil" class="mx-2 text-xs" />
                 Edit
             </a-button>
@@ -73,6 +78,7 @@
                 showPaddingX ? 'px-7' : '',
             ]"
             :editable="editable"
+            :content="entity?.attributes?.readme?.attributes?.description"
             @onEditorContentUpdate="onUpdate"
         />
         <a-modal
@@ -129,9 +135,23 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        onMounted,
+        watch,
+        computed,
+        toRefs,
+    } from 'vue'
 
     import Editor from '@/common/editor/index.vue'
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
+    import useUpdateReadme from '@/common/readme/useUpdateReadme'
+    import useCreateReadme from '@/common/readme/useCreateReadme'
 
     export default defineComponent({
         components: {
@@ -157,15 +177,29 @@
                 required: false,
                 default: true,
             },
+            entity: {
+                type: Object as PropType<Glossary | Category | Term>,
+                required: true,
+                default: () => {},
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
-        setup() {
+        setup(props) {
             const editable = ref(false)
             const editor = ref()
-            const editorContent = ref('')
             const showTemplatesModal = ref(false)
             const templateName = ref('')
             const newTemplateName = ref('')
             const templateNameDropdown = ref(false)
+            const { entity } = toRefs(props)
+            const editorContent = ref(entity?.attributes?.readme?.attributes?.description ?? '')
+            const readmeDescription = computed(
+                () => entity?.attributes?.readme?.attributes?.description
+            )
 
             const templateList = ref([
                 {
@@ -181,15 +215,15 @@
             ])
 
             const onUpdate = (content: string, json: Record<string, any>) => {
-                // console.log(content, json)
                 editorContent.value = content
+                console.log(content, editorContent.value)
             }
 
             const onCancel = () => {
                 if (editor.value) {
                     editor.value.resetEditor()
                 }
-                editorContent.value = editor.value.getEditorContent()?.content
+                editorContent.value = readmeDescription.value
 
                 editable.value = false
             }
@@ -217,6 +251,7 @@
                 // if (!editorContent.value || editorContent.value === '<p></p>') {
                 //     showTemplatesModal.value = true
                 // }
+                // editorContent.value = readmeDescription.value
             }
 
             // const newTemplate = () => {
@@ -226,6 +261,40 @@
                 showTemplatesModal.value = false
                 templateName.value = ''
             }
+            const handleSave = () => {
+                editable.value = false
+                console.log(editorContent.value)
+                if (readmeDescription.value?.length || readmeDescription.value === '') {
+                    const { isCompleted, isLoading, update } = useUpdateReadme(
+                        entity?.attributes?.readme,
+                        editorContent.value
+                    )
+                    update()
+                    watch(isCompleted, (completed) => {
+                        if(completed) {
+                            entity.attributes.readme.attributes.description = editorContent.value
+                        }
+                    })
+                } else {
+                    const { createReadme } = useCreateReadme(
+                        entity,
+                        editorContent.value
+                    )
+                    createReadme()
+                }
+            }
+
+            // onMounted(() => {
+            //     console.log(
+            //         props.entity?.attributes?.readme?.attributes?.description
+            //     )
+            //     if (
+            //         props.entity?.attributes?.readme?.attributes?.description
+            //             ?.length
+            //     ) {
+            //         editor.value = console.log(editorContent.value)
+            //     }
+            // })
 
             return {
                 editable,
@@ -241,7 +310,9 @@
                 saveAsTemplate,
                 startEdit,
                 startBlank,
+                handleSave,
                 showTemplatesModal,
+                readmeDescription,
             }
         },
     })

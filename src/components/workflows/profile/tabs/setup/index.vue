@@ -1,44 +1,53 @@
 <template>
-    <div class="flex items-center justify-center w-full h-full text-2xl">
-        <CustomRadioButton
-            v-model:data="selected"
-            class="pb-4 border-b"
-            :list="template.map((l) => ({ id: l, label: l }))"
-            @change="handleInputChange"
-        ></CustomRadioButton>
+    <div class="relative w-full h-full">
+        <div class="absolute flex items-center justify-center w-full h-full">
+            <a-spin />
+        </div>
+        <div class="absolute w-full h-full">
+            <SetupGraph
+                v-if="tasks"
+                :graph-data="tasks"
+                @change="emit('change', $event, 'dag')"
+            />
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, ref, toRefs } from 'vue'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import { defineComponent, computed, ref, watch } from 'vue'
+    import { useRoute } from 'vue-router'
+
+    // Components
+    import SetupGraph from './setupGraph.vue'
+
+    // Composables
+    import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
-        components: { CustomRadioButton },
-        props: {
-            uiConfig: {
-                type: Object,
-                required: false,
-                default: null,
-            },
-        },
+        components: { SetupGraph },
         emits: ['change'],
-        setup(props, { emit }) {
-            const selected = ref('')
-            const { uiConfig } = toRefs(props)
-            const template = computed(() => {
-                if (uiConfig.value?.length)
-                    return JSON.parse(uiConfig.value[0]?.data?.templates)
-                return []
+        setup(_, { emit }) {
+            const route = useRoute()
+            const tasks = ref([])
+
+            /** DATA */
+            const id = computed(() => route?.params?.id || '')
+
+            const { data } = useWorkflowTemplateByName(id.value)
+
+            watch(data, (newVal) => {
+                tasks.value =
+                    newVal.workflowtemplate.spec.templates[0].dag.tasks
             })
 
-            const handleInputChange = () => {
-                emit('change', selected.value, 'dag')
+            return {
+                id,
+                data,
+                tasks,
+                emit,
             }
-
-            return { selected, template, handleInputChange }
         },
     })
 </script>

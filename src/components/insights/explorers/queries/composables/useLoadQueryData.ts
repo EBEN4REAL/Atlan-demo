@@ -40,8 +40,10 @@ const useLoadQueryData = ({
         'classifications',
 
         'connectorName',
+        'connectionId',
         'connectionQualifiedName',
         'parentFolderQualifiedName',
+        'defaultSchemaQualifiedName',
         'parentFolder',
         'columns', //TODO: queries
         'folder',
@@ -67,7 +69,7 @@ const useLoadQueryData = ({
                 criterion: [],
             },
             // sortBy: 'name',
-            // sortOrder: 'ASCENDING',
+            sortOrder: 'ASCENDING',
         }
         if (connector.value) {
             body.value.entityFilters.criterion.push({

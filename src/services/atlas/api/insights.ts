@@ -7,18 +7,7 @@ import {
     SavedQueryResponse,
     Query,
 } from '~/types/insights/savedQuery.interface'
-import { autosuggestionResponse } from '~/types/insights/autosuggestionEntity.interface'
-import { BaseAttributes, SavedQueryAttributes } from '~/constant/projection'
 
-const serviceAlias = 'meta'
-const body = ref({
-    typeName: 'Query',
-    excludeDeletedEntities: true,
-    includeClassificationAttributes: true,
-    includeSubClassifications: true,
-    includeSubTypes: true,
-    attributes: [...SavedQueryAttributes, ...BaseAttributes],
-})
 const CreateSavedQuery = (body: Record<string, any>) => {
     const { data, error, isLoading } = useAPIAsyncState<
         BasicSearchResponse<any>
@@ -58,11 +47,6 @@ const UpdateSavedQuery = (body: Record<string, any>) => {
     )
     return { data, error, isLoading }
 }
-const GetAutoSuggestions = (body: Record<string, any>) => {
-    return useAPIPromise(KeyMaps.insights.GET_AUTO_SUGGESTIONS(), 'POST', {
-        body,
-    }) as Promise<autosuggestionResponse>
-}
 
 const DeleteEntity = (guid: string) => {
     const { data, error, isLoading } = useAPIAsyncState<SavedQueryResponse>(
@@ -70,17 +54,16 @@ const DeleteEntity = (guid: string) => {
         'DELETE',
         {
             pathVariables: {
-                guid
+                guid,
             },
         }
     )
     return { data, error, isLoading }
 }
 export const Insights = {
-    GetAutoSuggestions,
     UpdateSavedQuery,
     CreateSavedQuery,
     GetSavedQuery,
     CreateQueryFolder,
-    DeleteEntity
+    DeleteEntity,
 }

@@ -18,7 +18,6 @@
                     <template #switcherIcon>
                         <AtlanIcon icon="CaretRight" />
                     </template>
-
                     <template #title="item">
                         <SchemaTreeItem
                             v-if="item.title !== 'Load more'"
@@ -26,14 +25,7 @@
                         />
                         <div
                             v-else
-                            class="
-                                flex flex-row
-                                w-full
-                                text-sm
-                                font-bold
-                                leading-5
-                                text-primary
-                            "
+                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -47,21 +39,17 @@
                     </template>
                 </a-tree>
             </div>
-            <div v-else-if="isLoading">
+            <div v-else-if="isLoading" class="flex items-center justify-center">
                 <LoadingView />
             </div>
             <div
                 v-else-if="!treeData.length"
-                class="
-                    flex flex-col
-                    justify-center
-                    text-base
-                    leading-6
-                    text-center text-gray-500
-                    mt-14
-                "
+                class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
-                <AtlanIcon icon="EmptyGlossary" class="h-40" />
+                <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
+                <p class="mt-6 mb-0 text-base text-gray-700">
+                    No schemas available
+                </p>
             </div>
         </div>
     </div>
@@ -89,31 +77,18 @@ import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 import AtlanBtn from '~/components/UI/button.vue'
 import { KeyMaps } from '~/api/keyMap'
 
-// import { Glossary } from '~/api/atlas/glossary'
-
-export default defineComponent({
-    components: {
-        LoadingView,
-        AtlanIcon,
-        AtlanBtn,
-        Tooltip,
-        PillGroup,
-        OwnerInfoCard,
-        Avatar,
-        Classifications,
-        ClassificationInfoCard,
-        SchemaTreeItem,
-    },
-    props: {
-        treeData: {
-            type: Object as PropType<TreeDataItem[]>,
-            required: true,
-            default: () => {},
-        },
-        onLoadData: {
-            type: Function,
-            required: false,
-            default: () => {},
+    export default defineComponent({
+        components: {
+            LoadingView,
+            AtlanIcon,
+            AtlanBtn,
+            Tooltip,
+            PillGroup,
+            OwnerInfoCard,
+            Avatar,
+            Classifications,
+            ClassificationInfoCard,
+            SchemaTreeItem,
         },
         expandNode: {
             type: Function,
@@ -162,11 +137,22 @@ export default defineComponent({
 .tree-container {
     overflow: hidden;
 }
+.no-schema-icon {
+    @apply w-32 !important;
+}
 </style>
 <style lang="less" module>
-.schemaTreeStyles {
-    :global(.ant-tree-switcher_open) {
-        transform: rotate(90deg);
+    .schemaTreeStyles {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+        :global(.ant-tree li ul) {
+            padding-left: 16px !important;
+        }
+    }
+
+    :global(.ant-tree-title) {
+        width: calc(100% - 1.5rem) !important;
     }
     :global(.ant-tree li ul) {
         padding-left: 16px !important;

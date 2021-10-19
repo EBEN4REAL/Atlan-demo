@@ -256,7 +256,7 @@
                         :isActive="tabActiveKey === 'activity'"
                     />
                 </template>
-                <div class="h-screen overflow-auto pb-52">
+                <div class="h-screen pb-48 overflow-auto">
                     <Activity :selected-asset="entity" />
                 </div>
             </a-tab-pane>
@@ -315,6 +315,7 @@
     //  utils
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     import { copyToClipboard } from '~/utils/clipboard'
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
@@ -364,7 +365,7 @@
         emits: ['closePreviewPanel', 'updateAsset'],
         setup(props, context) {
             const router = useRouter()
-            const activeKey = ref()
+            const activeKey = ref('details')
             const tabActiveKey = ref('info')
             const updateTreeNode = inject<any>('updateTreeNode')
             // computed
@@ -406,12 +407,7 @@
             )
 
             // methods
-            const redirectToProfile = () => {
-                if (props.entity.typeName === 'AtlasGlossaryCategory')
-                    router.push(`/glossary/category/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${props.entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
@@ -437,7 +433,7 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
-                message.info({
+                message.success({
                     content: 'Copied!',
                 })
             }

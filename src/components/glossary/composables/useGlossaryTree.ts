@@ -1,7 +1,7 @@
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
 import { ComputedRef, ref, watch } from 'vue';
 import { Components } from '~/api/atlas/client';
-import { Glossary } from '~/api/atlas/glossary'
+import { Glossary } from '~/services/atlas/glossary/glossary_api'
 
 import { GlossaryType } from '~/types/atlas/glossary';
 

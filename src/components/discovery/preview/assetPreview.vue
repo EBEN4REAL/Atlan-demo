@@ -2,14 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="
-                    fixed
-                    z-10
-                    px-0
-                    border-r-0
-                    rounded-none rounded-l
-                    -left-5
-                "
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -19,126 +12,147 @@
             </a-button>
         </div>
         <div v-if="page !== 'profile'" class="p-5 border-b">
-            <div class="flex items-center justify-between mb-0 text-sm">
+            <div v-if="selectedAsset.guid === '-1'" class="mb-0 text-sm">
                 <AssetLogo :asset="selectedAsset" variant="md" />
+                <div class="flex items-center w-full">
+                    <Tooltip
+                        :tooltip-text="selectedAsset.displayText"
+                        classes="font-bold text-base cursor-pointer text-gray-700"
+                        placement="left"
+                    />
+                    <AtlanIcon icon="Lock" class="mb-1 ml-1" />
+                </div>
+            </div>
+            <div v-else>
+                <div class="flex items-center justify-between mb-0 text-sm">
+                    <AssetLogo :asset="selectedAsset" variant="md" />
 
-                <div class="flex space-x-2">
-                    <a-button-group>
-                        <a-tooltip
-                            placement="left"
-                            :mouse-enter-delay="0.5"
-                            title="Copy asset profile link"
-                        >
-                            <a-button
-                                class="w-8 h-8"
-                                size="small"
-                                @click="handleCopyProfileLink"
-                                ><AtlanIcon icon="Share" /></a-button
-                        ></a-tooltip>
-                        <a-tooltip
-                            placement="bottom"
-                            :mouse-enter-delay="0.5"
-                            title="Open profile"
-                        >
-                            <a-button
-                                class="w-8 h-8"
-                                size="small"
-                                @click="handleOpenProfile"
+                    <div class="flex space-x-2">
+                        <a-button-group>
+                            <a-tooltip
+                                placement="left"
+                                :mouse-enter-delay="0.5"
+                                title="Copy asset profile link"
                             >
-                                <AtlanIcon icon="External" /> </a-button
-                        ></a-tooltip>
-                        <!-- <a-button class="w-8 h-8" size="small">
+                                <a-button
+                                    class="w-8 h-8"
+                                    size="small"
+                                    @click="handleCopyProfileLink"
+                                    ><AtlanIcon icon="Share" /></a-button
+                            ></a-tooltip>
+                            <a-tooltip
+                                placement="bottom"
+                                :mouse-enter-delay="0.5"
+                                title="Open profile"
+                            >
+                                <a-button
+                                    class="w-8 h-8"
+                                    size="small"
+                                    @click="handleOpenProfile"
+                                >
+                                    <AtlanIcon icon="External" /> </a-button
+                            ></a-tooltip>
+                            <!-- <a-button class="w-8 h-8" size="small">
                             <AtlanIcon icon="Bookmark" />
                         </a-button> -->
-                    </a-button-group>
+                        </a-button-group>
+                    </div>
                 </div>
-            </div>
 
-            <div class="flex items-center w-full">
-                <a-tooltip
-                    placement="left"
-                    :mouse-enter-delay="0.5"
-                    :title="getDataType(selectedAsset?.attributes?.dataType)"
-                >
-                    <component
-                        :is="
-                            images[
-                                getDataType(selectedAsset?.attributes?.dataType)
-                            ]
-                        "
-                        v-if="isColumnAsset(selectedAsset)"
-                        class="w-4 h-4 mb-1 mr-1"
-                    ></component
-                ></a-tooltip>
-
-                <Tooltip
-                    :tooltip-text="selectedAsset.attributes?.name"
-                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
-                    placement="left"
-                    :route-to="
-                        isColumnAsset(selectedAsset)
-                            ? `/${getColumnUrl(selectedAsset)}`
-                            : `/assets/${selectedAsset.guid}/overview`
-                    "
-                />
-
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :show-no-status="false"
-                    :status-id="selectedAsset?.attributes?.certificateStatus"
-                    class="ml-1.5 mb-1"
-                ></StatusBadge>
-            </div>
-        </div>
-        <a-tabs
-            v-model:activeKey="activeKey"
-            :class="$style.previewtab"
-            tab-position="left"
-        >
-            <a-tab-pane
-                v-for="(tab, index) in filteredTabs"
-                :key="index"
-                class="overflow-y-auto"
-            >
-                <template #tab>
-                    <SidePanelTabHeaders
-                        :title="tab.tooltip"
-                        :icon="tab.icon"
-                        :isActive="activeKey === index"
-                    />
-                </template>
-
-                <div
-                    class="flex flex-col"
-                    :style="{ height: tabHeights[page] }"
-                >
-                    <div
-                        v-if="tab.tooltip !== 'Activity'"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            px-5
-                            py-3
-                            font-semibold
-                            text-gray-700 text-md
+                <div class="flex items-center w-full">
+                    <a-tooltip
+                        placement="left"
+                        :mouse-enter-delay="0.5"
+                        :title="
+                            getDataType(selectedAsset?.attributes?.dataType)
                         "
                     >
-                        {{ tab.tooltip }}
+                        <component
+                            :is="
+                                images[
+                                    getDataType(
+                                        selectedAsset?.attributes?.dataType
+                                    )
+                                ]
+                            "
+                            v-if="isColumnAsset(selectedAsset)"
+                            class="w-4 h-4 mb-1 mr-1"
+                        ></component
+                    ></a-tooltip>
+                    <div
+                        class="text-base font-bold cursor-pointer  truncated text-primary hover:underline"
+                        v-if="mutateTooltip"
+                    >
+                        {{ selectedAsset.attributes?.name }}
                     </div>
-
-                    <component
-                        :is="tab.component"
-                        :component-data="dataMap[tab.id]"
-                        :info-tab-data="selectedAsset"
-                        :page="page"
-                        :selected-asset="selectedAsset"
-                        :is-loaded="isLoaded"
-                        @change="handleChange"
-                    ></component>
+                    <Tooltip
+                        v-else
+                        :tooltip-text="selectedAsset.attributes?.name"
+                        classes="font-bold text-base cursor-pointer text-primary hover:underline"
+                        placement="left"
+                        :route-to="
+                            isColumnAsset(selectedAsset)
+                                ? `/${getColumnUrl(selectedAsset)}`
+                                : `/assets/${selectedAsset.guid}/overview`
+                        "
+                    />
+                    <CertificatePopover
+                        v-if="selectedAsset?.guid"
+                        :data="selectedAsset"
+                    />
                 </div>
-            </a-tab-pane>
-        </a-tabs>
+            </div>
+        </div>
+        <div v-if="selectedAsset.guid !== '-1'">
+            <a-tabs
+                v-model:activeKey="activeKey"
+                :class="$style.previewtab"
+                tab-position="left"
+            >
+                <a-tab-pane
+                    v-for="(tab, index) in filteredTabs"
+                    :key="index"
+                    class="overflow-y-auto"
+                >
+                    <template #tab>
+                        <SidePanelTabHeaders
+                            :title="tab.tooltip"
+                            :icon="tab.icon"
+                            :isActive="activeKey === index"
+                        />
+                    </template>
+
+                    <div
+                        class="flex flex-col"
+                        :style="{ height: tabHeights[page] }"
+                    >
+                        <div
+                            v-if="tab.tooltip !== 'Activity'"
+                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                        >
+                            {{ tab.tooltip }}
+                        </div>
+
+                        <component
+                            :is="tab.component"
+                            :component-data="dataMap[tab.id]"
+                            :info-tab-data="selectedAsset"
+                            :page="page"
+                            :selected-asset="selectedAsset"
+                            :user-permission="userPermission"
+                            :is-loaded="isLoaded"
+                            @change="handleChange"
+                        ></component>
+                    </div>
+                </a-tab-pane>
+            </a-tabs>
+        </div>
+        <div v-else :style="{ height: tabHeights[page] }">
+            <NoAccessPage
+                >Oops, looks like you don’t have<br />access to view this
+                asset!</NoAccessPage
+            >
+        </div>
     </div>
 </template>
 
@@ -161,12 +175,15 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
+    import CertificatePopover from '~/components/common/certificatePopover.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
     import { copyToClipboard } from '~/utils/clipboard'
+    import useCheckAccess from '~/services/access/useCheckAccess'
+    import NoAccessPage from '@/discovery/noAccess.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -175,6 +192,7 @@
             AssetLogo,
             StatusBadge,
             SidePanelTabHeaders,
+            NoAccessPage,
             AtlanButton,
             info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
             columns: defineAsyncComponent(
@@ -198,6 +216,7 @@
             businessMetadataTab: defineAsyncComponent(
                 () => import('./tabs/businessMetadata/businessMetadataTab.vue')
             ),
+            CertificatePopover,
         },
         props: {
             selectedAsset: {
@@ -212,16 +231,27 @@
                 type: Boolean,
                 required: false,
             },
+            mutateTooltip: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
-            const { selectedAsset, page } = toRefs(props)
+            const { selectedAsset, page, mutateTooltip } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             const { assetTypeLabel, title, certificateStatus, assetType } =
                 useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
             const router = useRouter()
+
+            const { evaluatePermissions } = useCheckAccess()
+            const { data: userPermission } = evaluatePermissions(
+                selectedAsset.value,
+                'ENTITY_UPDATE'
+            )
 
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = () => {}
@@ -299,10 +329,12 @@
             onMounted(init)
 
             return {
+                mutateTooltip,
                 name,
                 tabHeights,
                 isLoaded,
                 infoTabData,
+                userPermission,
                 title,
                 assetTypeLabel,
                 dataMap,

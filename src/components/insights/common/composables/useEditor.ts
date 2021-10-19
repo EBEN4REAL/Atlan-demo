@@ -1,13 +1,18 @@
-import { Ref, toRaw } from 'vue'
+import { Ref, toRaw, ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
+import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
 import { format, FormatOptions } from 'sql-formatter'
+import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
-    activeInlineTab?: Ref<activeInlineTabInterface>
+    activeInlineTab?: Ref<activeInlineTabInterface>,
+    sqlVariables?: Ref<CustomVaribaleInterface[]>
 ) {
+    let decorations = []
+    let cursorDecorations = []
     function setEditorPos(
         editorInstance: any,
         editorPos: Ref<{ column: number; lineNumber: number }>
@@ -22,12 +27,26 @@ export function useEditor(
         editorFocused.value = state
     }
     const { modifyActiveInlineTabEditor } = useInlineTab()
-    function onEditorContentChange(event: any, editorText: string) {
-        if (activeInlineTab && tabs?.value) {
+    const { isSqlVariablesChanged, setSqlVariables } = useCustomVariable()
+    function onEditorContentChange(
+        event: any,
+        editorText: string,
+        editorInstance: any
+    ) {
+        if (activeInlineTab?.value && tabs?.value) {
             const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
                 {},
                 activeInlineTab.value
             )
+            // const res: CustomVaribaleInterface[] = isSqlVariablesChanged(
+            //     editorText,
+            //     sqlVariables,
+            //     event,
+            //     editorInstance
+            // )
+            // /* If there are any array changes show them here */
+            // setSqlVariables(sqlVariables, res)
+            // activeInlineTabCopy.playground.editor.variables = res
             activeInlineTabCopy.playground.editor.text = editorText
             modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
         }
@@ -43,24 +62,24 @@ export function useEditor(
         editorInstance?.setModel(model)
         editorInstance?.getModel().onDidChangeContent((event) => {
             const text = editorInstance.getValue()
-            onEditorContentChange(event, text)
+            onEditorContentChange(event, text, editorInstance)
         })
     }
     function moustacheInterpolator(query, variables) {
-        query.match(/{{\s*[\w\.]+\s*}}/g).map((x) => {
+        query.match(/{{\s*[\w\.]+\s*}}/gm).map((x) => {
             query = query.replace(x, (a) => {
                 const temp = a.match(/[\w\.]+/)[0]
                 return variables[temp]
             })
         })
-        if (/{{\s*[\w\.]+\s*}}/g.test(query)) {
+        if (/{{\s*[\w\.]+\s*}}/gm.test(query)) {
             return moustacheInterpolator(query, variables)
         }
         return query
     }
     function removeMoustacheSpaces(text) {
-        let t = text.replace('{ { ', '{{')
-        t = t.replace(' } }', '}}')
+        let t = text.replaceAll('{ { ', '{{')
+        t = t.replaceAll(' } }', '}}')
         return t
     }
     function semicolonSeparateQuery(query: string) {
@@ -96,6 +115,41 @@ export function useEditor(
     function focusEditor(editorInstance) {
         editorInstance.focus()
     }
+    function setEditorTheme(
+        monacoInstance,
+        editorConfig: Ref<editorConfigInterface>,
+        themeName: string
+    ) {
+        if (themeName) {
+            console.log(monacoInstance.editor.setTheme, themeName)
+            monacoInstance.editor.setTheme(themeName)
+            editorConfig.value.theme = themeName
+        }
+    }
+    function setTabSpaces(
+        editorInstance: any,
+        editorConfig: Ref<editorConfigInterface>,
+        tabSpace: number
+    ) {
+        // console.log(editorInstance.getModel())
+        editorInstance.getModel().updateOptions({ tabSize: tabSpace })
+        editorConfig.value.tabSpace = tabSpace
+        // monacoInstance.editor.setTheme(themeName)
+        // editorConfig.value.theme = themeName
+    }
+    function setFontSizes(
+        editorInstance: any,
+        editorConfig: Ref<editorConfigInterface>,
+        size: number
+    ) {
+        console.log(size)
+        // console.log(editorInstance.getModel())
+        editorInstance.updateOptions({ fontSize: size })
+        editorConfig.value.fontSize = size
+        // monacoInstance.editor.setTheme(themeName)
+        // editorConfig.value.theme = themeName
+    }
+
     function setSelection(
         editorInstance,
         monacoInstance,
@@ -122,7 +176,90 @@ export function useEditor(
         )
     }
 
+    const changeMoustacheTemplateColor = (
+        editorInstance: any,
+        monacoInstance: any,
+        matches: any
+    ) => {
+        let el = []
+        matches.forEach((t) => {
+            const token = t.token
+            t.matches.forEach((d) => {
+                const s = d?.range
+                const obj = {
+                    range: new monacoInstance.Range(
+                        s.startLineNumber,
+                        s.startColumn,
+                        s.endLineNumber,
+                        s.startColumn + token.length
+                    ),
+                    options: { inlineClassName: 'moustacheDecoration' },
+                }
+                el.push(obj)
+            })
+        })
+        // older moustacheDecorations needed
+        decorations = editorInstance?.deltaDecorations(decorations, el)
+    }
+    const findCustomVariableMatches = (
+        editorInstance: any,
+        editorText: string
+    ) => {
+        const reg = /{{\s*[\w\.]+\s*}}/gm
+        const v: string[] | null = editorText.match(reg)
+        const matches = []
+        if (editorInstance) {
+            for (let i = 0; i < v?.length; i++) {
+                const t = editorInstance.getModel().findMatches(v[i])
+                matches.push({ matches: t, token: v[i] })
+            }
+            return matches
+        }
+    }
+    const toggleGhostCursor = (
+        isVisible: boolean,
+        editorInstance: any,
+        monacoInstance,
+        editorPos: Ref<{
+            column: number
+            lineNumber: number
+        }>
+    ) => {
+        const t = {
+            range: new monacoInstance.Range(
+                editorPos.value.lineNumber,
+                editorPos.value.column - 1,
+                editorPos.value.lineNumber,
+                editorPos.value.column
+            ),
+            options: { inlineClassName: 'ghostCursor' },
+        }
+        if (isVisible) {
+            cursorDecorations = editorInstance?.deltaDecorations(
+                cursorDecorations,
+                [t]
+            )
+        } else {
+            cursorDecorations = editorInstance?.deltaDecorations(
+                cursorDecorations,
+                []
+            )
+        }
+    }
+    const editorConfig = ref({
+        theme: 'vs',
+        tabSpace: 3,
+        fontSize: 12,
+    })
+
     return {
+        toggleGhostCursor,
+        findCustomVariableMatches,
+        changeMoustacheTemplateColor,
+        setFontSizes,
+        setTabSpaces,
+        editorConfig,
+        setEditorTheme,
         setEditorFocusedState,
         setEditorPos,
         formatter,

@@ -29,7 +29,7 @@
                         }}
                     </span>
                     <span class="text-gray-400"> &bull; </span>
-                    <span class="mb-1 text-sm capitalize">
+                    <span class="mb-1 text-sm">
                         {{ timeAgo(r.finished_at) }}</span
                     >
                 </p>

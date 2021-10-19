@@ -1,6 +1,6 @@
 import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
-import { KeyMaps } from '~/api/keyMap'
+import { KeyMaps } from '~/services/heka/heka_keyMaps'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
@@ -24,6 +24,7 @@ export default function useProject() {
     const dataList = ref([])
     const isQueryRunning = ref('')
     const queryExecutionTime = ref(-1)
+    const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         if (columns.length > 0) {
@@ -32,7 +33,7 @@ export default function useProject() {
                 columnList.value.push({
                     title: col.columnName.split('_').join(' '),
                     dataIndex: col.columnName,
-                    width: '9vw',
+                    width: 'fit-content',
                     key: col.columnName,
                 })
             })
@@ -57,19 +58,21 @@ export default function useProject() {
     }
 
     const queryRun = (
-        activeInlineTab: activeInlineTabInterface,
+        activeInlineTab: Ref<activeInlineTabInterface>,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
-        isQueryRunning: Ref<string>,
-        limitRows: Ref<{ checked: boolean; rowsCount: number }>
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>
     ) => {
+        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+            'loading'
         const attributeValue =
-            activeInlineTab.explorer.schema.connectors.attributeValue
-        let queryText = getParsedQuery(
-            activeInlineTab.playground.editor.variables,
-            activeInlineTab.playground.editor.text
+            activeInlineTab.value.explorer.schema.connectors.attributeValue
+        let queryText
+
+        queryText = getParsedQuery(
+            activeInlineTab.value.playground.editor.variables,
+            activeInlineTab.value.playground.editor.text
         )
 
-        isQueryRunning.value = 'loading'
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))
         /* -------- NOTE -----------
@@ -79,14 +82,22 @@ export default function useProject() {
 
         const params = {
             sql: query,
-            defaultSchema: getSchemaWithDataSourceName(attributeValue),
             dataSourceName: encodeURIComponent(
                 getConnectionQualifiedName(attributeValue) as string
             ),
             length: 10,
         }
-        /* Adding a limit param if limit rows is checked */
-        if (limitRows.value.checked) params['limit'] = limitRows.value.rowsCount
+        /* This means it is a saved query */
+        if (getSchemaWithDataSourceName(attributeValue)) {
+            params.defaultSchema = getSchemaWithDataSourceName(attributeValue)
+        }
+        /* This means it is a saved query */
+        if (activeInlineTab.value?.queryId) {
+            params.savedQueryId = activeInlineTab.value?.queryId
+        }
+        /* Adding a limit param if limit rows is checked and limit is passed*/
+        if (limitRows?.value && limitRows?.value?.checked)
+            params['limit'] = limitRows.value.rowsCount
 
         let search_prms = generateQueryStringParamsFromObj(params)
 
@@ -100,53 +111,72 @@ export default function useProject() {
             error,
             isLoading,
         } = useSSE({
-            path: KeyMaps.query.RUN_QUERY,
+            path: KeyMaps.insights.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
         })
 
         watch([isLoading, error], () => {
+            console.log(isLoading.value, error.value, 'request log')
             try {
-                isQueryRunning.value = !isLoading.value ? 'success' : 'loading'
                 if (!isLoading.value && error.value === undefined) {
-                    const { subscribe, close } = sse.value
+                    const { subscribe } = sse.value
                     subscribe('', (message: any) => {
+                        console.log(message, 'message')
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
                             setRows(dataList, columnList, message.rows)
-                        if (message?.status === 'completed') {
+                        if (message?.details.status === 'completed') {
                             getData(
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),
-                                message?.executionTime
+                                message?.details.executionTime
                             )
-                            close()
+                            if (eventSource?.close) {
+                                // for closing the connection
+                                eventSource.close()
+                            }
+                            /* Query related data */
+                            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                                'success'
+                            activeInlineTab.value.playground.resultsPane.result.executionTime =
+                                message?.details.executionTime
+                            activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
+                                message?.details.totalRowsStreamed
+                            /* ------------------- */
+                        }
+                        if (message?.details?.status === 'error') {
+                            if (eventSource?.close) {
+                                // for closing the connection
+                                console.log('coonectio closed')
+                                eventSource.close()
+                            }
+                            /* Query related data */
+                            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                                message
+                            activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
+                                -1
+                            activeInlineTab.value.playground.resultsPane.result.executionTime =
+                                -1
+                            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                                'error'
+                            /* ------------------- */
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
-                    console.error('Failed to connect to server', error.value)
-                    if (error.value?.status && error.value?.statusText) {
-                        message.error({
-                            content: `${error.value.status} ${error.value.statusText}!`,
-                        })
-                        if (eventSource?.close) {
-                            // for closing the connection in case of error
-                            eventSource.close()
-                        }
-                    } else {
-                        message.error({
-                            content: `Something went wrong!`,
-                        })
-                        if (eventSource?.close) {
-                            // for closing the connection in case of error
-                            eventSource.close()
-                        }
+                    console.log(
+                        'Failed to connect to server',
+                        error.value,
+                        'error'
+                    )
+                    if (eventSource?.close) {
+                        // for closing the connection in case of error
+                        eventSource.close()
                     }
                     setColumns(columnList, [])
                     setRows(dataList, columnList, [])
                     getData([], [], -1)
-                    isQueryRunning.value = 'error'
                 }
             } catch (e) {
                 if (eventSource?.close) {
@@ -156,15 +186,9 @@ export default function useProject() {
             }
         })
     }
-    const modifyQueryExecutionTime = (
-        queryExecutionTime: Ref<number>,
-        exTime: number
-    ) => {
-        queryExecutionTime.value = exTime
-    }
 
     return {
-        modifyQueryExecutionTime,
+        queryErrorObj,
         queryExecutionTime,
         isQueryRunning,
         queryRun,

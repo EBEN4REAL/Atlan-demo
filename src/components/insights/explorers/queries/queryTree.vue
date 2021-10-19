@@ -1,6 +1,7 @@
-TR<template>
+TR
+<template>
     <div class="max-h-screen" :class="$style.queryTreeStyles">
-        <div class="h-full query-tree-root-div">
+        <div class="h-full overflow-x-hidden query-tree-root-div">
             <div v-if="treeData.length">
                 <a-tree
                     :expanded-keys="expandedKeys"
@@ -26,14 +27,7 @@ TR<template>
                         />
                         <div
                             v-else
-                            class="
-                                flex flex-row
-                                w-full
-                                text-sm
-                                font-bold
-                                leading-5
-                                text-primary
-                            "
+                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -52,23 +46,55 @@ TR<template>
             </div>
             <div
                 v-else-if="!treeData.length"
-                class="
-                    flex flex-col
-                    justify-center
-                    text-base
-                    leading-6
-                    text-center text-gray-500
-                    mt-14
-                "
+                class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
-                <AtlanIcon icon="EmptyGlossary" class="h-40" />
+                <div class="flex flex-col items-center justify-center">
+                    <AtlanIcon
+                        v-if="savedQueryType === 'personal'"
+                        icon="NoSavedQueriesPersonal"
+                        class="h-32 no-svaved-query-icon text-primary"
+                    />
+                    <AtlanIcon
+                        v-else
+                        icon="NoSavedQueriesAll"
+                        class="h-32 no-svaved-query-icon text-primary"
+                    />
+                    <p
+                        class="my-2 mb-0 mb-6 text-base text-gray-700  max-width-text"
+                    >
+                        Your {{ savedQueryType }} queries will appear here
+                    </p>
+                </div>
+                <div>
+                    <a-button
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
+                        @click="toggleCreateQueryModal"
+                    >
+                        <span
+                            ><AtlanIcon
+                                icon="NewQuery"
+                                class="h-4 m-0 mr-1 -mt-0.5" /></span
+                        >Create a new query</a-button
+                    >
+                    <p class="my-2 text-sm text-base text-gray-500">OR</p>
+                    <a-button
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
+                        @click="createFolderInput"
+                    >
+                        <span
+                            ><AtlanIcon
+                                icon="NewFolder"
+                                class="h-4 m-0 mr-1 -mt-0.5" /></span
+                        >Create a new folder</a-button
+                    >
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts">
 // library
-import { defineComponent, PropType, inject, Ref } from 'vue'
+import { defineComponent, PropType, inject, Ref, toRefs } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
 // components
@@ -86,8 +112,6 @@ import { List as StatusList } from '~/constant/status'
 import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 import AtlanBtn from '~/components/UI/button.vue'
 
-// import { Glossary } from '~/api/atlas/glossary'
-
 export default defineComponent({
     components: {
         LoadingView,
@@ -96,11 +120,16 @@ export default defineComponent({
         StatusBadge,
         QueryTreeItem,
     },
+    emits: ['toggleCreateQueryModal', 'createFolderInput'],
     props: {
         treeData: {
             type: Object as PropType<TreeDataItem[]>,
             required: true,
             default: () => {},
+        },
+        savedQueryType: {
+            type: Object as PropType<string>,
+            required: true,
         },
         onLoadData: {
             type: Function,
@@ -139,6 +168,7 @@ export default defineComponent({
         },
     },
     setup(props, { emit }) {
+        const { savedQueryType } = toRefs(props)
         // data
         const inlineTabs = inject('inlineTabs') as Ref<
             activeInlineTabInterface[]
@@ -160,8 +190,17 @@ export default defineComponent({
             })
             return bool
         }
+        const toggleCreateQueryModal = () => {
+            emit('toggleCreateQueryModal')
+        }
+        const createFolderInput = () => {
+            emit('createFolderInput')
+        }
 
         return {
+            createFolderInput,
+            toggleCreateQueryModal,
+            savedQueryType,
             StatusList,
             isSavedQueryOpened,
             openSavedQueryInNewTab,
@@ -179,5 +218,37 @@ export default defineComponent({
     :global(.ant-tree-switcher_open) {
         transform: rotate(90deg);
     }
+    :global(.ant-tree-title) {
+        width: calc(100% - 1.5rem) !important;
+    }
+    :global(.ant-tree li ul) {
+        padding-left: 16px !important;
+    }
+    :global(.ant-tree .ant-tree-title) {
+        @apply pt-0 pb-0 !important;
+    }
+    :global(.ant-tree .ant-tree-title) {
+        @apply pl-0 pr-0 !important;
+    }
+    :global(.ant-tree.ant-tree-block-node li .ant-tree-node-content-wrapper) {
+        @apply w-full !important;
+    }
+    :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+        @apply bg-gray-light;
+    }
+    :global(.ant-tree-switcher_open) {
+        transform: rotate(90deg);
+    }
+    :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+        @apply bg-gray-light;
+    }
+}
+</style>
+<style lang="less" scoped>
+.no-svaved-query-icon {
+    @apply w-32 !important;
+}
+.max-width-text {
+    max-width: 216px;
 }
 </style>

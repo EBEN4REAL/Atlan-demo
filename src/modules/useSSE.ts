@@ -121,9 +121,11 @@ export function useSSE({
             withCredentials: cfg.withCredentials,
         })
 
-        eventSource.onerror = reject
+        eventSource.onerror = (e) => {
+            console.log(e)
+            reject(e)
+        }
         eventSource.onopen = () => {
-            eventSource.onerror = null
             const subscribers: {
                 [index: string]: Array<(e?: any) => any>
             } = {}
@@ -145,7 +147,6 @@ export function useSSE({
                         } catch (err) {
                             if (typeof eventSource.onerror === 'function') {
                                 console.log('subscribe error')
-                                eventSource.onerror(err)
                             }
                         }
                         handler(data, e)

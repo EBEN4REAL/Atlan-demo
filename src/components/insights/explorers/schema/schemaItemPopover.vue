@@ -1,12 +1,13 @@
 <template>
-    <div class="popover-container">
+    <div class="py-2 popover-container">
         <div class="flex items-center mb-2">
             <p class="text-base font-bold text-gray-700">
                 {{ title(item) }}
             </p>
             <div class="ml-2 -mt-0.5">
                 <StatusBadge
-                    :status-id="item.certificateStatus"
+                    v-if="certificateStatus(item)"
+                    :status-id="certificateStatus(item)"
                     :show-chip-style-status="false"
                     :show-no-status="true"
                     :show-label="false"
@@ -18,7 +19,7 @@
             {{ description(item) }}
         </p>
 
-        <!-- <div
+        <div
             class="flex flex-wrap items-center"
             :class="TAndCList.length > 0 ? 'mb-4' : ''"
         >
@@ -64,14 +65,11 @@
                     </span>
                 </template>
             </PillGroup>
-        </div> -->
+        </div>
 
-        <div class="">
+        <div class="" v-if="ownerList.length > 0">
             <p class="mb-1 text-gray-700">Owned By</p>
-            <div
-                class="flex items-center justify-between"
-                v-if="ownerList.length > 0"
-            >
+            <div class="flex items-center justify-between">
                 <PillGroup
                     :data="ownerList"
                     label-key="username"
@@ -129,9 +127,6 @@
                     </template>
                 </PillGroup>
             </div>
-            <p class="text-sm text-gray-500" v-else>
-                {{ 'None' }}
-            </p>
         </div>
         <div class="flex justify-end w-full mt-3 text-primary">
             <div class="flex items-center cursor-pointer" @click="oSidebar">
@@ -195,7 +190,7 @@
                 inlineTabs,
                 activeInlineTab
             )
-            const { description, title } = useAssetInfo()
+            const { description, title, certificateStatus } = useAssetInfo()
 
             const {
                 mixClassificationsAndTerms,
@@ -253,6 +248,7 @@
                     const owners: string[] =
                         item.value?.attributes?.ownerUsers?.split(',') ?? []
 
+                    /* Include Classification false */
                     mixedTermsAndClassifications.value =
                         mixClassificationsAndTerms(classifications, terms)
                     mixedOwnersAndGroups.value = mixOwnersAndGroups(
@@ -272,6 +268,7 @@
                 { immediate: true }
             )
             return {
+                certificateStatus,
                 title,
                 description,
                 sidebarDisabled,
@@ -297,7 +294,7 @@
         background-color: #f4f4f4;
     }
     .popover-container {
-        width: 440px !important;
+        max-width: 440px !important;
     }
     .horizontal-scrollbar::-webkit-scrollbar {
         width: 0;

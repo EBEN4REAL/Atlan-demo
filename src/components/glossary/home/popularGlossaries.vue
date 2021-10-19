@@ -4,7 +4,9 @@
             <span class="self-start text-lg font-bold">Popular Glossaries</span>
             <span
                 class="self-end cursor-pointer text-primary"
-                @click="redirectToProfile(entities[0])"
+                @click="
+                    redirectToProfile(entities[0]?.typeName, entities[0]?.guid)
+                "
                 >View all
             </span>
         </div>
@@ -17,13 +19,13 @@
             :class="$style.menuClasses"
         >
             <template v-for="item in entities" :key="item.guid">
-                <div class="w-full px-3 py-4 bg-white border">
+                <div class="w-full px-3 py-4 bg-white border rounded">
                     <div class="flex items-center mb-2 text-gray-500">
                         <atlan-icon
                             :icon="
                                 getEntityStatusIcon(
                                     'glossary',
-                                    item.attributes.certificateStatus
+                                    item.attributes?.certificateStatus
                                 )
                             "
                             class="w-auto h-4 mr-1"
@@ -33,7 +35,7 @@
                     <div class="flex items-center">
                         <span
                             class="font-bold cursor-pointer hover:underline"
-                            @click="redirectToProfile(item)"
+                            @click="redirectToProfile(item.typeName, item.guid)"
                         >
                             {{ item.displayText }}
                         </span>
@@ -58,16 +60,10 @@
                         No description available
                     </span>
                     <div
-                        class="
-                            flex
-                            items-center
-                            mt-4
-                            cursor-pointer
-                            text-primary
-                        "
-                        @click="redirectToProfile(item)"
+                        class="flex items-center mt-4 cursor-pointer  text-primary"
+                        @click="redirectToProfile(item.typeName, item.guid)"
                     >
-                        <span v-if="item.attributes.terms.length">
+                        <span v-if="item.attributes?.terms?.length">
                             See all {{ item.attributes.terms.length }} terms
                         </span>
                         <span v-else> Add terms </span>
@@ -89,6 +85,7 @@
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     // utils
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         components: { LoadingView, StatusBadge },
@@ -108,13 +105,7 @@
                     offset: 0,
                 })
             }, 400)
-            const redirectToProfile = (entity) => {
-                if (entity.typeName === 'AtlasGlossary')
-                    router.push(`/glossary/${entity.guid}`)
-                else if (entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${entity.guid}`)
-                else router.push(`/glossary/category/${entity.guid}`)
-            }
+            const redirectToProfile = redirect(router)
 
             return {
                 entities,

@@ -1,148 +1,174 @@
 <template>
-    <div>
+    <a-input
+        v-if="dataType === 'text'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :prefix="prefix"
+        :suffix="suffix"
+        @change="handleChange"
+    ></a-input>
+    <!-- Continued types -->
+    <a-textarea
+        v-if="dataType === 'textArea'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        @change="handleChange"
+    ></a-textarea>
+    <component
+        :is="dateTimeTypeComponent || 'a-date-picker'"
+        v-if="dataType === 'date'"
+        :default-value="modelValue"
+        :placeholder="placeholder"
+        :disabled-date="disabledDate"
+        format="MM-DD-YYYY"
+        @change="handleChange"
+    ></component>
+    <a-time-picker
+        v-if="dataType === 'time'"
+        :default-value="modelValue"
+        :placeholder="placeholder"
+        @change="handleChange"
+    ></a-time-picker>
+    <a-checkbox-group
+        v-if="dataType === 'checkbox'"
+        :checked="modelValue"
+        :options="options"
+        @change="handleChange"
+    ></a-checkbox-group>
+    <a-radio-group
+        v-if="dataType === 'radioButton'"
+        :value="modelValue"
+        :options="options"
+        @change="handleChange"
+    ></a-radio-group>
+    <!-- End of Coninuted types -->
+    <a-select
+        v-if="dataType === 'asyncSelect'"
+        style="width: 100%"
+        :value="modelValue"
+        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+        :options="asyncData"
+        :loading="loading"
+        :disabled="letAsyncSelectDisabled || disabled"
+        :placeholder="placeholder"
+        v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
+        @change="handleChange"
+        @dropdownVisibleChange="handleDropdownVisibleChange"
+    >
+        <template #dropdownRender="{ menuNode: menu }">
+            <v-nodes :vnodes="menu" />
+            <template v-if="allowCreate">
+                <a-divider style="margin: 4px 0" />
+                <div
+                    style="padding: 4px 8px; cursor: pointer"
+                    @mousedown="(e) => e.preventDefault()"
+                    @click="handleCreateNew"
+                >
+                    {{ createNewLabel || 'Create More' }}
+                </div>
+            </template>
+        </template>
+    </a-select>
+    <a-modal
+        v-model:visible="createNewVisibility"
+        title="Basic Modal"
+        width="60%"
+        :closable="false"
+    >
+        <div class="overflow-y-scroll" style="height: 65vh">
+            <FormGenerator :config="newConfig" />
+        </div>
+        <template #footer>
+            <a-button @click="handleClose">Close</a-button>
+        </template>
+    </a-modal>
+
+    <!-- async tree select start -->
+    <a-tree-select
+        v-if="dataType === 'asyncTreeSelect'"
+        v-model:value="value"
+        :multiple="true"
+        :tree-checkable="true"
+        style="width: 100%"
+        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+        :tree-data="treeData"
+        placeholder="Please select"
+        :load-data="onLoadData"
+        @change="handleSelect"
+        @click="handleDropdownVisibleChange"
+    />
+
+    <!-- async tree select end -->
+
+    <a-input-number
+        v-if="dataType === 'number'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :prefix="prefix"
+        :suffix="suffix"
+        @change="handleChange"
+    ></a-input-number>
+    <a-input-password
+        v-if="dataType === 'password'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :prefix="prefix"
+        :suffix="suffix"
+        @change="handleChange"
+    ></a-input-password>
+    <a-switch
+        v-if="dataType === 'boolean'"
+        :checked="modelValue"
+        @change="handleChange"
+    />
+
+    <a-input-group v-if="dataType === 'enum'" compact class="w-full">
         <a-input
-            v-if="dataType === 'text'"
+            v-if="isCustom"
+            style="width: 80%"
             :value="modelValue"
             :placeholder="placeholder"
             :prefix="prefix"
             :suffix="suffix"
             @change="handleChange"
         ></a-input>
-        <!-- Continued types -->
-        <a-textarea
-            v-if="dataType === 'textArea'"
-            :value="modelValue"
-            :placeholder="placeholder"
-            @change="handleChange"
-        ></a-textarea>
-        <component
-            :is="dateTimeTypeComponent || 'a-date-picker'"
-            v-if="dataType === 'date'"
-            :default-value="modelValue"
-            :placeholder="placeholder"
-            @change="handleChange"
-            :disabled-date="disabledDate"
-            format="MM-DD-YYYY"
-        ></component>
-        <a-time-picker
-            v-if="dataType === 'time'"
-            :default-value="modelValue"
-            :placeholder="placeholder"
-            @change="handleChange"
-        ></a-time-picker>
-        <a-checkbox-group
-            v-if="dataType === 'checkbox'"
-            :checked="modelValue"
-            @change="handleChange"
-            :options="options"
-        ></a-checkbox-group>
-        <a-radio-group
-            v-if="dataType === 'radioButton'"
-            :value="modelValue"
-            @change="handleChange"
-            :options="options"
-        ></a-radio-group>
-        <!-- End of Coninuted types -->
         <a-select
-            v-if="dataType === 'asyncSelect'"
-            style="width: 100%"
+            v-if="dataType === 'enum' && !isCustom"
+            style="width: 80%"
+            show-search
             :value="modelValue"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            :options="asyncData"
-            :loading="loading"
-            :disabled="letAsyncSelectDisabled"
+            :options="enumList"
             :placeholder="placeholder"
-            v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
-            @dropdownVisibleChange="handleDropdownVisibleChange"
+        ></a-select>
+        <a-button
+            v-if="allowCustom"
+            style="width: 10%"
+            class="px-1"
+            @click="handleToggleCustom"
         >
-            <template #dropdownRender="{ menuNode: menu }">
-                <v-nodes :vnodes="menu" />
-                <template v-if="allowCreate">
-                    <a-divider style="margin: 4px 0" />
-                    <div
-                        style="padding: 4px 8px; cursor: pointer"
-                        @mousedown="(e) => e.preventDefault()"
-                        @click="handleCreateNew"
-                    >
-                        {{ createNewLabel || 'Create More' }}
-                    </div>
-                </template>
-            </template>
-        </a-select>
-        <a-modal
-            v-model:visible="createNewVisibility"
-            title="Basic Modal"
-            width="60%"
-            :closable="false"
-        >
-            <div class="overflow-y-scroll" style="height: 65vh">
-                <FormGenerator :config="newConfig" />
-            </div>
-            <template #footer>
-                <a-button @click="handleClose">Close</a-button>
-            </template>
-        </a-modal>
-
-        <a-input-number
-            v-if="dataType === 'number'"
-            :value="modelValue"
-            :placeholder="placeholder"
-            :prefix="prefix"
-            :suffix="suffix"
-            @change="handleChange"
-        ></a-input-number>
-        <a-input-password
-            v-if="dataType === 'password'"
-            :value="modelValue"
-            :placeholder="placeholder"
-            :prefix="prefix"
-            :suffix="suffix"
-            @change="handleChange"
-        ></a-input-password>
-        <a-switch
-            v-if="dataType === 'boolean'"
-            :checked="modelValue"
-            @change="handleChange"
-        />
-
-        <a-input-group v-if="dataType === 'enum'" compact class="w-full">
-            <a-input
-                v-if="isCustom"
-                style="width: 80%"
-                :value="modelValue"
-                :placeholder="placeholder"
-                :prefix="prefix"
-                :suffix="suffix"
-                @change="handleChange"
-            ></a-input>
-            <a-select
-                v-if="dataType === 'enum' && !isCustom"
-                style="width: 80%"
-                show-search
-                :value="modelValue"
-                :options="enumList"
-                :placeholder="placeholder"
-                @change="handleChange"
-            ></a-select>
-            <a-button
-                v-if="allowCustom"
-                style="width: 10%"
-                class="px-1"
-                @click="handleToggleCustom"
-            >
-                <fa icon="fal user-edit"></fa>
-            </a-button>
-        </a-input-group>
-        <UserSelector v-if="dataType === 'users'"></UserSelector>
+            <fa icon="fal user-edit"></fa>
+        </a-button>
+    </a-input-group>
+    <UserSelector v-if="dataType === 'users'"></UserSelector>
+    <div v-if="errorM || treeErrorM" class="text-red-600">
+        {{ errorM || treeErrorM }}
     </div>
 </template>
 
 <script lang="ts">
     import dayjs from 'dayjs'
-    import { defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
+    import {
+        defineAsyncComponent,
+        toRefs,
+        defineComponent,
+        PropType,
+        ref,
+        watch,
+    } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
+    import useAsyncTreeSelect from './useAsyncTreeSelect'
 
     export default defineComponent({
         components: {
@@ -167,6 +193,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false,
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
             dataType: {
                 type: String,
@@ -234,17 +265,22 @@
             },
             getFormConfig: {
                 type: Object,
-                require: false,
+                required: false,
                 default: () => null,
             },
             requestConfig: {
                 type: Object,
-                require: false,
+                required: false,
                 default: () => null,
             },
             responseConfig: {
                 type: Object,
-                require: false,
+                required: false,
+                default: () => null,
+            },
+            otherApiConfig: {
+                type: Object,
+                required: false,
                 default: () => null,
             },
             dateTimeType: {
@@ -270,12 +306,16 @@
             },
         },
         emits: ['update:modelValue', 'change', 'blur'],
-        setup(props) {
+        setup(props, { emit }) {
+            const { valueObject } = toRefs(props)
+
             const {
+                errorM,
                 loadData,
                 asyncData,
                 newConfig,
                 loadingData: loading,
+                loadDataError: error,
                 letAsyncSelectDisabled,
                 shouldRefetch,
                 handleCreateNew,
@@ -283,8 +323,19 @@
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
-                props.valueObject,
+                valueObject,
                 props?.getFormConfig
+            )
+
+            const {
+                onLoadData,
+                treeData,
+                init,
+                errorM: treeErrorM,
+            } = useAsyncTreeSelect(
+                asyncData,
+                props.otherApiConfig.req,
+                props.otherApiConfig.res
             )
 
             const handleDropdownVisibleChange = (open) => {
@@ -295,7 +346,52 @@
                 createNewVisibility.value = false
                 loadData()
             }
+
+            const value = ref(null)
+
+            watch(
+                [loading, error],
+                () => {
+                    if (!loading.value && !error.value) {
+                        init()
+                    }
+                },
+                { immediate: false }
+            )
+
+            const handleSelect = (v, n, e) => {
+                const { allCheckedNodes } = e
+                const result = {}
+                allCheckedNodes.forEach((n) => {
+                    // if pid dont exists it is db else it is schema
+                    const db =
+                        n?.props?.pid ||
+                        n.node?.props?.pid ||
+                        n?.props?.value ||
+                        n?.node?.props?.value ||
+                        null
+                    const schema =
+                        n?.node?.props?.pid || n?.props?.pid
+                            ? n?.node?.props?.value || n?.props?.value
+                            : null
+
+                    if (result[db] && schema)
+                        result[db] = [...result[db], schema]
+                    else if (schema) result[db] = [schema]
+                    else result[db] = []
+                })
+
+                emit('update:modelValue', result)
+                emit('change', result)
+            }
+
             return {
+                errorM,
+                treeErrorM,
+                treeData,
+                handleSelect,
+                value,
+                onLoadData,
                 loadData,
                 handleClose,
                 createNewVisibility,

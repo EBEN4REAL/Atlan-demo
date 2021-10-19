@@ -4,7 +4,7 @@
         <div class="flex items-center">
             <h3
                 class="p-0 my-0 ml-3 text-sm font-bold text-gray-500 cursor-pointer  hover:underline"
-                @click="redirectToProfile"
+                @click="redirectToProfile(term.typeName, term.guid)"
             >
                 {{ term.name ?? term.displayText }}
             </h3>
@@ -16,6 +16,7 @@
 
     import { useRouter } from 'vue-router'
     import { Components } from '~/api/atlas/client'
+    import redirect from '@/glossary/utils/redirectToProfile';
 
     interface PropsType {
         term: Components.Schemas.AtlasGlossaryTerm
@@ -27,9 +28,7 @@
         setup(props: PropsType) {
             const term = computed(() => props.term)
             const router = useRouter()
-            const redirectToProfile = () => {
-                router.push(`/glossary/term/${props.term.guid}`)
-            }
+            const redirectToProfile = redirect(router)
             return {
                 term,
                 redirectToProfile,

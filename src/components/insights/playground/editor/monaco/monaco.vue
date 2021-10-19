@@ -1,5 +1,5 @@
 <template>
-    <div ref="monacoRoot" class="relative monacoeditor"></div>
+    <div ref="monacoRoot" class="relative px-3 monacoeditor"></div>
 </template>
 
 <script lang="ts">
@@ -34,6 +34,8 @@
     } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
+    import { createAtlanTheme } from './customTheme'
+    import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 
     const turndownService = new TurndownService({})
 
@@ -49,10 +51,14 @@
         props: {},
 
         setup(props, { emit }) {
+            const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const sqlVariables = inject('sqlVariables') as Ref<
+                CustomVaribaleInterface[]
+            >
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorPos = inject('editorPos') as Ref<{
                 column: number
@@ -64,11 +70,14 @@
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const {
+                toggleGhostCursor,
                 onEditorContentChange,
                 formatter,
                 setEditorPos,
                 setEditorFocusedState,
-            } = useEditor(tabs, activeInlineTab)
+                findCustomVariableMatches,
+                changeMoustacheTemplateColor,
+            } = useEditor(tabs, activeInlineTab, sqlVariables)
 
             const entityFilters = {
                 condition: 'OR',
@@ -101,13 +110,13 @@
                     }
                 }
             }
-
-            const now = ref(true)
-            const { list } = fetchColumnList('', now, entityFilters, [
-                'Column.dataType.keyword',
-            ])
-            // const { list } = fetchColumnList('', now, entityFilters)
-            console.log(list)
+            const findAndChangeCustomVariablesColor = () => {
+                const matches = findCustomVariableMatches(
+                    editor,
+                    activeInlineTab.value.playground.editor.text
+                )
+                changeMoustacheTemplateColor(editor, monaco, matches)
+            }
 
             monaco.languages.register({ id: 'atlansql' })
 
@@ -115,20 +124,6 @@
                 'atlansql',
                 languageTokens
             )
-            const setCurrentPosition = (position: any) => {
-                currentPosition.value = position
-            }
-            const getCurrentPosition = () => {
-                return currentPosition.value
-            }
-            function randStr(len = 7) {
-                let s = ''
-                while (s.length < len)
-                    s += Math.random()
-                        .toString(36)
-                        .substr(2, len - s.length)
-                return s
-            }
 
             const triggerAutoCompletion = (
                 promise: Promise<{
@@ -195,16 +190,27 @@
             )
             /* ----------------------------------------------------- */
             onMounted(() => {
+                createAtlanTheme(monaco)
+                // atlanThemeLight
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
+                    glyphMargin: false,
+                    folding: false,
+                    lineDecorationsWidth: 8,
+                    lineNumbersMinChars: 2,
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
-                    theme: 'vs',
-
+                    theme: 'atlan-light',
+                    fontSize: 12,
                     minimap: {
                         enabled: false,
                     },
                     automaticLayout: true,
+                    overviewRulerLanes: 0,
+                    scrollbar: {
+                        horizontal: 'hidden',
+                    },
+                    wordWrap: 'on',
                     quickSuggestions: {
                         other: true,
                         comments: false,
@@ -214,17 +220,29 @@
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
+                const matches = findCustomVariableMatches(
+                    editor,
+                    activeInlineTab.value.playground.editor.text
+                )
+                changeMoustacheTemplateColor(editor, monaco, matches)
+
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
-                editor?.getModel().onDidChangeContent(async (event) => {
+                editor?.getModel().onDidChangeContent((event) => {
                     const text = editor?.getValue()
-                    onEditorContentChange(event, text)
+                    onEditorContentChange(event, text, editor)
+                    /* ------------- custom variable color change */
+                    findAndChangeCustomVariablesColor()
+                    /* ------------------------------------------ */
                     const changes = event?.changes[0]
-                    // const lastTypedCharacter = event?.changes[0]?.text
+                    const lastTypedCharacter = event?.changes[0]?.text
+                    console.log(changes, 'changes')
+                    /* Preventing network request when pasting name of table */
                     const suggestions = useAutoSuggestions(
                         changes,
                         editor,
-                        activeInlineTab
+                        activeInlineTab,
+                        cancelTokenSource
                     ) as Promise<{
                         suggestions: suggestionKeywordInterface[]
                         incomplete: boolean
@@ -235,8 +253,12 @@
                     setEditorPos(editor, editorPos)
                     setEditorFocusedState(true, editorFocused)
                 })
-                editor?.onDidBlurEditorText(() => {
+                editor?.onDidBlurEditorWidget(() => {
                     setEditorFocusedState(false, editorFocused)
+                    toggleGhostCursor(true, editor, monaco, editorPos)
+                })
+                editor?.onDidFocusEditorWidget(() => {
+                    toggleGhostCursor(false, editor, monaco, editorPos)
                 })
                 setEditorFocusedState(true, editorFocused)
                 editor?.focus()
@@ -272,15 +294,21 @@
                     )
 
                     editor?.setModel(model)
+                    /* ------------- custom variable color change */
+                    findAndChangeCustomVariablesColor()
+                    /* ------------------------------------------ */
                     editor.getModel().onDidChangeContent(async (event) => {
                         const text = editor.getValue()
-                        onEditorContentChange(event, text)
+                        onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
-                        // const lastTypedCharacter = event?.changes[0]?.text
+                        /* ------------- custom variable color change */
+                        findAndChangeCustomVariablesColor()
+                        /* ------------------------------------------ */
                         const suggestions = useAutoSuggestions(
                             changes,
                             editor,
-                            activeInlineTab
+                            activeInlineTab,
+                            cancelTokenSource
                         ) as Promise<{
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
@@ -296,9 +324,17 @@
                     editor?.onDidChangeCursorPosition(() => {
                         setEditorPos(editor, editorPos)
                     })
+                    editor?.onDidChangeCursorPosition(() => {
+                        setEditorPos(editor, editorPos)
+                        setEditorFocusedState(true, editorFocused)
+                    })
                     editor?.focus()
-                    editor?.onDidBlurEditorText(() => {
+                    editor?.onDidBlurEditorWidget(() => {
                         setEditorFocusedState(false, editorFocused)
+                        toggleGhostCursor(true, editor, monaco, editorPos)
+                    })
+                    editor?.onDidFocusEditorWidget(() => {
+                        toggleGhostCursor(false, editor, monaco, editorPos)
                     })
                     emit('editorInstance', editor, monaco)
                 }
@@ -319,11 +355,32 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .monacoeditor {
         min-height: 90%;
     }
     .editor_wrapper {
         overflow: hidden;
+    }
+    .c {
+        font-family: 'Courier New', Courier, monospace;
+    }
+</style>
+<style lang="less">
+    .moustacheDecoration {
+        // @apply font-semibold;
+        color: #d77252 !important;
+        background-color: #faf1ef !important;
+    }
+    .ghostCursor {
+        position: relative;
+    }
+    .ghostCursor::after {
+        position: absolute;
+        content: '';
+        width: 2px !important;
+        @apply bg-gray-400;
+        top: -10%;
+        height: 120%;
     }
 </style>

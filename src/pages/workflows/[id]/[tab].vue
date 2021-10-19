@@ -4,7 +4,11 @@
 
     <div v-if="data?.asset" class="flex w-full h-full">
         <div class="flex flex-col w-full">
-            <Header :title="templateName" class="px-5 pt-3 bg-white" />
+            <Header
+                :title="selected.name"
+                class="px-5 pt-3 bg-white"
+                @open-logs="workflowLogsIsOpen = true"
+            />
 
             <a-tabs
                 :active-key="activeKey"
@@ -21,7 +25,6 @@
                             }
                         "
                         :selected-run-id="selectedRunId"
-                        :ui-config="data?.uiConfig"
                         class="bg-transparent"
                         @change="handlePreview"
                     ></component>
@@ -37,6 +40,11 @@
                 :formConfig="formConfig"
             />
         </div>
+        <WorkflowLogs
+            ref="workflowLogs"
+            :is-open="workflowLogsIsOpen"
+            @close="workflowLogsIsOpen = false"
+        />
     </div>
 </template>
 <script lang="ts">
@@ -48,7 +56,6 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -62,7 +69,6 @@
     import {
         useWorkflowByName,
         getWorkflowConfigMap,
-        useWorkflowTemplateByName,
     } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
@@ -81,6 +87,9 @@
             settings: defineAsyncComponent(
                 () => import('@/workflows/profile/tabs/settings/index.vue')
             ),
+            WorkflowLogs: defineAsyncComponent(
+                () => import('@/workflows/profile/workflowLogs.vue')
+            ),
         },
         props: {
             selectedRunId: {
@@ -98,9 +107,12 @@
         },
         emits: ['preview'],
         setup(props, { emit }) {
+            /** DATA */
             const activeKey = ref(1)
             const data = ref({})
-
+            const selected = ref(null)
+            const selectedDag = ref('')
+            const workflowLogsIsOpen = ref(false)
             const refs: { [key: string]: any } = ref({})
             const tabs = [
                 {
@@ -120,34 +132,36 @@
                 },
             ]
 
-            const selected = ref(null)
-            const selectedDag = ref(null)
-
             /** UTILS */
             const router = useRouter()
             const route = useRoute()
 
             /** COMPUTED */
-            // ! this is actually name
             const id = computed(() => route?.params?.id || '')
 
             const formConfig = computed(() => {
-                if (data.value?.uiConfig?.length) {
-                    let configCopy =
-                        data.value.uiConfig[0]?.data?.uiConfig || '{}'
-                    configCopy = configCopy
-                        .replace(/\\n/g, '\\n')
-                        .replace(/\\'/g, "\\'")
-                        .replace(/\\"/g, '\\"')
-                        .replace(/\\&/g, '\\&')
-                        .replace(/\\r/g, '\\r')
-                        .replace(/\\t/g, '\\t')
-                        .replace(/\\b/g, '\\b')
-                        .replace(/\\f/g, '\\f')
-                    return JSON.parse(configCopy) ?? {}
+                try {
+                    if (data.value?.uiConfig?.length) {
+                        let configCopy =
+                            data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                        configCopy = configCopy
+                            .replace(/\\n/g, '\\n')
+                            .replace(/\\'/g, "\\'")
+                            .replace(/\\"/g, '\\"')
+                            .replace(/\\&/g, '\\&')
+                            .replace(/\\r/g, '\\r')
+                            .replace(/\\t/g, '\\t')
+                            .replace(/\\b/g, '\\b')
+                            .replace(/\\f/g, '\\f')
+                        return JSON.parse(configCopy) ?? {}
+                    }
+                } catch {
+                    return {}
                 }
                 return {}
             })
+
+            const templateName = computed(() => data.value?.asset?.name)
 
             /** METHODS */
             // selectTab
@@ -166,16 +180,7 @@
                 } else selected.value = item
             }
 
-            const templateName = computed(
-                () =>
-                    data.value?.asset?.workflowtemplate?.spec
-                        ?.workflowTemplateRef?.name ||
-                    data.value.asset.labels[
-                        'com.atlan.orchestration/parent-template-name'
-                    ] ||
-                    ''
-            )
-
+            // fetchUIConfig
             const fetchUIConfig = () => {
                 if (!templateName.value) return
                 const {
@@ -210,6 +215,11 @@
                 })
             }
 
+            /** WATCHERS */
+            watch(id, (n, o) => {
+                if (n && !o) fetch()
+            })
+
             /** LIFECYCLES */
             onMounted(async () => {
                 await fetch()
@@ -228,7 +238,6 @@
 
             return {
                 emit,
-                id,
                 activeKey,
                 selected,
                 tabs,
@@ -239,6 +248,7 @@
                 selectTab,
                 templateName,
                 formConfig,
+                workflowLogsIsOpen,
             }
         },
     })

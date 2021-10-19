@@ -14,6 +14,7 @@
                 :show-borders="false"
                 :show-padding-x="false"
                 :parent-asset-id="assetData"
+                :entity="assetData"
             />
         </div>
         <div class="pb-6 pr-6">
@@ -34,49 +35,49 @@
 </template>
 
 <script lang="ts">
-// Vue
-import { defineComponent, inject, computed, ref, onMounted } from 'vue'
+    // Vue
+    import { defineComponent, inject, computed, ref, onMounted } from 'vue'
 
-// Components
-import TableauAssetSummary from '@/asset/assetProfile/tabs/overview/tableauAsset/tableauAssetSummary.vue'
-import Readme from '@/common/readme/index.vue'
+    // Components
+    import TableauAssetSummary from '@/asset/assetProfile/tabs/overview/tableauAsset/tableauAssetSummary.vue'
+    import Readme from '@/common/readme/index.vue'
 
-import overviewImagePreview from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewImagePreview.vue'
-import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
-import Resources from '@/asset/assetProfile/widgets/resources/resources.vue'
-// Composables
-import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import overviewImagePreview from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewImagePreview.vue'
+    import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
+    import Resources from '@/asset/assetProfile/widgets/resources/resources.vue'
+    // Composables
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
-import { getAPIPath } from '~/api'
+    import { getAPIPath } from '~/api'
 
-export default defineComponent({
-    components: {
-        overviewImagePreview,
-        Readme,
-        TableauAssetSummary,
-        Announcements,
-        Resources,
-    },
-    setup() {
-        /** INJECTIONS */
-        const assetDataInjection = inject('assetData')
+    export default defineComponent({
+        components: {
+            overviewImagePreview,
+            Readme,
+            TableauAssetSummary,
+            Announcements,
+            Resources,
+        },
+        setup() {
+            /** INJECTIONS */
+            const assetDataInjection = inject('assetData')
 
-        /** COMPUTED */
-        const assetData = computed(() => assetDataInjection?.asset)
-        const imagePreview = ref<string>('')
-        const imageId = ref()
+            /** COMPUTED */
+            const assetData = computed(() => assetDataInjection?.asset)
+            const imagePreview = ref<string>('')
+            const imageId = ref()
 
-        const { previewURL } = useAssetInfo()
-        const fetch = () => {
-            imageId.value = previewURL(assetData.value)
+            const { previewURL } = useAssetInfo()
+            const fetch = () => {
+                imageId.value = previewURL(assetData.value)
 
-            imagePreview.value = `/api${getAPIPath('/auth', imageId.value)}`
-        }
-        onMounted(() => {
-            fetch()
-        })
+                imagePreview.value = `/api${getAPIPath('/auth', imageId.value)}`
+            }
+            onMounted(() => {
+                fetch()
+            })
 
-        return { assetData, imagePreview, imageId }
-    },
-})
+            return { assetData, imagePreview, imageId }
+        },
+    })
 </script>

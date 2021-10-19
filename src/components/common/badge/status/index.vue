@@ -14,11 +14,11 @@
             <div
                 class="inline-flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border border-opacity-0 rounded-full cursor-pointer  hover:border-opacity-100 status-badge-margin"
             >
-                <span class="svg-icon">
+                <span class="mr-2 svg-icon" v-if="iconId !== 'is_null'">
                     <component class="w-auto h-4" :is="icon" />
                 </span>
 
-                <p v-if="showLabel" class="mb-0 ml-2">
+                <p v-if="showLabel" class="mb-0">
                     {{ label }}
                 </p>
             </div>
@@ -104,10 +104,11 @@
                 return found
             })
             const icon = computed(() => statusObject.value?.icon)
+            const iconId = computed(() => statusObject.value?.id)
             const label = computed(() => statusObject.value?.label)
 
             const timeAgo = (time: string | number) => useTimeAgo(time).value
-            return { statusId, icon, label, timeAgo }
+            return { statusId, icon, label, timeAgo, iconId }
         },
     })
 </script>

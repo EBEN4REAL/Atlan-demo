@@ -72,6 +72,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             'tenantId',
             'anchor',
             'linkedAssets',
+            'readme',
             'bannerDescription',
             'bannerTitle',
             'bannerType',
@@ -81,6 +82,13 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             ...relatedTerms,
             ...BaseAttributes,
             ...BasicSearchAttributes,
+        ],
+        relationAttributes: [
+            'readme',
+            'displayText',
+            'name',
+            'description',
+            'shortDescription',
         ],
         entityFilters: {
             condition: 'AND',
@@ -153,6 +161,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     const refetch = () => {
         body.value = getBody()
         mutate()
+        console.log('refetching')
+        console.log(entity)
     }
 
     return {

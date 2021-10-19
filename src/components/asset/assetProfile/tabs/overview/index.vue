@@ -3,12 +3,19 @@
     <tableauAsset v-if="assetType(assetData).includes('Tableau')" />
 
     <!-- nonBiAssets -->
-    <nonBiAsset v-else />
+    <nonBiAsset v-else :edit-permission="editPermission" />
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, computed } from 'vue'
+    import {
+        defineComponent,
+        inject,
+        computed,
+        PropType,
+        ref,
+        toRefs,
+    } from 'vue'
 
     // Components
     import nonBiAsset from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/index.vue'
@@ -19,9 +26,21 @@
 
     export default defineComponent({
         components: { nonBiAsset, tableauAsset },
-        setup() {
+        props: {
+            userHasEditPermission: {
+                type: Object as PropType<any>,
+                required: true,
+            },
+        },
+        setup(props) {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
+
+            const { userHasEditPermission } = toRefs(props)
+
+            const editPermission = ref<boolean>(
+                userHasEditPermission.value?.userPermission[0]?.allowed
+            )
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
@@ -32,6 +51,7 @@
             return {
                 assetData,
                 assetType,
+                editPermission,
             }
         },
     })

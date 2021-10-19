@@ -41,7 +41,6 @@
     import { computed, defineComponent, ref, Ref, toRefs, PropType } from 'vue'
     import { List } from '~/constant/status'
     import { useConnectionsStore } from '~/store/connections'
-    import AssetDropdown from './assetDropdown.vue'
 
     export default defineComponent({
         props: {
@@ -55,9 +54,7 @@
                 default: [],
             },
         },
-        components: {
-            AssetDropdown,
-        },
+        components: {},
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { connector: selectedValue, filterSourceIds } = toRefs(props)

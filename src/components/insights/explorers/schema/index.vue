@@ -90,16 +90,19 @@
             const isAssetSidebarOpened = (table: tableInterface) => {
                 if (
                     activeInlineTab.value &&
-                    activeInlineTab.value.assetSidebar
+                    activeInlineTab.value?.assetSidebar
                 ) {
-                    if (activeInlineTab.value.assetSidebar.id === table.id)
+                    if (activeInlineTab.value?.assetSidebar?.id === table.id)
                         return true
                 }
                 return false
             }
 
             const connectorsData: Ref<connectorsWidgetInterface> = ref(
-                activeInlineTab.value.explorer.schema.connectors
+                activeInlineTab.value?.explorer?.schema?.connectors ?? {
+                    attributeName: undefined,
+                    attributeValue: undefined,
+                }
             )
 
             const handleChange = () => {
@@ -116,20 +119,38 @@
             }
 
             const connectionQualifiedName = computed(() =>
-                !getConnectionQualifiedName(connectorsData.value.attributeValue)?.endsWith('undefined') ? getConnectionQualifiedName(connectorsData.value.attributeValue) : undefined
+                !getConnectionQualifiedName(
+                    connectorsData.value?.attributeValue
+                )?.endsWith('undefined')
+                    ? getConnectionQualifiedName(
+                          connectorsData.value?.attributeValue
+                      )
+                    : undefined
             )
             const databaseQualifiedName = computed(() =>
-                !getDatabaseQualifiedName(connectorsData.value.attributeValue)?.endsWith('undefined') ? getDatabaseQualifiedName(connectorsData.value.attributeValue) : undefined
+                !getDatabaseQualifiedName(
+                    connectorsData.value?.attributeValue
+                )?.endsWith('undefined')
+                    ? getDatabaseQualifiedName(
+                          connectorsData.value.attributeValue
+                      )
+                    : undefined
             )
             const schemaQualifiedName = computed(() =>
-                !getSchemaQualifiedName(connectorsData.value.attributeValue)?.endsWith('undefined') ? getSchemaQualifiedName(connectorsData.value.attributeValue) : undefined
+                !getSchemaQualifiedName(
+                    connectorsData.value?.attributeValue
+                )?.endsWith('undefined')
+                    ? getSchemaQualifiedName(
+                          connectorsData.value.attributeValue
+                      )
+                    : undefined
             )
             const initSelectedKeys = computed(() => {
                 /* KEY - SchemaqualifiedName/tableName */
                 let key = `${getSchemaQualifiedName(
-                    activeInlineTab.value.explorer.schema.connectors
+                    activeInlineTab.value?.explorer?.schema?.connectors
                         .attributeValue
-                )}/${activeInlineTab.value.assetSidebar.assetInfo?.title}`
+                )}/${activeInlineTab.value?.assetSidebar?.assetInfo?.title}`
                 return key
             })
             /* WE CAN USE THIS FXN LATER */
@@ -175,7 +196,12 @@
             watch(activeInlineTab, () => {
                 if (activeInlineTab.value) {
                     connectorsData.value =
-                        activeInlineTab.value.explorer.schema.connectors
+                        activeInlineTab?.value?.explorer?.schema?.connectors
+                } else {
+                    connectorsData.value = {
+                        attributeName: undefined,
+                        attributeValue: undefined,
+                    }
                 }
             })
             console.log(selectedKeys.value, 'out')

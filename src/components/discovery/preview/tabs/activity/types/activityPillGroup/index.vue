@@ -12,10 +12,10 @@
             "
         >
             <template v-for="item in itemList" :key="item">
-                <slot name="pill-content" :item="item"> {{ item }}</slot>
+                <slot name="pill-content" :item="item"></slot>
             </template>
             <span
-                v-if="splittedItems.b.length > 0 && !showAll"
+                v-if="splittedItems.b.length > 0"
                 class="
                     px-1
                     py-0.5

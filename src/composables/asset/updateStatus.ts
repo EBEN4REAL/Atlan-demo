@@ -12,9 +12,9 @@ export default function updateAssetStatus(selectedAsset: Ref<assetInterface>) {
 
     const statusId: WritableComputedRef<string> = computed({
         get: () =>
-            certificateStatus.value.id ||
             selectedAsset.value?.attributes?.certificateStatus ||
-            'is_null',
+            'is_null'
+        ,
         set: (newValue: string) => {
             certificateStatus.value.id = newValue
             body.value = getBody()

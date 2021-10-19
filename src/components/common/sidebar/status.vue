@@ -28,7 +28,7 @@
                                         <span class="text-gray-700 svg-icon">
                                             <component
                                                 :is="item.icon"
-                                                class="w-auto h-4 ml-1 mr-2 pushtop"
+                                                class="w-auto h-4 ml-1 mr-2  pushtop"
                                             />
                                             {{ item.label }}
                                         </span>
@@ -89,18 +89,6 @@
                         :show-label="true"
                     ></StatusBadge>
                 </div>
-
-                <!-- <div
-                    v-if="selectedAsset?.attributes?.assetStatusMessage"
-                    class=""
-                >
-                    <p class="mb-1 text-xs">Message</p>
-                    <p
-                        v-linkified
-                        class="mb-0 text-sm text-gray"
-                        v-html="statusMessage"
-                    ></p>
-                </div> -->
             </div>
         </a-popover>
         <div
@@ -127,18 +115,6 @@
                     :show-label="true"
                 ></StatusBadge>
             </div>
-
-            <!-- <div
-                v-if="selectedAsset?.attributes?.assetStatusMessage"
-                class=""
-            >
-                <p class="mb-1 text-xs">Message</p>
-                <p
-                    v-linkified
-                    class="mb-0 text-sm text-gray"
-                    v-html="statusMessage"
-                ></p>
-            </div> -->
         </div>
     </div>
 </template>
@@ -171,6 +147,7 @@
         setup(props, { emit }) {
             // const isLoading = ref(false);
             const { selectedAsset } = toRefs(props)
+
             const {
                 handleCancel,
                 update,
@@ -252,6 +229,8 @@
                         )
 
                     emit('update:selectedAsset', selectedAsset.value)
+                    message.value = ''
+                    statusType.value = 'is_null'
                 }
             })
             const keys = useMagicKeys()

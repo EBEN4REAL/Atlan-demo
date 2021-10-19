@@ -170,7 +170,7 @@ const useTree = (
             categoryMap[guid] = categoryList
             treeData.value = []
 
-            categoryList.forEach((element) => {
+            categoryList?.forEach((element) => {
                 // if category is root level, i.e `categoryGuid` does not exist
                 if (!element.parentCategory?.categoryGuid) {
                     if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
@@ -179,7 +179,7 @@ const useTree = (
                     )
                 }
             })
-            termsList.forEach((element) => {
+            termsList?.forEach((element) => {
                 if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
                 treeData.value.push(
                     returnTreeDataItemAttributes(element, 'term', guid)

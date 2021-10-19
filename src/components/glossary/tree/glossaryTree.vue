@@ -7,6 +7,7 @@
                 <a-select
                     v-model:value="currentGlossaryGuid"
                     :options="glossaryContextDropdown"
+                    dropdownClassName="pr-0.5"
                 >
                     <template #suffixIcon>
                         <atlan-icon
@@ -163,7 +164,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        term.displayText
+                                        term?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="term.attributes.shortDescription"
@@ -203,7 +204,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        category.displayText
+                                        category?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="
@@ -239,7 +240,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        glossary.displayText
+                                        glossary?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="
@@ -271,7 +272,7 @@
                             class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
                         >
                             <div class="flex flex-row justify-between">
-                                {{ glossary.displayText }}
+                                {{ glossary?.displayText }}
                                 <!-- <Fa
                             class="w-auto h-3 text-white group-hover:text-primary"
                             icon="fal external-link-alt"
@@ -360,7 +361,10 @@
                             <div
                                 class="flex flex-col justify-center p-2 bg-opacity-0 "
                             >
-                                <AtlanIcon icon="Add" />
+                                <AddCta
+                                    class="w-7 h-7 ml-0.5"
+                                    :entity="parentGlossary"
+                                />                   
                             </div>
                             <div
                                 class="flex flex-col justify-center mt-1 bg-opacity-0 "
@@ -542,7 +546,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        term.displayText
+                                        term?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="term.attributes.shortDescription"
@@ -582,7 +586,7 @@
                                 /></span>
                                 <div class="flex flex-col w-full">
                                     <span class="text-md">{{
-                                        category.displayText
+                                        category?.displayText
                                     }}</span>
                                     <Tooltip
                                         v-if="
@@ -634,6 +638,7 @@
     // components
     import LoadingView from '@common/loaders/section.vue'
     import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+    import AddCta from '~/components/glossary/tree/addCta.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -654,6 +659,7 @@
 
     export default defineComponent({
         components: {
+            AddCta,
             LoadingView,
             ThreeDotMenu,
             AtlanIcon,

@@ -62,7 +62,8 @@
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                     :editPermission="userHasEditPermission"
-                                    @update:selected-asset="refreshEntity"
+                                    @update:selected-asset="updateEntityAndTree
+                                    "
                                 />
                                 <Owners
                                     v-if="entity.guid"
@@ -185,8 +186,8 @@
             },
         },
         setup(props) {
-            const activeKey = ref()
-            const tabActiveKey = ref()
+            const activeKey = ref('1')
+            const tabActiveKey = ref('info')
 
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode = inject<any>('updateTreeNode')

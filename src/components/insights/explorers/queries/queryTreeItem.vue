@@ -1,100 +1,121 @@
 <template>
-    <div class="w-full group">
+    <div :class="`w-full group ${item.qualifiedName}`">
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
-                    class="flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    v-if="item.typeName === 'QueryFolder'"
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
                     <!--FOLDER NODE -->
-                    <a-dropdown
-                        v-if="item.typeName === 'QueryFolder'"
-                        :trigger="['contextmenu']"
-                    >
-                        <div class="relative flex w-full z py-1.5">
-                            <div class="flex w-full">
-                                <AtlanIcon
-                                    :icon="
-                                        expandedKeys.find(
-                                            (key) => key === item.key
-                                        )
-                                            ? 'FolderOpen'
-                                            : 'FolderClosed'
-                                    "
-                                    class="w-5 h-5 my-auto mr-1"
-                                ></AtlanIcon>
-                                <span class="text-sm leading-5 tracking-wide">{{
-                                    item.title
-                                }}</span>
+
+                    <div class="parent-ellipsis-container py-1.5">
+                        <div class="flex w-full">
+                            <AtlanIcon
+                                :icon="
+                                    expandedKeys.find((key) => key === item.key)
+                                        ? 'FolderOpen'
+                                        : 'FolderClosed'
+                                "
+                                class="w-5 h-5 my-auto mr-1"
+                            ></AtlanIcon>
+                            <span
+                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            >
+                                {{ title(item) }}</span
+                            >
+                            <div
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            >
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    @click.stop="() => {}"
+                                >
+                                    <div class="pl-2">
+                                        <AtlanIcon
+                                            icon="KebabMenu"
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </div>
+                                    <template #overlay>
+                                        <a-menu>
+                                            <a-menu-item
+                                                key="rename"
+                                                @click="renameFolder"
+                                                >Rename Folder</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                key="newQuery"
+                                                @click="newQuery"
+                                                >New Query</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                v-if="
+                                                    savedQueryType ===
+                                                    'personal'
+                                                "
+                                                key="public"
+                                                @click="
+                                                    showPublishPopover = true
+                                                "
+                                                >Make folder public</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                key="deleteFolder"
+                                                class="text-red-600"
+                                                @click="
+                                                    showDeletePopover = true
+                                                "
+                                                >Delete Folder</a-menu-item
+                                            >
+                                        </a-menu>
+                                    </template>
+                                </a-dropdown>
                             </div>
                         </div>
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item key="rename" @click="renameFolder"
-                                    >Rename Folder</a-menu-item
-                                >
-                                <a-menu-item key="newQuery" @click="newQuery"
-                                    >New Query</a-menu-item
-                                >
-                                <a-menu-item
-                                    v-if="savedQueryType === 'personal'"
-                                    key="public"
-                                    @click="publishFolder"
-                                    >Make folder public</a-menu-item
-                                >
-                                <a-menu-item
-                                    key="deleteFolder"
-                                    class="text-red-600"
-                                    @click="deleteFolder"
-                                    >Delete Folder</a-menu-item
-                                >
-                            </a-menu>
-                        </template>
-                    </a-dropdown>
-
-                    <!------------------------------->
-                    <!--SAVED QUERY NODE -->
-                    <a-popover
-                        v-else-if="item.typeName === 'Query'"
-                        placement="rightTop"
+                    </div>
+                </div>
+                <!--Empty NODE -->
+                <div
+                    v-else-if="item.typeName === 'Empty'"
+                    class="text-sm font-bold text-gray-500"
+                >
+                    {{ item.title }}
+                </div>
+                <!------------------------------->
+                <!-- Popover Allowed -->
+                <a-popover
+                    placement="rightTop"
+                    v-else-if="item.typeName === 'Query'"
+                >
+                    <template #content>
+                        <div>
+                            <QueryItemPopover :item="item" />
+                        </div>
+                    </template>
+                    <div
+                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                     >
-                        <template #content>
-                            <div>
-                                <QueryItemPopover :item="item" />
-                            </div>
-                        </template>
-                        <div class="relative flex w-full z py-1.5">
-                            <div class="flex w-full">
-                                <span class="text-sm leading-5 tracking-wide pl-6">{{
-                                    item.title
-                                }}</span>
-                                <div class="ml-1 mt-0.5">
-                                    <StatusBadge
-                                        v-if="item.typeName !== 'QueryFolder'"
-                                        :status-id="
-                                            item?.attributes?.certificateStatus
-                                        "
-                                        :show-chip-style-status="false"
-                                        :show-no-status="true"
-                                        :show-label="false"
-                                        class="flex-none"
-                                    ></StatusBadge>
-                                </div>
-                            </div>
-
-                            <div
-                                v-if="item.typeName !== 'QueryFolder'"
+                        <!--SAVED QUERY NODE -->
+                        <!--For Others -->
+                        <div class="parent-ellipsis-container py-1.5">
+                            <span
+                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            >
+                                {{ title(item) }}
+                            </span>
+                            <StatusBadge
+                                v-if="certificateStatus(item)"
+                                :key="item?.guid"
+                                :show-no-status="false"
+                                :status-id="certificateStatus(item)"
                                 class="
-                                    absolute
-                                    right-4
-                                    flex
-                                    items-center
-                                    mt-0.5
-                                    text-gray-500
-                                    transition
-                                    duration-300
-                                    opacity-0
-                                    group-hover:opacity-100
+                                    ml-1.5
+                                    -mt-0.5
+                                    parent-ellipsis-container-extension
                                 "
+                            ></StatusBadge>
+                            <div
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  right-6 margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -102,12 +123,7 @@
                                 "
                             >
                                 <div
-                                    class="pl-2 pr-2 ml-16"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light'
-                                    "
+                                    class="pl-2 ml-24"
                                     @click.stop="
                                         () => actionClick('info', item)
                                     "
@@ -116,7 +132,6 @@
                                         <template #title
                                             >Open preview sidebar</template
                                         >
-
                                         <AtlanIcon
                                             icon="Info"
                                             :class="
@@ -128,41 +143,71 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
-                                <div
-                                    class="bg-gray-light"
-                                    @click.stop="
-                                        () => actionClick('bookmark', item)
-                                    "
+                            </div>
+                            <div
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            >
+                                <a-dropdown
+                                    :trigger="['click']"
+                                    @click.stop="() => {}"
                                 >
-                                    <a-tooltip placement="top">
-                                        <template #title>Bookmark</template>
-
+                                    <div class="pl-2">
                                         <AtlanIcon
-                                            icon="BookmarkOutlined"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
+                                            icon="KebabMenu"
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>
+                                    </div>
+                                    <template #overlay>
+                                        <a-menu>
+                                            <a-menu-item
+                                                key="rename"
+                                                @click="renameFolder"
+                                                >Rename Query</a-menu-item
+                                            >
+
+                                            <a-menu-item
+                                                v-if="
+                                                    canUserDeleteFolder(
+                                                        item?.attributes?.owner
+                                                    )
+                                                "
+                                                key="deleteFolder"
+                                                class="text-red-600"
+                                                @click="
+                                                    showDeletePopover = true
+                                                "
+                                                >Delete Query</a-menu-item
+                                            >
+                                        </a-menu>
+                                    </template>
+                                </a-dropdown>
                             </div>
                         </div>
-                    </a-popover>
-                    <!------------------------------->
-                    <!--Empty NODE -->
-                    <div
-                        v-else-if="item.typeName === 'Empty'"
-                        class="text-sm font-bold text-gray-500"
-                    >
-                        {{ item.title }}
+                        <!------------------------------->
                     </div>
-                </div>
+                </a-popover>
+                <!-- ---------------- -->
             </div>
         </div>
     </div>
+    <a-popover :visible="showDeletePopover" placement="right">
+        <template #content>
+            <TreeDeletePopover
+                :item="item"
+                @cancel="showDeletePopover = false"
+                @delete="() => delteItem(item.typeName)"
+            />
+        </template>
+    </a-popover>
+    <a-popover :visible="showPublishPopover" placement="right">
+        <template #content>
+            <PublishFolderPopover
+                :item="item"
+                @cancel="showPublishPopover = false"
+                @publish="publishFolder"
+            />
+        </template>
+    </a-popover>
 </template>
 
 <script lang="ts">
@@ -179,12 +224,14 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
 
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
 
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { useAccess } from '~/components/insights/common/composables/useAccess'
     import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
+    import PublishFolderPopover from '~/components/insights/common/publishFolderPopover.vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -193,9 +240,15 @@
     import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
     import { Insights } from '~/services/atlas/api/insights'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { QueryItemPopover, StatusBadge },
+        components: {
+            QueryItemPopover,
+            StatusBadge,
+            TreeDeletePopover,
+            PublishFolderPopover,
+        },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -208,14 +261,24 @@
             },
         },
         setup(props) {
+            const { canUserDeleteFolder } = useAccess()
             const { expandedKeys, item } = toRefs(props)
+            const {
+                isPrimary,
+                dataTypeImageForColumn,
+                dataTypeImage,
+                dataType,
+                assetType,
+                title,
+                certificateStatus,
+            } = useAssetInfo()
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const editorInstanceRef = inject('editorInstance') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const editorInstanceRef = inject('editorInstance') as Ref<any>
             const toggleCreateQueryModal = inject<(guid: string) => void>(
                 'toggleCreateQueryModal'
             )
@@ -229,24 +292,24 @@
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchParentNode', () => {})
-            const editorInstance = toRaw(editorInstanceRef.value)
-            const {
-                isPrimary,
-                dataTypeImageForColumn,
-                dataTypeImage,
-                dataType,
-                assetType,
-                title,
-            } = useAssetInfo()
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
             )
+            const showDeletePopover = ref(false)
+            const showPublishPopover = ref(false)
 
             const actionClick = (action: string, t: assetInterface) => {
                 /* Here t->enity->assetInfo */
                 switch (action) {
+                    case 'add': {
+                        const editorInstance = toRaw(editorInstanceRef.value)
+                        editorInstance.trigger('keyboard', 'type', {
+                            text: `${title(t)} `,
+                        })
+                        break
+                    }
                     case 'info': {
                         // i button clicked on the same node -> close the sidebar
                         if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
@@ -308,9 +371,70 @@
             }
             const renameFolder = () => {
                 useAddEvent('insights', 'folder', 'renamed', undefined)
+                const orignalName = item.value.attributes.name
+                const parentNode = document.getElementsByClassName(
+                    `${item.value.qualifiedName}`
+                )[0]
+
+                const childNode = parentNode?.firstChild as HTMLElement
+                childNode?.classList?.add('hidden')
+
+                const input = document.createElement('input')
+                input.setAttribute(
+                    'class',
+                    `outline-none border py-0 px-1 rounded mx-0 my-1 w-auto`
+                )
+                input.classList.add(`${item.value.qualifiedName}-rename-input`)
+
+                parentNode?.prepend(input)
+                input.focus()
+                input.value = ''
+                input.value = item.value.attributes?.name
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        parentNode?.removeChild(input)
+                        childNode?.classList?.remove('hidden')
+                    }
+                    if (e.key === 'Enter') {
+                        if (input.value && input.value !== orignalName) {
+                            item.value.attributes.name = input.value
+                            const { data, error } = Insights.CreateSavedQuery({
+                                entity: item.value.entity,
+                            })
+                            watch(error, (newError) => {
+                                if (newError) {
+                                    item.value.attributes.name = orignalName
+                                }
+                            })
+                        }
+                        input.value = ''
+                        try {
+                            parentNode?.removeChild(input)
+                        } catch {}
+                        childNode?.classList?.remove('hidden')
+                    }
+                })
+                input.addEventListener('blur', (e) => {
+                    if (input.value) {
+                        item.value.attributes.name = input.value
+                        const { data, error } = Insights.CreateSavedQuery({
+                            entiy: item.value.entity,
+                        })
+                        watch(error, (newError) => {
+                            if (newError) {
+                                item.value.attributes.name = orignalName
+                            }
+                        })
+                    }
+                    try {
+                        parentNode?.removeChild(input)
+                    } catch {}
+                    childNode?.classList?.remove('hidden')
+                })
             }
 
-            const deleteFolder = () => {
+            const delteItem = (type: 'Query' | 'QueryFolder') => {
                 const { data, error } = Insights.DeleteEntity(item.value.guid)
 
                 watch([data, error], ([newData, newError]) => {
@@ -321,15 +445,17 @@
                         })
                         refetchParentNode(
                             props.item.guid,
-                            'queryFolder',
+                            type === 'Query' ? 'query' : 'queryFolder',
                             savedQueryType.value
                         )
                     }
                 })
             }
             return {
+                canUserDeleteFolder,
+                certificateStatus,
                 renameFolder,
-                deleteFolder,
+                delteItem,
                 publishFolder,
                 newQuery,
                 savedQueryType,
@@ -343,6 +469,8 @@
                 dataTypeImage,
                 actionClick,
                 dataTypeImageForColumn,
+                showDeletePopover,
+                showPublishPopover,
             }
         },
     })
@@ -351,17 +479,9 @@
     .tree-container {
         overflow: hidden;
     }
-    .nooverflow {
-        display: inline-block;
-        overflow: hidden !important;
-        overflow-wrap: normal;
-        text-overflow: ellipsis;
-        white-space: nowrap !important;
-        width: 0;
-        min-width: 100%;
-    }
+
     .popover-width {
-        min-width: 440px;
+        max-width: 440px;
         min-height: 228px;
     }
     .margin-align-top {
@@ -380,6 +500,19 @@
     }
     .from-tree-light-color {
         --tw-gradient-from: #dbe9fe !important;
+    }
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .parent-ellipsis-container-extension {
+        flex-shrink: 0;
     }
 
     /* ------------------------------- */

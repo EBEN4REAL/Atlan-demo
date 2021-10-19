@@ -410,7 +410,7 @@ export default defineComponent({
           const { id } = newImageUploadData;
 
           const imageUrl = getAPIPath(
-            "/auth",
+            "/service",
             `/images/${id}?ContentDisposition=inline&name=image`
           );
           editor

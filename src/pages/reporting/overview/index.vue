@@ -6,7 +6,7 @@
     import DashboardComponent from '@/reporting/dashboard.vue'
     import { useHead } from '@vueuse/head'
 
-    import { Metadata } from './metadata'
+    import { Metadata } from './dashboard'
 
     export default defineComponent({
         components: {
@@ -22,6 +22,7 @@
     })
 </script>
 <style lang="less" module></style>
+
 <route lang="yaml">
 meta:
 layout: default

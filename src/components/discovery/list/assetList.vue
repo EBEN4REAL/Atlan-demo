@@ -8,7 +8,11 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="item.guid === selectedAssetId"
+                :is-selected="
+                    item.guid === '-1'
+                        ? item.displayText === selectedAssetId
+                        : item.guid === selectedAssetId
+                "
                 :score="score[item.guid]"
                 :projection="projection"
                 :show-check-box="projection?.includes('enableCheckbox')"
@@ -141,7 +145,10 @@
             const selectedAssetId = ref('')
             const shouldReSelect = false
             function handlePreview(item: any) {
-                if (item.guid !== '-1') {
+                if (item.guid === '-1') {
+                    selectedAssetId.value = item.displayText
+                    emit('preview', item)
+                } else {
                     selectedAssetId.value = item.guid
                     emit('preview', item)
                 }

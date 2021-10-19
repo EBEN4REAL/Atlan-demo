@@ -4,7 +4,9 @@
             <span class="self-start text-lg font-bold">Popular Glossaries</span>
             <span
                 class="self-end cursor-pointer text-primary"
-                @click="redirectToProfile(entities[0]?.typeName, entities[0]?.guid)"
+                @click="
+                    redirectToProfile(entities[0]?.typeName, entities[0]?.guid)
+                "
                 >View all
             </span>
         </div>
@@ -17,7 +19,7 @@
             :class="$style.menuClasses"
         >
             <template v-for="item in entities" :key="item.guid">
-                <div class="w-full px-3 py-4 bg-white border">
+                <div class="w-full px-3 py-4 bg-white border rounded">
                     <div class="flex items-center mb-2 text-gray-500">
                         <atlan-icon
                             :icon="
@@ -58,13 +60,7 @@
                         No description available
                     </span>
                     <div
-                        class="
-                            flex
-                            items-center
-                            mt-4
-                            cursor-pointer
-                            text-primary
-                        "
+                        class="flex items-center mt-4 cursor-pointer  text-primary"
                         @click="redirectToProfile(item.typeName, item.guid)"
                     >
                         <span v-if="item.attributes?.terms?.length">
@@ -89,7 +85,7 @@
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     // utils
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
-    import redirect from '@/glossary/utils/redirectToProfile';
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         components: { LoadingView, StatusBadge },

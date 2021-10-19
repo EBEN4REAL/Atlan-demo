@@ -39,13 +39,10 @@
         "@vueuse/core": "^6.6.1",
         "@vueuse/head": "^0.6.0",
         "ant-design-vue": "^2.2.8",
-
-
-        "chart.js": "^3.5.1",
-
         "axios": "^0.23.0",
+        "chart.js": "^3.5.1",
+        "chartjs-plugin-datalabels": "^2.0.0",
         "cron-parser": "^4.1.0",
-
         "dayjs": "^1.10.7",
         "emoji-mart-vue-fast": "^10.0.1",
         "event-source-polyfill": "^1.0.25",

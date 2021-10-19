@@ -56,6 +56,7 @@
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
                                         : 'bg-gradient-to-l from-gray-light via-gray-light'
                                 "
+                                @click.stop="() => {}"
                             >
                                 <div
                                     class="pl-2 ml-20"
@@ -63,7 +64,7 @@
                                 >
                                     <a-tooltip placement="top">
                                         <template #title
-                                            >Place name in SQL</template
+                                            >Place name in editor</template
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
@@ -76,16 +77,15 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+                                <!-- Add pr-2 for next icon -->
                                 <div
-                                    class="pl-2 pr-2"
+                                    class="pl-2"
                                     :class="
                                         item?.selected
                                             ? 'tree-light-color'
                                             : 'bg-gray-light'
                                     "
-                                    @click.stop="
-                                        () => actionClick('info', item)
-                                    "
+                                    @click="() => actionClick('info', item)"
                                 >
                                     <a-tooltip placement="top">
                                         <template #title
@@ -103,7 +103,7 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
-                                <div
+                                <!-- <div
                                     class="bg-gray-light"
                                     @click.stop="
                                         () => actionClick('bookmark', item)
@@ -122,7 +122,7 @@
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </a-tooltip>
-                                </div>
+                                </div> -->
                             </div>
                             <div
                                 class="flex items-center text-xs text-gray-500"
@@ -171,13 +171,14 @@
                                 :status-id="certificateStatus(item)"
                                 class="
                                     ml-1.5
-                                    mb-1
+                                    -mt-0.5
                                     parent-ellipsis-container-extension
                                 "
                             ></StatusBadge>
 
                             <div
                                 class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                @click.stop="() => {}"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -190,7 +191,7 @@
                                 >
                                     <a-tooltip placement="top">
                                         <template #title
-                                            >Place name in SQL</template
+                                            >Place name in editor</template
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
@@ -210,9 +211,7 @@
                                             ? 'tree-light-color'
                                             : 'bg-gray-light'
                                     "
-                                    @click.stop="
-                                        () => actionClick('info', item)
-                                    "
+                                    @click="() => actionClick('info', item)"
                                 >
                                     <a-tooltip placement="top">
                                         <template #title
@@ -230,11 +229,10 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+                                <!-- Add pr-2 for next icon -->
                                 <div
-                                    class="pr-2"
-                                    @click.stop="
-                                        () => actionClick('play', item)
-                                    "
+                                    class=""
+                                    @click="() => actionClick('play', item)"
                                 >
                                     <a-tooltip placement="top">
                                         <template #title>Preview data</template>
@@ -250,7 +248,7 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
-                                <div
+                                <!-- <div
                                     class="bg-gray-light"
                                     @click.stop="
                                         () => actionClick('bookmark', item)
@@ -269,7 +267,7 @@
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </a-tooltip>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <!------------------------------->
@@ -317,6 +315,7 @@
                                     ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
                                     : 'bg-gradient-to-l from-gray-light via-gray-light'
                             "
+                            @click.stop="() => {}"
                         >
                             <div
                                 class="pl-2 ml-24"
@@ -324,7 +323,7 @@
                             >
                                 <a-tooltip placement="top">
                                     <template #title
-                                        >Place name in SQL</template
+                                        >Place name in editor</template
                                     >
                                     <AtlanIcon
                                         icon="AddAssetName"
@@ -352,6 +351,7 @@
         PropType,
         toRefs,
         ComputedRef,
+        computed,
         Ref,
         inject,
         toRaw,
@@ -386,7 +386,6 @@
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const popoverAllowed = ['Column', 'Table']
             const isPopoverAllowed = (typeName: string) => {
                 return popoverAllowed.includes(typeName)
@@ -450,7 +449,7 @@
                     case 'add': {
                         const editorInstance = toRaw(editorInstanceRef.value)
                         editorInstance.trigger('keyboard', 'type', {
-                            text: `${title(t)}`,
+                            text: `${title(t)} `,
                         })
                         break
                     }
@@ -474,7 +473,7 @@
                         selectionObject.value.endLineNumber = 2
                         selectionObject.value.endColumnNumber =
                             newQuery.length + 1 // +1 for semicolon
-                        queryRun(activeInlineTabCopy, getData, isQueryRunning)
+                        queryRun(activeInlineTab, getData)
 
                         break
                     }

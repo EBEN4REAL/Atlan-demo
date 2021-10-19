@@ -5,8 +5,10 @@ import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
 import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import Reload from '~/assets/images/icons/reload.svg'
+import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import PrimaryKey from '~/assets/images/icons/primary.svg'
+import Lock from '~/assets/images/icons/lock.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
@@ -46,7 +48,6 @@ import GlossaryInactive from '~/assets/images/icons/glossary_inactive.svg'
 import GlossaryDeprecated from '~/assets/images/icons/glossary-deprecated.svg'
 import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
-
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
@@ -103,6 +104,15 @@ import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
+import Settings from '~/assets/images/icons/setings.svg'
+import Delete from '~/assets/images/icons/delete.svg'
+import NoDataInsights from '~/assets/images/icons/results.svg'
+import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
+import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal.svg'
+import AddQuery from '~/assets/images/icons/add-query.svg'
+import NoSchema from '~/assets/images/icons/no-schema.svg'
+import queryErorrIllus from '~/assets/images/icons/queryError.svg'
+import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
 import Delete from '~/assets/images/icons/delete.svg'
@@ -111,6 +121,13 @@ import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
 
 export default {
+    queryErorrIllus,
+    NoSavedQueriesAll,
+    NoSchema,
+    NoDataInsights,
+    SomethingWrong,
+    NoSavedQueriesPersonal,
+    AddQuery,
     RunHistory,
     RunSuccess,
     RunFailed,
@@ -130,6 +147,7 @@ export default {
     ForeignKey,
     PrimaryKey,
     Share,
+    NoAccess,
     Cancel,
     Filter,
     Reload,
@@ -163,6 +181,7 @@ export default {
     Approve,
     Decline,
     CategoryDraft,
+    Lock,
     EmptyGlossary,
     Glossary,
     GlossaryInactive,
@@ -215,6 +234,8 @@ export default {
     InsightsInactive,
     AssetsActive,
     AssetsInactive,
+    Settings,
+    Delete,
     Slack,
     Schedule,
     Delete,

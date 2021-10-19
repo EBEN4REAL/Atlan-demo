@@ -4,7 +4,11 @@
 
     <div v-if="data?.asset" class="flex w-full h-full">
         <div class="flex flex-col w-full">
-            <Header :title="selected.name" class="px-5 pt-3 bg-white" />
+            <Header
+                :title="selected.name"
+                class="px-5 pt-3 bg-white"
+                @open-logs="workflowLogsIsOpen = true"
+            />
 
             <a-tabs
                 :active-key="activeKey"
@@ -36,6 +40,11 @@
                 :formConfig="formConfig"
             />
         </div>
+        <WorkflowLogs
+            ref="workflowLogs"
+            :is-open="workflowLogsIsOpen"
+            @close="workflowLogsIsOpen = false"
+        />
     </div>
 </template>
 <script lang="ts">
@@ -78,6 +87,9 @@
             settings: defineAsyncComponent(
                 () => import('@/workflows/profile/tabs/settings/index.vue')
             ),
+            WorkflowLogs: defineAsyncComponent(
+                () => import('@/workflows/profile/workflowLogs.vue')
+            ),
         },
         props: {
             selectedRunId: {
@@ -100,6 +112,7 @@
             const data = ref({})
             const selected = ref(null)
             const selectedDag = ref('')
+            const workflowLogsIsOpen = ref(false)
             const refs: { [key: string]: any } = ref({})
             const tabs = [
                 {
@@ -215,6 +228,10 @@
                 activeKey.value = currTab.id
             })
 
+            watch(id, (n, o) => {
+                if (n && !o) fetch()
+            })
+
             return {
                 emit,
                 activeKey,
@@ -227,6 +244,7 @@
                 selectTab,
                 templateName,
                 formConfig,
+                workflowLogsIsOpen,
             }
         },
     })

@@ -200,7 +200,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         currKey: string,
         newKey: string,
         activeTab: activeInlineTabInterface,
-        activeInlineTabKey: Ref<activeInlineTabKey>
+        activeInlineTabKey: Ref<string>
     ) => {
         const index = tabsArray.value.findIndex((tab) => tab.key === currKey)
         tabsArray.value[index] = activeTab

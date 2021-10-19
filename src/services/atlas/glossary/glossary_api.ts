@@ -16,7 +16,7 @@ import {
     UPDATE_GLOSSARY_CATEGORY_FULL,
     UPDATE_GLOSSARY_TERM_FULL,
 } from '~/api/keyMaps/glossary'
-import { useAPI, useAPIPromise } from '~/services/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 
 const serviceAlias = 'meta'
 

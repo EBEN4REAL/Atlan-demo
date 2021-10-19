@@ -314,6 +314,7 @@
                             true
                         )
                         watch(updateData, () => {
+                            if (refreshEntity) refreshEntity()
                             if (updateTreeNode) {
                                 updateTreeNode({
                                     guid: props.entity?.guid,
@@ -366,6 +367,7 @@
                             }
                         })
                     } else {
+                        if (refreshEntity) refreshEntity()
                         const { data, error, isLoading } =
                             GlossaryApi.UpdateGlossaryTerm(
                                 props.entity.guid ?? '',
@@ -453,7 +455,10 @@
                         )
                         watch(data, (newData) => {
                             if (newData) {
-                                emit('onAddGlossary')
+                                if (refreshEntity) refreshEntity()
+                                setTimeout(() => {
+                                    emit('onAddGlossary')
+                                }, 500)
                             }
                         })
                     }
@@ -517,11 +522,12 @@
 
 <style lang="less" module>
     .input {
-        :global(.ant-input:focus
-                .ant-input:hover
-                .ant-input::selection
-                .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input):focus,
+        :global(.ant-input):hover {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
         }
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;

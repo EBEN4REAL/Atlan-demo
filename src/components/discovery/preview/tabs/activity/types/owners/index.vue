@@ -10,21 +10,34 @@
             >
             <template #pill-content="user">
                 <Pill
-                    :label="user.item"
-                    @click.stop="() => handleClickUser(user.item)"
+                    v-if="user.item.name !== ''"
+                    :label="user.item.name"
+                    @click.stop="() => handleClickUser(user.item.name)"
                     ><template #prefix>
                         <avatar
-                            v-if="user.item"
+                            v-if="user.item.name && user.item.type === 'user'"
                             class="-ml-2.5"
                             :image-url="
                                 KeyMaps.auth.avatar.GET_AVATAR({
-                                    username: user.item,
+                                    username: user.item.name,
                                 })
                             "
                             :allow-upload="false"
-                            :avatar-name="user.item"
+                            :avatar-name="user.item.name"
                             avatar-size="small"
                             :avatar-shape="'circle'"
+                        />
+                        <AtlanIcon
+                            v-else-if="
+                                user.item.name && user.item.type === 'group'
+                            "
+                            icon="Group"
+                            class="
+                                h-4
+                                -ml-0.5
+                                text-primary
+                                group-hover:text-white
+                            "
                         /> </template></Pill
             ></template>
         </PillGroup>

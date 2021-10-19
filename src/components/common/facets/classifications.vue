@@ -150,10 +150,6 @@
                     label: 'All',
                 },
                 {
-                    value: 'users',
-                    label: 'Users',
-                },
-                {
                     value: 'propagation',
                     label: 'Propagation',
                 },

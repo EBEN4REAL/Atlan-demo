@@ -109,7 +109,7 @@ export const Metadata = {
                         },
                     },
                 },
-                graphType: 'scatter',
+                graphType: 'bar',
                 graphOptions: {
                     responsive: true,
                     maintainAspectRatio: false,

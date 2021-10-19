@@ -123,6 +123,7 @@ export default function useAsyncSelector(
             setConfigData(response)
             createNewVisibility.value = true
         } catch (e) {
+            console.log({ e })
             newConfigError.value = true;
         }
         newConfigLoading.value = false
@@ -144,6 +145,7 @@ export default function useAsyncSelector(
             const response = await useAPIPromise(parsedUrl, method, { params, body: getParsedBody(addFormValues) })
             setData(response);
         } catch (e) {
+            console.log({ e })
             loadDataError.value = true;
         }
         loadingData.value = false

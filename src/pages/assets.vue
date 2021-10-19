@@ -6,7 +6,6 @@
                     <component
                         :is="isItem ? 'router-view' : 'AssetDiscovery'"
                         ref="assetDiscovery"
-                        :initial-filters="initialFilters"
                         @preview="handlePreview"
                     ></component>
                 </KeepAlive>
@@ -32,7 +31,6 @@
                 :page="page"
                 @asset-mutation="propagateToAssetList"
             ></AssetPreview>
-            <NoAccessPage v-else>You don't have access to this</NoAccessPage>
         </div>
         <BulkNotification class="fixed bottom-0 right-0" />
     </div>
@@ -52,7 +50,6 @@
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
-    import NoAccessPage from '@/discovery/noAccess.vue'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -65,7 +62,6 @@
             AssetDiscovery,
             BulkSidebar,
             BulkNotification,
-            NoAccessPage,
         },
         setup() {
             useHead({
@@ -79,17 +75,6 @@
             const assetDiscovery: Ref<Element | null> = ref(null)
             // const initialFilters: initialFiltersType =
             //     getDecodedOptionsFromString(router)
-
-            const initialFilters: Record<string, any> = {
-                facetsFilters: {},
-                searchText: '',
-                selectedTab: 'Catalog',
-                sortOrder: 'default',
-                state: 'active',
-                ...decodeQuery(
-                    Object.keys(router.currentRoute.value?.query)[0]
-                ),
-            }
 
             router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
@@ -127,7 +112,6 @@
                 store.setBulkMode(false)
             }
             return {
-                initialFilters,
                 selected,
                 handlePreview,
                 isItem,

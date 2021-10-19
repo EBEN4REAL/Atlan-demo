@@ -30,7 +30,7 @@
                                 class="flex-none w-auto h-3.5 mb-0.5"
                             />
                         </div>
-                        <span class="text-gray-500">Workflow</span>
+                        <span class="text-gray-500">Template</span>
                     </div>
                     <div style="color: rgb(196, 196, 196)">•</div>
                     <div class="flex text-sm text-gray-500">
@@ -38,17 +38,11 @@
                     </div>
                 </div>
                 <div class="flex items-center mb-0 overflow-hidden">
-                    <router-link
-                        :class="
-                            cssClasses?.textSize
-                                ? cssClasses?.textSize
-                                : 'text-xl'
-                        "
-                        :to="`/workflows/${item.workflowtemplate.metadata.name}/monitor`"
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    <h3
+                        class="flex-shrink mb-0 overflow-hidden text-xl font-bold truncate cursor-pointer  t text-primary overflow-ellipsis whitespace-nowrap"
                     >
                         {{ item.workflowtemplate.metadata.name }}
-                    </router-link>
+                    </h3>
                 </div>
                 <div class="flex items-center gap-x-3">
                     <div class="flex text-sm text-gray-500">

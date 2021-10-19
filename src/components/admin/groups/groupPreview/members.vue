@@ -22,7 +22,7 @@
                 v-if="!selectedGroup.memberCount"
                 class="flex flex-col items-center justify-center"
             >
-                <div class="text-center">
+                <div class="text-center mt-6">
                     <p class="text-lg">No members are present in the group.</p>
                 </div>
             </div>

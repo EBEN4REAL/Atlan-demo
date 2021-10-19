@@ -110,7 +110,7 @@
                                 :status-id="certificateStatus(item)"
                                 class="
                                     ml-1.5
-                                    mb-1
+                                    -mt-0.5
                                     parent-ellipsis-container-extension
                                 "
                             ></StatusBadge>
@@ -275,6 +275,7 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const editorInstanceRef = inject('editorInstance') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -302,6 +303,13 @@
             const actionClick = (action: string, t: assetInterface) => {
                 /* Here t->enity->assetInfo */
                 switch (action) {
+                    case 'add': {
+                        const editorInstance = toRaw(editorInstanceRef.value)
+                        editorInstance.trigger('keyboard', 'type', {
+                            text: `${title(t)} `,
+                        })
+                        break
+                    }
                     case 'info': {
                         // i button clicked on the same node -> close the sidebar
                         if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {

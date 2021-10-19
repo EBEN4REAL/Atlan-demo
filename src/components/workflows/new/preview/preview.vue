@@ -171,6 +171,7 @@
                             `/workflows/${data.value.metadata.name}/setup`
                         )
                     } else if (error.value) {
+                        console.log({ error: error.value })
                         const errMsg = error.value?.response?.data?.message
                         message.error({
                             content: `${

@@ -93,21 +93,17 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
-    import Groups from '@common/selector/groups/index.vue'
     import Users from '@common/selector/users/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { Collapse } from '~/types'
     import fetchUserList from '~/composables/user/fetchUserList'
-    import fetchGroupList from '~/composables/group/fetchGroupList'
     import { userInterface } from '~/types/users/user.interface'
-    import { groupInterface } from '~/types/groups/group.interface'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
         name: 'OwnersFilter',
         components: {
-            Groups,
             Users,
             SearchAndFilter,
         },
@@ -124,27 +120,19 @@
         emits: ['change'],
         setup(props, { emit }) {
             const { data } = toRefs(props)
-            const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
+            const activeOwnerTabKey: Ref<'users'> = ref('users')
             const showMoreUsers = ref(true)
-            const showMoreGroups = ref(true)
             const queryText = ref('')
 
             // own info
             const { username: myUsername } = whoami()
 
-            console.log(
-                'propsValue',
-                data.value.userValue,
-                data.value.groupValue
-            )
+            console.log('propsValue', data.value.userValue)
 
             const handleUsersChange = () => {
                 handleChange()
             }
 
-            const handleGroupsChange = () => {
-                handleChange()
-            }
             const handleChange = () => {
                 // make no owners unchecked
                 data.value.noOwnerAssigned = false
@@ -153,23 +141,11 @@
             }
             const noOwnersToggle = () => {
                 data.value.userValue = []
-                data.value.groupValue = []
-
                 emit('change')
             }
 
             const handleOwnerSearch = () => {
-                if (activeOwnerTabKey.value === 'users') {
-                    handleUserSearch(queryText.value)
-                } else if (activeOwnerTabKey.value === 'groups') {
-                    // for groups
-                    handleGroupSearch(queryText.value)
-                }
-            }
-
-            function setActiveTab(tabName: 'users' | 'groups') {
-                activeOwnerTabKey.value = tabName
-                if (queryText.value !== '') handleOwnerSearch()
+                handleUserSearch(queryText.value)
             }
 
             const {
@@ -182,15 +158,6 @@
                 handleSearch: handleUserSearch,
             } = fetchUserList()
 
-            const {
-                list: listGroups,
-                handleSearch: handleGroupSearch,
-                total: totalGroupCount,
-                STATES: GROUPSTATES,
-                state: groupOwnerState,
-                mutate: mutateGroups,
-                setLimit: setGroupLimit,
-            } = fetchGroupList()
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected
                 if (data.value.userValue.includes(user.username)) {
@@ -202,25 +169,14 @@
                     data.value.userValue.push(user.username)
                 }
             }
-            const onSelectGroup = (group: groupInterface) => {
-                // unselect if already selected
-                if (data.value.groupValue.includes(group.name)) {
-                    const index = data.value.groupValue.indexOf(group.name)
-                    if (index > -1) {
-                        data.value.groupValue.splice(index, 1)
-                    }
-                } else {
-                    data.value.groupValue.push(group.name)
-                }
-            }
+
             function isOwner(username: string, owners: string[]) {
                 return owners.includes(username)
             }
 
             const userList: Ref<userInterface[]> = ref([])
-            const groupList: Ref<groupInterface[]> = ref([])
             watch(
-                [listUsers, listGroups],
+                [listUsers],
                 () => {
                     userList.value = sortClassificationsByOrder(
                         listUsers,
@@ -239,10 +195,6 @@
                     } else {
                         userList.value = [...userList.value]
                     }
-                    groupList.value = sortClassificationsByOrder(
-                        listGroups,
-                        'name'
-                    )
                 },
                 {
                     immediate: true,
@@ -250,7 +202,7 @@
             )
 
             function sortClassificationsByOrder(
-                data: Ref<userInterface[] | groupInterface[]>,
+                data: Ref<userInterface[]>,
                 key: string
             ) {
                 let modifiedData: userInterface[] = []
@@ -275,39 +227,24 @@
                 mutateUsers()
             }
 
-            function toggleShowMoreGroups() {
-                showMoreGroups.value = !showMoreGroups.value
-                setGroupLimit(totalGroupCount.value)
-                mutateGroups()
-            }
-
             return {
                 data,
                 emptyScreen,
                 queryText,
                 noOwnersToggle,
                 totalUsersCount,
-                totalGroupCount,
                 userOwnerState,
-                groupOwnerState,
                 STATES,
-                GROUPSTATES,
                 myUsername,
-                showMoreGroups,
-                onSelectGroup,
                 isOwner,
                 onSelectUser,
                 userList,
-                groupList,
                 handleOwnerSearch,
                 activeOwnerTabKey,
-                toggleShowMoreGroups,
                 toggleShowMore,
                 handleChange,
                 handleUsersChange,
-                handleGroupsChange,
                 showMoreUsers,
-                setActiveTab,
             }
         },
         mounted() {},

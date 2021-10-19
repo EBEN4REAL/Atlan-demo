@@ -18,25 +18,25 @@
                 </template>
             </PillGroup>
         </div>
+        <div v-if="pillTerms.length < 1">
+            <div v-if="editPermission" @click.stop="toggleLinkTermPopover">
+                <div
+                    class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
+                >
+                    <span class="text-xs">Add terms</span>
+                </div>
+            </div>
+            <div v-else>
+                <div class="flex items-center text-gray-500 cursor-pointer">
+                    <span class="text-xs">No terms</span>
+                </div>
+            </div>
+        </div>
         <a-popover
             v-model:visible="linkTermPopover"
             placement="left"
             trigger="click"
         >
-            <div v-if="pillTerms.length < 1">
-                <div v-if="editPermission" @click.stop="toggleLinkTermPopover">
-                    <div
-                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
-                    >
-                        <span class="text-xs">Add Terms</span>
-                    </div>
-                </div>
-                <div v-else>
-                    <div class="flex items-center text-gray-500 cursor-pointer">
-                        <span class="text-xs">No Terms</span>
-                    </div>
-                </div>
-            </div>
             <!-- popover content  -->
             <template #content>
                 <div class="flex flex-col overflow-y-auto w-72">

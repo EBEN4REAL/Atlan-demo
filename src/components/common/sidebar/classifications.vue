@@ -46,31 +46,28 @@
                 </template>
             </PillGroup>
         </div>
+        <div v-if="asset.classifications?.length < 1">
+            <div
+                v-if="editPermission"
+                @click.stop="toggleLinkClassificationPopover"
+            >
+                <div
+                    class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
+                >
+                    <span class="text-xs">Add classifications</span>
+                </div>
+            </div>
+            <div v-else>
+                <div class="flex items-center text-gray-500 cursor-pointer">
+                    <span class="text-xs">No classifications</span>
+                </div>
+            </div>
+        </div>
         <a-popover
             v-model:visible="linkClassificationPopover"
             placement="left"
             trigger="click"
         >
-            <div v-if="asset.classifications?.length < 1">
-                <div
-                    v-if="editPermission"
-                    @click.stop="toggleLinkClassificationPopover"
-                >
-                    <div
-                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
-                    >
-                        <!-- <span class="flex items-center text-xs">
-                            <fa icon="fal plus" />
-                        </span> -->
-                        <span class="text-xs">Add classifications</span>
-                    </div>
-                </div>
-                <div v-else>
-                    <div class="flex items-center text-gray-500 cursor-pointer">
-                        <span class="text-xs">No classifications</span>
-                    </div>
-                </div>
-            </div>
             <template #content>
                 <div class="flex flex-col overflow-y-auto">
                     <template v-if="!showCreateClassificationPopover">

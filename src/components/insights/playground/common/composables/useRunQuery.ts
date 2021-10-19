@@ -56,33 +56,23 @@ export default function useProject() {
             dataList.value.push(tmp)
         })
     }
-    const handleSSEError = (error: any) => {
-        message.error(error.errorMessage)
-    }
+
     const queryRun = (
         activeInlineTab: Ref<activeInlineTabInterface>,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
-        limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
-        getRowsCount?: Function
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>
     ) => {
+        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+            'loading'
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
         let queryText
-        if (getRowsCount) {
-            queryText = `SELECT COUNT(*) as count from (${getParsedQuery(
-                activeInlineTab.value.playground.editor.variables,
-                activeInlineTab.value.playground.editor.text
-            )})`
-        } else {
-            queryText = getParsedQuery(
-                activeInlineTab.value.playground.editor.variables,
-                activeInlineTab.value.playground.editor.text
-            )
-        }
-        if (getRowsCount === undefined) {
-            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                'loading'
-        }
+
+        queryText = getParsedQuery(
+            activeInlineTab.value.playground.editor.variables,
+            activeInlineTab.value.playground.editor.text
+        )
+
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))
         /* -------- NOTE -----------
@@ -92,11 +82,14 @@ export default function useProject() {
 
         const params = {
             sql: query,
-            defaultSchema: getSchemaWithDataSourceName(attributeValue),
             dataSourceName: encodeURIComponent(
                 getConnectionQualifiedName(attributeValue) as string
             ),
             length: 10,
+        }
+        /* This means it is a saved query */
+        if (getSchemaWithDataSourceName(attributeValue)) {
+            params.defaultSchema = getSchemaWithDataSourceName(attributeValue)
         }
         /* This means it is a saved query */
         if (activeInlineTab.value?.queryId) {
@@ -126,19 +119,10 @@ export default function useProject() {
         watch([isLoading, error], () => {
             console.log(isLoading.value, error.value, 'request log')
             try {
-                if (getRowsCount === undefined) {
-                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                        !isLoading.value ? 'success' : 'loading'
-                }
                 if (!isLoading.value && error.value === undefined) {
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
-                        console.log(
-                            message,
-                            'message',
-                            message?.status === 'error',
-                            typeof message
-                        )
+                        console.log(message, 'message')
                         if (message?.columns)
                             setColumns(columnList, message.columns)
                         if (message?.rows)
@@ -153,11 +137,14 @@ export default function useProject() {
                                 // for closing the connection
                                 eventSource.close()
                             }
-                            if (getRowsCount === undefined) {
-                                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                                    'success'
-                            }
-                            if (getRowsCount) getRowsCount('success')
+                            /* Query related data */
+                            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                                'success'
+                            activeInlineTab.value.playground.resultsPane.result.executionTime =
+                                message?.details.executionTime
+                            activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
+                                message?.details.totalRowsStreamed
+                            /* ------------------- */
                         }
                         if (message?.details?.status === 'error') {
                             if (eventSource?.close) {
@@ -165,14 +152,16 @@ export default function useProject() {
                                 console.log('coonectio closed')
                                 eventSource.close()
                             }
-                            if (getRowsCount === undefined) {
-                                activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                                    message
-                                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                                    'error'
-                            }
-                            /* Assging error obj */
-                            if (getRowsCount) getRowsCount('error')
+                            /* Query related data */
+                            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                                message
+                            activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
+                                -1
+                            activeInlineTab.value.playground.resultsPane.result.executionTime =
+                                -1
+                            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                                'error'
+                            /* ------------------- */
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -181,31 +170,13 @@ export default function useProject() {
                         error.value,
                         'error'
                     )
-
-                    if (error.value?.status && error.value?.statusText) {
-                        message.error({
-                            content: `${error.value.status} ${error.value.statusText}!`,
-                        })
-                        if (eventSource?.close) {
-                            // for closing the connection in case of error
-                            eventSource.close()
-                        }
-                    } else {
-                        // message.error({
-                        //     content: `Something went wrong!`,
-                        // })
-                        if (eventSource?.close) {
-                            // for closing the connection in case of error
-                            eventSource.close()
-                        }
+                    if (eventSource?.close) {
+                        // for closing the connection in case of error
+                        eventSource.close()
                     }
                     setColumns(columnList, [])
                     setRows(dataList, columnList, [])
                     getData([], [], -1)
-                    if (getRowsCount === undefined) {
-                        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                            'error'
-                    }
                 }
             } catch (e) {
                 if (eventSource?.close) {
@@ -215,16 +186,9 @@ export default function useProject() {
             }
         })
     }
-    const modifyQueryExecutionTime = (
-        queryExecutionTime: Ref<number>,
-        exTime: number
-    ) => {
-        queryExecutionTime.value = exTime
-    }
 
     return {
         queryErrorObj,
-        modifyQueryExecutionTime,
         queryExecutionTime,
         isQueryRunning,
         queryRun,

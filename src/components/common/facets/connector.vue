@@ -10,6 +10,7 @@
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
             :allowClear="true"
+            @change="onChange"
             @select="selectNode"
         >
             <template #title="node">
@@ -234,6 +235,13 @@
                 }
             }
 
+            const onChange = (value) => {
+                if (!value) {
+                    console.log('inside undefined')
+                    selectNode(undefined, undefined)
+                }
+            }
+
             const filteredConnector = computed(() =>
                 store.getSourceList?.find((item) => item.id === connector.value)
             )
@@ -285,6 +293,7 @@
             }
 
             return {
+                onChange,
                 expandedKeys,
                 selectNode,
                 handleChange,

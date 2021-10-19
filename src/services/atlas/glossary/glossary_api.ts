@@ -18,7 +18,7 @@ import {
 } from '~/api/keyMaps/glossary'
 import { useAPI } from '~/services/api/useAPI'
 
-const serviceAlias = 'metastore'
+const serviceAlias = 'meta'
 
 const GetGlossary = (
     guid: string,

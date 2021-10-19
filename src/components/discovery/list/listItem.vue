@@ -198,7 +198,6 @@
             <ThreeDotMenu
                 v-if="showThreeDotMenu"
                 :entity="item"
-                class="opacity-0"
                 :visible="false"
                 :show-gtc-crud="false"
                 :show-links="false"

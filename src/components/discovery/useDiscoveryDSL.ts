@@ -24,7 +24,7 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 // We use individual `term` filter when using AND operator
                 // and `terms` filter when it is OR operator
                 if (fltrObj?.noClassificationsAssigned) {
-                    query.notQuery('exists', 'field', '__traitNames')
+                    query.notQuery('exists', '__traitNames')
                 } else if (fltrObj?.checked?.length) {
                     if (fltrObj?.operator === 'AND') {
                         fltrObj?.checked?.forEach((val) => {
@@ -44,6 +44,18 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 break
             }
             case 'owners': {
+                if (fltrObj?.noOwnerAssigned) {
+                    query.notQuery('exists', 'Asset.ownerUsers')
+                    query.notQuery('exists', 'Asset.ownerGroups')
+                }
+                const users: string[] = fltrObj.userValue
+                if (users?.length)
+                    query.filter('terms', 'Asset.ownerUsers', users)
+
+                const groups: string[] = fltrObj.groupValue
+                if (groups?.length)
+                    query.filter('terms', 'Asset.ownerGroups', groups)
+
                 break
             }
             case 'advanced': {

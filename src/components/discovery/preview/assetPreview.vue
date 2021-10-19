@@ -80,7 +80,7 @@
                         ></component
                     ></a-tooltip>
                     <div
-                        class="text-base font-bold cursor-pointer  truncated text-primary hover:underline"
+                        class="text-base font-bold cursor-pointer truncated text-primary hover:underline"
                         v-if="mutateTooltip"
                     >
                         {{ selectedAsset.attributes?.name }}
@@ -128,7 +128,7 @@
                     >
                         <div
                             v-if="tab.tooltip !== 'Activity'"
-                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700 text-md"
                         >
                             {{ tab.tooltip }}
                         </div>
@@ -239,7 +239,7 @@
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
-            const { selectedAsset, page } = toRefs(props)
+            const { selectedAsset, page, mutateTooltip } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             const { assetTypeLabel, title, certificateStatus, assetType } =
                 useAssetInfo()

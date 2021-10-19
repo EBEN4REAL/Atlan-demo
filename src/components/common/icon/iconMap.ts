@@ -113,6 +113,8 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
+import EmptyResult from '~/assets/images/icons/empty_result.svg'
 
 export default {
     queryErorrIllus,
@@ -229,4 +231,6 @@ export default {
     Settings,
     Delete,
     Slack,
+    EmptySearchQuery,
+    EmptyResult
 }

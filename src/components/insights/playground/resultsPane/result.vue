@@ -1,7 +1,7 @@
 <template>
     <div class="relative w-full h-full overflow-hidden rounded">
         <div
-            class="relative flex flex-col justify-start w-full overflow-x-auto rounded  table_height"
+            class="relative flex flex-col justify-start w-full overflow-x-auto rounded table_height"
         >
             <!-- <a-table
                 v-if="
@@ -60,7 +60,7 @@
                             v-for="(col, index) in activeInlineTab.playground
                                 .editor.columnList"
                             :key="index"
-                            class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border border-gray-light"
                         >
                             {{ col.title }}
                         </th>
@@ -76,7 +76,7 @@
                         <td
                             v-for="(rowData, index) in row"
                             :key="index"
-                            class="px-4 py-2 text-xs text-gray-700 truncate bg-white border  border-gray-light"
+                            class="px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light"
                         >
                             {{ rowData }}
                         </td>
@@ -88,8 +88,11 @@
                 v-if="isQueryRunning === ''"
                 class="flex flex-col items-center justify-center w-full h-full"
             >
-                <img :src="ResultsImg" class="text-white" :draggable="false" />
-                <p class="mt-4 mb-0 text-base text-gray-700">
+                <AtlanIcon
+                    icon="EmptyResult"
+                    class="h-32"
+                />
+                <p class="mt-2 mb-0 text-base text-gray-700">
                     Your results will appear here
                 </p>
             </div>

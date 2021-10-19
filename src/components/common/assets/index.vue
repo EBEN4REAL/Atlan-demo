@@ -82,7 +82,10 @@
     // import useTracking from '~/modules/tracking'
 
     import { useFilteredTabs } from '@/discovery/useTabMapped'
-    import useFilterPayload from '~/components/discovery/filters/useFilterPayload'
+    import {
+        generateAggregationDSL,
+        generateAssetQueryDSL,
+    } from '@/discovery/useDiscoveryDSL'
 
     export default defineComponent({
         name: 'DiscoveryList',
@@ -99,7 +102,7 @@
         },
         props: {
             dataMap: {
-                type: Object as PropType<any>,
+                type: Object as PropType<Record<string, any>>,
                 required: false,
                 default() {
                     return {}
@@ -113,7 +116,7 @@
         },
         emits: ['preview', 'bulkSelectChange'],
         setup(props, { emit }) {
-            const { dataMap } = toRefs(props)
+            const { dataMap: facets } = toRefs(props)
 
             const autoSelect = ref(true)
 
@@ -121,33 +124,13 @@
             // const events = tracking.getEventsName()
             const isAggregate = ref(true)
 
-            // Clean Stuff
-            const AllFilters: Ref = ref({
-                searchText: '',
-                selectedTab: 'Catalog',
-            })
-
-            const selectedTab = computed({
-                get: () => AllFilters.value.selectedTab || 'Catalog',
-                set: (val) => {
-                    AllFilters.value.selectedTab = val
-                },
-            })
-            const queryText = computed({
-                get: () => AllFilters.value.searchText,
-                set: (val) => {
-                    AllFilters.value.searchText = val
-                },
-            })
-
-            const termName = ref<string | undefined>()
-
-            // This is the actual filter body
-            // FIXME: Can we make it a computed property?\
-            const { payload: filters } = useFilterPayload(dataMap)
-
+            // Temporary, not saved in url
             const limit = ref(20)
             const offset = ref(0)
+
+            // Permanents
+            const selectedTab = ref('Catalog')
+            const queryText = ref('')
             const sortOrder = ref('default')
             const state = ref('active')
 
@@ -198,9 +181,9 @@
 
             const totalSum = computed(() => {
                 let sum = 0
-                assetTypeList.value.forEach((element) => {
-                    if (assetTypeMap.value[element.id]) {
-                        sum += assetTypeMap.value[element.id]
+                assetTypeList.value?.forEach((element) => {
+                    if (assetTypeMap.value?.[element.id]) {
+                        sum += assetTypeMap.value?.[element.id]
                     }
                 })
                 return sum
@@ -210,7 +193,7 @@
                 if (selectedTab.value == 'Catalog') {
                     return totalSum.value
                 }
-                return assetTypeMap.value[selectedTab.value]
+                return assetTypeMap.value?.[selectedTab.value]
             })
 
             // Push all asset type
@@ -220,64 +203,36 @@
 
             const updateBody = () => {
                 const initialBody = {
-                    typeName: assetTypeListString.value,
-                    termName: props.termName ?? termName.value,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
-                    limit: limit.value,
-                    offset: offset.value,
-                    entityFilters: {
-                        condition: 'AND',
-                        criterion: Array.isArray(filters?.value)
-                            ? [...filters.value]
-                            : [],
+                    relationAttributes: [
+                        'readme',
+                        'displayText',
+                        'name',
+                        'description',
+                        'shortDescription',
+                    ],
+                    dsl: {
+                        size: limit.value,
+                        from: offset.value,
+                        ...generateAssetQueryDSL(
+                            facets.value,
+                            queryText.value,
+                            selectedTab.value
+                        ),
                     },
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...tableauAttributes,
                     ],
-                    aggregationAttributes: [],
-                }
-
-                if (selectedTab.value !== 'Catalog') {
-                    initialBody.entityFilters.criterion.push({
-                        attributeName: '__typeName',
-                        attributeValue: selectedTab.value,
-                        operator: 'eq',
-                    })
-                }
-
-                if (state.value) {
-                    if (state.value === 'all') {
-                        initialBody.excludeDeletedEntities = false
-                    } else if (state.value === 'archived') {
-                        initialBody.excludeDeletedEntities = false
-                        initialBody.entityFilters.criterion.push({
-                            attributeName: '__state',
-                            attributeValue: 'DELETED',
-                            operator: 'eq',
-                        })
-                    } else {
-                        initialBody.excludeDeletedEntities = true
-                    }
-                }
-
-                if (sortOrder.value !== 'default') {
-                    const split = sortOrder.value.split('|')
-                    if (split.length > 1) {
-                        initialBody.sortBy = split[0]
-                        initialBody.sortOrder = split[1].toUpperCase()
-                    }
-                } else {
-                    delete initialBody.sortBy
-                    delete initialBody.sortOrder
-                }
-                if (queryText.value) {
-                    initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
-                if (isAggregate.value) refreshAggregation(initialBody)
+                if (isAggregate.value)
+                    refreshAggregation({
+                        dsl: generateAggregationDSL(
+                            facets.value,
+                            queryText.value
+                        ),
+                    })
             }
 
             function handleTabChange() {
@@ -309,12 +264,6 @@
                 updateBody()
             }
 
-            const termNameChange = (termQName: string) => {
-                termName.value = termQName
-                isAggregate.value = true
-                updateBody()
-            }
-
             const loadMore = () => {
                 autoSelect.value = false
                 offset.value += limit.value
@@ -327,7 +276,7 @@
             }
 
             watch(
-                dataMap,
+                facets,
                 () => {
                     updateBody()
                 },
@@ -336,7 +285,7 @@
             return {
                 autoSelect,
                 handleClearFiltersFromList,
-                AllFilters,
+
                 initialTabs,
                 searchScoreList,
                 list,
@@ -359,9 +308,7 @@
                 handleState,
                 mutateAssetInList,
                 handleTabChange,
-                filters,
                 assetTypeListString,
-                termNameChange,
             }
         },
     })

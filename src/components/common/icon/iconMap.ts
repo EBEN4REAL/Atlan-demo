@@ -239,7 +239,6 @@ export default {
     Delete,
     Slack,
     Schedule,
-    Delete,
     Minimap,
     FullScreenBoth,
     Minus,

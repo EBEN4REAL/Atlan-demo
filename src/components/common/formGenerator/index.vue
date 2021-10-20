@@ -187,6 +187,11 @@
                 required: false,
                 default: () => {},
             },
+            globalValues: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change'],
         setup(props, { emit }) {
@@ -204,7 +209,13 @@
                 handleFormSubmit,
                 init,
                 setGlobal,
-            } = useFormGenerator(configX, formRef, emit, props.defaultValues)
+            } = useFormGenerator(
+                configX,
+                formRef,
+                emit,
+                props.defaultValues,
+                props.globalValues
+            )
 
             watch(configX, () => {
                 init()

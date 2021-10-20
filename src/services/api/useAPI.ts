@@ -165,8 +165,18 @@ export function resolveUrl(
 }
 
 const getUrlWithParams = (url, params) => {
+    console.log('getUrlWithParams')
     let p = isRef(params) ? params.value : params
-    p = new URLSearchParams(p)
+    if (!p) return url
+    const temp = {}
+    Object.entries(p).forEach(([k, v]) => {
+        let newv = v
+        if (typeof v === 'object') {
+            newv = JSON.stringify(v)
+        }
+        temp[k] = newv;
+    })
+    p = new URLSearchParams(temp)
     return p.toString() ? `${url}?${p.toString()}` : url
 }
 

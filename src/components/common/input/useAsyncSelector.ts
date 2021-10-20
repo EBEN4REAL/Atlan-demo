@@ -1,7 +1,7 @@
 import { ref, computed, watch } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 import { ReqConfig, ResConfig } from './asyncSelect.interface';
-import { getStringFromPath, genParams } from './asyncSelect.utils'
+import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 export default function useAsyncSelector(
     reqConfig: ReqConfig,
@@ -130,9 +130,20 @@ export default function useAsyncSelector(
 
     const letAsyncSelectDisabled = computed(() => {
         if (!reqConfig) return false;
+        // ? check for missing values in addFormValues
         const { addFormValues } = reqConfig;
         if (addFormValues?.length && !valueObject.value) return true
-        const valueMissing = addFormValues?.some((e: string) => (valueObject.value[e] == null) || (valueObject.value[e] === ""))
+
+        // ? check for missing values in params
+        const { params } = reqConfig
+        const dependentKeys: string[] = []
+        if (typeof params === 'object')
+            Object.values(params as object).forEach(v => {
+                if (typeof v === 'string')
+                    dependentKeys.push(...keyIDs(v))
+            })
+        const valueMissing = addFormValues?.some((e: string) => (valueObject.value[e] == null)
+            || (valueObject.value[e] === "")) || dependentKeys?.some((e: string) => (valueObject.value[e] == null) || (valueObject.value[e] === ""))
         return valueMissing
     })
 
@@ -144,7 +155,7 @@ export default function useAsyncSelector(
     const values = computed(() => {
         if (!reqConfig || !valueObject.value) return []
         const { addFormValues } = reqConfig;
-        const temp = []
+        const temp: any[] = []
         if (addFormValues)
             addFormValues.forEach(element => {
                 if (valueObject.value[element])

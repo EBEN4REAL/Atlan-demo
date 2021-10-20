@@ -8,7 +8,7 @@
 export const getStringFromPath = (data: object | Array<any>, path: string) => {
     if (!path || ['', '.'].includes(path)) return data;
     const arrayReg = /\w*\[\d*\]$/g
-    const r = /\{\{(\.\w*?)\}\}/g
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
     const varArr = path.match(r);
     let label: unknown = '';
     if (varArr?.length) {
@@ -23,7 +23,7 @@ export const getStringFromPath = (data: object | Array<any>, path: string) => {
                     word = (word as string)[pp.split('[')[0]][index]
                 } else word = (word as string)[pp]
             })
-            label = label.replace(p, word as string)
+            label = (label as string).replace(p, word as string)
         })
     } else {
         label = data;
@@ -42,7 +42,31 @@ export const getStringFromPath = (data: object | Array<any>, path: string) => {
 export const genParams = (dO, pO) => {
     const newParamObject = {}
     Object.entries(pO).forEach(([k, p]: string[]) => {
-        newParamObject[k] = getStringFromPath(dO, p);
+        if (typeof p === 'object')
+            newParamObject[k] = p;
+        else {
+            const val = getStringFromPath(dO, p);
+            newParamObject[k] = val;
+        }
     })
     return newParamObject;
+}
+
+/**
+     * 
+     * @param v string containing ids in curly braces eg. {{.idName}} xx {{.anotherID}}
+     * @returns [idName, anotherID]
+     */
+export const keyIDs = (v) => {
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
+    const keys: string[] = []
+    if (typeof v === 'string') {
+        const varArr = v.match(r);
+        if (varArr?.length) {
+            // ? checking for single id, {{.id}}
+            const dependendID = varArr[0].split('{{')[1].split('}}')[0].split('.').slice(1)[0]
+            keys.push(dependendID)
+        }
+    }
+    return keys
 }

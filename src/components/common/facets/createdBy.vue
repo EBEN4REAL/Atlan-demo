@@ -44,7 +44,7 @@
                             >
                                 <a-checkbox
                                     v-if="item.username"
-                                    :value="item.username"
+                                    :value="item.id"
                                     class="w-full mb-3"
                                 >
                                     <div
@@ -135,7 +135,6 @@
 
             const handleChange = () => {
                 // make no owners unchecked
-                data.value.noOwnerAssigned = false
 
                 emit('change')
             }

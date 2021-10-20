@@ -5,7 +5,7 @@ import { Schema, ProcessedSchema, ProcessedRule } from './builder.interface'
 
 
 
-export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef: Ref, emit, dV) {
+export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef: Ref, emit, dV, gV) {
   const processedSchema: Ref<ProcessedSchema[]> = ref([])
   const privateTypes: String[] = ['object', 'array', 'group']
 
@@ -119,6 +119,7 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   const init = () => {
     testModal.value = {}
     processedSchema.value = []
+    setGlobal(dV)
 
 
     formConfig.value.forEach((f) => {

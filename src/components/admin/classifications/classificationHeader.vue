@@ -61,6 +61,7 @@
     import DeleteClassificationModal from './deleteClassificationModal.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { classificationInterface } from '~/types/classifications/classification.interface'
+    import Dropdown from '@/UI/dropdown.vue'
 
     export default defineComponent({
         name: 'ClassificationHeader',

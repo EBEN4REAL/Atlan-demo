@@ -18,9 +18,8 @@
             </span>
         </div>
     </div> -->
-    <div class="z-20 flex flex-col bg-white">
+    <div class="z-20 flex flex-col bg-white" v-if="selectedAsset">
         <AssetPreview
-            v-if="selectedAsset"
             :mutateTooltip="true"
             :selectedAsset="selectedAsset"
             @asset-mutation="() => {}"

@@ -131,6 +131,7 @@ import HourglassActive from '~/assets/images/icons/hourglass-active.svg'
 import GroupActive from '~/assets/images/icons/group-active.svg'
 import GroupLight from '~/assets/images/icons/group-light.svg'
 import AccessLogs from '~/assets/images/icons/access-logs.svg'
+
 import AccessLogsActive from '~/assets/images/icons/access-logs-active.svg'
 
 export default {

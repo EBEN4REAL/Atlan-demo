@@ -36,14 +36,27 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, inject, Ref, toRaw } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        inject,
+        Ref,
+        toRaw,
+        PropType,
+        toRefs,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { languageTokens } from '~/components/insights/playground/editor/monaco/sqlTokens'
 
     export default defineComponent({
         components: {},
         props: {},
-        setup() {
+        setup(props) {
+            const errorDecorations = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .errorDecorations
+            )
             const lineRegex = /(?:line )([0-9]+)/gim
             const columnRegex = /(?:column )([0-9]+)/gi
 
@@ -51,6 +64,7 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
             const queryErrorObj = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
@@ -82,18 +96,20 @@
             let validPos = pos.endLine ? pos.endLine : pos.startLine
             validPos = Number(validPos)
             /* Next line exist for showing */
-            // console.log(validPos, e, 'validPos')
+            console.log(validPos, e, 'validPos')
 
             if (validPos < e.length) {
-                renderedLines.push({
-                    index: validPos + 1,
-                    description: e[validPos + 1 - 1],
-                })
-                renderedLines.push({
-                    index: validPos,
-                    description: e[validPos - 1],
-                })
+                if (validPos >= 0)
+                    renderedLines.push({
+                        index: validPos + 1,
+                        description: e[validPos + 1 - 1],
+                    })
                 if (validPos - 1 >= 0)
+                    renderedLines.push({
+                        index: validPos,
+                        description: e[validPos - 1],
+                    })
+                if (validPos - 2 >= 0)
                     renderedLines.push({
                         index: validPos - 1,
                         description: e[validPos - 1 - 1],
@@ -120,7 +136,7 @@
                 }
             }
 
-            // console.log(renderedLines, 'renderedLines')
+            console.log(renderedLines, 'renderedLines')
 
             const isQueryRunning = computed(
                 () =>
@@ -153,6 +169,7 @@
             ) => {
                 const t = lineDesc.split(' ')
                 let html = ''
+
                 if (pos?.endLine) {
                     if (Number(lineIndex) === Number(pos.endLine)) {
                         let tokensTillNow = ''
@@ -171,9 +188,16 @@
                                         } else {
                                             html += `<span class="light_creme">&nbsp;</span>`
                                         }
+                                    } else {
+                                        if (char !== ' ') {
+                                            html += `<span >${char}</span>`
+                                        } else {
+                                            html += `<span >&nbsp;</span>`
+                                        }
                                     }
                                 })
                                 html += `<span>&nbsp;</span>`
+                                tokensTillNow += ' '
                             } else {
                                 if (
                                     tokensTillNow.length >=
@@ -185,7 +209,7 @@
                                 } else {
                                     html += `<span>&nbsp;</span>`
                                 }
-                                tokensTillNow += 1
+                                tokensTillNow += ' '
                             }
                             tokensTillNow += token
                         })
@@ -205,6 +229,7 @@
                     if (Number(lineIndex) === Number(pos.startLine)) {
                         let tokensTillNow = ''
                         t.forEach((token) => {
+                            console.log(t, 'tokens', tokensTillNow)
                             if (token !== '') {
                                 const chars = token.split('')
                                 chars.forEach((char, z) => {
@@ -219,12 +244,19 @@
                                         } else {
                                             html += `<span class="light_creme">&nbsp;</span>`
                                         }
+                                    } else {
+                                        if (char !== ' ') {
+                                            html += `<span >${char}</span>`
+                                        } else {
+                                            html += `<span >&nbsp;</span>`
+                                        }
                                     }
                                 })
                                 html += `<span>&nbsp;</span>`
+                                tokensTillNow += ' '
                             } else {
                                 html += `<span>&nbsp;</span>`
-                                tokensTillNow += 1
+                                tokensTillNow += ' '
                             }
                             tokensTillNow += token
                         })
@@ -241,12 +273,28 @@
                 }
                 return html
             }
+            const monacoI = toRaw(monacoInstance.value)
+            const editorI = toRaw(editorInstance.value)
+
+            activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                editorI.deltaDecorations(errorDecorations.value, [
+                    {
+                        range: new monacoI.Range(
+                            Number(pos.startLine),
+                            1,
+                            Number(pos.startLine),
+                            1
+                        ),
+                        options: {
+                            linesDecorationsClassName:
+                                'edtiorErrorDotDecoration',
+                        },
+                    },
+                ])
 
             return {
                 generateHTMLFromLine,
-                getTokenColor,
                 renderedLines,
-                isQueryRunning,
                 queryErrorObj,
             }
         },
@@ -256,9 +304,7 @@
     .dark_orange {
         color: #e04f1a;
     }
-    .error-lines-area {
-        min-height: 96px;
-    }
+
     .keep-spaces {
         white-space: pre-wrap;
     }
@@ -266,6 +312,17 @@
 <style lang="less">
     .light_creme {
         background-color: #fceee8;
+    }
+    .edtiorErrorDotDecoration {
+        background: #cf592e;
+        position: absolute !important;
+        top: 50%;
+        left: -15% !important;
+        transform: translate(0%, -50%);
+        width: 6px !important;
+        height: 6px !important;
+        border-radius: 100%;
+        margin-left: 3px;
     }
 </style>
 

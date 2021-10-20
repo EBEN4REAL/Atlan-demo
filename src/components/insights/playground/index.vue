@@ -233,6 +233,7 @@
                                 queryErrorObj: {},
                                 totalRowsCount: -1,
                                 executionTime: -1,
+                                errorDecorations: [],
                             },
                             metadata: {},
                             queries: {},

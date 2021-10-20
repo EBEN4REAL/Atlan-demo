@@ -124,7 +124,17 @@
                 'atlansql',
                 languageTokens
             )
-
+            const resetErrorDecorations = (
+                activeInlineTab: Ref<activeInlineTabInterface>,
+                editor: any
+            ) => {
+                activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                    editor.deltaDecorations(
+                        activeInlineTab.value.playground.resultsPane.result
+                            .errorDecorations,
+                        []
+                    )
+            }
             const triggerAutoCompletion = (
                 promise: Promise<{
                     suggestions: suggestionKeywordInterface[]
@@ -229,6 +239,7 @@
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
                 editor?.getModel().onDidChangeContent((event) => {
+                    resetErrorDecorations(activeInlineTab, editor)
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     /* ------------- custom variable color change */
@@ -298,6 +309,7 @@
                     findAndChangeCustomVariablesColor()
                     /* ------------------------------------------ */
                     editor.getModel().onDidChangeContent(async (event) => {
+                        resetErrorDecorations(activeInlineTab, editor)
                         const text = editor.getValue()
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
@@ -375,6 +387,7 @@
     .ghostCursor {
         position: relative;
     }
+
     .ghostCursor::after {
         position: absolute;
         content: '';

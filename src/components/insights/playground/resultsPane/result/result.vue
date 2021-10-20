@@ -5,7 +5,12 @@
         >
             <!-- Error on running a query -->
             <!-- v-if="!LINE_ERROR_NAMES.includes(queryErrorObj.errorName)" -->
-            <QueryError />
+            <QueryError
+                v-if="
+                    isQueryRunning === 'error' &&
+                    !LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
+                "
+            />
             <!-- ---------------------- -->
             <!-- Loading on running a query -->
             <Loading />
@@ -68,6 +73,7 @@
                 "
              -->
             <LineError
+                :errorDecorations="errorDecorations"
                 v-if="
                     isQueryRunning === 'error' &&
                     LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
@@ -82,7 +88,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, computed, PropType, ref } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        computed,
+        PropType,
+        ref,
+        toRaw,
+        watch,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import LoadingView from '@common/loaders/page.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -116,6 +131,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const editorInstance = inject('editorInstance') as Ref<any>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const queryErrorObj = computed(
                 () =>
@@ -133,7 +149,23 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning
             )
+            const errorDecorations =
+                activeInlineTab.value.playground.resultsPane.result
+                    .errorDecorations
+
+            watch(queryErrorObj, () => {
+                /* Resetting the red dot from the editor if it error is not line type */
+                const editorI = toRaw(editorInstance.value)
+                activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                    editorI.deltaDecorations(
+                        activeInlineTab.value.playground.resultsPane.result
+                            .errorDecorations,
+                        []
+                    )
+            })
+
             return {
+                errorDecorations,
                 LINE_ERROR_NAMES,
                 isQueryRunning,
                 queryErrorObj,

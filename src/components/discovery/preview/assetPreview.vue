@@ -2,7 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -80,7 +80,7 @@
                         ></component
                     ></a-tooltip>
                     <div
-                        class="text-base font-bold cursor-pointer  truncated text-primary hover:underline"
+                        class="text-base font-bold cursor-pointer truncated text-primary hover:underline"
                         v-if="mutateTooltip"
                     >
                         {{ selectedAsset.attributes?.name }}
@@ -128,7 +128,7 @@
                     >
                         <div
                             v-if="tab.tooltip !== 'Activity'"
-                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700 text-md"
                         >
                             {{ tab.tooltip }}
                         </div>
@@ -263,10 +263,12 @@ export default defineComponent({
             nonBiOverview: 'calc(100vh - 9.2rem)',
         }
 
-        function getAssetEntitity(data: Ref): any {
-            if (data.value?.entities.length > 0) return data.value?.entities[0]
-            return {}
-        }
+            // function getAssetEntitity(data: Ref): any {
+            //     if (data.value?.entities.length > 0)
+            //         return data.value?.entities[0]
+            //     return {}
+            // }
+
 
         const getDataType = (type: string) => {
             let label = ''

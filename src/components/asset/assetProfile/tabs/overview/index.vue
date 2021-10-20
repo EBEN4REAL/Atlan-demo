@@ -1,6 +1,6 @@
 <template>
     <!-- tableauAsset -->
-    <tableauAsset v-if="assetType(assetData).includes('Tableau')" />
+    <tableauAsset v-if="assetType(selectedAsset).includes('Tableau')" />
 
     <!-- nonBiAssets -->
     <nonBiAsset v-else :edit-permission="userHasEditPermission" />
@@ -10,12 +10,13 @@
     // Vue
     import {
         defineComponent,
-        inject,
-        computed,
+        // inject,
+        // computed,
         PropType,
         ref,
         toRefs,
     } from 'vue'
+    import { storeToRefs } from 'pinia'
 
     // Components
     import nonBiAsset from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/index.vue'
@@ -23,6 +24,7 @@
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: { nonBiAsset, tableauAsset },
@@ -34,17 +36,22 @@
         },
         setup(props) {
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
-
+            // const assetData = computed(() => assetDataInjection?.asset)
+            // store
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             /** METHODS */
             const { assetType } = useAssetInfo()
 
             return {
-                assetData,
+                // assetData,
                 assetType,
+                editPermission,
+                selectedAsset
             }
         },
     })

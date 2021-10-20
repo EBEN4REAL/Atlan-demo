@@ -58,7 +58,7 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
-
+    import useDiscoveryStore from '~/store/discovery'
     export default defineComponent({
         components: {
             ListItem,
@@ -95,7 +95,7 @@
         emits: ['preview'],
         setup(props, context) {
             const { page } = toRefs(props)
-
+            const storeDiscovery = useDiscoveryStore()
             const selectedAssetId = ref('')
             const { dataTypeImage } = useAssetInfo()
 
@@ -110,8 +110,9 @@
 
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
+                storeDiscovery.setSelectedAsset(item)
                 // ctx.emit('preview', item)
-                context.emit('preview', item)
+                // context.emit('preview', item)
                 if (page.value === 'BiOverview') {
                     selectedAssetData.value = item
                     showAssetSidebar.value = true

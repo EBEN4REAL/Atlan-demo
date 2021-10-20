@@ -2,6 +2,7 @@ name: Production Website Workflow
 on:
   push:
     branches:
+      - beta
       - alpha
 jobs:
   test:

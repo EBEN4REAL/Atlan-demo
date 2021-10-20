@@ -3,6 +3,7 @@
         <div class="h-full overflow-x-hidden" :class="$style.schemaTreeStyles">
             <div v-if="treeData.length">
                 <a-tree
+                    v-bind="$attrs"
                     :expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
                     :loadedKeys="loadedKeys"
@@ -132,6 +133,7 @@
                 default: () => [],
             },
         },
+        inheritAttrs: false,
         setup(props, { emit }) {
             // data
             return {

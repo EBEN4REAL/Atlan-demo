@@ -1,5 +1,10 @@
 <template>
     <div>
+        <AssetSelectorDrawer
+            v-model:visible="assetSelectorVisible"
+            :assets="policy.assets"
+            connectionQualifiedName="default/snowflake/development-test"
+        />
         <div class="flex items-center justify-between">
             <span class="text-base font-bold leading-8 text-gray-500"
                 >{{ policy.name }} details</span
@@ -55,21 +60,25 @@
         <p class="mb-2" v-else>{{ policy.connectionId }}</p>
 
         <span class="block mb-1 text-sm text-gray-700">ASSETS</span>
-        <a-select
+        <!-- <a-select
             v-model:value="policy.assets"
             mode="tags"
             class="w-full mb-2"
             v-if="isEditing"
             placeholder="Enter asset name / pattern"
-        />
+        /> -->
         <div
-            v-else
             class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5 mb-2"
         >
-            <Pill
-                v-for="asset in policy.assets"
-                :label="asset"
-                :has-action="false"
+            <PillGroup
+                :data="
+                    policy.assets.map((name) => ({
+                        label: name,
+                    }))
+                "
+                label-key="label"
+                :read-only="!isEditing"
+                @add="openAssetSelector"
             />
         </div>
         <MetadataScopes v-model:actions="policy.actions" />
@@ -78,16 +87,25 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import Pill from '~/components/UI/pill/pill.vue'
+    import PillGroup from '~/components/UI/pill/pillGroup.vue'
+    import MetadataScopes from './metadataScopes.vue'
+    import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
+
     import { MetadataPolicies } from '~/types/accessPolicies/personas'
     import { isEditing } from '../composables/useEditPersona'
-    import MetadataScopes from './metadataScopes.vue'
 
     export default defineComponent({
         name: 'PersonaPolicy',
-        components: { AtlanBtn, Pill, MetadataScopes },
+        components: {
+            AtlanBtn,
+            Pill,
+            MetadataScopes,
+            PillGroup,
+            AssetSelectorDrawer,
+        },
         props: {
             policy: {
                 type: Object as PropType<MetadataPolicies>,
@@ -96,12 +114,19 @@
         },
         emits: ['delete'],
         setup(props, { emit }) {
+            const assetSelectorVisible = ref(false)
             function removePolicy() {
                 emit('delete')
             }
+
+            function openAssetSelector() {
+                assetSelectorVisible.value = true
+            }
             return {
+                assetSelectorVisible,
                 isEditing,
                 removePolicy,
+                openAssetSelector,
             }
         },
     })

@@ -12,7 +12,6 @@
                 :options="scope.scopes"
             />
         </div>
-        <a-divider />
     </div>
 </template>
 

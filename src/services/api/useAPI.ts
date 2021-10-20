@@ -166,6 +166,7 @@ export function resolveUrl(
 
 const getUrlWithParams = (url, params) => {
     let p = isRef(params) ? params.value : params
+    if (!p) return url
     const temp = {}
     // fix me
     Object.entries(p).forEach(([k, v]) => {

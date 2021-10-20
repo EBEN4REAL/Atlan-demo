@@ -1,5 +1,9 @@
 [
     {
+        "type": "temnplate",
+        "template": "{{description}}"
+    },
+    {
         "type": "asyncSelect",
         "label": "Select or Create Credentials",
         "id": "credential",

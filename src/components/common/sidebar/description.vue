@@ -37,17 +37,24 @@
         >
             {{ description }}
         </span>
-        <span
+        <div
             v-if="
                 (!description || description === '') &&
                 !showEditableDescription &&
                 !isLoading
             "
-            class="text-xs cursor-pointer text-primary hover:underline"
-            @click="handleAddDescriptionClick"
         >
-            Add description
-        </span>
+            <span
+                v-if="editPermission"
+                class="text-xs cursor-pointer text-primary hover:underline"
+                @click="handleAddDescriptionClick"
+            >
+                Add description</span
+            >
+            <span v-else class="text-xs text-gray-500 cursor-pointer">
+                No description</span
+            >
+        </div>
     </div>
 </template>
 
@@ -79,8 +86,8 @@
             editPermission: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
         },
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
@@ -129,7 +136,7 @@
             }
 
             const handleAddDescriptionClick = () => {
-                if(props.editPermission) {
+                if (props.editPermission) {
                     showEditableDescription.value = true
                     nextTick(() => {
                         descriptionInput.value = description.value

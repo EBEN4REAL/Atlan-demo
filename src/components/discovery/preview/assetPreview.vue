@@ -139,7 +139,7 @@
                             :info-tab-data="selectedAsset"
                             :page="page"
                             :selected-asset="selectedAsset"
-                            :user-permission="userPermission"
+                            :user-has-edit-permission="userHasEditPermission"
                             :is-loaded="isLoaded"
                             @change="handleChange"
                         ></component>
@@ -244,6 +244,7 @@ export default defineComponent({
         const activeKey = ref(0)
         const isLoaded: Ref<boolean> = ref(true)
         const router = useRouter()
+        const userHasEditPermission = ref<boolean>(true)
 
         const { evaluatePermissions } = useCheckAccess()
         const { data: userPermission } = evaluatePermissions(
@@ -310,9 +311,14 @@ export default defineComponent({
             if (idx > -1) activeKey.value = idx
         })
 
-        watch(page, () => {
-            if (activeKey.value > filteredTabs.value.length) activeKey.value = 0
-        })
+            watch(page, () => {
+                if (activeKey.value > filteredTabs.value.length)
+                    activeKey.value = 0
+            })
+            watch(userPermission, () => {
+                userHasEditPermission.value = userPermission.value[0]?.allowed
+            })
+
 
         function init() {
             isLoaded.value = false
@@ -322,29 +328,29 @@ export default defineComponent({
         const name = computed(() => selectedAsset.value.attributes?.name)
         onMounted(init)
 
-        return {
-            mutateTooltip,
-            name,
-            tabHeights,
-            isLoaded,
-            infoTabData,
-            userPermission,
-            title,
-            assetTypeLabel,
-            dataMap,
-            activeKey,
-            filteredTabs,
-            certificateStatus,
-            handleChange,
-            images,
-            getDataType,
-            isColumnAsset,
-            getColumnUrl,
-            handleCopyProfileLink,
-            handleOpenProfile,
-        }
-    },
-})
+            return {
+                mutateTooltip,
+                name,
+                tabHeights,
+                isLoaded,
+                infoTabData,
+                userHasEditPermission,
+                title,
+                assetTypeLabel,
+                dataMap,
+                activeKey,
+                filteredTabs,
+                certificateStatus,
+                handleChange,
+                images,
+                getDataType,
+                isColumnAsset,
+                getColumnUrl,
+                handleCopyProfileLink,
+                handleOpenProfile,
+            }
+        },
+    })
 </script>
 <style lang="less" scoped>
 .icon-btn {

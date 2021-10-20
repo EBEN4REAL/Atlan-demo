@@ -61,20 +61,26 @@
                 </template>
             </PillGroup>
         </div>
+        <div v-if="ownerUsers.length < 1 && ownerGroups.length < 1">
+            <div v-if="editPermission" @click.stop="toggleOwnerPopover">
+                <div
+                    class="flex items-center cursor-pointer  text-primary hover:underline"
+                >
+                    <span class="text-xs">Add owners</span>
+                </div>
+            </div>
+            <div v-else>
+                <div class="flex items-center text-gray-500 cursor-pointer">
+                    <span class="text-xs">No owners</span>
+                </div>
+            </div>
+        </div>
         <a-popover
-            v-if="editPermission"
             v-model:visible="showOwnersDropdown"
             placement="left"
             overlay-class-name="inlinepopover"
             trigger="click"
         >
-            <div
-                v-if="ownerUsers.length < 1 && ownerGroups.length < 1"
-                class="text-xs cursor-pointer text-primary hover:underline"
-                @click.stop="toggleOwnerPopover"
-            >
-                Add owners
-            </div>
             <template #content>
                 <div
                     class="
@@ -166,12 +172,7 @@
                                 </div>
                                 <div
                                     v-else
-                                    class="
-                                        flex
-                                        items-center
-                                        justify-center
-                                        mt-3
-                                    "
+                                    class="flex items-center justify-center mt-3 "
                                 >
                                     <a-spin
                                         size="small"
@@ -188,12 +189,7 @@
                                         STATES.SUCCESS === groupOwnerState &&
                                         groupList.length < 1
                                     "
-                                    class="
-                                        flex flex-col
-                                        items-center
-                                        justify-center
-                                        h-full
-                                    "
+                                    class="flex flex-col items-center justify-center h-full "
                                 >
                                     <div class="flex flex-col items-center">
                                         <img

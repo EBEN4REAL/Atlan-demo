@@ -5,35 +5,83 @@
      * @returns required string
      */
 // eslint-disable-next-line import/prefer-default-export
-export const getStringFromPath = (data: object | Array<any>, path: string) => {
+export const getStringFromPath = (data: object | Array<any>, path: string): any => {
+    // ? if path is '' or '.' get the root as value
+    if (['', '.'].includes(path)) return data;
     const arrayReg = /\w*\[\d*\]$/g
-    const r = /\{\{(\.\w*?)\}\}/g
-    const varArr = path.match(r);
-    let label: unknown = '';
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
+    // ? Wrapping old string version eg ".parent.child[0]" with {{ }} for bakward compatibility
+    const varArr = path.match(r) ?? `{{${path}}}`.match(r);
+    let label: unknown = undefined;
+    let missingValues = false;
     if (varArr?.length) {
         label = path
-        varArr.forEach(p => {
-            const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
-            let word: unknown = data;
-            pathParts.forEach((pp: string) => {
-                const isArr = arrayReg.test(pp)
-                if (isArr) {
-                    const index = parseInt(pp.match(/(?<=\[).+?(?=\])/)[0], 10)
-                    word = (word as string)[pp.split('[')[0]][index]
-                } else word = (word as string)[pp]
+        try {
+            varArr.forEach(p => {
+                const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
+                let word: unknown = data;
+                pathParts.forEach((pp: string) => {
+                    if (!pp) return
+                    const isArr = arrayReg.test(pp)
+                    if (isArr) {
+                        const index = parseInt(pp.match(/(?<=\[).+?(?=\])/)[0], 10)
+                        word = (word as object)[pp.split('[')[0]][index]
+                    } else word = (word as object)[pp]
+                })
+                if (typeof word === 'undefined')
+                    missingValues = true
+                label = (label as string).replace(p, word as string)
             })
-            label = label.replace(p, word as string)
-        })
-    } else {
-        label = data;
-        const labelPathParts = path.split('.').slice(1)
-        labelPathParts.forEach((p: string) => {
-            const isArr = arrayReg.test(p)
-            if (isArr) {
-                const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
-                label = (label as string)[p.split('[')[0]][index]
-            } else label = (label as string)[p]
-        })
+        } catch { return undefined }
+
     }
-    return label || path;
+    // else {
+    //     // ? backward compatible with ".records.displayName[0]"
+    //     const labelPathParts = path.split('.').slice(1)
+    //     if (labelPathParts.length)
+    //         label = data;
+    //     labelPathParts.forEach((p: string) => {
+    //         if (!p) return
+    //         const isArr = arrayReg.test(p)
+    //         if (isArr) {
+    //             const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
+    //             label = (label as string)[p.split('[')[0]][index]
+    //         } else label = (label as string)[p]
+    //         if (typeof label === 'undefined')
+    //             missingValues = true
+    //     })
+    // }
+    return missingValues ? undefined : label;
+}
+
+export const genParams = (dO, pO) => {
+    const newParamObject = {}
+    Object.entries(pO).forEach(([k, p]: string[]) => {
+        if (typeof p === 'object')
+            newParamObject[k] = p;
+        else {
+            const val = getStringFromPath(dO, p);
+            newParamObject[k] = val;
+        }
+    })
+    return newParamObject;
+}
+
+/**
+     * 
+     * @param v string containing ids in curly braces eg. {{.idName}} xx {{.anotherID}}
+     * @returns [idName, anotherID]
+     */
+export const keyIDs = (v) => {
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
+    const keys: string[] = []
+    if (typeof v === 'string') {
+        const varArr = v.match(r);
+        if (varArr?.length) {
+            // ? checking for single id, {{.id}}
+            const dependendID = varArr[0].split('{{')[1].split('}}')[0].split('.').slice(1)[0]
+            keys.push(dependendID)
+        }
+    }
+    return keys
 }

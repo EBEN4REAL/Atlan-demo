@@ -51,6 +51,7 @@ export interface activeInlineTabInterface {
                 totalRowsCount: number
                 executionTime: number
                 queryErrorObj: any
+                errorDecorations: any
             }
             metadata: Object
             queries: Object

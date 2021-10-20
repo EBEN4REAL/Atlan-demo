@@ -13,7 +13,6 @@
                 >
                     <a-menu-item-group title="Workspace">
                         <a-menu-item key="overview">Overview</a-menu-item>
-                        <!-- <a-menu-item key="general">General</a-menu-item> -->
                         <a-menu-item key="members">Members</a-menu-item>
                         <a-menu-item key="groups">Groups</a-menu-item>
                         <a-menu-item key="sso">SSO</a-menu-item>
@@ -21,13 +20,9 @@
                         <a-menu-item key="integrations"
                             >Integrations</a-menu-item
                         >
-                        <!-- <a-menu-item key="integrations">Integrations</a-menu-item> -->
-                        <!-- <a-menu-item key="billing">Billing & License</a-menu-item> -->
                     </a-menu-item-group>
 
                     <a-menu-item-group title="Access Control">
-                        <!-- <a-menu-item key="metadata_policies">Metadata Policies</a-menu-item>
-            <a-menu-item key="data_policies">Data Policies</a-menu-item> -->
                         <a-menu-item key="personas">Personas</a-menu-item>
                         <a-menu-item key="apikeys">API Keys</a-menu-item>
                     </a-menu-item-group>
@@ -40,14 +35,6 @@
                             Custom Metadata
                         </a-menu-item>
                         <a-menu-item key="enums"> Enums </a-menu-item>
-                    </a-menu-item-group>
-                    <a-menu-item-group title="Cloud & Compliance">
-                        <!-- <a-menu-item key="accesslogs">Access Logs</a-menu-item>
-            <a-menu-item key="auditlogs">Audit Logs</a-menu-item> -->
-                        <!-- <a-menu-item key="releases">Releases</a-menu-item> -->
-                        <a-menu-item key="health">Health Status</a-menu-item>
-                        <a-menu-item key="release">Release</a-menu-item>
-                        <!-- <a-menu-item key="observe">Observability</a-menu-item> -->
                     </a-menu-item-group>
                 </a-menu>
             </div>

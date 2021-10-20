@@ -164,6 +164,22 @@ export function resolveUrl(
     })
 }
 
+const getUrlWithParams = (url, params) => {
+    console.log('getUrlWithParams')
+    let p = isRef(params) ? params.value : params
+    if (!p) return url
+    const temp = {}
+    Object.entries(p).forEach(([k, v]) => {
+        let newv = v
+        if (typeof v === 'object') {
+            newv = JSON.stringify(v)
+        }
+        temp[k] = newv;
+    })
+    p = new URLSearchParams(temp)
+    return p.toString() ? `${url}?${p.toString()}` : url
+}
+
 export function useAPIPromise(
     url: string,
     method: HTTPVerb,
@@ -178,7 +194,7 @@ export function useAPIPromise(
             )
         case 'POST':
             return fetcherPost(
-                url,
+                getUrlWithParams(url, params),
                 isRef(body) ? body.value : body,
                 isRef(options) ? options.value : options
             )

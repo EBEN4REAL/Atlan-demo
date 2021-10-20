@@ -249,7 +249,7 @@ export function useEditor(
     const editorConfig = ref({
         theme: 'vs',
         tabSpace: 3,
-        fontSize: 12,
+        fontSize: 14,
     })
 
     return {

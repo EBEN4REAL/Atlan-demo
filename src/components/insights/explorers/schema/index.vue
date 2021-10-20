@@ -28,7 +28,7 @@
             ></Connector>
         </div>
         <div
-            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto  scrollable-container"
+            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto scrollable-container"
         >
             <schema-tree
                 :tree-data="treeData"

@@ -56,9 +56,6 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .queryErrorObj
             )
-            const totalLinesCount = toRaw(editorInstance.value)
-                .getModel()
-                .getLineCount()
             const editorText = toRaw(editorInstance.value).getValue()
             /* [["Line 3", "3"], ["line 3", "3"]] */
             const linesInfo = [
@@ -82,9 +79,11 @@
             }
 
             const e = editorText.split('\n')
-            let validPos = pos.endLine ? pos.startLine : pos.endLine
+            let validPos = pos.endLine ? pos.endLine : pos.startLine
+            validPos = Number(validPos)
             /* Next line exist for showing */
-            console.log(validPos, e, 'validPos')
+            // console.log(validPos, e, 'validPos')
+
             if (validPos < e.length) {
                 renderedLines.push({
                     index: validPos + 1,
@@ -99,25 +98,29 @@
                         index: validPos - 1,
                         description: e[validPos - 1 - 1],
                     })
-            } else if (Number(pos.endLine) == e.length) {
+            } else if (validPos == e.length) {
                 /* Next line exist for showing */
-                renderedLines.push({
-                    index: validPos,
-                    description: e[validPos - 1],
-                })
-                if (validPos - 1 >= 0)
+                if (validPos - 1 >= 0) {
+                    renderedLines.push({
+                        index: validPos,
+                        description: e[validPos - 1],
+                    })
+                }
+                if (validPos - 2 >= 0) {
                     renderedLines.push({
                         index: validPos - 1,
                         description: e[validPos - 1 - 1],
                     })
-                if (validPos - 2 >= 0)
+                }
+                if (validPos - 3 >= 0) {
                     renderedLines.push({
                         index: validPos - 1 - 1,
                         description: e[validPos - 1 - 1 - 1],
                     })
+                }
             }
 
-            console.log(renderedLines, 'renderedLines')
+            // console.log(renderedLines, 'renderedLines')
 
             const isQueryRunning = computed(
                 () =>

@@ -13,7 +13,7 @@
                 >
                     <template #tabBarExtraContent>
                         <div class="inline-flex items-center ml-1 mr-2">
-                            <a-tooltip placement="bottom">
+                            <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
                                     class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
@@ -501,10 +501,6 @@
             @apply hidden !important;
         }
     }
-    // :global(.ant-modal-wrap) {
-    //     /* Overrriding modals z-index so that it appears above menu */
-    //     z-index: 1100 !important;
-    // }
 </style>
 <route lang="yaml">
 meta:

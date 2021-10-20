@@ -282,7 +282,7 @@
                 // emit('editorInstance', editor)
                 editor?.getModel().onDidChangeContent((event) => {
                     resetErrorDecorations(activeInlineTab, editor)
-                    setErrorDecorations(activeInlineTab, editor)
+                    // setErrorDecorations(activeInlineTab, editor)
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     /* ------------- custom variable color change */
@@ -356,7 +356,7 @@
                     /* ------------------------------------------ */
                     editor.getModel().onDidChangeContent(async (event) => {
                         resetErrorDecorations(activeInlineTab, editor)
-                        setErrorDecorations(activeInlineTab, editor)
+                        // setErrorDecorations(activeInlineTab, editor)
                         const text = editor.getValue()
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]

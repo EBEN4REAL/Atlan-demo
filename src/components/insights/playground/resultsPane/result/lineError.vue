@@ -328,7 +328,7 @@
         background: #cf592e;
         position: absolute !important;
         top: 50%;
-        left: -15% !important;
+        left: -14% !important;
         transform: translate(0%, -50%);
         width: 6px !important;
         height: 6px !important;

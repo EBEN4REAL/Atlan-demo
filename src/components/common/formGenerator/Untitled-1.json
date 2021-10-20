@@ -1,12 +1,8 @@
 [
     {
-        "type": "temnplate",
-        "template": "{{description}}"
-    },
-    {
         "type": "asyncSelect",
         "label": "Select or Create Credentials",
-        "id": "credential",
+        "id": "guid",
         "allowIncludeAll": true,
         "includeAllVal": "{}",
         "requestConfig": {
@@ -23,8 +19,7 @@
         },
         "saveVariables": {
             "host": ".host",
-            "description": ".description",
-            "guid": ".id"
+            "port": ".port"
         },
         "allowCreate": true,
         "rules": [
@@ -44,6 +39,24 @@
             },
             "rootPath": ".items[0].data.uiConfig"
         }
+    },
+    {
+        "type": "template",
+        "id": "host",
+        "template": "{{host}}",
+        "isVisible": false
+    },
+    {
+        "type": "template",
+        "id": "credential-guid",
+        "template": "{{guid}}",
+        "isVisible": false
+    },
+    {
+        "type": "template",
+        "id": "port",
+        "template": "{{.port}}",
+        "isVisible": false
     },
     {
         "type": "asyncTreeSelect",
@@ -68,13 +81,14 @@
             "url": "http://{{domain}}/api/sql/metadata/schemas/{{parent}}",
             "method": "POST",
             "params": {
-                "guid": "{{.credential}}"
+                "guid": "{{.guid}}"
             },
             "addFormValues": [],
             "body": {
                 "schemaExcludePattern": [
                     "INFORMATION_SCHEMA"
-                ]
+                ],
+                "schemaIncludePattern": []
             }
         },
         "responseConfig_2": {

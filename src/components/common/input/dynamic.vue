@@ -385,12 +385,12 @@
                     const db =
                         n?.props?.pid ||
                         n.node?.props?.pid ||
-                        n?.props?.value ||
-                        n?.node?.props?.value ||
+                        n?.props?.val ||
+                        n?.node?.props?.val ||
                         null
                     const schema =
                         n?.node?.props?.pid || n?.props?.pid
-                            ? n?.node?.props?.value || n?.props?.value
+                            ? n?.node?.props?.val || n?.props?.val
                             : null
 
                     if (result[db] && schema)

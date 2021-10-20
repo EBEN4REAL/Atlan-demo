@@ -1,5 +1,5 @@
 <template>
-    <DefaultLayout title="Manage Users">
+    <DefaultLayout v-if="permissions.list" title="Manage Users">
         <!-- <a-badge
             :number-style="{ backgroundColor: '#5277D7' }"
             :count="filteredUserCount"
@@ -56,7 +56,7 @@
                         </a-button>
                     </a-popover>
                     <a-button
-                        v-if="loginWithEmailAllowed"
+                        v-if="loginWithEmailAllowed && permissions.create"
                         type="primary"
                         class="rounded-md"
                         size="default"
@@ -97,7 +97,7 @@
                     :scroll="{ y: 'calc(100vh - 20rem)' }"
                     :table-layout="'fixed'"
                     :data-source="userList"
-                    :columns="columns"
+                    :columns="columns.filter((col) => (col.title !== 'Actions' || permissions.update))"
                     :row-key="(user) => user.id"
                     :pagination="false"
                     :loading="
@@ -156,7 +156,7 @@
                     </template>
                     <template #actions="{ text: user }">
                         <a-button-group>
-                            <a-tooltip v-if="user.enabled" placement="top">
+                            <a-tooltip v-if="user.enabled && permissions.update" placement="top">
                                 <template #title>
                                     <span>Disable User</span>
                                 </template>
@@ -187,7 +187,7 @@
                                 ></a-popconfirm>
                             </a-tooltip>
                             <a-tooltip
-                                v-if="!user.enabled"
+                                v-if="!user.enabled && permissions.update"
                                 placement="top"
                                 class="mr-3.5 rounded"
                             >
@@ -216,7 +216,7 @@
                                         ></fa> </a-button
                                 ></a-popconfirm>
                             </a-tooltip>
-                            <a-tooltip v-if="user.enabled" placement="top">
+                            <a-tooltip v-if="user.enabled && permissions.update" placement="top">
                                 <template #title>
                                     <span>Change Role</span>
                                 </template>
@@ -325,7 +325,7 @@ import { defineComponent, ref, reactive, computed, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import ErrorView from '@common/error/index.vue'
-import { User } from '@services/keycloak/users/users_api'
+import { User } from '~/services/keycloak/users/users_api'
 import DefaultLayout from '@/admin/defaultLayout.vue'
 import { useUserPreview } from '~/composables/user/showUserPreview'
 import useUsers from '~/composables/user/useUsers'
@@ -340,6 +340,7 @@ import ChangeRole from './changeRole.vue'
 import InviteUsers from './inviteUsers.vue'
 import useRoles from '~/composables/roles/useRoles'
 import { useTenantStore } from '~/services/keycloak/tenant/store'
+import { useAccessStore } from '~/services/access/accessStore'
 
 export default defineComponent({
     components: {
@@ -353,6 +354,15 @@ export default defineComponent({
 
     setup() {
         const tenantStore = useTenantStore()
+        const accessStore = useAccessStore()
+        const permissions = computed(() => ({
+            list: accessStore.checkPermission('LIST_USERS'),
+            create: accessStore.checkPermission('CREATE_USERS'),
+            update: accessStore.checkPermission('UPDATE_USERS'),
+            delete: accessStore.checkPermission('DELETE_USERS'),
+            suspend: accessStore.checkPermission('SUSPEND_USERS'),
+        }))
+
         const loginWithEmailAllowed = ref(
             tenantStore?.tenant?.loginWithEmailAllowed ?? false
         )
@@ -710,6 +720,7 @@ export default defineComponent({
             getEnableDisablePopoverContent,
             confirmEnableDisablePopover,
             selectedUserId,
+            permissions
         }
     },
     data() {

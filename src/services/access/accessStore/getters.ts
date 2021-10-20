@@ -25,6 +25,16 @@ export const getters: GettersTree<State> & Getters = {
             return permissions;
         }
         return check;
+    },
+    checkAnyPermissionExists(state) {
+        const check = (keys: string[]) => {
+            let permission = false;
+            keys.forEach((key) => {
+                permission = permission || !!state.permissions.find((permission) => permission === key)
+            })
+            return permission
+        }
+        return check
     }
 
 }

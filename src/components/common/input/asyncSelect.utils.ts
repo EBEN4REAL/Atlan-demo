@@ -8,7 +8,7 @@
 export const getStringFromPath = (data: object | Array<any>, path: string) => {
     if (!path || ['', '.'].includes(path)) return data;
     const arrayReg = /\w*\[\d*\]$/g
-    const r = /\{\{(\.\w*?)\}\}/g
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
     const varArr = path.match(r);
     let label: unknown = '';
     if (varArr?.length) {
@@ -36,14 +36,18 @@ export const getStringFromPath = (data: object | Array<any>, path: string) => {
             } else label = (label as string)[p]
         })
     }
-    return label || null;
+    return label || path;
 }
 
 export const genParams = (dO, pO) => {
     const newParamObject = {}
     Object.entries(pO).forEach(([k, p]: string[]) => {
-        const val = getStringFromPath(dO, p);
-        newParamObject[k] = val;
+        if (typeof p === 'object')
+            newParamObject[k] = p;
+        else {
+            const val = getStringFromPath(dO, p);
+            newParamObject[k] = val;
+        }
     })
     return newParamObject;
 }
@@ -54,7 +58,7 @@ export const genParams = (dO, pO) => {
      * @returns [idName, anotherID]
      */
 export const keyIDs = (v) => {
-    const r = /\{\{(\.\w*?)\}\}/g
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
     const keys: string[] = []
     if (typeof v === 'string') {
         const varArr = v.match(r);

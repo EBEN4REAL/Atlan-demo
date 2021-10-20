@@ -404,23 +404,6 @@
             }
 
             const handleChange = (e, timeStamp) => {
-                let val = e
-                if (e?.target) {
-                    val = e.target.value
-                }
-                if (props.dataType === 'number') {
-                    emit('update:modelValue', parseInt(val, 10))
-                } else if (props.dataType === 'checkbox') {
-                    emit('update:modelValue', Array.from(e))
-                } else if (
-                    props.dataType === 'date' ||
-                    props.dataType === 'time'
-                ) {
-                    emit('update:modelValue', timeStamp)
-                } else {
-                    emit('update:modelValue', val)
-                }
-                emit('change', val)
                 if (
                     props.dataType === 'asyncSelect' &&
                     props?.globalVariables
@@ -432,7 +415,27 @@
                         ).data
                         temp[k] = getStringFromPath(d, p)
                     })
+                    emit('update:modelValue', e)
                     emit('getGlobal', temp)
+                    emit('change', e)
+                } else {
+                    let val = e
+                    if (e?.target) {
+                        val = e.target.value
+                    }
+                    if (props.dataType === 'number') {
+                        emit('update:modelValue', parseInt(val, 10))
+                    } else if (props.dataType === 'checkbox') {
+                        emit('update:modelValue', Array.from(e))
+                    } else if (
+                        props.dataType === 'date' ||
+                        props.dataType === 'time'
+                    ) {
+                        emit('update:modelValue', timeStamp)
+                    } else {
+                        emit('update:modelValue', val)
+                    }
+                    emit('change', val)
                 }
             }
 

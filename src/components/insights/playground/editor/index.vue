@@ -262,6 +262,7 @@
                     <!-- <WarehouseConnector /> -->
                     <div class="flex items-center">
                         <AtlanIcon
+                            @click="toggleExplorerPane"
                             icon="ExplorerTrigger"
                             class="w-4 h-4 mr-4"
                         />
@@ -382,7 +383,7 @@
 
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
-            const { resultsPaneSizeToggle } = useHotKeys()
+            const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
             const { toggleFullScreenMode } = useFullScreen()
@@ -411,6 +412,7 @@
                 'queryExecutionTime'
             ) as Ref<number>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
+            const explorerPaneSize = inject('explorerPaneSize') as Ref<number>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
@@ -506,6 +508,10 @@
                 console.log('called')
                 resultsPaneSizeToggle(outputPaneSize)
             }
+            const toggleExplorerPane = () => {
+                console.log('explorer pane toggled')
+                explorerPaneToggle(explorerPaneSize)
+            }
             const tFullScreen = () => {
                 toggleFullScreenMode(fullSreenState)
             }
@@ -555,6 +561,7 @@
 
             /* ------------------------------------------ */
             return {
+                toggleExplorerPane,
                 editorConfig,
                 canUserUpdateQuery,
                 toggleAssetPreview,

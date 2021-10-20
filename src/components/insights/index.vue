@@ -199,6 +199,7 @@
                 editorConfig: editorConfig,
                 monacoInstance: monacoInstance,
                 sqlVariables: sqlVariables,
+                explorerPaneSize: explorerPaneSize,
                 outputPaneSize: outputPaneSize,
                 fullSreenState: fullSreenState,
                 setEditorInstance: setEditorInstance,

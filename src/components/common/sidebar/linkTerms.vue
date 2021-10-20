@@ -167,7 +167,7 @@
 
             // link term on click ok
             const createTerm = () => {
-                const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
+                const { assignLinkedAssets } = useLinkAssets()
                 selectedTermForLink.value.map((el) => {
                     const { response, loading } = assignLinkedAssets(el.guid, [
                         props.selectedAsset,
@@ -197,10 +197,10 @@
             }
             // unlink term on pill cross btn clicked
             const unLinkTerm = (term: any) => {
-                const { unLinkAssets } = useLinkAssets()
-                const { response: unlinkResponse, loading } = unLinkAssets(
+                const { unlinkAsset } = useLinkAssets()
+                const { response: unlinkResponse, loading } = unlinkAsset(
                     term?.termGuid || term?.guid,
-                    [props.selectedAsset]
+                    props.selectedAsset
                 )
                 pillTerms.value = pillTerms.value.filter((el) => {
                     if (term?.termGuid) {
@@ -246,28 +246,16 @@
                         break
                     }
                 }
-                // pillTerms.value.forEach((el) => {
-                //     if (el.termGuid !== term.guid) {
-                //         console.log('true')
-                //         isAvailable = true
-                //     } else {
-                //         console.log('false')
-                //         isAvailable = false
-                //         return isAvailable
-                //     }
-                // })
                 return isAvailable
             }
 
             const handleTermChange = (data) => {
-                console.log(data)
                 if (data) {
                     selectedTermForLink.value = data.filter((el) => {
                         if (isTermAlreadyLinked(el)) return true
                         message.info(`${el.name} already linked`)
                         return false
                     })
-                    console.log(selectedTermForLink.value)
                 }
             }
 

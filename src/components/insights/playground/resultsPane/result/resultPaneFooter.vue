@@ -1,12 +1,12 @@
 <template>
     <div
-        class="left-0 flex w-full bg-white border-t bottom_footer h-7"
+        class="left-0 flex w-full h-8 text-xs bg-white bg-gray-700 border-t bottom_footer"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
             isQueryRunning === 'success'
         "
     >
-        <div class="flex items-center px-3 text-gray-500">
+        <div class="flex items-center px-3 text-gray-500 mt-0.5">
             <span class="mr-2">
                 {{
                     activeInlineTab.playground.editor.columnList.length

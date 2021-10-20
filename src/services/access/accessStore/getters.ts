@@ -4,6 +4,7 @@ import { State } from './state'
 export interface Getters {
     checkPermission(state: State): (key: string) => boolean
     checkPermissions(state: State): (keys: string[]) => Record<string, boolean>
+    checkAnyPermissionExists(state: State): (keys: string[]) => boolean
 }
 
 

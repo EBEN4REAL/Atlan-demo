@@ -42,6 +42,7 @@
             </div>
         </div>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
 import { defineComponent, computed, ComputedRef, Ref, ref, watch } from 'vue'
@@ -52,12 +53,14 @@ import { useTenantStore } from '~/services/keycloak/tenant/store'
 import { KeyMaps } from '~/api/keyMap'
 import { useAPIAsyncState } from '~/services/api/useAPI'
 import { useAccessStore } from '~/services/access/accessStore'
+import NoAcces from '@/admin/common/noAccessPage.vue'
 
 export default defineComponent({
     name: 'OrgOverview',
     components: {
         DefaultLayout,
         OrgLogo,
+        NoAcces
     },
     setup() {
         const tenantStore = useTenantStore()

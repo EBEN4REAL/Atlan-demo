@@ -32,6 +32,7 @@
         />
         <span v-else>No Enum Selected</span>
     </ExplorerLayout>
+    <NoAcces v-else />
 </template>
 
 <script lang="ts">
@@ -46,6 +47,7 @@
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { useAccessStore } from '~/services/access/accessStore'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     export default defineComponent({
         components: {
@@ -55,6 +57,7 @@
             ExplorerLayout,
             SearchAndFilter,
             AtlanBtn,
+            NoAcces
         },
         setup() {
             useHead({

@@ -1,5 +1,5 @@
 <template>
-    <DefaultLayout>
+    <DefaultLayout v-if="createPermission" >
         <template #header>
             <div class="flex items-center pb-3 -mt-3 text-2xl text-gray">
                 <div class="flex mr-3 cursor-pointer" @click="routeToGroups">
@@ -102,6 +102,7 @@
             </a-form>
         </div>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
     import { useRouter } from 'vue-router'
@@ -120,6 +121,7 @@
     import UserList from '~/components/admin/groups/common/userList.vue'
     import whoami from '~/composables/user/whoami'
     import { useAccessStore } from '~/services/access/accessStore'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     interface Group {
         name: String
@@ -128,13 +130,14 @@
     }
     export default defineComponent({
         name: 'AddGroup',
-        components: { UserList, DefaultLayout },
+        components: { UserList, DefaultLayout, NoAcces },
         setup(props, context) {
             const router = useRouter()
             const createGroupLoading = ref(false)
             const isDefault = ref(false)
             const accessStore  = useAccessStore()
             const listPermission = accessStore.checkPermission('LIST_USERS')
+            const createPermission = accessStore.checkPermission('CREATE_GROUP')
             const group: UnwrapRef<Group> = reactive({
                 name: '',
                 description: '',
@@ -221,7 +224,8 @@
                 updateUserList,
                 isDefault,
                 routeToGroups,
-                listPermission
+                listPermission,
+                createPermission
             }
         },
         data() {

@@ -33,6 +33,7 @@
         </template>
         <div v-else>Empty state</div>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 
 <script lang="ts">
@@ -47,6 +48,7 @@
     import RequestListItem from './requestListItem.vue'
     import RequestFilters from './filters/requestFilters.vue'
     import RequestModal from './modal/requestDetailsBase.vue'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
     import { message } from 'ant-design-vue'
@@ -62,6 +64,7 @@
             RequestModal,
             RequestTypeTabs,
             DefaultLayout,
+            NoAcces
         },
         setup() {
             const accessStore = useAccessStore();

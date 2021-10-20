@@ -1,5 +1,6 @@
 <template>
     <DefaultLayout
+        v-if="permissions.list"
         title="Manage Groups"
         sub-title="Add, remove and manage their members"
     >
@@ -151,6 +152,7 @@
             </template>
         </a-table>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, watch } from 'vue'
@@ -164,12 +166,14 @@ import useGroups from '~/composables/group/useGroups'
 import GroupPreviewDrawer from './groupPreview/groupPreviewDrawer.vue'
 import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
 import { useAccessStore } from '~/services/access/accessStore'
+import NoAcces from '@/admin/common/noAccessPage.vue'
 
 export default defineComponent({
     components: {
         ErrorView,
         GroupPreviewDrawer,
         DefaultLayout,
+        NoAcces
     },
     setup(props, context) {
         const router = useRouter()

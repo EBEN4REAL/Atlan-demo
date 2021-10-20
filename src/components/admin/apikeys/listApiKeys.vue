@@ -129,6 +129,7 @@
             </a-modal>
         </div>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
     // Todo: Add createdBy user name for each API Key
@@ -139,6 +140,7 @@
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
 
+    import NoAcces from '@/admin/common/noAccessPage.vue'
     import ErrorView from '@common/error/index.vue'
     import DefaultLayout from '@/admin/defaultLayout.vue'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -147,11 +149,11 @@
     import { debounce } from '~/composables/utils/debounce'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useAccessStore } from '~/services/access/accessStore'
-
+    
     dayjs.extend(relativeTime)
 
     export default defineComponent({
-        components: { ErrorView, DefaultLayout },
+        components: { ErrorView, DefaultLayout, NoAcces },
         setup() {
             const keycloak: any = inject('$keycloak')
             const accessStore = useAccessStore()

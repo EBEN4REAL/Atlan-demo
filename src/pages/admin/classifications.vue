@@ -92,6 +92,7 @@
             </p>
         </a-modal>
     </ExplorerLayout>
+    <NoAcces v-else />
 </template>
 
 <script lang="ts">
@@ -119,6 +120,7 @@
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { useAccessStore } from '~/services/access/accessStore'
 
@@ -129,7 +131,7 @@
                 type: String as PropType<String>,
             },
         },
-        components: { AtlanBtn, ExplorerLayout, SearchAndFilter, ExplorerList },
+        components: { AtlanBtn, ExplorerLayout, SearchAndFilter, ExplorerList, NoAcces },
         setup(props) {
             const store = useClassificationStore()
             const accessStore  = useAccessStore();

@@ -48,6 +48,7 @@
             @clearNewBm="newBm = null"
         />
     </ExplorerLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
     // ? components
@@ -66,6 +67,7 @@
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
 
     import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     export default defineComponent({
         name: 'BusinessMetadata',
@@ -75,6 +77,7 @@
             ExplorerLayout,
             SearchAndFilter,
             AtlanBtn,
+            NoAcces
         },
         setup() {
             useHead({

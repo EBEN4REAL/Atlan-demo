@@ -319,6 +319,7 @@
             />
         </a-modal>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, watch } from 'vue'
@@ -341,6 +342,7 @@ import InviteUsers from './inviteUsers.vue'
 import useRoles from '~/composables/roles/useRoles'
 import { useTenantStore } from '~/services/keycloak/tenant/store'
 import { useAccessStore } from '~/services/access/accessStore'
+import NoAcces from '@/admin/common/noAccessPage.vue'
 
 export default defineComponent({
     components: {
@@ -350,6 +352,7 @@ export default defineComponent({
         Avatar,
         ErrorView,
         DefaultLayout,
+        NoAcces
     },
 
     setup() {

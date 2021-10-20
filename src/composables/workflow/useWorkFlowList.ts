@@ -44,22 +44,6 @@ export function useWorkflowSearchList(
     mutate()
   }
 
-  const transformFacets = (facetsFilters) => {
-    const output = []
-    return output
-  }
-
-  // transform Allfilters 
-  const transformToFilters = (AllFilters) => {
-    console.log('facetsFilters: ', AllFilters.facetsFilters)
-    const { facetsFilters, searchText, sortOrder } = AllFilters
-    const output = {}
-    if (searchText) output.name = { $ilike: `%${searchText}%` }
-    if (Object.keys(facetsFilters).length !== 0) output.$or = transformFacets(facetsFilters)
-    return output
-  }
-
-
   const filterList = (AllFilters) => {
     console.log('Tranformed: ', AllFilters);
 
@@ -115,7 +99,16 @@ export function useArchivedRunList(
 export function useWorkflowTemplates(
   immediate: boolean = true
 ) {
-  const params = ref({ limit: 10, offset: 0, labelSelector: "com.atlan.orchestration/verified=true" })
+  const params = ref(new URLSearchParams())
+  const filter = ref({})
+  // const sort = ref()
+  const limit = ref(10)
+  const offset = ref(0)
+  params.value.append('limit', limit.value.toString())
+  params.value.append('offset', offset.value.toString())
+  params.value.append('filter', JSON.stringify(filter.value))
+
+
   const { data, error, isLoading, mutate } =
     Workflows.getWorkflowTemplates({ immediate, options: {}, params })
 
@@ -137,8 +130,25 @@ export function useWorkflowTemplates(
     mutate()
   }
 
-  const filterList = (text) =>
-    workflowList.value.filter((wf) => wf.name.includes(text))
+  const filterList = (AllFilters) => {
+    console.log('Tranformed: ', AllFilters);
+
+    const { filter: theFilters, sort } = AllFilters
+    // rest list
+    workflowList.value = []
+    // reset offset 
+    offset.value = 0
+    params.value.set('offset', '0')
+
+    // set filter name && set filter
+    filter.value = theFilters
+    params.value.set('filter', JSON.stringify(filter.value,).replace(/\\/g, ""));
+
+    // set sorting
+    if (sort !== 'default' && sort) params.value.set('sort', sort);
+    // mutate
+    mutate()
+  };
 
   return { workflowList, loadMore, filter_record, totalCount, error, isLoading, filterList, mutate }
 }

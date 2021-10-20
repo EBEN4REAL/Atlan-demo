@@ -13,7 +13,7 @@
                     <th
                         v-for="(col, index) in tableColumns"
                         :key="index"
-                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border  border-gray-light"
+                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border border-gray-light"
                     >
                         <div class="flex">
                             <component
@@ -34,7 +34,7 @@
                     <td
                         v-for="(rowData, index) in row"
                         :key="index"
-                        class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
+                        class="px-4 py-2 text-xs text-gray-700 bg-white border border-gray-light"
                     >
                         <Tooltip
                             :tooltip-text="rowData"
@@ -49,14 +49,22 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, inject, computed } from 'vue'
+    import { defineComponent,
+        watch,
+        ref,
+        // inject,
+        // computed 
+    } from 'vue'
+    import { storeToRefs } from 'pinia'
 
     import { images, dataTypeList } from '~/constant/datatype'
     import Tooltip from '@/common/ellipsis/index.vue'
 
     // API
     import { useAPI } from '~/services/api/useAPI'
-    import HEKA_SERVICE_API from '~/services/heka/index'
+    // import HEKA_SERVICE_API from '~/services/heka/index'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: { Tooltip },
@@ -66,13 +74,16 @@
             const results = ref<any>([])
 
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
-
+            // const assetData = computed(() => assetDataInjection?.asset)
+            // store
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             const { connectionQualifiedName, databaseName, schemaName, name } =
-                { ...assetData.value.attributes }
+                { ...selectedAsset.value.attributes }
 
             const body = {
                 sql: `select * from ${name}`,

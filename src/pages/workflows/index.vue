@@ -25,14 +25,9 @@
                             :autofocus="true"
                             @change="handleSearchChange"
                         >
-                            <!-- <template #filter>
-                            <Preferences
-                                :default-projection="projection"
-                                @change="handleChangePreferences"
-                                @sort="handleChangeSort"
-                                @state="handleState"
-                            />
-                        </template> -->
+                            <template #filter>
+                                <Preferences @sort="handleChangeSort" />
+                            </template>
                             <!-- <template #buttonAggregation>
                         <span>({{ projection.length }})</span>
                     </template> -->
@@ -42,7 +37,7 @@
                         class="ml-2"
                         color="secondary"
                         padding="compact"
-                        @click="goToSetup"
+                        @click="$router.push(`/workflows/new`)"
                     >
                         <div class="flex items-center gap-2">
                             <AtlanIcon icon="Add" class="" />
@@ -63,14 +58,15 @@
                         class="w-2/5 m-auto mb-4"
                     />
                     <span class="text-gray-500">No Workflow found</span>
+                    <a-button @click="handleClearFiltersFromList"
+                        >Clear filters</a-button
+                    >
                 </div>
                 <WorkflowList
                     v-else
                     v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
-                    :list="
-                        queryText.length ? filterList(queryText) : workflowList
-                    "
+                    :list="workflowList"
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     @preview="handlePreview"
@@ -100,6 +96,7 @@
     import { serializeQuery, decodeQuery } from '~/utils/helper/routerHelper'
 
     import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
+    import { transformToFilters } from '~/components/workflows/discovery/filters/useFilterTransform'
 
     import { useWorkflowSearchList } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -113,6 +110,7 @@
             DiscoveryPreview,
             AtlanBtn,
             SearchAndFilter,
+            Preferences,
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -122,13 +120,13 @@
             const initialFilters: Record<string, any> = ref({
                 facetsFilters: {},
                 searchText: '',
-                selectedTab: 'Catalog',
                 sortOrder: 'default',
-                state: 'active',
                 ...decodeQuery(
                     Object.keys(router.currentRoute.value?.query)[0]
                 ),
             })
+
+            console.log('initialFilters: ', initialFilters.value)
 
             // workflow filter component ref
             const workflowFilterRef = ref()
@@ -151,7 +149,6 @@
             const limit = ref(20)
             const offset = ref(0)
             const sortOrder = ref('default')
-            const state = ref('active')
             const facets = computed(() => AllFilters.value?.facetsFilters)
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
@@ -163,12 +160,13 @@
                 totalCount,
                 loadMore,
                 mutate,
+                filter_record,
             } = useWorkflowSearchList(false)
 
-            if (!workflowList.value.length) mutate()
+            // if (!workflowList.value.length) mutate()
 
             const isLoadMore = computed(
-                () => totalCount.value > workflowList.value.length
+                () => filter_record.value > workflowList.value.length
             )
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
@@ -195,20 +193,35 @@
                 if (queryText.value) routerOptions.searchText = queryText.value
                 if (sortOrder.value !== 'default')
                     routerOptions.sortOrder = sortOrder.value
-                if (state.value !== 'active') routerOptions.state = state.value
 
                 const routerQuery = serializeQuery(routerOptions)
                 router.push(`/workflows?${routerQuery}`)
             }
 
+            const shootQuery = () => {
+                // console.log(filters.value)
+                console.log({ ...AllFilters.value.facetsFilters })
+
+                filterList(transformToFilters(AllFilters.value))
+            }
+            if (!workflowList.value.length) shootQuery()
+
             const handleSearchChange = useDebounceFn(() => {
                 // TODO use pagination and recall api
                 setRouterOptions()
-            }, 150)
+                shootQuery()
+            }, 600)
 
-            const updateQuery = () => {
-                // console.log(filters.value)
-                console.log({ ...AllFilters.value.facetsFilters })
+            const handleChangeSort = (payload: any) => {
+                console.log(payload)
+                AllFilters.value.sortOrder = payload
+                isAggregate.value = true
+                shootQuery()
+            }
+
+            const handleChangePreferences = (payload: any) => {
+                // console.log(payload)
+                // projection.value = payload
             }
 
             const handleFilterChange = (
@@ -220,7 +233,7 @@
                 filters.value = payload
                 offset.value = 0
                 isAggregate.value = true
-                updateQuery()
+                shootQuery()
                 setRouterOptions()
             }
 
@@ -237,14 +250,9 @@
                 workflowFilterRef.value?.resetAllFilters()
             }
 
-            const goToSetup = () => {
-                router.push(`/workflows/new`)
-            }
-
             return {
-                autoSelect,
-                goToSetup,
                 handleClearFiltersFromList,
+                autoSelect,
                 workflowFilterRef,
                 selected,
                 AllFilters,
@@ -260,9 +268,9 @@
                 setPlaceholder,
                 placeholderLabel,
                 filters,
-                filterList,
                 handleFilterChange,
                 handleFilterInit,
+                handleChangeSort,
             }
         },
         data() {

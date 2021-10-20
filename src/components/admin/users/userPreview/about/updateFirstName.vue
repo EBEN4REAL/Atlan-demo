@@ -2,7 +2,7 @@
     <div class>
         <div>
             <div class="flex flex-row items-center cursor-pointer group">
-                <p class="mb-0 text-gray">
+                <p class="mb-0 text-gray-500">
                     First Name
                     <fa
                         v-if="updateSuccess"
@@ -12,19 +12,7 @@
                 </p>
                 <p
                     v-if="!isUpdate && allowUpdate"
-                    class="
-                        mb-0
-                        ml-2
-                        text-xs
-                        leading-none
-                        transition
-                        duration-300
-                        ease-in-out
-                        delay-100
-                        opacity-0
-                        text-primary
-                        group-hover:opacity-100
-                    "
+                    class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0  text-primary group-hover:opacity-100"
                     @click="onUpdate"
                 >
                     edit

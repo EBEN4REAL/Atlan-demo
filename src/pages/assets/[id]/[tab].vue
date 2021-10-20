@@ -4,7 +4,7 @@
 
     <div v-else class="w-full h-full max-profile-width">
         <div class="flex flex-col">
-            <Header />
+            <Header :user-has-edit-permission="userHasEditPermission" />
             <div
                 v-if="data?.asset?.guid === '-1'"
                 style="height: calc(100vh - 170px)"
@@ -44,6 +44,7 @@
                                     refs[tab.id] = el
                                 }
                             "
+                            :user-has-edit-permission="userHasEditPermission"
                             class="bg-transparent"
                             @preview="handlePreview"
                         ></component>
@@ -87,8 +88,8 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        provide,
-        toRefs,
+        // provide
+        // toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -103,9 +104,9 @@
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useCheckAccess from '~/services/access/useCheckAccess'
-
+    import useDiscoveryStore from '~/store/discovery'
     // Constants
-    import { AssetTypeList } from '~/constant/assetType'
+    // import { AssetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         components: {
@@ -136,10 +137,11 @@
         emits: ['preview'],
         setup(props, context) {
             /** DATA */
+            const storeDiscovery = useDiscoveryStore()
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
-            const userHasEditPermission = ref<any>({})
+            const userHasEditPermission = ref<boolean>(true)
 
             const biTabs = [
                 {
@@ -253,7 +255,8 @@
 
             // handlePreview
             const handlePreview = (item) => {
-                context.emit('preview', item)
+              // context.emit('preview', item)
+              storeDiscovery.setSelectedAsset(item)
             }
 
             // fetch
@@ -269,12 +272,14 @@
                         if (data.value?.asset?.guid !== '-1') {
                             handlePreview(data.value?.asset)
                         }
-
                         const { data: userPermission } = evaluatePermissions(
                             data.value?.asset,
                             'ENTITY_UPDATE'
                         )
-                        userHasEditPermission.value = { userPermission }
+                        watch(userPermission, () => {
+                            userHasEditPermission.value =
+                                userPermission.value[0]?.allowed
+                        })
                     })
                 }
             }
@@ -300,7 +305,7 @@
             })
 
             /** PROVIDER */
-            provide('assetData', data.value)
+            // provide('assetData', data.value)
 
             // TODO: remove after fixing hierarchy bug
             // provide('parentForBIAsset', parentForBIAsset)

@@ -18,6 +18,7 @@ export function useLocalStorageSync() {
                 t.playground.resultsPane.result.isQueryRunning = ''
                 t.playground.resultsPane.result.executionTime = -1
                 t.playground.resultsPane.result.totalRowsCount = -1
+                t.playground.resultsPane.result.totalRowsCount = []
                 return t
             })
             localStorage.setItem(

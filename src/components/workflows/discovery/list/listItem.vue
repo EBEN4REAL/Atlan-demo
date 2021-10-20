@@ -44,7 +44,7 @@
                                 ? cssClasses?.textSize
                                 : 'text-xl'
                         "
-                        :to="`/workflows/${item.workflowtemplate.metadata.name}/monitor`"
+                        :to="`/workflows/${item.workflowtemplate.metadata.name}/setup`"
                         class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ item.workflowtemplate.metadata.name }}

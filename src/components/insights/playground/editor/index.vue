@@ -122,7 +122,7 @@
                                         v-else
                                         icon="CircleLoader"
                                         style="margin-right: 2.5px"
-                                        class="w-5 h-5 text-white animate-spin"
+                                        class="w-4 h-4 text-white animate-spin"
                                     ></AtlanIcon>
 
                                     <span

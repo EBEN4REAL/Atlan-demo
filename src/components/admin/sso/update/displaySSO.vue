@@ -3,84 +3,89 @@
         <span class="block pb-3 mb-10 text-3xl font-medium">
             Single Sign On
         </span>
-        <div class="flex items-center justify-between mb-8">
-            <span class="flex items-center">
-                <img
-                    v-if="!provider.isCustomSaml"
-                    :src="provider.image"
-                    class="w-6 mr-2"
-                    alt="logo"
-                />
-                <fa
-                    v-else
-                    icon="fas key"
-                    class="p-1 mr-2 text-3xl bg-yellow-400 rounded"
-                />
-                <span class="text-2xl font-medium">{{ provider.title }}</span>
-            </span>
-            <router-link :to="`/admin/sso/config/${providerDetails.alias}`">
-                <a-button>Configure</a-button>
-            </router-link>
-        </div>
-        <a-divider />
-        <a-form
-            label-align="left"
-            :label-col="{ span: 16 }"
-            :wrapper-col="{ span: 2, offset: 6 }"
-            :model="ssoForm"
-            :colon="false"
-        >
-            <a-form-item class="mb-12">
-                <template #label>
-                    <div class="flex flex-col mb-2 h-36">
-                        <span class="mb-2 text-lg font-normal">Enabled:</span>
-                        <span class="mb-1 text-gray-500"
-                            >This allows user to login with SSO<br />
-                            They will be able to login via email.
-                        </span>
-                    </div>
-                </template>
-                <a-switch v-model:checked="ssoForm.enabled" />
-            </a-form-item>
-
-            <a-form-item>
-                <template #label>
-                    <div class="flex flex-col h-48 mb-2">
-                        <div class="mb-2 text-lg font-normal">Enforce SSO:</div>
-                        <div class="mb-4 text-gray-500">
-                            User will be automatically redirected to configured
-                            SSO
-                        </div>
-                    </div>
-                </template>
-                <a-switch
-                    v-model:checked="ssoForm.enforceSSO"
-                    :disabled="!ssoForm.enabled"
-                />
-            </a-form-item>
-            <div class="flex justify-between mb-2 mt-14">
-                <a-button
-                    type="danger"
-                    ghost
-                    class="text-red-500"
-                    @click="showDeleteSSOModal"
-                >
-                    <div class="flex items-center">
-                        <AtlanIcon icon="Delete" class="mr-2" />
-                        <div>Delete</div>
-                    </div></a-button
-                >
-
-                <a-button
-                    class="block ml-auto"
-                    type="primary"
-                    :disabled="!isChangesDone"
-                    :loading="formLoading"
-                    @click="submitForm"
-                    >Update</a-button
-                >
+        <div class="w-3/5">
+            <div class="flex items-center justify-between mb-8">
+                <span class="flex items-center">
+                    <img
+                        v-if="!provider.isCustomSaml"
+                        :src="provider.image"
+                        class="w-6 mr-2"
+                        alt="logo"
+                    />
+                    <fa
+                        v-else
+                        icon="fas key"
+                        class="p-1 mr-2 text-3xl bg-yellow-400 rounded"
+                    />
+                    <span class="text-2xl font-medium">{{
+                        provider.title
+                    }}</span>
+                </span>
+                <router-link :to="`/admin/sso/config/${providerDetails.alias}`">
+                    <a-button>Configure</a-button>
+                </router-link>
             </div>
-        </a-form>
+            <a-divider />
+            <a-form
+                label-align="left"
+                :label-col="{ span: 15 }"
+                :wrapper-col="{ offset: 6 }"
+                :model="ssoForm"
+                :colon="false"
+            >
+                <a-form-item class="mb-12">
+                    <template #label>
+                        <div class="flex flex-col mb-2 h-36">
+                            <span class="mb-2 font-bold">Enabled</span>
+                            <span class="mb-1 text-gray-500"
+                                >This allows user to login with SSO<br />
+                                They will be able to login via email.
+                            </span>
+                        </div>
+                    </template>
+                    <a-switch v-model:checked="ssoForm.enabled" class="ml-5" />
+                </a-form-item>
+
+                <a-form-item>
+                    <template #label>
+                        <div class="flex flex-col h-48 mb-2">
+                            <div class="mb-2 font-bold">Enforce SSO</div>
+                            <div class="mb-4 text-gray-500">
+                                User will be automatically redirected to
+                                configured SSO
+                            </div>
+                        </div>
+                    </template>
+                    <a-switch
+                        v-model:checked="ssoForm.enforceSSO"
+                        :disabled="!ssoForm.enabled"
+                        class="ml-5"
+                    />
+                </a-form-item>
+                <div class="flex justify-between mb-2 mt-14">
+                    <a-button
+                        type="danger"
+                        ghost
+                        class="text-red-500"
+                        @click="showDeleteSSOModal"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Delete" class="mr-2" />
+                            <div>Delete</div>
+                        </div></a-button
+                    >
+
+                    <a-button
+                        class="block ml-auto"
+                        type="primary"
+                        :disabled="!isChangesDone"
+                        :loading="formLoading"
+                        @click="submitForm"
+                        >Update</a-button
+                    >
+                </div>
+            </a-form>
+        </div>
         <a-modal
             :visible="showDeleteModal"
             title="Delete SSO Provider"

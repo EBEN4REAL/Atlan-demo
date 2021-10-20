@@ -4,7 +4,7 @@
             v-if="identityProviders.length"
             :provider-details="identityProviders[0] || {}"
         />
-        <div class="w-4/5 p-12" v-else>
+        <div class="p-12" v-else>
             <EmptySSOScreen />
         </div>
     </div>

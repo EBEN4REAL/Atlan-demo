@@ -1,6 +1,6 @@
 <template>
     <div class="px-12 mx-auto my-8 text-gray-600 bg-white rounded">
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-6">
             <div class="flex items-center text-2xl">
                 <img
                     v-if="!provider.isCustomSaml"
@@ -19,7 +19,7 @@
                 <fa icon="fal times" class="text-xl text-gray-600"></fa>
             </a-button>
         </div>
-        <a-divider />
+
         <span v-if="provider.isCustomSaml" class="block my-2">
             Atlan SSO work as a SAML 2.0 compliant service provider to your
             external identity provider (IdP).

@@ -3,7 +3,7 @@ import { CollapseArray } from '~/types'
 export const List: CollapseArray = [
   {
     id: 'workflowType',
-    label: 'Workflow Type',
+    label: 'Workflow Source',
     component: 'workflowType',
     overallCondition: 'OR',
     filters: [

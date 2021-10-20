@@ -15,7 +15,7 @@
                     ></a-input-search>
                 </div>
                 <router-link to="/admin/groups/new">
-                    <a-button class="rounded-md" type="primary"
+                    <a-button v-if="permissions.create" class="rounded-md" type="primary"
                         >New Group</a-button
                     >
                 </router-link>
@@ -49,7 +49,7 @@
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :table-layout="'fixed'"
             :data-source="groupList"
-            :columns="columns"
+            :columns="columns.filter((col) => (col.title !== 'Actions' || permissions.delete || permissions.update))"
             :row-key="(group) => group.id"
             :pagination="pagination"
             :loading="
@@ -94,8 +94,9 @@
                             <fa icon="fal cog" />
                         </a>
                         <template #overlay>
-                            <a-menu>
+                            <a-menu v-if="permissions.delete && permissions.update">
                                 <a-menu-item
+                                    v-if="permissions.add"
                                     key="0"
                                     class="flex"
                                     @click="handleAddMembers(group)"
@@ -105,7 +106,7 @@
                                         >Add Members
                                     </div>
                                 </a-menu-item>
-                                <a-menu-item key="1">
+                                <a-menu-item  v-if="permissions.udpate" key="1">
                                     <div class="flex">
                                         <div v-if="markAsDefaultLoading">
                                             <fa
@@ -124,6 +125,7 @@
                                     </div>
                                 </a-menu-item>
                                 <a-menu-item
+                                    v-if="permissions.delete"
                                     key="2"
                                     @click="() => handleDeleteGroup(group.id)"
                                 >
@@ -156,11 +158,12 @@ import ErrorView from '@common/error/index.vue'
 import { message } from 'ant-design-vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-import { Group } from '@services/keycloak/groups/groups_api'
+import { Group } from '~/services/keycloak/groups/groups_api'
 import DefaultLayout from '@/admin/defaultLayout.vue'
 import useGroups from '~/composables/group/useGroups'
 import GroupPreviewDrawer from './groupPreview/groupPreviewDrawer.vue'
 import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
+import { useAccessStore } from '~/services/access/accessStore'
 
 export default defineComponent({
     components: {
@@ -175,6 +178,15 @@ export default defineComponent({
         const markAsDefaultLoading = ref(false)
         const deleteGroupLoading = ref(false)
         const showActionsDropdown = ref(false)
+
+        const accessStore = useAccessStore()
+        const permissions = computed(() => ({
+            list: accessStore.checkPermission('LIST_GROUPS'),
+            add: accessStore.checkPermission('ADD_USER_GROUP'),
+            remove: accessStore.checkPermission('REMOVE_USER_GROUP'),
+            create: accessStore.checkPermission('CREATE_GROUP'),
+            update: accessStore.checkPermission('UPDATE_GROUP'),
+        }))
 
         const selectedGroupId = ref('')
         const groupListAPIParams = reactive({
@@ -353,6 +365,7 @@ export default defineComponent({
             markAsDefaultLoading,
             deleteGroupLoading,
             showActionsDropdown,
+            permissions
         }
     },
     data() {

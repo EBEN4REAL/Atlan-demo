@@ -20,7 +20,12 @@
             class="p-2 overflow-y-auto border"
             style="height: calc(100vh - 3.5rem)"
         >
-            <formGen v-if="view" :config="JSON.parse(data)" :error="error" />
+            <formGen
+                v-if="view"
+                :config="JSON.parse(data)"
+                :error="error"
+                :globalValues="tempGlobal"
+            />
         </div>
     </div>
 </template>
@@ -56,7 +61,14 @@
                 }
             }
 
-            return { handleChange, data, error, view }
+            const tempGlobal = ref({
+                global_1: '1111111',
+                global_3: {
+                    global_2: '000000',
+                },
+            })
+
+            return { tempGlobal, handleChange, data, error, view }
         },
     })
 </script>

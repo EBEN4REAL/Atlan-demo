@@ -35,4 +35,12 @@ export const List: any = [
         popoverText: 'All assets from BI integrations',
         description: 'Visualizations',
     },
+    {
+        id: 'businessTerms',
+        include: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory',],
+        label: 'Business Terms',
+        description: 'Business Terms',
+        popoverText: 'Business Terms & Categories',
+    },
+
 ]

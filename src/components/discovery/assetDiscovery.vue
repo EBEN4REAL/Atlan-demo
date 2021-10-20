@@ -26,7 +26,10 @@
                         @change="handleSearchChange"
                     >
                         <template #categoryFilter>
-                            <AssetCategoryFilter />
+                            <AssetCategoryFilter
+                                :data="assetCategoryFilter"
+                                @refresh="handleCategoryChange"
+                            />
                         </template>
                         <template #filter>
                             <Preferences
@@ -168,6 +171,9 @@
             const sortOrder = ref('default')
             const state = ref('active')
             const facets = ref({})
+            const assetCategoryFilter = ref({
+                checked: undefined,
+            })
 
             // Initialization via IIFE
             ;(() => {
@@ -185,7 +191,7 @@
             const initialTabs: Ref<string[]> = computed(() =>
                 useFilteredTabs({
                     connector: facets.value?.connector,
-                    category: facets.value?.assetCategory?.checked,
+                    category: assetCategoryFilter.value?.checked,
                 })
             )
 
@@ -384,6 +390,14 @@
                 updateBody()
             }
 
+            const handleCategoryChange = (
+                filterMapData: Record<string, any>
+            ) => {
+                /* offset.value = 0
+                isAggregate.value = true
+                updateBody()
+                setRouterOptions() */
+            }
             const handleFilterChange = (filterMapData: Record<string, any>) => {
                 facets.value = filterMapData
                 offset.value = 0
@@ -427,6 +441,7 @@
             return {
                 autoSelect,
                 handleClearFiltersFromList,
+                handleCategoryChange,
                 assetFilterRef,
                 initialTabs,
                 searchScoreList,

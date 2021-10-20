@@ -1,7 +1,9 @@
 <template>
-    <a-dropdown :trigger="['click']">
-        <a-button @click.prevent>
-            All
+    <a-dropdown :trigger="['click']" v-model:visible="dropdownVisible">
+        <a-button
+            @click.prevent
+            class="flex items-center justify-between w-3/12 h-full p-3 bg-gray-100 border-none  category-selector"
+            ><span class="text-xs text-gray-700"> All</span>
             <AtlanIcon
                 icon="ChevronDown"
                 class="ml-3 text-gray-500 transition-transform duration-300 transform "
@@ -10,7 +12,7 @@
         <template #overlay>
             <a-checkbox-group
                 v-model:value="data.checked"
-                class="w-full py-1 pb-6"
+                class="z-10 w-full p-2 bg-white shadow"
                 @change="handleChange"
             >
                 <div class="flex flex-col w-full gap-y-3">
@@ -46,22 +48,28 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import { List } from '~/constant/assetCategory'
-    import { Collapse } from '~/types'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         props: {
             data: {
                 type: Object,
-                required: true,
+                required: false,
+                default() {
+                    return {}
+                },
             },
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const dropdownVisible = ref(false)
+
             const list = computed(() => List)
             const { data } = toRefs(props)
+
             const handleChange = () => {
                 emit('change')
+                dropdownVisible.value = false
                 useAddEvent('discovery', 'facet', 'changed', {
                     filter_type: 'category',
                     count: data.value?.checked?.length,
@@ -71,13 +79,14 @@
                 data,
                 list,
                 handleChange,
+                dropdownVisible,
             }
         },
     })
 </script>
 
 <style scoped>
-    :global(.ant-tooltip-arrow) {
-        display: none;
+    .category-selector {
+        max-width: 150px;
     }
 </style>

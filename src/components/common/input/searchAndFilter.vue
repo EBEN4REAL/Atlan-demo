@@ -1,44 +1,56 @@
 <template>
     <div
-        class="flex items-center justify-between py-1 transition duration-300  searchbar"
+        class="flex items-center transition duration-300 searchbar"
         :class="size"
     >
         <slot name="categoryFilter" />
-        <AtlanIcon icon="Search" class="flex-none pl-2 pr-1 text-gray-500" />
-        <input
-            ref="searchBar"
-            :placeholder="placeholder"
-            v-model="value"
-            type="text"
-            class="flex-1 text-sm bg-transparent focus:outline-none"
-            @keyup.esc="$event.target.blur()"
-        />
-        <div class="flex-none h-7 w-7">
-            <button v-if="value?.length" class="text-gray-500 hover:text-gray">
-                <AtlanIcon
-                    icon="Cancel"
-                    class="h-3 m-2"
-                    @click="clearInput"
-                    @keyup.enter="clearInput"
-                />
-            </button>
-        </div>
+        <div class="flex items-center justify-between flex-grow py-1">
+            <AtlanIcon
+                icon="Search"
+                class="flex-none pl-2 pr-1 text-gray-500"
+            />
+            <input
+                ref="searchBar"
+                :placeholder="placeholder"
+                v-model="value"
+                type="text"
+                class="flex-1 text-sm bg-transparent focus:outline-none"
+                @keyup.esc="$event.target.blur()"
+            />
+            <div class="flex-none h-7 w-7">
+                <button
+                    v-if="value?.length"
+                    class="text-gray-500 hover:text-gray"
+                >
+                    <AtlanIcon
+                        icon="Cancel"
+                        class="h-3 m-2"
+                        @click="clearInput"
+                        @keyup.enter="clearInput"
+                    />
+                </button>
+            </div>
 
-        <a-popover v-if="$slots.filter" trigger="click" placement="bottomRight">
-            <template #content>
-                <slot name="filter" />
-            </template>
-
-            <button
-                class="p-1 mr-2 transition-colors rounded hover:bg-gray-light"
+            <a-popover
+                v-if="$slots.filter"
+                trigger="click"
+                placement="bottomRight"
             >
-                <AtlanIcon
-                    :icon="dot ? 'FilterDot' : 'Filter'"
-                    class="w-4 h-4"
-                />
-                <slot name="buttonAggregation" />
-            </button>
-        </a-popover>
+                <template #content>
+                    <slot name="filter" />
+                </template>
+
+                <button
+                    class="p-1 mr-2 transition-colors rounded  hover:bg-gray-light"
+                >
+                    <AtlanIcon
+                        :icon="dot ? 'FilterDot' : 'Filter'"
+                        class="w-4 h-4"
+                    />
+                    <slot name="buttonAggregation" />
+                </button>
+            </a-popover>
+        </div>
     </div>
 </template>
 

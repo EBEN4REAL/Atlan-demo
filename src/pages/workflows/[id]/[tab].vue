@@ -213,7 +213,7 @@
                 mutate()
 
                 watch(response, (v) => {
-                    data.value.asset = v
+                    data.value.asset = v?.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
                     handlePreview(data.value?.asset, null)

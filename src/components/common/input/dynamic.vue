@@ -96,6 +96,7 @@
         :load-data="onLoadData"
         :disabled="letAsyncSelectDisabled || disabled"
         @change="handleSelect"
+        treeNodeLabelProp="key"
         @click="
             () =>
                 handleDropdownVisibleChange(

@@ -50,7 +50,7 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, value
         try {
             const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body })
             // eslint-disable-next-line no-param-reassign // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
-            n.dataRef.children = [...getData(response)].map(r => ({ pid: n.value, title: r.label, isLeaf: true, key: `${n.value}-${r.value}`, value: `${n.value}-${r.value}`, val: r.value }));
+            n.dataRef.children = [...getData(response)].map(r => ({ pid: n.value, title: r.label, isLeaf: true, key: `${n.value}/${r.value}`, value: `${n.value}/${r.value}`, val: r.value }));
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig
             errorM.value = errorMessage || errorLabelPath && getStringFromPath(e, errorLabelPath) || 'Some error occured'

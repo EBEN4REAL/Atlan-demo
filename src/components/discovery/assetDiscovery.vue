@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300 facets"
         >
             <AssetFilters
                 :ref="
@@ -77,9 +77,8 @@
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     :typename="assetTypeListString"
-                    @preview="handlePreview"
                     @loadMore="loadMore"
-                ></AssetList>
+                />
             </div>
         </div>
     </div>
@@ -165,8 +164,6 @@
             const sortOrder = ref('default')
             const state = ref('active')
             const facets = ref({})
-
-            const termNames = ref<string[]>([])
 
             // Initialization via IIFE
             ;(() => {
@@ -391,9 +388,9 @@
                 setRouterOptions()
             }
 
-            const handlePreview = (item) => {
-                emit('preview', item)
-            }
+            // const handlePreview = (item) => {
+            //     emit('preview', item)
+            // }
             const loadMore = () => {
                 autoSelect.value = false
                 offset.value += limit.value
@@ -441,7 +438,7 @@
                 handleChangeSort,
                 isLoading,
                 handleFilterChange,
-                handlePreview,
+                // handlePreview,
                 queryText,
                 facets,
                 totalCount,
@@ -456,7 +453,6 @@
                 setPlaceholder,
                 placeholderLabel,
                 assetTypeListString,
-                termNames,
             }
         },
         data() {

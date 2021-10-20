@@ -1,30 +1,86 @@
 [
     {
-        "label": "Connection",
-        "id": "connection-guid",
+        "type": "temnplate",
+        "template": "{{description}}"
+    },
+    {
         "type": "asyncSelect",
-        "isVisible": true,
+        "label": "Select or Create Credentials",
+        "id": "credential",
+        "allowIncludeAll": true,
+        "includeAllVal": "{}",
         "requestConfig": {
-            "url": "https://{{domain}}/api/meta/search/basic",
-            "method": "POST",
+            "url": "http://{{domain}}/api/service/credentials?filter={\"connector\": \"snowflake\"}",
+            "method": "GET",
             "params": {},
             "addFormValues": [],
-            "body": {
-                "excludeDeletedEntities": true,
-                "includeSubClassifications": false,
-                "includeSubTypes": false,
-                "includeClassificationAttributes": false,
-                "limit": 100,
-                "offset": 0,
-                "typeName": "Connection",
-                "classification": null,
-                "termName": null
-            }
+            "body": {}
         },
         "responseConfig": {
-            "rootPath": ".entities",
-            "labelPath": ".displayText",
-            "valuePath": ".guid"
+            "rootPath": ".records",
+            "labelPath": ".name",
+            "valuePath": ".id"
+        },
+        "saveVariables": {
+            "host": ".host",
+            "description": ".description",
+            "guid": ".id"
+        },
+        "allowCreate": true,
+        "rules": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": "Credentials are mandatory to be selected"
+            }
+        ],
+        "createNewLabel": "Create new credential",
+        "getFormConfig": {
+            "requestConfig": {
+                "url": "http://{{domain}}/api/service/configmap?labelSelector=com.atlan.orchestration.credential/source=snowflake,com.atlan.orchestration.credential/version=1",
+                "method": "GET",
+                "params": {},
+                "body": {}
+            },
+            "rootPath": ".items[0].data.uiConfig"
+        }
+    },
+    {
+        "type": "asyncTreeSelect",
+        "stringifyValue": true,
+        "id": "include-filter",
+        "label": "Include Databases/Schemas",
+        "requestConfig": {
+            "url": "http://{{domain}}/api/sql/metadata/databases",
+            "method": "POST",
+            "params": {
+                "guid": "{{.guid}}"
+            },
+            "form": {},
+            "addFormValues": []
+        },
+        "responseConfig": {
+            "rootPath": ".results",
+            "labelPath": "{{.TABLE_CATALOG}}",
+            "valuePath": ".TABLE_CATALOG"
+        },
+        "requestConfig_2": {
+            "url": "http://{{domain}}/api/sql/metadata/schemas/{{parent}}",
+            "method": "POST",
+            "params": {
+                "guid": "{{.credential}}"
+            },
+            "addFormValues": [],
+            "body": {
+                "schemaExcludePattern": [
+                    "INFORMATION_SCHEMA"
+                ]
+            }
+        },
+        "responseConfig_2": {
+            "rootPath": ".results",
+            "labelPath": "{{.TABLE_SCHEM}}",
+            "valuePath": ".TABLE_SCHEM"
         }
     }
 ]

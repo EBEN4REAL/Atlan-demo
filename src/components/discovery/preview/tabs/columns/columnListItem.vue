@@ -32,7 +32,11 @@
         </div> -->
                 </div>
             </ColumnInfoCard>
-            <Description :selected-asset="asset" :using-in-info="false" />
+            <Description
+                :selected-asset="asset"
+                :using-in-info="false"
+                :edit-permission="userHasEditPermission"
+            />
             <ScrollStrip v-if="asset.classifications">
                 <Pill
                     v-for="clsf in asset.classifications"
@@ -56,7 +60,10 @@
         >
             <AtlanIcon icon="KebabMenu" class="-mx-1"></AtlanIcon>
         </AtlanBtn> -->
-        <ColumnListMenu :asset="asset" />
+        <ColumnListMenu
+            :asset="asset"
+            :edit-permission="userHasEditPermission"
+        />
     </div>
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
@@ -83,7 +90,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import Description from '@common/sidebar/description.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -93,6 +100,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import ScrollStrip from '@/UI/scrollStrip.vue'
+    import useCheckAccess from '~/services/access/useCheckAccess'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -114,9 +122,18 @@
         emits: ['assetMutation'],
 
         setup(props, { emit }) {
+            const { asset } = toRefs(props)
+
             const { dataTypeImage } = useAssetInfo()
 
             const showColumnSidebar = ref<boolean>(false)
+            const userHasEditPermission = ref<boolean>(true)
+
+            const { evaluatePermissions } = useCheckAccess()
+            const { data: userPermission } = evaluatePermissions(
+                asset.value,
+                'ENTITY_UPDATE'
+            )
 
             const handleCloseColumnSidebar = () => {
                 showColumnSidebar.value = false
@@ -125,11 +142,16 @@
                 emit('assetMutation', updatedAsset)
             }
 
+            watch(userPermission, () => {
+                userHasEditPermission.value = userPermission.value[0]?.allowed
+            })
+
             return {
                 dataTypeImage,
                 handleCloseColumnSidebar,
                 showColumnSidebar,
                 propagateToColumnList,
+                userHasEditPermission,
             }
         },
     })

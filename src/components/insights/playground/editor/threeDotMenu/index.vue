@@ -28,18 +28,21 @@
                                 class="flex items-center justify-between w-full mr-2 "
                             >
                                 <div
-                                    class="flex items-center justify-between w-full "
+                                    class="flex items-center justify-between w-full text-gray-500 "
                                 >
-                                    <span>Themes</span>
+                                    <span class="text-gray-700">Themes</span>
                                     <span>{{
                                         themeAlias[editorConfig.theme]
                                     }}</span>
                                 </div>
-                                <AtlanIcon icon="ChevronRight" class="ml-2" />
+                                <AtlanIcon
+                                    icon="ChevronRight"
+                                    class="ml-2 text-gray-500"
+                                />
                             </div>
                         </template>
                         <template #expandIcon />
-                        <div class="w-28">
+                        <div class="text-gray-700 w-28">
                             <a-menu-item
                                 key="vs"
                                 class="text-sm"
@@ -93,16 +96,21 @@
                                 class="flex items-center justify-between w-full mr-2 "
                             >
                                 <div
-                                    class="flex items-center justify-between w-full "
+                                    class="flex items-center justify-between w-full text-gray-500 "
                                 >
-                                    <span>Tab Spacing</span>
+                                    <span class="text-gray-700"
+                                        >Tab Spacing</span
+                                    >
                                     <span>{{ editorConfig.tabSpace }}</span>
                                 </div>
-                                <AtlanIcon icon="ChevronRight" class="ml-2" />
+                                <AtlanIcon
+                                    icon="ChevronRight"
+                                    class="ml-2 text-gray-500"
+                                />
                             </div>
                         </template>
                         <template #expandIcon />
-                        <div class="w-28">
+                        <div class="text-gray-700 w-28">
                             <a-menu-item
                                 key="2"
                                 class="text-sm"
@@ -158,22 +166,25 @@
                     </a-sub-menu>
                     <!-- ------------------------------- -->
                     <!-- Font size -->
-                    <a-sub-menu key="fontsize" class="">
+                    <a-sub-menu key="fontsize" class="text-gray-500">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 "
+                                class="flex items-center justify-between w-full mr-2 text-gray-500 "
                             >
                                 <div
                                     class="flex items-center justify-between w-full "
                                 >
-                                    <span>Font size</span>
+                                    <span class="text-gray-700">Font size</span>
                                     <span>{{ editorConfig.fontSize }}</span>
                                 </div>
-                                <AtlanIcon icon="ChevronRight" class="ml-2" />
+                                <AtlanIcon
+                                    icon="ChevronRight"
+                                    class="ml-2 text-gray-500"
+                                />
                             </div>
                         </template>
                         <template #expandIcon />
-                        <div class="w-28">
+                        <div class="text-gray-700 w-28">
                             <a-menu-item
                                 key="12"
                                 class="text-sm"
@@ -248,12 +259,17 @@
                         <a-menu-item>Sans serif</a-menu-item>
                     </a-sub-menu> -->
                     <hr />
-                    <a-menu-item @click="duplicateQuery"
-                        >Duplicate query</a-menu-item
-                    >
-                    <a-menu-item>Edit saved query</a-menu-item>
-                    <a-menu-item>Delete</a-menu-item>
-                    <hr />
+                    <!-- Show these options when query is saved -->
+                    <div v-if="activeInlineTab?.queryId" class="text-gray-700">
+                        <a-menu-item @click="duplicateQuery"
+                            >Duplicate query</a-menu-item
+                        >
+                        <a-menu-item>Edit saved query</a-menu-item>
+                        <a-menu-item class="text-red-600"
+                            >Delete query</a-menu-item
+                        >
+                        <hr />
+                    </div>
                     <a-menu-item>keyboard shortcuts</a-menu-item>
                 </a-menu>
             </template>
@@ -360,6 +376,7 @@
             }
 
             return {
+                activeInlineTab,
                 duplicateQuery,
                 fontSizeChange,
                 isThisFontSizeActive,

@@ -7,6 +7,7 @@
                     :is-sidebar-active="showNavbar"
                     @change="handleChange"
                     @toggleNavbar="handleToggleNavbar"
+                    @openNavbar="showNavbar = true"
                 />
             </div>
         </a-layout-header>
@@ -36,7 +37,11 @@
                 <div v-else style="min-width: 264px">
                     <SidePanel :page="activeKey[0]" @change="handleChange" />
                 </div>
-                <div class="w-full" @click="handleClick">
+                <div
+                    class="w-full"
+                    @click="handleClick"
+                    @mouseover="showNavbar = false"
+                >
                     <router-view />
                 </div>
             </a-layout-content>

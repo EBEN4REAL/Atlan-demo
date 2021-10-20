@@ -15,13 +15,13 @@
                 />
 
                 <div class="flex flex-col ml-2">
-                    <div class="text-base text-gray-700 capitalize">
+                    <div class="text-sm text-gray-700 capitalize">
                         {{ name }}
                     </div>
-                    <div class="text-sm text-gray-500">{{ username }}</div>
+                    <div class="text-xs text-gray-500">{{ username }}</div>
                 </div>
             </div>
-            <AtlanIcon class="h-3 ml-2" icon="ChevronDown" />
+            <AtlanIcon class="h-3 ml-2 cursor-pointer" icon="ChevronDown" />
         </div>
         <!-- <div
             class="flex items-center px-2 py-1 transition-colors duration-300 border border-transparent rounded-full hover:border-gray-300"

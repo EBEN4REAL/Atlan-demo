@@ -1,35 +1,30 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="
-                flex flex-col
-                h-full
-                bg-white
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
         >
             <AtlanBtn
                 class="m-2"
                 size="sm"
                 color="secondary"
                 padding="compact"
-                @click="goToWorkflow"
+                @click="$router.push(`/workflows`)"
             >
                 <div class="flex items-center gap-2">
                     <div>Back to Workflows</div>
                 </div>
             </AtlanBtn>
-            <!-- <WorkflowFilters
+            <WorkflowFilters
                 :ref="
                     (el) => {
                         workflowFilterRef = el
                     }
                 "
+                :filters-list="listOfFilters"
                 :initial-filters="AllFilters"
                 @refresh="handleFilterChange"
                 @initialize="handleFilterInit"
-            ></WorkflowFilters> -->
+            ></WorkflowFilters>
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
@@ -42,14 +37,9 @@
                         :autofocus="true"
                         @change="handleSearchChange"
                     >
-                        <!-- <template #filter>
-                            <Preferences
-                                :default-projection="projection"
-                                @change="handleChangePreferences"
-                                @sort="handleChangeSort"
-                                @state="handleState"
-                            />
-                        </template> -->
+                        <template #filter>
+                            <Preferences @sort="handleChangeSort" />
+                        </template>
                         <!-- <template #buttonAggregation>
                         <span>({{ projection.length }})</span>
                     </template> -->
@@ -138,9 +128,12 @@
     import { useRouter } from 'vue-router'
     import emptyScreen from '~/assets/images/empty_search.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import Preferences from '@/workflows/new/list/preference.vue'
     import WorkflowList from '@/workflows/new/list/workflowList.vue'
-    import WorkflowFilters from '@/workflows/new/filters/workflowFilters.vue'
+
+    // sharing discover components
+    import Preferences from '@/workflows/discovery/list/preference.vue'
+    import WorkflowFilters from '@/workflows/discovery/filters/workflowFilters.vue'
+    import { List as listOfFilters } from '@/workflows/new/filters/filters' // own filter list
 
     import { serializeQuery, decodeQuery } from '~/utils/helper/routerHelper'
 
@@ -235,11 +228,6 @@
                 return placeholder
             })
 
-            function setPlaceholder(label: string, type: string) {
-                placeholderLabel.value[type] = label
-                if (type === 'connector') placeholderLabel.value.asset = ''
-            }
-
             // FIXME
             const setRouterOptions = () => {
                 const routerOptions: Record<string, any> = {
@@ -254,10 +242,19 @@
                 router.push(`/workflows/new?${routerQuery}`)
             }
 
+            const shootQuery = () => {
+                // console.log(filters.value)
+                console.log({ ...AllFilters.value.facetsFilters })
+
+                // filterList(transformToFilters(AllFilters.value))
+            }
+            if (!workflowList.value.length) shootQuery()
+
             const handleSearchChange = useDebounceFn(() => {
                 // TODO use pagination and recall api
                 setRouterOptions()
-            }, 150)
+                shootQuery()
+            }, 600)
 
             const handlePreview = (item) => {
                 selectedItemId.value = item.workflowtemplate.metadata.uid
@@ -267,10 +264,6 @@
             const handleClearFiltersFromList = () => {
                 queryText.value = ''
                 workflowFilterRef.value?.resetAllFilters()
-            }
-
-            const goToWorkflow = () => {
-                router.push(`/workflows`)
             }
 
             return {
@@ -288,12 +281,11 @@
                 queryText,
                 isLoading,
                 dynamicSearchPlaceholder,
-                setPlaceholder,
                 placeholderLabel,
                 filters,
                 filterList,
-                goToWorkflow,
                 selectedItemId,
+                listOfFilters,
             }
         },
         data() {

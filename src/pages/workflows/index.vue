@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
             <WorkflowFilters
                 :ref="
@@ -180,11 +180,6 @@
                 return placeholder
             })
 
-            function setPlaceholder(label: string, type: string) {
-                placeholderLabel.value[type] = label
-                if (type === 'connector') placeholderLabel.value.asset = ''
-            }
-
             // FIXME
             const setRouterOptions = () => {
                 const routerOptions: Record<string, any> = {
@@ -265,7 +260,6 @@
                 queryText,
                 isLoading,
                 dynamicSearchPlaceholder,
-                setPlaceholder,
                 placeholderLabel,
                 filters,
                 handleFilterChange,

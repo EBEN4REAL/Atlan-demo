@@ -106,7 +106,7 @@
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as WorkflowCategoryList } from '~/constant/workflowCategory'
     import { WorkflowTypeList } from '~/constant/workflowTypes'
-    import { List } from './filters'
+    import { List as defaultfiltersList } from './filters'
     import useFilterPayload from './useFilterPayload'
     import useFilterUtils from './useFilterUtils'
 
@@ -150,16 +150,16 @@
             const dirtyTimestamp = ref('dirty_')
 
             /**
-             * @desc combines static List with mapped BM object that has filter support
+             * @desc combines static defaultfiltersList with mapped BM object that has filter support
              * */
             const dynamicList = computed(() => {
                 if (props.filtersList?.length > 0) {
-                    const arr = List.filter((el) =>
+                    const arr = defaultfiltersList.filter((el) =>
                         props.filtersList?.includes(el.id)
                     )
                     return [...arr]
                 }
-                return [...List, ...bmFiltersList.value]
+                return [...defaultfiltersList, ...bmFiltersList.value]
             })
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({

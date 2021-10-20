@@ -36,14 +36,18 @@ export const getStringFromPath = (data: object | Array<any>, path: string) => {
             } else label = (label as string)[p]
         })
     }
-    return label || null;
+    return label || path;
 }
 
 export const genParams = (dO, pO) => {
     const newParamObject = {}
     Object.entries(pO).forEach(([k, p]: string[]) => {
-        const val = getStringFromPath(dO, p);
-        newParamObject[k] = val;
+        if (typeof p === 'object')
+            newParamObject[k] = p;
+        else {
+            const val = getStringFromPath(dO, p);
+            newParamObject[k] = val;
+        }
     })
     return newParamObject;
 }

@@ -18,6 +18,7 @@ const allTabs = [
         key: 'about',
         icon: 'Overview',
         tooltip: 'User Info',
+        activeIcon: 'InfoActive',
     },
     {
         name: 'Assets',

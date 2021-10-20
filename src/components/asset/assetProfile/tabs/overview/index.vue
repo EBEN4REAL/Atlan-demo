@@ -3,7 +3,7 @@
     <tableauAsset v-if="assetType(selectedAsset).includes('Tableau')" />
 
     <!-- nonBiAssets -->
-    <nonBiAsset v-else :edit-permission="editPermission" />
+    <nonBiAsset v-else :edit-permission="userHasEditPermission" />
 </template>
 
 <script lang="ts">
@@ -30,19 +30,13 @@
         components: { nonBiAsset, tableauAsset },
         props: {
             userHasEditPermission: {
-                type: Object as PropType<any>,
+                type: Boolean,
                 required: true,
             },
         },
         setup(props) {
             /** INJECTIONS */
             // const assetDataInjection = inject('assetData')
-
-            const { userHasEditPermission } = toRefs(props)
-
-            const editPermission = ref<boolean>(
-                userHasEditPermission.value?.userPermission[0]?.allowed
-            )
 
             /** COMPUTED */
             // const assetData = computed(() => assetDataInjection?.asset)

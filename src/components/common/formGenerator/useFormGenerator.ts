@@ -114,6 +114,8 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   const getValueFromSchemaData = (id) =>
     testModal.value[id]
 
+  const setGlobal = (vO) => { testModal.value = { ...testModal.value, ...vO } }
+
   const init = () => {
     testModal.value = {}
     processedSchema.value = []
@@ -365,6 +367,7 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   init()
 
   return {
+    setGlobal,
     validate,
     init,
     getRules,

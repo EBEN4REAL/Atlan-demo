@@ -2,10 +2,10 @@
 
 import { ref, computed, watch } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
-import { getStringFromPath } from './asyncSelect.utils'
+import { getStringFromPath, genParams } from './asyncSelect.utils'
 
 
-export default function useAsyncTreeSelect(rootData, reqConfig, resConfig) {
+export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, valueObject: { [x: string]: string; }) {
 
     const getData = (res: any) => {
         const { rootPath, labelPath, valuePath } = resConfig;
@@ -41,14 +41,14 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig) {
         console.log('onLoadData', n);
         const { url, method, params, body } = reqConfig
         errorM.value = ''
-        let parsedUrl = url;
+        let parsedUrl: string = url;
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         if (parsedUrl.includes('{{parent}}'))
             parsedUrl = parsedUrl.replace('{{parent}}', n.value)
 
         try {
-            const response = await useAPIPromise(parsedUrl, method, { params, body })
+            const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body })
             // eslint-disable-next-line no-param-reassign
             n.dataRef.children = [...getData(response)].map(r => ({ pid: n.value, value: r.value, title: r.label, children: undefined, isLeaf: true, key: r.value }));
         } catch (e) {

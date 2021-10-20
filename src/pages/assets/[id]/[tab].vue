@@ -4,7 +4,7 @@
 
     <div v-else class="w-full h-full max-profile-width">
         <div class="flex flex-col">
-            <Header />
+            <Header :user-has-edit-permission="userHasEditPermission" />
             <div
                 v-if="data?.asset?.guid === '-1'"
                 style="height: calc(100vh - 170px)"
@@ -44,6 +44,7 @@
                                     refs[tab.id] = el
                                 }
                             "
+                            :user-has-edit-permission="userHasEditPermission"
                             class="bg-transparent"
                             @preview="handlePreview"
                         ></component>
@@ -140,7 +141,7 @@
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
-            const userHasEditPermission = ref<any>({})
+            const userHasEditPermission = ref<boolean>(true)
 
             const biTabs = [
                 {
@@ -271,12 +272,14 @@
                         if (data.value?.asset?.guid !== '-1') {
                             handlePreview(data.value?.asset)
                         }
-
                         const { data: userPermission } = evaluatePermissions(
                             data.value?.asset,
                             'ENTITY_UPDATE'
                         )
-                        userHasEditPermission.value = { userPermission }
+                        watch(userPermission, () => {
+                            userHasEditPermission.value =
+                                userPermission.value[0]?.allowed
+                        })
                     })
                 }
             }

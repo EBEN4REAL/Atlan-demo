@@ -48,7 +48,10 @@
                         </div></a-button
                     >
 
-                    <AssetMenu :asset="selectedAsset" />
+                    <AssetMenu
+                        :asset="assetData"
+                        :editPermission="userHasEditPermission"
+                    />
                 </div>
             </div>
         </div>
@@ -115,8 +118,13 @@
             StatusBadge,
             AssetMenu,
         },
-
-        setup() {
+        props: {
+            userHasEditPermission: {
+                type: Boolean,
+                required: true,
+            },
+        },
+        setup(props) {
             /** INJECTIONS */
             // const assetDataInjection = inject('assetData')
 

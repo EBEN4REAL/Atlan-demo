@@ -139,7 +139,7 @@
                             :info-tab-data="selectedAsset"
                             :page="page"
                             :selected-asset="selectedAsset"
-                            :user-permission="userPermission"
+                            :user-has-edit-permission="userHasEditPermission"
                             :is-loaded="isLoaded"
                             @change="handleChange"
                         ></component>
@@ -245,6 +245,8 @@
                 useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
+            const userHasEditPermission = ref<boolean>(true)
+
             const router = useRouter()
 
             const { evaluatePermissions } = useCheckAccess()
@@ -319,6 +321,9 @@
                 if (activeKey.value > filteredTabs.value.length)
                     activeKey.value = 0
             })
+            watch(userPermission, () => {
+                userHasEditPermission.value = userPermission.value[0]?.allowed
+            })
 
             function init() {
                 isLoaded.value = false
@@ -334,7 +339,7 @@
                 tabHeights,
                 isLoaded,
                 infoTabData,
-                userPermission,
+                userHasEditPermission,
                 title,
                 assetTypeLabel,
                 dataMap,

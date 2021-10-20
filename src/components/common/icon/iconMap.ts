@@ -120,6 +120,14 @@ import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
+import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
+import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
+import Hourglass from '~/assets/images/icons/hourglass.svg'
+import HourglassActive from '~/assets/images/icons/hourglass-active.svg'
+import GroupActive from '~/assets/images/icons/group-active.svg'
+import GroupLight from '~/assets/images/icons/group-light.svg'
+import AccessLogs from '~/assets/images/icons/access-logs.svg'
+import AccessLogsActive from '~/assets/images/icons/access-logs-active.svg'
 
 export default {
     queryErorrIllus,
@@ -244,4 +252,12 @@ export default {
     Minimap,
     FullScreenBoth,
     Minus,
+    AssetsInactiveLight,
+    AssetsActiveLight,
+    Hourglass,
+    HourglassActive,
+    GroupActive,
+    GroupLight,
+    AccessLogs,
+    AccessLogsActive,
 }

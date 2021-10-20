@@ -165,8 +165,6 @@
             const state = ref('active')
             const facets = ref({})
 
-            const termNames = ref<string[]>([])
-
             // Initialization via IIFE
             ;(() => {
                 const qry = decodeQuery(
@@ -455,7 +453,6 @@
                 setPlaceholder,
                 placeholderLabel,
                 assetTypeListString,
-                termNames,
             }
         },
         data() {

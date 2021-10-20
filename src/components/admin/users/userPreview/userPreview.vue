@@ -72,9 +72,6 @@
                             :class="index === 0 ? 'mt-1' : ''"
                         />
                     </template>
-                    <!-- <template #tab>
-                        <span class="mb-0">{{ tab.name }}</span>
-                    </template> -->
                     <component
                         :is="tab.component"
                         class="px-6 pt-3 overflow-auto component-height"

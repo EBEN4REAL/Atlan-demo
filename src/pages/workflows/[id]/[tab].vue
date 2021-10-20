@@ -36,7 +36,7 @@
                 v-if="selected"
                 :selected-workflow="selected"
                 :selected-dag="selectedDag"
-                :formConfig="formConfig"
+                :form-config="formConfig"
             />
         </div>
         <WorkflowLogs
@@ -61,6 +61,7 @@
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
+    import EmptyView from '@common/empty/index.vue'
     import ProfilePreview from '@/workflows/profile/preview/preview.vue'
     import Header from '@/workflows/profile/header.vue'
 
@@ -72,6 +73,7 @@
 
     export default defineComponent({
         components: {
+            EmptyView,
             Header,
             LoadingView,
             ErrorView,
@@ -209,7 +211,7 @@
                 mutate()
 
                 watch(response, (v) => {
-                    data.value.asset = v
+                    data.value.asset = v?.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
                     handlePreview(data.value?.asset, null)

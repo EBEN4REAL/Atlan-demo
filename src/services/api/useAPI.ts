@@ -165,21 +165,14 @@ export function resolveUrl(
 }
 
 const getUrlWithParams = (url, params) => {
+    console.log('getUrlWithParams')
     let p = isRef(params) ? params.value : params
+    if (!p) return url
     const temp = {}
-    // fix me
     Object.entries(p).forEach(([k, v]) => {
         let newv = v
         if (typeof v === 'object') {
             newv = JSON.stringify(v)
-                .replace(/\\n/g, '\\n')
-                .replace(/\\'/g, "\\'")
-                .replace(/\\"/g, '\\"')
-                .replace(/\\&/g, '\\&')
-                .replace(/\\r/g, '\\r')
-                .replace(/\\t/g, '\\t')
-                .replace(/\\b/g, '\\b')
-                .replace(/\\f/g, '\\f')
         }
         temp[k] = newv;
     })

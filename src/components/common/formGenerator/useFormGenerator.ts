@@ -2,7 +2,7 @@
 import { computed, ref, Ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 import { Schema, ProcessedSchema, ProcessedRule } from './builder.interface'
-
+import { getStringFromPath } from '@/common/input/asyncSelect.utils'
 
 
 export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef: Ref, emit, dV, gV) {
@@ -57,6 +57,9 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
     if (schema.type === 'checkbox' && schema.options) {
       schema.options = schema.options.map(o => ({ value: o.id || o.value, label: o.label || o.id }))
     }
+
+    if (schema.type === 'template')
+      schema.isVisible = false
     return schema;
   }
 
@@ -114,12 +117,12 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   const getValueFromSchemaData = (id) =>
     testModal.value[id]
 
-  const setGlobal = (vO) => { testModal.value = { ...testModal.value, ...vO } }
+  const setGlobal = (vO) => { testModal.value = { ...testModal.value, "$global": vO } }
 
   const init = () => {
     testModal.value = {}
     processedSchema.value = []
-    setGlobal(dV)
+    setGlobal(gV)
 
 
     formConfig.value.forEach((f) => {
@@ -155,30 +158,13 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
     })
 
     testModal.value = { ...testModal.value, ...dV }
+    finalConfigObject(processedSchema.value)
   }
-
-
-
 
   const generateTemplateValue = (s, id, isStringfied) => {
     if (!processedSchema.value.length) return s
-    const templatePartsf = s.split('{{')
-    let finalString = ''
-    // ? ->
-    let missingValue = false;
-    templatePartsf.forEach((p, i) => {
-      if (i === 0) {
-        finalString += p
-      } else {
-        const pp = p.split('}}')
-        if (typeof getValueFromSchemaData(pp[0]) === 'undefined') {
-          missingValue = true
-        }
-        finalString += getValueFromSchemaData(pp[0]) + pp[1]
-      }
-    })
-    if (missingValue) return null;
-    testModal.value[id] = isStringfied ? JSON.parse(finalString) : finalString
+    const finalString = getStringFromPath(testModal.value, s);
+    testModal.value[id] = isStringfied ? JSON.parse(finalString as string) : finalString
     return testModal.value[id]
   }
 

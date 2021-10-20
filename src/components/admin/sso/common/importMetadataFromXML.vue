@@ -36,7 +36,7 @@ export default defineComponent({
         json?.EntityDescriptor || json["md:EntityDescriptor"];
       const IDPSSODescriptor =
         EntityDescriptor?.IDPSSODescriptor ||
-        EntityDescriptor["md:EntityDescriptor"];
+        EntityDescriptor["md:IDPSSODescriptor"];
       const SingleSignOnService =
         IDPSSODescriptor?.SingleSignOnService ||
         IDPSSODescriptor["md:SingleSignOnService"];

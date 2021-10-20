@@ -96,6 +96,7 @@
         :load-data="onLoadData"
         :disabled="letAsyncSelectDisabled || disabled"
         @change="handleSelect"
+        treeNodeLabelProp="key"
         @click="
             () =>
                 handleDropdownVisibleChange(
@@ -385,12 +386,12 @@
                     const db =
                         n?.props?.pid ||
                         n.node?.props?.pid ||
-                        n?.props?.value ||
-                        n?.node?.props?.value ||
+                        n?.props?.val ||
+                        n?.node?.props?.val ||
                         null
                     const schema =
                         n?.node?.props?.pid || n?.props?.pid
-                            ? n?.node?.props?.value || n?.props?.value
+                            ? n?.node?.props?.val || n?.props?.val
                             : null
 
                     if (result[db] && schema)
@@ -404,23 +405,6 @@
             }
 
             const handleChange = (e, timeStamp) => {
-                let val = e
-                if (e?.target) {
-                    val = e.target.value
-                }
-                if (props.dataType === 'number') {
-                    emit('update:modelValue', parseInt(val, 10))
-                } else if (props.dataType === 'checkbox') {
-                    emit('update:modelValue', Array.from(e))
-                } else if (
-                    props.dataType === 'date' ||
-                    props.dataType === 'time'
-                ) {
-                    emit('update:modelValue', timeStamp)
-                } else {
-                    emit('update:modelValue', val)
-                }
-                emit('change', val)
                 if (
                     props.dataType === 'asyncSelect' &&
                     props?.globalVariables
@@ -432,7 +416,27 @@
                         ).data
                         temp[k] = getStringFromPath(d, p)
                     })
+                    emit('update:modelValue', e)
                     emit('getGlobal', temp)
+                    emit('change', e)
+                } else {
+                    let val = e
+                    if (e?.target) {
+                        val = e.target.value
+                    }
+                    if (props.dataType === 'number') {
+                        emit('update:modelValue', parseInt(val, 10))
+                    } else if (props.dataType === 'checkbox') {
+                        emit('update:modelValue', Array.from(e))
+                    } else if (
+                        props.dataType === 'date' ||
+                        props.dataType === 'time'
+                    ) {
+                        emit('update:modelValue', timeStamp)
+                    } else {
+                        emit('update:modelValue', val)
+                    }
+                    emit('change', val)
                 }
             }
 

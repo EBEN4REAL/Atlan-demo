@@ -184,8 +184,9 @@ export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
 }
 
 export function useWorkflowByName(name, immediate: boolean = true) {
+  const params = ref({ filter: { name } })
   const { data, error, isLoading, mutate } =
-    Workflows.getWorkflowByName(name, {
+    Workflows.getWorkflowByName(params, {
       immediate,
       options: {},
     })

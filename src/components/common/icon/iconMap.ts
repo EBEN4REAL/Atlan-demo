@@ -115,6 +115,7 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import Flash from '~/assets/images/icons/flash.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
@@ -238,8 +239,8 @@ export default {
     Settings,
     Delete,
     Slack,
+    Flash,
     Schedule,
-    Delete,
     Minimap,
     FullScreenBoth,
     Minus,

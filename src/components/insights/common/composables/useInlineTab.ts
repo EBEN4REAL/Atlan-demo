@@ -26,7 +26,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         if (localStorageInlineTabs.length > 0) {
             return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
-        return []
+        return inlineTabsDemoData
     }
 
     const isInlineTabAlreadyOpened = (

@@ -97,7 +97,7 @@
                     <div class="flex text-sm">
                         <div class="flex">
                             <AtlanBtn
-                                class="flex items-center h-6"
+                                class="flex items-center h-6 button-shadow"
                                 size="sm"
                                 color="primary"
                                 padding="compact"
@@ -135,6 +135,9 @@
                                     >
                                     <span
                                         v-else-if="
+                                            activeInlineTab.playground
+                                                .resultsPane.result
+                                                .runQueryId &&
                                             !activeInlineTab.playground
                                                 .resultsPane.result
                                                 .buttonDisable
@@ -420,7 +423,8 @@
             const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun } = useRunQuery()
-            const { modifyActiveInlineTabEditor } = useInlineTab()
+            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
+                useInlineTab()
             const { toggleFullScreenMode } = useFullScreen()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
                 column: 0,
@@ -553,10 +557,6 @@
                             activeInlineTab.value.explorer.schema.connectors
                                 .attributeValue
                         ),
-                        databaseName: getDatabaseName(
-                            activeInlineTab.value.explorer.schema.connectors
-                                .attributeValue
-                        ),
                     }
                     /* Change loading state */
                     HEKA_SERVICE_API.Insights.AbortQuery(body).then(() => {
@@ -569,10 +569,18 @@
                             activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
                             activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
                                 undefined
-                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                                undefined
+
                             activeInlineTab.value.playground.resultsPane.result.buttonDisable =
                                 false
+                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                                undefined
+                            /* For syncing with local storage */
+                            const activeInlineTabCopy: activeInlineTabInterface =
+                                Object.assign({}, activeInlineTab.value)
+                            modifyActiveInlineTab(
+                                activeInlineTabCopy,
+                                inlineTabs
+                            )
                             console.log('connection closed succesfully')
                         }
                     })

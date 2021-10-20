@@ -42,6 +42,8 @@
         inject,
         Ref,
         toRaw,
+        watch,
+        ref,
         PropType,
         toRefs,
     } from 'vue'
@@ -57,92 +59,101 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .errorDecorations
             )
+            /* Regex for extracting the line number & column number */
             const lineRegex = /(?:line )([0-9]+)/gim
-            const columnRegex = /(?:column )([0-9]+)/gi
+            const columnRegex = /(?:column )([0-9]+)/gim
 
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
             const editorInstance = inject('editorInstance') as Ref<any>
             const monacoInstance = inject('monacoInstance') as Ref<any>
+            const pos: Ref<any> = ref({})
+            const renderedLines: Ref<any[]> = ref([])
             const queryErrorObj = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
                         .queryErrorObj
             )
-            const editorText = toRaw(editorInstance.value).getValue()
-            /* [["Line 3", "3"], ["line 3", "3"]] */
-            const linesInfo = [
-                ...queryErrorObj.value.errorMessage.matchAll(lineRegex),
-            ]
-            /* [["column 4", "4"], ["column 7", "7"]]*/
-            const columnsInfo = [
-                ...queryErrorObj.value.errorMessage.matchAll(columnRegex),
-            ]
-            let renderedLines: any[] = []
-            const pos = {
-                startLine: linesInfo[0][1],
-                startColumn: columnsInfo[0][1],
-                endLine: undefined,
-                endColumn: undefined,
-            }
-            /* Check line counts length */
-            if (linesInfo.length > 1) {
-                pos.endLine = linesInfo[1][1]
-                pos.endColumn = columnsInfo[1][1]
-            }
+            watch(
+                activeInlineTabKey,
+                () => {
+                    renderedLines.value = []
+                    const editorText =
+                        activeInlineTab.value.playground.editor.text
+                    /* [["Line 3", "3"], ["line 3", "3"]] */
+                    const linesInfo = [
+                        ...queryErrorObj.value.errorMessage.matchAll(lineRegex),
+                    ]
+                    /* [["column 4", "4"], ["column 7", "7"]]*/
+                    const columnsInfo = [
+                        ...queryErrorObj.value.errorMessage.matchAll(
+                            columnRegex
+                        ),
+                    ]
 
-            const e = editorText.split('\n')
-            let validPos = pos.endLine ? pos.endLine : pos.startLine
-            validPos = Number(validPos)
-            /* Next line exist for showing */
-            console.log(validPos, e, 'validPos')
+                    const e = editorText.split('\n')
+                    pos.value = {
+                        startLine: linesInfo[0][1],
+                        startColumn: columnsInfo[0][1],
+                        endLine: undefined,
+                        endColumn: undefined,
+                    }
+                    let validPos = pos.value.endLine
+                        ? pos.value.endLine
+                        : pos.value.startLine
+                    validPos = Number(validPos)
+                    /* Next line exist for showing */
+                    console.log(validPos, e, 'validPos')
 
-            if (validPos < e.length) {
-                if (validPos >= 0)
-                    renderedLines.push({
-                        index: validPos + 1,
-                        description: e[validPos + 1 - 1],
-                    })
-                if (validPos - 1 >= 0)
-                    renderedLines.push({
-                        index: validPos,
-                        description: e[validPos - 1],
-                    })
-                if (validPos - 2 >= 0)
-                    renderedLines.push({
-                        index: validPos - 1,
-                        description: e[validPos - 1 - 1],
-                    })
-            } else if (validPos == e.length) {
-                /* Next line exist for showing */
-                if (validPos - 1 >= 0) {
-                    renderedLines.push({
-                        index: validPos,
-                        description: e[validPos - 1],
-                    })
-                }
-                if (validPos - 2 >= 0) {
-                    renderedLines.push({
-                        index: validPos - 1,
-                        description: e[validPos - 1 - 1],
-                    })
-                }
-                if (validPos - 3 >= 0) {
-                    renderedLines.push({
-                        index: validPos - 1 - 1,
-                        description: e[validPos - 1 - 1 - 1],
-                    })
-                }
-            }
-
-            console.log(renderedLines, 'renderedLines')
-
-            const isQueryRunning = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    if (validPos < e.length) {
+                        if (validPos >= 0)
+                            renderedLines.value.push({
+                                index: validPos + 1,
+                                description: e[validPos + 1 - 1],
+                            })
+                        if (validPos - 1 >= 0)
+                            renderedLines.value.push({
+                                index: validPos,
+                                description: e[validPos - 1],
+                            })
+                        if (validPos - 2 >= 0)
+                            renderedLines.value.push({
+                                index: validPos - 1,
+                                description: e[validPos - 1 - 1],
+                            })
+                    } else if (validPos == e.length) {
+                        /* Next line exist for showing */
+                        if (validPos - 1 >= 0) {
+                            renderedLines.value.push({
+                                index: validPos,
+                                description: e[validPos - 1],
+                            })
+                        }
+                        if (validPos - 2 >= 0) {
+                            renderedLines.value.push({
+                                index: validPos - 1,
+                                description: e[validPos - 1 - 1],
+                            })
+                        }
+                        if (validPos - 3 >= 0) {
+                            renderedLines.value.push({
+                                index: validPos - 1 - 1,
+                                description: e[validPos - 1 - 1 - 1],
+                            })
+                        }
+                    }
+                },
+                { immediate: true }
             )
+
+            console.log(renderedLines.value, 'renderedLines')
+            /* IMP FOR FIRST TIME RENDER */
+            renderedLines.value.reverse()
+
             const getTokenColor = (token: string) => {
                 console.log(token)
                 /* Noram gray color */
@@ -170,8 +181,8 @@
                 const t = lineDesc.split(' ')
                 let html = ''
 
-                if (pos?.endLine) {
-                    if (Number(lineIndex) === Number(pos.endLine)) {
+                if (pos.value?.endLine) {
+                    if (Number(lineIndex) === Number(pos.value.endLine)) {
                         let tokensTillNow = ''
                         t.forEach((token) => {
                             if (token !== '') {
@@ -179,9 +190,9 @@
                                 chars.forEach((char, z) => {
                                     if (
                                         tokensTillNow.length + z + 1 >=
-                                            Number(pos.startColumn) &&
+                                            Number(pos.value.startColumn) &&
                                         tokensTillNow.length + z + 1 <=
-                                            Number(pos.endColumn)
+                                            Number(pos.value.endColumn)
                                     ) {
                                         if (char !== ' ') {
                                             html += `<span class="light_creme">${char}</span>`
@@ -201,9 +212,9 @@
                             } else {
                                 if (
                                     tokensTillNow.length >=
-                                        Number(pos.startColumn) &&
+                                        Number(pos.value.startColumn) &&
                                     tokensTillNow.length <=
-                                        Number(pos.endColumn)
+                                        Number(pos.value.endColumn)
                                 ) {
                                     html += `<span class="light_creme">&nbsp;</span>`
                                 } else {
@@ -214,7 +225,7 @@
                             tokensTillNow += token
                         })
                     } else {
-                        console.log('else', pos?.endLine)
+                        console.log('else', pos.value?.endLine)
                         t.forEach((token, i) => {
                             if (token !== '') {
                                 const color = getTokenColor(token)
@@ -226,7 +237,7 @@
                     }
                 } else {
                     const t = lineDesc.split(' ')
-                    if (Number(lineIndex) === Number(pos.startLine)) {
+                    if (Number(lineIndex) === Number(pos.value.startLine)) {
                         let tokensTillNow = ''
                         t.forEach((token) => {
                             console.log(t, 'tokens', tokensTillNow)
@@ -235,7 +246,7 @@
                                 chars.forEach((char, z) => {
                                     if (
                                         tokensTillNow.length + z + 1 >=
-                                            Number(pos.startColumn) &&
+                                            Number(pos.value.startColumn) &&
                                         tokensTillNow.length + z + 1 <=
                                             tokensTillNow.length + token.length
                                     ) {
@@ -280,9 +291,9 @@
                 editorI.deltaDecorations(errorDecorations.value, [
                     {
                         range: new monacoI.Range(
-                            Number(pos.startLine),
+                            Number(pos.value.startLine),
                             1,
-                            Number(pos.startLine),
+                            Number(pos.value.startLine),
                             1
                         ),
                         options: {

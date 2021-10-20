@@ -57,7 +57,7 @@
             <!-- --------------- -->
 
             <!-- First screen -->
-            <!-- <div
+            <div
                 v-if="isQueryRunning === ''"
                 class="flex flex-col items-center justify-center w-full h-full"
             >
@@ -65,7 +65,7 @@
                 <p class="mt-4 mb-0 text-base text-gray-700">
                     Your results will appear here
                 </p>
-            </div> -->
+            </div>
             <!-- 
                                 v-if="
                     isQueryRunning === 'success' &&

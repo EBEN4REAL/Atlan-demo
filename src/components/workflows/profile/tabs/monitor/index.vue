@@ -1,10 +1,14 @@
 <template>
     <div class="relative w-full h-full">
-        <div class="absolute flex items-center justify-center w-full h-full">
+        <div
+            v-if="isLoading"
+            class="absolute flex items-center justify-center w-full h-full"
+        >
             <a-spin />
         </div>
-        <div class="absolute w-full h-full">
-            <WorkflowGraph v-if="graphData.metadata" :graph-data="graphData" />
+        <EmptyView v-else-if="!graphData?.metadata" empty="" />
+        <div v-else-if="graphData.metadata" class="absolute w-full h-full">
+            <WorkflowGraph :graph-data="graphData" />
         </div>
     </div>
 </template>
@@ -16,6 +20,7 @@
 
     // Components
     import WorkflowGraph from './workflowGraph.vue'
+    import EmptyView from '@common/empty/index.vue'
 
     // Composables
     import {
@@ -25,7 +30,7 @@
 
     export default defineComponent({
         name: 'WorkflowMonitor',
-        components: { WorkflowGraph },
+        components: { WorkflowGraph, EmptyView },
         props: {
             selectedRunId: {
                 type: String,

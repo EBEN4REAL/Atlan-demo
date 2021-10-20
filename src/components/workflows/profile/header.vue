@@ -12,7 +12,7 @@
                         hover:border-gray-300
                         py-0.5
                     "
-                    @click="$router.back()"
+                    @click="$router.push('/workflows')"
                 >
                     <atlan-icon
                         icon="ArrowRight"

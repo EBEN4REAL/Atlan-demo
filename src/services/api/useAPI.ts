@@ -166,6 +166,7 @@ export function resolveUrl(
 
 const getUrlWithParams = (url, params) => {
     let p = isRef(params) ? params.value : params
+    if (!p) return url
     const temp = {}
     // fix me
     Object.entries(p).forEach(([k, v]) => {
@@ -201,7 +202,7 @@ export function useAPIPromise(
             )
         case 'POST':
             return fetcherPost(
-                getUrlWithParams(url, params),
+                url,
                 isRef(body) ? body.value : body,
                 isRef(options) ? options.value : options
             )

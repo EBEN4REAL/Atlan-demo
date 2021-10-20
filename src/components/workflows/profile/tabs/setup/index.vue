@@ -1,8 +1,13 @@
 <template>
     <div class="relative w-full h-full">
-        <div class="absolute flex items-center justify-center w-full h-full">
+        <div
+            v-if="isLoading"
+            class="absolute flex items-center justify-center w-full h-full"
+        >
             <a-spin />
         </div>
+        <EmptyView v-else-if="!tasks?.length" empty="" class="" />
+
         <div class="absolute w-full h-full">
             <SetupGraph
                 v-if="tasks"
@@ -20,13 +25,14 @@
 
     // Components
     import SetupGraph from './setupGraph.vue'
+    import EmptyView from '@common/empty/index.vue'
 
     // Composables
     import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
-        components: { SetupGraph },
+        components: { SetupGraph, EmptyView },
         emits: ['change'],
         setup(_, { emit }) {
             const route = useRoute()
@@ -35,14 +41,15 @@
             /** DATA */
             const id = computed(() => route?.params?.id || '')
 
-            const { data } = useWorkflowTemplateByName(id.value)
+            const { data, isLoading } = useWorkflowTemplateByName(id.value)
 
             watch(data, (newVal) => {
                 tasks.value =
-                    newVal.workflowtemplate.spec.templates[0].dag.tasks
+                    newVal?.workflowtemplate?.spec?.templates[0]?.dag?.tasks
             })
 
             return {
+                isLoading,
                 id,
                 data,
                 tasks,

@@ -40,6 +40,8 @@
 
             /** COMPUTED */
             // const assetData = computed(() => assetDataInjection?.asset)
+            // props
+            const { userHasEditPermission } = toRefs(props)
             // store
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
@@ -50,7 +52,7 @@
             return {
                 // assetData,
                 assetType,
-                editPermission,
+                userHasEditPermission,
                 selectedAsset
             }
         },

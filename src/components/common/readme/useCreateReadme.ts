@@ -2,6 +2,7 @@ import { computed, ref, WritableComputedRef, watch, Ref } from 'vue'
 import { useAPIAsyncState, useAPIPromise } from '~/services/api/useAPI'
 import { KeyMaps } from '~/services/atlas/atlas_keyMaps'
 import { generateUUID } from '~/utils/helper/generator'
+import { message } from 'ant-design-vue'
 
 export default function useUpdateReadme(selectedAsset, readmeContent) {
     const body = ref({
@@ -32,6 +33,7 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
             selectedAsset.value.attributes.readme = {
                 ...data.value.mutatedEntities.CREATE[0],
             }
+            message.success('Readme saved!')
         })
         return { data, error, isLoading }
     }

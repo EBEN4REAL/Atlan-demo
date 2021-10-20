@@ -1,9 +1,10 @@
 <template>
     <ExplorerLayout
+        v-if="permissions.list"
         title="Custom Metadata"
         sub-title="Manage Custom Metadata & it's attributes"
     >
-        <template #action>
+        <template v-if="permissions.create" #action>
             <AtlanBtn
                 class="flex-none"
                 size="sm"
@@ -57,6 +58,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     // ? Media
 
@@ -78,7 +80,12 @@
             useHead({
                 title: computed(() => 'Custom Metadata'),
             })
-
+            const accessStore = useAccessStore();
+            const permissions = computed(() => ({
+                list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
+                create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
+                delete: accessStore.checkPermission('DELETE_BUSINESS_METADATA'),
+            }))
             const {
                 fetchBMonStore,
                 selectedBm,
@@ -117,6 +124,7 @@
                 searchedBusinessMetadataList,
                 selectedBm,
                 updatedBm,
+                permissions
             }
         },
     })

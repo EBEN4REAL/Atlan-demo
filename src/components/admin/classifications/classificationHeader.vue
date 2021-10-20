@@ -6,7 +6,7 @@
                 >Classification</span
             >
             <Dropdown
-                v-if="options.length"
+                v-if="classificationDropdownOption.length"
                 class="ml-auto"
                 :options="classificationDropdownOption"
             ></Dropdown>

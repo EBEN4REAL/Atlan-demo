@@ -82,8 +82,11 @@
                 activeInlineTabKey,
                 () => {
                     if (
+                        activeInlineTab.value &&
                         activeInlineTab.value.playground.resultsPane.result
-                            .errorDecorations.length > 0
+                            .queryErrorObj.errorMessage &&
+                        activeInlineTab.value.playground.resultsPane.result
+                            .queryErrorObj.errorMessage !== ''
                     ) {
                         renderedLines.value = []
                         const editorText =
@@ -293,22 +296,23 @@
             }
             const monacoI = toRaw(monacoInstance.value)
             const editorI = toRaw(editorInstance.value)
-
-            activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                editorI.deltaDecorations(errorDecorations.value ?? [], [
-                    {
-                        range: new monacoI.Range(
-                            Number(pos.value.startLine),
-                            1,
-                            Number(pos.value.startLine),
-                            1
-                        ),
-                        options: {
-                            linesDecorationsClassName:
-                                'edtiorErrorDotDecoration',
+            if (activeInlineTab.value) {
+                activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                    editorI.deltaDecorations(errorDecorations.value, [
+                        {
+                            range: new monacoI.Range(
+                                Number(pos.value.startLine),
+                                1,
+                                Number(pos.value.startLine),
+                                1
+                            ),
+                            options: {
+                                linesDecorationsClassName:
+                                    'edtiorErrorDotDecoration',
+                            },
                         },
-                    },
-                ])
+                    ])
+            }
 
             return {
                 generateHTMLFromLine,

@@ -111,11 +111,14 @@
                 }
             }
             const findAndChangeCustomVariablesColor = () => {
-                const matches = findCustomVariableMatches(
-                    editor,
-                    activeInlineTab.value.playground.editor.text
-                )
-                changeMoustacheTemplateColor(editor, monaco, matches)
+                if (activeInlineTab.value) {
+                    const matches = findCustomVariableMatches(
+                        editor,
+                        activeInlineTab.value.playground.editor.text
+                    )
+                    if (matches?.length > 0)
+                        changeMoustacheTemplateColor(editor, monaco, matches)
+                }
             }
 
             monaco.languages.register({ id: 'atlansql' })
@@ -145,6 +148,7 @@
                 editor: any
             ) => {
                 if (
+                    activeInlineTab.value &&
                     activeInlineTab.value.playground.resultsPane.result
                         .errorDecorations?.length > 0
                 ) {
@@ -281,10 +285,11 @@
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
-                const matches = findCustomVariableMatches(
-                    editor,
-                    activeInlineTab.value.playground.editor.text
-                )
+                const matches =
+                    findCustomVariableMatches(
+                        editor,
+                        activeInlineTab.value.playground.editor.text
+                    ) ?? []
                 changeMoustacheTemplateColor(editor, monaco, matches)
 
                 console.log(lastLineLength)
@@ -363,10 +368,10 @@
                     /* ------------- set error decorations */
                     setErrorDecorations(activeInlineTab, editor)
                     /* ------------------------------------------ */
-                    editor.getModel().onDidChangeContent(async (event) => {
+                    editor?.getModel()?.onDidChangeContent(async (event) => {
                         resetErrorDecorations(activeInlineTab, editor)
                         // setErrorDecorations(activeInlineTab, editor)
-                        const text = editor.getValue()
+                        const text = editor?.getValue()
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
                         /* ------------- custom variable color change */

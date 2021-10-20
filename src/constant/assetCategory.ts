@@ -37,7 +37,7 @@ export const List: any = [
     },
     {
         id: 'businessTerms',
-        include: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory',],
+        include: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
         label: 'Business Terms',
         description: 'Business Terms',
         popoverText: 'Business Terms & Categories',

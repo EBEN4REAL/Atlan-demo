@@ -14,6 +14,8 @@ export const allTypeNames = [
     'TableauDatasource',
     'TableauDatasourceField',
     'TableauCalculatedField',
+    'AtlasGlossaryTerm',
+    'AtlasGlossaryCategory',
 ]
 
 const integrationTypeMapping = {
@@ -55,6 +57,7 @@ const categoryTypeMapping = {
         'PowerBIPage',
         'PowerBIDatasource',
     ],
+    businessTerms: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory']
 }
 
 export function tabsByConnector(

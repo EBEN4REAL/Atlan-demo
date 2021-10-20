@@ -62,9 +62,9 @@
             }
 
             const tempGlobal = ref({
-                global_1: '1111111',
-                global_3: {
-                    global_2: '000000',
+                name: 'atlan',
+                details: {
+                    email: 'samiran@atlan.com',
                 },
             })
 

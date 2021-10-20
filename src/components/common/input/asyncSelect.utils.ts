@@ -10,42 +10,47 @@ export const getStringFromPath = (data: object | Array<any>, path: string): any 
     if (['', '.'].includes(path)) return data;
     const arrayReg = /\w*\[\d*\]$/g
     const r = /\{\{(\.[\w\W]*?)\}\}/g
-    const varArr = path.match(r);
+    // ? Wrapping old string version eg ".parent.child[0]" with {{ }} for bakward compatibility
+    const varArr = path.match(r) ?? `{{${path}}}`.match(r);
     let label: unknown = undefined;
     let missingValues = false;
     if (varArr?.length) {
         label = path
-        varArr.forEach(p => {
-            const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
-            let word: unknown = data;
-            pathParts.forEach((pp: string) => {
-                if (!pp) return
-                const isArr = arrayReg.test(pp)
-                if (isArr) {
-                    const index = parseInt(pp.match(/(?<=\[).+?(?=\])/)[0], 10)
-                    word = (word as string)[pp.split('[')[0]][index]
-                } else word = (word as string)[pp]
+        try {
+            varArr.forEach(p => {
+                const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
+                let word: unknown = data;
+                pathParts.forEach((pp: string) => {
+                    if (!pp) return
+                    const isArr = arrayReg.test(pp)
+                    if (isArr) {
+                        const index = parseInt(pp.match(/(?<=\[).+?(?=\])/)[0], 10)
+                        word = (word as object)[pp.split('[')[0]][index]
+                    } else word = (word as object)[pp]
+                })
+                if (typeof word === 'undefined')
+                    missingValues = true
+                label = (label as string).replace(p, word as string)
             })
-            if (typeof word === 'undefined')
-                missingValues = true
-            label = (label as string).replace(p, word as string)
-        })
-    } else {
-        // ? backward compatible with ".records.displayName[0]"
-        const labelPathParts = path.split('.').slice(1)
-        if (labelPathParts.length)
-            label = data;
-        labelPathParts.forEach((p: string) => {
-            if (!p) return
-            const isArr = arrayReg.test(p)
-            if (isArr) {
-                const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
-                label = (label as string)[p.split('[')[0]][index]
-            } else label = (label as string)[p]
-            if (typeof label === 'undefined')
-                missingValues = true
-        })
+        } catch { return undefined }
+
     }
+    // else {
+    //     // ? backward compatible with ".records.displayName[0]"
+    //     const labelPathParts = path.split('.').slice(1)
+    //     if (labelPathParts.length)
+    //         label = data;
+    //     labelPathParts.forEach((p: string) => {
+    //         if (!p) return
+    //         const isArr = arrayReg.test(p)
+    //         if (isArr) {
+    //             const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
+    //             label = (label as string)[p.split('[')[0]][index]
+    //         } else label = (label as string)[p]
+    //         if (typeof label === 'undefined')
+    //             missingValues = true
+    //     })
+    // }
     return missingValues ? undefined : label;
 }
 

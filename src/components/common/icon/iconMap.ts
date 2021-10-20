@@ -128,11 +128,14 @@ import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg
 import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
 import Hourglass from '~/assets/images/icons/hourglass.svg'
 import HourglassActive from '~/assets/images/icons/hourglass-active.svg'
-import GroupActive from '~/assets/images/icons/group-active.svg'
+import GroupActive from '~/assets/images/icons/group-light-active.svg'
 import GroupLight from '~/assets/images/icons/group-light.svg'
 import AccessLogs from '~/assets/images/icons/access-logs.svg'
 
 import AccessLogsActive from '~/assets/images/icons/access-logs-active.svg'
+import InfoActive from '~/assets/images/icons/info-active.svg'
+import UserLight from '~/assets/images/icons/user-light.svg'
+import UserLightActive from '~/assets/images/icons/user-light-active.svg'
 
 export default {
     IssuesFilled,
@@ -269,4 +272,7 @@ export default {
     GroupLight,
     AccessLogs,
     AccessLogsActive,
+    InfoActive,
+    UserLight,
+    UserLightActive,
 }

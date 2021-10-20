@@ -94,8 +94,14 @@
         :tree-data="treeData"
         placeholder="Please select"
         :load-data="onLoadData"
+        :disabled="letAsyncSelectDisabled || disabled"
         @change="handleSelect"
-        @click="handleDropdownVisibleChange"
+        @click="
+            () =>
+                handleDropdownVisibleChange(
+                    !letAsyncSelectDisabled && !disabled
+                )
+        "
     />
 
     <!-- async tree select end -->
@@ -173,7 +179,6 @@
     export default defineComponent({
         components: {
             UserSelector,
-            // formGenerator,
             FormGenerator: defineAsyncComponent(
                 () => import('@/common/formGenerator/index.vue')
             ),
@@ -181,7 +186,7 @@
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
-            id: {},
+            id: { type: String, required: false, default: '' },
             modelValue: {
                 type: [Boolean, String, Number],
                 required: false,
@@ -255,7 +260,9 @@
                 },
             },
             defaultValue: {
+                type: [Boolean, String, Number],
                 required: false,
+                default: () => '',
             },
             allowCustom: {
                 type: Boolean,
@@ -340,11 +347,12 @@
                 onLoadData,
                 treeData,
                 init,
+                disabled,
                 errorM: treeErrorM,
             } = useAsyncTreeSelect(
                 asyncData,
-                props.otherApiConfig.req,
-                props.otherApiConfig.res,
+                props.otherApiConfig?.req,
+                props.otherApiConfig?.res,
                 valueObject
             )
 
@@ -396,23 +404,6 @@
             }
 
             const handleChange = (e, timeStamp) => {
-                let val = e
-                if (e?.target) {
-                    val = e.target.value
-                }
-                if (props.dataType === 'number') {
-                    emit('update:modelValue', parseInt(val, 10))
-                } else if (props.dataType === 'checkbox') {
-                    emit('update:modelValue', Array.from(e))
-                } else if (
-                    props.dataType === 'date' ||
-                    props.dataType === 'time'
-                ) {
-                    emit('update:modelValue', timeStamp)
-                } else {
-                    emit('update:modelValue', val)
-                }
-                emit('change', val)
                 if (
                     props.dataType === 'asyncSelect' &&
                     props?.globalVariables
@@ -424,7 +415,27 @@
                         ).data
                         temp[k] = getStringFromPath(d, p)
                     })
+                    emit('update:modelValue', e)
                     emit('getGlobal', temp)
+                    emit('change', e)
+                } else {
+                    let val = e
+                    if (e?.target) {
+                        val = e.target.value
+                    }
+                    if (props.dataType === 'number') {
+                        emit('update:modelValue', parseInt(val, 10))
+                    } else if (props.dataType === 'checkbox') {
+                        emit('update:modelValue', Array.from(e))
+                    } else if (
+                        props.dataType === 'date' ||
+                        props.dataType === 'time'
+                    ) {
+                        emit('update:modelValue', timeStamp)
+                    } else {
+                        emit('update:modelValue', val)
+                    }
+                    emit('change', val)
                 }
             }
 

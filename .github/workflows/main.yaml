@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - beta
+      - alpha
 jobs:
   test:
     name: Production Deployment
@@ -29,13 +30,37 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Get branch name
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: get_branch
+      - name: Get previous tag from charts repo
+        id: get_channel
+        run: |
+          repo_branch=${{ steps.get_branch.outputs.branch }}
+          if [[ "$repo_branch" == "main" ]]; then
+            channel="prod"
+          elif [[ "$repo_branch" == "alpha" ]]; then
+            channel="alpha"
+          elif [[ "$repo_branch" == "beta" ]]; then
+            channel="beta"
+          elif [[ "$repo_branch" == "development" ]]; then
+            channel="development"
+          elif [[ "$repo_branch" == "staging" ]]; then
+            channel="staging"
+          else 
+            echo "Build not configured for current branch"
+            exit 1
+          fi
+          echo "##[set-output name=channel;]$(echo $channel)"
+        shell: bash
       - name: Build
         run: NODE_OPTIONS=--max_old_space_size=8000 npm run build
       - name: COPY DIST TO S3
-        run: aws s3 cp ./dist s3://$AWS_S3_BUCKET/ --recursive --region $AWS_REGION
+        run: aws s3 cp ./dist s3://$AWS_S3_BUCKET/$CHANNEL_NAME --recursive --region $AWS_REGION
         env:
           AWS_REGION: "ap-south-1"
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_MASTER }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_DEPLOYMENT_BUCKET }}
+          CHANNEL_NAME: ${{ steps.get_channel.outputs.channel }}
       # Send a slack notification message on the specified channel with the failure github actions workflow report.
       - name: Slack notification
         uses: 8398a7/action-slack@v3

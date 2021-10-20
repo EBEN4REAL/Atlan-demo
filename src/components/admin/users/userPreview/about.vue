@@ -19,7 +19,7 @@
         </div>
         <div class="mb-3">
             <div class="flex-1 mr-4">
-                <p class="mb-0 text-gray-500">Alias</p>
+                <p class="mb-0 text-gray-500">Username</p>
                 <div class="text-gray">@{{ selectedUser.username }}</div>
             </div>
         </div>

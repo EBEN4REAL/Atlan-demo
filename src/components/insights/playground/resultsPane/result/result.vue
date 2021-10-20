@@ -153,18 +153,18 @@
                 activeInlineTab.value?.playground?.resultsPane?.result
                     ?.errorDecorations
 
-            watch(queryErrorObj, () => {
-                /* Resetting the red dot from the editor if it error is not line type */
-                const editorI = toRaw(editorInstance.value)
-                if (activeInlineTab.value) {
-                    activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                        editorI.deltaDecorations(
-                            activeInlineTab.value?.playground?.resultsPane
-                                ?.result?.errorDecorations,
-                            []
-                        )
-                }
-            })
+            // watch(queryErrorObj, () => {
+            //     /* Resetting the red dot from the editor if it error is not line type */
+            //     const editorI = toRaw(editorInstance.value)
+            //     if (activeInlineTab.value) {
+            //         activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+            //             editorI.deltaDecorations(
+            //                 activeInlineTab.value?.playground?.resultsPane
+            //                     ?.result?.errorDecorations,
+            //                 []
+            //             )
+            //     }
+            // })
 
             return {
                 errorDecorations,

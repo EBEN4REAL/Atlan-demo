@@ -36,6 +36,7 @@
     import { autoclosePairsConfig } from '~/components/insights/playground/editor/monaco/autoclosePairs'
     import { createAtlanTheme } from './customTheme'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
+    import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
 
     const turndownService = new TurndownService({})
 
@@ -70,32 +71,18 @@
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const {
+                clearMoustacheTemplateColor,
+                setErrorDecorations,
+                resetErrorDecorations,
                 toggleGhostCursor,
                 onEditorContentChange,
                 formatter,
                 setEditorPos,
                 setEditorFocusedState,
                 findCustomVariableMatches,
-                changeMoustacheTemplateColor,
+                setMoustacheTemplateColor,
             } = useEditor(tabs, activeInlineTab, sqlVariables)
-
-            const entityFilters = {
-                condition: 'OR',
-                criterion: [
-                    {
-                        attributeName: 'viewQualifiedName',
-                        operator: 'eq',
-                        attributeValue:
-                            'default/snowflake/shpllkz7g/SNOWFLAKE/ORGANIZATION_USAGE/RATE_SHEET_DAILY',
-                    },
-                    {
-                        attributeName: 'tableQualifiedName',
-                        operator: 'eq',
-                        attributeValue:
-                            'default/snowflake/shpllkz7g/SNOWFLAKE/ORGANIZATION_USAGE/RATE_SHEET_DAILY',
-                    },
-                ],
-            }
+            const { isLineError } = useResultPane(tabs)
 
             const isSelectedWordIsTableName = (word: string): boolean => {
                 switch (word) {
@@ -112,12 +99,16 @@
             }
             const findAndChangeCustomVariablesColor = () => {
                 if (activeInlineTab.value) {
-                    const matches = findCustomVariableMatches(
-                        editor,
-                        activeInlineTab.value.playground.editor.text
-                    )
+                    const matches =
+                        findCustomVariableMatches(
+                            editor,
+                            activeInlineTab.value.playground.editor.text
+                        ) ?? []
                     if (matches?.length > 0)
-                        changeMoustacheTemplateColor(editor, monaco, matches)
+                        setMoustacheTemplateColor(editor, monaco, matches)
+                    else {
+                        clearMoustacheTemplateColor(editor)
+                    }
                 }
             }
 
@@ -127,68 +118,6 @@
                 'atlansql',
                 languageTokens
             )
-            const resetErrorDecorations = (
-                activeInlineTab: Ref<activeInlineTabInterface>,
-                editor: any
-            ) => {
-                if (
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.errorDecorations?.length > 0
-                ) {
-                    activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                        editor.deltaDecorations(
-                            activeInlineTab.value.playground.resultsPane.result
-                                .errorDecorations,
-                            []
-                        )
-                }
-            }
-            const setErrorDecorations = (
-                activeInlineTab: Ref<activeInlineTabInterface>,
-                editor: any
-            ) => {
-                if (
-                    activeInlineTab.value &&
-                    activeInlineTab.value.playground.resultsPane.result
-                        .errorDecorations?.length > 0
-                ) {
-                    const lineRegex = /(?:line )([0-9]+)/gim
-                    /* [["Line 3", "3"], ["line 3", "3"]] */
-                    const linesInfo = [
-                        ...activeInlineTab.value.playground.resultsPane.result.queryErrorObj.errorMessage?.matchAll(
-                            lineRegex
-                        ),
-                    ]
-                    let startLine
-                    if (
-                        linesInfo?.length &&
-                        linesInfo[0]?.length > 1 &&
-                        activeInlineTab.value.playground.resultsPane.result
-                            .errorDecorations?.length > 0
-                    ) {
-                        startLine = linesInfo[0][1]
-                        activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                            editor.deltaDecorations(
-                                activeInlineTab.value.playground.resultsPane
-                                    .result.errorDecorations,
-                                [
-                                    {
-                                        range: new monaco.Range(
-                                            Number(startLine),
-                                            1,
-                                            Number(startLine),
-                                            1
-                                        ),
-                                        options: {
-                                            linesDecorationsClassName:
-                                                'edtiorErrorDotDecoration',
-                                        },
-                                    },
-                                ]
-                            )
-                    }
-                }
-            }
 
             const triggerAutoCompletion = (
                 promise: Promise<{
@@ -285,25 +214,27 @@
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
+                /* As this is mounting time you have to manually set the color for custom variables */
                 const matches =
                     findCustomVariableMatches(
                         editor,
                         activeInlineTab.value.playground.editor.text
                     ) ?? []
-                changeMoustacheTemplateColor(editor, monaco, matches)
-
+                setMoustacheTemplateColor(editor, monaco, matches)
+                /* ----------------------------------- */
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
                 editor?.getModel().onDidChangeContent((event) => {
-                    resetErrorDecorations(activeInlineTab, editor)
-                    // setErrorDecorations(activeInlineTab, editor)
+                    if (isLineError(activeInlineTab)) {
+                        resetErrorDecorations(activeInlineTab, editor)
+                    }
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     /* ------------- custom variable color change */
                     findAndChangeCustomVariablesColor()
                     /* ------------------------------------------ */
                     const changes = event?.changes[0]
-                    const lastTypedCharacter = event?.changes[0]?.text
+                    // const lastTypedCharacter = event?.changes[0]?.text
                     console.log(changes, 'changes')
                     /* Preventing network request when pasting name of table */
                     const suggestions = useAutoSuggestions(
@@ -366,10 +297,15 @@
                     findAndChangeCustomVariablesColor()
                     /* ------------------------------------------ */
                     /* ------------- set error decorations */
-                    setErrorDecorations(activeInlineTab, editor)
+                    if (isLineError(activeInlineTab)) {
+                        setErrorDecorations(activeInlineTab, editor, monaco)
+                    }
+
                     /* ------------------------------------------ */
                     editor?.getModel()?.onDidChangeContent(async (event) => {
-                        resetErrorDecorations(activeInlineTab, editor)
+                        if (isLineError(activeInlineTab)) {
+                            resetErrorDecorations(activeInlineTab, editor)
+                        }
                         // setErrorDecorations(activeInlineTab, editor)
                         const text = editor?.getValue()
                         onEditorContentChange(event, text, editor)

@@ -1,8 +1,8 @@
 
 
-import { ref, computed, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
-import { getStringFromPath, genParams } from './asyncSelect.utils'
+import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 
 export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, valueObject: { [x: string]: string; }) {
@@ -59,18 +59,24 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, value
         }
     }
 
+    // Currently not needing use case for disabling based on child api
+    const disabled = computed(() => {
+        const { params } = reqConfig
+        const dependentKeys: string[] = []
+        Object.values(params).forEach(v => {
+            if (typeof v === 'string')
+                dependentKeys.push(...keyIDs(v))
+        })
+        return dependentKeys;
+    })
+
     const data = ref([]);
-
-
     const init = () => {
         data.value = rootData.value.map(r => ({ value: r.value, title: r.label, children: [], key: r.value }))
     }
 
-
-
-
-
     return {
+        disabled,
         treeData: data,
         init,
         onLoadData,

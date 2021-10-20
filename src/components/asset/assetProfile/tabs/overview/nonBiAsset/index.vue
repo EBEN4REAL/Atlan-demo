@@ -4,7 +4,7 @@
         style="padding: 2rem 1.25rem 2rem 3.75rem"
     >
         <!-- Announcements -->
-        <Announcements :asset="assetData" :edit-permission="editPermission" />
+        <Announcements :asset="selectedAsset" :edit-permission="editPermission" />
 
         <!-- Table Summary -->
         <tableSummary :edit-permission="editPermission" />
@@ -42,14 +42,10 @@
                     ></a-tooltip
                 >
             </a-button-group>
-            <KeepAlive>
-                <overviewColumns
-                    v-if="activePreviewTabKey === 'column-preview'"
-                />
-                <overviewTable
-                    v-else-if="activePreviewTabKey === 'table-preview'"
-                />
-            </KeepAlive>
+
+            <overviewColumns v-if="activePreviewTabKey === 'column-preview'" />
+
+            <overviewTable v-if="activePreviewTabKey === 'table-preview'" />
         </div>
 
         <!-- Readme widget -->
@@ -57,11 +53,11 @@
             class="w-full"
             :show-borders="false"
             :show-padding-x="false"
-            :entity="assetData"
-            :parent-asset-id="assetData"
+            :entity="selectedAsset"
+            :parent-asset-id="selectedAsset"
             :edit-permission="editPermission"
         />
-        <Resources :asset="assetData" />
+        <Resources :asset="selectedAsset" />
     </div>
 </template>
 
@@ -69,13 +65,14 @@
     // Vue
     import {
         defineComponent,
-        inject,
+        // inject,
         computed,
         ref,
         defineAsyncComponent,
         Ref,
-        ComputedRef,
+        // ComputedRef,
     } from 'vue'
+    import { storeToRefs } from 'pinia'
 
     // Components
     import Readme from '@/common/readme/index.vue'
@@ -85,7 +82,9 @@
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
+    // import { assetInterface } from '~/types/assets/asset.interface'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: {
@@ -122,30 +121,34 @@
             }
 
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData: ComputedRef<assetInterface> = computed(
-                () => assetDataInjection?.asset
-            )
+            // const assetData: ComputedRef<assetInterface> = computed(
+            //     () => assetDataInjection?.asset
+            // )
 
             /** METHODS */
             // useAssetInfo
             const { assetType } = useAssetInfo()
-
+            // store
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             const showTablePreview = computed(
                 () =>
                     !['TablePartition', 'MaterialisedView'].includes(
-                        assetType(assetData.value)
+                        assetType(selectedAsset.value)
                     )
             )
 
             return {
-                assetData,
+                // assetData,
                 showTablePreview,
                 assetType,
                 setActiveTab,
                 activePreviewTabKey,
+                selectedAsset
             }
         },
     })

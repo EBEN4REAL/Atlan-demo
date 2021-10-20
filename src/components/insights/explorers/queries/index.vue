@@ -63,7 +63,7 @@
             </div>
             <div
                 v-if="!searchQuery?.length"
-                class="relative w-full h-full px-4 pt-0 overflow-y-auto  scrollable-container"
+                class="relative w-full h-full px-4 pt-0 overflow-y-auto scrollable-container"
             >
                 <!--explorer pane start -->
                 <div
@@ -106,7 +106,7 @@
             </div>
             <div
                 v-else
-                class="relative w-full h-full p-3 pt-0 pl-6 overflow-y-auto  scrollable-container"
+                class="relative w-full h-full p-3 pt-0 pl-6 overflow-y-auto scrollable-container"
             >
                 <div v-if="searchLoading">
                     <LoadingView />
@@ -127,7 +127,17 @@
                         />
                     </div>
                 </div>
-                <div v-else-if="!searchResults?.entities">No results</div>
+                <div v-else-if="!searchResults?.entities" class="flex flex-col items-center justify-center mt-14">
+                    <AtlanIcon
+                        icon="EmptySearchQuery"
+                        class="h-32 no-svaved-query-icon text-primary"
+                    />
+                     <p
+                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                    >
+                        Sorry, we couldn’t find<br /> the query you were looking for
+                    </p>
+                </div>
             </div>
         </div>
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full pb-1 mt-4 gap-y-4">
+    <div class="flex flex-col w-full pb-1 mt-2 gap-y-2">
         <template v-for="(item, index) in list" :key="item.typeName">
             <div>
                 <AssetSelector

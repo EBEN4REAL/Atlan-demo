@@ -31,11 +31,11 @@ export interface assetInterface {
         sourceUpdatedAt: string
         tenantId: string
         viewDefinition: string
-        bannerDescription: string
-        bannerTitle: string
-        bannerType: string
-        bannerUpdatedAt: number
-        bannerUpdatedBy: string
+        announcementMessage: string
+        announcementTitle: string
+        announcementType: string
+        announcementUpdatedAt: number
+        announcementUpdatedBy: string
 
         table?: {
             guid: string

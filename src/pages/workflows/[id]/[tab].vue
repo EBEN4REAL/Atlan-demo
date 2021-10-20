@@ -1,8 +1,8 @@
 <template>
-    <LoadingView v-if="!data?.asset" />
+    <LoadingView v-if="isLoading" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="flex w-full h-full">
+    <div v-else class="flex w-full h-full">
         <div class="flex flex-col w-full">
             <Header
                 :title="selected.name"
@@ -141,19 +141,23 @@
             const id = computed(() => route?.params?.id || '')
 
             const formConfig = computed(() => {
-                if (data.value?.uiConfig?.length) {
-                    let configCopy =
-                        data.value.uiConfig[0]?.data?.uiConfig || '{}'
-                    configCopy = configCopy
-                        .replace(/\\n/g, '\\n')
-                        .replace(/\\'/g, "\\'")
-                        .replace(/\\"/g, '\\"')
-                        .replace(/\\&/g, '\\&')
-                        .replace(/\\r/g, '\\r')
-                        .replace(/\\t/g, '\\t')
-                        .replace(/\\b/g, '\\b')
-                        .replace(/\\f/g, '\\f')
-                    return JSON.parse(configCopy) ?? {}
+                try {
+                    if (data.value?.uiConfig?.length) {
+                        let configCopy =
+                            data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                        configCopy = configCopy
+                            .replace(/\\n/g, '\\n')
+                            .replace(/\\'/g, "\\'")
+                            .replace(/\\"/g, '\\"')
+                            .replace(/\\&/g, '\\&')
+                            .replace(/\\r/g, '\\r')
+                            .replace(/\\t/g, '\\t')
+                            .replace(/\\b/g, '\\b')
+                            .replace(/\\f/g, '\\f')
+                        return JSON.parse(configCopy) ?? {}
+                    }
+                } catch {
+                    return {}
                 }
                 return {}
             })
@@ -192,17 +196,19 @@
                 })
             }
 
+            const {
+                workflow: response,
+                error,
+                isLoading,
+                mutate,
+            } = useWorkflowByName(id.value, false)
             // fetch
             const fetch = () => {
                 if (selected.value) {
                     fetchUIConfig()
                     return
                 }
-                const {
-                    workflow: response,
-                    error,
-                    isLoading,
-                } = useWorkflowByName(id.value)
+                mutate()
 
                 watch(response, (v) => {
                     data.value.asset = v
@@ -234,6 +240,7 @@
             })
 
             return {
+                isLoading,
                 emit,
                 activeKey,
                 selected,

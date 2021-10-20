@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300 facets"
         >
             <AssetFilters
                 :ref="
@@ -10,10 +10,8 @@
                         assetFilterRef = el
                     }
                 "
-                :initial-filters="AllFilters"
+                :facets="facets"
                 @refresh="handleFilterChange"
-                @termNameChange="termNameChange"
-                @initialize="handleFilterInit"
             ></AssetFilters>
         </div>
 
@@ -79,9 +77,8 @@
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     :typename="assetTypeListString"
-                    @preview="handlePreview"
                     @loadMore="loadMore"
-                ></AssetList>
+                />
             </div>
         </div>
     </div>
@@ -94,16 +91,7 @@
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
-    import {
-        computed,
-        defineComponent,
-        onMounted,
-        ref,
-        watch,
-        toRefs,
-        PropType,
-        Ref,
-    } from 'vue'
+    import { computed, defineComponent, ref, watch, Ref } from 'vue'
     import { useRouter } from 'vue-router'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
@@ -123,14 +111,16 @@
     } from '~/constant/projection'
     // TODO: Uncomment all tracing related code
     // import useTracking from '~/modules/tracking'
-    import { initialFiltersType } from '~/pages/assets.vue'
 
-    import { serializeQuery } from '~/utils/helper/routerHelper'
+    import { decodeQuery, serializeQuery } from '~/utils/helper/routerHelper'
 
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
-    import { Components } from '~/api/atlas/client'
     import useFilterUtils from './filters/useFilterUtils'
+    import {
+        generateAggregationDSL,
+        generateAssetQueryDSL,
+    } from './useDiscoveryDSL'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -146,18 +136,6 @@
             SearchAndFilter,
         },
         props: {
-            initialFilters: {
-                type: Object as PropType<initialFiltersType>,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-            termName: {
-                type: String,
-                required: false,
-                default: undefined,
-            },
             showFilters: {
                 type: Boolean,
                 required: false,
@@ -167,9 +145,7 @@
         emits: ['preview'],
         setup(props, { emit }) {
             // initializing the discovery store
-            const { initialFilters } = toRefs(props)
             const router = useRouter()
-
             // Asset filter component ref
             const assetFilterRef = ref()
             const autoSelect = ref(true)
@@ -178,41 +154,34 @@
             // const events = tracking.getEventsName()
             const isAggregate = ref(true)
 
-            // Clean Stuff
-            const AllFilters: Ref = ref({ ...initialFilters.value })
-
-            const selectedTab = computed({
-                get: () => AllFilters.value.selectedTab || 'Catalog',
-                set: (val) => {
-                    AllFilters.value.selectedTab = val
-                },
-            })
-            const queryText = computed({
-                get: () => AllFilters.value.searchText,
-                set: (val) => {
-                    AllFilters.value.searchText = val
-                },
-            })
-
-            const termName = ref<string | undefined>()
-
-            // This is the actual filter body
-            // FIXME: Can we make it a computed property?
-            const filters = ref([])
+            // Temporary, not saved in url
             const limit = ref(20)
             const offset = ref(0)
+
+            // Permanents
+            const selectedTab = ref('Catalog')
+            const queryText = ref('')
             const sortOrder = ref('default')
             const state = ref('active')
-            const facets = computed(() => AllFilters.value?.facetsFilters)
+            const facets = ref({})
 
-            const { generateFacetConfigForRouter } = useFilterUtils(facets)
+            // Initialization via IIFE
+            ;(() => {
+                const qry = decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                )
+                if (qry.selectedTab) selectedTab.value = qry.selectedTab
+                if (qry.queryText) queryText.value = qry.queryText
+                if (qry.sortOrder) sortOrder.value = qry.sortOrder
+                if (qry.state) state.value = qry.state
+                if (qry.facets) facets.value = qry.facets
+            })()
 
             // Get All Disoverable Asset Types
             const initialTabs: Ref<string[]> = computed(() =>
                 useFilteredTabs({
-                    connector: AllFilters.value?.facetsFilters?.connector,
-                    category:
-                        AllFilters.value?.facetsFilters?.assetCategory?.checked,
+                    connector: facets.value?.connector,
+                    category: facets.value?.assetCategory?.checked,
                 })
             )
 
@@ -266,9 +235,9 @@
 
             const totalSum = computed(() => {
                 let sum = 0
-                assetTypeList.value.forEach((element) => {
-                    if (assetTypeMap.value[element.id]) {
-                        sum += assetTypeMap.value[element.id]
+                assetTypeList.value?.forEach((element) => {
+                    if (assetTypeMap.value?.[element.id]) {
+                        sum += assetTypeMap.value?.[element.id]
                     }
                 })
                 return sum
@@ -278,7 +247,7 @@
                 if (selectedTab.value == 'Catalog') {
                     return totalSum.value
                 }
-                return assetTypeMap.value[selectedTab.value]
+                return assetTypeMap.value?.[selectedTab.value]
             })
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
@@ -305,12 +274,6 @@
 
             const updateBody = () => {
                 const initialBody = {
-                    typeName: assetTypeListString.value,
-                    termName: props.termName ?? termName.value,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
-                    limit: limit.value,
-                    offset: offset.value,
                     relationAttributes: [
                         'readme',
                         'displayText',
@@ -318,11 +281,14 @@
                         'description',
                         'shortDescription',
                     ],
-                    entityFilters: {
-                        condition: 'AND',
-                        criterion: Array.isArray(filters?.value)
-                            ? [...filters.value]
-                            : [],
+                    dsl: {
+                        size: limit.value,
+                        from: offset.value,
+                        ...generateAssetQueryDSL(
+                            facets.value,
+                            queryText.value,
+                            selectedTab.value
+                        ),
                     },
                     attributes: [
                         ...BaseAttributes,
@@ -330,55 +296,49 @@
                         ...tableauAttributes,
                         ...BMAttributeProjection.value,
                     ],
-                    aggregationAttributes: [],
-                }
-
-                if (selectedTab.value !== 'Catalog') {
-                    initialBody.entityFilters.criterion.push({
-                        attributeName: '__typeName',
-                        attributeValue: selectedTab.value,
-                        operator: 'eq',
-                    })
                 }
 
                 if (state.value) {
-                    if (state.value === 'all') {
-                        initialBody.excludeDeletedEntities = false
-                    } else if (state.value === 'archived') {
-                        initialBody.excludeDeletedEntities = false
-                        initialBody.entityFilters.criterion.push({
-                            attributeName: '__state',
-                            attributeValue: 'DELETED',
-                            operator: 'eq',
-                        })
-                    } else {
-                        initialBody.excludeDeletedEntities = true
-                    }
+                    // if (state.value === 'all') {
+                    //     initialBody.excludeDeletedEntities = false
+                    // } else if (state.value === 'archived') {
+                    //     initialBody.excludeDeletedEntities = false
+                    //     initialBody.entityFilters.criterion.push({
+                    //         attributeName: '__state',
+                    //         attributeValue: 'DELETED',
+                    //         operator: 'eq',
+                    //     })
+                    // } else {
+                    //     initialBody.excludeDeletedEntities = true
+                    // }
                 }
 
                 if (sortOrder.value !== 'default') {
-                    const split = sortOrder.value.split('|')
-                    if (split.length > 1) {
-                        initialBody.sortBy = split[0]
-                        initialBody.sortOrder = split[1].toUpperCase()
-                    }
+                    // const split = sortOrder.value.split('|')
+                    // if (split.length > 1) {
+                    //     initialBody.sortBy = split[0]
+                    //     initialBody.sortOrder = split[1].toUpperCase()
+                    // }
                 } else {
-                    delete initialBody.sortBy
-                    delete initialBody.sortOrder
-                }
-                if (queryText.value) {
-                    initialBody.query = queryText.value
+                    // delete initialBody.sortBy
+                    // delete initialBody.sortOrder
                 }
                 replaceBody(initialBody)
-                if (isAggregate.value) refreshAggregation(initialBody)
+                if (isAggregate.value)
+                    refreshAggregation({
+                        dsl: generateAggregationDSL(
+                            facets.value,
+                            queryText.value
+                        ),
+                    })
             }
 
+            const { generateFacetConfigForRouter } = useFilterUtils(facets)
             const setRouterOptions = () => {
                 const routerOptions: Record<string, any> = {
-                    facetsFilters: generateFacetConfigForRouter(),
+                    facets: generateFacetConfigForRouter(),
                 }
-                console.log(routerOptions)
-                if (queryText.value) routerOptions.searchText = queryText.value
+                if (queryText.value) routerOptions.queryText = queryText.value
                 if (selectedTab.value !== 'Catalog')
                     routerOptions.selectedTab = selectedTab.value
                 if (sortOrder.value !== 'default')
@@ -420,31 +380,17 @@
                 updateBody()
             }
 
-            const handleFilterChange = (
-                payload: any,
-                filterMapData: Record<string, Components.Schemas.FilterCriteria>
-            ) => {
-                AllFilters.value.facetsFilters = filterMapData
-                filters.value = payload
+            const handleFilterChange = (filterMapData: Record<string, any>) => {
+                facets.value = filterMapData
                 offset.value = 0
                 isAggregate.value = true
                 updateBody()
                 setRouterOptions()
             }
-            const termNameChange = (termQName: string) => {
-                termName.value = termQName
-                isAggregate.value = true
-                updateBody()
-                // setRouterOptions()
-            }
 
-            const handleFilterInit = (payload: any) => {
-                filters.value = payload
-            }
-
-            const handlePreview = (item) => {
-                emit('preview', item)
-            }
+            // const handlePreview = (item) => {
+            //     emit('preview', item)
+            // }
             const loadMore = () => {
                 autoSelect.value = false
                 offset.value += limit.value
@@ -478,8 +424,6 @@
                 autoSelect,
                 handleClearFiltersFromList,
                 assetFilterRef,
-                initialFilters,
-                AllFilters,
                 initialTabs,
                 searchScoreList,
                 list,
@@ -488,15 +432,15 @@
                 assetTypeList,
                 assetTypeMap,
                 isAggregate,
-                replaceBody,
                 handleSearchChange,
                 projection,
                 handleChangePreferences,
                 handleChangeSort,
                 isLoading,
                 handleFilterChange,
-                handlePreview,
+                // handlePreview,
                 queryText,
+                facets,
                 totalCount,
                 assetlist,
                 isLoadMore,
@@ -508,10 +452,7 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
-                filters,
                 assetTypeListString,
-                handleFilterInit,
-                termNameChange,
             }
         },
         data() {

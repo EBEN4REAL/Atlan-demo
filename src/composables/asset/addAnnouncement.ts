@@ -5,34 +5,34 @@ import { assetInterface } from '~/types/assets/asset.interface'
 
 export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
     const { username } = whoami()
-    const banner: { [key: string]: any } = ref({})
+    const announcement: { [key: string]: any } = ref({})
     const isCompleted = ref(false)
     const isLoading = ref(false)
     const body: { [key: string]: any } = ref({})
 
-    const bannerType: WritableComputedRef<string> = computed({
+    const announcementType: WritableComputedRef<string> = computed({
         get: () =>
-            selectedAsset.value?.attributes?.bannerType
+            selectedAsset.value?.attributes?.announcementType
             || "information"
         ,
         set: (newValue: string) => {
-            banner.value.type = newValue
+            announcement.value.type = newValue
             body.value = getBody()
         },
     })
-    const bannerDescription: WritableComputedRef<string> = computed({
-        get: () => selectedAsset.value?.attributes?.bannerDescription,
+    const announcementMessage: WritableComputedRef<string> = computed({
+        get: () => selectedAsset.value?.attributes?.announcementMessage,
         set: (newValue: string) => {
-            banner.value.description = newValue
+            announcement.value.description = newValue
             body.value = getBody()
         },
     })
-    const bannerTitle: WritableComputedRef<string> = computed({
+    const announcementTitle: WritableComputedRef<string> = computed({
         get: () =>
-            selectedAsset.value?.attributes?.bannerTitle,
+            selectedAsset.value?.attributes?.announcementTitle,
 
         set: (newValue: string) => {
-            banner.value.title = newValue
+            announcement.value.title = newValue
             body.value = getBody()
         },
     })
@@ -46,11 +46,11 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
                     qualifiedName:
                         selectedAsset.value.attributes?.qualifiedName,
                     name: selectedAsset.value.attributes?.name,
-                    bannerType: banner.value.type,
-                    bannerTitle: banner.value.title,
-                    bannerDescription: banner.value.description,
-                    bannerUpdatedAt: Date.now(),
-                    bannerUpdatedBy: username,
+                    announcementType: announcement.value.type,
+                    announcementTitle: announcement.value.title,
+                    announcementMessage: announcement.value.description,
+                    announcementUpdatedAt: Date.now(),
+                    announcementUpdatedBy: username,
                     tenantId: selectedAsset.value.attributes?.tenantId,
                     anchor: selectedAsset.value.attributes?.anchor
                 },
@@ -72,14 +72,14 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
         if (!error.value && state && isReady.value) {
             isLoading.value = false
             isCompleted.value = false
-            selectedAsset.value.attributes.bannerType =
-                banner.value.type
-            selectedAsset.value.attributes.bannerTitle =
-                banner.value.title
-            selectedAsset.value.attributes.bannerDescription =
-                banner.value.description
-            selectedAsset.value.attributes.bannerUpdatedAt = Date.now()
-            selectedAsset.value.attributes.bannerUpdatedBy =
+            selectedAsset.value.attributes.announcementType =
+                announcement.value.type
+            selectedAsset.value.attributes.announcementTitle =
+                announcement.value.title
+            selectedAsset.value.attributes.announcementMessage =
+                announcement.value.description
+            selectedAsset.value.attributes.announcementUpdatedAt = Date.now()
+            selectedAsset.value.attributes.announcementUpdatedBy =
                 username as unknown as string
             selectedAsset.value.attributes.__modifiedBy =
                 username as unknown as string
@@ -94,9 +94,9 @@ export default function addAnnouncement(selectedAsset: Ref<assetInterface>) {
 
     return {
         handleCancel,
-        bannerType,
-        bannerDescription,
-        bannerTitle,
+        announcementType,
+        announcementMessage,
+        announcementTitle,
         state,
         update,
         isReady,

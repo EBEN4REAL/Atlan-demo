@@ -109,13 +109,13 @@
                     :disabled="accessLogsParams.first === 0"
                     @click="paginateLogs('prev')"
                 >
-                    <fa icon="fal chevron-left"></fa>
+                    <AtlanIcon icon="CaretLeft" />
                 </a-button>
                 <a-button
                     :disabled="accessLogs.length < accessLogsParams.max"
                     @click="paginateLogs('next')"
                 >
-                    <fa icon="fal chevron-right"></fa>
+                    <AtlanIcon icon="CaretRight" />
                 </a-button>
             </div>
         </div>

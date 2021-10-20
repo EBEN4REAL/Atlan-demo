@@ -164,6 +164,29 @@ export function resolveUrl(
     })
 }
 
+const getUrlWithParams = (url, params) => {
+    let p = isRef(params) ? params.value : params
+    const temp = {}
+    // fix me
+    Object.entries(p).forEach(([k, v]) => {
+        let newv = v
+        if (typeof v === 'object') {
+            newv = JSON.stringify(v)
+                .replace(/\\n/g, '\\n')
+                .replace(/\\'/g, "\\'")
+                .replace(/\\"/g, '\\"')
+                .replace(/\\&/g, '\\&')
+                .replace(/\\r/g, '\\r')
+                .replace(/\\t/g, '\\t')
+                .replace(/\\b/g, '\\b')
+                .replace(/\\f/g, '\\f')
+        }
+        temp[k] = newv;
+    })
+    p = new URLSearchParams(temp)
+    return p.toString() ? `${url}?${p.toString()}` : url
+}
+
 export function useAPIPromise(
     url: string,
     method: HTTPVerb,
@@ -178,7 +201,7 @@ export function useAPIPromise(
             )
         case 'POST':
             return fetcherPost(
-                url,
+                getUrlWithParams(url, params),
                 isRef(body) ? body.value : body,
                 isRef(options) ? options.value : options
             )

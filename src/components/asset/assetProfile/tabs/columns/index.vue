@@ -5,7 +5,7 @@
     >
         <div class="w-full">
             <div
-                class="inline-block px-2 py-1 mb-4 font-bold rounded shadow  text-primary"
+                class="inline-block px-2 py-1 mb-4 font-bold rounded shadow text-primary"
             >
                 Column Preview
             </div>
@@ -26,11 +26,14 @@
         Ref,
         ComputedRef,
     } from 'vue'
+    import { storeToRefs } from 'pinia'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import overviewColumns from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewColumns.vue'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: {
@@ -55,11 +58,13 @@
             /** METHODS */
             // useAssetInfo
             const { assetType } = useAssetInfo()
-
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             const showTablePreview = computed(
                 () =>
                     !['TablePartition', 'MaterialisedView'].includes(
-                        assetType(assetData.value)
+                        assetType(selectedAsset.value)
                     )
             )
 
@@ -69,6 +74,7 @@
                 assetType,
                 setActiveTab,
                 activePreviewTabKey,
+                selectedAsset
             }
         },
     })

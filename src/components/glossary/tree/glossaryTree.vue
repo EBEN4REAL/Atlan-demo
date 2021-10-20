@@ -391,7 +391,7 @@
                             class="h-full"
                         >
                             <template #switcherIcon>
-                                <AtlanIcon icon="Caret" />
+                                <AtlanIcon icon="CaretRight" />
                                 !
                             </template>
 

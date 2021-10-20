@@ -68,10 +68,7 @@
 
                 <div
                     v-if="
-                        !isLoading &&
-                        !(queryText.length
-                            ? filterList(queryText).length
-                            : workflowList.length)
+                        workflowList && workflowList.length <= 0 && !isLoading
                     "
                     class="flex flex-col items-center mt-10"
                 >
@@ -97,11 +94,7 @@
                         <WorkflowList
                             v-model:autoSelect="autoSelect"
                             class="pt-2 bg-white"
-                            :list="
-                                queryText.length
-                                    ? filterList(queryText)
-                                    : workflowList
-                            "
+                            :list="workflowList"
                             :is-loading="isLoading"
                             :is-load-more="isLoadMore"
                             :selected-item-id="selectedItemId"
@@ -120,28 +113,27 @@
 </template>
 
 <script lang="ts">
-    import EmptyView from '@common/empty/discover.vue'
-    import workflowPagination from '@common/pagination/index.vue'
-
     import { useDebounceFn } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, Ref } from 'vue'
     import { useRouter } from 'vue-router'
     import emptyScreen from '~/assets/images/empty_search.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import WorkflowList from '@/workflows/new/list/workflowList.vue'
-
     // sharing discover components
     import Preferences from '@/workflows/discovery/list/preference.vue'
     import WorkflowFilters from '@/workflows/discovery/filters/workflowFilters.vue'
-    import { List as listOfFilters } from '@/workflows/new/filters/filters' // own filter list
 
     import { serializeQuery, decodeQuery } from '~/utils/helper/routerHelper'
 
-    import useFilterUtils from '@/workflows/new/filters/useFilterUtils'
+    import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
+    import { transformToFilters } from '~/components/workflows/discovery/filters/useFilterTransform'
+
     import { useWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/new/cards.vue'
     import SetupPreview from '@/workflows/new/preview/preview.vue'
+
+    import { List as listOfFilters } from '@/workflows/new/filters/filters' // own filter list
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
@@ -149,17 +141,13 @@
             WorkflowList,
             SetupPreview,
             WorkflowFilters,
-            workflowPagination,
             Preferences,
-            EmptyView,
             WorkflowCards,
             SearchAndFilter,
             AtlanBtn,
         },
         emits: ['preview'],
         setup(props, { emit }) {
-            console.log('In Setup')
-
             // FIXME FIX FILTERS
             const router = useRouter()
             const initialFilters: Record<string, any> = ref({
@@ -191,8 +179,6 @@
             // This is the actual filter body
             // FIXME Can we make it a computed property?
             const filters = ref([])
-            const limit = ref(20)
-            const offset = ref(0)
             const sortOrder = ref('default')
             const state = ref('active')
             const facets = computed(() => AllFilters.value?.facetsFilters)
@@ -213,8 +199,6 @@
             const isLoadMore = computed(
                 () => filter_record.value > workflowList.value.length
             )
-
-            if (!workflowList.value.length) mutate()
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
 
@@ -246,7 +230,7 @@
                 // console.log(filters.value)
                 console.log({ ...AllFilters.value.facetsFilters })
 
-                // filterList(transformToFilters(AllFilters.value))
+                filterList(transformToFilters(AllFilters.value))
             }
             if (!workflowList.value.length) shootQuery()
 
@@ -255,6 +239,27 @@
                 setRouterOptions()
                 shootQuery()
             }, 600)
+
+            const handleChangeSort = (payload: any) => {
+                console.log(payload)
+                AllFilters.value.sortOrder = payload
+                shootQuery()
+            }
+
+            const handleFilterChange = (
+                payload: any,
+                filterMapData: Record<string, Components.Schemas.FilterCriteria>
+            ) => {
+                // console.log(payload, filterMapData)
+                AllFilters.value.facetsFilters = filterMapData
+                filters.value = payload
+                shootQuery()
+                setRouterOptions()
+            }
+
+            const handleFilterInit = (payload: any) => {
+                filters.value = payload
+            }
 
             const handlePreview = (item) => {
                 selectedItemId.value = item.workflowtemplate.metadata.uid
@@ -286,6 +291,9 @@
                 filterList,
                 selectedItemId,
                 listOfFilters,
+                handleFilterChange,
+                handleFilterInit,
+                handleChangeSort,
             }
         },
         data() {

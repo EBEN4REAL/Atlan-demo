@@ -82,8 +82,6 @@
 </template>
 
 <script lang="ts">
-    import EmptyView from '@common/empty/discover.vue'
-
     import { useDebounceFn } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, Ref } from 'vue'
     import { useRouter } from 'vue-router'
@@ -118,7 +116,6 @@
         setup(props, { emit }) {
             // FIXME FIX FILTERS
             const router = useRouter()
-
             const initialFilters: Record<string, any> = ref({
                 facetsFilters: {},
                 searchText: '',
@@ -161,8 +158,6 @@
                 mutate,
                 filter_record,
             } = useWorkflowSearchList(false)
-
-            // if (!workflowList.value.length) mutate()
 
             const isLoadMore = computed(
                 () => filter_record.value > workflowList.value.length

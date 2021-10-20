@@ -12,16 +12,10 @@ export const transformFacets = (facetsFilters) => {
 // transform Allfilters 
 export const transformToFilters = (AllFilters) => {
   // console.log('facetsFilters: ', AllFilters.facetsFilters)
-
-  const { facetsFilters, searchText, sortOrder } = AllFilters
-  const checkIfAnyFilter = Object.keys(facetsFilters).map(x => facetsFilters[x])
-
-  console.log(checkIfAnyFilter);
-
-
-  console.log('mac', Object.keys(facetsFilters).length !== 0, facetsFilters);
   const output = {}
+  const { facetsFilters, searchText, sortOrder } = AllFilters
+  const transformedFilters = transformFacets(facetsFilters)
   if (searchText) output.name = { $ilike: `%${searchText}%` }
-  if (checkIfAnyFilter) output.$or = transformFacets(facetsFilters)
+  if (transformedFilters.length > 0) output.$or = transformedFilters
   return { filter: output, sort: sortOrder }
 }

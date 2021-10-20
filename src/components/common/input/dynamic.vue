@@ -181,8 +181,16 @@
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
+            id: {},
             modelValue: {
+                type: [Boolean, String, Number],
                 required: false,
+                default: () => '',
+            },
+            globalVariables: {
+                type: Object,
+                required: false,
+                default: () => {},
             },
             valueObject: {
                 type: Object,
@@ -305,7 +313,7 @@
                 },
             },
         },
-        emits: ['update:modelValue', 'change', 'blur'],
+        emits: ['update:modelValue', 'change', 'blur', 'getGlobal'],
         setup(props, { emit }) {
             const { valueObject } = toRefs(props)
 
@@ -320,6 +328,7 @@
                 shouldRefetch,
                 handleCreateNew,
                 createNewVisibility,
+                getStringFromPath,
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
@@ -335,7 +344,8 @@
             } = useAsyncTreeSelect(
                 asyncData,
                 props.otherApiConfig.req,
-                props.otherApiConfig.res
+                props.otherApiConfig.res,
+                valueObject
             )
 
             const handleDropdownVisibleChange = (open) => {
@@ -385,7 +395,41 @@
                 emit('change', result)
             }
 
+            const handleChange = (e, timeStamp) => {
+                let val = e
+                if (e?.target) {
+                    val = e.target.value
+                }
+                if (props.dataType === 'number') {
+                    emit('update:modelValue', parseInt(val, 10))
+                } else if (props.dataType === 'checkbox') {
+                    emit('update:modelValue', Array.from(e))
+                } else if (
+                    props.dataType === 'date' ||
+                    props.dataType === 'time'
+                ) {
+                    emit('update:modelValue', timeStamp)
+                } else {
+                    emit('update:modelValue', val)
+                }
+                emit('change', val)
+                if (
+                    props.dataType === 'asyncSelect' &&
+                    props?.globalVariables
+                ) {
+                    const temp = {}
+                    Object.entries(props.globalVariables).forEach(([k, p]) => {
+                        const d = asyncData.value.find(
+                            (o) => o.value === e
+                        ).data
+                        temp[k] = getStringFromPath(d, p)
+                    })
+                    emit('getGlobal', temp)
+                }
+            }
+
             return {
+                handleChange,
                 errorM,
                 treeErrorM,
                 treeData,
@@ -448,26 +492,7 @@
                         : current < dayjs(this.limitBefore, 'MM-DD-YYYY')
                 return current && limitAfter && current && limitBefore
             },
-            handleChange(e, timeStamp) {
-                let val = e
-                if (e?.target) {
-                    val = e.target.value
-                }
-                if (this.dataType === 'number') {
-                    this.$emit('update:modelValue', parseInt(val))
-                } else if (this.dataType === 'checkbox') {
-                    console.log(e)
-                    this.$emit('update:modelValue', Array.from(e))
-                } else if (
-                    this.dataType === 'date' ||
-                    this.dataType === 'time'
-                ) {
-                    this.$emit('update:modelValue', timeStamp)
-                } else {
-                    this.$emit('update:modelValue', val)
-                }
-                this.$emit('change', val)
-            },
+
             handleToggleCustom() {
                 this.isCustom = !this.isCustom
             },

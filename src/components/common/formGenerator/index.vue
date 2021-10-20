@@ -65,10 +65,13 @@
                                                           c?.getFormConfig,
                                                       createNewLabel:
                                                           c?.createNewLabel,
+                                                      globalVariables:
+                                                          c?.saveVariables,
                                                   }
                                                 : {}
                                         "
                                         @change="handleInputChange"
+                                        @getGlobal="setGlobal"
                                     ></DynamicInput>
                                 </a-form-item>
                             </div>
@@ -131,10 +134,12 @@
                                           allowCreate: f.allowCreate,
                                           getFormConfig: f.getFormConfig,
                                           createNewLabel: f.createNewLabel,
+                                          globalVariables: f?.saveVariables,
                                       }
                                     : {}
                             "
                             @change="handleInputChange"
+                            @getGlobal="setGlobal"
                         ></DynamicInput>
                     </a-form-item>
                 </div>
@@ -198,18 +203,15 @@
                 isRequiredField,
                 handleFormSubmit,
                 init,
+                setGlobal,
             } = useFormGenerator(configX, formRef, emit, props.defaultValues)
-
-            const handleIncludeAll = (e, id, v) => {
-                handleInputChange()
-            }
 
             watch(configX, () => {
                 init()
             })
 
             return {
-                handleIncludeAll,
+                setGlobal,
                 handleFormSubmit,
                 init,
                 handleInputChange,

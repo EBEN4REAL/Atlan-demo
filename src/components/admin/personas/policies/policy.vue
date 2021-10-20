@@ -52,7 +52,7 @@
             placeholder="Connection Id"
             class="mb-2"
         />
-        <span class="mb-2" v-else>{{ policy.connectionId }}</span>
+        <p class="mb-2" v-else>{{ policy.connectionId }}</p>
 
         <span class="block mb-1 text-sm text-gray-700">ASSETS</span>
         <a-select
@@ -72,18 +72,7 @@
                 :has-action="false"
             />
         </div>
-
-        <span class="mb-1 text-sm text-gray-700">SCOPES</span>
-        <div class="mb-3" v-for="scope in scopeList">
-            <span class="block mb-1 text-sm text-gray-500 capitalize">{{
-                scope.type
-            }}</span>
-            <a-checkbox-group
-                :value="policy.actions"
-                :name="scope.type"
-                :options="scope.scopes"
-            />
-        </div>
+        <MetadataScopes v-model:actions="policy.actions" />
         <a-divider />
     </div>
 </template>
@@ -93,12 +82,12 @@
     import AtlanBtn from '@/UI/button.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/personas'
-    import { isEditing } from './composables/useEditPersona'
-    import useScopeService from '~/services/heracles/composables/scopes'
+    import { isEditing } from '../composables/useEditPersona'
+    import MetadataScopes from './metadataScopes.vue'
 
     export default defineComponent({
         name: 'PersonaPolicy',
-        components: { AtlanBtn, Pill },
+        components: { AtlanBtn, Pill, MetadataScopes },
         props: {
             policy: {
                 type: Object as PropType<MetadataPolicies>,
@@ -107,13 +96,10 @@
         },
         emits: ['delete'],
         setup(props, { emit }) {
-            const { scopeList } = useScopeService().listScopes()
-
             function removePolicy() {
                 emit('delete')
             }
             return {
-                scopeList,
                 isEditing,
                 removePolicy,
             }

@@ -63,7 +63,7 @@
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
 
-    import PersonaPolicy from './personaPolicy.vue'
+    import PersonaPolicy from './policies/policy.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import {
         isEditing,

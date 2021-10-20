@@ -188,11 +188,7 @@
         },
         props: {
             id: { type: String, required: false, default: '' },
-            modelValue: {
-                type: [Boolean, String, Number],
-                required: false,
-                default: () => '',
-            },
+            modelValue: {},
             globalVariables: {
                 type: Object,
                 required: false,

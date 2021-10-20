@@ -8,7 +8,7 @@
 export const getStringFromPath = (data: object | Array<any>, path: string) => {
     if (!path || ['', '.'].includes(path)) return data;
     const arrayReg = /\w*\[\d*\]$/g
-    const r = /\{\{(\.\w*?)\}\}/g
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
     const varArr = path.match(r);
     let label: unknown = '';
     if (varArr?.length) {
@@ -54,7 +54,7 @@ export const genParams = (dO, pO) => {
      * @returns [idName, anotherID]
      */
 export const keyIDs = (v) => {
-    const r = /\{\{(\.\w*?)\}\}/g
+    const r = /\{\{(\.[\w\W]*?)\}\}/g
     const keys: string[] = []
     if (typeof v === 'string') {
         const varArr = v.match(r);

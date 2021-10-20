@@ -96,7 +96,12 @@
         :load-data="onLoadData"
         :disabled="letAsyncSelectDisabled || disabled"
         @change="handleSelect"
-        @click="handleDropdownVisibleChange"
+        @click="
+            () =>
+                handleDropdownVisibleChange(
+                    !letAsyncSelectDisabled && !disabled
+                )
+        "
     />
 
     <!-- async tree select end -->

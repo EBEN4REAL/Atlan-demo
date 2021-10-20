@@ -84,8 +84,8 @@
                             group</span
                         >
                     </a-form-item>
-                    <div class="mt-4 border-b"></div>
-                    <div class="mt-3 ml-2">
+                    <div v-if="listPermission" class="mt-4 border-b"></div>
+                    <div v-if="listPermission" class="mt-3 ml-2">
                         <div class="mb-2">
                             <span class="mr-2">Select users</span
                             ><span class="text-gray">(Optional)</span>
@@ -119,6 +119,7 @@
 
     import UserList from '~/components/admin/groups/common/userList.vue'
     import whoami from '~/composables/user/whoami'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     interface Group {
         name: String
@@ -132,6 +133,8 @@
             const router = useRouter()
             const createGroupLoading = ref(false)
             const isDefault = ref(false)
+            const accessStore  = useAccessStore()
+            const listPermission = accessStore.checkPermission('LIST_USERS')
             const group: UnwrapRef<Group> = reactive({
                 name: '',
                 description: '',
@@ -218,6 +221,7 @@
                 updateUserList,
                 isDefault,
                 routeToGroups,
+                listPermission
             }
         },
         data() {

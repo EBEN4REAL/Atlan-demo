@@ -6,6 +6,7 @@
                 >Classification</span
             >
             <Dropdown
+                v-if="options.length"
                 class="ml-auto"
                 :options="classificationDropdownOption"
             ></Dropdown>
@@ -62,6 +63,7 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import Dropdown from '@/UI/dropdown.vue'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         name: 'ClassificationHeader',
@@ -99,6 +101,8 @@
         setup(props) {
             const isDeleteClassificationModalOpen = ref(false)
             const isEditClassificationModalOpen = ref(false)
+            const accessStore  = useAccessStore();
+
             const selectedClassification = computed(
                 (): classificationInterface => props.classification
             )
@@ -119,19 +123,25 @@
             const updatedBy = computed(
                 () => selectedClassification.value.updatedBy
             )
-            const classificationDropdownOption = computed(() => [
-                {
-                    title: 'Edit',
-                    icon: 'Edit',
-                    handleClick: editClassification,
-                },
-                {
+            const classificationDropdownOption = computed(() => {
+                const options: Record<string, any>[] = []
+                if(accessStore.checkPermission('UPDATE_CLASSIFICATION')) {
+                    options.push( {
+                        title: 'Edit',
+                        icon: 'Edit',
+                        handleClick: editClassification,
+                    })
+                }
+                if(accessStore.checkPermission('DELETE_CLASSIFICATION')) {
+                    options.push({
                     title: 'Delete',
                     icon: 'Trash',
                     class: 'text-red-700',
                     handleClick: deleteClassification,
-                },
-            ])
+                })
+                }
+                return options
+            })
             const deleteClassification = () => {
                 isDeleteClassificationModalOpen.value = true
             }

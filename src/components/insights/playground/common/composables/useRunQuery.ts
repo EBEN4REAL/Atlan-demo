@@ -26,6 +26,7 @@ export default function useProject() {
     const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
+        // console.log('columns: ', columns)
         if (columns.length > 0) {
             columnList.value = []
             columns.map((col: any) => {
@@ -36,24 +37,40 @@ export default function useProject() {
                     key: col.columnName,
                 })
             })
+
+            // columnList.value.unshift({
+            //     title: 'KEY',
+            //     dataIndex: 'key',
+            //     width: 'fit-content',
+            //     key: 'key',
+            // })
         }
+
+        
     }
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
         const columns = toRaw(columnList.value)
+        // console.log('columns: ', columns)
+        // console.log('rows: ', rows)
+
+
         rows.map((result: any) => {
+            // console.log(result)
             let tmp = {}
             result.map((row, rowindex) => {
                 tmp = {
                     ...tmp,
                     ...{
-                        [columns[rowindex].dataIndex]: row,
-                        key: rowindex,
+                        // key: rowindex,
+                        [columns[rowindex].dataIndex]: row
+                        // key: rowindex,
                     },
                 }
             })
             dataList.value.push(tmp)
         })
+        // console.log('rows: ', dataList)
     }
 
     const queryRun = (

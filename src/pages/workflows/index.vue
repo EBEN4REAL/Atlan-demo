@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
         >
             <WorkflowFilters
                 :ref="
@@ -10,6 +10,7 @@
                     }
                 "
                 :initial-filters="AllFilters"
+                :filters-list="defaultfiltersList"
                 @refresh="handleFilterChange"
                 @initialize="handleFilterInit"
             ></WorkflowFilters>
@@ -82,7 +83,6 @@
 
 <script lang="ts">
     import EmptyView from '@common/empty/discover.vue'
-    import workflowPagination from '@common/pagination/index.vue'
 
     import { useDebounceFn } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, Ref } from 'vue'
@@ -101,6 +101,8 @@
     import { useWorkflowSearchList } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import DiscoveryPreview from '@/workflows/discovery/preview/preview.vue'
+
+    import { List as defaultfiltersList } from '@/workflows/discovery/filters/filters'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
@@ -126,8 +128,6 @@
                 ),
             })
 
-            console.log('initialFilters: ', initialFilters.value)
-
             // workflow filter component ref
             const workflowFilterRef = ref()
             const autoSelect = ref(true)
@@ -146,7 +146,6 @@
             // This is the actual filter body
             // FIXME Can we make it a computed property?
             const filters = ref([])
-            const limit = ref(20)
             const offset = ref(0)
             const sortOrder = ref('default')
             const facets = computed(() => AllFilters.value?.facetsFilters)
@@ -214,11 +213,6 @@
                 shootQuery()
             }
 
-            const handleChangePreferences = (payload: any) => {
-                // console.log(payload)
-                // projection.value = payload
-            }
-
             const handleFilterChange = (
                 payload: any,
                 filterMapData: Record<string, Components.Schemas.FilterCriteria>
@@ -265,6 +259,7 @@
                 handleFilterChange,
                 handleFilterInit,
                 handleChangeSort,
+                defaultfiltersList,
             }
         },
         data() {

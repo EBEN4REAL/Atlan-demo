@@ -366,6 +366,8 @@
     import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 
     export default defineComponent({
         components: {
@@ -383,6 +385,7 @@
 
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
+            const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
@@ -417,6 +420,7 @@
                 'activeInlineTabKey'
             ) as Ref<string>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
             const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
@@ -458,9 +462,35 @@
                     )
                 }
             }
+            /* sucess| error */
+            const onRunCompletion = (status: string) => {
+                if (status === 'success') {
+                    /* Resetting the red dot from the editor if it error is not line type */
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                } else if ((status = 'error')) {
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
+                    const errorName =
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    if (LINE_ERROR_NAMES.includes(errorName)) {
+                        setErrorDecorations(
+                            activeInlineTab,
+                            toRaw(editorInstance),
+                            toRaw(monacoInstance)
+                        )
+                    }
+                }
+            }
             const run = () => {
                 useAddEvent('insights', 'query', 'run', undefined)
-                queryRun(activeInlineTab, getData, limitRows)
+                queryRun(activeInlineTab, getData, limitRows, onRunCompletion)
             }
 
             const setInstance = (

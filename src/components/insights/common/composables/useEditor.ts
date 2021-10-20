@@ -176,7 +176,7 @@ export function useEditor(
         )
     }
 
-    const changeMoustacheTemplateColor = (
+    const setMoustacheTemplateColor = (
         editorInstance: any,
         monacoInstance: any,
         matches: any
@@ -200,6 +200,10 @@ export function useEditor(
         })
         // older moustacheDecorations needed
         decorations = editorInstance?.deltaDecorations(decorations, el)
+    }
+    const clearMoustacheTemplateColor = (editorInstance: any) => {
+        // older moustacheDecorations needed
+        decorations = editorInstance?.deltaDecorations(decorations, [])
     }
     const findCustomVariableMatches = (
         editorInstance: any,
@@ -246,6 +250,67 @@ export function useEditor(
             )
         }
     }
+    const resetErrorDecorations = (
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        editor: any
+    ) => {
+        if (activeInlineTab.value) {
+            activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                editor.deltaDecorations(
+                    activeInlineTab.value.playground.resultsPane.result
+                        .errorDecorations,
+                    []
+                )
+        }
+    }
+
+    const setErrorDecorations = (
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        editor: any,
+        monaco: any
+    ) => {
+        if (
+            activeInlineTab.value &&
+            activeInlineTab.value.playground.resultsPane.result.errorDecorations
+                ?.length > 0
+        ) {
+            const lineRegex = /(?:line )([0-9]+)/gim
+            /* [["Line 3", "3"], ["line 3", "3"]] */
+            const linesInfo = [
+                ...activeInlineTab.value.playground.resultsPane.result.queryErrorObj.errorMessage?.matchAll(
+                    lineRegex
+                ),
+            ]
+            let startLine
+            if (
+                linesInfo?.length &&
+                linesInfo[0]?.length > 1 &&
+                activeInlineTab.value.playground.resultsPane.result
+                    .errorDecorations?.length > 0
+            ) {
+                startLine = linesInfo[0][1]
+                activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                    editor.deltaDecorations(
+                        activeInlineTab.value.playground.resultsPane.result
+                            .errorDecorations,
+                        [
+                            {
+                                range: new monaco.Range(
+                                    Number(startLine),
+                                    1,
+                                    Number(startLine),
+                                    1
+                                ),
+                                options: {
+                                    linesDecorationsClassName:
+                                        'edtiorErrorDotDecoration',
+                                },
+                            },
+                        ]
+                    )
+            }
+        }
+    }
     const editorConfig = ref({
         theme: 'vs',
         tabSpace: 3,
@@ -253,9 +318,12 @@ export function useEditor(
     })
 
     return {
+        clearMoustacheTemplateColor,
+        setErrorDecorations,
+        resetErrorDecorations,
         toggleGhostCursor,
         findCustomVariableMatches,
-        changeMoustacheTemplateColor,
+        setMoustacheTemplateColor,
         setFontSizes,
         setTabSpaces,
         editorConfig,

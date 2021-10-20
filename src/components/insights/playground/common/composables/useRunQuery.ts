@@ -1,14 +1,13 @@
 import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
 import { KeyMaps } from '~/services/heka/heka_keyMaps'
-import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { generateQueryStringParamsFromObj } from '~/utils/queryString'
 
 export default function useProject() {
-    const { getParsedQuery, formatter } = useEditor()
+    const { getParsedQuery } = useEditor()
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const columnList: Ref<
@@ -60,7 +59,8 @@ export default function useProject() {
     const queryRun = (
         activeInlineTab: Ref<activeInlineTabInterface>,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
-        limitRows?: Ref<{ checked: boolean; rowsCount: number }>
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
+        onCompletion?: Function
     ) => {
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
@@ -148,6 +148,8 @@ export default function useProject() {
                                 []
                             activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
                                 {}
+                            /* Callback will be called when request completed */
+                            if (onCompletion) onCompletion('success')
 
                             /* ------------------- */
                         }
@@ -167,6 +169,8 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
                                 'error'
                             /* ------------------- */
+                            /* Callback will be called when request completed */
+                            if (onCompletion) onCompletion('error')
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {

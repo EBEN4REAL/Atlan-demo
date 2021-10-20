@@ -202,7 +202,7 @@ export function useAPIPromise(
             )
         case 'POST':
             return fetcherPost(
-                getUrlWithParams(url, params),
+                url,
                 isRef(body) ? body.value : body,
                 isRef(options) ? options.value : options
             )

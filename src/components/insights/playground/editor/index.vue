@@ -96,35 +96,63 @@
                 <div class="flex items-center">
                     <div class="flex text-sm">
                         <div class="flex">
-                            <a-button
-                                type="primary"
-                                class="
-                                    flex
-                                    items-center
-                                    button-shadow
-                                    border-none
-                                    py-0.5
-                                    h-6
-                                    rounded
+                            <AtlanBtn
+                                class="flex items-center h-6"
+                                size="sm"
+                                color="primary"
+                                padding="compact"
+                                :disabled="
+                                    activeInlineTab.playground.resultsPane
+                                        .result.buttonDisable
                                 "
-                                :class="
-                                    isQueryRunning === 'loading'
-                                        ? 'px-4.5 pr-3.5'
-                                        : 'px-3'
-                                "
-                                :loading="
-                                    isQueryRunning === 'loading' ? true : false
-                                "
-                                @click="run"
+                                @click="toggleRun"
                             >
-                                <template #icon>
+                                <div class="flex items-center">
                                     <AtlanIcon
-                                        class="mr-1 text-white"
+                                        v-if="
+                                            isQueryRunning === 'loading'
+                                                ? false
+                                                : true
+                                        "
+                                        style="margin-right: 2.5px"
                                         icon="Play"
-                                    />
-                                </template>
-                                Run</a-button
-                            >
+                                        class="text-white rounded button-shadow"
+                                    ></AtlanIcon>
+                                    <AtlanIcon
+                                        v-else
+                                        icon="CircleLoader"
+                                        style="margin-right: 2.5px"
+                                        class="w-5 h-5 text-white animate-spin"
+                                    ></AtlanIcon>
+
+                                    <span
+                                        v-if="
+                                            !activeInlineTab.playground
+                                                .resultsPane.result.runQueryId
+                                        "
+                                        class="text-white"
+                                        >Run</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            !activeInlineTab.playground
+                                                .resultsPane.result
+                                                .buttonDisable
+                                        "
+                                        class="text-white"
+                                        >Abort</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            activeInlineTab.playground
+                                                .resultsPane.result
+                                                .buttonDisable
+                                        "
+                                        class="text-white"
+                                        >Aborting</span
+                                    >
+                                </div>
+                            </AtlanBtn>
                         </div>
                         <a-button
                             v-if="
@@ -367,7 +395,9 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+    import HEKA_SERVICE_API from '~/services/heka/index'
 
     export default defineComponent({
         components: {
@@ -385,6 +415,8 @@
 
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
+            const { getDatabaseName, getConnectionQualifiedName } =
+                useConnector()
             const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun } = useRunQuery()
@@ -488,9 +520,63 @@
                     }
                 }
             }
-            const run = () => {
-                useAddEvent('insights', 'query', 'run', undefined)
-                queryRun(activeInlineTab, getData, limitRows, onRunCompletion)
+            const onQueryIdGeneration = (queryId: string, eventSource: any) => {
+                /* Setting the particular instance to this tab */
+                activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                    queryId
+                activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                    eventSource
+            }
+            const toggleRun = () => {
+                const queryId =
+                    activeInlineTab.value.playground.resultsPane.result
+                        .runQueryId
+                const currState = !queryId ? 'run' : 'abort'
+                if (currState === 'run') {
+                    useAddEvent('insights', 'query', 'run', undefined)
+                    queryRun(
+                        activeInlineTab,
+                        getData,
+                        limitRows,
+                        onRunCompletion,
+                        onQueryIdGeneration
+                    )
+                } else {
+                    /* Abort Query logic */
+                    activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                        true
+                    const body = {
+                        queryId:
+                            activeInlineTab.value.playground.resultsPane.result
+                                .runQueryId,
+                        dataSourceName: getConnectionQualifiedName(
+                            activeInlineTab.value.explorer.schema.connectors
+                                .attributeValue
+                        ),
+                        databaseName: getDatabaseName(
+                            activeInlineTab.value.explorer.schema.connectors
+                                .attributeValue
+                        ),
+                    }
+                    /* Change loading state */
+                    HEKA_SERVICE_API.Insights.AbortQuery(body).then(() => {
+                        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                            ''
+                        if (
+                            activeInlineTab.value.playground.resultsPane.result
+                                .eventSourceInstance?.close
+                        ) {
+                            activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
+                            activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                                undefined
+                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                                undefined
+                            activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                                false
+                            console.log('connection closed succesfully')
+                        }
+                    })
+                }
             }
 
             const setInstance = (
@@ -622,7 +708,7 @@
                 openSaveQueryModal,
                 saveQuery,
                 setInstance,
-                run,
+                toggleRun,
             }
         },
     })

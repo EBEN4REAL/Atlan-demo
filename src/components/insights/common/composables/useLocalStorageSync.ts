@@ -19,6 +19,8 @@ export function useLocalStorageSync() {
                 t.playground.resultsPane.result.executionTime = -1
                 t.playground.resultsPane.result.totalRowsCount = -1
                 t.playground.resultsPane.result.totalRowsCount = []
+                t.playground.resultsPane.result.buttonDisable = undefined
+                t.playground.resultsPane.result.eventSourceInstance = undefined
                 return t
             })
             localStorage.setItem(

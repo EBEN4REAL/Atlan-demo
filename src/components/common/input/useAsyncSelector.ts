@@ -1,65 +1,36 @@
 import { ref, computed, watch } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
+import { ReqConfig, ResConfig } from './asyncSelect.interface';
+import { getStringFromPath, genParams } from './asyncSelect.utils'
 
 export default function useAsyncSelector(
-    reqConfig: { url?: any; method?: any; params?: any; addFormValues: Array; body: Object },
-    resConfig: { rootPath: any; labelPath: any; valuePath: any; },
-    valueObject: { [x: string]: string; }, getConfig: object,) {
+    reqConfig: ReqConfig,
+    resConfig: ResConfig,
+    valueObject: { [x: string]: string; },
+    getConfig: { rootPath: string, requestConfig: ReqConfig }) {
     const asyncData = ref()
-
 
     const setData = (res: any) => {
         const { rootPath, labelPath, valuePath } = resConfig;
-
         const rootPathParts = rootPath.split('.').slice(1)
-
         let root = res
-
         rootPathParts.forEach((p: string) => {
             if (p)
                 root = root[p]
         });
 
-
         const data = root.map((o: any) => {
             // labelPath - {{.name}} - a - {{.attribute.displayName}}
-            const r = /\{\{(\.\w*?)\}\}/g
-            const varArr = labelPath.match(r);
-            let label = '';
-            if (varArr?.length) {
-                label = labelPath
-                varArr.forEach(p => {
-                    const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
-                    let word = o;
-                    pathParts.forEach((pp: string) => {
-                        word = word[pp]
-                    })
-                    label = label.replace(p, word)
-                })
-            } else {
-                label = o;
-                const labelPathParts = labelPath.split('.').slice(1)
-                labelPathParts.forEach((p: string) => {
-                    label = label[p]
-                })
-            }
-
-
-
-            let value = o;
-            const valuePathParts = valuePath.split('.').slice(1)
-            valuePathParts.forEach((p: string | number) => {
-                value = value[p]
-            })
-
+            const label = getStringFromPath(o, labelPath)
+            const value = getStringFromPath(o, valuePath);
             return {
                 value,
-                label
+                label,
+                data: o
             }
         })
 
         asyncData.value = data;
-
     }
 
     const getParsedBody = (keys) => {
@@ -119,10 +90,11 @@ export default function useAsyncSelector(
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            const response = await useAPIPromise(parsedUrl, method, { params, body })
+            const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body })
             setConfigData(response)
             createNewVisibility.value = true
         } catch (e) {
+            console.log({ e })
             newConfigError.value = true;
         }
         newConfigLoading.value = false
@@ -131,7 +103,10 @@ export default function useAsyncSelector(
     const loadingData = ref(false)
     const loadDataError = ref(false);
     const shouldRefetch = ref(true)
+    const errorM = ref('')
+
     const loadData = async () => {
+        errorM.value = ''
         shouldRefetch.value = false;
         asyncData.value = [];
         const { url, method, params, addFormValues } = reqConfig
@@ -141,9 +116,13 @@ export default function useAsyncSelector(
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            const response = await useAPIPromise(parsedUrl, method, { params, body: getParsedBody(addFormValues) })
+            const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body: getParsedBody(addFormValues) })
             setData(response);
         } catch (e) {
+            const { errorMessage, errorLabelPath } = resConfig
+            shouldRefetch.value = true;
+            console.log({ e: e.response })
+            errorM.value = errorMessage || errorLabelPath && getStringFromPath(e, errorLabelPath) || 'Some error occured'
             loadDataError.value = true;
         }
         loadingData.value = false
@@ -185,6 +164,7 @@ export default function useAsyncSelector(
 
     return {
         loadData,
+        errorM,
         loadDataError,
         newConfig,
         asyncData,
@@ -192,7 +172,8 @@ export default function useAsyncSelector(
         loadingData,
         handleCreateNew,
         createNewVisibility,
-        letAsyncSelectDisabled
+        letAsyncSelectDisabled,
+        getStringFromPath
     }
 };
 

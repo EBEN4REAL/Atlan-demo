@@ -1,7 +1,7 @@
 <template>
     <div>
-        <p class="mb-2 leading-none text-gray">Designation</p>
-        <div v-if="designation && designation.length" class="flex">
+        <p class="mb-2 leading-none text-gray-500">Designation</p>
+        <div class="flex">
             <Tags
                 :tags="designation"
                 :updating-tags="updatingDesignation"

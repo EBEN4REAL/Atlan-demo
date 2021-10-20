@@ -2,7 +2,7 @@
     <div class>
         <div>
             <div class="flex flex-row items-center cursor-pointer group">
-                <p class="mb-0 text-gray">
+                <p class="mb-0 text-gray-500">
                     Role
                     <fa
                         v-if="updateSuccess"
@@ -12,19 +12,7 @@
                 </p>
                 <p
                     v-if="!isUpdate && allowUpdate"
-                    class="
-                        mb-0
-                        ml-2
-                        text-xs
-                        leading-none
-                        transition
-                        duration-300
-                        ease-in-out
-                        delay-100
-                        opacity-0
-                        text-primary
-                        group-hover:opacity-100
-                    "
+                    class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0  text-primary group-hover:opacity-100"
                     @click="onUpdate"
                 >
                     edit
@@ -40,7 +28,9 @@
                         v-for="role in roles"
                         :key="role.id"
                         :value="role.id"
-                        ><span class="capitalize">{{ role.name }}</span></a-select-option
+                        ><span class="capitalize">{{
+                            role.name
+                        }}</span></a-select-option
                     >
                 </a-select>
                 <div class="flex items-center justify-between max-w-full mt-1">

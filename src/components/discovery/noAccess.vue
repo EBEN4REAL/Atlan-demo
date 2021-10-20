@@ -1,8 +1,11 @@
 <template>
     <div
-        class="flex items-center justify-center w-full h-full mx-auto text-lg text-gray-700 "
+        class="flex flex-col items-center justify-center w-full h-full mx-auto"
     >
-        <slot></slot>
+        <AtlanIcon icon="NoAccess" class="w-auto" style="height: 120px" />
+        <div class="mx-auto mt-8 text-sm text-center text-gray-500">
+            <slot></slot>
+        </div>
     </div>
 </template>
 <script lang="ts">

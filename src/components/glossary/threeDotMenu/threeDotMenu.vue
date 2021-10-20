@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="!noPermissions"
-        class="group-hover:opacity-100"
+        class="group-hover:opacity-100 leading-5"
         :class="{
             'opacity-100': isVisible,
             'opacity-0 treeMode': treeMode,
@@ -11,7 +11,10 @@
         <a-dropdown
             v-model:visible="isVisible"
             :trigger="treeMode ? ['click'] : ['click']"
-            :class="treeMode ? $style.treeMode : ''"
+            :class="{
+                [$style.treeMode] : treeMode,
+                [$style.threeDotMenu]: true
+            }"
             @click.stop="() => {}"
         >
             <a-button
@@ -27,14 +30,26 @@
                 <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
             </a-button>
             <template #overlay>
-                <a-menu>
+                <a-menu :class="$style.threeDotMenu">
                     <a-menu-item
                         v-if="showLinks"
                         key="profileLink"
                         @click="redirectToProfile(entity.typeName, entity.guid)"
                     >
                         <div class="flex items-center">
-                            <AtlanIcon icon="Link" class="m-0 mr-2" />
+                            <atlan-icon
+                                v-if="entity?.typeName === 'AtlasGlossaryTerm'"
+                                icon="OpenTermProfile"
+                                class="w-auto mr-2"
+                            />
+                            <atlan-icon
+                                v-if="
+                                    entity?.typeName === 'AtlasGlossaryCategory'
+                                "
+                                icon="OpenCategoryProfile"
+                                class="w-auto mr-2"
+                            />
+
                             <p class="p-0 m-0">
                                 Go to
                                 {{ assetTypeLabel[entity?.typeName] }}
@@ -82,7 +97,7 @@
                             </template>
                             <template #trigger>
                                 <div class="flex items-center">
-                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
+                                    <AtlanIcon icon="Pencil" class="m-0 mr-2" />
                                     <p class="p-0 m-0 capitalize">
                                         Edit
                                         {{ assetTypeLabel[entity?.typeName] }}
@@ -165,15 +180,7 @@
 
                     <a-menu-item v-if="showUnlinkAsset" key="unkink">
                         <a-button
-                            class="
-                                w-full
-                                p-0
-                                m-0
-                                bg-transparent
-                                border-0
-                                shadow-none
-                                outline-none
-                            "
+                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
                             @click="$emit('unlinkAsset', entity)"
                         >
                             <div class="flex items-center text-red-700">
@@ -182,8 +189,6 @@
                             </div>
                         </a-button>
                     </a-menu-item>
-                   
-                    <a-menu-divider v-if="showUnlinkAsset" />
 
                     <a-menu-divider
                         v-if="
@@ -258,13 +263,7 @@
                     >
                         <a-popover :trigger="['hover']" placement="right">
                             <div
-                                class="
-                                    flex
-                                    items-center
-                                    justify-between
-                                    pr-4
-                                    mr-2
-                                "
+                                class="flex items-center justify-between pr-4 mr-2 "
                             >
                                 <div class="flex items-center justify-between">
                                     <AtlanIcon
@@ -310,15 +309,7 @@
                         class="text-red-700"
                     >
                         <a-button
-                            class="
-                                w-full
-                                p-0
-                                m-0
-                                bg-transparent
-                                border-0
-                                shadow-none
-                                outline-none
-                            "
+                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
                             @click="showModal"
                         >
                             <div class="flex items-center text-red-700">
@@ -374,7 +365,7 @@
         ref,
         PropType,
         inject,
-        onMounted,
+        toRefs,
         watch,
         computed,
     } from 'vue'
@@ -401,7 +392,7 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import { useAccessStore } from '~/services/access/accessStore'
-    import redirect from '@/glossary/utils/redirectToProfile';
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         components: {
@@ -448,6 +439,7 @@
         emits: ['unlinkAsset'],
         setup(props, context) {
             // data
+            const { entity } = toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
@@ -458,6 +450,7 @@
             )
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
+            const refreshEntity = inject<() => void>('refreshEntity', () => {})
             const showCategories = ref(false)
             const refetchGlossaryTree = inject<
                 (
@@ -505,6 +498,7 @@
                 )
                 if (handleFetchListInj) handleFetchListInj(props.entity)
                 watch(data, () => {
+                    if (refreshEntity) refreshEntity()
                     if (refetchGlossaryTree) {
                         if (
                             props.entity?.typeName === 'AtlasGlossaryCategory'
@@ -547,7 +541,7 @@
                     assetTypeLabel[props.entity?.typeName]
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
-                message.info({
+                message.success({
                     content: 'Copied!',
                 })
             }
@@ -586,22 +580,40 @@
             const store = useAccessStore()
             const permissionMap = {
                 AtlasGlossary: {
-                    update: "UPDATE_GLOSSARY",
-                    delete: "DELETE_GLOSSARY"
+                    update: 'UPDATE_GLOSSARY',
+                    delete: 'DELETE_GLOSSARY',
                 },
                 AtlasGlossaryCategory: {
                     update: 'UPDATE_CATEGORY',
-                    delete: 'DELETE_CATEGORY'
+                    delete: 'DELETE_CATEGORY',
                 },
                 AtlasGlossaryTerm: {
                     update: 'UPDATE_TERM',
-                    delete: 'DELETE_TERM'
-                }
+                    delete: 'DELETE_TERM',
+                },
             }
-            const permissions = computed(() => store.checkPermissions(['CREATE_TERM', 'CREATE_CATEGORY']))
-            const deletePermission = computed(() => store.checkPermission(permissionMap[props.entity?.typeName]?.delete))
-            const udpatePermission = computed(() => store.checkPermission(permissionMap[props.entity?.typeName]?.update))
-            const noPermissions = computed(() => !(permissions.value.CREATE_TERM || permissions.value.CREATE_CATEGORY || deletePermission.value || udpatePermission.value) )
+            const permissions = computed(() =>
+                store.checkPermissions(['CREATE_TERM', 'CREATE_CATEGORY'])
+            )
+            const deletePermission = computed(() =>
+                store.checkPermission(
+                    permissionMap[props.entity?.typeName]?.delete
+                )
+            )
+            const udpatePermission = computed(() =>
+                store.checkPermission(
+                    permissionMap[props.entity?.typeName]?.update
+                )
+            )
+            const noPermissions = computed(
+                () =>
+                    !(
+                        permissions.value.CREATE_TERM ||
+                        permissions.value.CREATE_CATEGORY ||
+                        deletePermission.value ||
+                        udpatePermission.value
+                    )
+            )
             return {
                 permissions,
                 deletePermission,
@@ -629,5 +641,15 @@
 <style lang="less" module>
     .treeMode {
         @apply bg-black bg-opacity-0 !important;
+    }
+    .threeDotMenu {
+        :global(.ant-dropdown-menu-item) {
+            padding: 9px 16px !important;
+            margin: 0;
+        }
+        :global( .ant-dropdown-menu-submenu-title) {
+            padding: 9px 16px !important;
+            margin: 0;
+        }
     }
 </style>

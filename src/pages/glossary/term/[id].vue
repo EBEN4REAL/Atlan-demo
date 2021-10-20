@@ -61,7 +61,7 @@
                             </div>
                         </a-tab-pane>
                         <a-tab-pane key="2" tab="Assets">
-                            <div :class="$style.tabClasses">
+                            <div>
                                 <LinkedAssetsTab
                                     :term-qualified-name="qualifiedName"
                                     :term-guid="id"

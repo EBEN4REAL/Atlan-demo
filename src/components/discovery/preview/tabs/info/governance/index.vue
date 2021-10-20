@@ -1,18 +1,17 @@
 <template>
-    <div class="w-full px-5">
+    <div class="flex flex-col w-full px-5 gap-y-4">
         <!-- <Terms :selectedAsset="selectedAsset" /> -->
         <Classification
             :selected-asset="selectedAsset"
             :edit-permission="userHasEditPermission"
         />
-        <div class="mt-2">
-            <LinkTerms
-                :selected-asset="selectedAsset"
-                :edit-permission="userHasEditPermission"
-                @update:selected-asset="mutateSelectedAsset"
-            />
-            <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
-        </div>
+
+        <LinkTerms
+            :selected-asset="selectedAsset"
+            :edit-permission="userHasEditPermission"
+            @update:selected-asset="mutateSelectedAsset"
+        />
+        <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
     </div>
 </template>
 

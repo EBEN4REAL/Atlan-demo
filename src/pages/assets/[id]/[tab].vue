@@ -2,59 +2,80 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <NoAccessPage v-if="data?.asset?.guid === '-1'"
-        >You don't have access to this page</NoAccessPage
-    >
-
     <div v-else class="w-full h-full max-profile-width">
         <div class="flex flex-col">
-            <Header />
-
-            <a-tabs
-                v-if="assetType(data.asset)?.includes('Tableau')"
-                :active-key="activeKey"
-                :class="$style.profiletab"
-                @change="selectBiTab($event)"
+            <Header :user-has-edit-permission="userHasEditPermission" />
+            <div
+                v-if="data?.asset?.guid === '-1'"
+                style="height: calc(100vh - 170px)"
             >
-                <a-tab-pane v-for="tab in biTabs" :key="tab.id" :tab="tab.name">
-                    <component
-                        :is="tab.component"
-                        :key="activeKey || id"
-                        :ref="
-                            (el) => {
-                                refs[tab.id] = el
-                            }
-                        "
-                        class="bg-transparent"
-                        @preview="handlePreview"
-                    ></component>
-                </a-tab-pane>
-            </a-tabs>
-            <a-tabs
-                v-else
-                :active-key="activeKey"
-                :class="$style.profiletab"
-                @change="selectNonBiTab($event)"
-            >
-                <a-tab-pane
-                    v-for="tab in nonBiTabs"
-                    :key="tab.id"
-                    :tab="tab.name"
+                <NoAccessPage
+                    ><div class="flex flex-col items-center justify-center">
+                        <div>
+                            Oops, looks like you don’t have<br />access to view
+                            this asset!
+                        </div>
+                        <a-button class="flex mt-2" @click="$router.back()">
+                            <atlan-icon
+                                icon="ArrowRight"
+                                class="mt-0.5 mr-1 transform rotate-180"
+                            />Back to assets</a-button
+                        >
+                    </div>
+                </NoAccessPage>
+            </div>
+            <div v-else>
+                <a-tabs
+                    v-if="assetType(data.asset)?.includes('Tableau')"
+                    :active-key="activeKey"
+                    :class="$style.profiletab"
+                    @change="selectBiTab($event)"
                 >
-                    <component
-                        :is="tab.component"
-                        :key="activeKey || id"
-                        :ref="
-                            (el) => {
-                                refs[tab.id] = el
-                            }
-                        "
-                        :user-has-edit-permission="userHasEditPermission"
-                        class="bg-transparent"
-                        @preview="handlePreview"
-                    ></component>
-                </a-tab-pane>
-            </a-tabs>
+                    <a-tab-pane
+                        v-for="tab in biTabs"
+                        :key="tab.id"
+                        :tab="tab.name"
+                    >
+                        <component
+                            :is="tab.component"
+                            :key="activeKey || id"
+                            :ref="
+                                (el) => {
+                                    refs[tab.id] = el
+                                }
+                            "
+                            :user-has-edit-permission="userHasEditPermission"
+                            class="bg-transparent"
+                            @preview="handlePreview"
+                        ></component>
+                    </a-tab-pane>
+                </a-tabs>
+                <a-tabs
+                    v-else
+                    :active-key="activeKey"
+                    :class="$style.profiletab"
+                    @change="selectNonBiTab($event)"
+                >
+                    <a-tab-pane
+                        v-for="tab in nonBiTabs"
+                        :key="tab.id"
+                        :tab="tab.name"
+                    >
+                        <component
+                            :is="tab.component"
+                            :key="activeKey || id"
+                            :ref="
+                                (el) => {
+                                    refs[tab.id] = el
+                                }
+                            "
+                            :user-has-edit-permission="userHasEditPermission"
+                            class="bg-transparent"
+                            @preview="handlePreview"
+                        ></component>
+                    </a-tab-pane>
+                </a-tabs>
+            </div>
         </div>
     </div>
 </template>
@@ -67,8 +88,8 @@
         defineAsyncComponent,
         watch,
         onMounted,
-        provide,
-        toRefs,
+        // provide
+        // toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -83,9 +104,9 @@
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useCheckAccess from '~/services/access/useCheckAccess'
-
+    import useDiscoveryStore from '~/store/discovery'
     // Constants
-    import { AssetTypeList } from '~/constant/assetType'
+    // import { AssetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         components: {
@@ -116,10 +137,11 @@
         emits: ['preview'],
         setup(props, context) {
             /** DATA */
+            const storeDiscovery = useDiscoveryStore()
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
-            const userHasEditPermission = ref<any>({})
+            const userHasEditPermission = ref<boolean>(true)
 
             const biTabs = [
                 {
@@ -233,7 +255,8 @@
 
             // handlePreview
             const handlePreview = (item) => {
-                context.emit('preview', item)
+              // context.emit('preview', item)
+              storeDiscovery.setSelectedAsset(item)
             }
 
             // fetch
@@ -249,12 +272,14 @@
                         if (data.value?.asset?.guid !== '-1') {
                             handlePreview(data.value?.asset)
                         }
-
                         const { data: userPermission } = evaluatePermissions(
                             data.value?.asset,
                             'ENTITY_UPDATE'
                         )
-                        userHasEditPermission.value = { userPermission }
+                        watch(userPermission, () => {
+                            userHasEditPermission.value =
+                                userPermission.value[0]?.allowed
+                        })
                     })
                 }
             }
@@ -280,7 +305,7 @@
             })
 
             /** PROVIDER */
-            provide('assetData', data.value)
+            // provide('assetData', data.value)
 
             // TODO: remove after fixing hierarchy bug
             // provide('parentForBIAsset', parentForBIAsset)

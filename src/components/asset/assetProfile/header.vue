@@ -1,22 +1,31 @@
 <template>
     <div class="px-5 pt-4">
         <div class="flex items-center justify-between">
-            <div class="flex items-center w-full ml-10 gap-x-2">
+            <div
+                v-if="selectedAsset.guid !== '-1'"
+                class="flex items-center w-full ml-10 gap-x-2"
+            >
                 <!-- asset logo -->
-                <AssetLogo :asset="assetData" variant="" />
-                <HierarchyBar :selected-asset="assetData" />
+                <AssetLogo :asset="selectedAsset" variant="" />
+                <HierarchyBar :selected-asset="selectedAsset" />
+            </div>
+            <div
+                v-else
+                class="flex items-center w-full ml-10 text-gray-500 gap-x-2"
+            >
+                {{ selectedAsset?.typeName }}
             </div>
 
             <!-- CTAs -->
-            <div class="flex">
+            <div v-if="selectedAsset.guid !== '-1'" class="flex">
                 <div class="flex text-gray-500">
                     <a-button
                         v-if="
                             ['table', 'view'].includes(
-                                assetType(assetData)?.toLowerCase()
+                                assetType(selectedAsset)?.toLowerCase()
                             )
                         "
-                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                        class="text-gray-500 border-transparent shadow-none hover:border-gray-300 hover:shadow-sm"
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -24,8 +33,8 @@
                         </div></a-button
                     >
                     <a-button
-                        v-if="assetType(assetData)?.includes('Tableau')"
-                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                        v-if="assetType(selectedAsset)?.includes('Tableau')"
+                        class="text-gray-500 border-transparent shadow-none hover:border-gray-300 hover:shadow-sm"
                     >
                         <div class="flex">
                             <AtlanIcon icon="External" class="mt-0.5 mr-2" />
@@ -33,13 +42,16 @@
                         </div></a-button
                     >
                     <a-button
-                        class="text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
+                        class="text-gray-500 border-transparent shadow-none hover:border-gray-300 hover:shadow-sm"
                         ><div class="flex">
                             <AtlanIcon icon="Share" class="mt-0.5 mr-2" /> Share
                         </div></a-button
                     >
 
-                    <AssetMenu :asset="assetData" />
+                    <AssetMenu
+                        :asset="assetData"
+                        :editPermission="userHasEditPermission"
+                    />
                 </div>
             </div>
         </div>
@@ -61,18 +73,25 @@
                     />
                 </a-button>
             </div>
-            <div class="flex items-center">
+            <div v-if="selectedAsset.guid !== '-1'" class="flex items-center">
                 <span
                     class="mb-0 text-lg font-semibold text-gray-700 truncate"
-                    >{{ title(assetData) }}</span
+                    >{{ title(selectedAsset) }}</span
                 >
 
                 <StatusBadge
-                    :key="assetData?.guid"
+                    :key="selectedAsset?.guid"
                     :show-no-status="false"
-                    :status-id="assetData?.attributes?.certificateStatus"
+                    :status-id="selectedAsset?.attributes?.certificateStatus"
                     class="ml-1.5"
                 ></StatusBadge>
+            </div>
+            <div
+                v-else
+                class="flex mb-0 text-lg font-semibold text-gray-700 truncate"
+            >
+                {{ selectedAsset?.displayText }}
+                <AtlanIcon icon="Lock" class="mt-1 ml-1" />
             </div>
         </div>
     </div>
@@ -81,14 +100,16 @@
 <script lang="ts">
     // Vue
     import { defineComponent, computed, inject } from 'vue'
+    import { storeToRefs } from 'pinia'
     // Components
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AssetMenu from './assetMenu.vue'
-
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: {
@@ -97,23 +118,31 @@
             StatusBadge,
             AssetMenu,
         },
-
-        setup() {
+        props: {
+            userHasEditPermission: {
+                type: Boolean,
+                required: true,
+            },
+        },
+        setup(props) {
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
-
+            // const assetData = computed(() => assetDataInjection?.asset)
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             /** METHODS */
             // useAssetInfo
             const { status, title, assetType } = useAssetInfo()
 
             return {
-                assetData,
+                // assetData,
                 status,
                 title,
                 assetType,
+                selectedAsset
             }
         },
     })

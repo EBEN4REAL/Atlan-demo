@@ -72,7 +72,7 @@ const useTree = (
         false
     )
 
-    const { glossaryList, refetch: refetchGlossaryList } = useGlossaryList()
+    const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
 
     const returnTreeDataItemAttributes = (
         item:
@@ -170,7 +170,7 @@ const useTree = (
             categoryMap[guid] = categoryList
             treeData.value = []
 
-            categoryList.forEach((element) => {
+            categoryList?.forEach((element) => {
                 // if category is root level, i.e `categoryGuid` does not exist
                 if (!element.parentCategory?.categoryGuid) {
                     if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
@@ -179,7 +179,7 @@ const useTree = (
                     )
                 }
             })
-            termsList.forEach((element) => {
+            termsList?.forEach((element) => {
                 if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
                 treeData.value.push(
                     returnTreeDataItemAttributes(element, 'term', guid)
@@ -406,12 +406,13 @@ const useTree = (
         guid: string
         entity?: Glossary | Category | Term
         name?: string
-        certificateStatus?: string
+        certificateStatus?: "DRAFT" | "VERIFIED" | "ISSUE"
         ownerGroups: string
         ownerUsers?: string
         shortDescription?: string
     }) => {
         const currentParents = nodeToParentKeyMap[guid]
+        updateGlossaryStatusInList(guid, certificateStatus ?? entity?.attributes?.certificateStatus)
         if (
             currentParents === 'root' ||
             (typeof currentParents !== 'string' &&

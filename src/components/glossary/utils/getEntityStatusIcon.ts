@@ -5,7 +5,8 @@ const getEntityStatusIcon = (
     if (
         certificateStatus === undefined ||
         certificateStatus === '' ||
-        certificateStatus === 'is_null'
+        certificateStatus === 'is_null' ||
+        certificateStatus === null
     )
         return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
 

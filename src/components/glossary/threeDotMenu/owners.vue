@@ -212,7 +212,7 @@
             const { selectedAsset } = toRefs(props)
             const showOwnersDropdown: Ref<boolean> = ref(false)
             const activeOwnerTabKey = ref('1')
-            const selectedUsers: Ref<string[]> = ref([])
+            const selectedUsers: Ref<string[]> = ref(selectedAsset.value?.attributes?.ownerUsers?.split(',') ?? [])
             const selectedGroups: Ref<string[]> = ref([])
             const showAll = ref(false)
 
@@ -222,14 +222,14 @@
                 state: userOwnerState,
                 STATES,
                 handleSearch: handleUserSearch,
-            } = fetchUserList(now)
+            } = fetchUserList(true)
 
             const {
                 list: listGroups,
                 handleSearch: handleGroupSearch,
                 total: totalGroupCount,
                 state: groupOwnerState,
-            } = fetchGroupList(now)
+            } = fetchGroupList(true)
 
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected
@@ -331,21 +331,23 @@
                 }
             }
 
-            // watch(
-            //     [ownerUsers, ownerGroups],
-            //     () => {
-            //         console.log('owners changed', ownerUsers.value)
-            //         selectedUsers.value = [...ownerUsers.value]
-            //         selectedGroups.value = [...ownerGroups.value]
-            //         splittedOwners.value = splitArray(
-            //             5,
-            //             mappedSplittedOwners(ownerUsers, ownerGroups)
-            //         )
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
+            watch(
+                [ownerUsers, ownerGroups],
+                () => {
+                    selectedUsers.value = [...ownerUsers.value]
+                    selectedGroups.value = [...ownerGroups.value]
+                    splittedOwners.value = splitArray(
+                        5,
+                        mappedSplittedOwners(ownerUsers, ownerGroups)
+                    )
+                },
+                {
+                    immediate: true,
+                }
+            )
+            watch(selectedAsset, (newSelectedAsset) => {
+                selectedUsers.value = newSelectedAsset?.attributes?.ownerUsers?.split(',')
+            })
 
             const handleOwnerSearch = (e: Event) => {
                 const queryText = (<HTMLInputElement>e.target).value

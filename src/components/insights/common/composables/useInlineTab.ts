@@ -207,7 +207,6 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         tabsArray.value[index].key = newKey
         activeInlineTabKey.value = newKey
         // syncying inline tabarray in localstorage
-        debugger
         syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
     }
 

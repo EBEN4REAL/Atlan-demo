@@ -14,7 +14,7 @@
                     />
                 </template>
 
-                <div class="h-screen pt-4 pb-24 overflow-auto">
+                <div class="h-screen pt-2 pb-64 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
                         :bordered="false"
@@ -62,7 +62,8 @@
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                     :editPermission="userHasEditPermission"
-                                    @update:selected-asset="refreshEntity"
+                                    @update:selected-asset="updateEntityAndTree
+                                    "
                                 />
                                 <Owners
                                     v-if="entity.guid"
@@ -112,7 +113,7 @@
                         :isActive="tabActiveKey === 'activity'"
                     />
                 </template>
-                <div class="h-screen overflow-auto">
+                <div class="h-screen pb-16 overflow-auto">
                     <Activity :selectedAsset="entity" />
                 </div>
             </a-tab-pane>
@@ -185,8 +186,8 @@
             },
         },
         setup(props) {
-            const activeKey = ref()
-            const tabActiveKey = ref()
+            const activeKey = ref('1')
+            const tabActiveKey = ref('info')
 
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode = inject<any>('updateTreeNode')

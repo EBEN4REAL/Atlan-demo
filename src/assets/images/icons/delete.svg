@@ -1,3 +1,8 @@
-<svg  viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M11.6111 15L4.38889 15C3.59114 15 2.94444 14.3732 2.94444 13.6L2.94444 4.5H2C1.72386 4.5 1.5 4.27614 1.5 4V3.6C1.5 3.32386 1.72386 3.1 2 3.1L4.38889 3.1V2.4C4.38889 1.6268 5.03559 1 5.83333 1L10.1667 1C10.9644 1 11.6111 1.6268 11.6111 2.4V3.1L14 3.1C14.2761 3.1 14.5 3.32386 14.5 3.6V4C14.5 4.27614 14.2761 4.5 14 4.5H13.0556L13.0556 13.6C13.0556 14.3732 12.4089 15 11.6111 15ZM4.38889 4.5L4.38889 13.6L11.6111 13.6L11.6111 4.5L4.38889 4.5ZM5.83333 2.4V3.1L10.1667 3.1V2.4L5.83333 2.4Z" fill="currentColor"/>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 5L12.0988 13.1104C12.0426 13.6169 11.6145 14 11.105 14H4.89504C4.38549 14 3.95743 13.6169 3.90116 13.1104L3 5" stroke="currentColor" stroke-linecap="round"/>
+<path d="M5 3V3C5 2.44772 5.44772 2 6 2H10C10.5523 2 11 2.44772 11 3V3" stroke="currentColor"/>
+<path d="M5.5 6L6 12" stroke="currentColor" stroke-linecap="round"/>
+<path d="M8 6V12" stroke="currentColor" stroke-linecap="round"/>
+<path d="M10.5 6L10 12" stroke="currentColor" stroke-linecap="round"/>
+<line x1="2.5" y1="3.5" x2="13.5" y2="3.5" stroke="currentColor" stroke-linecap="round"/>
 </svg>

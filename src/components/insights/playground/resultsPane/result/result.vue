@@ -135,33 +135,38 @@
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const queryErrorObj = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .queryErrorObj
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.queryErrorObj
             )
             const rowCountErrObj = ref()
             const queryExecutionTime = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .executionTime
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.executionTime
             )
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
             const errorDecorations =
-                activeInlineTab.value.playground.resultsPane.result
-                    .errorDecorations
+                activeInlineTab.value?.playground?.resultsPane?.result
+                    ?.errorDecorations
 
             watch(queryErrorObj, () => {
-                /* Resetting the red dot from the editor if it error is not line type */
-                const editorI = toRaw(editorInstance.value)
-                activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                    editorI.deltaDecorations(
-                        activeInlineTab.value.playground.resultsPane.result
-                            .errorDecorations,
-                        []
-                    )
+                if (
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.errorDecorations
+                ) {
+                    /* Resetting the red dot from the editor if it error is not line type */
+                    const editorI = toRaw(editorInstance.value)
+                    activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                        editorI.deltaDecorations(
+                            activeInlineTab.value?.playground?.resultsPane
+                                ?.result?.errorDecorations,
+                            []
+                        )
+                }
             })
 
             return {

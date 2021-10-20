@@ -81,69 +81,78 @@
             watch(
                 activeInlineTabKey,
                 () => {
-                    renderedLines.value = []
-                    const editorText =
-                        activeInlineTab.value.playground.editor.text
-                    /* [["Line 3", "3"], ["line 3", "3"]] */
-                    const linesInfo = [
-                        ...queryErrorObj.value.errorMessage.matchAll(lineRegex),
-                    ]
-                    /* [["column 4", "4"], ["column 7", "7"]]*/
-                    const columnsInfo = [
-                        ...queryErrorObj.value.errorMessage.matchAll(
-                            columnRegex
-                        ),
-                    ]
+                    if (
+                        activeInlineTab.value.playground.resultsPane.result
+                            .queryErrorObj.errorMessage &&
+                        activeInlineTab.value.playground.resultsPane.result
+                            .queryErrorObj.errorMessage !== ''
+                    ) {
+                        renderedLines.value = []
+                        const editorText =
+                            activeInlineTab.value.playground.editor.text
+                        /* [["Line 3", "3"], ["line 3", "3"]] */
+                        const linesInfo = [
+                            ...queryErrorObj.value.errorMessage?.matchAll(
+                                lineRegex
+                            ),
+                        ]
+                        /* [["column 4", "4"], ["column 7", "7"]]*/
+                        const columnsInfo = [
+                            ...queryErrorObj.value.errorMessage.matchAll(
+                                columnRegex
+                            ),
+                        ]
 
-                    const e = editorText.split('\n')
-                    pos.value = {
-                        startLine: linesInfo[0][1],
-                        startColumn: columnsInfo[0][1],
-                        endLine: undefined,
-                        endColumn: undefined,
-                    }
-                    let validPos = pos.value.endLine
-                        ? pos.value.endLine
-                        : pos.value.startLine
-                    validPos = Number(validPos)
-                    /* Next line exist for showing */
-                    console.log(validPos, e, 'validPos')
-
-                    if (validPos < e.length) {
-                        if (validPos >= 0)
-                            renderedLines.value.push({
-                                index: validPos + 1,
-                                description: e[validPos + 1 - 1],
-                            })
-                        if (validPos - 1 >= 0)
-                            renderedLines.value.push({
-                                index: validPos,
-                                description: e[validPos - 1],
-                            })
-                        if (validPos - 2 >= 0)
-                            renderedLines.value.push({
-                                index: validPos - 1,
-                                description: e[validPos - 1 - 1],
-                            })
-                    } else if (validPos == e.length) {
+                        const e = editorText.split('\n')
+                        pos.value = {
+                            startLine: linesInfo[0][1],
+                            startColumn: columnsInfo[0][1],
+                            endLine: undefined,
+                            endColumn: undefined,
+                        }
+                        let validPos = pos.value.endLine
+                            ? pos.value.endLine
+                            : pos.value.startLine
+                        validPos = Number(validPos)
                         /* Next line exist for showing */
-                        if (validPos - 1 >= 0) {
-                            renderedLines.value.push({
-                                index: validPos,
-                                description: e[validPos - 1],
-                            })
-                        }
-                        if (validPos - 2 >= 0) {
-                            renderedLines.value.push({
-                                index: validPos - 1,
-                                description: e[validPos - 1 - 1],
-                            })
-                        }
-                        if (validPos - 3 >= 0) {
-                            renderedLines.value.push({
-                                index: validPos - 1 - 1,
-                                description: e[validPos - 1 - 1 - 1],
-                            })
+                        console.log(validPos, e, 'validPos')
+
+                        if (validPos < e.length) {
+                            if (validPos >= 0)
+                                renderedLines.value.push({
+                                    index: validPos + 1,
+                                    description: e[validPos + 1 - 1],
+                                })
+                            if (validPos - 1 >= 0)
+                                renderedLines.value.push({
+                                    index: validPos,
+                                    description: e[validPos - 1],
+                                })
+                            if (validPos - 2 >= 0)
+                                renderedLines.value.push({
+                                    index: validPos - 1,
+                                    description: e[validPos - 1 - 1],
+                                })
+                        } else if (validPos == e.length) {
+                            /* Next line exist for showing */
+                            if (validPos - 1 >= 0) {
+                                renderedLines.value.push({
+                                    index: validPos,
+                                    description: e[validPos - 1],
+                                })
+                            }
+                            if (validPos - 2 >= 0) {
+                                renderedLines.value.push({
+                                    index: validPos - 1,
+                                    description: e[validPos - 1 - 1],
+                                })
+                            }
+                            if (validPos - 3 >= 0) {
+                                renderedLines.value.push({
+                                    index: validPos - 1 - 1,
+                                    description: e[validPos - 1 - 1 - 1],
+                                })
+                            }
                         }
                     }
                 },

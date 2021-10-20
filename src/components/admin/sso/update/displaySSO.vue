@@ -1,6 +1,8 @@
 <template>
-    <div class="h-full px-4 pb-4 ssoPage">
-        <span class="block mb-8 text-3xl font-medium"> Single Sign On </span>
+    <div class="h-full pb-4 ssoPage">
+        <span class="block pb-3 mb-10 text-3xl font-medium">
+            Single Sign On
+        </span>
         <div class="flex items-center justify-between mb-8">
             <span class="flex items-center">
                 <img
@@ -31,8 +33,8 @@
             <a-form-item class="mb-12">
                 <template #label>
                     <div class="flex flex-col mb-2 h-36">
-                        <span class="mb-2 text-xl font-normal">Enabled:</span>
-                        <span class="mb-1 text-gray"
+                        <span class="mb-2 text-lg font-normal">Enabled:</span>
+                        <span class="mb-1 text-gray-500"
                             >This allows user to login with SSO<br />
                             They will be able to login via email.
                         </span>
@@ -44,21 +46,29 @@
             <a-form-item>
                 <template #label>
                     <div class="flex flex-col h-48 mb-2">
-                        <div class="mb-2 text-xl font-normal">Enforce SSO:</div>
-                        <div class="mb-4 text-gray">
+                        <div class="mb-2 text-lg font-normal">Enforce SSO:</div>
+                        <div class="mb-4 text-gray-500">
                             User will be automatically redirected to configured
                             SSO
                         </div>
                     </div>
                 </template>
-                <a-switch v-model:checked="ssoForm.enforceSSO" />
+                <a-switch
+                    v-model:checked="ssoForm.enforceSSO"
+                    :disabled="!ssoForm.enabled"
+                />
             </a-form-item>
             <div class="flex justify-between mb-2 mt-14">
                 <a-button
-                    type="link"
-                    class="px-0 mx-0 text-red-500"
+                    type="danger"
+                    ghost
+                    class="text-red-500"
                     @click="showDeleteSSOModal"
-                    >Delete</a-button
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon icon="Delete" class="mr-2" />
+                        <div>Delete</div>
+                    </div></a-button
                 >
 
                 <a-button
@@ -99,185 +109,167 @@
     </div>
 </template>
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        reactive,
-        onMounted,
-        computed,
-        watch,
-    } from 'vue';
-    import { message } from 'ant-design-vue';
-    import { topSAMLProviders, customSamlProvider } from '~/constant/saml';
-    import { IdentityProvider } from '~/api/auth/identityProvider';
+import { defineComponent, ref, reactive, onMounted, computed, watch } from 'vue'
+import { message } from 'ant-design-vue'
+import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
+import { IdentityProvider } from '~/api/auth/identityProvider'
 
-    import { useTenantStore } from '~/services/keycloak/tenant/store';
-    import { Tenant } from '~/api/auth/tenant';
+import { useTenantStore } from '~/services/keycloak/tenant/store'
+import { Tenant } from '~/api/auth/tenant'
 
-    export default defineComponent({
-        props: ['providerDetails'],
-        setup(props) {
-            const showDeleteModal = ref(false);
-            const isDeleting = ref(false);
-            const ssoForm = reactive({
-                enabled: false,
-                enforceSSO: false,
-            });
-            const defaultSSO = ref(false);
-            const formLoading = ref(false);
-            const tenantStore = useTenantStore();
-            const samlProvider = topSAMLProviders.find(
-                (data) => data.alias === props.providerDetails?.alias
-            );
-            const provider: any = samlProvider || customSamlProvider;
+export default defineComponent({
+    props: ['providerDetails'],
+    setup(props) {
+        const showDeleteModal = ref(false)
+        const isDeleting = ref(false)
+        const ssoForm = reactive({
+            enabled: false,
+            enforceSSO: false,
+        })
+        const defaultSSO = ref(false)
+        const formLoading = ref(false)
+        const tenantStore = useTenantStore()
+        const samlProvider = topSAMLProviders.find(
+            (data) => data.alias === props.providerDetails?.alias
+        )
+        const provider: any = samlProvider || customSamlProvider
 
-            const getDefaultIDPList = async () => {
-                try {
-                    const data = (await IdentityProvider.getDefaultIDP()) || {};
-                    return data || {};
-                } catch (error) {
-                    console.error(
-                        'Unable to fetch default idps::',
-                        error.message
-                    );
-                    return {};
+        const getDefaultIDPList = async () => {
+            try {
+                const data = (await IdentityProvider.getDefaultIDP()) || {}
+                return data || {}
+            } catch (error) {
+                console.error('Unable to fetch default idps::', error.message)
+                return {}
+            }
+        }
+
+        const setConfig = async () => {
+            const defaultIDPList: any = await getDefaultIDPList()
+            console.log('default list==>', defaultIDPList)
+            if (defaultIDPList?.alias === props.providerDetails?.alias) {
+                defaultSSO.value = true
+                ssoForm.enforceSSO = true
+            } else {
+                defaultSSO.value = false
+                ssoForm.enforceSSO = false
+            }
+            ssoForm.enabled = props.providerDetails?.enabled
+        }
+
+        const isChangesDone = computed(
+            () =>
+                ssoForm?.enabled !== props.providerDetails?.enabled ||
+                ssoForm?.enforceSSO !== defaultSSO.value
+        )
+
+        const enableSSO = async () => {
+            try {
+                const config = {
+                    ...props.providerDetails,
+                    enabled: ssoForm.enabled,
                 }
-            };
-
-            const setConfig = async () => {
-                const defaultIDPList: any = await getDefaultIDPList();
-                console.log('default list==>', defaultIDPList);
-                if (defaultIDPList?.alias === props.providerDetails?.alias) {
-                    defaultSSO.value = true;
-                    ssoForm.enforceSSO = true;
-                } else {
-                    defaultSSO.value = false;
-                    ssoForm.enforceSSO = false;
-                }
-                ssoForm.enabled = props.providerDetails?.enabled;
-            };
-
-            const isChangesDone = computed(
-                () =>
-                    ssoForm?.enabled !== props.providerDetails?.enabled ||
-                    ssoForm?.enforceSSO !== defaultSSO.value
-            );
-
-            const enableSSO = async () => {
-                try {
-                    const config = {
-                        ...props.providerDetails,
-                        enabled: ssoForm.enabled,
-                    };
-                    await IdentityProvider.updateIDP(
-                        props.providerDetails?.alias,
-                        config
-                    );
-                } catch (error) {
-                    throw new Error(error);
-                }
-            };
-
-            const changeEnforceSSO = async () => {
-                try {
-                    if (ssoForm.enforceSSO) {
-                        return await IdentityProvider.setDefaultIDP(
-                            props.providerDetails?.alias
-                        );
-                    }
-                    return await IdentityProvider.deleteDefaultIDP(
-                        props.providerDetails?.alias
-                    );
-                } catch (error) {
-                    console.error(
-                        'Unable to change Enforce SSO::',
-                        error.message
-                    );
-                    throw new Error(error);
-                }
-            };
-
-            const submitForm = async (e: Event) => {
-                try {
-                    formLoading.value = true;
-                    e.preventDefault();
-                    ssoForm?.enabled !== props.providerDetails?.enabled &&
-                        (await enableSSO());
-                    ssoForm?.enforceSSO !== defaultSSO.value &&
-                        (await changeEnforceSSO());
-                    await updateTenant();
-                    await setConfig();
-                    message.success({
-                        content: 'SSO updated!',
-                    });
-                    formLoading.value = false;
-                } catch (error) {
-                    message.error({
-                        content: 'Unable to update changes',
-                    });
-                    formLoading.value = false;
-                    console.error('Unable to submit form::', error.message);
-                }
-            };
-
-            const showDeleteSSOModal = () => {
-                showDeleteModal.value = !showDeleteModal.value;
-            };
-            const deleteSSO = async () => {
-                try {
-                    isDeleting.value = true;
-                    await IdentityProvider.deleteIDP(
-                        props.providerDetails?.alias
-                    );
-                    defaultSSO.value &&
-                        (await IdentityProvider.deleteDefaultIDP(
-                            props.providerDetails?.alias
-                        ));
-                    message.success({
-                        content: 'Provider removed.',
-                    });
-                    await updateTenant();
-                    showDeleteSSOModal();
-                    isDeleting.value = false;
-                } catch (error) {
-                    console.error('Unable to delete SSO::', error.message);
-                    message.error({
-                        content: 'Failed to remove.',
-                    });
-                }
-            };
-
-            const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.Get();
-                tenantStore.setData(tenantResponse);
-            };
-
-            onMounted(async () => {
-                await setConfig();
-            });
-
-            watch(ssoForm, () => {
-                if (
-                    ssoForm?.enforceSSO !== defaultSSO.value &&
-                    ssoForm?.enforceSSO
+                await IdentityProvider.updateIDP(
+                    props.providerDetails?.alias,
+                    config
                 )
-                    message.warn({
-                        content:
-                            'Make sure you have tested config before enabling it.',
-                    });
-            });
+            } catch (error) {
+                throw new Error(error)
+            }
+        }
 
-            return {
-                provider,
-                showDeleteModal,
-                ssoForm,
-                showDeleteSSOModal,
-                deleteSSO,
-                isChangesDone,
-                formLoading,
-                submitForm,
-                isDeleting,
-            };
-        },
-    });
+        const changeEnforceSSO = async () => {
+            try {
+                if (ssoForm.enforceSSO) {
+                    return await IdentityProvider.setDefaultIDP(
+                        props.providerDetails?.alias
+                    )
+                }
+                return await IdentityProvider.deleteDefaultIDP(
+                    props.providerDetails?.alias
+                )
+            } catch (error) {
+                console.error('Unable to change Enforce SSO::', error.message)
+                throw new Error(error)
+            }
+        }
+
+        const submitForm = async (e: Event) => {
+            try {
+                formLoading.value = true
+                e.preventDefault()
+                ssoForm?.enabled !== props.providerDetails?.enabled &&
+                    (await enableSSO())
+                ssoForm?.enforceSSO !== defaultSSO.value &&
+                    (await changeEnforceSSO())
+                await updateTenant()
+                await setConfig()
+                message.success({
+                    content: 'SSO updated!',
+                })
+                formLoading.value = false
+            } catch (error) {
+                message.error({
+                    content: 'Unable to update changes',
+                })
+                formLoading.value = false
+                console.error('Unable to submit form::', error.message)
+            }
+        }
+
+        const showDeleteSSOModal = () => {
+            showDeleteModal.value = !showDeleteModal.value
+        }
+        const deleteSSO = async () => {
+            try {
+                isDeleting.value = true
+                await IdentityProvider.deleteIDP(props.providerDetails?.alias)
+                defaultSSO.value &&
+                    (await IdentityProvider.deleteDefaultIDP(
+                        props.providerDetails?.alias
+                    ))
+                message.success({
+                    content: 'Provider removed.',
+                })
+                await updateTenant()
+                showDeleteSSOModal()
+                isDeleting.value = false
+            } catch (error) {
+                console.error('Unable to delete SSO::', error.message)
+                message.error({
+                    content: 'Failed to remove.',
+                })
+            }
+        }
+
+        const updateTenant = async () => {
+            const tenantResponse: any = await Tenant.Get()
+            tenantStore.setData(tenantResponse)
+        }
+
+        onMounted(async () => {
+            await setConfig()
+        })
+
+        watch(ssoForm, () => {
+            if (ssoForm?.enforceSSO !== defaultSSO.value && ssoForm?.enforceSSO)
+                message.warn({
+                    content:
+                        'Make sure you have tested config before enabling it.',
+                })
+        })
+
+        return {
+            provider,
+            showDeleteModal,
+            ssoForm,
+            showDeleteSSOModal,
+            deleteSSO,
+            isChangesDone,
+            formLoading,
+            submitForm,
+            isDeleting,
+        }
+    },
+})
 </script>

@@ -5,7 +5,8 @@
     <div v-else class="flex w-full h-full">
         <div class="flex flex-col w-full">
             <Header
-                :title="selected?.name || id"
+                :title="selected.name"
+                :workflow="data.asset"
                 class="px-5 pt-3 bg-white"
                 @open-logs="workflowLogsIsOpen = true"
             />

@@ -47,13 +47,6 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                   operator: 'contains',
                 })
               })
-              fltrObj?.groupValue?.forEach((group) => {
-                usrPld.criterion?.push({
-                  attributeName: 'ownerGroups',
-                  attributeValue: group,
-                  operator: 'contains',
-                })
-              })
               if (usrPld.criterion?.length) pl.push(usrPld)
             }
             break

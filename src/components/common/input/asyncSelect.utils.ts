@@ -5,38 +5,48 @@
      * @returns required string
      */
 // eslint-disable-next-line import/prefer-default-export
-export const getStringFromPath = (data: object | Array<any>, path: string) => {
-    if (!path || ['', '.'].includes(path)) return data;
+export const getStringFromPath = (data: object | Array<any>, path: string): any => {
+    // ? if path is '' or '.' get the root as value
+    if (['', '.'].includes(path)) return data;
     const arrayReg = /\w*\[\d*\]$/g
     const r = /\{\{(\.[\w\W]*?)\}\}/g
     const varArr = path.match(r);
-    let label: unknown = '';
+    let label: unknown = undefined;
+    let missingValues = false;
     if (varArr?.length) {
         label = path
         varArr.forEach(p => {
             const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
             let word: unknown = data;
             pathParts.forEach((pp: string) => {
+                if (!pp) return
                 const isArr = arrayReg.test(pp)
                 if (isArr) {
                     const index = parseInt(pp.match(/(?<=\[).+?(?=\])/)[0], 10)
                     word = (word as string)[pp.split('[')[0]][index]
                 } else word = (word as string)[pp]
             })
+            if (typeof word === 'undefined')
+                missingValues = true
             label = (label as string).replace(p, word as string)
         })
     } else {
-        label = data;
+        // ? backward compatible with ".records.displayName[0]"
         const labelPathParts = path.split('.').slice(1)
+        if (labelPathParts.length)
+            label = data;
         labelPathParts.forEach((p: string) => {
+            if (!p) return
             const isArr = arrayReg.test(p)
             if (isArr) {
                 const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
                 label = (label as string)[p.split('[')[0]][index]
             } else label = (label as string)[p]
+            if (typeof label === 'undefined')
+                missingValues = true
         })
     }
-    return label || path;
+    return missingValues ? undefined : label;
 }
 
 export const genParams = (dO, pO) => {

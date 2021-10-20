@@ -1,5 +1,6 @@
 <template>
     <DefaultLayout
+        v-if="listPermissions"
         title="API Keys"
         sub-title="Create, delete and access API Keys"
     >
@@ -132,7 +133,7 @@
 <script lang="ts">
     // Todo: Add createdBy user name for each API Key
 
-    import { defineComponent, inject, onMounted, ref } from 'vue'
+    import { defineComponent, inject, onMounted, ref, computed } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     // TODO: Why do we need dayjs? Use vueuse
     import dayjs from 'dayjs'
@@ -145,6 +146,7 @@
     import { APIKeyService } from '~/api/auth/apiKeys'
     import { debounce } from '~/composables/utils/debounce'
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     dayjs.extend(relativeTime)
 
@@ -152,6 +154,8 @@
         components: { ErrorView, DefaultLayout },
         setup() {
             const keycloak: any = inject('$keycloak')
+            const accessStore = useAccessStore()
+            const listPermissions = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             const {
                 apiList,
                 state,
@@ -243,6 +247,8 @@
                 searchText,
                 handleSearch,
                 handleClickUser,
+                listPermissions
+
             }
         },
         data() {

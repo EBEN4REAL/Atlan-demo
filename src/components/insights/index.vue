@@ -4,7 +4,7 @@
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
+                    class="relative flex flex-col items-center text-xs sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -276,7 +276,7 @@
         border-right: 0px !important;
         // margin-right: -0.5px;
         // @apply border-r !important;
-        border-width: 1.5px !important;
+        border-width: 1px !important;
         &:hover {
             @apply bg-primary !important;
             &:before {
@@ -290,7 +290,7 @@
                 margin-left: 0px;
                 transform: translateY(-50%);
                 width: 2px;
-                height: 100%;
+                height: 101%;
                 @apply z-50 !important;
             }
             &:after {

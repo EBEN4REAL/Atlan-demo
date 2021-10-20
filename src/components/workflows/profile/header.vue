@@ -32,16 +32,9 @@
                 </div>
                 <div>
                     <h3 class="text-xl capitalize">
-                        {{ workflow.name }}
+                        {{ workflow?.name }}
                         <a-button
-                            class="
-                                px-2
-                                py-0
-                                text-xs
-                                border border-transparent border-gray-200
-                                shadow-none
-                                hover:border-gray-300
-                            "
+                            class="px-2 py-0 text-xs border border-transparent border-gray-200 shadow-none  hover:border-gray-300"
                             @click="$router.back()"
                         >
                             Scheduled
@@ -84,7 +77,6 @@
             UtilityButtons,
         },
         props: {
-            title: { type: String, default: 'Title here' },
             workflow: { type: Object, default: () => {} },
         },
         emits: ['openLogs'],

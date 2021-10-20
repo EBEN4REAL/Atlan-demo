@@ -184,5 +184,5 @@ export const getters: GettersTree<State> & Getters = {
     getClasificationByName:
         (state: State) =>
         (name: string): classificationInterface | undefined =>
-            state.classifications.find((obj) => obj.name === name),
+            state?.classifications.find((obj) => obj.name === name),
 }

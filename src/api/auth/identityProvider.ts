@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import { getAPIPath, getAxiosClient } from "~/api";
 
-const serviceAlias = "auth";
+const serviceAlias = "service";
 
 const createIDP = (params?: any) => getAxiosClient().post(getAPIPath(serviceAlias, "/idp"), params);
 

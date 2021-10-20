@@ -214,8 +214,6 @@ export const KeyMaps = {
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
         WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflowtemplates/${name}`),
-        WORKFLOW_BY_NAME: ({ name }: PathParams) =>
-            getAPIPath('/service', `/workflows/${name}`),
         WORKFLOW_CONFIG_MAP: () =>
             getAPIPath('/service', `/configmap`)
 

@@ -10,6 +10,7 @@
                     }
                 "
                 :initial-filters="AllFilters"
+                :filters-list="defaultfiltersList"
                 @refresh="handleFilterChange"
                 @initialize="handleFilterInit"
             ></WorkflowFilters>
@@ -81,9 +82,6 @@
 </template>
 
 <script lang="ts">
-    import EmptyView from '@common/empty/discover.vue'
-    import workflowPagination from '@common/pagination/index.vue'
-
     import { useDebounceFn } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, Ref } from 'vue'
     import { useRouter } from 'vue-router'
@@ -102,6 +100,8 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import DiscoveryPreview from '@/workflows/discovery/preview/preview.vue'
 
+    import { List as defaultfiltersList } from '@/workflows/discovery/filters/filters'
+
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
@@ -116,7 +116,6 @@
         setup(props, { emit }) {
             // FIXME FIX FILTERS
             const router = useRouter()
-
             const initialFilters: Record<string, any> = ref({
                 facetsFilters: {},
                 searchText: '',
@@ -125,8 +124,6 @@
                     Object.keys(router.currentRoute.value?.query)[0]
                 ),
             })
-
-            console.log('initialFilters: ', initialFilters.value)
 
             // workflow filter component ref
             const workflowFilterRef = ref()
@@ -146,7 +143,6 @@
             // This is the actual filter body
             // FIXME Can we make it a computed property?
             const filters = ref([])
-            const limit = ref(20)
             const offset = ref(0)
             const sortOrder = ref('default')
             const facets = computed(() => AllFilters.value?.facetsFilters)
@@ -163,8 +159,6 @@
                 filter_record,
             } = useWorkflowSearchList(false)
 
-            // if (!workflowList.value.length) mutate()
-
             const isLoadMore = computed(
                 () => filter_record.value > workflowList.value.length
             )
@@ -179,11 +173,6 @@
                 }
                 return placeholder
             })
-
-            function setPlaceholder(label: string, type: string) {
-                placeholderLabel.value[type] = label
-                if (type === 'connector') placeholderLabel.value.asset = ''
-            }
 
             // FIXME
             const setRouterOptions = () => {
@@ -217,11 +206,6 @@
                 AllFilters.value.sortOrder = payload
                 isAggregate.value = true
                 shootQuery()
-            }
-
-            const handleChangePreferences = (payload: any) => {
-                // console.log(payload)
-                // projection.value = payload
             }
 
             const handleFilterChange = (
@@ -265,12 +249,12 @@
                 queryText,
                 isLoading,
                 dynamicSearchPlaceholder,
-                setPlaceholder,
                 placeholderLabel,
                 filters,
                 handleFilterChange,
                 handleFilterInit,
                 handleChangeSort,
+                defaultfiltersList,
             }
         },
         data() {

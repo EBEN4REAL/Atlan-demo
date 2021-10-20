@@ -7,13 +7,13 @@ export function useWorkflowSearchList(
 ) {
   const params = ref(new URLSearchParams())
   const filter = ref({})
-  const sort = ref()
+  // const sort = ref()
   const limit = ref(10)
   const offset = ref(0)
   params.value.append('limit', limit.value.toString())
   params.value.append('offset', offset.value.toString())
   params.value.append('filter', JSON.stringify(filter.value))
-  if (sort.value) params.value.append('sort', sort.value)
+  // params.value.append('sort', sort.value)
 
   // const sample = `{ "$or":[ { "labels": { "$elemMatch":{ "workflows.argoproj.io/creator-email": "nityananda.at.atlan.comar"} } }, { "labels":{ "$elemMatch":{ "x2": "a2"} } } ] }`
 
@@ -27,7 +27,7 @@ export function useWorkflowSearchList(
 
   watch(data, () => {
     if (!data?.value?.records) return;
-    console.log('useWorkflowSearchList', data.value.records)
+    // console.log('useWorkflowSearchList', data.value.records)
     totalCount.value = data.value.total_record
     filter_record.value = data.value.filter_record
     workflowList.value.push(...data.value.records)
@@ -40,20 +40,43 @@ export function useWorkflowSearchList(
       offset.value = totalCount.value
       params.value.set('offset', offset.value.toString())
     }
-    console.log(offset.value);
+    // console.log(offset.value);
     mutate()
   }
 
+  const transformFacets = (facetsFilters) => {
+    const output = []
+    return output
+  }
+
+  // transform Allfilters 
+  const transformToFilters = (AllFilters) => {
+    console.log('facetsFilters: ', AllFilters.facetsFilters)
+    const { facetsFilters, searchText, sortOrder } = AllFilters
+    const output = {}
+    if (searchText) output.name = { $ilike: `%${searchText}%` }
+    if (Object.keys(facetsFilters).length !== 0) output.$or = transformFacets(facetsFilters)
+    return output
+  }
 
 
-  const filterList = (text) => {
-    console.log(text);
+  const filterList = (AllFilters) => {
+    console.log('Tranformed: ', AllFilters);
+
+    const { filter: theFilters, sort } = AllFilters
+    // rest list
     workflowList.value = []
     // reset offset 
     offset.value = 0
     params.value.set('offset', '0')
-    filter.value.name = { $ilike: `%${text}%` }
+
+    // set filter name && set filter
+    filter.value = theFilters
     params.value.set('filter', JSON.stringify(filter.value,).replace(/\\/g, ""));
+
+    // set sorting
+    if (sort !== 'default' && sort) params.value.set('sort', sort);
+    // mutate
     mutate()
   };
   return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate, filter_record }

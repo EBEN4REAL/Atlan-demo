@@ -10,7 +10,7 @@
         <div class="flex items-center">
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -67,7 +67,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -172,12 +172,6 @@
                     userValue:
                         props.initialFilters?.facetsFilters?.owners
                             ?.userValue || [],
-                    groupValue:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.groupValue || [],
-                    noOwnerAssigned:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.noOwnerAssigned || false,
                 },
             })
 
@@ -239,8 +233,6 @@
                     }
                     case 'owners': {
                         dataMap.value[filterId].userValue = []
-                        dataMap.value[filterId].groupValue = []
-                        dataMap.value[filterId].noOwnerAssigned = false
                         break
                     }
                     default: {
@@ -294,28 +286,12 @@
                     }
                     case 'owners': {
                         const users = dataMap.value[filterId]?.userValue || []
-                        const groups = dataMap.value[filterId]?.groupValue || []
-                        const noOwnerAssigned =
-                            dataMap.value[filterId]?.noOwnerAssigned || false
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
                             if (users?.length === 1)
                                 appliedOwnersString += `${users.length} user`
                             else appliedOwnersString += `${users.length} users`
                         }
-                        if (groups && groups?.length > 0) {
-                            if (appliedOwnersString.length > 0) {
-                                if (groups.length === 1)
-                                    appliedOwnersString += ` & ${groups.length} group`
-                                else
-                                    appliedOwnersString += ` & ${groups.length} groups`
-                            } else if (groups.length === 1)
-                                appliedOwnersString += `${groups.length} group`
-                            else
-                                appliedOwnersString += `${groups.length} groups`
-                        }
-                        if (noOwnerAssigned) appliedOwnersString += 'No Owners'
-
                         return appliedOwnersString
                     }
                     default: {
@@ -339,8 +315,6 @@
                 dataMap.value.workflowCategory.checked = []
                 dataMap.value.workflowType.checked = []
                 dataMap.value.owners.userValue = []
-                dataMap.value.owners.groupValue = []
-                dataMap.value.owners.noOwnerAssigned = false
                 // ? remove bm applied data
                 bmFiltersList.value
                     .map((b) => b.id)

@@ -13,7 +13,7 @@ export default function fetchUserList(immediate: boolean = true) {
   params.value.append('columns', 'first_name')
   params.value.append('columns', 'last_name')
   params.value.append('columns', 'username')
-  params.value.append('columns', 'email')
+  params.value.append('columns', 'id')
   params.value.append('filter', '{"$and":[{"email_verified":true}]}')
 
   const { data, error, mutate, isValidating } = useSWRV(

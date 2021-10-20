@@ -28,7 +28,7 @@
                         <template #categoryFilter>
                             <AssetCategoryFilter
                                 :data="assetCategoryFilter"
-                                @refresh="handleCategoryChange"
+                                @change="handleCategoryChange"
                             />
                         </template>
                         <template #filter>
@@ -390,15 +390,15 @@
                 updateBody()
             }
 
-            const handleCategoryChange = (
-                filterMapData: Record<string, any>
-            ) => {
+            const handleCategoryChange = (categoryFilterData) => {
+                console.log(categoryFilterData)
                 /* offset.value = 0
                 isAggregate.value = true
                 updateBody()
                 setRouterOptions() */
             }
             const handleFilterChange = (filterMapData: Record<string, any>) => {
+                console.log(filterMapData)
                 facets.value = filterMapData
                 offset.value = 0
                 isAggregate.value = true

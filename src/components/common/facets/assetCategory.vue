@@ -12,9 +12,17 @@
         <template #overlay>
             <a-checkbox-group
                 v-model:value="data.checked"
-                class="z-10 w-full p-2 bg-white shadow"
+                class="z-10 flex flex-col w-full px-4 pt-4 pb-6 bg-white rounded shadow  gap-y-3"
                 @change="handleChange"
             >
+                <div>
+                    <a-checkbox value="all"
+                        ><span class="mb-0 ml-1 text-gray"> All </span>
+                    </a-checkbox>
+                </div>
+                <div>
+                    <hr />
+                </div>
                 <div class="flex flex-col w-full gap-y-3">
                     <div
                         v-for="item in list"
@@ -68,8 +76,9 @@
             const { data } = toRefs(props)
 
             const handleChange = () => {
-                emit('change')
+                emit('change', data.value)
                 dropdownVisible.value = false
+                console.log(data.value.checked)
                 useAddEvent('discovery', 'facet', 'changed', {
                     filter_type: 'category',
                     count: data.value?.checked?.length,

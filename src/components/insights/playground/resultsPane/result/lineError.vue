@@ -10,7 +10,7 @@
             <span class="ml-2 text-gray-500">Error found</span>
         </div>
         <div class="flex items-center mb-2">
-            <AtlanIcon icon="Issues" class="w-4 h-4 mr-2" />
+            <AtlanIcon icon="IssuesFilled" class="w-4 h-4 mr-2" />
             <span class="text-sm text-gray-700">{{
                 queryErrorObj.errorMessage
             }}</span>

@@ -10,5 +10,9 @@ export default function usePersonaService() {
         return personaServiceAPI.createPersona(newPersona)
     }
 
-    return { listPersonas, createPersona }
+    function updatePersona(newPersona: IPersona) {
+        return personaServiceAPI.updatePersona(newPersona)
+    }
+
+    return { listPersonas, createPersona, updatePersona }
 }

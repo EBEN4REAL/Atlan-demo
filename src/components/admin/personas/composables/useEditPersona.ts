@@ -1,14 +1,14 @@
 import { Ref, ref } from 'vue'
 import { IPersona } from '~/types/accessPolicies/personas'
+import usePersonaService from '~/services/heracles/composables/personas'
 
 export const isEditing = ref(false)
 export const selectedPersonaDirty: Ref<IPersona | undefined> = ref(undefined)
 
-export function savePersona() {
+export async function savePersona() {
     isEditing.value = false
-
-    if (selectedPersonaDirty.value) {
-    }
+    const { updatePersona } = usePersonaService()
+    return updatePersona(selectedPersonaDirty.value!)
 }
 
 export function discardPersona() {

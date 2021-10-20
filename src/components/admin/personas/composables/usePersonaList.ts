@@ -19,9 +19,7 @@ export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
     if (searchTerm.value)
         return personaList.value.filter((ps) =>
-            ps.personaName
-                .toLowerCase()
-                .includes(searchTerm.value.toLowerCase())
+            ps.name!.toLowerCase().includes(searchTerm.value.toLowerCase())
         )
     else return personaList.value
 })
@@ -29,5 +27,5 @@ export const filteredPersonas = computed(() => {
 invoke(async () => {
     await until(isReady).toBe(true)
     if (personaList.value?.length)
-        selectedPersonaId.value = personaList.value[0].id
+        selectedPersonaId.value = personaList.value[0].id!
 })

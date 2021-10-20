@@ -104,6 +104,8 @@
                     assets: [],
                     connectionId: '',
                     allow: true,
+                    name: '',
+                    description: '',
                 })
             }
 

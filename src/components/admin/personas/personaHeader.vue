@@ -16,7 +16,7 @@
                 >
                 <AtlanBtn
                     size="sm"
-                    @click="savePersona"
+                    @click="saveEditedPersona"
                     color="primary"
                     padding="compact"
                     >Save</AtlanBtn
@@ -35,7 +35,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed } from 'vue'
+    import { defineComponent, PropType, computed, toRefs } from 'vue'
+    import { message } from 'ant-design-vue'
+
     import AtlanBtn from '@/UI/button.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import {
@@ -45,6 +47,7 @@
     } from './composables/useEditPersona'
 
     import Dropdown from '@/UI/dropdown.vue'
+    import { reFetchList } from './composables/usePersonaList'
 
     export default defineComponent({
         name: 'PersonaHeader',
@@ -56,6 +59,7 @@
             },
         },
         setup(props, { emit }) {
+            const { persona } = toRefs(props)
             const personaActions = computed(() => [
                 {
                     title: 'Edit',
@@ -71,10 +75,22 @@
                     handleClick: () => {},
                 },
             ])
+
+            async function saveEditedPersona() {
+                try {
+                    await savePersona()
+                    message.success(
+                        `${persona.value?.displayName} persona updated`
+                    )
+                    reFetchList()
+                } catch (error) {
+                    message.error('Failed to update persona')
+                }
+            }
             return {
                 personaActions,
                 isEditing,
-                savePersona,
+                saveEditedPersona,
                 discardPersona,
             }
         },

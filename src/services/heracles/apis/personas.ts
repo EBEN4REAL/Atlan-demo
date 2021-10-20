@@ -15,7 +15,17 @@ const createPersona = (newPersona: IPersona): Promise<IPersona> =>
         body: newPersona,
     })
 
+const updatePersona = (newPersona: IPersona): Promise<IPersona> =>
+    useAPIPromise(
+        heracles_keymap.personas.UPDATE_PERSONA({ guid: newPersona.id! }),
+        'POST',
+        {
+            body: newPersona,
+        }
+    )
+
 export const personaServiceAPI = {
     listPersonas,
     createPersona,
+    updatePersona,
 }

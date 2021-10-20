@@ -2,7 +2,7 @@
     <div>
         <div class="flex items-center justify-between">
             <span class="text-base font-bold leading-8 text-gray-500"
-                >Policy Details</span
+                >{{ policy.name }} details</span
             >
 
             <AtlanBtn
@@ -15,6 +15,27 @@
             ></AtlanBtn>
         </div>
 
+        <a-form layout="vertical" :wrapper-col="{ span: 12 }" :model="policy">
+            <a-form-item label="Name" name="name" required>
+                <a-input
+                    v-if="isEditing"
+                    v-model:value="policy.name"
+                    placeholder="Persona Name"
+                />
+                <span v-else>{{ policy.name }}</span>
+            </a-form-item>
+            <a-form-item label="Description" name="description">
+                <a-textarea
+                    v-if="isEditing"
+                    v-model:value="policy.description"
+                    showCount
+                    :maxlength="140"
+                    :auto-size="{ minRows: 1, maxRows: 3 }"
+                />
+                <span v-else>{{ policy.description }}</span>
+            </a-form-item>
+        </a-form>
+
         <span class="block mb-1 text-sm text-gray-700">ACCESS</span>
         <a-switch
             :disabled="!isEditing"
@@ -23,6 +44,15 @@
             un-checked-children="Deny"
             v-model:checked="policy.allow"
         />
+
+        <span class="block mb-1 text-sm text-gray-700">CONNECTION</span>
+        <a-input
+            v-if="isEditing"
+            v-model:value="policy.connectionId"
+            placeholder="Connection Id"
+            class="mb-2"
+        />
+        <span class="mb-2" v-else>{{ policy.connectionId }}</span>
 
         <span class="block mb-1 text-sm text-gray-700">ASSETS</span>
         <a-select

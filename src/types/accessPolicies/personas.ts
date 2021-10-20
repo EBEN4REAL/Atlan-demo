@@ -1,8 +1,20 @@
 export interface MetadataPolicies {
+    name: string
+    description: string
     actions: string[]
     assets: string[]
     connectionId: string
     allow: boolean
+}
+
+export interface DataPolicies {
+    actions: string[]
+    allow: boolean
+    assets: string[]
+    connectionName: string
+    description: string
+    maskingOption: 'MASK_HASH'
+    name: string
 }
 
 export interface IPersona {
@@ -14,7 +26,7 @@ export interface IPersona {
     users?: string[]
     groups?: string[]
     metadataPolicies?: MetadataPolicies[]
-    sqlPolicies?: []
+    dataPolicies?: DataPolicies[]
     updatedAt?: string
     updatedBy?: string
     createdAt?: string

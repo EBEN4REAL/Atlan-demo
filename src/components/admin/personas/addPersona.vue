@@ -78,11 +78,11 @@
                         users: [],
                         groups: [],
                         personaType: 'persona',
-                        sqlPolicies: [],
+                        dataPolicies: [],
                     })
                     message.success(`${title.value} persona Created`)
                     reFetchList()
-                    selectedPersonaId.value = newPersona.Id
+                    selectedPersonaId.value = newPersona.id!
                     modalVisible.value = false
                 } catch (error) {
                     message.error('Failed to create persona')

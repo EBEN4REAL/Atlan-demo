@@ -3,6 +3,7 @@
         class="flex items-center justify-between py-1 transition duration-300  searchbar"
         :class="size"
     >
+        <slot name="categoryFilter" />
         <AtlanIcon icon="Search" class="flex-none pl-2 pr-1 text-gray-500" />
         <input
             ref="searchBar"

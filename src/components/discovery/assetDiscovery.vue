@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300 facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
             <AssetFilters
                 :ref="
@@ -25,6 +25,9 @@
                         :autofocus="true"
                         @change="handleSearchChange"
                     >
+                        <template #categoryFilter>
+                            <AssetCategoryFilter />
+                        </template>
                         <template #filter>
                             <Preferences
                                 :default-projection="projection"
@@ -100,7 +103,7 @@
     import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
-
+    import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import { useAssetListing, useAssetAggregation } from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
@@ -134,6 +137,7 @@
             EmptyView,
             AssetDropdown,
             SearchAndFilter,
+            AssetCategoryFilter,
         },
         props: {
             showFilters: {

@@ -3,8 +3,10 @@
         <div class="flex w-full">
             <!-- back button -->
             <div class="self-center mr-2">
-                <a-button
+                <router-link
                     class="
+                        rounded
+                        block
                         border border-gray-200
                         px-1
                         border-transparent
@@ -12,13 +14,13 @@
                         hover:border-gray-300
                         py-0.5
                     "
-                    @click="$router.back()"
+                    to="/workflows"
                 >
                     <atlan-icon
                         icon="ArrowRight"
                         class="w-5 h-5 text-gray-500 transform rotate-180"
                     />
-                </a-button>
+                </router-link>
             </div>
             <div class="flex flex-col w-full">
                 <div class="flex text-sm text-gray-500">
@@ -33,12 +35,12 @@
                 <div>
                     <h3 class="text-xl capitalize">
                         {{ workflow?.name }}
-                        <a-button
-                            class="px-2 py-0 text-xs border border-transparent border-gray-200 shadow-none  hover:border-gray-300"
+                        <span
+                            class="px-2 py-1 text-xs border border-transparent border-gray-200 rounded shadow-none hover:border-gray-300"
                             @click="$router.back()"
                         >
                             Scheduled
-                        </a-button>
+                        </span>
                     </h3>
                 </div>
                 <div class="flex items-center gap-x-3">

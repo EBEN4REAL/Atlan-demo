@@ -156,7 +156,7 @@
             watch(queryErrorObj, () => {
                 if (
                     activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.errorDecorations
+                        ?.errorDecorations?.length > 0
                 ) {
                     /* Resetting the red dot from the editor if it error is not line type */
                     const editorI = toRaw(editorInstance.value)

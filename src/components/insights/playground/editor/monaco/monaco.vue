@@ -128,12 +128,17 @@
                 activeInlineTab: Ref<activeInlineTabInterface>,
                 editor: any
             ) => {
-                activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                    editor.deltaDecorations(
-                        activeInlineTab.value.playground.resultsPane.result
-                            .errorDecorations,
-                        []
-                    )
+                if (
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.errorDecorations?.length > 0
+                ) {
+                    activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                        editor.deltaDecorations(
+                            activeInlineTab.value.playground.resultsPane.result
+                                .errorDecorations,
+                            []
+                        )
+                }
             }
             const setErrorDecorations = (
                 activeInlineTab: Ref<activeInlineTabInterface>,
@@ -141,9 +146,7 @@
             ) => {
                 if (
                     activeInlineTab.value.playground.resultsPane.result
-                        .queryErrorObj.errorMessage &&
-                    activeInlineTab.value.playground.resultsPane.result
-                        .queryErrorObj.errorMessage !== ''
+                        .errorDecorations?.length > 0
                 ) {
                     const lineRegex = /(?:line )([0-9]+)/gim
                     /* [["Line 3", "3"], ["line 3", "3"]] */
@@ -152,9 +155,14 @@
                             lineRegex
                         ),
                     ]
-                    const startLine = linesInfo[0][1]
-
-                    activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                    let startLine
+                    if (
+                        linesInfo?.length &&
+                        linesInfo[0]?.length > 1 &&
+                        activeInlineTab.value.playground.resultsPane.result
+                            .errorDecorations?.length > 0
+                    ) {
+                        startLine = linesInfo[0][1]
                         activeInlineTab.value.playground.resultsPane.result.errorDecorations =
                             editor.deltaDecorations(
                                 activeInlineTab.value.playground.resultsPane
@@ -174,6 +182,7 @@
                                     },
                                 ]
                             )
+                    }
                 }
             }
 

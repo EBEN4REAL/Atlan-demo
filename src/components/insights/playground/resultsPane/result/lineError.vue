@@ -83,9 +83,7 @@
                 () => {
                     if (
                         activeInlineTab.value.playground.resultsPane.result
-                            .queryErrorObj.errorMessage &&
-                        activeInlineTab.value.playground.resultsPane.result
-                            .queryErrorObj.errorMessage !== ''
+                            .errorDecorations.length > 0
                     ) {
                         renderedLines.value = []
                         const editorText =
@@ -297,7 +295,7 @@
             const editorI = toRaw(editorInstance.value)
 
             activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                editorI.deltaDecorations(errorDecorations.value, [
+                editorI.deltaDecorations(errorDecorations.value ?? [], [
                     {
                         range: new monacoI.Range(
                             Number(pos.value.startLine),

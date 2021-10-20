@@ -310,7 +310,7 @@
                                 />
                             </a-tooltip>
                         </div>
-                        <!-- <div class="ml-2" @click="toggleAssetPreview">
+                        <div class="ml-2" @click="toggleAssetPreview">
                             <a-tooltip>
                                 <template #title>Toggle asset preview</template>
 
@@ -319,7 +319,7 @@
                                     class="w-4 h-4 text-gray-500"
                                 />
                             </a-tooltip>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -419,6 +419,10 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
+            const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
                 inlineTabs,
@@ -516,15 +520,15 @@
                 toggleFullScreenMode(fullSreenState)
             }
             const toggleAssetPreview = () => {
-                // const activeInlineTabCopy: activeInlineTabInterface =
-                //     Object.assign({}, activeInlineTab.value)
-                // if (activeInlineTab.value.assetSidebar.isVisible) {
-                //     activeInlineTabCopy.assetSidebar.isVisible = false
-                //     closeAssetSidebar(activeInlineTabCopy)
-                // } else {
-                //     activeInlineTabCopy.assetSidebar.isVisible = true
-                //     openAssetSidebar(activeInlineTabCopy)
-                // }
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                if (activeInlineTab.value.assetSidebar.isVisible) {
+                    activeInlineTabCopy.assetSidebar.isVisible = false
+                    closeAssetSidebar(activeInlineTabCopy)
+                } else {
+                    activeInlineTabCopy.assetSidebar.isVisible = true
+                    openAssetSidebar(activeInlineTabCopy)
+                }
             }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------

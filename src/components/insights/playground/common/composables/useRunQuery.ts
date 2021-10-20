@@ -144,6 +144,9 @@ export default function useProject() {
                                 message?.details.executionTime
                             activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
                                 message?.details.totalRowsStreamed
+                            activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                                []
+
                             /* ------------------- */
                         }
                         if (message?.details?.status === 'error') {

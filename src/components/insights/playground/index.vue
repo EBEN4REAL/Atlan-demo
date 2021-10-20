@@ -1,92 +1,101 @@
 <template>
     <div class="flex flex-col w-full h-full bg-white playground-height">
-        <div class="flex w-full bg-white text-gray">
-            <a-tabs
-                v-model:activeKey="activeInlineTabKey"
-                :class="$style.inline_tabs"
-                hide-add
-                type="editable-card"
-                class="insights-tabs"
-                @change="onTabClick"
-                @edit="onEdit"
-                
-            >
-                <template #tabBarExtraContent>
-                    <div class="inline-flex items-center ml-1 mr-2">
-                        <a-tooltip placement="bottom">
-                            <template #title
-                                >New query</template
+        <div class="relative flex flex-col">
+            <div class="flex w-full bg-gray-light text-gray">
+                <a-tabs
+                    v-model:activeKey="activeInlineTabKey"
+                    :class="$style.inline_tabs"
+                    hide-add
+                    type="editable-card"
+                    class="insights-tabs"
+                    @change="onTabClick"
+                    @edit="onEdit"
+                >
+                    <template #tabBarExtraContent>
+                        <div class="inline-flex items-center ml-1 mr-2">
+                            <a-tooltip placement="bottom">
+                                <template #title>New query</template>
+                                <span
+                                    class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                                    @click="handleAdd"
+                                >
+                                    <fa icon="fal plus" class="" />
+                                </span>
+                            </a-tooltip>
+                        </div>
+                    </template>
+                    <a-tab-pane
+                        v-for="tab in tabs"
+                        :key="tab.key"
+                        :closable="true"
+                    >
+                        <template #tab>
+                            <a-dropdown
+                                :trigger="['click']"
+                                :visible="
+                                    unsavedPopover.show &&
+                                    unsavedPopover.key === tab.key
+                                "
                             >
-                             <span
-                                class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
-                                @click="handleAdd"
-                            >
-                                <fa icon="fal plus" class="" />
-                            </span>
-                        </a-tooltip>
-                       
-                    </div>
-                </template>
-                <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
-                    <template #tab>
-                        <a-dropdown
-                            :trigger="['click']"
-                            :visible="
-                                unsavedPopover.show &&
-                                unsavedPopover.key === tab.key
-                            "
-                        >
-                            <div
-                                class="flex items-center justify-between inline_tab"
-                            >
-                                <div class="flex items-center text-gray-700">
-                                    <span
-                                        class="
-                                            text-sm
-                                            truncate
-                                            ...
-                                            inline_tab_label
-                                        "
-                                        :class="
-                                            tab.key !== activeInlineTabKey
-                                                ? 'text-gray-500'
-                                                : ''
-                                        "
-                                        >{{ tab.label }}</span
-                                    >
-                                </div>
                                 <div
-                                    v-if="!tab.isSaved"
-                                    class="flex items-center mr-2 unsaved-dot"
+                                    class="flex items-center justify-between  inline_tab"
                                 >
                                     <div
-                                        class="
-                                            w-1.5
-                                            h-1.5
-                                            rounded-full
-                                            bg-primary
-                                            -mt-0.5
-                                            absolute
-                                            right-2.5
-                                        "
-                                    ></div>
+                                        class="flex items-center text-gray-700"
+                                    >
+                                        <span
+                                            class="
+                                                text-sm
+                                                truncate
+                                                ...
+                                                inline_tab_label
+                                            "
+                                            :class="
+                                                tab.key !== activeInlineTabKey
+                                                    ? 'text-gray-500'
+                                                    : ''
+                                            "
+                                            >{{ tab.label }}</span
+                                        >
+                                    </div>
+                                    <div
+                                        v-if="!tab.isSaved"
+                                        class="flex items-center mr-2  unsaved-dot"
+                                    >
+                                        <div
+                                            class="
+                                                w-1.5
+                                                h-1.5
+                                                rounded-full
+                                                bg-primary
+                                                -mt-0.5
+                                                absolute
+                                                right-2.5
+                                            "
+                                        ></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <template #overlay>
-                                <a-menu>
-                                    <UnsavedPopover
-                                        @closeTab="closeTabConfirm"
-                                        @saveTab="saveTabConfirm"
-                                        :unsavedPopover="unsavedPopover"
-                                        :isSaving="isSaving"
-                                    />
-                                </a-menu>
-                            </template>
-                        </a-dropdown>
-                    </template>
-                </a-tab-pane>
-            </a-tabs>
+                                <template #overlay>
+                                    <a-menu>
+                                        <UnsavedPopover
+                                            @closeTab="closeTabConfirm"
+                                            @saveTab="saveTabConfirm"
+                                            :unsavedPopover="unsavedPopover"
+                                            :isSaving="isSaving"
+                                        />
+                                    </a-menu>
+                                </template>
+                            </a-dropdown>
+                        </template>
+                    </a-tab-pane>
+                </a-tabs>
+            </div>
+            <div
+                class="absolute bottom-0 flex-1 w-full bg-white"
+                style="height: 3px"
+            ></div>
         </div>
+
         <div v-if="activeInlineTabKey" class="w-full h-full">
             <splitpanes horizontal :push-other-panes="false">
                 <pane
@@ -402,7 +411,6 @@
     .insights-tabs {
         .ant-tabs-nav-container {
             height: 30px !important;
-            
         }
         .ant-tabs-extra-content {
             line-height: 30px !important;
@@ -468,11 +476,14 @@
     // .inline_tab {
     //     max-width: 4.2rem;
     //     overflow: hidden;
-    //     // min-width: 3rem;
+    //     // min-width: 3rem
     // }
     .inline_tab_label {
         max-width: 5.8rem;
         overflow: hidden;
+    }
+    .playground-height {
+        // @apply bg-gray-light !important;
     }
 </style>
 <style lang="less" module>
@@ -485,6 +496,9 @@
         }
         :global(.ant-tabs-nav .ant-tabs-tab-active) {
             @apply text-white !important;
+        }
+        :global(.ant-tabs-top-content) {
+            @apply hidden !important;
         }
     }
     // :global(.ant-modal-wrap) {

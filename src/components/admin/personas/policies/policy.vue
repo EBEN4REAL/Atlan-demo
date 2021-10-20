@@ -2,8 +2,8 @@
     <div>
         <AssetSelectorDrawer
             v-model:visible="assetSelectorVisible"
-            :assets="policy.assets"
-            connectionQualifiedName="default/snowflake/development-test"
+            v-model:assets="policy.assets"
+            connectionQfName="default/snowflake/development-test"
         />
         <div class="flex items-center justify-between">
             <span class="text-base font-bold leading-8 text-gray-500"
@@ -71,11 +71,7 @@
             class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5 mb-2"
         >
             <PillGroup
-                :data="
-                    policy.assets.map((name) => ({
-                        label: name,
-                    }))
-                "
+                v-model:data="assets"
                 label-key="label"
                 :read-only="!isEditing"
                 @add="openAssetSelector"
@@ -87,7 +83,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
@@ -114,7 +110,9 @@
         },
         emits: ['delete'],
         setup(props, { emit }) {
+            const { policy } = toRefs(props)
             const assetSelectorVisible = ref(false)
+
             function removePolicy() {
                 emit('delete')
             }
@@ -122,11 +120,23 @@
             function openAssetSelector() {
                 assetSelectorVisible.value = true
             }
+
+            const assets = computed({
+                get: () =>
+                    policy.value.assets.map((name) => ({
+                        label: name,
+                    })),
+                set: (val) => {
+                    policy.value.assets = val.map((ast) => ast.label)
+                },
+            })
+
             return {
                 assetSelectorVisible,
                 isEditing,
                 removePolicy,
                 openAssetSelector,
+                assets,
             }
         },
     })

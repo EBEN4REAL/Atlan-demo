@@ -10,45 +10,48 @@
         :width="420"
     >
         <div class="flex flex-col h-full">
-            <AtlanBtn
-                class="mt-2 ml-auto"
-                size="sm"
-                padding="compact"
-                color="light"
-                @click="() => (isVisible = false)"
-                >Close</AtlanBtn
-            >
-
-            <span class="p-4 text-lg font-bold text-gray-700"
-                >Select Assets</span
-            >
-            <a-divider class="m-0" />
-            <div class="h-full p-4 overflow-y-auto">
-                <SchemaTree
-                    :tree-data="treeData"
-                    checkable="true"
-                    :on-load-data="onLoadData"
-                    :select-node="selectNode"
-                    :expand-node="expandNode"
-                    :is-loading="isInitingTree"
-                    :loaded-keys="loadedKeys"
-                    :selected-keys="selectedKeys"
-                    :expanded-keys="expandedKeys"
-                    v-model:checkedKeys="checkedKeys"
-                />
+            <div class="flex items-center justify-between">
+                <span class="px-4 pt-4 text-lg font-bold text-gray-700"
+                    >Select Assets</span
+                >
+                <AtlanBtn
+                    class="ml-auto mr-2"
+                    size="sm"
+                    padding="compact"
+                    color="secondary"
+                    @click="() => (isVisible = false)"
+                >
+                    <AtlanIcon icon="Cross" class="-mx-1" />
+                </AtlanBtn>
             </div>
+            <MinimalTab v-model:active="activeTab" :data="tabConfig" />
+
+            <template v-if="activeTab === 'tree'">
+                <span class="mx-4 mt-4 text-base font-bold text-gray-500"
+                    >Browse from your assets</span
+                >
+                <div class="h-full p-4 overflow-y-auto">
+                    <AssetBrowserTree
+                        v-model:assets="checkedKeys"
+                        :connectionQfName="connectionQfName"
+                    />
+                </div>
+            </template>
+            <template v-else-if="activeTab === 'list'">
+                <span class="mx-4 mt-4 text-base font-bold text-gray-500"
+                    >Search from your assets</span
+                >
+                <AssetsWrapper :dataMap="filterConfig" />
+            </template>
             <div class="flex items-center justify-end m-2 gap-x-2">
                 <AtlanBtn
                     size="sm"
                     padding="compact"
                     color="secondary"
                     @click="() => (isVisible = false)"
-                    >Close</AtlanBtn
+                    >Cancel</AtlanBtn
                 >
-                <AtlanBtn
-                    size="sm"
-                    padding="compact"
-                    @click="() => (isVisible = false)"
+                <AtlanBtn size="sm" padding="compact" @click="saveAssets"
                     >Save</AtlanBtn
                 >
             </div>
@@ -57,17 +60,24 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import SchemaTree from '@/insights/explorers/schema/schemaTree.vue'
-
-    import useSchemaExplorerTree from '@/insights/explorers/schema/composables/useSchemaExplorerTree'
+    import MinimalTab from '@/UI/minimalTab.vue'
+    import AssetBrowserTree from './assetBrowserTree.vue'
+    import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
-        components: { AtlanBtn, SchemaTree },
+        components: { AtlanBtn, AssetBrowserTree, MinimalTab, AssetsWrapper },
         props: {
-            connectionQualifiedName: {
+            connectionQfName: {
                 type: String,
                 required: true,
             },
@@ -80,9 +90,11 @@
                 default: () => false,
             },
         },
-        emits: ['update:visible'],
+        emits: ['update:visible', 'update:assets'],
         setup(props, { emit }) {
-            const { visible, connectionQualifiedName } = toRefs(props)
+            const { visible, assets, connectionQfName } = toRefs(props)
+
+            // Drawer Visibility
             const isVisible = computed({
                 get: () => visible.value,
                 set: (val) => {
@@ -90,35 +102,50 @@
                 },
             })
 
-            const checkedKeys = ref([])
-            const {
-                treeData,
-                loadedKeys,
-                isInitingTree,
-                selectedKeys,
-                expandedKeys,
-                onLoadData,
-                expandNode,
-                selectNode,
-            } = useSchemaExplorerTree({
-                emit,
-                // initSelectedKeys,
-                connectionQualifiedName,
-                // databaseQualifiedName,
-                // schemaQualifiedName,
+            // Asset related stuff
+            const checkedKeys = ref([] as string[])
+            watch(assets, () => (checkedKeys.value = [...assets.value]), {
+                immediate: true,
             })
+            function saveAssets() {
+                // TODO: Change this implementation
+                // Use a WritableComputedRef and the @check event
+                // to see which node got selected or unselected and
+                // use a set to maintain the state
+                const assetSet = new Set([
+                    ...checkedKeys.value,
+                    ...assets.value,
+                ])
+                emit('update:assets', [...assetSet])
+                isVisible.value = false
+            }
+            function discardAssets() {
+                checkedKeys.value = [...assets.value]
+                isVisible.value = false
+            }
+
+            const filterConfig = computed(() => ({
+                connector: {
+                    attributeName: 'connectionQualifiedName',
+                    attributeValue: connectionQfName.value,
+                },
+            }))
+
+            // Tab related data
+            const activeTab = ref('tree')
+            const tabConfig = [
+                { key: 'tree', label: 'Browse' },
+                { key: 'list', label: 'Search' },
+            ]
 
             return {
+                activeTab,
+                tabConfig,
                 isVisible,
-                treeData,
-                loadedKeys,
-                isInitingTree,
-                selectedKeys,
-                expandedKeys,
-                onLoadData,
-                expandNode,
-                selectNode,
                 checkedKeys,
+                saveAssets,
+                discardAssets,
+                filterConfig,
             }
         },
     })

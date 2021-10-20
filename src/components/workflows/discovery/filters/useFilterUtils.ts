@@ -11,8 +11,6 @@ export default function useFilterUtils(filters: Ref<Record<string, any>>) {
     } else if (id === 'owners') {
       const onrFltr = filters.value[id]
       return (
-        onrFltr?.noOwnerAssigned ||
-        onrFltr?.groupValue?.length ||
         onrFltr?.userValue?.length
       )
     } else if (

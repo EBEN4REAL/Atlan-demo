@@ -121,7 +121,7 @@ export function useEditor(
         themeName: string
     ) {
         if (themeName) {
-            console.log(monacoInstance.editor.setTheme, themeName)
+            // console.log(monacoInstance.editor.setTheme, themeName)
             monacoInstance.editor.setTheme(themeName)
             editorConfig.value.theme = themeName
         }
@@ -142,7 +142,7 @@ export function useEditor(
         editorConfig: Ref<editorConfigInterface>,
         size: number
     ) {
-        console.log(size)
+        // console.log(size)
         // console.log(editorInstance.getModel())
         editorInstance.updateOptions({ fontSize: size })
         editorConfig.value.fontSize = size
@@ -317,6 +317,12 @@ export function useEditor(
         fontSize: 14,
     })
 
+    const editorHoverConfig = ref({
+        theme: 'vs',
+        tabSpace: 3,
+        fontSize: 14,
+    })
+
     return {
         clearMoustacheTemplateColor,
         setErrorDecorations,
@@ -327,6 +333,7 @@ export function useEditor(
         setFontSizes,
         setTabSpaces,
         editorConfig,
+        editorHoverConfig,
         setEditorTheme,
         setEditorFocusedState,
         setEditorPos,

@@ -141,6 +141,7 @@
             // TODO: will be used for HOTKEYs
             const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
             const { editorConfig } = useEditor()
+            const { editorHoverConfig } = useEditor()
             const { fullSreenState } = useFullScreen()
 
             const { filteredTabs: tabsList } = useInsightsTabList()
@@ -197,6 +198,7 @@
                 inlineTabs: tabsArray,
                 editorInstance: editorInstance,
                 editorConfig: editorConfig,
+                editorHoverConfig: editorHoverConfig,
                 monacoInstance: monacoInstance,
                 sqlVariables: sqlVariables,
                 explorerPaneSize: explorerPaneSize,

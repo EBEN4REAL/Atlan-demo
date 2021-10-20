@@ -42,14 +42,10 @@
                     ></a-tooltip
                 >
             </a-button-group>
-            <KeepAlive>
-                <overviewColumns
-                    v-if="activePreviewTabKey === 'column-preview'"
-                />
-                <overviewTable
-                    v-else-if="activePreviewTabKey === 'table-preview'"
-                />
-            </KeepAlive>
+
+            <overviewColumns v-if="activePreviewTabKey === 'column-preview'" />
+
+            <overviewTable v-if="activePreviewTabKey === 'table-preview'" />
         </div>
 
         <!-- Readme widget -->

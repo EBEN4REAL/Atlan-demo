@@ -1,21 +1,21 @@
 import { CollapseArray } from '~/types'
 
 export const List: CollapseArray = [
-    {
-        id: 'status',
-        label: 'Certificate',
-        component: 'status',
-        overallCondition: 'OR',
-        filters: [
-            {
-                attributeName: 'certificateStatus',
-                condition: 'OR',
-                isMultiple: false,
-                operator: 'eq',
-            },
-        ],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    },
+  {
+    id: 'workflowType',
+    label: 'Workflow Type',
+    component: 'workflowType',
+    overallCondition: 'OR',
+    filters: [
+      {
+        attributeName: 'workflowType',
+        condition: 'OR',
+        isMultiple: false,
+        operator: 'eq',
+      },
+    ],
+    isDeleted: false,
+    isDisabled: false,
+    exclude: false,
+  },
 ]

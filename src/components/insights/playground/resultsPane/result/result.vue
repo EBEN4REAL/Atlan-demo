@@ -154,12 +154,9 @@
                     ?.errorDecorations
 
             watch(queryErrorObj, () => {
-                if (
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.errorDecorations?.length > 0
-                ) {
-                    /* Resetting the red dot from the editor if it error is not line type */
-                    const editorI = toRaw(editorInstance.value)
+                /* Resetting the red dot from the editor if it error is not line type */
+                const editorI = toRaw(editorInstance.value)
+                if (activeInlineTab.value) {
                     activeInlineTab.value.playground.resultsPane.result.errorDecorations =
                         editorI.deltaDecorations(
                             activeInlineTab.value?.playground?.resultsPane

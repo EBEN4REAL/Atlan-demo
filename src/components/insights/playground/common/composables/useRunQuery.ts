@@ -146,6 +146,8 @@ export default function useProject() {
                                 message?.details.totalRowsStreamed
                             activeInlineTab.value.playground.resultsPane.result.errorDecorations =
                                 []
+                            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                                {}
 
                             /* ------------------- */
                         }

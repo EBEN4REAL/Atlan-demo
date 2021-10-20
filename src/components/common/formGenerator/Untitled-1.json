@@ -6,11 +6,9 @@
         "allowIncludeAll": true,
         "includeAllVal": "{}",
         "requestConfig": {
-            "url": "http://{{domain}}/api/service/credentials",
+            "url": "http://{{domain}}/api/service/credentials?filter={\"connector\": \"snowflake\"}",
             "method": "GET",
-            "params": {
-                "filter": "{\"connector\": \"snowflake\"}"
-            },
+            "params": {},
             "addFormValues": [],
             "body": {}
         },

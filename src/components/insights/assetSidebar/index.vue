@@ -22,7 +22,6 @@
         class="z-20 flex flex-col bg-white"
         v-else-if="selectedAsset && activeInlineTab?.queryId"
     >
-        {{ activeInlineTab?.queryId }}
         <AssetPreview
             :mutateTooltip="true"
             :selectedAsset="selectedAsset"

@@ -237,7 +237,7 @@
                 },
                 classifications: {
                     noClassificationsAssigned: false,
-                    checked: props.facets?.classifications?.checked,
+                    checked: props.facets?.classifications?.checked || [],
                     operator: props.facets?.classifications?.condition || 'OR',
                     addedBy: props.facets?.classifications?.addedBy || 'all',
                 },
@@ -250,7 +250,10 @@
                 advanced: {
                     applied: props.facets?.advanced?.applied,
                 },
-                terms: props.facets?.terms,
+                terms: {
+                    checked: props.facets?.terms?.checked || [],
+                    operator: props.facets?.terms?.operator || 'OR',
+                },
             })
 
             const { isFilterApplied, totalAppliedFiltersCount } =

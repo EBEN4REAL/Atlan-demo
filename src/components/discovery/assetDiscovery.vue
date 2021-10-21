@@ -341,9 +341,11 @@
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
             const setRouterOptions = () => {
-                const routerOptions: Record<string, any> = {
-                    facets: generateFacetConfigForRouter(),
-                }
+                const routerOptions: Record<string, any> = {}
+
+                const urlFacets = generateFacetConfigForRouter()
+                if (Object.keys(urlFacets).length)
+                    routerOptions.facets = urlFacets
                 if (queryText.value) routerOptions.queryText = queryText.value
                 if (selectedTab.value !== 'Catalog')
                     routerOptions.selectedTab = selectedTab.value

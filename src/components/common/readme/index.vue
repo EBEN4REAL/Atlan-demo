@@ -152,6 +152,7 @@
     } from '~/types/glossary/glossary.interface'
     import useUpdateReadme from '@/common/readme/useUpdateReadme'
     import useCreateReadme from '@/common/readme/useCreateReadme'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
@@ -196,7 +197,9 @@
             const newTemplateName = ref('')
             const templateNameDropdown = ref(false)
             const { entity } = toRefs(props)
-            const editorContent = ref(entity?.attributes?.readme?.attributes?.description ?? '')
+            const editorContent = ref(
+                entity?.attributes?.readme?.attributes?.description ?? ''
+            )
             const readmeDescription = computed(
                 () => entity?.attributes?.readme?.attributes?.description
             )
@@ -263,16 +266,20 @@
             }
             const handleSave = () => {
                 editable.value = false
-                console.log(editorContent.value)
-                if (readmeDescription.value?.length || readmeDescription.value === '') {
+                if (
+                    readmeDescription.value?.length ||
+                    readmeDescription.value === ''
+                ) {
                     const { isCompleted, isLoading, update } = useUpdateReadme(
                         entity?.attributes?.readme,
                         editorContent.value
                     )
                     update()
                     watch(isCompleted, (completed) => {
-                        if(completed) {
-                            entity.attributes.readme.attributes.description = editorContent.value
+                        if (completed) {
+                            entity.attributes.readme.attributes.description =
+                                editorContent.value
+                            message.success('Readme saved!')
                         }
                     })
                 } else {
@@ -283,18 +290,6 @@
                     createReadme()
                 }
             }
-
-            // onMounted(() => {
-            //     console.log(
-            //         props.entity?.attributes?.readme?.attributes?.description
-            //     )
-            //     if (
-            //         props.entity?.attributes?.readme?.attributes?.description
-            //             ?.length
-            //     ) {
-            //         editor.value = console.log(editorContent.value)
-            //     }
-            // })
 
             return {
                 editable,

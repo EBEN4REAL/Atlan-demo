@@ -105,6 +105,25 @@
                 ></BulkSidebar>
                 <BulkNotification class="fixed bottom-0 right-0" />
             </div>
+            <AddGtcModal
+                entityType="term"
+                :glossaryId="glossary.guid"
+                :glossaryQualifiedName="glossary?.attributes?.qualifiedName"
+                :visible="addTermModalOpen"
+            >
+                <template #header>
+                    <ModalHeader
+                        :entity="glossary"
+                        entity-to-add="term"
+                    />
+                </template>
+                <template #trigger>
+                    <div class="flex items-center">
+                        <AtlanIcon icon="Term" class="m-0 mr-2" />
+                        <p class="p-0 m-0">Create New Term</p>
+                    </div>
+                </template>
+            </AddGtcModal>
         </div>
     </div>
 </template>
@@ -130,6 +149,8 @@
     import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
+    import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
+    import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -157,6 +178,8 @@
             BulkSidebar,
             BulkNotification,
             NoAccessPage,
+            AddGtcModal,
+            ModalHeader
         },
         props: {
             id: {
@@ -167,8 +190,11 @@
         },
         setup(props) {
             // data
+            const router = useRouter()
+
             const guid = toRef(props, 'id')
-            const currentTab = ref('1')
+            const currentTab = ref(router.currentRoute.value.query.tab === 'terms' ? '2' : '1')
+            const addTermModalOpen = ref(router.currentRoute.value.query.cta === 'addTerm')
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
@@ -178,7 +204,6 @@
             const landByRedirect = false
             const accessStore = useAccessStore()
 
-            const router = useRouter()
             const {
                 entity: glossary,
                 title,
@@ -198,46 +223,12 @@
                 accessStore.checkPermission('READ_GLOSSARY')
             )
 
-            // const {
-            //     terms: glossaryTerms,
-            //     error: termsError,
-            //     isLoading: termsLoading,
-            //     fetchGlossaryTermsPaginated,
-            // } = useGlossaryTerms()
-
-            // const {
-            //     categories: glossaryCategories,
-            //     error: categoriesError,
-            //     isLoading: categoriesLoading,
-            //     fetchGlossaryCategoriesPaginated,
-            // } = useGlossaryCategories()
-
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
             // computed
 
             // methods
             const reInitTree = inject('reInitTree')
-
-            // const refreshCategoryTermList = (type: string) => {
-            //     if (type === 'category') {
-            //         fetchGlossaryCategoriesPaginated({
-            //             refreshSamePage: true,
-            //         })
-            //     } else if (type === 'term') {
-            //         fetchGlossaryTermsPaginated({ refreshSamePage: true })
-            //     }
-            // }
-
-            // const fetchNextCategoryOrTermList = (type: string) => {
-            //     if (type === 'category') {
-            //         fetchGlossaryCategoriesPaginated({
-            //             limit: 5,
-            //         })
-            //     } else if (type === 'term') {
-            //         fetchGlossaryTermsPaginated({ limit: 5 })
-            //     }
-            // }
 
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
@@ -271,25 +262,6 @@
                 headerReachedTop.value = false
                 temp.value = true
             }
-            // lifecycle methods and watchers
-            // onMounted(() => {
-            //     fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
-            //     fetchGlossaryCategoriesPaginated({
-            //         guid: guid.value,
-            //         offset: 0,
-            //     })
-            // })
-
-            // watch(guid, (newGuid) => {
-            //     fetchGlossaryTermsPaginated({
-            //         guid: newGuid,
-            //         offset: 0,
-            //     })
-            //     fetchGlossaryCategoriesPaginated({
-            //         guid: newGuid,
-            //         offset: 0,
-            //     })
-            // })
 
             watch(updatedEntity, () => {
                 refetch()
@@ -337,6 +309,7 @@
                 handleCloseBulk,
                 store,
                 userHasAccess,
+                addTermModalOpen
             }
         },
     })

@@ -205,17 +205,28 @@
             const landByRedirect = false
             const accessStore = useAccessStore()
 
-            const {
-                entity: glossary,
-                title,
-                shortDescription,
-                qualifiedName,
-                statusObject,
-                error,
-                isLoading,
-                refetch,
-                statusMessage,
-            } = useGTCEntity<Glossary>('glossary', guid)
+            // const {
+            //     entity: glossary,
+            //     title,
+            //     shortDescription,
+            //     qualifiedName,
+            //     statusObject,
+            //     error,
+            //     isLoading,
+            //     refetch,
+            //     statusMessage,
+            // } = useGTCEntity<Glossary>('glossary', guid)
+
+            const glossary = inject<Glossary>('currentEntity')
+            const title = inject('currentTitle')
+            const shortDescription = inject('currentShortDescription')
+            const qualifiedName = inject('currentQualifiedName')
+            const statusObject = inject('statusObject')
+            const error = inject('profileError')
+            const isLoading = inject('profileIsLoading' )
+            const refetch = inject('refreshEntity') 
+            const statusMessage = inject('statusMessage')
+            
 
             const isNewGlossary = computed(
                 () => title.value === 'Untitled Glossary'
@@ -276,7 +287,7 @@
             }
 
             // Providers
-            provide('refreshEntity', refetch)
+            // provide('refreshEntity', refetch)
 
             return {
                 glossary,

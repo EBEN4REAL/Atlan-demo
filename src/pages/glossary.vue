@@ -41,7 +41,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed, provide } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRouter } from 'vue-router'
+    import { useRouter,useRoute } from 'vue-router'
 
     // components
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
@@ -49,6 +49,7 @@
     // composables
     import useTree from '~/components/glossary/tree/composables/useTree'
     import useBusinessMetadata from '~/components/admin/custom-metadata/composables/useBusinessMetadata'
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
 
     // store
     import useBusinessMetadataStore from '~/store/businessMetadata/index'
@@ -72,6 +73,7 @@
 
             // data
             const router = useRouter()
+            const route = useRoute()
 
             // computed
             const isHome = computed(
@@ -80,6 +82,25 @@
                         router.currentRoute.value.path.split('/').length - 1
                     ] === 'glossary'
             )
+            const guid = ref<string>(route.params.id as string)
+            const currentType = ref(
+                router.currentRoute.value.fullPath.split('/')[
+                    router.currentRoute.value.fullPath.split('/').length - 2
+                ] as 'glossary' | 'category' | 'term'
+            )
+
+            const {
+                entity,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                statusMessage,
+                isLoading,
+                refetch,
+            } = useGTCEntity<Term>(currentType.value, guid, guid.value, true)
+
 
             const {
                 treeData,
@@ -124,6 +145,17 @@
             provide('reInitTree', reInitTree)
             provide('refetchGlossaryList', refetchGlossaryList)
             provide('reorderTreeNodes', reOrderNodes)
+
+            provide('currentEntity',entity)
+            provide('currentTitle',title)
+            provide('currentShortDescription', shortDescription)
+            provide('currentQualifiedName',qualifiedName)
+            provide('statusObject',statusObject)
+            provide('profileError',error)
+            provide('statusMessage',statusMessage)
+            provide('profileIsLoading' ,isLoading)
+            provide('refreshEntity',refetch)            
+            
             return {
                 backToHome,
                 backToGlossary,

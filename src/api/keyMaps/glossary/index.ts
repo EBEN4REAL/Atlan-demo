@@ -37,7 +37,7 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [CREATE_GLOSSARY_CATEGORY]: () => getAPIPath('meta', "/glossary/category"),
     [CREATE_GLOSSARY_TERM]: () => getAPIPath('meta', "/glossary/term"),
     
-    [GET_GTC_ENTITY]: () => getAPIPath('meta', `/search/basic`),
+    [GET_GTC_ENTITY]: () => getAPIPath('meta', `/search/indexsearch`),
     [GET_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/${guid}`),
     [GET_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}`),
     [GET_TERM]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/term/${guid}`),

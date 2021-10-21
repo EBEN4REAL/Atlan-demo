@@ -28,7 +28,12 @@
             ></Connector>
         </div>
         <div
-            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto  scrollable-container"
+            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto"
+            :style="
+                fullSreenState
+                    ? 'height: calc( 100vh - 140px )'
+                    : 'height: calc( 100vh - 40px )'
+            "
         >
             <schema-tree
                 :tree-data="treeData"
@@ -71,6 +76,7 @@
         props: {},
         setup(props, { emit }) {
             const tables: tableInterface[] = tablesData
+            const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -207,6 +213,7 @@
             console.log(selectedKeys.value, 'out')
 
             return {
+                fullSreenState,
                 connectorsData,
                 setConnector,
                 isAssetSidebarOpened,

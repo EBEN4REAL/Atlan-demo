@@ -49,7 +49,7 @@
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
     import { useTenantStore } from '~/services/keycloak/tenant/store'
-    import useRecentlyData from '~/composables/home/useRecently'
+    import useRecentTerms from '~/composables/home/useRecentTerms'
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -71,8 +71,9 @@
             const keycloak = inject('$keycloak')
             const tenantStore = useTenantStore()
             const router = useRouter()
-
-            useRecentlyData()
+            // recent terms
+            const recentTerms = useRecentTerms()
+            console.log('recentTerms', recentTerms)
 
             const logoUrl = computed(() => `${window.location.origin}/api/service/avatars/_logo_`)
 
@@ -175,6 +176,7 @@
                 dummyProjects,
                 logoUrl,
                 redirectToDiscover,
+                recentTerms
             }
         },
     })

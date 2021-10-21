@@ -3,7 +3,7 @@ import bodybuilder from 'bodybuilder'
 import useIndexSearch from '~/services/atlas/discovery/useIndexSearch'
 
 
-export default function useRecentlyData() {
+export default function useRecentTerms() {
     const currentDate = new Date();
     const sevenDaysAgo = currentDate.getDate() - 7;
     currentDate.setDate(sevenDaysAgo);
@@ -12,7 +12,8 @@ export default function useRecentlyData() {
 
     const query = bodybuilder().orFilter(
       'bool', 
-      (b) => b.filter("term", "__typeName.keyword", "AtlasGlossaryTerm")
+      (b) => b
+      .filter("term", "__typeName.keyword", "AtlasGlossaryTerm")
       .filter("range", "__timestamp", {
         gte: lastSevenDaysTimestamp,
         lt: currentTimestamp
@@ -29,6 +30,6 @@ export default function useRecentlyData() {
     })
 
   return {
-      data
-    }
+    data
+  }
 }

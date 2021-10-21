@@ -34,7 +34,7 @@
         :desc="
             !error
                 ? 'There are no runs for this workflow. '
-                : 'Sorry, we couldn’t find sthe workflow you were looking for.'
+                : 'Sorry, we couldn’t find the workflow you were looking for.'
         "
         :EmptyScreen="EmptyScreen"
         descClass="text-center w-56"

@@ -1,7 +1,10 @@
 <template>
     <div
         v-if="
-            workflowList && workflowList.length <= 0 && !isLoading && !queryText
+            workflowList &&
+            workflowList.length <= 0 &&
+            !isLoading &&
+            !isFilterAppplied
         "
         class="h-full"
     >
@@ -190,11 +193,15 @@
                 router.push(`/workflows?${routerQuery}`)
             }
 
+            const isFilterAppplied = ref(false)
+
             const shootQuery = () => {
                 // console.log(filters.value)
                 console.log({ ...AllFilters.value.facetsFilters })
-
-                filterList(transformToFilters(AllFilters.value))
+                console.log('filters', transformToFilters(AllFilters.value))
+                const filters = transformToFilters(AllFilters.value)
+                isFilterAppplied.value = !!Object?.keys(filters?.filter).length
+                filterList(filters)
             }
             if (!workflowList.value.length) shootQuery()
 
@@ -238,6 +245,7 @@
             }
 
             return {
+                isFilterAppplied,
                 handleClearFiltersFromList,
                 autoSelect,
                 workflowFilterRef,

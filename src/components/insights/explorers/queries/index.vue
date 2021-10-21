@@ -106,12 +106,12 @@
             </div>
             <div
                 v-else
-                class="relative w-full h-full p-3 pt-0 pl-6 overflow-y-auto scrollable-container"
+                class="relative w-full h-full p-3 pt-0 overflow-y-auto scrollable-container"
             >
-                <div v-if="searchLoading">
+                <div v-if="searchLoading" class="pl-6">
                     <LoadingView />
                 </div>
-                <div v-else-if="searchResults?.entities?.length">
+                <div class="pl-6" v-else-if="searchResults?.entities?.length">
                     <div
                         v-for="query in searchResults?.entities"
                         :key="query.guid"

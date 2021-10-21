@@ -15,7 +15,7 @@
                     >Select Assets</span
                 >
                 <AtlanBtn
-                    class="ml-auto mr-2"
+                    class="ml-auto mr-2 border-none"
                     size="sm"
                     padding="compact"
                     color="secondary"
@@ -32,23 +32,36 @@
             />
             <a-divider class="my-4" />
 
-            <template v-if="activeTab === 'tree'">
-                <span class="mx-4 mt-2 text-base font-bold text-gray-500"
-                    >Browse from your assets</span
-                >
-                <div class="h-full p-4 overflow-y-auto">
-                    <AssetBrowserTree
+            <keep-alive>
+                <template v-if="activeTab === 'tree'">
+                    <span class="mx-4 mt-2 text-base font-bold text-gray-500"
+                        >Browse from your assets</span
+                    >
+                    <div class="h-full p-4 overflow-y-auto">
+                        <AssetBrowserTree
+                            v-model:assets="checkedKeys"
+                            :connectionQfName="connectionQfName"
+                        />
+                    </div>
+                </template>
+                <template v-else-if="activeTab === 'list'">
+                    <span class="mx-4 mt-2 text-base font-bold text-gray-500"
+                        >Search from your assets</span
+                    >
+                    <AssetsWrapper :dataMap="filterConfig" />
+                </template>
+                <template v-else-if="activeTab === 'custom'">
+                    <span class="mx-4 mt-2 text-base font-bold text-gray-500"
+                        >Select assets matching
+                    </span>
+                    <CustomAssetSelector
+                        class="h-full py-4"
                         v-model:assets="checkedKeys"
                         :connectionQfName="connectionQfName"
                     />
-                </div>
-            </template>
-            <template v-else-if="activeTab === 'list'">
-                <span class="mx-4 mt-2 text-base font-bold text-gray-500"
-                    >Search from your assets</span
-                >
-                <AssetsWrapper :dataMap="filterConfig" />
-            </template>
+                </template>
+            </keep-alive>
+
             <div class="flex items-center justify-end m-2 gap-x-2">
                 <AtlanBtn
                     size="sm"
@@ -77,11 +90,18 @@
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
+    import CustomAssetSelector from './customAssetSelector.vue'
     import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
-        components: { AtlanBtn, AssetBrowserTree, RaisedTab, AssetsWrapper },
+        components: {
+            AtlanBtn,
+            AssetBrowserTree,
+            RaisedTab,
+            AssetsWrapper,
+            CustomAssetSelector,
+        },
         props: {
             connectionQfName: {
                 type: String,
@@ -142,6 +162,7 @@
             const tabConfig = [
                 { key: 'tree', label: 'Browse' },
                 { key: 'list', label: 'Search' },
+                { key: 'custom', label: 'Custom' },
             ]
 
             return {

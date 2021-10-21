@@ -9,7 +9,7 @@
                 size="minimal"
             >
             </SearchAndFilter>
-            <!--  <a-button-group class="mb-2 text-xs rounded shadow">
+            <a-button-group class="mb-2 text-xs rounded shadow">
                 <a-button
                     :class="
                         activeTab === 'personal'
@@ -30,11 +30,12 @@
                     @click="setActiveTab('all')"
                     >All</a-button
                 >
-            </a-button-group> -->
+            </a-button-group>
+            -->
         </div>
         <div class="w-full">
             <template v-if="activeTab === 'personal'">
-                <!--    <div class="w-full overflow-y-auto h-44">
+                <div class="w-full overflow-y-auto h-44">
                     <div
                         v-if="isLoading"
                         class="flex items-center justify-center mt-3"
@@ -110,7 +111,7 @@
                                             </div>
 
                                             <div
-                                                class="flex items-center cursor-pointer ml-52 text-primary"
+                                                class="flex items-center cursor-pointer  ml-52 text-primary"
                                                 @click.stop="
                                                     () =>
                                                         handleLoadFilter(filter)
@@ -126,7 +127,7 @@
                                     </div>
                                 </template>
                                 <div
-                                    class="flex items-center justify-between px-2 py-1 text-gray-700 border rounded cursor-pointer hover:text-primary hover:bg-primary-light"
+                                    class="flex items-center justify-between px-2 py-1 text-gray-700 border rounded cursor-pointer  hover:text-primary hover:bg-primary-light"
                                     :class="
                                         selected === filter.name
                                             ? '  border-primary bg-primary-light  text-primary'
@@ -150,7 +151,7 @@
                             ></a-popover>
                         </div>
                     </div>
-                </div>-->
+                </div>
             </template>
             <template v-else>
                 <div class="overflow-y-auto h-44">

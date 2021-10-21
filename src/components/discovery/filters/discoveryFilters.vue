@@ -15,7 +15,7 @@
                 >
                     <template #trigger>
                         <div
-                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
+                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
                         >
                             Save
                         </div>
@@ -23,10 +23,46 @@
                 </SaveFilterModal>
             </div>
             <div
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                class="mr-3 text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
+            </div>
+            <div>
+                <a-dropdown trigger="click" placement="bottomRight">
+                    <div
+                        class="text-gray-500 cursor-pointer hover:text-gray-700"
+                    >
+                        <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
+                    </div>
+
+                    <template #overlay>
+                        <a-menu mode="vertical">
+                            <a-menu-item
+                                key="moveToSaved"
+                                @click="
+                                    () => {
+                                        resetAllFilters()
+                                        setActiveTab('saved')
+                                    }
+                                "
+                            >
+                                <div
+                                    class="flex items-center justify-between mb-2 "
+                                >
+                                    <div class="text-sm text-gray-700">
+                                        View Saved Filters
+                                    </div>
+                                    <div class="text-sm text-gray-500">⌘ S</div>
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    Loading saved filters will override applied
+                                    filters.
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
             </div>
         </div>
     </div>
@@ -100,7 +136,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -135,7 +171,10 @@
             </a-collapse-panel>
         </a-collapse>
     </div>
-    <div v-if="activeTab === 'saved'">
+    <div
+        v-if="activeTab === 'saved'"
+        class="h-full overflow-y-auto bg-gray-100"
+    >
         <SavedFilter
             :updateSavedFilters="updateSavedFilters"
             v-model:data="dataMap['saved']"

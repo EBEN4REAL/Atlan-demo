@@ -45,7 +45,7 @@
 
             <div
                 class="flex flex-col"
-                :style="{ height: 'calc(100vh - 7.8rem)' }"
+                :style="{ height: 'calc(100vh - 0.8rem)' }"
             >
                 <div
                     class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "

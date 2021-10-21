@@ -58,7 +58,7 @@ export default function useAPIKeys(config?: IConfig) {
     const { state, STATES } = swrvState(data, error, isValidating);
     const { state: roleState, STATES: roleSTATES } = swrvState(rolesData, rolesError, isRoleValidate);
     const apiList = computed(() => data.value?.results?.records ?? []);
-    const AdminrolesId = computed(() => rolesData.value?.results.filter((role: any) => role.name === "$admin")[0].id ?? "")
+    const AdminrolesId = computed(() => rolesData.value?.results?.filter((role: any) => role.name === "$admin")[0]?.id ?? "")
 
     return {
         apiList,

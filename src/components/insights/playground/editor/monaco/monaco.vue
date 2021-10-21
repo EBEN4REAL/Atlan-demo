@@ -220,7 +220,8 @@
                         editor,
                         activeInlineTab.value.playground.editor.text
                     ) ?? []
-                setMoustacheTemplateColor(editor, monaco, matches)
+                if (matches.length > 0)
+                    setMoustacheTemplateColor(editor, monaco, matches)
                 /* ----------------------------------- */
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
@@ -326,10 +327,11 @@
                     })
                     const range = editor?.getModel().getFullModelRange()
                     const position = {
-                        column: range.endColumn,
-                        lineNumber: range.endLineNumber,
+                        column: range?.endColumn,
+                        lineNumber: range?.endLineNumber,
                     }
-                    editor?.setPosition(position)
+                    if (position?.column && position?.lineNumber)
+                        editor?.setPosition(position)
                     editor?.onDidChangeCursorPosition(() => {
                         setEditorPos(editor, editorPos)
                     })

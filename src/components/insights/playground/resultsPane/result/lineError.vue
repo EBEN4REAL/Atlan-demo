@@ -103,14 +103,20 @@
                                 columnRegex
                             ),
                         ]
-
-                        const e = editorText.split('\n')
                         pos.value = {
                             startLine: linesInfo[0][1],
                             startColumn: columnsInfo[0][1],
                             endLine: undefined,
                             endColumn: undefined,
                         }
+
+                        if (linesInfo.length > 1) {
+                            pos.value.endLine = linesInfo[1][1]
+                            pos.value.endColumn = columnsInfo[1][1]
+                        }
+
+                        const e = editorText.split('\n')
+
                         let validPos = pos.value.endLine
                             ? pos.value.endLine
                             : pos.value.startLine
@@ -190,7 +196,7 @@
             ) => {
                 const t = lineDesc.split(' ')
                 let html = ''
-
+                console.log(pos, 'positon')
                 if (pos.value?.endLine) {
                     if (Number(lineIndex) === Number(pos.value.endLine)) {
                         let tokensTillNow = ''
@@ -294,6 +300,7 @@
                 }
                 return html
             }
+
             const monacoI = toRaw(monacoInstance.value)
             const editorI = toRaw(editorInstance.value)
             if (activeInlineTab.value) {

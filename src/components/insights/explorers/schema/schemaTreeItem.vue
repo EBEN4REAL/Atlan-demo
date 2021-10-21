@@ -467,7 +467,11 @@
                         )}\" LIMIT 50;\n`
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
-                        modifyActiveInlineTab(activeInlineTabCopy, inlineTabs)
+                        modifyActiveInlineTab(
+                            activeInlineTabCopy,
+                            inlineTabs,
+                            activeInlineTabCopy.isSaved
+                        )
                         selectionObject.value.startLineNumber = 2
                         selectionObject.value.startColumnNumber = 1
                         selectionObject.value.endLineNumber = 2

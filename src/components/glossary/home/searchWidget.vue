@@ -133,7 +133,6 @@
             const { entities, isLoading, fetchAssetsPaginated } = useGtcSearch(
                 undefined,
                 ref(true),
-                'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary'
             )
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({

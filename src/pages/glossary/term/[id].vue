@@ -6,7 +6,7 @@
         <div v-if="isLoading && term?.guid !== id">
             <LoadingView />
         </div>
-        <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+        <div v-else-if="term" class="flex flex-row h-full" :class="$style.tabClasses">
             <div
                 ref="scrollDiv"
                 class="w-2/3"

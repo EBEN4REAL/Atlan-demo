@@ -140,6 +140,7 @@ import Report from '~/assets/images/icons/report.svg'
 import Platform from '~/assets/images/icons/platform.svg'
 import Feedback from '~/assets/images/icons/feedback.svg'
 import Admin from '~/assets/images/icons/admin.svg'
+import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
 
 export default {
     IssuesFilled,
@@ -284,4 +285,5 @@ export default {
     Platform,
     Feedback,
     Admin,
+    ActivityLogs
 }

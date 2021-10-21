@@ -49,7 +49,7 @@
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
     import { useTenantStore } from '~/services/keycloak/tenant/store'
-    import useRecenlyData from '~/composables/home/useRecenly'
+    import useRecentlyData from '~/composables/home/useRecently'
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -72,7 +72,7 @@
             const tenantStore = useTenantStore()
             const router = useRouter()
 
-            useRecenlyData()
+            useRecentlyData()
 
             const logoUrl = computed(() => `${window.location.origin}/api/service/avatars/_logo_`)
 

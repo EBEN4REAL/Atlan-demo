@@ -91,7 +91,7 @@
                 toRefs(props)
 
             const connector = computed(() => {
-                if (data.value?.attributeName === 'integrationName')
+                if (data.value?.attributeName === 'connectorName')
                     return data.value?.attributeValue
                 else {
                     let qfChunks = data.value?.attributeValue?.split('/')

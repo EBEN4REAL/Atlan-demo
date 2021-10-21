@@ -102,6 +102,9 @@ export function useSavedQuery(
                         errorDecorations: [],
                         totalRowsCount: -1,
                         executionTime: -1,
+                        runQueryId: undefined,
+                        buttonDisable: false,
+                        eventSourceInstance: undefined,
                     },
                     metadata: {},
                     queries: {},
@@ -120,6 +123,7 @@ export function useSavedQuery(
                 id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
+        debugger
         if (!isInlineTabAlreadyOpened(newTab, tabsArray)) {
             console.log('not opened')
             /* CAREFUL:-------Order is important here------ */
@@ -128,6 +132,7 @@ export function useSavedQuery(
             /* ----------------------------- */
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
+            debugger
         } else {
             // show user that this tab is already opened
             let key = undefined
@@ -137,6 +142,7 @@ export function useSavedQuery(
             newTab.key = key
             overwriteInlineTab(newTab, tabsArray)
             activeInlineTabKey.value = key
+            debugger
         }
     }
     /* Involved network requests */

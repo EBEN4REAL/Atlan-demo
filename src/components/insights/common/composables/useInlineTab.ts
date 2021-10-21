@@ -2,6 +2,7 @@ import { Ref, ref, computed, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
+import { useConnectionsStore } from '~/store/connections'
 
 export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     const {
@@ -20,13 +21,27 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         })
         return localStorageInlineTabsX
     }
-    const setInlineTabsArray = () => {
+    const setInlineTabsArray = (shouldDefaultTabAdd: boolean) => {
         // checking if localstorage already have active tabs
+        const store = useConnectionsStore()
+        let firstConnection = store?.data?.entities?.find(
+            (item) => item.attributes.connectorName === 'snowflake'
+        )
+        console.log(firstConnection, 'firstConnection', store?.data?.entities)
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
             return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
-        return inlineTabsDemoData
+        /* For intiial selection of connections */
+        if (firstConnection && firstConnection?.attributes?.name) {
+            inlineTabsDemoData[0].explorer.schema.connectors.attributeName =
+                'connectionQualifiedName'
+            inlineTabsDemoData[0].explorer.schema.connectors.attributeValue =
+                firstConnection?.attributes?.qualifiedName
+        }
+        // if (shouldDefaultTabAdd) return inlineTabsDemoData
+
+        return []
     }
 
     const isInlineTabAlreadyOpened = (

@@ -52,17 +52,7 @@
                 :style="{ height: 'calc(100vh - 7.8rem)' }"
             >
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        px-4
-                        pt-2
-                        mt-2
-                        text-lg
-                        font-semibold
-                        text-gray-700
-                    "
+                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
                 >
                     {{ tab.name }}
                 </div>
@@ -203,17 +193,20 @@
             const handleChange = (v) => {
                 Object.entries(v).forEach(([key, value]) => {
                     const index =
-                        body.value.spec.arguments.parameters.findIndex(
+                        body.value.spec.templates[0].dag.tasks[0].arguments.parameters.findIndex(
                             (e) => e.name === key
                         )
                     if (index > -1)
-                        body.value.spec.arguments.parameters[index].value =
-                            value
+                        body.value.spec.templates[0].dag.tasks[0].arguments.parameters[
+                            index
+                        ].value = value
                     else
-                        body.value.spec.arguments.parameters.push({
-                            name: key,
-                            value,
-                        })
+                        body.value.spec.templates[0].dag.tasks[0].arguments.parameters.push(
+                            {
+                                name: key,
+                                value,
+                            }
+                        )
                 })
             }
 

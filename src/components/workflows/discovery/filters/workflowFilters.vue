@@ -10,7 +10,7 @@
         <div class="flex items-center">
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -67,7 +67,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -106,7 +106,7 @@
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as WorkflowCategoryList } from '~/constant/workflowCategory'
     import { WorkflowTypeList } from '~/constant/workflowTypes'
-    import { List } from './filters'
+
     import useFilterPayload from './useFilterPayload'
     import useFilterUtils from './useFilterUtils'
 
@@ -138,7 +138,7 @@
                 type: Object,
                 required: false,
                 default() {
-                    return {}
+                    return []
                 },
             },
         },
@@ -150,16 +150,10 @@
             const dirtyTimestamp = ref('dirty_')
 
             /**
-             * @desc combines static List with mapped BM object that has filter support
+             * @desc combines static defaultfiltersList with mapped BM object that has filter support
              * */
             const dynamicList = computed(() => {
-                if (props.filtersList?.length > 0) {
-                    const arr = List.filter((el) =>
-                        props.filtersList?.includes(el.id)
-                    )
-                    return [...arr]
-                }
-                return [...List, ...bmFiltersList.value]
+                return [...props.filtersList, ...bmFiltersList.value]
             })
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({
@@ -172,12 +166,6 @@
                     userValue:
                         props.initialFilters?.facetsFilters?.owners
                             ?.userValue || [],
-                    groupValue:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.groupValue || [],
-                    noOwnerAssigned:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.noOwnerAssigned || false,
                 },
             })
 
@@ -239,8 +227,6 @@
                     }
                     case 'owners': {
                         dataMap.value[filterId].userValue = []
-                        dataMap.value[filterId].groupValue = []
-                        dataMap.value[filterId].noOwnerAssigned = false
                         break
                     }
                     default: {
@@ -294,28 +280,12 @@
                     }
                     case 'owners': {
                         const users = dataMap.value[filterId]?.userValue || []
-                        const groups = dataMap.value[filterId]?.groupValue || []
-                        const noOwnerAssigned =
-                            dataMap.value[filterId]?.noOwnerAssigned || false
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
                             if (users?.length === 1)
                                 appliedOwnersString += `${users.length} user`
                             else appliedOwnersString += `${users.length} users`
                         }
-                        if (groups && groups?.length > 0) {
-                            if (appliedOwnersString.length > 0) {
-                                if (groups.length === 1)
-                                    appliedOwnersString += ` & ${groups.length} group`
-                                else
-                                    appliedOwnersString += ` & ${groups.length} groups`
-                            } else if (groups.length === 1)
-                                appliedOwnersString += `${groups.length} group`
-                            else
-                                appliedOwnersString += `${groups.length} groups`
-                        }
-                        if (noOwnerAssigned) appliedOwnersString += 'No Owners'
-
                         return appliedOwnersString
                     }
                     default: {
@@ -339,8 +309,6 @@
                 dataMap.value.workflowCategory.checked = []
                 dataMap.value.workflowType.checked = []
                 dataMap.value.owners.userValue = []
-                dataMap.value.owners.groupValue = []
-                dataMap.value.owners.noOwnerAssigned = false
                 // ? remove bm applied data
                 bmFiltersList.value
                     .map((b) => b.id)

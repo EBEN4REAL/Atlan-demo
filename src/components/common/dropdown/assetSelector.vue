@@ -15,10 +15,7 @@
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
             <a-divider style="margin: 4px 0" />
-            <div class="px-3">
-                {{ list.length }} of {{ selfAssetTypeMap[typeName] }}
-                {{ typeName }}
-            </div>
+            <div class="px-3">{{ list.length }} of {{ totalCount }}</div>
         </template>
         <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
@@ -40,10 +37,6 @@
                 type: String,
                 required: false,
             },
-            typeName: {
-                type: String,
-                required: true,
-            },
             filters: {
                 type: Object,
                 required: false,
@@ -60,33 +53,25 @@
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { disabled, filters, typeName } = toRefs(props)
+            const { disabled, filters } = toRefs(props)
 
             const initialBody = {
-                typeName: typeName.value,
-                limit: 100,
-                offset: 0,
-                entityFilters: filters.value,
+                dsl: filters.value,
                 attributes: ['name', 'displayName'],
-                // sortBy: 'name',
-                aggregationAttributes: ['__typeName.keyword'],
-                sortOrder: 'ASCENDING',
             }
 
             const { list, replaceBody, data, isLoading } = useAssetListing(
-                initialBody.typeName,
+                '',
                 false
             )
 
-            const selfAssetTypeMap = computed(
-                () => data.value?.aggregations?.['__typeName.keyword'] || 0
-            )
+            const totalCount = computed(() => data.value?.approximateCount || 0)
 
             watch(
                 [disabled, filters],
                 () => {
                     if (!disabled.value) {
-                        initialBody.entityFilters = filters.value
+                        initialBody.dsl = filters.value
                         replaceBody(initialBody)
                     }
                 },
@@ -108,7 +93,7 @@
             return {
                 list,
                 handleChange,
-                selfAssetTypeMap,
+                totalCount,
                 data,
                 isLoading,
                 dropdownOption,

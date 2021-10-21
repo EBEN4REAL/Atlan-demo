@@ -51,6 +51,7 @@ specifiers:
   autoprefixer: ^10.3.7
   axios: ^0.23.0
   babel-loader: ^8.2.2
+  bodybuilder: ^2.4.0
   chart.js: ^3.5.1
   chartjs-plugin-datalabels: ^2.0.0
   cron-parser: ^4.1.0
@@ -147,6 +148,7 @@ dependencies:
   '@vueuse/head': 0.6.0_vue@3.2.20
   ant-design-vue: 2.2.8_8612dc571a800641003b6ef0ef757662
   axios: 0.23.0
+  bodybuilder: 2.4.0
   chart.js: 3.5.1
   chartjs-plugin-datalabels: 2.0.0_chart.js@3.5.1
   cron-parser: 4.1.0
@@ -3776,6 +3778,12 @@ packages:
       raw-body: 2.4.0
       type-is: 1.6.18
     dev: true
+
+  /bodybuilder/2.4.0:
+    resolution: {integrity: sha512-vN4ebuqBaqjmyRQzygEkGR2KRM5IiRoKChBkola4RBZ5pNzy5l4tRDUVQxMP/UhzhFbjCB7TqCy3hcGoNnb4zw==}
+    dependencies:
+      lodash: 4.17.21
+    dev: false
 
   /boolbase/1.0.0:
     resolution: {integrity: sha1-aN/1++YMUes3cl6p4+0xDcwed24=}

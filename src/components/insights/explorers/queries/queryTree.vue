@@ -16,7 +16,7 @@ TR
                     @expand="expandNode"
                 >
                     <template #switcherIcon>
-                        <AtlanIcon icon="Caret" />
+                        <AtlanIcon icon="CaretRight" />
                     </template>
 
                     <template #title="item">

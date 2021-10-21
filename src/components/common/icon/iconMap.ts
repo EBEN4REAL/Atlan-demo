@@ -87,7 +87,6 @@ import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
 import Pencil from '~/assets/images/icons/pencil.svg'
-import Caret from '~/assets/images/icons/caret.svg'
 import Check from '~/assets/images/icons/check.svg'
 import Dots from '~/assets/images/icons/dots.svg'
 import Cross from '~/assets/images/icons/cross.svg'
@@ -104,6 +103,8 @@ import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
 import AssetsActive from '~/assets/images/icons/assets_active.svg'
 import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
+import CaretLeft from '~/assets/images/icons/caret-left.svg'
+import CaretRight from '~/assets/images/icons/caret-right.svg'
 import Settings from '~/assets/images/icons/setings.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -111,17 +112,36 @@ import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
 import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal.svg'
 import AddQuery from '~/assets/images/icons/add-query.svg'
 import NoSchema from '~/assets/images/icons/no-schema.svg'
+import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
+import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
+import EmptyResult from '~/assets/images/icons/empty_result.svg'
+import Flash from '~/assets/images/icons/flash.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
 import Retry from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
+import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
+import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
+import Hourglass from '~/assets/images/icons/hourglass.svg'
+import HourglassActive from '~/assets/images/icons/hourglass-active.svg'
+import GroupActive from '~/assets/images/icons/group-light-active.svg'
+import GroupLight from '~/assets/images/icons/group-light.svg'
+import AccessLogs from '~/assets/images/icons/access-logs.svg'
+
+import AccessLogsActive from '~/assets/images/icons/access-logs-active.svg'
+import InfoActive from '~/assets/images/icons/info-active.svg'
+import UserLight from '~/assets/images/icons/user-light.svg'
+import UserLightActive from '~/assets/images/icons/user-light-active.svg'
 
 export default {
+    IssuesFilled,
+    ExplorerTrigger,
     queryErorrIllus,
     NoSavedQueriesAll,
     NoSchema,
@@ -221,7 +241,7 @@ export default {
     GlossaryDraft,
     MultipleStatus,
     Pencil,
-    Caret,
+    CaretRight,
     Check,
     Dots,
     Cross,
@@ -235,13 +255,28 @@ export default {
     InsightsInactive,
     AssetsActive,
     AssetsInactive,
+    CaretLeft,
     Settings,
     Delete,
     Slack,
+    EmptySearchQuery,
+    EmptyResult,
+    Flash,
     Schedule,
     Minimap,
     FullScreenBoth,
     Minus,
     Retry,
     Recenter,
+    AssetsInactiveLight,
+    AssetsActiveLight,
+    Hourglass,
+    HourglassActive,
+    GroupActive,
+    GroupLight,
+    AccessLogs,
+    AccessLogsActive,
+    InfoActive,
+    UserLight,
+    UserLightActive,
 }

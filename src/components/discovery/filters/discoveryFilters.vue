@@ -1,6 +1,15 @@
 <template>
     <div
-        class="flex items-center justify-between px-4 py-2 text-sm bg-gray-100 border-b border-gray-300 "
+        class="
+            flex
+            items-center
+            justify-between
+            px-4
+            py-2
+            text-sm
+            bg-gray-100
+            border-b border-gray-300
+        "
     >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
@@ -9,22 +18,29 @@
         </div>
         <div class="flex items-center">
             <div v-if="totalAppliedFiltersCount">
-                <SaveFilterModal
+                <!-- <SaveFilterModal
                     :applied-filters="filterMap"
                     @savedFilterAdded="handleSavedFilterAdded"
                 >
                     <template #trigger>
                         <div
-                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
+                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
                         >
                             Save
                         </div>
                     </template>
-                </SaveFilterModal>
+                </SaveFilterModal> -->
             </div>
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                class="
+                    text-sm
+                    font-medium
+                    text-gray-500
+                    rounded
+                    cursor-pointer
+                    hover:text-gray-700
+                "
                 @click="resetAllFilters"
             >
                 Reset
@@ -68,7 +84,13 @@
                                 >
                                 <AtlanIcon
                                     icon="ChevronDown"
-                                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                                    class="
+                                        ml-3
+                                        text-gray-500
+                                        transition-transform
+                                        duration-300
+                                        transform
+                                    "
                                     :class="
                                         activeKey.includes(item.id)
                                             ? '-rotate-180'
@@ -77,7 +99,13 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    class="
+                                        ml-auto
+                                        text-xs text-gray-500
+                                        opacity-0
+                                        hover:text-primary
+                                        group-hover:opacity-100
+                                    "
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -100,14 +128,6 @@
                     :item="item"
                     :list="bmDataList[item.id]"
                     @change="handleChange"
-                ></component>
-                <component
-                    v-else-if="item.component === 'governance'"
-                    is="governance"
-                    v-model:data="dataMap[item.id]"
-                    :item="item"
-                    :list="bmDataList[item.id]"
-                    @change="handleTermChange"
                 ></component>
                 <component
                     is="savedFilter"
@@ -142,8 +162,8 @@
     import { List as StatusList } from '~/constant/status'
     import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
-    import useFilterPayload from './useFilterPayload'
     import useFilterUtils from './useFilterUtils'
+    import { useClassificationStore } from '~/components/admin/classifications/_store'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -180,13 +200,6 @@
             ),
         },
         props: {
-            initialFilters: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
             filtersList: {
                 type: Object,
                 required: false,
@@ -194,11 +207,17 @@
                     return {}
                 },
             },
+            facets: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
         },
-        emits: ['refresh', 'initialize', 'termNameChange'],
+        emits: ['refresh'],
         setup(props, { emit }) {
             const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
-            // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref('dirty_')
             const updateSavedFilters: Ref<boolean> = ref(false)
@@ -217,58 +236,36 @@
             })
             // Mapping of Data to child components
             const dataMap: Ref<{ [key: string]: any }> = ref({
-                connector: props.initialFilters?.facetsFilters?.connector || {},
-                saved: props.initialFilters?.facetsFilters?.saved || {
+                connector: props.facets?.connector || {},
+                saved: props.facets?.saved || {
                     checked: undefined,
                 },
-                assetCategory: props.initialFilters?.facetsFilters
-                    ?.assetCategory || { checked: undefined },
-                status: props.initialFilters?.facetsFilters?.status || {
+                assetCategory: props.facets?.assetCategory || {
+                    checked: undefined,
+                },
+                status: props.facets?.status || {
                     checked: undefined,
                 },
                 classifications: {
                     noClassificationsAssigned: false,
-                    checked:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.checked,
-                    operator:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.condition || 'OR',
-                    addedBy:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.addedBy || 'all',
+                    checked: props.facets?.classifications?.checked,
+                    operator: props.facets?.classifications?.condition || 'OR',
+                    addedBy: props.facets?.classifications?.addedBy || 'all',
                 },
                 owners: {
-                    userValue:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.userValue || [],
-                    groupValue:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.groupValue || [],
+                    userValue: props.facets?.owners?.userValue || [],
+                    groupValue: props.facets?.owners?.groupValue || [],
                     noOwnerAssigned:
-                        props.initialFilters?.facetsFilters?.owners
-                            ?.noOwnerAssigned || false,
+                        props.facets?.owners?.noOwnerAssigned || false,
                 },
                 advanced: {
-                    applied:
-                        props.initialFilters?.facetsFilters?.advanced?.applied,
+                    applied: props.facets?.advanced?.applied,
                 },
+                terms: props.facets?.terms,
             })
 
-            const { payload: filterMap } = useFilterPayload(dataMap)
             const { isFilterApplied, totalAppliedFiltersCount } =
                 useFilterUtils(dataMap)
-
-            // function setAppliedFiltersCount() {
-            //     let count = 0
-            //     const filterMapKeys = Object.keys(filterMap.value)
-            //     filterMapKeys?.forEach((id) => {
-            //         if (filterMap[id]?.criterion?.length > 0) {
-            //             return (count += 1)
-            //         }
-            //     })
-            //     totalAppliedFiltersCount.value = count
-            // }
 
             // ? watching for bmDataList to be computed
             watch(
@@ -279,8 +276,7 @@
                         dataMap.value[b] = {
                             applied: {
                                 ...dataMap.value[b]?.applied,
-                                ...props.initialFilters?.facetsFilters?.[b]
-                                    ?.applied,
+                                ...props.facets?.[b]?.applied,
                             },
                         }
                     })
@@ -292,7 +288,7 @@
             )
 
             const refresh = () => {
-                emit('refresh', filterMap.value, dataMap.value)
+                emit('refresh', dataMap.value)
             }
             const handleChange = () => {
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
@@ -305,10 +301,6 @@
                 dataMap.value['saved'].checked = payload
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 refresh()
-            }
-
-            const handleTermChange = (termName: string) => {
-                emit('termNameChange', termName)
             }
 
             const setConnector = (payload: any) => {
@@ -345,6 +337,10 @@
                             false
                         dataMap.value[filterId].operator = 'OR'
                         dataMap.value[filterId].addedBy = 'all'
+                        break
+                    }
+                    case 'term': {
+                        dataMap.value[filterId].applied = {}
                         break
                     }
                     case 'owners': {
@@ -413,8 +409,13 @@
                     }
                     case 'classifications': {
                         const facetFiltersData =
-                            dataMap.value[filterId]?.checked || []
-                        if (facetFiltersData.length > 3) {
+                            dataMap.value[filterId]?.checked?.map(
+                                (clsf: string) =>
+                                    useClassificationStore().getClasificationByName(
+                                        clsf
+                                    )?.displayName
+                            ) ?? []
+                        if (facetFiltersData.length || 0 > 3) {
                             return `${facetFiltersData
                                 .slice(0, 3)
                                 .join(', ')} +${
@@ -505,8 +506,6 @@
                 refresh()
             }
 
-            emit('initialize', filterMap.value)
-
             console.log(dynamicList, 'list')
             return {
                 resetAllFilters,
@@ -517,13 +516,11 @@
                 handleChange,
                 isFilterApplied,
                 dirtyTimestamp,
-                filterMap,
                 handleClear,
                 dynamicList,
                 bmFiltersList,
                 bmDataList,
                 setConnector,
-                handleTermChange,
                 handleSavedFilterChange,
                 handleSavedFilterAdded,
                 updateSavedFilters,

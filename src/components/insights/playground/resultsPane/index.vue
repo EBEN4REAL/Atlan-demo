@@ -79,7 +79,7 @@
 
     export default defineComponent({
         components: {
-            result: defineAsyncComponent(() => import('./result.vue')),
+            result: defineAsyncComponent(() => import('./result/result.vue')),
             metadata: defineAsyncComponent(() => import('./metadata.vue')),
             queries: defineAsyncComponent(() => import('./queries.vue')),
             filters: defineAsyncComponent(() => import('./filters.vue')),

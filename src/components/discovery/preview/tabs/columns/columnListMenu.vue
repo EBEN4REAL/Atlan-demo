@@ -5,13 +5,7 @@
         placement="bottomRight"
     >
         <a-button
-            class="
-                px-2
-                text-gray-500
-                border-transparent
-                shadow-none
-                hover:border-gray-300 hover:shadow-sm
-            "
+            class="px-2 text-gray-500 border-transparent shadow-none  hover:border-gray-300 hover:shadow-sm"
         >
             <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
         </a-button>
@@ -27,7 +21,7 @@
                 </a-menu-item>
                 <a-menu-divider />
 
-                <a-sub-menu key="status">
+                <a-sub-menu key="status" :disabled="!editPermission">
                     <template #title>
                         <div class="flex items-center justify-between">
                             <StatusBadge
@@ -57,25 +51,6 @@
                     </a-menu-item>
                 </a-sub-menu>
 
-                <a-sub-menu key="owner">
-                    <template #title>
-                        <div class="flex items-center">
-                            <AtlanIcon icon="AddUser" />
-                            <span class="pl-2 text-sm">Add Owner</span>
-                            <AtlanIcon
-                                class="flex-none ml-auto -mr-2"
-                                icon="ChevronRight"
-                            />
-                        </div>
-                    </template>
-                    <template #expandIcon />
-                    <a-menu-item class="m-0 bg-white">
-                        <Owners
-                            :selectedAsset="asset"
-                            @update:selectedAsset="updateAsset"
-                        />
-                    </a-menu-item>
-                </a-sub-menu>
                 <!-- <a-sub-menu key="classification">
                     <template #title>
                         <div class="flex items-center">
@@ -122,7 +97,6 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import Classification from '@common/sidebar/classifications.vue'
     import LinkTerms from '@common/sidebar/linkTerms.vue'
-    import Owners from '@/glossary/threeDotMenu/owners.vue'
     import Status from '@/glossary/threeDotMenu/status.vue'
 
     // utils
@@ -133,12 +107,16 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { Status, Owners, StatusBadge, Classification, LinkTerms },
+        components: { Status, StatusBadge, Classification, LinkTerms },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
                 default: () => {},
+            },
+            editPermission: {
+                type: Boolean,
+                required: true,
             },
         },
         setup(props, context) {

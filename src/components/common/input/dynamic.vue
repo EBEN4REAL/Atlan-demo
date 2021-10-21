@@ -1,157 +1,165 @@
 <template>
-    <div>
+    <a-input
+        v-if="dataType === 'text'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :prefix="prefix"
+        :suffix="suffix"
+        @change="handleChange"
+    ></a-input>
+    <!-- Continued types -->
+    <a-textarea
+        v-if="dataType === 'textArea'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        @change="handleChange"
+    ></a-textarea>
+    <component
+        :is="dateTimeTypeComponent || 'a-date-picker'"
+        v-if="dataType === 'date'"
+        :default-value="modelValue"
+        :placeholder="placeholder"
+        :disabled-date="disabledDate"
+        format="MM-DD-YYYY"
+        @change="handleChange"
+    ></component>
+    <a-time-picker
+        v-if="dataType === 'time'"
+        :default-value="modelValue"
+        :placeholder="placeholder"
+        @change="handleChange"
+    ></a-time-picker>
+    <a-checkbox-group
+        v-if="dataType === 'checkbox'"
+        :checked="modelValue"
+        :options="options"
+        @change="handleChange"
+    ></a-checkbox-group>
+    <a-radio-group
+        v-if="dataType === 'radioButton'"
+        :value="modelValue"
+        :options="options"
+        @change="handleChange"
+    ></a-radio-group>
+    <!-- End of Coninuted types -->
+    <a-select
+        v-if="dataType === 'asyncSelect'"
+        style="width: 100%"
+        :value="modelValue"
+        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+        :options="asyncData"
+        :loading="loading"
+        :disabled="letAsyncSelectDisabled || disabled"
+        :placeholder="placeholder"
+        v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
+        @change="handleChange"
+        @dropdownVisibleChange="handleDropdownVisibleChange"
+    >
+        <template #dropdownRender="{ menuNode: menu }">
+            <v-nodes :vnodes="menu" />
+            <template v-if="allowCreate">
+                <a-divider style="margin: 4px 0" />
+                <div
+                    style="padding: 4px 8px; cursor: pointer"
+                    @mousedown="(e) => e.preventDefault()"
+                    @click="handleCreateNew"
+                >
+                    {{ createNewLabel || 'Create More' }}
+                </div>
+            </template>
+        </template>
+    </a-select>
+    <a-modal
+        v-model:visible="createNewVisibility"
+        title="Basic Modal"
+        width="60%"
+        :closable="false"
+    >
+        <div class="overflow-y-scroll" style="height: 65vh">
+            <FormGenerator :config="newConfig" />
+        </div>
+        <template #footer>
+            <a-button @click="handleClose">Close</a-button>
+        </template>
+    </a-modal>
+
+    <!-- async tree select start -->
+    <a-tree-select
+        v-if="dataType === 'asyncTreeSelect'"
+        v-model:value="value"
+        :multiple="true"
+        :tree-checkable="true"
+        style="width: 100%"
+        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+        :tree-data="treeData"
+        placeholder="Please select"
+        :load-data="onLoadData"
+        :disabled="letAsyncSelectDisabled || disabled"
+        @change="handleSelect"
+        treeNodeLabelProp="key"
+        @click="
+            () =>
+                handleDropdownVisibleChange(
+                    !letAsyncSelectDisabled && !disabled
+                )
+        "
+    />
+
+    <!-- async tree select end -->
+
+    <a-input-number
+        v-if="dataType === 'number'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :prefix="prefix"
+        :suffix="suffix"
+        @change="handleChange"
+    ></a-input-number>
+    <a-input-password
+        v-if="dataType === 'password'"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :prefix="prefix"
+        :suffix="suffix"
+        @change="handleChange"
+    ></a-input-password>
+    <a-switch
+        v-if="dataType === 'boolean'"
+        :checked="modelValue"
+        @change="handleChange"
+    />
+
+    <a-input-group v-if="dataType === 'enum'" compact class="w-full">
         <a-input
-            v-if="dataType === 'text'"
+            v-if="isCustom"
+            style="width: 80%"
             :value="modelValue"
             :placeholder="placeholder"
             :prefix="prefix"
             :suffix="suffix"
             @change="handleChange"
         ></a-input>
-        <!-- Continued types -->
-        <a-textarea
-            v-if="dataType === 'textArea'"
-            :value="modelValue"
-            :placeholder="placeholder"
-            @change="handleChange"
-        ></a-textarea>
-        <component
-            :is="dateTimeTypeComponent || 'a-date-picker'"
-            v-if="dataType === 'date'"
-            :default-value="modelValue"
-            :placeholder="placeholder"
-            :disabled-date="disabledDate"
-            format="MM-DD-YYYY"
-            @change="handleChange"
-        ></component>
-        <a-time-picker
-            v-if="dataType === 'time'"
-            :default-value="modelValue"
-            :placeholder="placeholder"
-            @change="handleChange"
-        ></a-time-picker>
-        <a-checkbox-group
-            v-if="dataType === 'checkbox'"
-            :checked="modelValue"
-            :options="options"
-            @change="handleChange"
-        ></a-checkbox-group>
-        <a-radio-group
-            v-if="dataType === 'radioButton'"
-            :value="modelValue"
-            :options="options"
-            @change="handleChange"
-        ></a-radio-group>
-        <!-- End of Coninuted types -->
         <a-select
-            v-if="dataType === 'asyncSelect'"
-            style="width: 100%"
+            v-if="dataType === 'enum' && !isCustom"
+            style="width: 80%"
+            show-search
             :value="modelValue"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            :options="asyncData"
-            :loading="loading"
-            :disabled="letAsyncSelectDisabled || disabled"
+            :options="enumList"
             :placeholder="placeholder"
-            v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
-            @dropdownVisibleChange="handleDropdownVisibleChange"
+        ></a-select>
+        <a-button
+            v-if="allowCustom"
+            style="width: 10%"
+            class="px-1"
+            @click="handleToggleCustom"
         >
-            <template #dropdownRender="{ menuNode: menu }">
-                <v-nodes :vnodes="menu" />
-                <template v-if="allowCreate">
-                    <a-divider style="margin: 4px 0" />
-                    <div
-                        style="padding: 4px 8px; cursor: pointer"
-                        @mousedown="(e) => e.preventDefault()"
-                        @click="handleCreateNew"
-                    >
-                        {{ createNewLabel || 'Create More' }}
-                    </div>
-                </template>
-            </template>
-        </a-select>
-        <a-modal
-            v-model:visible="createNewVisibility"
-            title="Basic Modal"
-            width="60%"
-            :closable="false"
-        >
-            <div class="overflow-y-scroll" style="height: 65vh">
-                <FormGenerator :config="newConfig" />
-            </div>
-            <template #footer>
-                <a-button @click="handleClose">Close</a-button>
-            </template>
-        </a-modal>
-
-        <!-- async tree select start -->
-        <a-tree-select
-            v-if="dataType === 'asyncTreeSelect'"
-            v-model:value="value"
-            :multiple="true"
-            :tree-checkable="true"
-            style="width: 100%"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            :tree-data="treeData"
-            placeholder="Please select"
-            :load-data="onLoadData"
-            @change="handleSelect"
-            @click="handleDropdownVisibleChange"
-        />
-
-        <!-- async tree select end -->
-
-        <a-input-number
-            v-if="dataType === 'number'"
-            :value="modelValue"
-            :placeholder="placeholder"
-            :prefix="prefix"
-            :suffix="suffix"
-            @change="handleChange"
-        ></a-input-number>
-        <a-input-password
-            v-if="dataType === 'password'"
-            :value="modelValue"
-            :placeholder="placeholder"
-            :prefix="prefix"
-            :suffix="suffix"
-            @change="handleChange"
-        ></a-input-password>
-        <a-switch
-            v-if="dataType === 'boolean'"
-            :checked="modelValue"
-            @change="handleChange"
-        />
-
-        <a-input-group v-if="dataType === 'enum'" compact class="w-full">
-            <a-input
-                v-if="isCustom"
-                style="width: 80%"
-                :value="modelValue"
-                :placeholder="placeholder"
-                :prefix="prefix"
-                :suffix="suffix"
-                @change="handleChange"
-            ></a-input>
-            <a-select
-                v-if="dataType === 'enum' && !isCustom"
-                style="width: 80%"
-                show-search
-                :value="modelValue"
-                :options="enumList"
-                :placeholder="placeholder"
-                @change="handleChange"
-            ></a-select>
-            <a-button
-                v-if="allowCustom"
-                style="width: 10%"
-                class="px-1"
-                @click="handleToggleCustom"
-            >
-                <fa icon="fal user-edit"></fa>
-            </a-button>
-        </a-input-group>
-        <UserSelector v-if="dataType === 'users'"></UserSelector>
+            <fa icon="fal user-edit"></fa>
+        </a-button>
+    </a-input-group>
+    <UserSelector v-if="dataType === 'users'"></UserSelector>
+    <div v-if="errorM || treeErrorM" class="text-red-600">
+        {{ errorM || treeErrorM }}
     </div>
 </template>
 
@@ -172,7 +180,6 @@
     export default defineComponent({
         components: {
             UserSelector,
-            // formGenerator,
             FormGenerator: defineAsyncComponent(
                 () => import('@/common/formGenerator/index.vue')
             ),
@@ -180,8 +187,16 @@
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
+            id: { type: String, required: false, default: '' },
             modelValue: {
+                type: [Boolean, String, Number],
                 required: false,
+                default: () => '',
+            },
+            globalVariables: {
+                type: Object,
+                required: false,
+                default: () => {},
             },
             valueObject: {
                 type: Object,
@@ -246,7 +261,9 @@
                 },
             },
             defaultValue: {
+                type: [Boolean, String, Number],
                 required: false,
+                default: () => '',
             },
             allowCustom: {
                 type: Boolean,
@@ -304,11 +321,12 @@
                 },
             },
         },
-        emits: ['update:modelValue', 'change', 'blur'],
+        emits: ['update:modelValue', 'change', 'blur', 'getGlobal'],
         setup(props, { emit }) {
             const { valueObject } = toRefs(props)
 
             const {
+                errorM,
                 loadData,
                 asyncData,
                 newConfig,
@@ -318,6 +336,7 @@
                 shouldRefetch,
                 handleCreateNew,
                 createNewVisibility,
+                getStringFromPath,
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
@@ -325,10 +344,17 @@
                 props?.getFormConfig
             )
 
-            const { onLoadData, treeData, init } = useAsyncTreeSelect(
+            const {
+                onLoadData,
+                treeData,
+                init,
+                disabled,
+                errorM: treeErrorM,
+            } = useAsyncTreeSelect(
                 asyncData,
-                props.otherApiConfig.req,
-                props.otherApiConfig.res
+                props.otherApiConfig?.req,
+                props.otherApiConfig?.res,
+                valueObject
             )
 
             const handleDropdownVisibleChange = (open) => {
@@ -360,12 +386,12 @@
                     const db =
                         n?.props?.pid ||
                         n.node?.props?.pid ||
-                        n?.props?.value ||
-                        n?.node?.props?.value ||
+                        n?.props?.val ||
+                        n?.node?.props?.val ||
                         null
                     const schema =
                         n?.node?.props?.pid || n?.props?.pid
-                            ? n?.node?.props?.value || n?.props?.value
+                            ? n?.node?.props?.val || n?.props?.val
                             : null
 
                     if (result[db] && schema)
@@ -378,7 +404,46 @@
                 emit('change', result)
             }
 
+            const handleChange = (e, timeStamp) => {
+                if (
+                    props.dataType === 'asyncSelect' &&
+                    props?.globalVariables
+                ) {
+                    const temp = {}
+                    Object.entries(props.globalVariables).forEach(([k, p]) => {
+                        const d = asyncData.value.find(
+                            (o) => o.value === e
+                        ).data
+                        temp[k] = getStringFromPath(d, p)
+                    })
+                    emit('update:modelValue', e)
+                    emit('getGlobal', temp)
+                    emit('change', e)
+                } else {
+                    let val = e
+                    if (e?.target) {
+                        val = e.target.value
+                    }
+                    if (props.dataType === 'number') {
+                        emit('update:modelValue', parseInt(val, 10))
+                    } else if (props.dataType === 'checkbox') {
+                        emit('update:modelValue', Array.from(e))
+                    } else if (
+                        props.dataType === 'date' ||
+                        props.dataType === 'time'
+                    ) {
+                        emit('update:modelValue', timeStamp)
+                    } else {
+                        emit('update:modelValue', val)
+                    }
+                    emit('change', val)
+                }
+            }
+
             return {
+                handleChange,
+                errorM,
+                treeErrorM,
                 treeData,
                 handleSelect,
                 value,
@@ -439,26 +504,7 @@
                         : current < dayjs(this.limitBefore, 'MM-DD-YYYY')
                 return current && limitAfter && current && limitBefore
             },
-            handleChange(e, timeStamp) {
-                let val = e
-                if (e?.target) {
-                    val = e.target.value
-                }
-                if (this.dataType === 'number') {
-                    this.$emit('update:modelValue', parseInt(val))
-                } else if (this.dataType === 'checkbox') {
-                    console.log(e)
-                    this.$emit('update:modelValue', Array.from(e))
-                } else if (
-                    this.dataType === 'date' ||
-                    this.dataType === 'time'
-                ) {
-                    this.$emit('update:modelValue', timeStamp)
-                } else {
-                    this.$emit('update:modelValue', val)
-                }
-                this.$emit('change', val)
-            },
+
             handleToggleCustom() {
                 this.isCustom = !this.isCustom
             },

@@ -49,7 +49,7 @@
                         <AssetTypeItems
                             :projections="checkedList"
                             :asset-type="item.displayText"
-                            :asset-id="assetData.guid"
+                            :asset-id="selectedAsset.guid"
                             :css-classes="cssClasses"
                             page="BiOverview"
                             @preview="handlePreview"
@@ -81,6 +81,7 @@
         inject,
         computed,
     } from 'vue'
+    import { storeToRefs } from 'pinia'
     // Components
     import AssetTypeItems from '@/discovery/preview/tabs/relations/assetTypeItems.vue'
 
@@ -88,6 +89,8 @@
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
     // Assets
     import emptyScreen from '~/assets/images/empty_search.png'
+    // store
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         components: { AssetTypeItems },
@@ -102,10 +105,14 @@
             const queryText = ref('')
 
             /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+            // const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
+            // const assetData = computed(() => assetDataInjection?.asset)
+            // store
+            const storeDiscovery = useDiscoveryStore()
+            const { selectedAsset } = storeToRefs(storeDiscovery)
+            
             const filteredAssets = computed(() =>
                 relationshipAssetTypes.value.filter(
                     (el) =>
@@ -123,7 +130,7 @@
             // fetchData
             const fetchData = () => {
                 const { relationshipAssetTypes: x, isLoading: y } =
-                    useEntityRelationships(assetData.value.guid)
+                    useEntityRelationships(selectedAsset.value.guid)
 
                 watch(y, () => {
                     relationshipAssetTypes.value = x.value
@@ -140,7 +147,7 @@
             })
 
             /** WATCHERS */
-            watch(assetData, fetchData, { immediate: true })
+            watch(selectedAsset, fetchData, { immediate: true })
 
             return {
                 queryText,
@@ -149,7 +156,8 @@
                 isLoading,
                 plainOptions,
                 checkedList,
-                assetData,
+                // assetData,
+                selectedAsset,
                 emptyScreen,
                 cssClasses: {
                     paddingY: 'py-6',

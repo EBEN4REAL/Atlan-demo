@@ -3,7 +3,18 @@ import { watch, ref, computed } from 'vue'
 import { Workflows } from '~/services/argo/api/workflow'
 
 export function useWorkflowSearchList(immediate: boolean = true) {
-    const params = ref({ limit: 10, offset: 0 })
+    const params = ref(new URLSearchParams())
+    const filter = ref({})
+    // const sort = ref()
+    const limit = ref(10)
+    const offset = ref(0)
+    params.value.append('limit', limit.value.toString())
+    params.value.append('offset', offset.value.toString())
+    params.value.append('filter', JSON.stringify(filter.value))
+    // params.value.append('sort', sort.value)
+
+    // const sample = `{ "$or":[ { "labels": { "$elemMatch":{ "workflows.argoproj.io/creator-email": "nityananda.at.atlan.comar"} } }, { "labels":{ "$elemMatch":{ "x2": "a2"} } } ] }`
+
     const { data, error, isLoading, mutate } = Workflows.getWorkflows({
         immediate,
         options: {},
@@ -12,23 +23,49 @@ export function useWorkflowSearchList(immediate: boolean = true) {
 
     const workflowList = ref([])
     const totalCount = ref()
+    const filter_record = ref()
+
     watch(data, () => {
         if (!data?.value?.records) return
-        console.log('useWorkflowSearchList', data.value.records)
+        // console.log('useWorkflowSearchList', data.value.records)
         totalCount.value = data.value.total_record
+        filter_record.value = data.value.filter_record
         workflowList.value.push(...data.value.records)
     })
 
     const loadMore = () => {
-        params.value.offset += params.value.limit
-        if (params.value.offset > totalCount.value)
-            params.value.offset = totalCount.value
+        offset.value += limit.value
+        params.value.set('offset', offset.value.toString())
+        if (offset.value > totalCount.value) {
+            offset.value = totalCount.value
+            params.value.set('offset', offset.value.toString())
+        }
+        // console.log(offset.value);
         mutate()
     }
 
-    const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.name.includes(text))
+    const filterList = (AllFilters) => {
+        console.log('Tranformed: ', AllFilters)
 
+        const { filter: theFilters, sort } = AllFilters
+        // rest list
+        workflowList.value = []
+        // reset offset
+        offset.value = 0
+        params.value.set('offset', '0')
+
+        // set filter name && set filter
+        filter.value = theFilters
+        params.value.set(
+            'filter',
+            JSON.stringify(filter.value).replace(/\\/g, '')
+        )
+
+        // set sorting
+        if (sort !== 'default' && sort) params.value.set('sort', sort)
+        // mutate
+        mutate()
+    }
     return {
         workflowList,
         error,
@@ -37,6 +74,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
         loadMore,
         filterList,
         mutate,
+        filter_record,
     }
 }
 
@@ -66,11 +104,15 @@ export function useArchivedRunList(filter, immediate: boolean = true) {
 }
 
 export function useWorkflowTemplates(immediate: boolean = true) {
-    const params = ref({
-        limit: 10,
-        offset: 0,
-        labelSelector: 'com.atlan.orchestration/verified=true',
-    })
+    const params = ref(new URLSearchParams())
+    const filter = ref({})
+    // const sort = ref()
+    const limit = ref(10)
+    const offset = ref(0)
+    params.value.append('limit', limit.value.toString())
+    params.value.append('offset', offset.value.toString())
+    params.value.append('filter', JSON.stringify(filter.value))
+
     const { data, error, isLoading, mutate } = Workflows.getWorkflowTemplates({
         immediate,
         options: {},
@@ -95,8 +137,28 @@ export function useWorkflowTemplates(immediate: boolean = true) {
         mutate()
     }
 
-    const filterList = (text) =>
-        workflowList.value.filter((wf) => wf.name.includes(text))
+    const filterList = (AllFilters) => {
+        console.log('Tranformed: ', AllFilters)
+
+        const { filter: theFilters, sort } = AllFilters
+        // rest list
+        workflowList.value = []
+        // reset offset
+        offset.value = 0
+        params.value.set('offset', '0')
+
+        // set filter name && set filter
+        filter.value = theFilters
+        params.value.set(
+            'filter',
+            JSON.stringify(filter.value).replace(/\\/g, '')
+        )
+
+        // set sorting
+        if (sort !== 'default' && sort) params.value.set('sort', sort)
+        // mutate
+        mutate()
+    }
 
     return {
         workflowList,

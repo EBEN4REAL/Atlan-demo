@@ -115,8 +115,8 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            userPermission: {
-                type: Object as PropType<any>,
+            userHasEditPermission: {
+                type: Boolean,
                 required: true,
             },
             isLoaded: {
@@ -132,11 +132,7 @@
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
-            const { selectedAsset, page, userPermission } = toRefs(props)
-
-            const userHasEditPermission = ref<boolean>(
-                userPermission.value[0]?.allowed
-            )
+            const { selectedAsset, page } = toRefs(props)
 
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
@@ -194,7 +190,6 @@
             return {
                 tableauProperties,
                 handleCollapseChange,
-                userHasEditPermission,
                 dynamicList,
                 activeKey,
                 refMap,

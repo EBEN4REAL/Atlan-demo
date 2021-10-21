@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full pb-1 mt-4 gap-y-4">
+    <div class="flex flex-col w-full pb-1 mt-2 gap-y-2">
         <template v-for="(item, index) in list" :key="item.typeName">
             <div>
                 <AssetSelector
@@ -28,6 +28,7 @@
     } from 'vue'
     import { Components } from '~/api/atlas/client'
     import AssetSelector from '~/components/common/dropdown/assetSelector.vue'
+    import bodybuilder from 'bodybuilder'
 
     export default defineComponent({
         name: 'AssetDropdown',
@@ -96,17 +97,17 @@
             const getFilter = (index) => {
                 if (index > 0) {
                     const item = list.value[index - 1]
+                    const typeName = list.value[index].typeName
                     if (asset.value[item.attribute]) {
-                        return {
-                            condition: 'AND',
-                            criterion: [
-                                {
-                                    attributeName: item.attribute,
-                                    attributeValue: asset.value[item.attribute],
-                                    operator: 'eq',
-                                },
-                            ],
-                        }
+                        return bodybuilder()
+                            .filter(
+                                'term',
+                                `${typeName}.${item.attribute}`,
+                                asset.value[item.attribute]
+                            )
+                            .filter('term', '__typeName.keyword', typeName)
+                            .size(100)
+                            .build()
                     }
                 }
                 // For the first filter we need the connection name
@@ -115,17 +116,20 @@
                         ?.split('/')
                         .slice(0, 3)
                         ?.join('/')
-                    return {
-                        condition: 'AND',
-                        criterion: [
-                            {
-                                ...filter.value,
-                                operator: 'eq',
-                                attributeName: 'connectionQualifiedName',
-                                attributeValue: connectionName,
-                            },
-                        ],
-                    }
+
+                    return bodybuilder()
+                        .filter(
+                            'term',
+                            'Asset.connectionQualifiedName',
+                            connectionName
+                        )
+                        .filter(
+                            'term',
+                            '__typeName.keyword',
+                            list.value[index].typeName
+                        )
+                        .size(100)
+                        .build()
                 }
             }
 

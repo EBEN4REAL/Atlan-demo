@@ -1,10 +1,19 @@
 <template>
     <div class="relative w-full h-full">
-        <div class="absolute flex items-center justify-center w-full h-full">
+        <div
+            v-if="isLoading"
+            class="absolute flex items-center justify-center w-full h-full"
+        >
             <a-spin />
         </div>
-        <div class="absolute w-full h-full">
-            <WorkflowGraph v-if="graphData.name" :graph-data="graphData" />
+
+        <EmptyView v-else-if="!isLoading && !graphData.name" empty="" />
+
+        <div
+            v-else-if="!isLoading && graphData.name"
+            class="absolute w-full h-full"
+        >
+            <MonitorGraph :graph-data="graphData" />
         </div>
     </div>
 </template>
@@ -22,14 +31,15 @@
     import { useRoute } from 'vue-router'
 
     // Components
-    import WorkflowGraph from './monitorGraph.vue'
+    import MonitorGraph from './monitorGraph.vue'
+    import EmptyView from '@common/empty/index.vue'
 
     // Composables
     import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
-        components: { WorkflowGraph },
+        components: { MonitorGraph, EmptyView },
         props: {
             selectedRunName: {
                 type: String,
@@ -43,37 +53,29 @@
             const { selectedRunName } = toRefs(props)
             const records = ref([])
             const graphData = ref({})
-            const isLoading = ref(false)
             const id = computed(() => route?.params?.id || '')
 
             /** METHODS */
-            // fetchRunsData
-            const fetchRunsData = () => {
-                const filter = {
-                    labels: {
-                        $elemMatch: {
-                            'workflows.argoproj.io/workflow-template': `${id.value}`,
-                        },
+            const filter = {
+                labels: {
+                    $elemMatch: {
+                        'workflows.argoproj.io/workflow-template': `${id.value}`,
                     },
-                }
-                const { runList } = useArchivedRunList(
-                    JSON.stringify(filter),
-                    true
-                )
-
-                watch(runList, (newVal) => {
-                    records.value = newVal.records
-                    graphData.value = newVal.records[0]
-                })
+                },
             }
+            const { runList, isLoading } = useArchivedRunList(
+                JSON.stringify(filter),
+                true
+            )
+
+            watch(runList, (newVal) => {
+                records.value = newVal.records
+                graphData.value = newVal.records[0]
+            })
 
             /** Watchers */
             watch(selectedRunName, (newVal) => {
                 graphData.value = records.value.find((x) => (x.name = newVal))
-            })
-
-            onMounted(() => {
-                fetchRunsData()
             })
 
             return {

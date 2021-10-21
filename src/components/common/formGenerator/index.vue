@@ -65,10 +65,13 @@
                                                           c?.getFormConfig,
                                                       createNewLabel:
                                                           c?.createNewLabel,
+                                                      globalVariables:
+                                                          c?.saveVariables,
                                                   }
                                                 : {}
                                         "
                                         @change="handleInputChange"
+                                        @getGlobal="setGlobal"
                                     ></DynamicInput>
                                 </a-form-item>
                             </div>
@@ -131,10 +134,12 @@
                                           allowCreate: f.allowCreate,
                                           getFormConfig: f.getFormConfig,
                                           createNewLabel: f.createNewLabel,
+                                          globalVariables: f?.saveVariables,
                                       }
                                     : {}
                             "
                             @change="handleInputChange"
+                            @getGlobal="setGlobal"
                         ></DynamicInput>
                     </a-form-item>
                 </div>
@@ -182,6 +187,11 @@
                 required: false,
                 default: () => {},
             },
+            globalValues: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change'],
         setup(props, { emit }) {
@@ -198,18 +208,21 @@
                 isRequiredField,
                 handleFormSubmit,
                 init,
-            } = useFormGenerator(configX, formRef, emit, props.defaultValues)
-
-            const handleIncludeAll = (e, id, v) => {
-                handleInputChange()
-            }
+                setGlobal,
+            } = useFormGenerator(
+                configX,
+                formRef,
+                emit,
+                props.defaultValues,
+                props.globalValues
+            )
 
             watch(configX, () => {
                 init()
             })
 
             return {
-                handleIncludeAll,
+                setGlobal,
                 handleFormSubmit,
                 init,
                 handleInputChange,

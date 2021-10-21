@@ -158,10 +158,10 @@
                 >
                     <ScrollStrip>
                         <Pill
-                            v-for="clsf in item.classifications"
+                            v-for="clsf in item.classificationNames"
                             v-if="projection?.includes('classifications')"
                             class="flex-none"
-                            :label="clsf.typeName"
+                            :label="getClassificationDisplayname(clsf)"
                             :has-action="false"
                             :class="isSelected ? 'bg-white' : ''"
                         >
@@ -222,6 +222,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import ScrollStrip from '@/UI/scrollStrip.vue'
+    import { useClassificationStore } from '~/components/admin/classifications/_store'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -364,6 +365,11 @@
                 return `/assets/${tableGuid}/overview?column=${asset.guid}`
             }
 
+            function getClassificationDisplayname(name: string) {
+                return useClassificationStore().getClasificationByName(name)
+                    ?.displayName
+            }
+
             return {
                 isColumnAsset,
                 getColumnUrl,
@@ -378,6 +384,7 @@
                 columnCount,
                 getTruncatedUsers,
                 getCombinedUsersAndGroups,
+                getClassificationDisplayname,
             }
         },
     })

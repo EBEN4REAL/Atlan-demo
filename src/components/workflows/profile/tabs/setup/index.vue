@@ -1,11 +1,16 @@
 <template>
     <div class="relative w-full h-full">
-        <div class="absolute flex items-center justify-center w-full h-full">
+        <div
+            v-if="isLoading"
+            class="absolute flex items-center justify-center w-full h-full"
+        >
             <a-spin />
         </div>
-        <div class="absolute w-full h-full">
+
+        <EmptyView v-else-if="!isLoading && !tasks?.length" empty="" />
+
+        <div v-if="tasks" class="absolute w-full h-full">
             <SetupGraph
-                v-if="tasks"
                 :graph-data="tasks"
                 @change="emit('change', $event, 'dag')"
             />
@@ -19,13 +24,14 @@
 
     // Components
     import SetupGraph from './setupGraph.vue'
+    import EmptyView from '@common/empty/index.vue'
 
     // Composables
     import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
-        components: { SetupGraph },
+        components: { SetupGraph, EmptyView },
         props: {
             workflowTemplate: {
                 type: String,
@@ -36,9 +42,12 @@
         setup(props, { emit }) {
             const tasks = ref([])
             const { workflowTemplate } = toRefs(props)
+
             /** DATA */
             const filter = { name: `${workflowTemplate.value}` }
-            const { data } = useWorkflowTemplateByName(JSON.stringify(filter))
+            const { data, isLoading } = useWorkflowTemplateByName(
+                JSON.stringify(filter)
+            )
 
             watch(data, (newVal) => {
                 tasks.value =
@@ -46,7 +55,7 @@
             })
 
             return {
-                // id,
+                isLoading,
                 data,
                 tasks,
                 emit,

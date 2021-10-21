@@ -1,15 +1,14 @@
 <template>
-    <LoadingView v-if="!data?.asset" />
+    <LoadingView v-if="isLoading" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="flex w-full h-full">
+    <div v-else class="flex w-full h-full">
         <div class="flex flex-col w-full">
             <Header
-                :title="selected.name"
+                :workflow="data.asset"
                 class="px-5 pt-3 bg-white"
                 @open-logs="workflowLogsIsOpen = true"
             />
-
             <a-tabs
                 :active-key="activeKey"
                 :class="$style.profiletab"
@@ -17,6 +16,7 @@
             >
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
+                        v-if="workflowTemplate"
                         :is="tab.component"
                         :key="activeKey || id"
                         :ref="
@@ -38,7 +38,7 @@
                 v-if="selected"
                 :selected-workflow="selected"
                 :selected-dag="selectedDag"
-                :formConfig="formConfig"
+                :form-config="formConfig"
                 @change="selectedRunName = $event"
             />
         </div>
@@ -64,6 +64,7 @@
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
+    import EmptyView from '@common/empty/index.vue'
     import ProfilePreview from '@/workflows/profile/preview/preview.vue'
     import Header from '@/workflows/profile/header.vue'
 
@@ -75,6 +76,7 @@
 
     export default defineComponent({
         components: {
+            EmptyView,
             Header,
             LoadingView,
             ErrorView,
@@ -140,19 +142,23 @@
             const id = computed(() => route?.params?.id || '')
 
             const formConfig = computed(() => {
-                if (data.value?.uiConfig?.length) {
-                    let configCopy =
-                        data.value.uiConfig[0]?.data?.uiConfig || '{}'
-                    configCopy = configCopy
-                        .replace(/\\n/g, '\\n')
-                        .replace(/\\'/g, "\\'")
-                        .replace(/\\"/g, '\\"')
-                        .replace(/\\&/g, '\\&')
-                        .replace(/\\r/g, '\\r')
-                        .replace(/\\t/g, '\\t')
-                        .replace(/\\b/g, '\\b')
-                        .replace(/\\f/g, '\\f')
-                    return JSON.parse(configCopy) ?? {}
+                try {
+                    if (data.value?.uiConfig?.length) {
+                        let configCopy =
+                            data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                        configCopy = configCopy
+                            .replace(/\\n/g, '\\n')
+                            .replace(/\\'/g, "\\'")
+                            .replace(/\\"/g, '\\"')
+                            .replace(/\\&/g, '\\&')
+                            .replace(/\\r/g, '\\r')
+                            .replace(/\\t/g, '\\t')
+                            .replace(/\\b/g, '\\b')
+                            .replace(/\\f/g, '\\f')
+                        return JSON.parse(configCopy) ?? {}
+                    }
+                } catch {
+                    return {}
                 }
                 return {}
             })
@@ -191,6 +197,12 @@
                 })
             }
 
+            const {
+                workflow: response,
+                error,
+                isLoading,
+                mutate,
+            } = useWorkflowByName(id.value, false)
             // fetch
             const fetch = () => {
                 if (selected.value) {
@@ -205,8 +217,11 @@
                 )
 
                 watch(response, (v) => {
+                    console.log('tab v:', v)
+                    // workflowTemplate.value =
+                    //     v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
                     workflowTemplate.value =
-                        v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
+                        v.records[0].workflowtemplate.spec.workflowTemplateRef.name
                     data.value.asset = v.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
@@ -236,6 +251,7 @@
             })
 
             return {
+                isLoading,
                 emit,
                 activeKey,
                 selected,

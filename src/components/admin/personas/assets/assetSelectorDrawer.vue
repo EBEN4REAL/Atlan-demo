@@ -24,10 +24,16 @@
                     <AtlanIcon icon="Cross" class="-mx-1" />
                 </AtlanBtn>
             </div>
-            <MinimalTab v-model:active="activeTab" :data="tabConfig" />
+
+            <RaisedTab
+                class="mt-3 ml-4 mr-auto"
+                v-model:active="activeTab"
+                :data="tabConfig"
+            />
+            <a-divider class="my-4" />
 
             <template v-if="activeTab === 'tree'">
-                <span class="mx-4 mt-4 text-base font-bold text-gray-500"
+                <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                     >Browse from your assets</span
                 >
                 <div class="h-full p-4 overflow-y-auto">
@@ -38,7 +44,7 @@
                 </div>
             </template>
             <template v-else-if="activeTab === 'list'">
-                <span class="mx-4 mt-4 text-base font-bold text-gray-500"
+                <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                     >Search from your assets</span
                 >
                 <AssetsWrapper :dataMap="filterConfig" />
@@ -69,13 +75,13 @@
         watch,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import MinimalTab from '@/UI/minimalTab.vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
     import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
-        components: { AtlanBtn, AssetBrowserTree, MinimalTab, AssetsWrapper },
+        components: { AtlanBtn, AssetBrowserTree, RaisedTab, AssetsWrapper },
         props: {
             connectionQfName: {
                 type: String,

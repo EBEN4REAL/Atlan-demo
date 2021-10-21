@@ -17,7 +17,7 @@ export function useWorkflowSearchList(
 
   // const sample = `{ "$or":[ { "labels": { "$elemMatch":{ "workflows.argoproj.io/creator-email": "nityananda.at.atlan.comar"} } }, { "labels":{ "$elemMatch":{ "x2": "a2"} } } ] }`
 
-  const { data, error, isLoading, mutate } = Workflows.getWorkflows(
+  const { data, error, isLoading, mutate, isReady } = Workflows.getWorkflows(
     { immediate, options: {}, params }
   )
 
@@ -63,7 +63,7 @@ export function useWorkflowSearchList(
     // mutate
     mutate()
   };
-  return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate, filter_record }
+  return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate, filter_record, isReady }
 }
 
 

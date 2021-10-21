@@ -1,9 +1,16 @@
 <template>
-    <div class="flex flex-col items-center justify-center h-full gap-y-3">
+    <div
+        :class="class"
+        class="flex flex-col items-center justify-center h-full gap-y-3"
+    >
         <img v-if="EmptyScreen" :src="EmptyScreen" alt="" class="w-48" />
         <span v-if="headline" class="text-3xl font">{{ headline }}</span>
-        <p v-if="desc" class="w-1/3 text-lg text-center">
-            {{ desc }}
+        <p
+            v-if="desc || empty"
+            style="max-width: 29rem"
+            :class="descClass || 'text-lg text-center'"
+        >
+            {{ desc || empty }}
         </p>
         <AtlanButton
             v-if="buttonText"
@@ -33,6 +40,20 @@
                 },
             },
             headline: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
+            class: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
+            descClass: {
                 type: String,
                 required: false,
                 default() {

@@ -1,29 +1,19 @@
 <template>
     <div
         v-if="
-            (workflowList &&
-                workflowList.length <= 0 &&
-                !isLoading &&
-                !queryText) ||
-            true
+            workflowList && workflowList.length <= 0 && !isLoading && !queryText
         "
-        class="flex flex-col items-center justify-center h-full gap-y-3"
+        class="h-full"
     >
-        <img :src="EmptyScreen" alt="No Workflows" class="w-48" />
-        <span class="text-3xl font">Create a workflow!</span>
-        <p class="w-1/3 text-lg text-center">
-            Create a workflow from a workflow template to bring in data into
-            Atlan, run cron jobs and much more.
-        </p>
-        <AtlanButton
-            class="w-36 mt-11"
-            size="lg"
-            color="primary"
-            padding="compact"
-            @click="$router.push('/workflows/new')"
-        >
-            Get Started <AtlanIcon icon="ArrowRight" class="inline" />
-        </AtlanButton>
+        <EmptyState
+            desc="Create a workflow from a workflow template to bring in data into
+            Atlan, run cron jobs and much more."
+            headline="Create a workflow!"
+            @event="$router.push('/workflows/new')"
+            buttonText="Get Started"
+            :EmptyScreen="EmptyScreen"
+            buttonIcon="ArrowRight"
+        />
     </div>
     <div v-else class="flex w-full h-full">
         <div
@@ -96,7 +86,7 @@
     import { computed, defineComponent, ref, Ref } from 'vue'
     import { useRouter } from 'vue-router'
     import EmptyScreen from '~/assets/images/workflows/emptyDiscovery.png'
-
+    import EmptyState from '~/components/common/empty/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '@/workflows/discovery/list/preference.vue'
     import WorkflowList from '@/workflows/discovery/list/workflowList.vue'
@@ -116,6 +106,7 @@
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
+            EmptyState,
             WorkflowFilters,
             WorkflowList,
             DiscoveryPreview,

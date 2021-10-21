@@ -193,7 +193,7 @@
             const handleChange = (v) => {
                 Object.entries(v).forEach(([key, value]) => {
                     const index =
-                        body.value.spec.templates[0].dag.tasks[0].arguments.parameters.findIndex(
+                        body.value.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters.findIndex(
                             (e) => e.name === key
                         )
                     if (index > -1)
@@ -201,7 +201,7 @@
                             index
                         ].value = value
                     else
-                        body.value.spec.templates[0].dag.tasks[0].arguments.parameters.push(
+                        body.value.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters?.push(
                             {
                                 name: key,
                                 value,

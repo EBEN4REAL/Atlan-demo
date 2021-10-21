@@ -23,6 +23,13 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
         const fltrObj = filters[mkey]
         switch (mkey) {
             case 'connector': {
+                const conn = fltrObj
+                if (conn.attributeValue)
+                    query.filter(
+                        'term',
+                        `Asset.${conn.attributeName}`,
+                        conn.attributeValue
+                    )
                 break
             }
             case 'saved': {

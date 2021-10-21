@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-between px-4 py-2 text-sm bg-gray-100 border-b border-gray-300 "
+        class="flex items-center justify-between p-4 text-sm bg-gray-100 border-b border-gray-300 "
     >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
@@ -9,18 +9,18 @@
         </div>
         <div class="flex items-center">
             <div v-if="totalAppliedFiltersCount">
-                <!-- <SaveFilterModal
-                    :applied-filters="filterMap"
+                <SaveFilterModal
+                    :applied-filters="dataMap"
                     @savedFilterAdded="handleSavedFilterAdded"
                 >
                     <template #trigger>
                         <div
-                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
+                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
                         >
                             Save
                         </div>
                     </template>
-                </SaveFilterModal> -->
+                </SaveFilterModal>
             </div>
             <div
                 v-if="totalAppliedFiltersCount"
@@ -132,7 +132,6 @@
     } from 'vue'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
-    import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
     import useFilterUtils from './useFilterUtils'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
@@ -207,9 +206,6 @@
             const dataMap: Ref<{ [key: string]: any }> = ref({
                 connector: props.facets?.connector || {},
                 saved: props.facets?.saved || {
-                    checked: undefined,
-                },
-                assetCategory: props.facets?.assetCategory || {
                     checked: undefined,
                 },
                 status: props.facets?.status || {
@@ -292,10 +288,7 @@
                         dataMap.value[filterId].checked = []
                         break
                     }
-                    case 'assetCategory': {
-                        dataMap.value[filterId].checked = []
-                        break
-                    }
+
                     case 'status': {
                         dataMap.value[filterId].checked = []
                         break
@@ -330,26 +323,6 @@
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
-                    case 'assetCategory': {
-                        let facetFiltersData =
-                            dataMap.value[filterId]?.checked || []
-                        facetFiltersData = facetFiltersData?.map(
-                            (assetCategoryId: string) =>
-                                AssetCategoryList?.find(
-                                    (assetCategory: any) =>
-                                        assetCategory.id === assetCategoryId
-                                ).label
-                        )
-                        if (facetFiltersData.length > 2) {
-                            return `${facetFiltersData
-                                .slice(0, 2)
-                                .join(', ')} +${
-                                facetFiltersData.length - 2
-                            } others`
-                        }
-
-                        return facetFiltersData.slice(0, 2).join(', ')
-                    }
                     case 'saved': {
                         let facetFiltersData =
                             dataMap.value[filterId]?.checked || []
@@ -457,7 +430,6 @@
                 }
                 dataMap.value.saved.checked = []
 
-                dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
                 dataMap.value.classifications.noClassificationsAssigned = false

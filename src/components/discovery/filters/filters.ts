@@ -29,23 +29,6 @@ export const List: CollapseArray = [
         exclude: false,
     },
     {
-        id: 'assetCategory',
-        label: 'Category',
-        component: 'assetCategory',
-        overallCondition: 'OR',
-        filters: [
-            {
-                attributeName: 'assetCategory',
-                condition: 'OR',
-                isMultiple: false,
-                operator: 'eq',
-            },
-        ],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    },
-    {
         id: 'status',
         label: 'Certificate',
         component: 'status',

@@ -6,8 +6,13 @@
             >
                 <a-select
                     v-model:value="currentGlossaryGuid"
+                    :open="glossaryContextOpen"
                     :options="glossaryContextDropdown"
+                    :dropdownMatchSelectWidth="false"
                     dropdownClassName="pr-0.5"
+                    @click="glossaryContextOpen = !glossaryContextOpen"
+                    @select="glossaryContextOpen = false"
+                    @blur="glossaryContextOpen = false"
                 >
                     <template #suffixIcon>
                         <atlan-icon
@@ -126,168 +131,7 @@
 
             <hr />
 
-            <div v-if="isHome" class="h-screen px-2 py-4">
-                <div class="flex flex-col px-2 pb-2">
-                    <SearchAndFilter
-                        v-model:value="searchQuery"
-                        placeholder="Search accross Glossaries"
-                        size="minimal"
-                        @change="onSearch"
-                        class="w-full"
-                    />
-                </div>
-                <div
-                    v-if="searchResults?.length && searchQuery?.length"
-                    class="h-full px-4 overflow-y-auto"
-                >
-                    <div v-if="searchTerms?.length">
-                        <div class="mb-2 text-gray-500">Terms</div>
-                        <div
-                            v-for="term in searchTerms"
-                            :key="term.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                            @click="redirectToProfile('term', term.guid)"
-                        >
-                            <div
-                                class="flex content-center w-full mb-1 space-x-2 "
-                            >
-                                <span class="my-auto"
-                                    ><AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                'term',
-                                                term.attributes
-                                                    .certificateStatus
-                                            )
-                                        "
-                                        class="w-auto h-5"
-                                /></span>
-                                <div class="flex flex-col w-full">
-                                    <span class="text-md">{{
-                                        term?.displayText
-                                    }}</span>
-                                    <Tooltip
-                                        v-if="term.attributes.shortDescription"
-                                        :tooltip-text="
-                                            term.attributes.shortDescription
-                                        "
-                                        :rows="1"
-                                        classes="w-auto text-gray-500 text-xs"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="searchCategories?.length" class="mt-4">
-                        <div class="mb-2 text-gray-500">Categories</div>
-                        <div
-                            v-for="category in searchCategories"
-                            :key="category.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                            @click="
-                                redirectToProfile('category', category.guid)
-                            "
-                        >
-                            <div
-                                class="flex content-center w-full mb-1 space-x-2 "
-                            >
-                                <span class="my-auto"
-                                    ><AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                'category',
-                                                category.attributes
-                                                    .certificateStatus
-                                            )
-                                        "
-                                        class="w-auto h-5"
-                                /></span>
-                                <div class="flex flex-col w-full">
-                                    <span class="text-md">{{
-                                        category?.displayText
-                                    }}</span>
-                                    <Tooltip
-                                        v-if="
-                                            category.attributes.shortDescription
-                                        "
-                                        :tooltip-text="
-                                            category.attributes.shortDescription
-                                        "
-                                        :rows="1"
-                                        classes="w-auto text-gray-500 text-xs"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="searchGlossaries?.length" class="mt-4">
-                        <div class="mb-2 text-gray-500">Glossaries</div>
-                        <div
-                            v-for="glossary in searchGlossaries"
-                            :key="glossary.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
-                            @click="
-                                redirectToProfile('glossary', glossary.guid)
-                            "
-                        >
-                            <div
-                                class="flex content-center w-full mb-1 space-x-2 "
-                            >
-                                <span class="my-auto"
-                                    ><AtlanIcon
-                                        icon="Glossary"
-                                        class="w-auto h-5"
-                                /></span>
-                                <div class="flex flex-col w-full">
-                                    <span class="text-md">{{
-                                        glossary?.displayText
-                                    }}</span>
-                                    <Tooltip
-                                        v-if="
-                                            glossary.attributes.shortDescription
-                                        "
-                                        :tooltip-text="
-                                            glossary.attributes.shortDescription
-                                        "
-                                        :rows="1"
-                                        classes="w-auto text-gray-500 text-xs"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    v-else-if="glossaryList.length"
-                    class="h-full pb-32 overflow-y-auto"
-                >
-                    <div
-                        v-for="glossary in glossaryList"
-                        :key="glossary.guid"
-                        @click="
-                            () => redirectToProfile('glossary', glossary.guid)
-                        "
-                    >
-                        <div
-                            class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
-                        >
-                            <div class="flex flex-row justify-between">
-                                {{ glossary?.displayText }}
-                                <!-- <Fa
-                            class="w-auto h-3 text-white group-hover:text-primary"
-                            icon="fal external-link-alt"
-                        /> -->
-                                <atlan-icon
-                                    class="w-auto h-5 text-white  group-hover:text-primary"
-                                    icon="ArrowRight"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div v-else class="flex flex-col h-screen">
+            <div class="flex flex-col h-screen">
                 <div class="flex px-4 pt-2 pb-0 pr-3 searchArea">
                     <SearchAndFilter
                         v-model:value="searchQuery"
@@ -753,7 +597,7 @@
                 parentGlossary.value?.guid ?? 'all'
             )
             const glossaryContextDropdown = computed(() => {
-                const list = glossaryList.value.map((glossary) => ({
+            const list = glossaryList.value.map((glossary) => ({
                     value: glossary.guid,
                     label: glossary.attributes.name,
                     status: glossary.attributes.certificateStatus,
@@ -772,6 +616,8 @@
                 useCreateGlossary()
 
             const router = useRouter()
+
+            const glossaryContextOpen = ref(router.currentRoute.value.query.cta === 'glossaryContext')
 
             const parentGlossaryQualifiedName = computed(() =>
                 home.value
@@ -852,6 +698,7 @@
                 onSearch,
                 currentGlossaryGuid,
                 refetchGlossaryList,
+                glossaryContextOpen
             }
         },
     })

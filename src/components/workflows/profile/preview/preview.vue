@@ -6,7 +6,7 @@
                     ref="formRef"
                     :config="formConfig[selectedDag]"
                     :default-values="defaultValues"
-                    :ref-object="selectedWorkflow.workflowTemplate"
+                    :globalValues="selectedWorkflow"
                     @change="handleChange"
                 />
             </div>
@@ -206,14 +206,15 @@
                 const valueArr =
                     selectedWorkflow.value?.workflowtemplate?.spec?.arguments
                         ?.parameters
-                valueArr.forEach((v) => {
-                    const some = props.formConfig[props.selectedDag]?.some(
-                        (c) => c.id === v.name
-                    )
-                    // eslint-disable-next-line no-prototype-builtins
-                    if (some && v.hasOwnProperty('value') && v.value !== '')
-                        temp[v.name] = v.value
-                })
+                if (valueArr?.length)
+                    valueArr.forEach((v) => {
+                        const some = props.formConfig[props.selectedDag]?.some(
+                            (c) => c.id === v.name
+                        )
+                        // eslint-disable-next-line no-prototype-builtins
+                        if (some && v.hasOwnProperty('value') && v.value !== '')
+                            temp[v.name] = v.value
+                    })
                 return temp
             })
 

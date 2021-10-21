@@ -49,8 +49,8 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, value
 
         try {
             const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body })
-            // eslint-disable-next-line no-param-reassign
-            n.dataRef.children = [...getData(response)].map(r => ({ pid: n.value, value: r.value, title: r.label, children: undefined, isLeaf: true, key: r.value }));
+            // eslint-disable-next-line no-param-reassign // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
+            n.dataRef.children = [...getData(response)].map(r => ({ pid: n.value, title: r.label, isLeaf: true, key: `${n.value}/${r.value}`, value: `${n.value}/${r.value}`, val: r.value }));
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig
             errorM.value = errorMessage || errorLabelPath && getStringFromPath(e, errorLabelPath) || 'Some error occured'
@@ -72,7 +72,8 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, value
 
     const data = ref([]);
     const init = () => {
-        data.value = rootData.value.map(r => ({ value: r.value, title: r.label, children: [], key: r.value }))
+        // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
+        data.value = rootData.value.map(r => ({ value: r.value, val: r.value, title: r.label, children: [], key: r.value }))
     }
 
     return {

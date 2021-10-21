@@ -202,6 +202,11 @@
                 required: false,
                 default: () => {},
             },
+            visible: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['onAddGlossary'],
         setup(props, { emit }) {
@@ -216,7 +221,7 @@
             const addedCategories = ref([])
             const removedCategories = ref([])
 
-            const visible = ref<boolean>(false)
+            const visible = ref<boolean>(props.visible)
             const isVisible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
 

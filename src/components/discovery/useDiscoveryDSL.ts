@@ -26,12 +26,18 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 if (fltrObj?.noClassificationsAssigned) {
                     query.notQuery('exists', '__traitNames')
                 } else if (fltrObj?.checked?.length) {
+                    // By default filter for all classifications
+                    let attr = '__traitNames'
+                    // Else filter only propagated classifications
+                    if (fltrObj?.addedBy === 'propagation')
+                        attr = '__propagatedTraitNames'
+
                     if (fltrObj?.operator === 'AND') {
                         fltrObj?.checked?.forEach((val) => {
-                            query.filter('term', '__traitNames', val)
+                            query.filter('term', attr, val)
                         })
                     } else if (fltrObj?.operator === 'OR') {
-                        query.filter('terms', '__traitNames', fltrObj?.checked)
+                        query.filter('terms', attr, fltrObj?.checked)
                     }
                 }
                 // TODO: Add the classification addedBy filter to the payload

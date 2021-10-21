@@ -17,4 +17,7 @@ export const KeyMaps = {
     ES: {
         INDEX_SEARCH: () => getAPIPath('meta', '/search/indexsearch'),
     },
+    assets: {
+        GET_ENTITY: (guid) => getAPIPath('meta', `/entity/guid/${guid}`),
+    },
 }

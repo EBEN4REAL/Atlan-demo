@@ -113,6 +113,7 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useHotKeys } from './common/composables/useHotKeys'
     import { useFullScreen } from './common/composables/useFullScreen'
+    import { useRoute } from 'vue-router'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
@@ -138,19 +139,23 @@
                 outputPaneSize,
                 paneResize,
             } = useSpiltPanes()
+            const route = useRoute()
             // TODO: will be used for HOTKEYs
             const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
             const { editorConfig } = useEditor()
             const { fullSreenState } = useFullScreen()
+            const savedQueryGuidFromURL = ref(route.query?.id)
 
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
                 syncInlineTabsInLocalStorage,
                 syncActiveInlineTabKeyInLocalStorage,
             } = useLocalStorageSync()
-
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
-                useInlineTab()
+                useInlineTab(
+                    undefined,
+                    savedQueryGuidFromURL.value ? false : true
+                )
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,

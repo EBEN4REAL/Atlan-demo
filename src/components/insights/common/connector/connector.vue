@@ -86,6 +86,7 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
+            debugger
             const { getConnectorName } = useAssetInfo()
             const { data, filterSourceIds, isLeafNodeSelectable } =
                 toRefs(props)
@@ -198,7 +199,9 @@
                 return tree
             }
 
-            const treeData = transformConnectorToTree(filteredList.value)
+            const treeData = computed(() =>
+                transformConnectorToTree(filteredList.value)
+            )
 
             watch([connector, connection], () => emitChangedFilters())
 

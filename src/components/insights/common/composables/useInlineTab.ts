@@ -4,7 +4,10 @@ import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
 import { useConnectionsStore } from '~/store/connections'
 
-export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
+export function useInlineTab(
+    treeSelectedKeys?: Ref<string[]>,
+    shouldDefaultTabAdd?: boolean
+) {
     const {
         syncInlineTabsInLocalStorage,
         getInlineTabsFromLocalStorage,
@@ -39,7 +42,7 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
             inlineTabsDemoData[0].explorer.schema.connectors.attributeValue =
                 firstConnection?.attributes?.qualifiedName
         }
-        // if (shouldDefaultTabAdd) return inlineTabsDemoData
+        if (shouldDefaultTabAdd) return inlineTabsDemoData
 
         return []
     }
@@ -225,7 +228,9 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
     }
 
-    const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
+    const tabsArray: Ref<activeInlineTabInterface[]> = ref(
+        setInlineTabsArray(shouldDefaultTabAdd)
+    )
     const activeInlineTabKey = ref(setActiveInlineTabKey())
     const activeInlineTab = computed(() =>
         tabsArray.value.find((tab) => tab.key === activeInlineTabKey.value)

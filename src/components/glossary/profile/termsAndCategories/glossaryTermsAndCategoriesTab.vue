@@ -58,6 +58,7 @@
                         :projection="projection"
                         :isLoading="isLoading"
                         :selectedEntity="selectedEntity"
+                        :approximateCount="approximateCount"
                         @loadMore="loadMore"
                         @gtcCardClicked="onEntitySelect"
                         @bulkSelectChange="
@@ -214,11 +215,10 @@
             const {
                 entities,
                 referredEntities,
-                error,
                 isLoading,
                 fetchAssetsPaginated,
-                fetchAssets,
                 deleteEntityFromList,
+                approximateCount,
             } = useGtcSearch(glossaryQualifiedName)
 
             const projectionOptions = [
@@ -372,6 +372,7 @@
                 showFiltersPane,
                 initialFilters,
                 handleFilterInitialize,
+                approximateCount
             }
         },
     })

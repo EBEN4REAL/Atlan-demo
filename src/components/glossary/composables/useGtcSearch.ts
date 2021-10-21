@@ -23,12 +23,12 @@ type Filters = {
 export default function useGtcSearch(
     qualifiedName?: ComputedRef<string>,
     dependantFetchingKey?: Ref<any>,
-    type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm',
+    type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm' | string[],
     limit?: number
 ) {
     const requestQuery = ref<string>('')
     const offsetLocal = ref(0)
-    const defaultLimit = limit || 50
+    const defaultLimit = limit || 20
     const limitLocal = ref<number>(defaultLimit)
     const localFilters = ref<Filters>()
 
@@ -59,7 +59,7 @@ export default function useGtcSearch(
                 
             dsl: {
                 size: limitLocal.value,
-                // offset: offsetLocal.value,
+                from: offsetLocal.value,
                 query: {
                     bool: {
                         filter: [
@@ -136,7 +136,10 @@ export default function useGtcSearch(
         } else {
             if (type && type !== '') {
                 typeName = [type]
-            } else
+            }  else if(Array.isArray(type)) {
+                typeName = type
+            }
+            else
                 typeName =
                     ['AtlasGlossaryTerm', 'AtlasGlossaryCategory', 'AtlasGlossary']
         }
@@ -180,6 +183,8 @@ export default function useGtcSearch(
             revalidateOnFocus: false,
         },
     })
+    const approximateCount = computed(() => assets.value.approximateCount)
+
     offsetLocal.value += defaultLimit
     refreshBody()
 
@@ -272,6 +277,7 @@ export default function useGtcSearch(
         error,
         isLoading,
         referredEntities,
+        approximateCount,
         fetchAssets,
         fetchAssetsPaginated,
         deleteEntityFromList,

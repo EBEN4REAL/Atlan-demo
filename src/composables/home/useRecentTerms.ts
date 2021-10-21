@@ -1,4 +1,4 @@
-import { onMounted, ref} from "vue"
+import { onMounted } from "vue"
 import bodybuilder from 'bodybuilder'
 import useIndexSearch from '~/services/atlas/discovery/useIndexSearch'
 

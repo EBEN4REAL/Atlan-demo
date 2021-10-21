@@ -21,7 +21,7 @@
                                 class="w-4 h-4 mr-1"
                             ></component>
                             <Tooltip
-                                :tooltip-text="col.title"
+                                :tooltip-text="`${col.title}`"
                                 classes="cursor-pointer"
                             />
                         </div>
@@ -32,12 +32,14 @@
             <tbody>
                 <tr v-for="(row, index) in results" :key="index">
                     <td
-                        v-for="(rowData, index) in row"
-                        :key="index"
+                        v-for="(rowData, key) in row"
+                        :key="key"
                         class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
                     >
+                        <div v-if="key == 'hash_index'">{{ rowData }}</div>
                         <Tooltip
-                            :tooltip-text="rowData"
+                            v-else
+                            :tooltip-text="`${rowData}`"
                             classes="cursor-pointer"
                         />
                     </td>
@@ -137,6 +139,7 @@
                         obj = { ...obj }
                         results.value.push(obj)
                     })
+                    console.log(results.value)
                 }
             })
 

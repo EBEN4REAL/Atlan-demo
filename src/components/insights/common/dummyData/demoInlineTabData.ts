@@ -2,7 +2,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 export const inlineTabsDemoData: activeInlineTabInterface[] = [
     {
         key: '1',
-        label: 'ABCDE',
+        label: 'New tab',
         isSaved: false,
         queryId: undefined,
         status: 'DRAFT',
@@ -13,131 +13,39 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {
             schema: {
                 connectors: {
-                    attributeName: 'schemaQualifiedName',
-                    attributeValue: '',
+                    attributeName: undefined,
+                    attributeValue: undefined,
                 },
             },
             queries: {
                 connectors: {
-                    connector: 'snowflake',
+                    connector: undefined,
                 },
             },
         },
         playground: {
             editor: {
-                text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
+                text: '',
                 dataList: [],
                 columnList: [],
                 variables: [],
+                limitRows: {
+                    checked: false,
+                    rowsCount: -1,
+                },
             },
             resultsPane: {
                 activeTab: 0,
                 result: {
-                    title: 'ABCDE Result',
-                },
-                metadata: {},
-                queries: {},
-                joins: {},
-                filters: {},
-                impersonation: {},
-                downstream: {},
-                sqlHelp: {},
-            },
-        },
-        favico: 'https://atlan.com/favicon.ico',
-        assetSidebar: {
-            isVisible: false,
-            assetInfo: {},
-            title: '',
-            id: '',
-        },
-    },
-    {
-        key: '2',
-        label: 'ADBE',
-        isSaved: false,
-        queryId: undefined,
-        status: 'draft',
-        connectionId: '',
-        description: '',
-        qualifiedName: '',
-        isSQLSnippet: false,
-        explorer: {
-            schema: {
-                connectors: {
-                    attributeName: 'schemaQualifiedName',
-                    attributeValue: '',
-                },
-            },
-            queries: {
-                connectors: {
-                    connector: 'snowflake',
-                },
-            },
-        },
-        playground: {
-            editor: {
-                text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                dataList: [],
-                columnList: [],
-                variables: [],
-            },
-            resultsPane: {
-                activeTab: 0,
-                result: {
-                    title: 'ADBE Result',
-                },
-                metadata: {},
-                queries: {},
-                joins: {},
-                filters: {},
-                impersonation: {},
-                downstream: {},
-                sqlHelp: {},
-            },
-        },
-        favico: 'https://atlan.com/favicon.ico',
-        assetSidebar: {
-            isVisible: false,
-            assetInfo: {},
-            title: '',
-            id: '',
-        },
-    },
-    {
-        key: '3',
-        label: 'BCDE',
-        isSaved: false,
-        queryId: undefined,
-        status: 'draft',
-        connectionId: '',
-        description: '',
-        qualifiedName: '',
-        isSQLSnippet: false,
-        explorer: {
-            schema: {
-                connectors: {
-                    attributeName: 'schemaQualifiedName',
-                    attributeValue: '',
-                },
-            },
-            queries: {
-                connectors: {
-                    connector: 'snowflake',
-                },
-            },
-        },
-        playground: {
-            editor: {
-                text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                dataList: [],
-                columnList: [],
-                variables: [],
-            },
-            resultsPane: {
-                activeTab: 0,
-                result: {
-                    title: 'BCDE Result',
+                    title: `Result`,
+                    runQueryId: undefined,
+                    isQueryRunning: '',
+                    queryErrorObj: {},
+                    totalRowsCount: -1,
+                    executionTime: -1,
+                    errorDecorations: [],
+                    eventSourceInstance: undefined,
+                    buttonDisable: false,
                 },
                 metadata: {},
                 queries: {},

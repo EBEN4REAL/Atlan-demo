@@ -19,12 +19,12 @@
                                 class="w-5 h-5 my-auto mr-1"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                             >
                                 {{ title(item) }}</span
                             >
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -99,7 +99,7 @@
                         <!--For Others -->
                         <div class="parent-ellipsis-container py-1.5">
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                             >
                                 {{ title(item) }}
                             </span>
@@ -115,7 +115,7 @@
                                 "
                             ></StatusBadge>
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  right-6 margin-align-top group-hover:opacity-100"
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 right-6 margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -145,7 +145,7 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"

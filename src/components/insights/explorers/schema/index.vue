@@ -28,7 +28,7 @@
             ></Connector>
         </div>
         <div
-            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto scrollable-container"
+            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto  scrollable-container"
         >
             <schema-tree
                 :tree-data="treeData"
@@ -63,7 +63,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
-    import Connector from '@common/facets/connector.vue'
+    import Connector from '~/components/insights/common/connector/connector.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({

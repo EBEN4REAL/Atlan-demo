@@ -1,14 +1,10 @@
 <template>
     <div
-        class="flex items-center justify-between p-4 text-sm bg-gray-100 border-b border-gray-300 "
+        class="flex items-center justify-end p-4 text-sm bg-gray-100 border-b border-gray-300 "
+        v-if="totalAppliedFiltersCount"
     >
-        <div class="font-medium text-gray-500">
-            {{ totalAppliedFiltersCount || 'No' }}
-            {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
-            applied
-        </div>
         <div class="flex items-center">
-            <div v-if="totalAppliedFiltersCount">
+            <div>
                 <SaveFilterModal
                     :applied-filters="dataMap"
                     @savedFilterAdded="handleSavedFilterAdded"
@@ -23,7 +19,6 @@
                 </SaveFilterModal>
             </div>
             <div
-                v-if="totalAppliedFiltersCount"
                 class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
@@ -31,7 +26,31 @@
             </div>
         </div>
     </div>
-    <div class="h-full overflow-y-auto bg-gray-100">
+    <div v-else class="flex items-center px-4 pt-4 pb-2 text-sm bg-gray-100">
+        <a-button-group class="rounded shadow">
+            <a-button
+                :class="
+                    activeTab === 'all'
+                        ? 'text-primary font-bold'
+                        : 'text-gray-500'
+                "
+                @click="setActiveTab('all')"
+            >
+                Filters
+            </a-button>
+
+            <a-button
+                :class="
+                    activeTab === 'saved'
+                        ? 'text-primary font-bold'
+                        : 'text-gray-500'
+                "
+                @click="setActiveTab('saved')"
+                >Saved Filters</a-button
+            >
+        </a-button-group>
+    </div>
+    <div v-if="activeTab === 'all'" class="h-full overflow-y-auto bg-gray-100">
         <Connector
             class="px-4 py-3"
             :data="dataMap.connector"
@@ -101,14 +120,7 @@
                     :list="bmDataList[item.id]"
                     @change="handleChange"
                 ></component>
-                <component
-                    is="savedFilter"
-                    v-else-if="item.component === 'savedFilter'"
-                    :updateSavedFilters="updateSavedFilters"
-                    v-model:data="dataMap[item.id]"
-                    :item="item"
-                    @change="handleSavedFilterChange"
-                ></component>
+
                 <component
                     v-else
                     :is="item.component"
@@ -118,6 +130,13 @@
                 ></component>
             </a-collapse-panel>
         </a-collapse>
+    </div>
+    <div v-if="activeTab === 'saved'">
+        <SavedFilter
+            :updateSavedFilters="updateSavedFilters"
+            v-model:data="dataMap['saved']"
+            @change="handleSavedFilterChange"
+        />
     </div>
 </template>
 
@@ -190,6 +209,11 @@
             const dirtyTimestamp = ref('dirty_')
             const updateSavedFilters: Ref<boolean> = ref(false)
 
+            const activeTab: Ref<'all' | 'saved'> = ref('all')
+
+            function setActiveTab(tabName: 'all' | 'saved') {
+                activeTab.value = tabName
+            }
             /**
              * @desc combines static List with mapped BM object that has filter support
              * */
@@ -461,6 +485,8 @@
                 dynamicList,
                 bmFiltersList,
                 bmDataList,
+                activeTab,
+                setActiveTab,
                 setConnector,
                 handleSavedFilterChange,
                 handleSavedFilterAdded,

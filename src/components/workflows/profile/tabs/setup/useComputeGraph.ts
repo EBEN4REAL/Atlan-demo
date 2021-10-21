@@ -106,7 +106,7 @@ export default function useComputeGraph(
     }
 
     /* Zoom */
-    graph.value.zoom(-0.3)
+    graph.value.zoom(-0.4)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     return { model, edges, nodes }

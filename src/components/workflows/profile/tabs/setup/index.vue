@@ -15,8 +15,7 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, ref, watch } from 'vue'
-    import { useRoute } from 'vue-router'
+    import { defineComponent, computed, ref, watch, toRefs } from 'vue'
 
     // Components
     import SetupGraph from './setupGraph.vue'
@@ -27,23 +26,27 @@
     export default defineComponent({
         name: 'WorkflowSetupTab',
         components: { SetupGraph },
+        props: {
+            workflowTemplate: {
+                type: String,
+                required: true,
+            },
+        },
         emits: ['change'],
-        setup(_, { emit }) {
-            const route = useRoute()
+        setup(props, { emit }) {
             const tasks = ref([])
-
+            const { workflowTemplate } = toRefs(props)
             /** DATA */
-            const id = computed(() => route?.params?.id || '')
-
-            const { data } = useWorkflowTemplateByName(id.value)
+            const filter = { name: `${workflowTemplate.value}` }
+            const { data } = useWorkflowTemplateByName(JSON.stringify(filter))
 
             watch(data, (newVal) => {
                 tasks.value =
-                    newVal.workflowtemplate.spec.templates[0].dag.tasks
+                    newVal.records[0].workflowtemplate.spec.templates[0].dag.tasks
             })
 
             return {
-                id,
+                // id,
                 data,
                 tasks,
                 emit,

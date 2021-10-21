@@ -86,7 +86,6 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
-            debugger
             const { getConnectorName } = useAssetInfo()
             const { data, filterSourceIds, isLeafNodeSelectable } =
                 toRefs(props)

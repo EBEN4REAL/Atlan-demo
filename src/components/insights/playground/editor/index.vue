@@ -667,10 +667,12 @@
             /*-------------------------------------*/
 
             watch(editorInstance, () => {
-                const pos = toRaw(editorInstance.value).getPosition()
-                editorPos.value.column = pos.column
-                editorPos.value.lineNumber = pos.lineNumber
-                console.log(pos)
+                if (toRaw(editorInstance.value)) {
+                    const pos = toRaw(editorInstance.value).getPosition()
+                    editorPos.value.column = pos.column
+                    editorPos.value.lineNumber = pos.lineNumber
+                    console.log(pos)
+                }
             })
 
             /* Handlng the Fullscreen esc key logic */

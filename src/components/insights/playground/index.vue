@@ -145,6 +145,7 @@
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useRouter } from 'vue-router'
+    import { useUtils } from '~/components/insights/common/composables/useUtils'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -172,6 +173,7 @@
             const saveQueryData = ref()
 
             const { queryRun } = useRunQuery()
+            const { getFirstQueryConnection } = useUtils()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
@@ -196,6 +198,11 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
+            const checkIfItsAFirstTab = () => {
+                if (tabs.value.length < 1) return true
+                return false
+            }
+
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
@@ -272,6 +279,16 @@
                         title: activeInlineTab.value?.assetSidebar.title ?? '',
                         id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
+                }
+                if (checkIfItsAFirstTab()) {
+                    const firstConnection = getFirstQueryConnection()
+                    /* For intiial selection of connections */
+                    if (firstConnection && firstConnection?.attributes?.name) {
+                        inlineTabData.explorer.schema.connectors.attributeName =
+                            'connectionQualifiedName'
+                        inlineTabData.explorer.schema.connectors.attributeValue =
+                            firstConnection?.attributes?.qualifiedName
+                    }
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 router.push(`/insights`)

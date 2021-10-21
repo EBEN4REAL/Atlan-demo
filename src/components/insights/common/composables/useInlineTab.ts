@@ -1,8 +1,8 @@
 import { Ref, ref, computed, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from './useLocalStorageSync'
+import { useUtils } from '~/components/insights/common/composables/useUtils'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
-import { useConnectionsStore } from '~/store/connections'
 
 export function useInlineTab(
     treeSelectedKeys?: Ref<string[]>,
@@ -13,6 +13,7 @@ export function useInlineTab(
         getInlineTabsFromLocalStorage,
         getActiveInlineTabKeyFromLocalStorage,
     } = useLocalStorageSync()
+    const { getFirstQueryConnection } = useUtils()
 
     // initial sidebar will be not visible
     const setInlineTabsVisibilityToNone = (
@@ -26,11 +27,7 @@ export function useInlineTab(
     }
     const setInlineTabsArray = (shouldDefaultTabAdd: boolean) => {
         // checking if localstorage already have active tabs
-        const store = useConnectionsStore()
-        let firstConnection = store?.data?.entities?.find(
-            (item) => item.attributes.connectorName === 'snowflake'
-        )
-        console.log(firstConnection, 'firstConnection', store?.data?.entities)
+        let firstConnection = getFirstQueryConnection()
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
             return setInlineTabsVisibilityToNone(localStorageInlineTabs)

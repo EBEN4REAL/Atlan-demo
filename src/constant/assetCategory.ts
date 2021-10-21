@@ -1,9 +1,16 @@
 // import { CheckboxArray } from '~/types'
 
-export const List: any = [
+export const List = [
     {
         id: 'datasets',
-        include: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'TableauDatasource', 'PowerBIDataset'],
+        include: [
+            'View',
+            'Table',
+            'TablePartition',
+            'MaterialisedView',
+            'TableauDatasource',
+            'PowerBIDataset',
+        ],
         label: 'Datasets',
         description: 'Datasets',
         popoverText: 'Tabular assets (Tables, Views, etc.)',
@@ -44,5 +51,4 @@ export const List: any = [
         description: 'Business Terms',
         popoverText: 'Business Terms & Categories',
     },
-
 ]

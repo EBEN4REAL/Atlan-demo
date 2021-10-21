@@ -27,7 +27,7 @@
                     >
                         <template #categoryFilter>
                             <AssetCategoryFilter
-                                :data="assetCategoryFilter"
+                                v-model:checked="assetCategoryFilter"
                                 @change="handleCategoryChange"
                             />
                         </template>
@@ -82,7 +82,6 @@
                     :projection="projection"
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
-                    :typename="assetTypeListString"
                     @loadMore="loadMore"
                 />
             </div>
@@ -171,9 +170,7 @@
             const sortOrder = ref('default')
             const state = ref('active')
             const facets = ref({})
-            const assetCategoryFilter = ref({
-                checked: undefined,
-            })
+            const assetCategoryFilter = ref([])
 
             // Initialization via IIFE
             ;(() => {
@@ -185,13 +182,14 @@
                 if (qry.sortOrder) sortOrder.value = qry.sortOrder
                 if (qry.state) state.value = qry.state
                 if (qry.facets) facets.value = qry.facets
+                if (qry.category) assetCategoryFilter.value = qry.category
             })()
 
             // Get All Disoverable Asset Types
-            const initialTabs: Ref<string[]> = computed(() =>
+            const applicableTabs: Ref<string[]> = computed(() =>
                 useFilteredTabs({
                     connector: facets.value?.connector,
-                    category: assetCategoryFilter.value?.checked,
+                    category: assetCategoryFilter.value,
                 })
             )
 
@@ -199,7 +197,7 @@
                 const filteredTabs = AssetTypeList.filter(
                     (item) =>
                         item.isDiscoverable == true &&
-                        initialTabs.value.includes(item.id)
+                        applicableTabs.value.includes(item.id)
                 )
 
                 return [
@@ -211,20 +209,16 @@
                 ]
             })
 
-            const assetTypeListString = computed(() =>
-                initialTabs.value.join(',')
-            )
-
             const {
                 list,
                 replaceBody,
                 isLoading,
                 searchScoreList,
                 mutateAssetInList,
-            } = useAssetListing(assetTypeListString.value, false)
+            } = useAssetListing('', false)
 
             const { assetTypeMap, refreshAggregation } = useAssetAggregation(
-                assetTypeListString.value,
+                '',
                 false
             )
 
@@ -297,7 +291,8 @@
                         ...generateAssetQueryDSL(
                             facets.value,
                             queryText.value,
-                            selectedTab.value
+                            selectedTab.value,
+                            applicableTabs.value
                         ),
                     },
                     attributes: [
@@ -338,7 +333,8 @@
                     refreshAggregation({
                         dsl: generateAggregationDSL(
                             facets.value,
-                            queryText.value
+                            queryText.value,
+                            applicableTabs.value
                         ),
                     })
             }
@@ -354,6 +350,8 @@
                 if (sortOrder.value !== 'default')
                     routerOptions.sortOrder = sortOrder.value
                 if (state.value !== 'active') routerOptions.state = state.value
+                if (assetCategoryFilter.value.length)
+                    routerOptions.category = assetCategoryFilter.value
 
                 const routerQuery = serializeQuery(routerOptions)
                 router.push(`/assets?${routerQuery}`)
@@ -390,16 +388,13 @@
                 updateBody()
             }
 
-            const handleCategoryChange = (categoryFilterData) => {
-                console.log(categoryFilterData)
-                console.log(assetCategoryFilter.value)
-                /* offset.value = 0
+            function handleCategoryChange() {
+                offset.value = 0
                 isAggregate.value = true
                 updateBody()
-                setRouterOptions() */
+                setRouterOptions()
             }
-            const handleFilterChange = (filterMapData: Record<string, any>) => {
-                console.log(filterMapData)
+            function handleFilterChange(filterMapData: Record<string, any>) {
                 facets.value = filterMapData
                 offset.value = 0
                 isAggregate.value = true
@@ -407,17 +402,17 @@
                 setRouterOptions()
             }
 
-            // const handlePreview = (item) => {
+            // function handlePreview = (item) => {
             //     emit('preview', item)
             // }
-            const loadMore = () => {
+            function loadMore() {
                 autoSelect.value = false
                 offset.value += limit.value
                 isAggregate.value = false
                 updateBody()
             }
 
-            const handleClearFiltersFromList = () => {
+            function handleClearFiltersFromList() {
                 queryText.value = ''
                 assetFilterRef.value?.resetAllFilters()
             }
@@ -444,7 +439,7 @@
                 handleClearFiltersFromList,
                 handleCategoryChange,
                 assetFilterRef,
-                initialTabs,
+                applicableTabs,
                 searchScoreList,
                 list,
                 selectedTab,
@@ -473,7 +468,6 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
-                assetTypeListString,
             }
         },
         data() {

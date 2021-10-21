@@ -3,8 +3,8 @@
         <a-button
             @click.prevent
             class="flex items-center justify-between w-3/12 h-full p-3 bg-gray-100 border-none  category-selector"
-            ><span class="text-xs text-gray-700 truncate">{{
-                data.checked?.length > 0 ? getFiltersAppliedString() : 'All'
+            ><span class="text-xs text-gray-700 capitalize truncate">{{
+                applied?.length > 0 ? getFiltersAppliedString : 'All'
             }}</span>
             <AtlanIcon
                 icon="ChevronDown"
@@ -13,12 +13,12 @@
 
         <template #overlay>
             <a-checkbox-group
-                v-model:value="data.checked"
+                v-model:value="applied"
                 @change="handleChange"
                 class="z-10 flex flex-col w-full px-4 pt-4 pb-6 bg-white rounded shadow  gap-y-3"
             >
                 <div
-                    v-for="item in list"
+                    v-for="item in List"
                     :key="item.id"
                     class="flex items-center justify-between"
                 >
@@ -46,51 +46,45 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import { List } from '~/constant/assetCategory'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         props: {
-            data: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
+            checked: {
+                type: Array as PropType<string[]>,
+                default: () => [],
             },
         },
-        emits: ['change'],
+        emits: ['change', 'update:checked'],
         setup(props, { emit }) {
+            const { checked } = toRefs(props)
+
+            const applied = computed({
+                get: () => checked.value,
+                set: (val) => emit('update:checked', val),
+            })
+
             const dropdownVisible = ref(false)
 
-            const list = computed(() => List)
-            const { data } = toRefs(props)
-
-            const handleChange = () => {
-                emit('change', data.value)
+            const handleChange = (event: any) => {
+                emit('change', event)
                 dropdownVisible.value = false
+
                 useAddEvent('discovery', 'facet', 'changed', {
                     filter_type: 'category',
-                    count: data.value?.checked?.length,
+                    count: checked.value?.length,
                 })
             }
-            function getFiltersAppliedString() {
-                let filterData = data.value?.checked || []
-                filterData = filterData?.map(
-                    (assetCategoryId: string) =>
-                        List?.find(
-                            (assetCategory: any) =>
-                                assetCategory.id === assetCategoryId
-                        ).label
-                )
 
-                return filterData.join(', ')
-            }
+            const getFiltersAppliedString = computed(() =>
+                checked.value.join(', ')
+            )
 
             return {
-                data,
-                list,
+                applied,
+                List,
                 handleChange,
                 dropdownVisible,
                 getFiltersAppliedString,

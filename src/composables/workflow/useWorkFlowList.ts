@@ -15,7 +15,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
 
     // const sample = `{ "$or":[ { "labels": { "$elemMatch":{ "workflows.argoproj.io/creator-email": "nityananda.at.atlan.comar"} } }, { "labels":{ "$elemMatch":{ "x2": "a2"} } } ] }`
 
-    const { data, error, isLoading, mutate } = Workflows.getWorkflows({
+    const { data, error, isLoading, mutate, isReady } = Workflows.getWorkflows({
         immediate,
         options: {},
         params,
@@ -75,6 +75,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
         filterList,
         mutate,
         filter_record,
+        isReady,
     }
 }
 

@@ -133,11 +133,16 @@ import HourglassActive from '~/assets/images/icons/hourglass-active.svg'
 import GroupActive from '~/assets/images/icons/group-light-active.svg'
 import GroupLight from '~/assets/images/icons/group-light.svg'
 import AccessLogs from '~/assets/images/icons/access-logs.svg'
-
 import AccessLogsActive from '~/assets/images/icons/access-logs-active.svg'
 import InfoActive from '~/assets/images/icons/info-active.svg'
 import UserLight from '~/assets/images/icons/user-light.svg'
 import UserLightActive from '~/assets/images/icons/user-light-active.svg'
+import Support from '~/assets/images/icons/support.svg'
+import Report from '~/assets/images/icons/report.svg'
+import Platform from '~/assets/images/icons/platform.svg'
+import Feedback from '~/assets/images/icons/feedback.svg'
+import Admin from '~/assets/images/icons/admin.svg'
+import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
 
 export default {
     IssuesFilled,
@@ -279,4 +284,10 @@ export default {
     InfoActive,
     UserLight,
     UserLightActive,
+    Support,
+    Report,
+    Platform,
+    Feedback,
+    Admin,
+    ActivityLogs
 }

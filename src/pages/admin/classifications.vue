@@ -1,9 +1,10 @@
 <template>
     <ExplorerLayout
+        v-if="permissions.list"
         title="Classification"
         sub-title="Manage classification tags to build access policies."
     >
-        <template #action>
+        <template v-if="permissions.create" #action>
             <AtlanBtn
                 class="flex-none"
                 size="sm"
@@ -91,6 +92,7 @@
             </p>
         </a-modal>
     </ExplorerLayout>
+    <NoAcces v-else />
 </template>
 
 <script lang="ts">
@@ -104,6 +106,7 @@
         watch,
         Ref,
         computed,
+        onMounted
     } from 'vue'
 
     import { useRouter } from 'vue-router'
@@ -117,6 +120,9 @@
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
+
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         name: 'ClassificationProfile',
@@ -125,9 +131,10 @@
                 type: String as PropType<String>,
             },
         },
-        components: { AtlanBtn, ExplorerLayout, SearchAndFilter, ExplorerList },
+        components: { AtlanBtn, ExplorerLayout, SearchAndFilter, ExplorerList, NoAcces },
         setup(props) {
             const store = useClassificationStore()
+            const accessStore  = useAccessStore();
             const router = useRouter()
             const modalVisible = ref(false)
             const createClassificationStatus = ref('')
@@ -139,6 +146,11 @@
                 name: string
                 description: string
             }
+            
+            const permissions = computed(() => ({
+                list: accessStore.checkPermission('LIST_CLASSIFICATION'),
+                create: accessStore.checkPermission('CREATE_CLASSIFICATION')
+            }))
             const treeData = computed(() => store.classificationTree)
 
             const selectedClassificationNameFromRoute = computed(
@@ -388,6 +400,7 @@
                 formState,
                 rules,
                 handleSelectNode,
+                permissions
             }
         },
     })

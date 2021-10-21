@@ -195,7 +195,7 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel
+                        <!-- <a-collapse-panel
                             v-if="entity.typeName === 'AtlasGlossaryTerm'"
                             key="governance"
                             header="Governance"
@@ -203,7 +203,7 @@
                             <div class="px-5 py-0">
                                 <Classifications :selected-asset="entity" />
                             </div>
-                        </a-collapse-panel>
+                        </a-collapse-panel> -->
 
                         <!-- <a-collapse-panel
                             v-if="entity.typeName === 'AtlasGlossaryTerm'"

@@ -31,7 +31,18 @@
             @select="loadRunGraph"
         />
     </template>
-    <EmptyView v-else empty="No Runs Available" />
+    <EmptyView
+        v-else
+        :desc="
+            !error
+                ? 'There are no runs for this workflow. '
+                : 'Sorry, we couldn’t find sthe workflow you were looking for.'
+        "
+        :EmptyScreen="EmptyScreen"
+        descClass="text-center w-56"
+        buttonIcon="ArrowRight"
+        :buttonText="error ? '' : 'Run Workflow'"
+    />
 </template>
 
 <script lang="ts">
@@ -46,6 +57,7 @@
     import { useRoute } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
@@ -120,6 +132,7 @@
                 loadRunGraph,
                 isLoadingRunGraph,
                 currRunName,
+                EmptyScreen,
             }
         },
     })

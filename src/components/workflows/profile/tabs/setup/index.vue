@@ -7,9 +7,13 @@
             <a-spin />
         </div>
 
-        <EmptyView v-else-if="!isLoading && !tasks?.length" empty="" />
+        <EmptyView
+            v-else-if="!isLoading && !tasks?.length"
+            :EmptyScreen="EmptyScreen"
+            class="-mt-20"
+        />
 
-        <div v-if="tasks" class="absolute w-full h-full">
+        <div v-else-if="tasks" class="absolute w-full h-full">
             <SetupGraph
                 :graph-data="tasks"
                 @change="emit('change', $event, 'dag')"
@@ -25,6 +29,7 @@
     // Components
     import SetupGraph from './setupGraph.vue'
     import EmptyView from '@common/empty/index.vue'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     // Composables
     import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkFlowList'
@@ -56,6 +61,7 @@
 
             return {
                 isLoading,
+                EmptyScreen,
                 data,
                 tasks,
                 emit,

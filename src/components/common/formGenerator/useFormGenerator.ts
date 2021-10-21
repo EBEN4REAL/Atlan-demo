@@ -164,7 +164,10 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   const generateTemplateValue = (s, id, isStringfied) => {
     if (!processedSchema.value.length) return s
     const finalString = getStringFromPath(testModal.value, s);
-    testModal.value[id] = isStringfied ? JSON.parse(finalString as string) : finalString
+    if (finalString)
+      testModal.value[id] = finalString && isStringfied ? JSON.parse(finalString as string) : finalString
+    else
+      testModal.value[id] = undefined
     return testModal.value[id]
   }
 

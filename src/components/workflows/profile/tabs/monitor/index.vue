@@ -6,13 +6,12 @@
         >
             <a-spin />
         </div>
-
-        <EmptyView v-else-if="!isLoading && !graphData.name" empty="" />
-
-        <div
-            v-else-if="!isLoading && graphData.name"
-            class="absolute w-full h-full"
-        >
+        <EmptyView
+            v-else-if="!isLoading && !graphData?.name"
+            :EmptyScreen="EmptyScreen"
+            class="-mt-20"
+        />
+        <div v-else-if="graphData.name" class="absolute w-full h-full">
             <MonitorGraph :graph-data="graphData" />
         </div>
     </div>
@@ -36,6 +35,7 @@
 
     // Composables
     import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
@@ -80,6 +80,7 @@
 
             return {
                 graphData,
+                EmptyScreen,
                 isLoading,
             }
         },

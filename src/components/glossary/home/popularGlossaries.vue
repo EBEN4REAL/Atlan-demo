@@ -5,7 +5,7 @@
             <span
                 class="self-end cursor-pointer text-primary"
                 @click="
-                    redirectToProfile(entities[0]?.typeName, entities[0]?.guid)
+                    redirectToProfile(entities[0]?.typeName, entities[0]?.guid, { cta: 'glossaryContext' })
                 "
                 >View all
             </span>
@@ -61,12 +61,19 @@
                     </span>
                     <div
                         class="flex items-center mt-4 cursor-pointer  text-primary"
-                        @click="redirectToProfile(item.typeName, item.guid)"
                     >
-                        <span v-if="item.attributes?.terms?.length">
+                        <span 
+                            v-if="item.attributes?.terms?.length"
+                            @click="redirectToProfile(item.typeName, item.guid, { tab: 'terms'} )"
+                        >
                             See all {{ item.attributes.terms.length }} terms
                         </span>
-                        <span v-else> Add terms </span>
+                        <span 
+                            v-else
+                            @click="redirectToProfile(item.typeName, item.guid, { cta: 'addTerm'} )"
+                        >
+                             Add terms 
+                        </span>
                         <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
                     </div>
                 </div>

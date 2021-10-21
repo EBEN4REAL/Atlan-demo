@@ -1,5 +1,5 @@
 <template>
-    <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
+    <DefaultLayout v-if="listPermission" title="Requests" sub-title="Manage org-wide requests">
         <template #header>
             <SearchAndFilter v-model:value="searchTerm" class="max-w-xl mb-4">
                 <template #filter>
@@ -33,6 +33,7 @@
         </template>
         <div v-else>Empty state</div>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 
 <script lang="ts">
@@ -47,9 +48,11 @@
     import RequestListItem from './requestListItem.vue'
     import RequestFilters from './filters/requestFilters.vue'
     import RequestModal from './modal/requestDetailsBase.vue'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
     import { message } from 'ant-design-vue'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     export default defineComponent({
         name: 'RequestList',
@@ -61,8 +64,11 @@
             RequestModal,
             RequestTypeTabs,
             DefaultLayout,
+            NoAcces
         },
         setup() {
+            const accessStore = useAccessStore();
+            const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
@@ -191,6 +197,7 @@
                 isDetailsVisible,
                 traverseUp,
                 traverseDown,
+                listPermission
             }
         },
     })

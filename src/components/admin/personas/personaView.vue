@@ -10,7 +10,7 @@
                 size="sm"
                 color="secondary"
                 padding="compact"
-                @click="createNewPersona"
+                @click="() => (modalVisible = true)"
             >
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
@@ -42,13 +42,7 @@
             </ExplorerList>
         </template>
 
-        <CreationModal
-            v-model:visible="modalVisible"
-            title="New Persona"
-            @cancel="() => (modalVisible = false)"
-            @ok="handleCreation"
-        >
-        </CreationModal>
+        <AddPersona v-model:visible="modalVisible" />
         <PersonaHeader :persona="selectedPersona" />
         <PersonaDetails
             v-if="selectedPersona"
@@ -65,45 +59,36 @@
     import PersonaDetails from './personaDetails.vue'
     import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
-    import CreationModal from '@/admin/common/addModal.vue'
+    import AddPersona from './addPersona.vue'
     import {
         filteredPersonas,
         searchTerm,
         selectedPersona,
         selectedPersonaId,
     } from './composables/usePersonaList'
-    import { createNewPersona } from './composables/useNewPersona'
     import { isEditing } from './composables/useEditPersona'
 
     export default defineComponent({
         name: 'PersonaView',
         components: {
             AtlanBtn,
-            CreationModal,
             SearchAndFilter,
             PersonaDetails,
             PersonaHeader,
             ExplorerLayout,
             ExplorerList,
+            AddPersona,
         },
         setup() {
             const modalVisible = ref(false)
-
-            function toggleModal() {
-                modalVisible.value = !modalVisible.value
-            }
-
-            function handleCreation() {}
 
             return {
                 filteredPersonas,
                 selectedPersona,
                 selectedPersonaId,
                 searchTerm,
-                toggleModal,
                 modalVisible,
-                handleCreation,
-                createNewPersona,
+                // createNewPersona,
                 isEditing,
             }
         },

@@ -4,15 +4,17 @@
             <atlan-icon
                 v-if="!isHome"
                 icon="Dots"
-                class="h-6 mr-2 rounded cursor-pointer  hover:bg-primary-light hover:text-primary"
+                class="h-6 mr-2 rounded cursor-pointer select-none  hover:bg-primary-light hover:text-primary"
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
-            <img
-                :src="logoUrl"
-                class="w-auto h-8 cursor-pointer"
-                @click="handleClick('home')"
-            />
+
+            <router-link to="/">
+                <img
+                    :src="logoUrl"
+                    class="w-auto h-8 cursor-pointer select-none"
+                />
+            </router-link>
 
             <atlan-icon v-if="!isHome" icon="ChevronRight" class="h-4 mx-1" />
             <span class="text-sm font-bold tracking-wider text-gray-500">
@@ -45,7 +47,7 @@
                 default: false,
             },
         },
-        emits: ['change', 'toggleNavbar', 'openNavbar'],
+        emits: ['toggleNavbar', 'openNavbar'],
         setup(props, { emit }) {
             const route = useRoute()
             const tenantStore = useTenantStore()
@@ -68,18 +70,14 @@
             // })
 
             const navKeys = {
-                assets: 'Assets',
-                glossary: 'Glossary',
-                insights: 'Insights',
-                workflows: 'Workflows',
-                admin: 'Admin Centre',
+                '/assets': 'Assets',
+                '/glossary': 'Glossary',
+                '/insights': 'Insights',
+                '/workflows': 'Workflows',
+                '/admin': 'Admin Centre',
             }
 
-            function handleClick(key: string) {
-                emit('change', key)
-            }
-
-            return { handleClick, navKeys, isHome, logoUrl }
+            return { navKeys, isHome, logoUrl }
         },
     })
 </script>

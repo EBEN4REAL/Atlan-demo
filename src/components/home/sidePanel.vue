@@ -31,10 +31,11 @@
         </a-dropdown> -->
 
         <div class="px-3">
-            <button
+            <router-link
+                to="/"
                 class="w-full mx-0 mt-3 menu-item"
                 :class="{ active: page === '/' }"
-                @click="handleClick('home')"
+                @click="closeNavDrawer"
             >
                 <span class="flex items-center">
                     <atlan-icon
@@ -46,7 +47,7 @@
                     />
                     Home
                 </span>
-            </button>
+            </router-link>
 
             <!-- workspaces -->
             <div class="px-3 mt-4 mb-3 text-xs font-bold text-gray-500">
@@ -54,76 +55,48 @@
             </div>
             <!-- pages -->
 
-            <button
-                v-for="nav in navKeys"
-                :key="nav.label"
-                class="w-full mx-0 menu-item"
-                :class="{ active: nav.path === page }"
-                @click="handleClick(nav.path)"
-            >
-                <span class="flex items-center">
-                    <atlan-icon
-                        :icon="
-                            nav.path !== page ? nav?.inActiveIcon : nav?.icon
-                        "
-                        class="h-4 mr-2"
-                    />
-                    {{ nav.label }}
-                </span>
-            </button>
+            <template v-for="nav in topNavKeys" :key="nav.label">
+                <router-link
+                    :to="nav.path"
+                    class="w-full mx-0 menu-item"
+                    :class="{ active: nav.path === page }"
+                    @click="closeNavDrawer"
+                >
+                    <span class="flex items-center">
+                        <atlan-icon
+                            :icon="
+                                nav.path !== page
+                                    ? nav?.inactiveIcon
+                                    : nav?.icon
+                            "
+                            class="h-4 mr-2"
+                        />
+                        {{ nav.label }}
+                    </span>
+                </router-link>
+            </template>
         </div>
         <div class="flex-grow"></div>
-        <div class="w-full justify-self-end">
-            <button
-                class="w-full mr-2 menu-item"
-                :class="{ active: 'admin' === page }"
-                @click="handleClick('admin')"
-            >
-                <span class="flex items-center">
-                    <atlan-icon icon="Admin" class="h-4 mr-3 text-primary" />
-                    Admin Center
-                </span>
-            </button>
-            <button
-                class="w-full mr-2 menu-item"
-                :class="{ active: 'platform' === page }"
-                @click="handleClick('reporting')"
-            >
-                <span class="flex items-center">
-                    <atlan-icon icon="Report" class="h-4 mr-3 text-primary" />
-                    Reporting Center
-                </span>
-            </button>
-            <button
-                class="w-full mr-2 menu-item"
-                :class="{ active: 'platform' === page }"
-                @click="handleClick('platform')"
-            >
-                <span class="flex items-center">
-                    <atlan-icon icon="Platform" class="h-4 mr-3 text-primary" />
-                    Platform Center
-                </span>
-            </button>
-            <button
-                v-for="item in [
-                    { label: 'Help & Community', icon: 'Support' },
-                    { label: 'Feedback', icon: 'Feedback' },
-                ]"
-                :key="item.label"
-                class="mr-2 menu-item"
-            >
-                <span class="flex items-center">
-                    <atlan-icon
-                        :icon="item.icon"
-                        class="h-4 mr-3 text-primary"
-                    />
-                    {{ item.label }}
-                </span>
-            </button>
+        <div class="px-3">
+            <template v-for="nav in bottomNavKeys" :key="nav.label">
+                <router-link
+                    :to="nav.path"
+                    class="w-full mx-0 menu-item"
+                    :class="{ active: nav.path === page }"
+                    @click="closeNavDrawer"
+                >
+                    <span class="flex items-center">
+                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
+                        {{ nav.label }}
+                    </span>
+                </router-link>
+            </template>
         </div>
-        <span class="flex items-center px-4 mt-2 mb-4 text-sm text-gray-500"
+
+        <span class="flex items-center px-3 mt-2 mb-4 text-sm text-gray-500"
             >Built with 💙
             <span class="ml-2">by</span>
+            <!-- FIXME: What is this URL??? -->
             <img
                 src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
                 class="w-auto h-3 ml-2 mb-0.5"
@@ -150,43 +123,74 @@
             const keys = useMagicKeys()
             const esc = keys.Escape
             const { username, name } = whoami()
-            const navKeys = [
+
+            const topNavKeys = [
                 {
-                    path: 'assets',
+                    path: '/assets',
                     label: 'Assets',
                     icon: 'AssetsActive',
-                    inActiveIcon: 'AssetsInactive',
+                    inactiveIcon: 'AssetsInactive',
                 },
                 {
-                    path: 'glossary',
+                    path: '/glossary',
                     label: 'Glossary',
                     icon: 'Glossary',
-                    inActiveIcon: 'GlossaryInactive',
+                    inactiveIcon: 'GlossaryInactive',
                 },
                 {
-                    path: 'insights',
+                    path: '/insights',
                     label: 'Insights',
                     icon: 'InsightsActive',
-                    inActiveIcon: 'InsightsInactive',
+                    inactiveIcon: 'InsightsInactive',
                 },
                 {
-                    path: 'workflows',
+                    path: '/workflows',
                     label: 'Workflows',
                     icon: 'WorkflowsActive',
-                    inActiveIcon: 'WorkflowsInactive',
+                    inactiveIcon: 'WorkflowsInactive',
                 },
             ]
 
-            function handleClick(key: string) {
-                emit('change', key)
+            const bottomNavKeys = [
+                {
+                    path: '/admin',
+                    icon: 'Admin',
+                    label: 'Admin Center',
+                },
+                {
+                    path: '/reporting',
+                    icon: 'Report',
+                    label: 'Reporting Center',
+                },
+                {
+                    path: '/platform',
+                    icon: 'Platform',
+                    label: 'Platform Center',
+                },
+                {
+                    path: '/#',
+                    icon: 'Support',
+                    label: 'Help & Community',
+                },
+                {
+                    path: '/#',
+                    icon: 'Feedback',
+                    label: 'Feedback',
+                },
+            ]
+
+            function closeNavDrawer() {
+                emit('closeNavbar')
             }
-            watch(esc, (v) => {
-                if (v) {
-                    console.log('close')
-                    emit('closeNavbar')
-                }
-            })
-            return { handleClick, navKeys, purpose, username, name }
+
+            return {
+                closeNavDrawer,
+                topNavKeys,
+                purpose,
+                username,
+                name,
+                bottomNavKeys,
+            }
         },
     })
 </script>

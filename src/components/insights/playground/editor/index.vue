@@ -579,7 +579,8 @@
                                 Object.assign({}, activeInlineTab.value)
                             modifyActiveInlineTab(
                                 activeInlineTabCopy,
-                                inlineTabs
+                                inlineTabs,
+                                activeInlineTabCopy.isSaved
                             )
                             console.log('connection closed succesfully')
                         }

@@ -123,8 +123,8 @@ export function useSavedQuery(
                 id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
-        debugger
-        if (!isInlineTabAlreadyOpened(newTab, tabsArray)) {
+        const check = isInlineTabAlreadyOpened(newTab, tabsArray)
+        if (!check) {
             console.log('not opened')
             /* CAREFUL:-------Order is important here------ */
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
@@ -132,7 +132,7 @@ export function useSavedQuery(
             /* ----------------------------- */
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
-            debugger
+            return
         } else {
             // show user that this tab is already opened
             let key = undefined
@@ -142,7 +142,6 @@ export function useSavedQuery(
             newTab.key = key
             overwriteInlineTab(newTab, tabsArray)
             activeInlineTabKey.value = key
-            debugger
         }
     }
     /* Involved network requests */

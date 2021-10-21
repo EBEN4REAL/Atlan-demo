@@ -49,7 +49,7 @@
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
     import { useTenantStore } from '~/services/keycloak/tenant/store'
-    import useRecentTerms from '~/composables/home/useRecentTerms'
+    import { useRecentTerms, useRecentAssets } from '~/composables/home/useHomeDSL'
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -74,7 +74,8 @@
             // recent terms
             const recentTerms = useRecentTerms()
             console.log('recentTerms', recentTerms)
-
+            const recentAssets = useRecentAssets()
+            console.log('recentAssets', recentAssets)
             const logoUrl = computed(() => `${window.location.origin}/api/service/avatars/_logo_`)
 
             const username = keycloak.tokenParsed.preferred_username || ''
@@ -176,7 +177,8 @@
                 dummyProjects,
                 logoUrl,
                 redirectToDiscover,
-                recentTerms
+                recentTerms,
+                recentAssets
             }
         },
     })

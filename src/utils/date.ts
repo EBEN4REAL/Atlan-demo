@@ -60,3 +60,14 @@ export function timeDiffCalc(date_future, date_now) {
 
     return string
 }
+
+export function getRecentTimestamp() {
+    const currentDate = new Date();
+    const sevenDaysAgo = currentDate.getDate() - 7;
+    currentDate.setDate(sevenDaysAgo);
+    const recentTimestamp = {
+        lastSevenDaysTimestamp: new Date(currentDate).getTime(),
+        currentTimestamp: new Date().getTime()
+    }
+    return recentTimestamp
+}

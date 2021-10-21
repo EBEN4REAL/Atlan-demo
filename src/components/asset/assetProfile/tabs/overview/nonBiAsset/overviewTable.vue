@@ -13,7 +13,7 @@
                     <th
                         v-for="(col, index) in tableColumns"
                         :key="index"
-                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border border-gray-light"
+                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border  border-gray-light"
                     >
                         <div class="flex">
                             <component
@@ -34,7 +34,7 @@
                     <td
                         v-for="(rowData, index) in row"
                         :key="index"
-                        class="px-4 py-2 text-xs text-gray-700 bg-white border border-gray-light"
+                        class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
                     >
                         <Tooltip
                             :tooltip-text="rowData"
@@ -49,11 +49,12 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent,
+    import {
+        defineComponent,
         watch,
         ref,
         // inject,
-        // computed 
+        // computed
     } from 'vue'
     import { storeToRefs } from 'pinia'
 
@@ -81,12 +82,12 @@
             // store
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
-            
+
             const { connectionQualifiedName, databaseName, schemaName, name } =
                 { ...selectedAsset.value.attributes }
 
             const body = {
-                sql: `select * from ${name}`,
+                tableName: name,
                 defaultSchema: `${databaseName}.${schemaName}`,
                 dataSourceName: connectionQualifiedName,
                 limit: 100,

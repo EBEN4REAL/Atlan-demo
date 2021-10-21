@@ -11,7 +11,7 @@ export const getStringFromPath = (data: object | Array<any>, path: string): any 
     const arrayReg = /\w*\[\d*\]$/g
     const r = /\{\{(\.[\w\W]*?)\}\}/g
     // ? Wrapping old string version eg ".parent.child[0]" with {{ }} for bakward compatibility
-    const varArr = path.match(r) ?? `{{${path}}}`.match(r);
+    const varArr = path.match(r);
     let label: unknown = undefined;
     let missingValues = false;
     if (varArr?.length) {
@@ -35,22 +35,22 @@ export const getStringFromPath = (data: object | Array<any>, path: string): any 
         } catch { return undefined }
 
     }
-    // else {
-    //     // ? backward compatible with ".records.displayName[0]"
-    //     const labelPathParts = path.split('.').slice(1)
-    //     if (labelPathParts.length)
-    //         label = data;
-    //     labelPathParts.forEach((p: string) => {
-    //         if (!p) return
-    //         const isArr = arrayReg.test(p)
-    //         if (isArr) {
-    //             const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
-    //             label = (label as string)[p.split('[')[0]][index]
-    //         } else label = (label as string)[p]
-    //         if (typeof label === 'undefined')
-    //             missingValues = true
-    //     })
-    // }
+    else {
+        // ? backward compatible with ".records.displayName[0]"
+        const labelPathParts = path.split('.').slice(1)
+        if (labelPathParts.length)
+            label = data;
+        labelPathParts.forEach((p: string) => {
+            if (!p) return
+            const isArr = arrayReg.test(p)
+            if (isArr) {
+                const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
+                label = (label as string)[p.split('[')[0]][index]
+            } else label = (label as string)[p]
+            if (typeof label === 'undefined')
+                missingValues = true
+        })
+    }
     return missingValues ? undefined : label;
 }
 

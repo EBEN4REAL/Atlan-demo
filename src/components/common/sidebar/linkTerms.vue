@@ -42,7 +42,7 @@
                 <div class="flex flex-col overflow-y-auto w-72">
                     <template v-if="!showLinkTermPopover">
                         <p class="mb-2 text-sm text-gray-700">Link Terms</p>
-                        <a-select
+                        <!-- <a-select
                             v-model:value="selectedTermForLink"
                             mode="multiple"
                             :allow-clear="true"
@@ -51,7 +51,6 @@
                             placeholder="Search for terms"
                             :loading="searchLoading"
                         >
-                            <!-- term list -->
                             <template
                                 v-for="term in availableTerms"
                                 :key="term.guid"
@@ -60,7 +59,13 @@
                                     term.displayText
                                 }}</a-select-option>
                             </template>
-                        </a-select>
+                        </a-select> -->
+                        <Governance
+                            v-if="sendTerm"
+                            :data="undefined"
+                            :sendTerm="sendTerm"
+                            @change="handleTermChange"
+                        />
                     </template>
                     <template v-else>
                         <p v-if="searchLoading">loading</p>
@@ -106,9 +111,11 @@
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import Governance from '@/common/facets/governance.vue'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
-        components: { PillGroup },
+        components: { PillGroup, Governance },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -129,33 +136,13 @@
             const showLinkTermPopover = ref(false)
 
             const pillTerms = ref([...props.selectedAsset?.meanings]) // linked terms show in sidebar as pills
-            const { terms, isLoading: searchLoading } = useGtcSearch(
-                undefined,
-                ref(true),
-                'AtlasGlossaryTerm'
-            ) // gets all the terms using basic search
-
             const availableTerms = ref([]) // terms to show in popover
-
-            const assetLinkedTerms = computed(
-                () => selectedAsset.value.meaningNames ?? []
-            )
+            const sendTerm = ref(false)
 
             const selectedTermForLink = ref([])
             const createErrorText = ref('')
             const createClassificationFormRef = ref()
             // methods
-
-            // update avaible terms on link and unlink
-            const updateAvailableTerms = () => {
-                availableTerms.value = [...terms.value]
-                availableTerms.value = availableTerms.value.filter(
-                    (el) =>
-                        !selectedAsset.value.meaningNames?.includes(
-                            el?.displayText
-                        )
-                )
-            }
 
             const handlePopoverVisibleChange = () => {
                 showLinkTermPopover.value = false
@@ -163,42 +150,38 @@
             }
 
             const toggleLinkTermPopover = () => {
-                if (!linkTermPopover.value) linkTermPopover.value = true
-                else {
+                if (!linkTermPopover.value) {
+                    linkTermPopover.value = true
+                    sendTerm.value = true
+                } else {
                     showLinkTermPopover.value = false
                     selectedTermForLink.value = []
                 }
-                updateAvailableTerms()
             }
 
             const handleCancel = () => {
                 showLinkTermPopover.value = false
                 linkTermPopover.value = false
+                sendTerm.value = false
             }
 
             // link term on click ok
             const createTerm = () => {
-                const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
+                const { assignLinkedAssets } = useLinkAssets()
                 selectedTermForLink.value.map((el) => {
-                    const { response, loading } = assignLinkedAssets(el, [
+                    const { response, loading } = assignLinkedAssets(el.guid, [
                         props.selectedAsset,
                     ])
                     watch(response, (data) => {
-                        const termToBeAdded = terms.value.filter(
-                            (term) => term.guid === el
-                        )
                         handleCancel()
                         const obj = {
-                            displayText: termToBeAdded[0].displayText,
-                            termGuid:
-                                termToBeAdded[0].termGuid ||
-                                termToBeAdded[0].guid,
+                            displayText: el.name,
+                            termGuid: el.guid,
                         }
                         pillTerms.value = [...pillTerms.value, obj]
                         selectedAsset.value.meanings.push(obj)
                         selectedAsset.value.meaningNames.push(obj.displayText)
 
-                        updateAvailableTerms()
                         // event for link term
                         useAddEvent(
                             'discovery',
@@ -210,13 +193,14 @@
                         emit('update:selectedAsset', props.selectedAsset)
                     })
                 })
+                handleCancel()
             }
             // unlink term on pill cross btn clicked
             const unLinkTerm = (term: any) => {
-                const { unLinkAssets } = useLinkAssets()
-                const { response: unlinkResponse, loading } = unLinkAssets(
+                const { unlinkAsset } = useLinkAssets()
+                const { response: unlinkResponse, loading } = unlinkAsset(
                     term?.termGuid || term?.guid,
-                    [props.selectedAsset]
+                    props.selectedAsset
                 )
                 pillTerms.value = pillTerms.value.filter((el) => {
                     if (term?.termGuid) {
@@ -246,24 +230,42 @@
                         'terms_updated',
                         undefined
                     )
-
-                    updateAvailableTerms()
                 })
             }
-            //  watchers
-            watch(
-                terms,
-                () => {
-                    updateAvailableTerms()
-                },
-                { immediate: true }
-            )
 
+            const isTermAlreadyLinked = (term) => {
+                let isAvailable = true
+                for (let index = 0; index < pillTerms.value.length; index++) {
+                    const el = pillTerms.value[index]
+                    if (el.termGuid !== term.guid) {
+                        console.log('true')
+                        isAvailable = true
+                    } else {
+                        console.log('false')
+                        isAvailable = false
+                        break
+                    }
+                }
+                return isAvailable
+            }
+
+            const handleTermChange = (data) => {
+                if (data) {
+                    selectedTermForLink.value = data.filter((el) => {
+                        if (isTermAlreadyLinked(el)) return true
+                        message.info(`${el.name} already linked`)
+                        return false
+                    })
+                }
+            }
+
+            watch(linkTermPopover, () => {
+                if (linkTermPopover === false) sendTerm.value = false
+            })
             watch(
                 selectedAsset,
                 () => {
                     pillTerms.value = [...props.selectedAsset?.meanings]
-                    updateAvailableTerms()
                 },
                 { deep: true }
             )
@@ -275,17 +277,16 @@
                 showLinkTermPopover,
                 selectedTermForLink,
                 linkTermPopover,
-                assetLinkedTerms,
                 createErrorText,
                 handlePopoverVisibleChange,
                 toggleLinkTermPopover,
-                terms,
                 availableTerms,
                 handleCancel,
-                searchLoading,
                 createTerm,
                 pillTerms,
                 unLinkTerm,
+                handleTermChange,
+                sendTerm,
             }
         },
     })

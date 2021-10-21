@@ -1,5 +1,5 @@
 <template>
-    <DefaultLayout title="Workspace" sub-title="Manage your workspace settings">
+    <DefaultLayout v-if="updatePermission" title="Workspace" sub-title="Manage your workspace settings">
         <div v-if="tenantId" class="pt-6 mt-5 border-t">
             <div>
                 <div class="text-lg font-bold">Logo</div>
@@ -42,6 +42,7 @@
             </div>
         </div>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
 import { defineComponent, computed, ComputedRef, Ref, ref, watch } from 'vue'
@@ -51,20 +52,25 @@ import OrgLogo from '~/components/common/orgLogo.vue'
 import { useTenantStore } from '~/services/keycloak/tenant/store'
 import { KeyMaps } from '~/api/keyMap'
 import { useAPIAsyncState } from '~/services/api/useAPI'
+import { useAccessStore } from '~/services/access/accessStore'
+import NoAcces from '@/admin/common/noAccessPage.vue'
 
 export default defineComponent({
     name: 'OrgOverview',
     components: {
         DefaultLayout,
         OrgLogo,
+        NoAcces
     },
     setup() {
         const tenantStore = useTenantStore()
+        const accessStore = useAccessStore()
         const newTenantName: Ref<string> = ref('')
         const updateStatus = ref('')
         const tenantName: ComputedRef<string> = computed(
             () => tenantStore.getTenant?.displayName ?? ''
         )
+        const updatePermission = computed(() => accessStore.checkPermission('UPDATE_WORKSPACE'))
         // initialise tenant name in the input
         watch(
             tenantStore,
@@ -144,6 +150,7 @@ export default defineComponent({
             getStatusIcon,
             getIconClass,
             onEdit,
+            updatePermission
         }
     },
 })

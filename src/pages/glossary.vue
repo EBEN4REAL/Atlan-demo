@@ -4,6 +4,7 @@
         <pane
             min-size="12"
             max-size="50"
+            :size="12"
             style="min-width: 264px"
             class="relative z-20 bg-white"
             id="filterPane"

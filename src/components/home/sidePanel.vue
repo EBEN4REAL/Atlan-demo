@@ -80,7 +80,7 @@
                 @click="handleClick('admin')"
             >
                 <span class="flex items-center">
-                    <atlan-icon icon="Shield" class="h-4 mr-3 text-primary" />
+                    <atlan-icon icon="Admin" class="h-4 mr-3 text-primary" />
                     Admin Center
                 </span>
             </button>
@@ -90,7 +90,7 @@
                 @click="handleClick('reporting')"
             >
                 <span class="flex items-center">
-                    <atlan-icon icon="Shield" class="h-4 mr-3 text-primary" />
+                    <atlan-icon icon="Report" class="h-4 mr-3 text-primary" />
                     Reporting Center
                 </span>
             </button>
@@ -100,18 +100,24 @@
                 @click="handleClick('platform')"
             >
                 <span class="flex items-center">
-                    <atlan-icon icon="Shield" class="h-4 mr-3 text-primary" />
+                    <atlan-icon icon="Platform" class="h-4 mr-3 text-primary" />
                     Platform Center
                 </span>
             </button>
             <button
-                v-for="item in ['Help & Community', 'Feedback']"
-                :key="item"
+                v-for="item in [
+                    { label: 'Help & Community', icon: 'Support' },
+                    { label: 'Feedback', icon: 'Feedback' },
+                ]"
+                :key="item.label"
                 class="mr-2 menu-item"
             >
                 <span class="flex items-center">
-                    <atlan-icon icon="Globe" class="h-4 mr-3 text-primary" />
-                    {{ item }}
+                    <atlan-icon
+                        :icon="item.icon"
+                        class="h-4 mr-3 text-primary"
+                    />
+                    {{ item.label }}
                 </span>
             </button>
         </div>
@@ -187,7 +193,7 @@
 
 <style lang="less" scoped>
     .menu-item {
-        @apply flex items-center px-3 mb-1 self-stretch mx-1 py-1;
+        @apply flex items-center px-3  self-stretch mx-1 py-2;
         @apply text-sm text-gray;
         @apply rounded;
         @apply transition duration-300;

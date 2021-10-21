@@ -69,7 +69,7 @@
                             >
                                 <a-checkbox
                                     v-if="item?.displayName"
-                                    :value="item.displayName"
+                                    :value="item.name"
                                     class="w-full mb-3 truncate ..."
                                 >
                                     <span class="mb-0">
@@ -148,10 +148,6 @@
                 {
                     value: 'all',
                     label: 'All',
-                },
-                {
-                    value: 'users',
-                    label: 'Users',
                 },
                 {
                     value: 'propagation',

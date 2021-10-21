@@ -10,7 +10,7 @@
                 class="mr-1 border border-primary"
                 src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
             />
-            <div class="text-base text-gray-700 capitalize">
+            <div class="text-sm text-gray-700 capitalize">
                 {{ name }}
             </div>
             <div><AtlanIcon class="h-3 ml-1" icon="ChevronDown" /></div>

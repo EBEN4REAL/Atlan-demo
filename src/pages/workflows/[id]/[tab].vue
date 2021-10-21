@@ -5,12 +5,10 @@
     <div v-else class="flex w-full h-full">
         <div class="flex flex-col w-full">
             <Header
-                :title="selected?.name || id"
                 :workflow="data.asset"
                 class="px-5 pt-3 bg-white"
                 @open-logs="workflowLogsIsOpen = true"
             />
-
             <a-tabs
                 :active-key="activeKey"
                 :class="$style.profiletab"
@@ -213,7 +211,7 @@
                 mutate()
 
                 watch(response, (v) => {
-                    data.value.asset = v
+                    data.value.asset = v?.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
                     handlePreview(data.value?.asset, null)

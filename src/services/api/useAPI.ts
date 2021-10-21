@@ -12,8 +12,8 @@ interface useGetAPIParams {
     body?: Ref<Record<string, any>> | Record<string, any>
     pathVariables?: Ref<Record<string, any>> | Record<string, any>
     options?:
-    | Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>
-    | (IConfig & AxiosRequestConfig & AsyncStateOptions)
+        | Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>
+        | (IConfig & AxiosRequestConfig & AsyncStateOptions)
     dependantFetchingKey?: Ref
     // swrOptions?: IConfig,
     // axiosOptions?: AxiosRequestConfig
@@ -114,8 +114,7 @@ export const useAPI = <T>(
             }),
         <T>{},
         {
-            immediate: (isRef(options) ? options.value : options)
-                ?.immediate,
+            immediate: (isRef(options) ? options.value : options)?.immediate,
         }
     )
     const isLoading = computed(() => !isReady.value)
@@ -127,7 +126,6 @@ export const useAPI = <T>(
         isReady,
         isLoading,
     }
-
 }
 
 function isRef(arg: any): arg is Ref {
@@ -174,40 +172,40 @@ const getUrlWithParams = (url, params) => {
         if (typeof v === 'object') {
             newv = JSON.stringify(v)
         }
-        temp[k] = newv;
+        temp[k] = newv
     })
     p = new URLSearchParams(temp)
     return p.toString() ? `${url}?${p.toString()}` : url
 }
 
-export function useAPIPromise(
+export function useAPIPromise<T>(
     url: string,
     method: HTTPVerb,
     { params, body, options }: baseAPIParams
-) {
+): Promise<T> {
     switch (method) {
         case 'GET':
-            return fetcher(
+            return fetcher<T>(
                 url,
                 isRef(params) ? params.value : params,
                 isRef(options) ? options.value : options
             )
         case 'POST':
-            return fetcherPost(
+            return fetcherPost<T>(
                 getUrlWithParams(url, params),
                 isRef(body) ? body.value : body,
                 isRef(options) ? options.value : options
             )
         case 'DELETE':
-            return deleter(url, isRef(options) ? options.value : options)
+            return deleter<T>(url, isRef(options) ? options.value : options)
         case 'PUT':
-            return updater(
+            return updater<T>(
                 url,
                 isRef(body) ? body.value : body,
                 isRef(options) ? options.value : options
             )
         default:
-            return fetcher(
+            return fetcher<T>(
                 url,
                 isRef(params) ? params.value : params,
                 isRef(options) ? options.value : options

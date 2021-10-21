@@ -3,7 +3,9 @@
         <a-button
             @click.prevent
             class="flex items-center justify-between w-3/12 h-full p-3 bg-gray-100 border-none  category-selector"
-            ><span class="text-xs text-gray-700"> All</span>
+            ><span class="text-xs text-gray-700 truncate">{{
+                data.checked?.length > 0 ? getFiltersAppliedString() : 'All'
+            }}</span>
             <AtlanIcon
                 icon="ChevronDown"
                 class="ml-3 text-gray-500 transition-transform duration-300 transform "
@@ -16,7 +18,7 @@
                 <div>
                     <a-checkbox
                         v-model:checked="checkAll"
-                        @change="onCheckAllChange"
+                        :indeterminate="indeterminate"
                         ><span class="mb-0 ml-1 text-gray"> All </span>
                     </a-checkbox>
                 </div>
@@ -33,9 +35,7 @@
                             :key="item.id"
                             class="flex items-center justify-between"
                         >
-                            <a-checkbox
-                                :value="item.id"
-                                v-model:checked="checkCategory"
+                            <a-checkbox :value="item.id"
                                 ><span class="mb-0 ml-1 text-gray">
                                     {{ item.label }}
                                 </span>
@@ -79,7 +79,7 @@
         setup(props, { emit }) {
             const dropdownVisible = ref(false)
             const checkAll = ref(true)
-
+            const indeterminate = ref(false)
             const checkCategory = ref(true)
 
             const list = computed(() => List)
@@ -88,15 +88,22 @@
             const handleChange = () => {
                 emit('change', data.value)
                 dropdownVisible.value = false
-                console.log(data.value.checked)
                 useAddEvent('discovery', 'facet', 'changed', {
                     filter_type: 'category',
                     count: data.value?.checked?.length,
                 })
             }
+            function getFiltersAppliedString() {
+                let filterData = data.value?.checked || []
+                filterData = filterData?.map(
+                    (assetCategoryId: string) =>
+                        List?.find(
+                            (assetCategory: any) =>
+                                assetCategory.id === assetCategoryId
+                        ).label
+                )
 
-            const onCheckAllChange = (e: any) => {
-                checkCategory.value = e.target.checked
+                return filterData.join(', ')
             }
 
             return {
@@ -105,7 +112,8 @@
                 handleChange,
                 dropdownVisible,
                 checkAll,
-                onCheckAllChange,
+                indeterminate,
+                getFiltersAppliedString,
                 checkCategory,
             }
         },

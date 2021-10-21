@@ -31,6 +31,8 @@ export const List: any = [
             'PowerBITile',
             'PowerBIPage',
             'PowerBIDatasource',
+            'TableauDatasource',
+            'PowerBIDataset',
         ],
         popoverText: 'All assets from BI integrations',
         description: 'Visualizations',

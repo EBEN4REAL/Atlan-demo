@@ -392,6 +392,7 @@
 
             const handleCategoryChange = (categoryFilterData) => {
                 console.log(categoryFilterData)
+                console.log(assetCategoryFilter.value)
                 /* offset.value = 0
                 isAggregate.value = true
                 updateBody()

@@ -30,7 +30,9 @@
                     <tr>
                         <th
                             class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                        ></th>
+                        >
+                            #
+                        </th>
 
                         <th
                             v-for="(col, index) in activeInlineTab.playground
@@ -52,7 +54,7 @@
                         <td
                             class="px-4 py-2 text-xs text-gray-700 truncate bg-white border  border-gray-light"
                         >
-                            {{ index }}
+                            {{ index + 1 }}
                         </td>
                         <td
                             v-for="(rowData, index) in row"

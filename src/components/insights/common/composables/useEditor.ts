@@ -203,7 +203,7 @@ export function useEditor(
     }
     const clearMoustacheTemplateColor = (editorInstance: any) => {
         // older moustacheDecorations needed
-        decorations = editorInstance?.deltaDecorations(decorations, [])
+        decorations = editorInstance?.deltaDecorations(decorations ?? [], [])
     }
     const findCustomVariableMatches = (
         editorInstance: any,

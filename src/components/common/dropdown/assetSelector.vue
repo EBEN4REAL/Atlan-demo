@@ -14,8 +14,11 @@
     >
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
+
             <a-divider style="margin: 4px 0" />
-            <div class="px-3">{{ list.length }} of {{ totalCount }}</div>
+            <div class="px-3">
+                {{ list.length }} of {{ totalCount }} &nbsp;{{ typeName }}
+            </div>
         </template>
         <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
@@ -45,6 +48,10 @@
                 type: String,
                 required: true,
             },
+            typeName: {
+                type: String,
+                required: false,
+            },
             disabled: {
                 type: Boolean,
                 required: false,
@@ -53,7 +60,7 @@
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { disabled, filters } = toRefs(props)
+            const { disabled, filters, typeName } = toRefs(props)
 
             const initialBody = {
                 dsl: filters.value,
@@ -91,6 +98,7 @@
             )
 
             return {
+                typeName,
                 list,
                 handleChange,
                 totalCount,

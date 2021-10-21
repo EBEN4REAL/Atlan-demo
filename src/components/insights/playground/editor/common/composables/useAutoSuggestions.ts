@@ -152,6 +152,8 @@ export function entitiesToEditorKeyword(
                             if (connectorsInfo.databaseName) {
                                 insertText = `${spilltedVal[1]}.${spilltedVal[2]}`
                                 entityType = `${type}: ${insertText}`
+                            } else {
+                                entityType = `${type}: ${entities[i].tableQN}`
                             }
                         } else if (!connectorsInfo.databaseName) {
                             insertText = entities[i].tableQN as string

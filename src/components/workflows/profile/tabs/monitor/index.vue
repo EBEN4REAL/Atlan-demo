@@ -6,7 +6,11 @@
         >
             <a-spin />
         </div>
-        <EmptyView v-else-if="!graphData?.metadata" empty="" />
+        <EmptyView
+            v-else-if="!graphData?.metadata"
+            :EmptyScreen="EmptyScreen"
+            class="-mt-20"
+        />
         <div v-else-if="graphData.metadata" class="absolute w-full h-full">
             <WorkflowGraph :graph-data="graphData" />
         </div>
@@ -27,6 +31,7 @@
         useArchivedWorkflowRun,
         useArchivedRunList,
     } from '~/composables/workflow/useWorkFlowList'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     export default defineComponent({
         name: 'WorkflowMonitor',
@@ -76,6 +81,7 @@
 
             return {
                 graphData,
+                EmptyScreen,
                 isLoading,
             }
         },

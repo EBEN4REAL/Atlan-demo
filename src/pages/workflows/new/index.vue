@@ -1,5 +1,19 @@
 <template>
-    <div class="flex w-full h-full">
+    <div
+        v-if="
+            workflowList && workflowList.length <= 0 && !isLoading && !queryText
+        "
+        class="h-full"
+    >
+        <EmptyState
+            desc="Sorry! We couldn’t find any workflow templates."
+            @event="$router.push('/workflows')"
+            buttonText="Back to Workflows"
+            :EmptyScreen="EmptyScreen"
+            buttonIcon="ArrowRight"
+        />
+    </div>
+    <div v-else class="flex w-full h-full">
         <div
             class="flex flex-col h-full bg-white border-r border-gray-300  facets"
         >
@@ -66,23 +80,7 @@
                     />
                 </div> -->
 
-                <div
-                    v-if="
-                        workflowList && workflowList.length <= 0 && !isLoading
-                    "
-                    class="flex flex-col items-center mt-10"
-                >
-                    <img
-                        :src="emptyScreen"
-                        alt="No Workflows"
-                        class="w-2/5 m-auto mb-4"
-                    />
-                    <span class="text-gray-500"
-                        >No Workflow template found</span
-                    >
-                </div>
-
-                <div v-else class="">
+                <div class="">
                     <div
                         class="overflow-y-auto"
                         :style="
@@ -116,7 +114,9 @@
     import { useDebounceFn } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, Ref } from 'vue'
     import { useRouter } from 'vue-router'
-    import emptyScreen from '~/assets/images/empty_search.png'
+    import EmptyScreen from '~/assets/images/workflows/empty_template.png'
+    import EmptyState from '~/components/common/empty/index.vue'
+
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import WorkflowList from '@/workflows/new/list/workflowList.vue'
     // sharing discover components
@@ -139,6 +139,7 @@
         name: 'WorkflowSetupPage',
         components: {
             WorkflowList,
+            EmptyState,
             SetupPreview,
             WorkflowFilters,
             Preferences,
@@ -279,7 +280,7 @@
                 selected,
                 workflowList,
                 loadMore,
-                emptyScreen,
+                EmptyScreen,
                 isLoadMore,
                 handleSearchChange,
                 handlePreview,

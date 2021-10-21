@@ -126,11 +126,11 @@
                     name: 'Monitor',
                     component: 'monitor',
                 },
-                {
-                    id: 3,
-                    name: 'Settings',
-                    component: 'settings',
-                },
+                // {
+                //     id: 3,
+                //     name: 'Settings',
+                //     component: 'settings',
+                // },
             ]
 
             /** UTILS */

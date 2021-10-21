@@ -75,11 +75,6 @@
                 required: false,
                 default: [],
             },
-            isLeafNodeSelectable: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
         },
         components: {
             AssetDropdown,
@@ -87,11 +82,10 @@
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { getConnectorName } = useAssetInfo()
-            const { data, filterSourceIds, isLeafNodeSelectable } =
-                toRefs(props)
+            const { data, filterSourceIds } = toRefs(props)
 
             const connector = computed(() => {
-                if (data.value?.attributeName === 'integrationName')
+                if (data.value?.attributeName === 'connectorName')
                     return data.value?.attributeValue
                 else {
                     let qfChunks = data.value?.attributeValue?.split('/')
@@ -111,10 +105,7 @@
             const selectedValue = computed(
                 () => connection.value || connector.value || undefined
             )
-            // watch([connection, connector], () => {
-            //     selectedValue.value =
-            //         connection.value || connector.value || undefined
-            // })
+
             /* Remove the sources mentioned in filterIds array */
             const filterSourceList = (filterSourceIds: string[]) => {
                 return store.getSourceList.filter(
@@ -239,7 +230,6 @@
 
             const onChange = (value) => {
                 if (!value) {
-                    console.log('inside undefined')
                     selectNode(undefined, undefined)
                 }
             }
@@ -272,11 +262,6 @@
             }
 
             const selectNode = (value, node?: any) => {
-                /* Checking if isLeafNodeSelectable by default it is selectable */
-                if (node?.children.length > 0 && !isLeafNodeSelectable.value) {
-                    expandNode([], node)
-                    return
-                }
                 const payload: Components.Schemas.FilterCriteria = {
                     attributeName: undefined,
                     attributeValue: undefined,
@@ -292,6 +277,7 @@
                 }
 
                 emit('update:data', payload)
+                emit('change')
             }
 
             return {

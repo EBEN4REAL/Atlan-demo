@@ -1,4 +1,19 @@
-import bodybuilder from 'bodybuilder'
+import bodybuilder, { Bodybuilder } from 'bodybuilder'
+import { ISearchOperators } from '~/constant/advancedAttributes'
+
+function operatorToDSL(
+    query: Bodybuilder,
+    operator: ISearchOperators,
+    attribute: string,
+    value: string
+) {
+    if (operator === 'eq') return query.filter('term', attribute, value)
+    else if (operator === 'neq') return query.notQuery('term', attribute, value)
+    else if (operator === 'isNull')
+        return query.notQuery('exists', 'field', value)
+    else if (operator === 'notNull')
+        return query.query('exists', 'field', value)
+}
 
 export function useDiscoveryDSL(filters: Record<string, any>) {
     const query = bodybuilder()
@@ -65,6 +80,17 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 break
             }
             case 'advanced': {
+                Object.keys(fltrObj?.applied || {})?.forEach((key) => {
+                    const fl = fltrObj?.applied[key]
+                    Object.keys(fl).forEach((flk) => {
+                        operatorToDSL(
+                            query,
+                            flk as ISearchOperators,
+                            key,
+                            fl[flk]
+                        )
+                    })
+                })
                 break
             }
             // for BM

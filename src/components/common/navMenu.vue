@@ -1,9 +1,6 @@
 <template>
-    <div
-        class="flex items-center justify-between w-full h-full"
-        @mouseover="$emit('openNavbar')"
-    >
-        <div class="flex items-center">
+    <div class="flex items-center justify-between w-full h-full">
+        <div @mouseover="$emit('openNavbar')" class="flex items-center">
             <atlan-icon
                 v-if="!isHome"
                 icon="Dots"

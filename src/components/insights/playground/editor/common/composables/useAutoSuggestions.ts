@@ -81,19 +81,27 @@ export function entitiesToEditorKeyword(
                 switch (type) {
                     case 'TABLE': {
                         /* When Schema Or database not selected TableQN will be used */
+                        let entityType = `${type}`
                         let insertText = entities[i].name
                         let label = entities[i].name
                         if (!connectorsInfo.schemaName) {
                             insertText = entities[i].tableQN as string
-                            label = entities[i].tableQN as string
+                            const spilltedVal = insertText.split('.')
+                            /* Spliited val will be always >3 i,e 3 */
+                            insertText = entities[i].tableQN as string
+                            /* database name is selected */
+                            if (connectorsInfo.databaseName) {
+                                insertText = `${spilltedVal[1]}.${spilltedVal[2]}`
+                                entityType = `${type}: ${insertText}`
+                            }
                         } else if (!connectorsInfo.databaseName) {
                             insertText = entities[i].tableQN as string
-                            label = entities[i].tableQN as string
+                            entityType = `${type}: ${insertText}`
                         }
 
                         keyword = {
                             label: label,
-                            detail: `${type}`, // TABLE,
+                            detail: `${entityType}`, // TABLE,
                             kind: monaco.languages.CompletionItemKind.Field,
                             documentation: `Some descripiton for ${type}`,
                             insertText: insertText,

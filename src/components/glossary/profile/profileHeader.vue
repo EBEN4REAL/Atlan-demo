@@ -113,6 +113,15 @@
                     </div></a-button
                 >
             </a-dropdown>
+            <BulkModal>
+                <template #trigger>
+                    <div class="flex items-center">
+                        <AtlanIcon icon="Term" class="m-0 mr-2 text-primary" />
+                        <p class="p-0 m-0 capitalize">Bulk upload terms</p>
+                    </div>
+                </template>
+            </BulkModal>
+
             <ThreeDotMenu :entity="entity" :showLinks="false" />
         </div>
     </div>
@@ -180,6 +189,7 @@
     // components
     import { message } from 'ant-design-vue'
     import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+    import BulkModal from '~/components/glossary/gtcCrud/bulkModal.vue'
     // assets
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
@@ -190,6 +200,7 @@
     export default defineComponent({
         components: {
             ThreeDotMenu,
+            BulkModal,
         },
         props: {
             title: {

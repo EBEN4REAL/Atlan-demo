@@ -23,7 +23,7 @@ export default function useRecentTerms() {
     const { replaceBody, body, isReady, error, data } = useIndexSearch(
       {dsl: query},
       '',
-      true
+      false
     )
     onMounted(() => {
       replaceBody({dsl: query, "attributes":["_modificationTimestamp", "_timestamp"]})

@@ -56,6 +56,8 @@ const categoryTypeMapping = {
         'PowerBITile',
         'PowerBIPage',
         'PowerBIDatasource',
+        'TableauDatasource',
+        'PowerBIDataset',
     ],
     businessTerms: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory']
 }

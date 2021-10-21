@@ -105,6 +105,25 @@
                 ></BulkSidebar>
                 <BulkNotification class="fixed bottom-0 right-0" />
             </div>
+            <AddGtcModal
+                entityType="term"
+                :glossaryId="glossary.guid"
+                :glossaryQualifiedName="glossary?.attributes?.qualifiedName"
+                :visible="addTermModalOpen"
+            >
+                <template #header>
+                    <ModalHeader
+                        :entity="glossary"
+                        entity-to-add="term"
+                    />
+                </template>
+                <template #trigger>
+                    <div class="flex items-center">
+                        <AtlanIcon icon="Term" class="m-0 mr-2" />
+                        <p class="p-0 m-0">Create New Term</p>
+                    </div>
+                </template>
+            </AddGtcModal>
         </div>
     </div>
 </template>
@@ -130,6 +149,8 @@
     import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
+    import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
+    import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -157,6 +178,8 @@
             BulkSidebar,
             BulkNotification,
             NoAccessPage,
+            AddGtcModal,
+            ModalHeader
         },
         props: {
             id: {
@@ -168,9 +191,10 @@
         setup(props) {
             // data
             const router = useRouter()
-            
+
             const guid = toRef(props, 'id')
             const currentTab = ref(router.currentRoute.value.query.tab === 'terms' ? '2' : '1')
+            const addTermModalOpen = ref(router.currentRoute.value.query.cta === 'addTerm')
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
@@ -285,6 +309,7 @@
                 handleCloseBulk,
                 store,
                 userHasAccess,
+                addTermModalOpen
             }
         },
     })

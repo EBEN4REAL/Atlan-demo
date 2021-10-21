@@ -85,7 +85,7 @@
         },
         props: {
             appliedFilters: {
-                type: Object as PropType<any>,
+                type: Object as PropType<Components.Schemas.FilterCriteria[]>,
                 required: true,
             },
         },

@@ -139,7 +139,6 @@
                         obj = { ...obj }
                         results.value.push(obj)
                     })
-                    console.log(results.value)
                 }
             })
 

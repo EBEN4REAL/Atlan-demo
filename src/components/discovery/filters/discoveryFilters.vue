@@ -1,12 +1,16 @@
 <template>
     <div
-        class="flex items-center justify-end p-4 text-sm bg-gray-100 border-b border-gray-300 "
+        class="flex items-center justify-between p-4 text-sm bg-gray-100 border-b border-gray-300 "
         v-if="totalAppliedFiltersCount"
     >
+        <div class="font-medium text-gray-500">
+            {{ totalAppliedFiltersCount }}
+            {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
+        </div>
         <div class="flex items-center">
             <div>
                 <SaveFilterModal
-                    :applied-filters="dataMap"
+                    :applied-filters="filterMap"
                     @savedFilterAdded="handleSavedFilterAdded"
                 >
                     <template #trigger>
@@ -154,6 +158,7 @@
     import { List } from './filters'
     import useFilterUtils from './useFilterUtils'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import useFilterPayload from './useFilterPayload'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -255,6 +260,8 @@
                     operator: props.facets?.terms?.operator || 'OR',
                 },
             })
+
+            const { payload: filterMap } = useFilterPayload(dataMap)
 
             const { isFilterApplied, totalAppliedFiltersCount } =
                 useFilterUtils(dataMap)
@@ -479,6 +486,7 @@
                 resetAllFilters,
                 totalAppliedFiltersCount,
                 getFiltersAppliedString,
+                filterMap,
                 activeKey,
                 dataMap,
                 handleChange,

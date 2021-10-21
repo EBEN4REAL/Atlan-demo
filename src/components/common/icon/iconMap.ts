@@ -115,10 +115,11 @@ import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
-import Delete from '~/assets/images/icons/delete.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
+import Retry from '~/assets/images/icons/retry.svg'
+import Recenter from '~/assets/images/icons/recenter.svg'
 
 export default {
     queryErorrIllus,
@@ -238,8 +239,9 @@ export default {
     Delete,
     Slack,
     Schedule,
-    Delete,
     Minimap,
     FullScreenBoth,
     Minus,
+    Retry,
+    Recenter,
 }

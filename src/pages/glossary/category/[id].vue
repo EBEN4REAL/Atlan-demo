@@ -106,6 +106,7 @@
         onMounted,
         toRef,
         ref,
+        inject,
         provide,
     } from 'vue'
     import { useRouter } from 'vue-router'
@@ -160,17 +161,27 @@
 
             const router = useRouter()
 
-            const {
-                entity: category,
-                title,
-                shortDescription,
-                qualifiedName,
-                statusMessage,
-                statusObject,
-                error,
-                isLoading,
-                refetch,
-            } = useGTCEntity<Category>('category', guid, guid.value)
+            const category = inject<Term>('currentEntity')
+            const title = inject('currentTitle')
+            const shortDescription = inject('currentShortDescription')
+            const qualifiedName = inject('currentQualifiedName')
+            const statusObject = inject('statusObject')
+            const error = inject('profileError')
+            const isLoading = inject('profileIsLoading')
+            const refetch = inject('refreshEntity')
+            const statusMessage = inject('statusMessage')
+
+            // const {
+            //     entity: category,
+            //     title,
+            //     shortDescription,
+            //     qualifiedName,
+            //     statusMessage,
+            //     statusObject,
+            //     error,
+            //     isLoading,
+            //     refetch,
+            // } = useGTCEntity<Category>('category', guid, guid.value)
 
             // const {
             //     data: categoryTerms,

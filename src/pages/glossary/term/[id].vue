@@ -93,7 +93,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        toRef,
+        ref,
+        provide,
+        watch,
+        inject,
+    } from 'vue'
     import { useRouter } from 'vue-router'
 
     // components
@@ -141,17 +149,27 @@
             const headerReachedTop = ref(false)
             const temp = ref(false)
 
-            const {
-                entity: term,
-                title,
-                shortDescription,
-                qualifiedName,
-                statusObject,
-                error,
-                statusMessage,
-                isLoading,
-                refetch,
-            } = useGTCEntity<Term>('term', guid, guid.value)
+            // const {
+            //     entity: term,
+            //     title,
+            //     shortDescription,
+            //     qualifiedName,
+            //     statusObject,
+            //     error,
+            //     statusMessage,
+            //     isLoading,
+            //     refetch,
+            // } = useGTCEntity<Term>('term', guid, guid.value)
+
+            const term = inject<Term>('currentEntity')
+            const title = inject('currentTitle')
+            const shortDescription = inject('currentShortDescription')
+            const qualifiedName = inject('currentQualifiedName')
+            const statusObject = inject('statusObject')
+            const error = inject('profileError')
+            const isLoading = inject('profileIsLoading')
+            const refetch = inject('refreshEntity')
+            const statusMessage = inject('statusMessage')
 
             const accessStore = useAccessStore()
             const BMListLoaded = computed(

@@ -24,6 +24,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     cache?: boolean | string,
     watchForGuidChange: boolean = true
 ) => {
+    console.log('useGtcEntity called')
     const body = ref({})
 
     const relatedTerms = [
@@ -50,9 +51,9 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             size: 10,
             query: {
                 term: {
-                    __guid: entityGuid.value
-                }
-            }
+                    __guid: entityGuid.value,
+                },
+            },
         },
         attributes: [
             ...projection,

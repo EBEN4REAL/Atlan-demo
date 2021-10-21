@@ -223,11 +223,11 @@
             const qualifiedName = inject('currentQualifiedName')
             const statusObject = inject('statusObject')
             const error = inject('profileError')
-            const isLoading = inject('profileIsLoading' )
-            const refetch = inject('refreshEntity') 
+            const isLoading = inject('profileIsLoading')
+            const refetch = inject('refreshEntity')
             const statusMessage = inject('statusMessage')
-            
 
+            console.log(glossary)
             const isNewGlossary = computed(
                 () => title.value === 'Untitled Glossary'
             )

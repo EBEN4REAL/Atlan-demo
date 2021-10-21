@@ -41,7 +41,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed, provide } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRouter,useRoute } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
 
     // components
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
@@ -83,24 +83,12 @@
                     ] === 'glossary'
             )
             const guid = ref<string>(route.params.id as string)
+            // const currentGuid = ref(router.currentRoute.params?.id)
             const currentType = ref(
                 router.currentRoute.value.fullPath.split('/')[
                     router.currentRoute.value.fullPath.split('/').length - 2
                 ] as 'glossary' | 'category' | 'term'
             )
-
-            const {
-                entity,
-                title,
-                shortDescription,
-                qualifiedName,
-                statusObject,
-                error,
-                statusMessage,
-                isLoading,
-                refetch,
-            } = useGTCEntity<Term>(currentType.value, guid, guid.value, true)
-
 
             const {
                 treeData,
@@ -123,6 +111,22 @@
                 reOrderNodes,
             } = useTree(emit, true, isHome)
 
+            const {
+                entity,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                statusMessage,
+                isLoading,
+                refetch,
+            } = useGTCEntity<Term>(
+                currentType.value,
+                currentGuid,
+                currentGuid.value,
+                true
+            )
             // * Get all available BMs and save on storez
             const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
@@ -146,16 +150,16 @@
             provide('refetchGlossaryList', refetchGlossaryList)
             provide('reorderTreeNodes', reOrderNodes)
 
-            provide('currentEntity',entity)
-            provide('currentTitle',title)
+            provide('currentEntity', entity)
+            provide('currentTitle', title)
             provide('currentShortDescription', shortDescription)
-            provide('currentQualifiedName',qualifiedName)
-            provide('statusObject',statusObject)
-            provide('profileError',error)
-            provide('statusMessage',statusMessage)
-            provide('profileIsLoading' ,isLoading)
-            provide('refreshEntity',refetch)            
-            
+            provide('currentQualifiedName', qualifiedName)
+            provide('statusObject', statusObject)
+            provide('profileError', error)
+            provide('statusMessage', statusMessage)
+            provide('profileIsLoading', isLoading)
+            provide('refreshEntity', refetch)
+
             return {
                 backToHome,
                 backToGlossary,
@@ -164,7 +168,6 @@
                 selectNode,
                 dragAndDropNode,
                 collapseAll,
-                currentGuid,
                 glossaryList,
                 treeData,
                 loadedKeys,
@@ -173,6 +176,8 @@
                 parentGlossary,
                 isInitingTree,
                 isHome,
+                guid,
+                currentGuid,
             }
         },
     })

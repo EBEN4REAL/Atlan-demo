@@ -106,25 +106,25 @@
     />
 
     <!-- async tree select end -->
-
-    <a-upload
-        v-if="dataType === 'upload'"
-        :multiple="false"
-        v-model:file-list="fileList"
-        :remove="handleRemove"
-        :before-upload="beforeUpload"
-    >
-        <a-button :disabled="fileList.length > 0"> Select File </a-button>
-    </a-upload>
-    <a-button
-        type="primary"
-        :disabled="fileList.length === 0"
-        :loading="uploading"
-        style="margin-top: 16px"
-        @click="handleUpload"
-    >
-        {{ uploading ? 'Uploading' : 'Start Upload' }}
-    </a-button>
+    <div v-if="dataType === 'upload'">
+        <a-upload
+            :multiple="false"
+            v-model:file-list="fileList"
+            :remove="handleRemove"
+            :before-upload="beforeUpload"
+        >
+            <a-button :disabled="fileList.length > 0"> Select File </a-button>
+        </a-upload>
+        <a-button
+            type="primary"
+            :disabled="fileList.length === 0"
+            :loading="uploading"
+            style="margin-top: 16px"
+            @click="handleUpload"
+        >
+            {{ uploading ? 'Uploading' : 'Start Upload' }}
+        </a-button>
+    </div>
 
     <a-input-number
         v-if="dataType === 'number'"

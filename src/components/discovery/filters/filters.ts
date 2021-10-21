@@ -19,16 +19,6 @@ export const List: CollapseArray = [
     //     exclude: false,
     // },
     {
-        id: 'saved',
-        label: 'Saved Filter',
-        component: 'savedFilter',
-        overallCondition: 'AND',
-        filters: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    },
-    {
         id: 'status',
         label: 'Certificate',
         component: 'status',

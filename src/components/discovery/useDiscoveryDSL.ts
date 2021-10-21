@@ -13,6 +13,8 @@ function operatorToDSL(
         return query.notQuery('exists', 'field', value)
     else if (operator === 'notNull')
         return query.query('exists', 'field', value)
+    else if (['gt', 'lt', 'gte', 'lte'].includes(operator))
+        return query.query('range', attribute, { [operator]: value })
 }
 
 export function useDiscoveryDSL(filters: Record<string, any>) {

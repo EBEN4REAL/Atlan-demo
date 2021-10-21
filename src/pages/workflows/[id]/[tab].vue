@@ -163,7 +163,11 @@
                 return {}
             })
 
-            const templateName = computed(() => data.value?.asset?.name)
+            const templateName = computed(
+                () =>
+                    data.value?.asset?.workflowtemplate.spec.templates[0].dag
+                        .tasks[0].templateRef.name || ''
+            )
 
             /** METHODS */
             // selectTab

@@ -49,7 +49,7 @@
 
             <div
                 class="flex flex-col"
-                :style="{ height: 'calc(100vh - 7.8rem)' }"
+                :style="{ height: 'calc(100vh - 0.8rem)' }"
             >
                 <div
                     class="
@@ -154,7 +154,7 @@
                 {
                     name: 'Run History',
                     component: 'runs',
-                    icon: 'RunHistory',
+                    icon: 'ActivityLogs',
                     tooltip: 'Run History',
                 },
             ]

@@ -34,7 +34,7 @@ const getWorkflowTemplates = ({ immediate, options, params }) =>
         'GET',
         {
             options,
-            params
+            params,
         },
         { immediate }
     )
@@ -45,19 +45,20 @@ const getWorkflowConfigMap = ({ immediate, options, params }) =>
         'GET',
         {
             options,
-            params
+            params,
         },
         { immediate }
     )
 
-const getWorkflowByName = (params, { immediate, options }) =>
+const getWorkflowByName = (filter, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW,
         'GET',
         {
             options,
-            params,
-
+            pathVariables: {
+                filter,
+            },
         },
         { immediate }
     )
@@ -76,26 +77,28 @@ const updateWorkflowByName = (name, body, { immediate, options }) =>
         { immediate }
     )
 
-const getWorkflowTemplateByName = (name, { immediate, options }) =>
+const getWorkflowTemplateByName = (filter, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW_TEMPLATE_NAME,
         'GET',
         {
             options,
             pathVariables: {
-                name,
+                filter,
             },
         },
         { immediate }
     )
 
-const getArchivedRunList = (pathVariables, { immediate, options }) =>
+const getArchivedRunList = (filter, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
         'GET',
         {
             options,
-            pathVariables,
+            pathVariables: {
+                filter,
+            },
         },
         { immediate }
     )
@@ -119,7 +122,7 @@ const createWorkflow = ({ body, immediate, options }) =>
         'POST',
         {
             body,
-            options
+            options,
         },
         { immediate }
     )
@@ -135,5 +138,5 @@ export const Workflows = {
     getArchivedWorkflowRun,
     getWorkflowTemplates,
     getWorkflowConfigMap,
-    getWorkflowTemplateByName
+    getWorkflowTemplateByName,
 }

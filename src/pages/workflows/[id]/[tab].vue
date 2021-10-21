@@ -16,6 +16,7 @@
             >
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
+                        v-if="workflowTemplate"
                         :is="tab.component"
                         :key="activeKey || id"
                         :ref="
@@ -23,7 +24,8 @@
                                 refs[tab.id] = el
                             }
                         "
-                        :selected-run-id="selectedRunId"
+                        :selected-run-name="selectedRunName"
+                        :workflow-template="workflowTemplate"
                         class="bg-transparent"
                         @change="handlePreview"
                     ></component>
@@ -37,6 +39,7 @@
                 :selected-workflow="selected"
                 :selected-dag="selectedDag"
                 :form-config="formConfig"
+                @change="selectedRunName = $event"
             />
         </div>
         <WorkflowLogs
@@ -93,10 +96,6 @@
             ),
         },
         props: {
-            selectedRunId: {
-                type: String,
-                required: true,
-            },
             id: {
                 type: String,
                 required: true,
@@ -111,8 +110,10 @@
             /** DATA */
             const activeKey = ref(1)
             const data = ref({})
+            const selectedRunName = ref(null)
             const selected = ref(null)
             const selectedDag = ref('')
+            const workflowTemplate = ref('')
             const workflowLogsIsOpen = ref(false)
             const refs: { [key: string]: any } = ref({})
             const tabs = [
@@ -208,13 +209,23 @@
                     fetchUIConfig()
                     return
                 }
-                mutate()
+
+                const filter = { name: `${id.value}` }
+
+                const { workflow: response, error } = useWorkflowByName(
+                    JSON.stringify(filter)
+                )
 
                 watch(response, (v) => {
-                    data.value.asset = v?.records[0]
+                    console.log('tab v:', v)
+                    // workflowTemplate.value =
+                    //     v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
+                    workflowTemplate.value =
+                        v.records[0].workflowtemplate.spec.workflowTemplateRef.name
+                    data.value.asset = v.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
-                    handlePreview(data.value?.asset, null)
+                    handlePreview(data.value.asset, null)
                 })
             }
 
@@ -244,6 +255,7 @@
                 emit,
                 activeKey,
                 selected,
+                selectedRunName,
                 tabs,
                 handlePreview,
                 refs,
@@ -251,6 +263,7 @@
                 data,
                 selectTab,
                 templateName,
+                workflowTemplate,
                 formConfig,
                 workflowLogsIsOpen,
             }

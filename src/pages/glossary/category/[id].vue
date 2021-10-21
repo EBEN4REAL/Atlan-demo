@@ -108,6 +108,9 @@
         ref,
         inject,
         provide,
+        ComputedRef,
+        WritableComputedRef,
+        Ref
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -161,34 +164,15 @@
 
             const router = useRouter()
 
-            const category = inject<Term>('currentEntity')
-            const title = inject('currentTitle')
-            const shortDescription = inject('currentShortDescription')
-            const qualifiedName = inject('currentQualifiedName')
-            const statusObject = inject('statusObject')
-            const error = inject('profileError')
-            const isLoading = inject('profileIsLoading')
-            const refetch = inject('refreshEntity')
-            const statusMessage = inject('statusMessage')
-
-            // const {
-            //     entity: category,
-            //     title,
-            //     shortDescription,
-            //     qualifiedName,
-            //     statusMessage,
-            //     statusObject,
-            //     error,
-            //     isLoading,
-            //     refetch,
-            // } = useGTCEntity<Category>('category', guid, guid.value)
-
-            // const {
-            //     data: categoryTerms,
-            //     error: termsError,
-            //     isLoading: termsLoading,
-            //     fetchCategoryTermsPaginated,
-            // } = useCategoryTerms()
+            const category = inject<Ref<Category>>('currentEntity')
+            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
+            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const statusObject = inject<ComputedRef>('statusObject')
+            const error = inject<Ref>('profileError')
+            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const refetch = inject<() => void>('refreshEntity', () => {})
+            const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 

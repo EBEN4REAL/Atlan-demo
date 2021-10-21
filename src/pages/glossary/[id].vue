@@ -131,9 +131,11 @@
         watch,
         toRef,
         ref,
-        provide,
+        WritableComputedRef,
         computed,
         inject,
+        ComputedRef,
+        Ref
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -205,29 +207,16 @@
             const landByRedirect = false
             const accessStore = useAccessStore()
 
-            // const {
-            //     entity: glossary,
-            //     title,
-            //     shortDescription,
-            //     qualifiedName,
-            //     statusObject,
-            //     error,
-            //     isLoading,
-            //     refetch,
-            //     statusMessage,
-            // } = useGTCEntity<Glossary>('glossary', guid)
+            const glossary = inject<Ref<Glossary>>('currentEntity')
+            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
+            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const statusObject = inject<ComputedRef>('statusObject')
+            const error = inject<Ref>('profileError')
+            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const refetch = inject<() => void>('refreshEntity', () => {})
+            const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
-            const glossary = inject<Glossary>('currentEntity')
-            const title = inject('currentTitle')
-            const shortDescription = inject('currentShortDescription')
-            const qualifiedName = inject('currentQualifiedName')
-            const statusObject = inject('statusObject')
-            const error = inject('profileError')
-            const isLoading = inject('profileIsLoading')
-            const refetch = inject('refreshEntity')
-            const statusMessage = inject('statusMessage')
-
-            console.log(glossary)
             const isNewGlossary = computed(
                 () => title.value === 'Untitled Glossary'
             )
@@ -240,7 +229,7 @@
             // computed
 
             // methods
-            const reInitTree = inject('reInitTree')
+            const reInitTree = inject('reInitTree', () => {})
 
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
@@ -251,7 +240,7 @@
                 showPreviewPanel.value = false
             }
             const updateTitle = () => {
-                updateEntity('glossary', glossary.value?.guid ?? '', {
+                updateEntity('glossary', glossary?.value?.guid ?? '', {
                     name: newName.value,
                 })
                 if (reInitTree) {
@@ -286,9 +275,6 @@
                 store.setBulkMode(false)
             }
 
-            // Providers
-            // provide('refreshEntity', refetch)
-
             return {
                 glossary,
                 title,
@@ -296,11 +282,7 @@
                 shortDescription,
                 error,
                 isLoading,
-                // termsLoading,
-                // categoriesLoading,
                 guid,
-                // glossaryTerms,
-                // glossaryCategories,
                 qualifiedName,
                 currentTab,
                 previewEntity,
@@ -310,8 +292,6 @@
                 newName,
                 scrollDiv,
                 headerReachedTop,
-                // refreshCategoryTermList,
-                // fetchNextCategoryOrTermList,
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,

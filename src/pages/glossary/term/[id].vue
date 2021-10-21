@@ -101,6 +101,9 @@
         provide,
         watch,
         inject,
+        ComputedRef,
+        WritableComputedRef,
+        Ref
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -149,27 +152,16 @@
             const headerReachedTop = ref(false)
             const temp = ref(false)
 
-            // const {
-            //     entity: term,
-            //     title,
-            //     shortDescription,
-            //     qualifiedName,
-            //     statusObject,
-            //     error,
-            //     statusMessage,
-            //     isLoading,
-            //     refetch,
-            // } = useGTCEntity<Term>('term', guid, guid.value)
 
-            const term = inject<Term>('currentEntity')
-            const title = inject('currentTitle')
-            const shortDescription = inject('currentShortDescription')
-            const qualifiedName = inject('currentQualifiedName')
-            const statusObject = inject('statusObject')
-            const error = inject('profileError')
-            const isLoading = inject('profileIsLoading')
-            const refetch = inject('refreshEntity')
-            const statusMessage = inject('statusMessage')
+            const term = inject<Ref<Term>>('currentEntity')
+            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
+            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const statusObject = inject<ComputedRef>('statusObject')
+            const error = inject<Ref>('profileError')
+            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const refetch = inject<() => void>('refreshEntity', () => {})
+            const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
             const accessStore = useAccessStore()
             const BMListLoaded = computed(

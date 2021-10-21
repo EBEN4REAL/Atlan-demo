@@ -7,7 +7,7 @@
         :closable="false"
         :mask="false"
         :class="$style.drawerStyle"
-        :width="420"
+        :width="460"
     >
         <div class="flex flex-col h-full">
             <div class="flex items-center justify-between">
@@ -56,7 +56,7 @@
                     </span>
                     <CustomAssetSelector
                         class="h-full py-4"
-                        v-model:assets="checkedKeys"
+                        v-model:assets="regexKeys"
                         :connectionQfName="connectionQfName"
                     />
                 </template>
@@ -130,9 +130,8 @@
 
             // Asset related stuff
             const checkedKeys = ref([] as string[])
-            watch(assets, () => (checkedKeys.value = [...assets.value]), {
-                immediate: true,
-            })
+            const regexKeys = ref([] as string[])
+
             function saveAssets() {
                 // TODO: Change this implementation
                 // Use a WritableComputedRef and the @check event
@@ -141,12 +140,15 @@
                 const assetSet = new Set([
                     ...checkedKeys.value,
                     ...assets.value,
+                    ...regexKeys.value,
                 ])
                 emit('update:assets', [...assetSet])
                 isVisible.value = false
             }
+
             function discardAssets() {
-                checkedKeys.value = [...assets.value]
+                checkedKeys.value = []
+                regexKeys.value = []
                 isVisible.value = false
             }
 
@@ -170,6 +172,7 @@
                 tabConfig,
                 isVisible,
                 checkedKeys,
+                regexKeys,
                 saveAssets,
                 discardAssets,
                 filterConfig,

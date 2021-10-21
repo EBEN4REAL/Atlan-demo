@@ -11,6 +11,8 @@ import {
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
 import axios from 'axios'
+import TurndownService from 'turndown'
+import { List } from `~/constant/status.ts`
 
 export interface suggestionKeywordInterface {
     label: string
@@ -59,6 +61,62 @@ export function wordToEditorKeyword(
         })
     })
 }
+function getAssetProfileURL(entity: any) {
+    const URL = `https://${String(location.hostname)}/${
+        entity.metadata.guid
+    }/overview`
+    return URL
+}
+
+function generateMarkdown(
+    turndownService: any,
+    entity: any,
+    assetType: string
+) {
+    let description,
+        ownerString,
+        ownersHTML,
+        descriptionHTML,
+        rowCountHTML = '',
+        guid
+    // const URL = getAssetProfileURL(entity)
+    if (assetType === 'TABLE') {
+        description =
+            entity.metadata.userDescription || entity.metadata.description
+        ownerString = entity.metadata.ownerUsers.split(',').join(', ')
+        rowCountHTML = `<div>Row count:</div>
+        <p> ${entity.metadata.rowCount}</p>
+        &nbsp; 
+        </div>`
+        ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>&nbsp;`
+        descriptionHTML = `</p> Owned by:</br>${description}</p>`
+        guid = entity.metadata.guid
+    } else {
+        description = entity.userDescription || entity.description
+        ownerString = entity.ownerUsers.split(',').join(', ')
+        ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>`
+        descriptionHTML = `</p> Owned by:</br>${description}</p>`
+        guid = entity.guid
+    }
+
+    //<a target="_blank" href="${URL}" rel="noopener noreferrer nofollow">${entity.name}</a>
+    return turndownService.turndown(
+        `
+        ${description ? descriptionHTML : ''}
+        ${ownerString ? ownersHTML : ''}
+        <div>
+        <div style="display:flex">
+  ${rowCountHTML}
+         <div>
+         <div>Guid:</div>
+         <p> ${guid}</p>
+         </div>
+        </div>
+        </div>
+     
+        `
+    )
+}
 
 export function entitiesToEditorKeyword(
     response: Promise<autosuggestionResponse>,
@@ -71,6 +129,7 @@ export function entitiesToEditorKeyword(
     }
 ) {
     const sqlKeywords = getSqlKeywords()
+    const turndownService = new TurndownService()
     return new Promise((resolve) => {
         response.then((res) => {
             const entities = res.entities
@@ -103,7 +162,13 @@ export function entitiesToEditorKeyword(
                             label: label,
                             detail: `${entityType}`, // TABLE,
                             kind: monaco.languages.CompletionItemKind.Field,
-                            documentation: `Some descripiton for ${type}`,
+                            documentation: {
+                                value: generateMarkdown(
+                                    turndownService,
+                                    entities[i],
+                                    `${type}`
+                                ),
+                            },
                             insertText: insertText,
                         }
                         words.push(keyword)
@@ -116,7 +181,13 @@ export function entitiesToEditorKeyword(
                                 label: cols[j].name,
                                 detail: `${type}: ${entities[i].name}`, // COLUMN - TABLE_NAME,
                                 kind: monaco.languages.CompletionItemKind.Field,
-                                documentation: `Some descripiton for ${type}`,
+                                documentation: {
+                                    value: generateMarkdown(
+                                        turndownService,
+                                        cols[j],
+                                        `${type}`
+                                    ),
+                                },
                                 insertText: `${cols[j].name}`,
                             }
                             words.push(keyword)

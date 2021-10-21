@@ -77,7 +77,8 @@ export const KeyMaps = {
             ASSET_ACCESS: () => getAPIPath('auth', '/access/evaluate'),
         },
         role: {
-            LIST_ROLES: () => getAPIPath('service', '/workspaceroles?type=default'),
+            LIST_ROLES: () =>
+                getAPIPath('service', '/workspaceroles?type=default'),
         },
         tenant: {
             GET_TENANT: () => getAPIPath('service', '/tenants/default'),
@@ -157,13 +158,15 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'meta',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${
+                    offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         BULK_LINK_TERMS: () =>
@@ -190,7 +193,7 @@ export const KeyMaps = {
             getAPIPath('api/query', `/sql/stream?${params}`),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
+        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
             getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
@@ -207,15 +210,16 @@ export const KeyMaps = {
     workflow: {
         WORKFLOW: () => getAPIPath('/service', `/workflows`),
         CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
-        WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) => getAPIPath('/service', `/workflows/${name}`),
+        WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) =>
+            getAPIPath('/service', `/workflows/${name}`),
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
-        ARCHIVED_WORKFLOW_RUN: ({ name }: PathParams) =>
-            getAPIPath('/service', `/workflows/${name}/runs/archived`),
+        ARCHIVED_WORKFLOW_RUN: ({ filter }: PathParams) =>
+            getAPIPath('/service', `/runs/archived?filter=${filter}`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
-        WORKFLOW_TEMPLATE_NAME: ({ name }: PathParams) =>
-            getAPIPath('/service', `/workflowtemplates/${name}`),
-        WORKFLOW_CONFIG_MAP: () =>
-            getAPIPath('/service', `/configmap`)
-
+        WORKFLOW_TEMPLATE_NAME: ({ filter }: PathParams) =>
+            getAPIPath('/service', `/workflowtemplates?filter=${filter}`),
+        WORKFLOW_BY_NAME: ({ filter }: PathParams) =>
+            getAPIPath('/service', `/workflows?filter=${filter}`),
+        WORKFLOW_CONFIG_MAP: () => getAPIPath('/service', `/configmap`),
     },
 }

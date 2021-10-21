@@ -124,6 +124,8 @@ import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
+import Retry from '~/assets/images/icons/retry.svg'
+import Recenter from '~/assets/images/icons/recenter.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
 import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
 import Hourglass from '~/assets/images/icons/hourglass.svg'
@@ -140,6 +142,7 @@ import Report from '~/assets/images/icons/report.svg'
 import Platform from '~/assets/images/icons/platform.svg'
 import Feedback from '~/assets/images/icons/feedback.svg'
 import Admin from '~/assets/images/icons/admin.svg'
+import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
 
 export default {
     IssuesFilled,
@@ -268,6 +271,8 @@ export default {
     Minimap,
     FullScreenBoth,
     Minus,
+    Retry,
+    Recenter,
     AssetsInactiveLight,
     AssetsActiveLight,
     Hourglass,
@@ -284,4 +289,5 @@ export default {
     Platform,
     Feedback,
     Admin,
+    ActivityLogs
 }

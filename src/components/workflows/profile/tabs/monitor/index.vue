@@ -7,37 +7,41 @@
             <a-spin />
         </div>
         <EmptyView
-            v-else-if="!graphData?.metadata"
+            v-else-if="!isLoading && !graphData?.name"
             :EmptyScreen="EmptyScreen"
             class="-mt-20"
         />
-        <div v-else-if="graphData.metadata" class="absolute w-full h-full">
-            <WorkflowGraph :graph-data="graphData" />
+        <div v-else-if="graphData.name" class="absolute w-full h-full">
+            <MonitorGraph :graph-data="graphData" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, watch, ref, toRefs } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        watch,
+        ref,
+        toRefs,
+        onMounted,
+    } from 'vue'
     import { useRoute } from 'vue-router'
 
     // Components
-    import WorkflowGraph from './workflowGraph.vue'
+    import MonitorGraph from './monitorGraph.vue'
     import EmptyView from '@common/empty/index.vue'
 
     // Composables
-    import {
-        useArchivedWorkflowRun,
-        useArchivedRunList,
-    } from '~/composables/workflow/useWorkFlowList'
+    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
     import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     export default defineComponent({
-        name: 'WorkflowMonitor',
-        components: { WorkflowGraph, EmptyView },
+        name: 'WorkflowMonitorTab',
+        components: { MonitorGraph, EmptyView },
         props: {
-            selectedRunId: {
+            selectedRunName: {
                 type: String,
                 required: true,
             },
@@ -46,37 +50,32 @@
             const route = useRoute()
 
             /** DATA */
-            const { selectedRunId } = toRefs(props)
+            const { selectedRunName } = toRefs(props)
+            const records = ref([])
             const graphData = ref({})
-            const currRunId = ref('')
-            const isLoading = ref(false)
             const id = computed(() => route?.params?.id || '')
 
             /** METHODS */
-            // useArchivedRunList
-            const labelSelector = computed(
-                () => `workflows.argoproj.io/workflow-template=${id.value}`
-            )
-            const { runList } = useArchivedRunList(labelSelector)
-
-            // useArchivedWorkflowRun
-            const fetchRunData = () => {
-                const { runDeets } = useArchivedWorkflowRun(currRunId.value)
-
-                watch(runDeets, (newVal) => {
-                    graphData.value = newVal
-                })
+            const filter = {
+                labels: {
+                    $elemMatch: {
+                        'workflows.argoproj.io/workflow-template': `${id.value}`,
+                    },
+                },
             }
+            const { runList, isLoading } = useArchivedRunList(
+                JSON.stringify(filter),
+                true
+            )
 
-            /** Watchers */
             watch(runList, (newVal) => {
-                currRunId.value = newVal[0].metadata.uid
-                fetchRunData()
+                records.value = newVal.records
+                graphData.value = newVal.records[0]
             })
 
-            watch(selectedRunId, (newVal) => {
-                currRunId.value = newVal
-                fetchRunData()
+            /** Watchers */
+            watch(selectedRunName, (newVal) => {
+                graphData.value = records.value.find((x) => (x.name = newVal))
             })
 
             return {

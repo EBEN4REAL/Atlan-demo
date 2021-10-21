@@ -10,7 +10,7 @@ export default function useRecentTerms() {
     const lastSevenDaysTimestamp = new Date(currentDate).getTime()
     const currentTimestamp = new Date().getTime()
 
-    const query = bodybuilder().orFilter(
+    const query = bodybuilder().andFilter(
       'bool', 
       (b) => b
       .filter("term", "__typeName.keyword", "AtlasGlossaryTerm")
@@ -26,7 +26,7 @@ export default function useRecentTerms() {
       true
     )
     onMounted(() => {
-      replaceBody({dsl: query, "attributes":["_modificationTimestamp", "_timestamp", "__createdBy"]})
+      replaceBody({dsl: query, "attributes":["_modificationTimestamp", "_timestamp"]})
     })
 
   return {

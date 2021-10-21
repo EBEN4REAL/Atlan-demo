@@ -196,7 +196,7 @@
         emits: ['entityPreview', 'firstCardReachedTop', 'bulkSelectChange'],
         setup(props, { emit }) {
             // data
-            const glossaryQualifiedName = computed(() => props.qualifiedName)
+            const glossaryQualifiedName = computed(() => props.qualifiedName ?? '')
 
             const searchQuery = ref<string>()
             const activeKey = ref(0)

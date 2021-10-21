@@ -63,7 +63,7 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [ASSIGN_TERM_LINKED_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),
     [BULK_LINK_TERMS]: () => getAPIPath('meta', `/glossary/terms/assignedEntities`),
     [UNLINK_TERM_ASSETS]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),
-    [GTC_SEARCH]: () => getAPIPath('meta', `/search/basic`),
+    [GTC_SEARCH]: () => getAPIPath('meta', `/search/indexsearch`),
     [GLOSSARY_LIST]: () => getAPIPath('meta', `/search/basic`),
 
 }

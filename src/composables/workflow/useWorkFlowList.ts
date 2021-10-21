@@ -2,18 +2,18 @@
 import { watch, ref, computed } from 'vue'
 import { Workflows } from '~/services/argo/api/workflow'
 
-export function useWorkflowSearchList(
-    immediate: boolean = true
-) {
+export function useWorkflowSearchList(immediate: boolean = true) {
     const params = ref({ limit: 10, offset: 0 })
-    const { data, error, isLoading, mutate } = Workflows.getWorkflows(
-        { immediate, options: {}, params }
-    )
+    const { data, error, isLoading, mutate } = Workflows.getWorkflows({
+        immediate,
+        options: {},
+        params,
+    })
 
     const workflowList = ref([])
     const totalCount = ref()
     watch(data, () => {
-        if (!data?.value?.records) return;
+        if (!data?.value?.records) return
         console.log('useWorkflowSearchList', data.value.records)
         totalCount.value = data.value.total_record
         workflowList.value.push(...data.value.records)
@@ -29,18 +29,22 @@ export function useWorkflowSearchList(
     const filterList = (text) =>
         workflowList.value.filter((wf) => wf.name.includes(text))
 
-    return { workflowList, error, totalCount, isLoading, loadMore, filterList, mutate }
+    return {
+        workflowList,
+        error,
+        totalCount,
+        isLoading,
+        loadMore,
+        filterList,
+        mutate,
+    }
 }
 
-export function useArchivedRunList(
-    workflowName,
-    immediate: boolean = true
-) {
-    const pathVariables = ref({
-        name: workflowName
-    })
-    const { data, error, isLoading, mutate } =
-        Workflows.getArchivedRunList(pathVariables, { immediate, options: {} })
+export function useArchivedRunList(filter, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } = Workflows.getArchivedRunList(
+        filter,
+        { immediate, options: {} }
+    )
 
     const runList = ref([])
     watch(data, () => {
@@ -49,8 +53,9 @@ export function useArchivedRunList(
     })
 
     const filterList = (text) =>
-        runList.value.filter((wf) => wf.name.toLowerCase().includes(text.toLowerCase()))
-
+        runList.value.filter((wf) =>
+            wf.name.toLowerCase().includes(text.toLowerCase())
+        )
 
     const reFetch = (name) => {
         pathVariables.value.name = name
@@ -60,18 +65,23 @@ export function useArchivedRunList(
     return { runList, error, isLoading, filterList, mutate, reFetch }
 }
 
-export function useWorkflowTemplates(
-    immediate: boolean = true
-) {
-    const params = ref({ limit: 10, offset: 0, labelSelector: "com.atlan.orchestration/verified=true" })
-    const { data, error, isLoading, mutate } =
-        Workflows.getWorkflowTemplates({ immediate, options: {}, params })
+export function useWorkflowTemplates(immediate: boolean = true) {
+    const params = ref({
+        limit: 10,
+        offset: 0,
+        labelSelector: 'com.atlan.orchestration/verified=true',
+    })
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowTemplates({
+        immediate,
+        options: {},
+        params,
+    })
 
     const workflowList = ref([])
     const totalCount = ref()
     const filter_record = ref()
     watch(data, () => {
-        if (!data?.value?.records) return;
+        if (!data?.value?.records) return
         console.log('useWorkflowTemplates', data.value.records)
         totalCount.value = data.value.total_record
         filter_record.value = data.value.filter_record
@@ -88,12 +98,21 @@ export function useWorkflowTemplates(
     const filterList = (text) =>
         workflowList.value.filter((wf) => wf.name.includes(text))
 
-    return { workflowList, loadMore, filter_record, totalCount, error, isLoading, filterList, mutate }
+    return {
+        workflowList,
+        loadMore,
+        filter_record,
+        totalCount,
+        error,
+        isLoading,
+        filterList,
+        mutate,
+    }
 }
 
-export function useWorkflowTemplateByName(name, immediate: boolean = true) {
+export function useWorkflowTemplateByName(filter, immediate: boolean = true) {
     const { data, error, isLoading, mutate } =
-        Workflows.getWorkflowTemplateByName(name, {
+        Workflows.getWorkflowTemplateByName(filter, {
             immediate,
             options: {},
         })
@@ -121,12 +140,14 @@ export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
     return { runDeets, error, isLoading, mutate }
 }
 
-export function useWorkflowByName(name, immediate: boolean = true) {
-    const { data, error, isLoading, mutate } =
-        Workflows.getWorkflowByName(name, {
+export function useWorkflowByName(filter, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowByName(
+        filter,
+        {
             immediate,
             options: {},
-        })
+        }
+    )
 
     return {
         workflow: data,
@@ -152,14 +173,19 @@ export function updateWorkflowByName(name, body, immediate: boolean = true) {
     }
 }
 
-
 export function getWorkflowConfigMap(name, immediate: boolean = true) {
-    const params = ref({ labelSelector: `com.atlan.orchestration/workflow-template-name=${name},com.atlan.orchestration/type=package` })
+    const params = ref({
+        labelSelector: `com.atlan.orchestration/workflow-template-name=${name},com.atlan.orchestration/type=package`,
+    })
     // const params = computed(() => ({
     //     'name': `${name.value}` // `com.atlan.orchestration/workflow-template-name=${label}`
     // }))
     // const params = ref({ labelSelector: "" })
-    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap({ immediate, options: {}, params })
+    const { data, error, isLoading, mutate } = Workflows.getWorkflowConfigMap({
+        immediate,
+        options: {},
+        params,
+    })
 
     const changeName = (n) => {
         params.value.labelSelector = `com.atlan.orchestration/workflow-template-name=${n},com.atlan.orchestration/type=package`
@@ -170,8 +196,11 @@ export function getWorkflowConfigMap(name, immediate: boolean = true) {
 }
 
 export function createWorkflow(body, immediate: boolean = true) {
-
-    const { data, error, isLoading, mutate } = Workflows.createWorkflow({ body, immediate, options: {} })
+    const { data, error, isLoading, mutate } = Workflows.createWorkflow({
+        body,
+        immediate,
+        options: {},
+    })
 
     return { data, error, isLoading, mutate }
 }

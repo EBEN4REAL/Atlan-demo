@@ -97,7 +97,7 @@
                 {
                     name: 'Run History',
                     component: 'runs',
-                    icon: 'RunHistory',
+                    icon: 'ActivityLogs',
                     tooltip: 'Runs History',
                 },
             ]

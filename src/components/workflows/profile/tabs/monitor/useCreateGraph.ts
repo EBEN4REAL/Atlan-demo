@@ -15,7 +15,7 @@ export default function useCreateGraph(
     graph.value = new Graph({
         container: graphContainer.value,
         grid: true,
-        background: { color: '#f8f8fd' },
+        background: { color: '#ffffff' },
         scroller: {
             enabled: true,
             pageVisible: false,
@@ -24,6 +24,7 @@ export default function useCreateGraph(
         },
         mousewheel: {
             minScale: 0.5,
+            zoomAtMousePosition: true,
             maxScale: 1.2,
             enabled: true,
             global: true,
@@ -32,9 +33,9 @@ export default function useCreateGraph(
         minimap: {
             enabled: true,
             container: minimapContainer.value,
-            width: 200,
+            width: 270,
             height: 160,
-            padding: 10,
+            padding: 1,
             graphOptions: {
                 async: true,
                 getCellView(cell) {
@@ -51,6 +52,7 @@ export default function useCreateGraph(
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         ranksep: 35,
+        nodesep: 60,
     })
 
     return {

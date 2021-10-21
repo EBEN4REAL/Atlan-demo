@@ -1,7 +1,26 @@
 <template>
-    <div class="flex w-full h-full">
+    <div
+        v-if="
+            workflowList &&
+            workflowList.length <= 0 &&
+            !isLoading &&
+            !isFilterAppplied
+        "
+        class="h-full"
+    >
+        <EmptyState
+            desc="Create a workflow from a workflow template to bring in data into
+            Atlan, run cron jobs and much more."
+            headline="Create a workflow!"
+            @event="$router.push('/workflows/new')"
+            buttonText="Get Started"
+            :EmptyScreen="EmptyScreen"
+            buttonIcon="ArrowRight"
+        />
+    </div>
+    <div v-else class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
             <WorkflowFilters
                 :ref="
@@ -34,7 +53,7 @@
                     </template> -->
                         </SearchAndFilter>
                     </div>
-                    <AtlanBtn
+                    <AtlanButton
                         class="ml-2"
                         color="secondary"
                         padding="compact"
@@ -44,27 +63,10 @@
                             <AtlanIcon icon="Add" class="" />
                             <div>New Workflow</div>
                         </div>
-                    </AtlanBtn>
+                    </AtlanButton>
                 </div>
 
-                <div
-                    v-if="
-                        workflowList && workflowList.length <= 0 && !isLoading
-                    "
-                    class="flex flex-col items-center mt-10"
-                >
-                    <img
-                        :src="emptyScreen"
-                        alt="No Workflows"
-                        class="w-2/5 m-auto mb-4"
-                    />
-                    <span class="text-gray-500">No Workflow found</span>
-                    <a-button @click="handleClearFiltersFromList"
-                        >Clear filters</a-button
-                    >
-                </div>
                 <WorkflowList
-                    v-else
                     v-model:autoSelect="autoSelect"
                     class="pt-2 bg-white"
                     :list="workflowList"
@@ -75,6 +77,7 @@
                 ></WorkflowList>
             </div>
         </div>
+
         <div class="border-l border-gray-300 preview-container">
             <DiscoveryPreview v-if="selected" :selected-workflow="selected" />
         </div>
@@ -83,9 +86,10 @@
 
 <script lang="ts">
     import { useDebounceFn } from '@vueuse/core'
-    import { computed, defineComponent, ref, toRefs, Ref } from 'vue'
+    import { computed, defineComponent, ref, Ref } from 'vue'
     import { useRouter } from 'vue-router'
-    import emptyScreen from '~/assets/images/empty_search.png'
+    import EmptyScreen from '~/assets/images/workflows/emptyDiscovery.png'
+    import EmptyState from '~/components/common/empty/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '@/workflows/discovery/list/preference.vue'
     import WorkflowList from '@/workflows/discovery/list/workflowList.vue'
@@ -97,7 +101,7 @@
     import { transformToFilters } from '~/components/workflows/discovery/filters/useFilterTransform'
 
     import { useWorkflowSearchList } from '~/composables/workflow/useWorkFlowList'
-    import AtlanBtn from '~/components/UI/button.vue'
+    import AtlanButton from '~/components/UI/button.vue'
     import DiscoveryPreview from '@/workflows/discovery/preview/preview.vue'
 
     import { List as defaultfiltersList } from '@/workflows/discovery/filters/filters'
@@ -105,10 +109,11 @@
     export default defineComponent({
         name: 'WorkflowDiscovery',
         components: {
+            EmptyState,
             WorkflowFilters,
             WorkflowList,
             DiscoveryPreview,
-            AtlanBtn,
+            AtlanButton,
             SearchAndFilter,
             Preferences,
         },
@@ -155,6 +160,7 @@
                 filterList,
                 totalCount,
                 loadMore,
+                isReady,
                 mutate,
                 filter_record,
             } = useWorkflowSearchList(false)
@@ -187,11 +193,15 @@
                 router.push(`/workflows?${routerQuery}`)
             }
 
+            const isFilterAppplied = ref(false)
+
             const shootQuery = () => {
                 // console.log(filters.value)
                 console.log({ ...AllFilters.value.facetsFilters })
-
-                filterList(transformToFilters(AllFilters.value))
+                console.log('filters', transformToFilters(AllFilters.value))
+                const filters = transformToFilters(AllFilters.value)
+                isFilterAppplied.value = !!Object?.keys(filters?.filter).length
+                filterList(filters)
             }
             if (!workflowList.value.length) shootQuery()
 
@@ -235,6 +245,7 @@
             }
 
             return {
+                isFilterAppplied,
                 handleClearFiltersFromList,
                 autoSelect,
                 workflowFilterRef,
@@ -243,11 +254,12 @@
                 workflowList,
                 isLoadMore,
                 loadMore,
-                emptyScreen,
+                EmptyScreen,
                 handleSearchChange,
                 handlePreview,
                 queryText,
                 isLoading,
+                isReady,
                 dynamicSearchPlaceholder,
                 placeholderLabel,
                 filters,

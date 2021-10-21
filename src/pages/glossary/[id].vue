@@ -111,18 +111,15 @@
                 :glossaryQualifiedName="glossary?.attributes?.qualifiedName"
                 :visible="addTermModalOpen"
             >
-                <template #header>
-                    <ModalHeader
-                        :entity="glossary"
-                        entity-to-add="term"
-                    />
+                <!-- <template #header>
+                    <ModalHeader :entity="glossary" entity-to-add="term" />
                 </template>
                 <template #trigger>
                     <div class="flex items-center">
                         <AtlanIcon icon="Term" class="m-0 mr-2" />
                         <p class="p-0 m-0">Create New Term</p>
                     </div>
-                </template>
+                </template> -->
             </AddGtcModal>
         </div>
     </div>
@@ -179,7 +176,7 @@
             BulkNotification,
             NoAccessPage,
             AddGtcModal,
-            ModalHeader
+            ModalHeader,
         },
         props: {
             id: {
@@ -193,8 +190,12 @@
             const router = useRouter()
 
             const guid = toRef(props, 'id')
-            const currentTab = ref(router.currentRoute.value.query.tab === 'terms' ? '2' : '1')
-            const addTermModalOpen = ref(router.currentRoute.value.query.cta === 'addTerm')
+            const currentTab = ref(
+                router.currentRoute.value.query.tab === 'terms' ? '2' : '1'
+            )
+            const addTermModalOpen = ref(
+                router.currentRoute.value.query.cta === 'addTerm'
+            )
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
@@ -309,7 +310,7 @@
                 handleCloseBulk,
                 store,
                 userHasAccess,
-                addTermModalOpen
+                addTermModalOpen,
             }
         },
     })

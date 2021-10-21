@@ -1,14 +1,14 @@
 <template>
-    <div ref="setupContainer" class="setup">
+    <div ref="monitorContainer" class="monitor">
         <!-- Graph Container -->
         <div
             ref="graphContainer"
             style="width: calc(100vw + 45px); height: 1000px"
         ></div>
 
-        <!-- Setup Controls -->
+        <!-- Monitor Controls -->
         <div
-            class="setup-control"
+            class="monitor-control"
             :class="isFullscreen ? 'bottom-7' : 'bottom-44'"
         >
             <!-- Minimap Container -->
@@ -22,33 +22,12 @@
                 <div>
                     <a-tooltip placement="top">
                         <template #title>
-                            <span>run workflow</span>
-                        </template>
-                        <AtlanIcon icon="Play" class="outline-none"></AtlanIcon>
-                    </a-tooltip>
-                </div>
-
-                <div>
-                    <a-tooltip placement="top">
-                        <template #title>
-                            <span>schedule workflow</span>
+                            <span>retry</span>
                         </template>
 
                         <AtlanIcon
-                            icon="Schedule"
+                            icon="Retry"
                             class="outline-none"
-                        ></AtlanIcon>
-                    </a-tooltip>
-                </div>
-                <div>
-                    <a-tooltip placement="top">
-                        <template #title>
-                            <span>delete workflow</span>
-                        </template>
-
-                        <AtlanIcon
-                            icon="Delete"
-                            class="text-red-400 outline-none"
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
@@ -72,6 +51,20 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
+
+                <div>
+                    <a-tooltip placement="top">
+                        <template #title>
+                            <span>recenter</span>
+                        </template>
+
+                        <AtlanIcon
+                            icon="Recenter"
+                            class="outline-none"
+                        ></AtlanIcon>
+                    </a-tooltip>
+                </div>
+
                 <div @click="onFullscreen()">
                     <a-tooltip placement="top">
                         <template #title>
@@ -81,8 +74,8 @@
                         </template>
 
                         <AtlanIcon
-                            icon="FullScreenBoth"
-                            class="outline-none"
+                            icon="FullScreen"
+                            class="text-gray-500 outline-none"
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
@@ -129,7 +122,7 @@
     import useTransformGraph from './useTransformGraph'
 
     export default defineComponent({
-        name: 'SetupGraph',
+        name: 'MonitorGraph',
         props: {
             graphData: {
                 type: Object,
@@ -140,7 +133,7 @@
             /** DATA */
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
-            const setupContainer = ref(null)
+            const monitorContainer = ref(null)
             const highlightLoadingCords = ref({})
             const graph = ref(null)
             const { graphData } = toRefs(props)
@@ -154,7 +147,7 @@
             const { zoom, fullscreen } = useTransformGraph(graph, currZoom)
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
-                fullscreen(setupContainer)
+                fullscreen(monitorContainer)
             }
 
             // initialize
@@ -203,16 +196,15 @@
                 { deep: true }
             )
 
+            /** LIFECYCLE */
             onMounted(() => {
-                // watch(graphData, () => {
                 if (graph.value) graph.value.dispose()
                 initialize()
-                // })
             })
 
             return {
                 minimapContainer,
-                setupContainer,
+                monitorContainer,
                 graphContainer,
                 currZoom,
                 showMinimap,
@@ -225,7 +217,7 @@
 </script>
 
 <style lang="less">
-    .setup {
+    .monitor {
         // Control
         &-control {
             @apply absolute bg-white;
@@ -240,10 +232,10 @@
                 margin-right: 1rem;
                 cursor: pointer;
 
-                &:nth-child(3) {
+                &:nth-child(1) {
                     margin-right: 0.5rem;
                 }
-                &:nth-child(4) {
+                &:nth-child(2) {
                     cursor: auto;
                 }
 
@@ -267,18 +259,29 @@
 
         &-node {
             border-radius: 10px;
-            height: 40px;
-            width: 180px;
+            height: 55px;
+            width: 190px;
             display: inline-flex;
-            justify-content: center;
+            // justify-content: center;
             align-items: center;
             background-color: #f3f3f3;
-            font-size: 20px;
+            font-size: 16px;
             color: #3e4359;
             border: 1px solid #e6e6eb;
+            padding: 0 0.5rem;
 
-            &.isSelectedNode {
-                border: 2px solid #5277d7;
+            &.Succeeded {
+                background-color: #f2ffe7;
+                border: 1.5px solid #81c1b3;
+            }
+            &.Failed {
+                background-color: #ffede7;
+                border: 1.5px solid #c18181;
+            }
+            &.Skipped,
+            &.Omitted {
+                background-color: #f3f3f3;
+                border: 1.5px solid #e6e6eb;
             }
         }
     }

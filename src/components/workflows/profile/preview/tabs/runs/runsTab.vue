@@ -6,7 +6,7 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="runList?.length">
+    <template v-else-if="runList.records.length">
         <div class="flex px-4 mt-4 mb-4">
             <a-input-search
                 v-model:value="searchText"
@@ -20,22 +20,44 @@
             </a-button>
         </div>
         <RunCard
-            v-for="(r, x) in searchText ? filterList(searchText) : runList"
+            v-for="(r, x) in searchText
+                ? filterList(searchText)
+                : runList.records"
             :key="x"
             :r="r"
-            :curr-run-id="currRunId"
+            :curr-run-name="currRunName"
             :is-loading="isLoadingRunGraph"
             :select-enabled="true"
             @select="loadRunGraph"
         />
     </template>
-    <EmptyView v-else empty="No Runs Available" />
+    <EmptyView
+        v-else
+        :desc="
+            !error
+                ? 'There are no runs for this workflow. '
+                : 'Sorry, we couldn’t find the workflow you were looking for.'
+        "
+        :EmptyScreen="EmptyScreen"
+        descClass="text-center w-56"
+        buttonIcon="ArrowRight"
+        :buttonText="error ? '' : 'Run Workflow'"
+    />
 </template>
 
 <script lang="ts">
-    import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
+    import {
+        watch,
+        defineComponent,
+        PropType,
+        toRefs,
+        ref,
+        computed,
+    } from 'vue'
+    import { useRoute } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
@@ -54,19 +76,27 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const route = useRoute()
             const { selectedWorkflow: item } = toRefs(props)
 
             const searchText = ref('')
-
+            const id = computed(() => route?.params?.id || '')
+            const filter = {
+                labels: {
+                    $elemMatch: {
+                        'workflows.argoproj.io/workflow-template': `${id.value}`,
+                    },
+                },
+            }
             const { runList, error, isLoading, reFetch, filterList } =
-                useArchivedRunList('', false)
+                useArchivedRunList(JSON.stringify(filter), true)
 
             const isLoadingRunGraph = ref(false)
-            const currRunId = ref('')
+            const currRunName = ref('')
 
             const loadRunGraph = (id) => {
-                if (currRunId.value === id) return
-                currRunId.value = id
+                if (currRunName.value === id) return
+                currRunName.value = id
                 isLoadingRunGraph.value = true
                 emit('change', id)
                 setTimeout(() => {
@@ -75,21 +105,21 @@
             }
 
             watch(runList, (newVal) => {
-                if (newVal) currRunId.value = newVal[0].uid
+                if (newVal) currRunName.value = newVal.records[0].name
             })
 
-            watch(
-                item,
-                (n, o) => {
-                    console.log(n, o)
-                    if (!o) reFetch(n.name)
-                    else if (n.name !== o.name) reFetch(n.name)
-                },
-                {
-                    immediate: true,
-                    deep: true,
-                }
-            )
+            // watch(
+            //     item,
+            //     (n, o) => {
+            //         console.log(n, o)
+            //         if (!o) reFetch(n.name)
+            //         else if (n.name !== o.name) reFetch(n.name)
+            //     },
+            //     {
+            //         immediate: true,
+            //         deep: true,
+            //     }
+            // )
 
             return {
                 filterList,
@@ -101,7 +131,8 @@
                 emit,
                 loadRunGraph,
                 isLoadingRunGraph,
-                currRunId,
+                currRunName,
+                EmptyScreen,
             }
         },
     })

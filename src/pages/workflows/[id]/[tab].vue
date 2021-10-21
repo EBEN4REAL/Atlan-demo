@@ -163,7 +163,11 @@
                 return {}
             })
 
-            const templateName = computed(() => data.value?.asset?.name)
+            const templateName = computed(
+                () =>
+                    data.value?.asset?.workflowtemplate.spec.templates[0].dag
+                        .tasks[0].templateRef.name || ''
+            )
 
             /** METHODS */
             // selectTab
@@ -177,19 +181,18 @@
 
             // handlePreview
             const handlePreview = (item, is) => {
-                if (is === 'dag') {
-                    selectedDag.value = item
-                } else selected.value = item
+                if (is === 'dag') selectedDag.value = item
+                else selected.value = item
             }
 
             // fetchUIConfig
             const fetchUIConfig = () => {
-                if (!templateName.value) return
+                if (!workflowTemplate.value) return
                 const {
                     data: config,
                     error: e,
                     isLoading: l,
-                } = getWorkflowConfigMap(templateName.value)
+                } = getWorkflowConfigMap(workflowTemplate.value)
 
                 watch(config, (v) => {
                     if (config.value?.items)
@@ -217,11 +220,8 @@
                 )
 
                 watch(response, (v) => {
-                    console.log('tab v:', v)
-                    // workflowTemplate.value =
-                    //     v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
                     workflowTemplate.value =
-                        v.records[0].workflowtemplate.spec.workflowTemplateRef.name
+                        v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
                     data.value.asset = v.records[0]
                     data.value.error = error.value
                     fetchUIConfig()

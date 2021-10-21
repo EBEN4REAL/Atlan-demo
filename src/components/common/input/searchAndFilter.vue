@@ -50,6 +50,7 @@
                     <slot name="buttonAggregation" />
                 </button>
             </a-popover>
+            <slot name="tabSelector" />
         </div>
     </div>
 </template>

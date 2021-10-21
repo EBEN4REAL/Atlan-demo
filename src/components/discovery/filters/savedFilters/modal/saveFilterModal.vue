@@ -75,7 +75,7 @@
 
     import { message } from 'ant-design-vue'
     import whoami from '~/composables/user/whoami'
-    import { addSavedFilter, editSavedFilter } from './useSavedFilters'
+    import { addSavedFilter, editSavedFilter } from '../useSavedFilters'
     import { Components } from '~/api/atlas/client'
     import EditSavedFilter from './editSavedFilter.vue'
 

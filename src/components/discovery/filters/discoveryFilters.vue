@@ -15,7 +15,7 @@
                 >
                     <template #trigger>
                         <div
-                            class="mr-3 text-sm font-medium rounded cursor-pointer text-primary hover:text-primary-focus"
+                            class="mr-3 text-sm font-medium rounded cursor-pointer  text-primary hover:text-primary-focus"
                         >
                             Save
                         </div>
@@ -23,7 +23,7 @@
                 </SaveFilterModal>
             </div>
             <div
-                class="mr-3 text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
+                class="mr-3 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -136,7 +136,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -227,7 +227,7 @@
                 () => import('./savedFilters/viewSavedFilters.vue')
             ),
             SaveFilterModal: defineAsyncComponent(
-                () => import('./savedFilters/saveFilterModal.vue')
+                () => import('./savedFilters/modal/saveFilterModal.vue')
             ),
         },
         props: {

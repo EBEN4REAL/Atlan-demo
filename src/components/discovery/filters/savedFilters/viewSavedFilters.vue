@@ -1,6 +1,6 @@
 <template>
     <div class="pb-6 mt-1">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between p-4 mb-3">
             <SearchAndFilter
                 v-model:value="queryText"
                 placeholder="Search"
@@ -8,30 +8,45 @@
                 @change="handleSearch"
                 size="minimal"
             >
+                <template #tabSelector> </template>
             </SearchAndFilter>
-            <a-button-group class="mb-2 text-xs rounded shadow">
-                <a-button
-                    :class="
-                        activeTab === 'personal'
-                            ? 'text-primary font-bold'
-                            : 'text-gray-500'
-                    "
-                    @click="setActiveTab('personal')"
-                >
-                    Personal
-                </a-button>
 
-                <a-button
-                    :class="
-                        activeTab === 'all'
-                            ? 'text-primary font-bold'
-                            : 'text-gray-500'
-                    "
-                    @click="setActiveTab('all')"
-                    >All</a-button
-                >
-            </a-button-group>
-            -->
+            <a-button
+                class="
+                    px-1.5
+                    text-xs
+                    bg-transparent
+                    border-t-0 border-l-0 border-r-0 border-gray-300
+                    rounded-none
+                    mt-1
+                "
+                :class="
+                    activeTab === 'personal'
+                        ? 'text-gray-700 font-bold border-b-2 border-primary'
+                        : 'text-gray-500 border-b'
+                "
+                @click="setActiveTab('personal')"
+            >
+                Personal
+            </a-button>
+
+            <a-button
+                class="
+                    px-1.5
+                    text-xs
+                    bg-transparent
+                    border-t-0 border-l-0 border-r-0 border-gray-300
+                    rounded-none
+                    mt-1
+                "
+                :class="
+                    activeTab === 'all'
+                        ? 'text-gray-700 font-bold border-b-2 border-primary'
+                        : 'text-gray-500 border-b'
+                "
+                @click="setActiveTab('all')"
+                >All</a-button
+            >
         </div>
         <div class="w-full">
             <template v-if="activeTab === 'personal'">

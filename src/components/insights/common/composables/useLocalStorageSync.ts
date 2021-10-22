@@ -22,6 +22,7 @@ export function useLocalStorageSync() {
                 t.playground.resultsPane.result.buttonDisable = undefined
                 t.playground.resultsPane.result.runQueryId = undefined
                 t.playground.resultsPane.result.eventSourceInstance = undefined
+                t.assetSidebar.isVisible = false
                 return t
             })
             localStorage.setItem(

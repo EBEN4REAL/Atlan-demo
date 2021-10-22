@@ -141,7 +141,11 @@
             } = useSpiltPanes()
             const route = useRoute()
             // TODO: will be used for HOTKEYs
-            const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
+            const {
+                explorerPaneToggle,
+                resultsPaneSizeToggle,
+                assetSidebarToggle,
+            } = useHotKeys()
             const { editorConfig } = useEditor()
             const { editorHoverConfig } = useEditor()
             const { fullSreenState } = useFullScreen()
@@ -231,14 +235,28 @@
                 }
             })
             const _keyListener = (e) => {
-                if (e.key === 'b' && e.ctrlKey) {
-                    e.preventDefault()
-                    explorerPaneToggle(explorerPaneSize)
+                if (e.key === 'b') {
+                    if (e.metaKey || e.ctrlKey) {
+                        e.preventDefault()
+                        explorerPaneToggle(explorerPaneSize)
+                    }
                     //prevent the default action
                 }
-                if (e.key === 'j' && e.ctrlKey) {
-                    e.preventDefault()
-                    resultsPaneSizeToggle(outputPaneSize)
+                if (e.key === 'j') {
+                    if (e.metaKey || e.ctrlKey) {
+                        e.preventDefault()
+                        resultsPaneSizeToggle(outputPaneSize)
+                    }
+                    //prevent the default action
+                }
+                if (e.key === 'm') {
+                    if (e.metaKey || e.ctrlKey) {
+                        e.preventDefault()
+                        if (activeInlineTab.value) {
+                            activeInlineTab.value.assetSidebar.isVisible =
+                                !activeInlineTab.value.assetSidebar.isVisible
+                        }
+                    }
                     //prevent the default action
                 }
             }
@@ -430,6 +448,7 @@
     }
     .explorer_splitpane {
         width: 20.75rem;
+        background-color: white;
     }
     // .sidebar-nav-icon:first-child {
     //     @apply pt-2 !important;

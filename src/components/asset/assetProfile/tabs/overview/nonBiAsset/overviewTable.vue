@@ -7,7 +7,7 @@
         ><span>Getting sample data</span>
     </div>
     <div v-else class="w-full p-0 m-0 border rounded border-gray-light">
-        <table class="relative block w-full p-0 m-0 overflow-auto h-96">
+        <table class="relative w-full p-0 m-0 overflow-auto table_data h-96">
             <thead>
                 <tr>
                     <th
@@ -32,8 +32,8 @@
             <tbody>
                 <tr v-for="(row, index) in results" :key="index">
                     <td
-                        v-for="(rowData, key) in row"
-                        :key="key"
+                        v-for="(rowData, index) in row"
+                        :key="index"
                         class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
                     >
                         <div v-if="key == 'hash_index'">{{ rowData }}</div>
@@ -153,6 +153,13 @@
 </script>
 
 <style lang="less" scoped>
+    .table_data {
+        tr {
+            th:first-child {
+                position: sticky !important;
+            }
+        }
+    }
     table {
         td,
         th {
@@ -166,7 +173,7 @@
         }
 
         td:first-child,
-        th:first-child {
+        th {
             @apply bg-gray-100 text-center !important;
             width: 35px;
             min-width: 35px;

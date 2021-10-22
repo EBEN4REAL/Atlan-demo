@@ -8,7 +8,7 @@
                 v-if="activeInlineTab && activeInlineTab?.assetSidebar"
                 class="font-bold text-gray"
             >
-                Empty Screen
+                Unsaved Tab Screen
             </span>
             <span
                 class="flex items-center justify-center"

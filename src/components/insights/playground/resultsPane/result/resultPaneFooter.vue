@@ -1,6 +1,7 @@
 <template>
     <div
-        class="left-0 flex w-full h-8 py-1 text-xs bg-white border-t border-b bottom_footer"
+        class="relative flex h-8 py-1 text-xs bg-white border-t border-b  bottom_footer"
+        style="max-height: 8%"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
             isQueryRunning === 'success'

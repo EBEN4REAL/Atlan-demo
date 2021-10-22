@@ -63,7 +63,12 @@
             </div>
             <div
                 v-if="!searchQuery?.length"
-                class="relative w-full h-full px-4 pt-0 overflow-y-auto scrollable-container"
+                class="relative w-full h-full px-4 pt-0 overflow-y-auto"
+                :style="
+                    fullSreenState
+                        ? 'height: calc( 100vh - 140px )'
+                        : 'height: calc( 100vh - 40px )'
+                "
             >
                 <!--explorer pane start -->
                 <div
@@ -106,7 +111,16 @@
             </div>
             <div
                 v-else
+<<<<<<< HEAD
                 class="relative w-full h-full p-3 pt-0 overflow-y-auto scrollable-container"
+=======
+                class="relative w-full h-full p-3 pt-0 pl-6 overflow-y-auto"
+                :style="
+                    fullSreenState
+                        ? 'height: calc( 100vh- 140px )'
+                        : 'height: calc( 100vh- 40px )'
+                "
+>>>>>>> c2a98105a82ac46d3ac66a8dd1fa0199cda19111
             >
                 <div v-if="searchLoading" class="pl-6">
                     <LoadingView />
@@ -127,15 +141,19 @@
                         />
                     </div>
                 </div>
-                <div v-else-if="!searchResults?.entities" class="flex flex-col items-center justify-center mt-14">
+                <div
+                    v-else-if="!searchResults?.entities"
+                    class="flex flex-col items-center justify-center mt-14"
+                >
                     <AtlanIcon
                         icon="EmptySearchQuery"
                         class="h-32 no-svaved-query-icon text-primary"
                     />
-                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                    <p
+                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
                     >
-                        Sorry, we couldn’t find<br /> the query you were looking for
+                        Sorry, we couldn’t find<br />
+                        the query you were looking for
                     </p>
                 </div>
             </div>
@@ -198,6 +216,7 @@
         setup(props, { emit }) {
             const router = useRouter()
             const showSaveQueryModal: Ref<boolean> = ref(false)
+            const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const saveQueryLoading = ref(false)
             const searchQuery = ref('')
 
@@ -565,6 +584,7 @@
             provide('refetchParentNode', refetchParentNode)
 
             return {
+                fullSreenState,
                 saveModalRef,
                 saveQueryLoading,
                 showSaveQueryModal,

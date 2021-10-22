@@ -7,13 +7,13 @@
         ><span>Getting sample data</span>
     </div>
     <div v-else class="w-full p-0 m-0 border rounded border-gray-light">
-        <table class="relative block w-full p-0 m-0 overflow-auto h-96">
+        <table class="relative w-full p-0 m-0 overflow-auto table_data h-96">
             <thead>
                 <tr>
                     <th
                         v-for="(col, index) in tableColumns"
                         :key="index"
-                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border border-gray-light"
+                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border  border-gray-light"
                     >
                         <div class="flex">
                             <component
@@ -34,7 +34,7 @@
                     <td
                         v-for="(rowData, index) in row"
                         :key="index"
-                        class="px-4 py-2 text-xs text-gray-700 bg-white border border-gray-light"
+                        class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
                     >
                         <Tooltip
                             :tooltip-text="rowData"
@@ -49,11 +49,12 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent,
+    import {
+        defineComponent,
         watch,
         ref,
         // inject,
-        // computed 
+        // computed
     } from 'vue'
     import { storeToRefs } from 'pinia'
 
@@ -81,7 +82,7 @@
             // store
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
-            
+
             const { connectionQualifiedName, databaseName, schemaName, name } =
                 { ...selectedAsset.value.attributes }
 
@@ -150,6 +151,13 @@
 </script>
 
 <style lang="less" scoped>
+    .table_data {
+        tr {
+            th:first-child {
+                position: sticky !important;
+            }
+        }
+    }
     table {
         td,
         th {
@@ -163,7 +171,7 @@
         }
 
         td:first-child,
-        th:first-child {
+        th {
             @apply bg-gray-100 text-center !important;
             width: 35px;
             min-width: 35px;

@@ -43,6 +43,7 @@
                 Overview
             </div>
             <div
+                v-if="Object.values(overview).length"
                 class="w-full px-5 mt-2 overflow-y-auto"
                 style="max-height: calc(100vh - 14rem)"
             >
@@ -57,6 +58,14 @@
                     </div>
                 </span>
             </div>
+            <EmptyView
+                v-else
+                desc="
+            No information available for this workflow template
+        "
+                descClass="text-center w-56 mb-24"
+                :EmptyScreen="EmptyScreen"
+            />
         </template>
     </div>
     <!-- <div class=""> -->
@@ -95,11 +104,14 @@
     } from '~/composables/workflow/useWorkFlowList'
     import AtlanButton from '@/UI/button.vue'
     import PreviewHeader from '@/workflows/shared/previewHeader.vue'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
+    import EmptyView from '@common/empty/index.vue'
 
     export default defineComponent({
         name: 'SetupWorkflowPreview',
         components: {
             AtlanButton,
+            EmptyView,
             ErrorView,
             Loader,
             PreviewHeader,
@@ -133,18 +145,39 @@
                     name: workflowName.value,
                 },
                 spec: {
-                    arguments: {
-                        parameters: [
-                            ...selectedWorkflow.value?.workflowtemplate?.spec?.arguments?.parameters
-                                // eslint-disable-next-line no-prototype-builtins
-                                .filter((p) => !p.hasOwnProperty('value'))
-                                .map((e) => ({ name: e.name, value: '' })),
-                        ],
-                    },
-                    workflowTemplateRef: {
-                        name: selectedWorkflow.value.name,
-                        clusterScope: true,
-                    },
+                    templates: [
+                        {
+                            name: 'main',
+                            dag: {
+                                tasks: [
+                                    {
+                                        name: 'run',
+                                        arguments: {
+                                            parameters: [
+                                                ...selectedWorkflow.value?.workflowtemplate.spec.templates[0]?.inputs?.parameters
+                                                    // eslint-disable-next-line no-prototype-builtins
+                                                    ?.filter(
+                                                        (p) =>
+                                                            !p.hasOwnProperty(
+                                                                'value'
+                                                            )
+                                                    )
+                                                    ?.map((e) => ({
+                                                        name: e.name,
+                                                        value: '',
+                                                    })),
+                                            ],
+                                        },
+                                        templateRef: {
+                                            name: selectedWorkflow.value.name,
+                                            template: 'main',
+                                            clusterScope: true,
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    ],
                 },
             }))
 
@@ -228,6 +261,7 @@
                 configMapError,
                 configLoading,
                 body,
+                EmptyScreen,
                 images,
                 visible,
                 workflowName,

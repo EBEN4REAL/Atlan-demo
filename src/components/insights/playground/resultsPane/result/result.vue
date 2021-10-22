@@ -29,7 +29,8 @@
                 <thead>
                     <tr>
                         <th
-                            class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            class="sticky top-0 w-8 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            style="width: 32px; min-width: 32px; z-index: 4"
                         >
                             #
                         </th>
@@ -39,6 +40,7 @@
                                 .editor.columnList"
                             :key="index"
                             class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            style="z-index: 3"
                         >
                             {{ col.title }}
                         </th>
@@ -52,7 +54,8 @@
                         :key="index"
                     >
                         <td
-                            class="px-4 py-2 text-xs text-gray-700 truncate bg-white border  border-gray-light"
+                            class="sticky left-0 w-8 px-4 py-2 text-xs text-gray-700 truncate bg-white border  border-gray-light"
+                            style="width: 32px; min-width: 32px; z-index: 2"
                         >
                             {{ index + 1 }}
                         </td>
@@ -92,10 +95,9 @@
                 "
             />
 
-            <!--  -->
             <!-- Output pane footer -->
 
-            <ResultPaneFooter />
+            <!-- <ResultPaneFooter /> -->
         </div>
     </div>
 </template>
@@ -201,18 +203,11 @@
     })
 </script>
 <style lang="less" scoped>
-    .table-height {
-        height: 80%;
-    }
-
     .placeholder {
         background-color: #f4f4f4;
     }
     .table_height {
         height: 100%;
-    }
-    .bottom_footer {
-        height: 8%;
     }
 
     @font-face {

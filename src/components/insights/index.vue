@@ -1,10 +1,10 @@
 <template>
     <div class="flex h-full" id="fullScreenId">
         <!--Sidebar navigation pane start -->
-        <div class="bg-white border-r sidebar-nav">
+        <div class="bg-white sidebar-nav" :class="{'border-r': explorerPaneSize>0 }">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
+                    class="relative flex flex-col items-center text-xs sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -313,7 +313,7 @@
                 -webkit-transition: background-color 0.3s;
                 transition: background-color 0.3s;
                 margin-left: 0px;
-                transform: translateY(-50%);
+                transform: translateY(-50%) translateX(-35%);
                 width: 2px;
                 height: 101%;
                 @apply z-50 !important;

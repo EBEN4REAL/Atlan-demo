@@ -59,6 +59,8 @@ export const createAtlanTheme = (monaco: any) => {
             { token: 'operator.swift', foreground: '5277D7' },
             { token: 'predefined.sql', foreground: '5277D7' },
         ],
-        colors: {},
+        colors: {
+            'editorLineNumber.foreground': '#A5A5A5',
+        },
     })
 }

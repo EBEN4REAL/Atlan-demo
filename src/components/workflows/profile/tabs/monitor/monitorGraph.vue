@@ -262,7 +262,6 @@
             height: 55px;
             width: 190px;
             display: inline-flex;
-            // justify-content: center;
             align-items: center;
             background-color: #f3f3f3;
             font-size: 16px;

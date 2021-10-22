@@ -7,7 +7,7 @@
         :closable="false"
         :mask="false"
         :class="$style.drawerStyle"
-        :width="420"
+        :width="460"
     >
         <div class="flex flex-col h-full">
             <div class="flex items-center justify-between">
@@ -15,7 +15,7 @@
                     >Select Assets</span
                 >
                 <AtlanBtn
-                    class="ml-auto mr-2"
+                    class="ml-auto mr-2 border-none"
                     size="sm"
                     padding="compact"
                     color="secondary"
@@ -24,25 +24,44 @@
                     <AtlanIcon icon="Cross" class="-mx-1" />
                 </AtlanBtn>
             </div>
-            <MinimalTab v-model:active="activeTab" :data="tabConfig" />
 
-            <template v-if="activeTab === 'tree'">
-                <span class="mx-4 mt-4 text-base font-bold text-gray-500"
-                    >Browse from your assets</span
-                >
-                <div class="h-full p-4 overflow-y-auto">
-                    <AssetBrowserTree
-                        v-model:assets="checkedKeys"
+            <RaisedTab
+                class="mt-3 ml-4 mr-auto"
+                v-model:active="activeTab"
+                :data="tabConfig"
+            />
+            <a-divider class="my-4" />
+
+            <keep-alive>
+                <template v-if="activeTab === 'tree'">
+                    <span class="mx-4 mt-2 text-base font-bold text-gray-500"
+                        >Browse from your assets</span
+                    >
+                    <div class="h-full p-4 overflow-y-auto">
+                        <AssetBrowserTree
+                            v-model:assets="checkedKeys"
+                            :connectionQfName="connectionQfName"
+                        />
+                    </div>
+                </template>
+                <template v-else-if="activeTab === 'list'">
+                    <span class="mx-4 mt-2 text-base font-bold text-gray-500"
+                        >Search from your assets</span
+                    >
+                    <AssetsWrapper :dataMap="filterConfig" />
+                </template>
+                <template v-else-if="activeTab === 'custom'">
+                    <span class="mx-4 mt-2 text-base font-bold text-gray-500"
+                        >Select assets matching
+                    </span>
+                    <CustomAssetSelector
+                        class="h-full py-4"
+                        v-model:assets="regexKeys"
                         :connectionQfName="connectionQfName"
                     />
-                </div>
-            </template>
-            <template v-else-if="activeTab === 'list'">
-                <span class="mx-4 mt-4 text-base font-bold text-gray-500"
-                    >Search from your assets</span
-                >
-                <AssetsWrapper :dataMap="filterConfig" />
-            </template>
+                </template>
+            </keep-alive>
+
             <div class="flex items-center justify-end m-2 gap-x-2">
                 <AtlanBtn
                     size="sm"
@@ -69,13 +88,20 @@
         watch,
     } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import MinimalTab from '@/UI/minimalTab.vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
+    import CustomAssetSelector from './customAssetSelector.vue'
     import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
-        components: { AtlanBtn, AssetBrowserTree, MinimalTab, AssetsWrapper },
+        components: {
+            AtlanBtn,
+            AssetBrowserTree,
+            RaisedTab,
+            AssetsWrapper,
+            CustomAssetSelector,
+        },
         props: {
             connectionQfName: {
                 type: String,
@@ -104,9 +130,8 @@
 
             // Asset related stuff
             const checkedKeys = ref([] as string[])
-            watch(assets, () => (checkedKeys.value = [...assets.value]), {
-                immediate: true,
-            })
+            const regexKeys = ref([] as string[])
+
             function saveAssets() {
                 // TODO: Change this implementation
                 // Use a WritableComputedRef and the @check event
@@ -115,12 +140,15 @@
                 const assetSet = new Set([
                     ...checkedKeys.value,
                     ...assets.value,
+                    ...regexKeys.value,
                 ])
                 emit('update:assets', [...assetSet])
                 isVisible.value = false
             }
+
             function discardAssets() {
-                checkedKeys.value = [...assets.value]
+                checkedKeys.value = []
+                regexKeys.value = []
                 isVisible.value = false
             }
 
@@ -136,6 +164,7 @@
             const tabConfig = [
                 { key: 'tree', label: 'Browse' },
                 { key: 'list', label: 'Search' },
+                { key: 'custom', label: 'Custom' },
             ]
 
             return {
@@ -143,6 +172,7 @@
                 tabConfig,
                 isVisible,
                 checkedKeys,
+                regexKeys,
                 saveAssets,
                 discardAssets,
                 filterConfig,

@@ -1,18 +1,29 @@
 <template>
-    <div>
-        <span class="mb-1 text-sm text-gray-700">SCOPES</span>
-        <div class="mb-3" v-for="(scope, idx) in scopeList">
-            <span class="block mb-1 text-sm text-gray-500 capitalize">{{
-                scope.type
-            }}</span>
+    <a-collapse expandIconPosition="right">
+        <template #expandIcon="{ isActive }">
+            <div>
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                    :class="isActive ? '-rotate-180' : 'rotate-0'"
+                />
+            </div>
+        </template>
+
+        <a-collapse-panel v-for="(scope, idx) in scopeList" :key="idx">
+            <template #header>
+                <a-checkbox @click.stop="" checked="true">{{
+                    scope.type
+                }}</a-checkbox>
+            </template>
             <a-checkbox-group
                 :value="groupedActions[idx].scopes"
                 @update:value="updateSelection(scope.type, $event)"
                 :name="scope.type"
                 :options="scope.scopes"
             />
-        </div>
-    </div>
+        </a-collapse-panel>
+    </a-collapse>
 </template>
 
 <script lang="ts">

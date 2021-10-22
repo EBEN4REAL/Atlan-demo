@@ -27,7 +27,7 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 if (conn.attributeValue)
                     query.filter(
                         'term',
-                        `Asset.${conn.attributeName}`,
+                        conn.attributeName,
                         conn.attributeValue
                     )
                 break

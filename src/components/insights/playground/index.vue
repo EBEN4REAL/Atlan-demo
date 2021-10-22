@@ -1,5 +1,10 @@
 <template>
-    <div class="flex flex-col w-full h-full bg-white playground-height">
+    <div
+        class="flex flex-col w-full h-full bg-white"
+        :style="
+            fullSreenState ? 'height: calc( 100vh - 40px )' : 'height:100vh'
+        "
+    >
         <div class="relative flex flex-col">
             <div class="flex w-full bg-gray-light text-gray">
                 <a-tabs
@@ -16,7 +21,7 @@
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
-                                    class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                                    class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
                                     @click="handleAdd"
                                 >
                                     <fa icon="fal plus" class="" />
@@ -38,7 +43,7 @@
                                 "
                             >
                                 <div
-                                    class="flex items-center justify-between  inline_tab"
+                                    class="flex items-center justify-between inline_tab"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
@@ -59,8 +64,8 @@
                                         >
                                     </div>
                                     <div
-                                        v-if="!tab.isSaved"
-                                        class="flex items-center mr-2  unsaved-dot"
+                                        v-if="(!tab.isSaved && tab.playground.editor.text.length>0)"
+                                        class="flex items-center mr-2 unsaved-dot"
                                     >
                                         <div
                                             class="
@@ -79,6 +84,7 @@
                                     <a-menu>
                                         <UnsavedPopover
                                             @closeTab="closeTabConfirm"
+                                            @closePopup="closePopOver"
                                             @saveTab="saveTabConfirm"
                                             :unsavedPopover="unsavedPopover"
                                             :isSaving="isSaving"
@@ -96,21 +102,26 @@
             ></div>
         </div>
 
-        <div v-if="activeInlineTabKey" class="w-full h-full">
+        <div
+            v-if="activeInlineTabKey"
+            class="w-full"
+            style="max-height: 100%; min-height: 92%"
+        >
             <splitpanes horizontal :push-other-panes="false">
                 <pane
-                    :max-size="95.5"
+                    :max-size="100"
                     :size="100 - outputPaneSize"
                     min-size="30"
                     class="overflow-x-hidden"
                 >
                     <Editor
                 /></pane>
-                <pane min-size="4.5" :size="outputPaneSize" max-size="70">
+                <pane min-size="0" :size="outputPaneSize" max-size="70">
                     <ResultsPane
                 /></pane>
             </splitpanes>
         </div>
+        <ResultPaneFooter v-if="activeInlineTabKey" />
         <NoActiveInlineTab @handleAdd="handleAdd" v-else />
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
@@ -145,6 +156,8 @@
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useRouter } from 'vue-router'
+    import { useUtils } from '~/components/insights/common/composables/useUtils'
+    import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -155,6 +168,7 @@
             NoActiveInlineTab,
             UnsavedPopover,
             SaveQueryModal,
+            ResultPaneFooter,
         },
         props: {
             activeInlineTabKey: {
@@ -163,6 +177,7 @@
             },
         },
         setup(props, { emit }) {
+            const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
             const showSaveQueryModal = ref(false)
@@ -172,6 +187,7 @@
             const saveQueryData = ref()
 
             const { queryRun } = useRunQuery()
+            const { getFirstQueryConnection } = useUtils()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
@@ -196,10 +212,15 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
+            const checkIfItsAFirstTab = () => {
+                if (tabs.value.length < 1) return true
+                return false
+            }
+
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'untitled',
+                    label: 'Untitled',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
@@ -245,11 +266,14 @@
                                     ?.activeTab ?? 0,
                             result: {
                                 title: `${key} Result`,
+                                runQueryId: undefined,
                                 isQueryRunning: '',
                                 queryErrorObj: {},
                                 totalRowsCount: -1,
                                 executionTime: -1,
                                 errorDecorations: [],
+                                eventSourceInstance: undefined,
+                                buttonDisable: false,
                             },
                             metadata: {},
                             queries: {},
@@ -269,6 +293,16 @@
                         title: activeInlineTab.value?.assetSidebar.title ?? '',
                         id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
+                }
+                if (checkIfItsAFirstTab()) {
+                    const firstConnection = getFirstQueryConnection()
+                    /* For intiial selection of connections */
+                    if (firstConnection && firstConnection?.attributes?.name) {
+                        inlineTabData.explorer.schema.connectors.attributeName =
+                            'connectionQualifiedName'
+                        inlineTabData.explorer.schema.connectors.attributeValue =
+                            firstConnection?.attributes?.qualifiedName
+                    }
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 router.push(`/insights`)
@@ -320,6 +354,15 @@
                 unsavedPopover.value.key = undefined
                 unsavedPopover.value.show = false
             }
+            const closePopOver = () => {
+
+                if(unsavedPopover?.value?.show) {
+                    unsavedPopover.value.key = undefined
+                    unsavedPopover.value.show = false
+                }
+                
+            }
+
             const saveQueryOnCloseTab = (saveQueryDataParam: any) => {
                 saveQueryData.value = saveQueryDataParam
                 const key = saveCloseTabKey.value
@@ -386,6 +429,7 @@
             }
 
             return {
+                fullSreenState,
                 saveModalRef,
                 saveQueryLoading,
                 showSaveQueryModal,
@@ -393,6 +437,7 @@
                 saveQueryOnCloseTab,
                 saveTabConfirm,
                 closeTabConfirm,
+                closePopOver,
                 unsavedPopover,
                 isActiveInlineTabSaved,
                 activeInlineTab,
@@ -484,6 +529,7 @@
     }
     .playground-height {
         // @apply bg-gray-light !important;
+        height: calc(100vh - 40px);
     }
 </style>
 <style lang="less" module>

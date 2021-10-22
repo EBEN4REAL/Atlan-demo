@@ -1,4 +1,21 @@
-import bodybuilder from 'bodybuilder'
+import bodybuilder, { Bodybuilder } from 'bodybuilder'
+import { ISearchOperators } from '~/constant/advancedAttributes'
+
+function operatorToDSL(
+    query: Bodybuilder,
+    operator: ISearchOperators,
+    attribute: string,
+    value: string
+) {
+    if (operator === 'eq') return query.filter('term', attribute, value)
+    else if (operator === 'neq') return query.notQuery('term', attribute, value)
+    else if (operator === 'isNull')
+        return query.notQuery('exists', 'field', value)
+    else if (operator === 'notNull')
+        return query.query('exists', 'field', value)
+    else if (['gt', 'lt', 'gte', 'lte'].includes(operator))
+        return query.query('range', attribute, { [operator]: value })
+}
 
 export function useDiscoveryDSL(filters: Record<string, any>) {
     const query = bodybuilder()
@@ -6,6 +23,13 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
         const fltrObj = filters[mkey]
         switch (mkey) {
             case 'connector': {
+                const conn = fltrObj
+                if (conn.attributeValue)
+                    query.filter(
+                        'term',
+                        `Asset.${conn.attributeName}`,
+                        conn.attributeValue
+                    )
                 break
             }
             case 'saved': {
@@ -16,7 +40,7 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 if (statuses?.includes('is_null')) statuses.push('isNull')
 
                 if (statuses?.length)
-                    query.filter('terms', 'Asset.certificateStatus', statuses)
+                    query.filter('terms', 'certificateStatus', statuses)
 
                 break
             }
@@ -44,27 +68,42 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 break
             }
             case 'terms': {
-                const terms: string[] = fltrObj
-                if (terms?.length) query.filter('terms', '__meanings', terms)
-
+                if (fltrObj?.checked?.length) {
+                    if (fltrObj?.operator === 'AND') {
+                        fltrObj?.checked?.forEach((val) => {
+                            query.filter('term', '__meanings', val)
+                        })
+                    } else if (fltrObj?.operator === 'OR') {
+                        query.filter('terms', '__meanings', fltrObj?.checked)
+                    }
+                }
                 break
             }
             case 'owners': {
                 if (fltrObj?.noOwnerAssigned) {
-                    query.notQuery('exists', 'Asset.ownerUsers')
-                    query.notQuery('exists', 'Asset.ownerGroups')
+                    query.notQuery('exists', 'ownerUsers')
+                    query.notQuery('exists', 'ownerGroups')
                 }
                 const users: string[] = fltrObj.userValue
-                if (users?.length)
-                    query.filter('terms', 'Asset.ownerUsers', users)
+                if (users?.length) query.filter('terms', 'ownerUsers', users)
 
                 const groups: string[] = fltrObj.groupValue
-                if (groups?.length)
-                    query.filter('terms', 'Asset.ownerGroups', groups)
+                if (groups?.length) query.filter('terms', 'ownerGroups', groups)
 
                 break
             }
             case 'advanced': {
+                Object.keys(fltrObj?.applied || {})?.forEach((key) => {
+                    const fl = fltrObj?.applied[key]
+                    Object.keys(fl).forEach((flk) => {
+                        operatorToDSL(
+                            query,
+                            flk as ISearchOperators,
+                            key,
+                            fl[flk]
+                        )
+                    })
+                })
                 break
             }
             // for BM
@@ -79,26 +118,36 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
 export function generateAssetQueryDSL(
     facets: Record<string, any>,
     queryText: string,
-    assetType: string
+    assetType: string,
+    applicableTypes: string[]
 ) {
     const dsl = useDiscoveryDSL(facets)
+
     if (queryText) {
-        dsl.orQuery('match', 'Asset.name', queryText)
+        dsl.orQuery('match', 'name', queryText)
         dsl.orQuery('match', '__typeName', queryText)
     }
-    if (assetType !== 'Catalog') {
+
+    // Filter by all applicable types - based on selected category
+    // Only if the current tab is not catalog (All)
+    if (assetType !== 'Catalog')
         dsl.filter('term', '__typeName.keyword', assetType)
-    }
+    else dsl.filter('terms', '__typeName.keyword', applicableTypes)
+
     return dsl.build()
 }
 
 export function generateAggregationDSL(
     facets: Record<string, any>,
-    queryText: string
+    queryText: string,
+    applicableTypes: string[]
 ) {
     const dsl = useDiscoveryDSL(facets)
+
+    dsl.filter('terms', '__typeName.keyword', applicableTypes)
+
     if (queryText) {
-        dsl.orQuery('match', 'Asset.name', queryText)
+        dsl.orQuery('match', 'name', queryText)
         dsl.orQuery('match', '__typeName', queryText)
     }
     dsl.aggregation('terms', '__typeName.keyword', { size: 20 }, 'typename')

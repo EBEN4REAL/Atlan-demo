@@ -4,7 +4,10 @@
         style="padding: 2rem 1.25rem 2rem 3.75rem"
     >
         <!-- Announcements -->
-        <Announcements :asset="selectedAsset" :edit-permission="editPermission" />
+        <Announcements
+            :asset="selectedAsset"
+            :edit-permission="editPermission"
+        />
 
         <!-- Table Summary -->
         <tableSummary :edit-permission="editPermission" />
@@ -42,6 +45,24 @@
                     ></a-tooltip
                 >
             </a-button-group>
+
+            <!--  <keep-alive>
+                <component
+                    :is="
+                        activePreviewTabKey === 'column-preview' &&
+                        'overviewColumns'
+                    "
+                />
+            </keep-alive>
+
+            <keep-alive>
+                <component
+                    :is="
+                        activePreviewTabKey === 'table-preview' &&
+                        'overviewTable'
+                    "
+                />
+            </keep-alive> -->
 
             <overviewColumns v-if="activePreviewTabKey === 'column-preview'" />
 
@@ -134,7 +155,7 @@
             // store
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
-            
+
             const showTablePreview = computed(
                 () =>
                     !['TablePartition', 'MaterialisedView'].includes(
@@ -148,7 +169,7 @@
                 assetType,
                 setActiveTab,
                 activePreviewTabKey,
-                selectedAsset
+                selectedAsset,
             }
         },
     })

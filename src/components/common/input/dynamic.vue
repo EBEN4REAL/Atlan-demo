@@ -106,6 +106,25 @@
     />
 
     <!-- async tree select end -->
+    <div v-if="dataType === 'upload'">
+        <a-upload
+            :multiple="false"
+            v-model:file-list="fileList"
+            :remove="handleRemove"
+            :before-upload="beforeUpload"
+        >
+            <a-button :disabled="fileList.length > 0"> Select File </a-button>
+        </a-upload>
+        <a-button
+            type="primary"
+            :disabled="fileList.length === 0"
+            :loading="uploading"
+            style="margin-top: 16px"
+            @click="handleUpload"
+        >
+            {{ uploading ? 'Uploading' : 'Start Upload' }}
+        </a-button>
+    </div>
 
     <a-input-number
         v-if="dataType === 'number'"
@@ -158,8 +177,11 @@
         </a-button>
     </a-input-group>
     <UserSelector v-if="dataType === 'users'"></UserSelector>
-    <div v-if="errorM || treeErrorM" class="text-red-600">
-        {{ errorM || treeErrorM }}
+    <div v-if="errorM || treeErrorM || fileError" class="text-red-600">
+        {{ errorM || treeErrorM || 'Some error occured.' }}
+    </div>
+    <div v-else-if="fileSuccess" class="text-green-600">
+        {{ 'Successfully uploaded.' }}
     </div>
 </template>
 
@@ -176,6 +198,7 @@
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
     import useAsyncTreeSelect from './useAsyncTreeSelect'
+    import useFileUploader from './useFileUploader'
 
     export default defineComponent({
         components: {
@@ -353,6 +376,17 @@
                 valueObject
             )
 
+            const {
+                handleUpload,
+                beforeUpload,
+                handleRemove,
+                init: initFileUploader,
+                uploading,
+                fileList,
+                error: fileError,
+                success: fileSuccess,
+            } = useFileUploader(props.requestConfig, emit)
+
             const handleDropdownVisibleChange = (open) => {
                 if (open && shouldRefetch.value) loadData()
             }
@@ -437,7 +471,14 @@
             }
 
             return {
+                fileError,
+                fileSuccess,
+                uploading,
+                fileList,
+                handleUpload,
+                handleRemove,
                 handleChange,
+                beforeUpload,
                 errorM,
                 treeErrorM,
                 treeData,

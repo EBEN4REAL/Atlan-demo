@@ -34,7 +34,6 @@ export default function useAsset({
             'shortDescription',
         ],
         attributes: [
-            'owner',
             'expert',
             'files',
             'table',

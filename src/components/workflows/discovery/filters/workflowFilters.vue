@@ -15,10 +15,6 @@
             >
                 Reset
             </div>
-            <!-- <a-button
-                class="px-3 py-1 text-sm font-medium border-0 rounded bg-primary-light text-primary"
-                >Save</a-button
-            > -->
         </div>
     </div>
     <div class="h-full overflow-y-auto bg-gray-100">

@@ -53,9 +53,10 @@
                     </template> -->
                         </SearchAndFilter>
                     </div>
+
                     <AtlanButton
                         class="ml-2"
-                        color="secondary"
+                        color="primary"
                         padding="compact"
                         @click="$router.push(`/workflows/new`)"
                     >

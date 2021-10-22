@@ -23,7 +23,7 @@
                 @gtcCardClicked="handleGtcCardClicked"
             />
         </template>
-        <template #footer v-if="list?.length > 40">
+        <template #footer v-if="list?.length < approximateCount">
             <div class="flex items-center justify-center">
                 <button
                     :disabled="isLoading"
@@ -131,6 +131,11 @@
                     return undefined
                 },
             },
+            approximateCount: {
+                type: Number,
+                required: false,
+                default: 20
+            }
         },
         emits: ['loadMore', 'gtcCardClicked', 'bulkSelectChange'],
         setup(props, ctx: SetupContext) {

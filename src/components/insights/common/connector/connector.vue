@@ -91,7 +91,7 @@
                 toRefs(props)
 
             const connector = computed(() => {
-                if (data.value?.attributeName === 'integrationName')
+                if (data.value?.attributeName === 'connectorName')
                     return data.value?.attributeValue
                 else {
                     let qfChunks = data.value?.attributeValue?.split('/')
@@ -198,7 +198,9 @@
                 return tree
             }
 
-            const treeData = transformConnectorToTree(filteredList.value)
+            const treeData = computed(() =>
+                transformConnectorToTree(filteredList.value)
+            )
 
             watch([connector, connection], () => emitChangedFilters())
 
@@ -329,8 +331,11 @@
 <style lang="less" module>
     .tree_selecttor {
         :global(.ant-select-selector) {
-            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
-            @apply rounded-lg !important;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
+            background-color: #fbfbfb !important;
+            border: 1px solid #E9EBF1 !important;
+            color: #6F7590 !important;
+            border-radius: 8px !important;
         }
     }
 </style>

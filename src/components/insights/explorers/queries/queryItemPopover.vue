@@ -3,25 +3,28 @@
         <div class="flex mb-1 text-gray-500">
             <div class="flex items-center flex-1 mr-5 text-xs">
                 <div class="flex items-center h-full">
-                    <div class="relative w-4 h-4 mr-1 overflow-hidden">
-                        <div class="absolute absolute-center">
-                            <AtlanIcon icon="PublicFolder" class="h-4" />
-                        </div>
-                        <!-- <div class="absolute absolute-center">
-                                <AtlanIcon
-                                    icon="PrivateFolder"
-                                    class="h-4 m-0 -ml-0.5 -mt-0.5 absolute"
-                                />
-                            </div> -->
+                    <div class="relative w-4 h-4 mr-1 -mt-1 overflow-hidden">
+                            <AtlanIcon
+                                v-if="savedQueryType ===
+                                    'personal'
+                                "
+                                icon="PrivateFolder"
+                                class="h-4"
+                            />
+                            <AtlanIcon 
+                                v-else 
+                                icon="FolderClosed" 
+                                class="h-4" 
+                            />
                     </div>
 
                     <span>Metrics</span>
                 </div>
-                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
+                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full -mt-0.5"></div>
                 <div class="flex items-center h-full">
                     <span>Last run 5 days ago</span>
                 </div>
-                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full"></div>
+                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full -mt-0.5"></div>
                 <div class="flex items-center h-full">
                     <span>308 total runs</span>
                 </div>
@@ -213,6 +216,11 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const savedQueryType = inject('savedQueryType') as Ref<
+                'all' | 'personal'
+            >
+            
             const { openAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
@@ -310,6 +318,7 @@
                 mixedTermsAndClassifications,
                 KeyMaps,
                 List,
+                savedQueryType
             }
         },
     })

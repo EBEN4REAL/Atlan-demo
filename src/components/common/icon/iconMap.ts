@@ -144,6 +144,9 @@ import Platform from '~/assets/images/icons/platform.svg'
 import Feedback from '~/assets/images/icons/feedback.svg'
 import Admin from '~/assets/images/icons/admin.svg'
 import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
+import TableDeprecated from '~/assets/images/icons/table_deprecated.svg';
+import TableDraft from '~/assets/images/icons/table_draft.svg';
+import TableVerified from '~/assets/images/icons/table_verified.svg';
 
 export default {
     IssuesFilled,
@@ -291,5 +294,8 @@ export default {
     Platform,
     Feedback,
     Admin,
-    ActivityLogs
+    ActivityLogs,
+    TableDeprecated,
+    TableDraft,
+    TableVerified
 }

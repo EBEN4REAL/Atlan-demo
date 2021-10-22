@@ -21,7 +21,7 @@
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
-                                    class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                                    class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
                                     @click="handleAdd"
                                 >
                                     <fa icon="fal plus" class="" />
@@ -43,7 +43,7 @@
                                 "
                             >
                                 <div
-                                    class="flex items-center justify-between  inline_tab"
+                                    class="flex items-center justify-between inline_tab"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
@@ -64,8 +64,8 @@
                                         >
                                     </div>
                                     <div
-                                        v-if="!tab.isSaved"
-                                        class="flex items-center mr-2  unsaved-dot"
+                                        v-if="(!tab.isSaved && tab.playground.editor.text.length>0)"
+                                        class="flex items-center mr-2 unsaved-dot"
                                     >
                                         <div
                                             class="
@@ -84,6 +84,7 @@
                                     <a-menu>
                                         <UnsavedPopover
                                             @closeTab="closeTabConfirm"
+                                            @closePopup="closePopOver"
                                             @saveTab="saveTabConfirm"
                                             :unsavedPopover="unsavedPopover"
                                             :isSaving="isSaving"
@@ -219,7 +220,7 @@
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'untitled',
+                    label: 'Untitled',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
@@ -353,6 +354,15 @@
                 unsavedPopover.value.key = undefined
                 unsavedPopover.value.show = false
             }
+            const closePopOver = () => {
+
+                if(unsavedPopover?.value?.show) {
+                    unsavedPopover.value.key = undefined
+                    unsavedPopover.value.show = false
+                }
+                
+            }
+
             const saveQueryOnCloseTab = (saveQueryDataParam: any) => {
                 saveQueryData.value = saveQueryDataParam
                 const key = saveCloseTabKey.value
@@ -427,6 +437,7 @@
                 saveQueryOnCloseTab,
                 saveTabConfirm,
                 closeTabConfirm,
+                closePopOver,
                 unsavedPopover,
                 isActiveInlineTabSaved,
                 activeInlineTab,

@@ -91,7 +91,7 @@
                 toRefs(props)
 
             const connector = computed(() => {
-                if (data.value?.attributeName === 'integrationName')
+                if (data.value?.attributeName === 'connectorName')
                     return data.value?.attributeValue
                 else {
                     let qfChunks = data.value?.attributeValue?.split('/')
@@ -198,7 +198,9 @@
                 return tree
             }
 
-            const treeData = transformConnectorToTree(filteredList.value)
+            const treeData = computed(() =>
+                transformConnectorToTree(filteredList.value)
+            )
 
             watch([connector, connection], () => emitChangedFilters())
 

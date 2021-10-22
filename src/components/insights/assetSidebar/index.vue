@@ -1,14 +1,14 @@
 <template>
-    <!-- <div
+    <div
         class="w-full h-full placeholder"
-        v-if="selectedAsset && !activeInlineTab?.isSaved"
+        v-if="selectedAsset && !activeInlineTab?.queryId"
     >
         <div class="flex items-center justify-between w-full p-3">
             <span
                 v-if="activeInlineTab && activeInlineTab?.assetSidebar"
                 class="font-bold text-gray"
             >
-                Save Query first
+                Empty Screen
             </span>
             <span
                 class="flex items-center justify-center"
@@ -17,8 +17,11 @@
                 <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
             </span>
         </div>
-    </div> -->
-    <div class="z-20 flex flex-col bg-white" v-if="selectedAsset">
+    </div>
+    <div
+        class="z-20 flex flex-col bg-white"
+        v-else-if="selectedAsset && activeInlineTab?.queryId"
+    >
         <AssetPreview
             :mutateTooltip="true"
             :selectedAsset="selectedAsset"

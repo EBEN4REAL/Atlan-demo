@@ -1,5 +1,5 @@
 <template>
-    <DefaultLayout>
+    <DefaultLayout v-if="createPermission" >
         <template #header>
             <div class="flex items-center pb-3 -mt-3 text-2xl text-gray">
                 <div class="flex mr-3 cursor-pointer" @click="routeToGroups">
@@ -84,8 +84,8 @@
                             group</span
                         >
                     </a-form-item>
-                    <div class="mt-4 border-b"></div>
-                    <div class="mt-3 ml-2">
+                    <div v-if="listPermission" class="mt-4 border-b"></div>
+                    <div v-if="listPermission" class="mt-3 ml-2">
                         <div class="mb-2">
                             <span class="mr-2">Select users</span
                             ><span class="text-gray">(Optional)</span>
@@ -102,6 +102,7 @@
             </a-form>
         </div>
     </DefaultLayout>
+    <NoAcces v-else />
 </template>
 <script lang="ts">
     import { useRouter } from 'vue-router'
@@ -119,6 +120,8 @@
 
     import UserList from '~/components/admin/groups/common/userList.vue'
     import whoami from '~/composables/user/whoami'
+    import { useAccessStore } from '~/services/access/accessStore'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     interface Group {
         name: String
@@ -127,11 +130,14 @@
     }
     export default defineComponent({
         name: 'AddGroup',
-        components: { UserList, DefaultLayout },
+        components: { UserList, DefaultLayout, NoAcces },
         setup(props, context) {
             const router = useRouter()
             const createGroupLoading = ref(false)
             const isDefault = ref(false)
+            const accessStore  = useAccessStore()
+            const listPermission = accessStore.checkPermission('LIST_USERS')
+            const createPermission = accessStore.checkPermission('CREATE_GROUP')
             const group: UnwrapRef<Group> = reactive({
                 name: '',
                 description: '',
@@ -218,6 +224,8 @@
                 updateUserList,
                 isDefault,
                 routeToGroups,
+                listPermission,
+                createPermission
             }
         },
         data() {

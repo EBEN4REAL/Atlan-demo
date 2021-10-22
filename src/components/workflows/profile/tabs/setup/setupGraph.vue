@@ -195,11 +195,19 @@
                 })
             }
 
+            watch(
+                graphData,
+                (newVal) => {
+                    initialize(true)
+                },
+                { deep: true }
+            )
+
             onMounted(() => {
-                watch(graphData, () => {
-                    if (graph.value) graph.value.dispose()
-                    initialize()
-                })
+                // watch(graphData, () => {
+                if (graph.value) graph.value.dispose()
+                initialize()
+                // })
             })
 
             return {

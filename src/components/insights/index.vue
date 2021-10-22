@@ -4,7 +4,7 @@
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="relative flex flex-col items-center text-xs sidebar-nav-icon"
+                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -113,6 +113,7 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useHotKeys } from './common/composables/useHotKeys'
     import { useFullScreen } from './common/composables/useFullScreen'
+    import { useRoute } from 'vue-router'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
@@ -138,19 +139,24 @@
                 outputPaneSize,
                 paneResize,
             } = useSpiltPanes()
+            const route = useRoute()
             // TODO: will be used for HOTKEYs
             const { explorerPaneToggle, resultsPaneSizeToggle } = useHotKeys()
             const { editorConfig } = useEditor()
+            const { editorHoverConfig } = useEditor()
             const { fullSreenState } = useFullScreen()
+            const savedQueryGuidFromURL = ref(route.query?.id)
 
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
                 syncInlineTabsInLocalStorage,
                 syncActiveInlineTabKeyInLocalStorage,
             } = useLocalStorageSync()
-
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
-                useInlineTab()
+                useInlineTab(
+                    undefined,
+                    savedQueryGuidFromURL.value ? false : true
+                )
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -197,6 +203,7 @@
                 inlineTabs: tabsArray,
                 editorInstance: editorInstance,
                 editorConfig: editorConfig,
+                editorHoverConfig: editorHoverConfig,
                 monacoInstance: monacoInstance,
                 sqlVariables: sqlVariables,
                 explorerPaneSize: explorerPaneSize,
@@ -215,7 +222,7 @@
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })
             watch(savedQueryInfo, () => {
-                if (savedQueryInfo.value !== undefined) {
+                if (savedQueryInfo.value?.guid) {
                     // const savedQueryInlineTab =
                     //     transformSavedQueryResponseInfoToInlineTab(
                     //         savedQueryInfo as Ref<SavedQuery>

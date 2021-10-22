@@ -1,14 +1,19 @@
 import { Ref, ref, computed, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from './useLocalStorageSync'
+import { useUtils } from '~/components/insights/common/composables/useUtils'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
 
-export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
+export function useInlineTab(
+    treeSelectedKeys?: Ref<string[]>,
+    shouldDefaultTabAdd?: boolean
+) {
     const {
         syncInlineTabsInLocalStorage,
         getInlineTabsFromLocalStorage,
         getActiveInlineTabKeyFromLocalStorage,
     } = useLocalStorageSync()
+    const { getFirstQueryConnection } = useUtils()
 
     // initial sidebar will be not visible
     const setInlineTabsVisibilityToNone = (
@@ -20,12 +25,22 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         })
         return localStorageInlineTabsX
     }
-    const setInlineTabsArray = () => {
+    const setInlineTabsArray = (shouldDefaultTabAdd: boolean) => {
         // checking if localstorage already have active tabs
+        let firstConnection = getFirstQueryConnection()
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
             return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
+        /* For intiial selection of connections */
+        if (firstConnection && firstConnection?.attributes?.name) {
+            inlineTabsDemoData[0].explorer.schema.connectors.attributeName =
+                'connectionQualifiedName'
+            inlineTabsDemoData[0].explorer.schema.connectors.attributeValue =
+                firstConnection?.attributes?.qualifiedName
+        }
+        if (shouldDefaultTabAdd) return inlineTabsDemoData
+
         return []
     }
 
@@ -210,7 +225,9 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
     }
 
-    const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
+    const tabsArray: Ref<activeInlineTabInterface[]> = ref(
+        setInlineTabsArray(shouldDefaultTabAdd)
+    )
     const activeInlineTabKey = ref(setActiveInlineTabKey())
     const activeInlineTab = computed(() =>
         tabsArray.value.find((tab) => tab.key === activeInlineTabKey.value)

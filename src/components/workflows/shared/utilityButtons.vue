@@ -4,9 +4,9 @@
         <a-button size="small">
             <AtlanIcon icon="External" />
         </a-button>
-        <a-button size="small">
+        <!-- <a-button size="small">
             <AtlanIcon icon="Bookmark" />
-        </a-button>
+        </a-button> -->
     </a-button-group>
 </template>
 

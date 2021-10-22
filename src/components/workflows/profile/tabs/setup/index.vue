@@ -6,11 +6,15 @@
         >
             <a-spin />
         </div>
-        <EmptyView v-else-if="!tasks?.length" empty="" class="" />
 
-        <div class="absolute w-full h-full">
+        <EmptyView
+            v-else-if="!isLoading && !tasks?.length"
+            :EmptyScreen="EmptyScreen"
+            class="-mt-20"
+        />
+
+        <div v-else-if="tasks" class="absolute w-full h-full">
             <SetupGraph
-                v-if="tasks"
                 :graph-data="tasks"
                 @change="emit('change', $event, 'dag')"
             />
@@ -20,12 +24,12 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, ref, watch } from 'vue'
-    import { useRoute } from 'vue-router'
+    import { defineComponent, computed, ref, watch, toRefs } from 'vue'
 
     // Components
     import SetupGraph from './setupGraph.vue'
     import EmptyView from '@common/empty/index.vue'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     // Composables
     import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkFlowList'
@@ -33,24 +37,31 @@
     export default defineComponent({
         name: 'WorkflowSetupTab',
         components: { SetupGraph, EmptyView },
+        props: {
+            workflowTemplate: {
+                type: String,
+                required: true,
+            },
+        },
         emits: ['change'],
-        setup(_, { emit }) {
-            const route = useRoute()
+        setup(props, { emit }) {
             const tasks = ref([])
+            const { workflowTemplate } = toRefs(props)
 
             /** DATA */
-            const id = computed(() => route?.params?.id || '')
-
-            const { data, isLoading } = useWorkflowTemplateByName(id.value)
+            const filter = { name: `${workflowTemplate.value}` }
+            const { data, isLoading } = useWorkflowTemplateByName(
+                JSON.stringify(filter)
+            )
 
             watch(data, (newVal) => {
                 tasks.value =
-                    newVal?.workflowtemplate?.spec?.templates[0]?.dag?.tasks
+                    newVal.records[0].workflowtemplate.spec.templates[0].dag.tasks
             })
 
             return {
                 isLoading,
-                id,
+                EmptyScreen,
                 data,
                 tasks,
                 emit,

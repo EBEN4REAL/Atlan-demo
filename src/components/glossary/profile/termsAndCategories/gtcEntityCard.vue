@@ -8,7 +8,7 @@
         <a-checkbox
             v-if="projection.includes('checkbox')"
             :checked="isChecked"
-            class="mt-1 ml-2"
+            class="mt-1 ml-4"
             @click.stop
             @change="(e) => $emit('listItem:check', e, entity)"
         />

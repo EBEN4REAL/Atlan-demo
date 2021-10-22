@@ -1,5 +1,8 @@
 <template>
-    <div class="flex items-center justify-between w-full h-full">
+    <div
+        class="flex items-center justify-between w-full h-full"
+        @mouseover="$emit('openNavbar')"
+    >
         <div class="flex items-center">
             <atlan-icon
                 v-if="!isHome"
@@ -45,7 +48,7 @@
                 default: false,
             },
         },
-        emits: ['change', 'toggleNavbar'],
+        emits: ['change', 'toggleNavbar', 'openNavbar'],
         setup(props, { emit }) {
             const route = useRoute()
             const tenantStore = useTenantStore()

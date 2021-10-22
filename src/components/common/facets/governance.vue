@@ -120,7 +120,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import useTree from '~/components/glossary/tree/composables/useTree'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { useDebounceFn } from '@vueuse/core'
@@ -137,6 +137,12 @@
                 type: Object,
                 required: true,
             },
+            // to get entire term on change : used in link term widget
+            sendTerm: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         components: { LoadingView, SearchAndFilter, CustomRadioButton },
         emits: ['update:data', 'change'],
@@ -144,17 +150,21 @@
             const searchQuery = ref<string>()
             const checkedTerms = ref([])
             const selectedKeys = ref([])
-            const { data } = toRefs(props)
+            const { data, sendTerm } = toRefs(props)
 
             const onCheck = (_, { checkedNodes }) => {
-                if (checkedNodes.length)
-                    emit('update:data', {
-                        ...data.value,
-                        checked: checkedNodes.map(
-                            (node) => node.props.qualifiedName
-                        ),
-                    })
-                else emit('update:data', undefined)
+                if (checkedNodes.length) {
+                    emit(
+                        'update:data',
+                        checkedNodes.map((node) => node.props.qualifiedName)
+                    )
+                    if (props.sendTerm) {
+                        emit(
+                            'change',
+                            checkedNodes.map((node) => node.props)
+                        )
+                    }
+                } else emit('update:data', undefined)
 
                 emit('change')
             }

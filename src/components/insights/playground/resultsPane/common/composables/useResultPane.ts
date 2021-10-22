@@ -1,6 +1,7 @@
 import { Ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
+import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 
 export function useResultPane(tabsArray: Ref<activeInlineTabInterface[]>) {
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
@@ -19,8 +20,15 @@ export function useResultPane(tabsArray: Ref<activeInlineTabInterface[]>) {
         // syncying inline tabarray in localstorage
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
+    const isLineError = (activeInlineTab: Ref<activeInlineTabInterface>) => {
+        const errorName =
+            activeInlineTab.value?.playground?.resultsPane?.result
+                ?.queryErrorObj?.errorName
+        return LINE_ERROR_NAMES.includes(errorName)
+    }
 
     return {
+        isLineError,
         resultsPaneTabChange,
     }
 }

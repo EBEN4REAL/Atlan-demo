@@ -96,35 +96,66 @@
                 <div class="flex items-center">
                     <div class="flex text-sm">
                         <div class="flex">
-                            <a-button
-                                type="primary"
-                                class="
-                                    flex
-                                    items-center
-                                    button-shadow
-                                    border-none
-                                    py-0.5
-                                    h-6
-                                    rounded
+                            <AtlanBtn
+                                class="flex items-center h-6 button-shadow"
+                                size="sm"
+                                color="primary"
+                                padding="compact"
+                                :disabled="
+                                    activeInlineTab.playground.resultsPane
+                                        .result.buttonDisable
                                 "
-                                :class="
-                                    isQueryRunning === 'loading'
-                                        ? 'px-4.5 pr-3.5'
-                                        : 'px-3'
-                                "
-                                :loading="
-                                    isQueryRunning === 'loading' ? true : false
-                                "
-                                @click="run"
+                                @click="toggleRun"
                             >
-                                <template #icon>
+                                <div class="flex items-center">
                                     <AtlanIcon
-                                        class="mr-1 text-white"
+                                        v-if="
+                                            isQueryRunning === 'loading'
+                                                ? false
+                                                : true
+                                        "
+                                        style="margin-right: 2.5px"
                                         icon="Play"
-                                    />
-                                </template>
-                                Run</a-button
-                            >
+                                        class="text-white rounded button-shadow"
+                                    ></AtlanIcon>
+                                    <AtlanIcon
+                                        v-else
+                                        icon="CircleLoader"
+                                        style="margin-right: 2.5px"
+                                        class="w-4 h-4 text-white animate-spin"
+                                    ></AtlanIcon>
+
+                                    <span
+                                        v-if="
+                                            !activeInlineTab.playground
+                                                .resultsPane.result.runQueryId
+                                        "
+                                        class="text-white"
+                                        >Run</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            activeInlineTab.playground
+                                                .resultsPane.result
+                                                .runQueryId &&
+                                            !activeInlineTab.playground
+                                                .resultsPane.result
+                                                .buttonDisable
+                                        "
+                                        class="text-white"
+                                        >Abort</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            activeInlineTab.playground
+                                                .resultsPane.result
+                                                .buttonDisable
+                                        "
+                                        class="text-white"
+                                        >Aborting</span
+                                    >
+                                </div>
+                            </AtlanBtn>
                         </div>
                         <a-button
                             v-if="
@@ -310,7 +341,7 @@
                                 />
                             </a-tooltip>
                         </div>
-                        <!-- <div class="ml-2" @click="toggleAssetPreview">
+                        <div class="ml-2" @click="toggleAssetPreview">
                             <a-tooltip>
                                 <template #title>Toggle asset preview</template>
 
@@ -319,7 +350,7 @@
                                     class="w-4 h-4 text-gray-500"
                                 />
                             </a-tooltip>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -366,6 +397,10 @@
     import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+    import HEKA_SERVICE_API from '~/services/heka/index'
 
     export default defineComponent({
         components: {
@@ -383,9 +418,13 @@
 
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
+            const { getDatabaseName, getConnectionQualifiedName } =
+                useConnector()
+            const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun } = useRunQuery()
-            const { modifyActiveInlineTabEditor } = useInlineTab()
+            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
+                useInlineTab()
             const { toggleFullScreenMode } = useFullScreen()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
                 column: 0,
@@ -417,8 +456,13 @@
                 'activeInlineTabKey'
             ) as Ref<string>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
+            const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
 
             const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
                 inlineTabs,
@@ -454,9 +498,94 @@
                     )
                 }
             }
-            const run = () => {
-                useAddEvent('insights', 'query', 'run', undefined)
-                queryRun(activeInlineTab, getData, limitRows)
+            /* sucess| error */
+            const onRunCompletion = (status: string) => {
+                if (status === 'success') {
+                    /* Resetting the red dot from the editor if it error is not line type */
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                } else if ((status = 'error')) {
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
+                    const errorName =
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    if (LINE_ERROR_NAMES.includes(errorName)) {
+                        setErrorDecorations(
+                            activeInlineTab,
+                            toRaw(editorInstance),
+                            toRaw(monacoInstance)
+                        )
+                    }
+                }
+            }
+            const onQueryIdGeneration = (queryId: string, eventSource: any) => {
+                /* Setting the particular instance to this tab */
+                activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                    queryId
+                activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                    eventSource
+            }
+            const toggleRun = () => {
+                const queryId =
+                    activeInlineTab.value.playground.resultsPane.result
+                        .runQueryId
+                const currState = !queryId ? 'run' : 'abort'
+                if (currState === 'run') {
+                    useAddEvent('insights', 'query', 'run', undefined)
+                    queryRun(
+                        activeInlineTab,
+                        getData,
+                        limitRows,
+                        onRunCompletion,
+                        onQueryIdGeneration
+                    )
+                } else {
+                    /* Abort Query logic */
+                    activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                        true
+                    const body = {
+                        queryId:
+                            activeInlineTab.value.playground.resultsPane.result
+                                .runQueryId,
+                        dataSourceName: getConnectionQualifiedName(
+                            activeInlineTab.value.explorer.schema.connectors
+                                .attributeValue
+                        ),
+                    }
+                    /* Change loading state */
+                    HEKA_SERVICE_API.Insights.AbortQuery(body).then(() => {
+                        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                            ''
+                        if (
+                            activeInlineTab.value.playground.resultsPane.result
+                                .eventSourceInstance?.close
+                        ) {
+                            activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
+                            activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                                undefined
+
+                            activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                                false
+                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                                undefined
+                            /* For syncing with local storage */
+                            const activeInlineTabCopy: activeInlineTabInterface =
+                                Object.assign({}, activeInlineTab.value)
+                            modifyActiveInlineTab(
+                                activeInlineTabCopy,
+                                inlineTabs,
+                                activeInlineTabCopy.isSaved
+                            )
+                            console.log('connection closed succesfully')
+                        }
+                    })
+                }
             }
 
             const setInstance = (
@@ -516,15 +645,15 @@
                 toggleFullScreenMode(fullSreenState)
             }
             const toggleAssetPreview = () => {
-                // const activeInlineTabCopy: activeInlineTabInterface =
-                //     Object.assign({}, activeInlineTab.value)
-                // if (activeInlineTab.value.assetSidebar.isVisible) {
-                //     activeInlineTabCopy.assetSidebar.isVisible = false
-                //     closeAssetSidebar(activeInlineTabCopy)
-                // } else {
-                //     activeInlineTabCopy.assetSidebar.isVisible = true
-                //     openAssetSidebar(activeInlineTabCopy)
-                // }
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                if (activeInlineTab.value.assetSidebar.isVisible) {
+                    activeInlineTabCopy.assetSidebar.isVisible = false
+                    closeAssetSidebar(activeInlineTabCopy)
+                } else {
+                    activeInlineTabCopy.assetSidebar.isVisible = true
+                    openAssetSidebar(activeInlineTabCopy)
+                }
             }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
@@ -538,10 +667,12 @@
             /*-------------------------------------*/
 
             watch(editorInstance, () => {
-                const pos = toRaw(editorInstance.value).getPosition()
-                editorPos.value.column = pos.column
-                editorPos.value.lineNumber = pos.lineNumber
-                console.log(pos)
+                if (toRaw(editorInstance.value)) {
+                    const pos = toRaw(editorInstance.value).getPosition()
+                    editorPos.value.column = pos.column
+                    editorPos.value.lineNumber = pos.lineNumber
+                    console.log(pos)
+                }
             })
 
             /* Handlng the Fullscreen esc key logic */
@@ -588,7 +719,7 @@
                 openSaveQueryModal,
                 saveQuery,
                 setInstance,
-                run,
+                toggleRun,
             }
         },
     })

@@ -349,7 +349,10 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
 
   }
 
-  const handleInputChange = () => {
+  const handleInputChange = (v) => {
+    // temp fix
+    if (v)
+      emit('change', v)
     handleConditional()
     finalConfigObject(processedSchema.value)
   }

@@ -1,14 +1,17 @@
 import { onMounted } from "vue"
 import bodybuilder from 'bodybuilder'
+import dayjs from "dayjs"
 import useIndexSearch from '~/services/atlas/discovery/useIndexSearch'
-import { getRecentTimestamp } from '~/utils/date'
+// import { getRecentTimestamp } from '~/utils/date'
 
 export function useRecentTerms() {
+  const lastSevenDaysTimestamp = dayjs().subtract(7, "day").valueOf()
+  const currentTimestamp = dayjs().valueOf()
     const query = bodybuilder()
       .filter("term", "__typeName.keyword", "AtlasGlossaryTerm")
       .filter("range", "__timestamp", {
-        gte: getRecentTimestamp().lastSevenDaysTimestamp,
-        lt: getRecentTimestamp().currentTimestamp
+        gte: lastSevenDaysTimestamp,
+        lt: currentTimestamp
       })
       .size(5)
       .sort("__timestamp").build()

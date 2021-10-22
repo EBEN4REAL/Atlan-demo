@@ -61,11 +61,7 @@ export const createAtlanTheme = (monaco: any) => {
             { token: 'predefined.sql', foreground: '5277D7' },
         ],
         colors: {
-<<<<<<< Updated upstream
             'editorLineNumber.foreground': '#A5A5A5',
-=======
-            'editorLineNumber.foreground': '#a5a5a5'
->>>>>>> Stashed changes
         },
     })
 }

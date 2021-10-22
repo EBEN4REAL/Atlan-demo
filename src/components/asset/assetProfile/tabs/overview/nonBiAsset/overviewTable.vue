@@ -13,7 +13,7 @@
                     <th
                         v-for="(col, index) in tableColumns"
                         :key="index"
-                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border border-gray-light"
+                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border  border-gray-light"
                     >
                         <div class="flex">
                             <component
@@ -21,7 +21,7 @@
                                 class="w-4 h-4 mr-1"
                             ></component>
                             <Tooltip
-                                :tooltip-text="col.title"
+                                :tooltip-text="`${col.title}`"
                                 classes="cursor-pointer"
                             />
                         </div>
@@ -32,12 +32,14 @@
             <tbody>
                 <tr v-for="(row, index) in results" :key="index">
                     <td
-                        v-for="(rowData, index) in row"
-                        :key="index"
-                        class="px-4 py-2 text-xs text-gray-700 bg-white border border-gray-light"
+                        v-for="(rowData, key) in row"
+                        :key="key"
+                        class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
                     >
+                        <div v-if="key == 'hash_index'">{{ rowData }}</div>
                         <Tooltip
-                            :tooltip-text="rowData"
+                            v-else
+                            :tooltip-text="`${rowData}`"
                             classes="cursor-pointer"
                         />
                     </td>
@@ -49,11 +51,12 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent,
+    import {
+        defineComponent,
         watch,
         ref,
         // inject,
-        // computed 
+        // computed
     } from 'vue'
     import { storeToRefs } from 'pinia'
 
@@ -81,12 +84,12 @@
             // store
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
-            
+
             const { connectionQualifiedName, databaseName, schemaName, name } =
                 { ...selectedAsset.value.attributes }
 
             const body = {
-                sql: `select * from ${name}`,
+                tableName: name,
                 defaultSchema: `${databaseName}.${schemaName}`,
                 dataSourceName: connectionQualifiedName,
                 limit: 100,

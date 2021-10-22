@@ -38,6 +38,7 @@ const useTree = (
     const treeData = ref<TreeDataItem[]>([])
     const parentGlossary = ref<Glossary>()
     const isInitingTree = ref(false)
+    
     const loadedKeys = ref<string[]>([])
     const selectedCacheKey = `${cacheKey}_selected`
     const expandedCacheKey = `${cacheKey}_expanded`
@@ -1224,20 +1225,20 @@ const useTree = (
             newEntity?.typeName === 'AtlasGlossaryTerm'
         ) {
             if (!treeData.value?.length) {
-                if (
-                    referredEntities.value[newEntity?.attributes?.anchor?.guid]
-                        ?.guid
-                ) {
-                    parentGlossary.value =
-                        referredEntities.value[newEntity.attributes.anchor.guid]
+                // if (
+                //     referredEntities?.value[newEntity?.attributes?.anchor?.guid]
+                //         ?.guid
+                // ) {
+                //     parentGlossary.value =
+                //         referredEntities.value[newEntity.attributes.anchor.guid]
 
-                    if (parentGlossary.value?.guid)
-                        initTreeData(parentGlossary.value.guid)
-                } else {
+                //     if (parentGlossary.value?.guid)
+                //         initTreeData(parentGlossary.value.guid)
+                // } else {
                     fetchType.value = 'glossary'
                     fetchGuid.value = newEntity?.attributes?.anchor?.guid
                     refetch()
-                }
+                // }
                 currentEntity.value = fetchedEntity.value
             }
         }

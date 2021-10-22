@@ -39,9 +39,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed, provide } from 'vue'
+    import { defineComponent, ref, watch, computed, provide, toRef } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
 
     // components
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
@@ -49,6 +49,7 @@
     // composables
     import useTree from '~/components/glossary/tree/composables/useTree'
     import useBusinessMetadata from '~/components/admin/custom-metadata/composables/useBusinessMetadata'
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
 
     // store
     import useBusinessMetadataStore from '~/store/businessMetadata/index'
@@ -72,6 +73,7 @@
 
             // data
             const router = useRouter()
+            const route = useRoute()
 
             // computed
             const isHome = computed(
@@ -79,6 +81,13 @@
                     router.currentRoute.value.path.split('/')[
                         router.currentRoute.value.path.split('/').length - 1
                     ] === 'glossary'
+            )
+            const guid = toRef(props, 'id')
+            // const currentGuid = ref(router.currentRoute.params?.id)
+            const currentType = ref(
+                router.currentRoute.value.fullPath.split('/')[
+                    router.currentRoute.value.fullPath.split('/').length - 2
+                ] as 'glossary' | 'category' | 'term'
             )
 
             const {
@@ -102,6 +111,22 @@
                 reOrderNodes,
             } = useTree(emit, true, isHome)
 
+            const {
+                entity,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                statusMessage,
+                isLoading,
+                refetch,
+            } = useGTCEntity<Glossary | Term| Category>(
+                currentType.value,
+                guid,
+                false,
+                true
+            )
             // * Get all available BMs and save on storez
             const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
@@ -118,12 +143,34 @@
                     refetchGlossaryList()
                 }
             })
+            watch(router.currentRoute, (newRoute) => {
+            guid.value = newRoute.params.id as string
+            currentType.value = 
+                newRoute.fullPath.split('/')[
+                    router.currentRoute.value.fullPath.split('/').length - 2
+                ] as 'glossary' | 'category' | 'term'
+            
+
+            })
+
+            provide('refetchGlossaryList', refetchGlossaryList)
+            provide('glossaryList', glossaryList)
 
             provide('updateTreeNode', updateNode)
             provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
-            provide('refetchGlossaryList', refetchGlossaryList)
             provide('reorderTreeNodes', reOrderNodes)
+
+            provide('currentEntity', entity)
+            provide('currentTitle', title)
+            provide('currentShortDescription', shortDescription)
+            provide('currentQualifiedName', qualifiedName)
+            provide('statusObject', statusObject)
+            provide('profileError', error)
+            provide('statusMessage', statusMessage)
+            provide('profileIsLoading', isLoading)
+            provide('refreshEntity', refetch)
+
             return {
                 backToHome,
                 backToGlossary,
@@ -132,7 +179,6 @@
                 selectNode,
                 dragAndDropNode,
                 collapseAll,
-                currentGuid,
                 glossaryList,
                 treeData,
                 loadedKeys,
@@ -141,6 +187,8 @@
                 parentGlossary,
                 isInitingTree,
                 isHome,
+                guid,
+                currentGuid,
             }
         },
     })

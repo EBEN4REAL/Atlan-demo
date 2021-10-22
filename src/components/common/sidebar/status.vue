@@ -19,7 +19,7 @@
                         >
                             <div class="flex flex-col">
                                 <a-radio
-                                    v-for="item in List"
+                                    v-for="item in ListForSidebar"
                                     :key="item.id"
                                     :value="item.id"
                                     class="mb-1"
@@ -48,7 +48,6 @@
                         :rows="5"
                         class=""
                         @change="handleTextAreaUpdate"
-                        :disabled="textAreaDisabled"
                     ></a-textarea>
                     <div class="flex justify-end w-full mt-4 space-x-4">
                         <a-button class="px-4" @click="handleCancel"
@@ -123,7 +122,7 @@
     import { defineComponent, ref, watch, PropType, toRefs } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { List } from '~/constant/status'
+    import { ListForSidebar } from '~/constant/status'
     import updateStatus from '~/composables/asset/updateStatus'
     import confetti from '~/utils/confetti'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -162,7 +161,6 @@
 
             const message = ref(statusMessage.value)
             const statusType = ref(statusId.value)
-            const textAreaDisabled = ref(false)
 
             const handleUpdate = () => {
                 statusMessage.value = message.value
@@ -174,12 +172,7 @@
                 message.value = e.target.value
             }
             const handleStatusRadioUpdate = (e: any) => {
-                textAreaDisabled.value = false
                 statusType.value = e.target.value
-                if (e.target.value === 'is_null') {
-                    message.value = ''
-                    textAreaDisabled.value = true
-                }
             }
 
             watch(isReady, () => {
@@ -229,8 +222,6 @@
                         )
 
                     emit('update:selectedAsset', selectedAsset.value)
-                    message.value = ''
-                    statusType.value = 'is_null'
                 }
             })
             const keys = useMagicKeys()
@@ -246,14 +237,13 @@
                 handleTextAreaUpdate,
                 handleStatusRadioUpdate,
                 message,
-                textAreaDisabled,
                 statusType,
                 isReady,
                 state,
                 statusId,
                 statusMessage,
                 isCompleted,
-                List,
+                ListForSidebar,
                 animationPoint,
                 isLoading,
             }

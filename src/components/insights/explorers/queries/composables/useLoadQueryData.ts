@@ -111,7 +111,7 @@ const useLoadQueryData = ({
                 ],
             })
             body.value.entityFilters.criterion.push({
-                attributeName: 'owner',
+                attributeName: 'ownerUsers',
                 attributeValue: username.value,
                 operator: 'eq',
             })

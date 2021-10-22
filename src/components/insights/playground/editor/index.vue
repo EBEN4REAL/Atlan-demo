@@ -19,7 +19,7 @@
                         <a-tooltip>
                             <template #title>Custom variables</template>
                             <div
-                                class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
+                                class="items-center justify-center px-1 rounded cursor-pointer hover:bg-gray-300"
                                 :class="showcustomToolBar ? 'bg-gray-300' : ''"
                                 @click="toggleCustomToolbar"
                             >
@@ -46,12 +46,7 @@
                                 <AtlanIcon icon="Readme" class="w-5 h-5" />
                             </div>
                         </a-tooltip>
-                        <a-tooltip>
-                            <template #title>{{
-                                fullSreenState
-                                    ? 'Exit full screen'
-                                    : 'Go full screen'
-                            }}</template>
+                        
                             <div
                                 :class="fullSreenState ? 'bg-gray-300' : ''"
                                 class="
@@ -78,19 +73,34 @@
                                     "
                                     @click="tFullScreen"
                                 >
-                                    <AtlanIcon
-                                        v-if="fullSreenState"
-                                        class="w-4 h-4 border-gray-500"
-                                        icon="ExitFullScreen"
-                                    />
-                                    <AtlanIcon
+                                    <a-tooltip 
+                                            v-if="fullSreenState"
+                                    >
+                                        <template #title>
+                                                Exit full screen
+                                        </template>
+                                        <AtlanIcon
+                                            class="w-4 h-4 border-gray-500"
+                                            icon="ExitFullScreen"
+                                        />
+                                    </a-tooltip>
+                                    <a-tooltip
                                         v-else
-                                        class="w-4 h-4 border-gray-500"
-                                        icon="FullScreen"
-                                    />
+                                        :overlayClassName="$style.tooltip"
+                                    >
+                                        <template #title>
+                                                Go full screen
+                                        </template>
+                                        <AtlanIcon
+                                            class="w-4 h-4 border-gray-500"
+                                            icon="FullScreen"
+                                        />
+                                    </a-tooltip>
+
+                                    
+                                    
                                 </div>
                             </div>
-                        </a-tooltip>
                     </div>
                 </div>
                 <div class="flex items-center">
@@ -755,6 +765,11 @@
         :global(.ant-checkbox + span) {
             @apply px-1 !important;
         }
+    }
+
+    .tooltip {
+        
+        
     }
 </style>
 

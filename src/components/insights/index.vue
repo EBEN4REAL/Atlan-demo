@@ -1,7 +1,8 @@
 <template>
     <div class="flex h-full" id="fullScreenId">
         <!--Sidebar navigation pane start -->
-        <div class="bg-white sidebar-nav" :class="{'border-r': explorerPaneSize>0 }">
+        <div class="bg-white border-r sidebar-nav"
+        >
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
                     class="relative flex flex-col items-center text-xs sidebar-nav-icon"
@@ -64,6 +65,8 @@
                 :min-size="
                     activeInlineTab?.assetSidebar?.isVisible ? 50.5 : 75.5
                 "
+                :style="{marginLeft: explorerPaneSize===0 ? '-1px' : '0px'}"
+
             >
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
@@ -302,6 +305,7 @@
         // margin-right: -0.5px;
         // @apply border-r !important;
         border-width: 1px !important;
+        // margin-left: -0.5px !important;
         &:hover {
             @apply bg-primary !important;
             &:before {

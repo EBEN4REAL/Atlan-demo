@@ -72,7 +72,12 @@
 
     export default defineComponent({
         name: 'PersonaScopes',
-        components: { SearchAndFilter, MinimalTab, PersonaPolicy, AtlanBtn },
+        components: {
+            SearchAndFilter,
+            MinimalTab,
+            PersonaPolicy,
+            AtlanBtn,
+        },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,

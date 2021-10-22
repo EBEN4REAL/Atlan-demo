@@ -120,7 +120,7 @@
                     return bodybuilder()
                         .filter(
                             'term',
-                            'Asset.connectionQualifiedName',
+                            'connectionQualifiedName',
                             connectionName
                         )
                         .filter(

@@ -31,7 +31,7 @@
 <script lang="ts">
     import { defineComponent, ref } from 'vue'
 
-    import { getSavedFilters } from './useSavedFilters'
+    import { getSavedFilters } from '../useSavedFilters'
 
     export default defineComponent({
         emits: ['replaceFilter'],

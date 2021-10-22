@@ -56,9 +56,7 @@
             />
         </div>
         <div v-if="activeTab === 'replace'">
-            <keep-alive>
-                <EditSavedFilter @replaceFilter="handleReplaceFilterSelection"
-            /></keep-alive>
+            <EditSavedFilter @replaceFilter="handleReplaceFilterSelection" />
         </div>
     </a-modal>
 </template>
@@ -67,27 +65,23 @@
     import {
         defineComponent,
         ref,
-        defineAsyncComponent,
-        computed,
         onMounted,
         nextTick,
         watch,
         Ref,
-        inject,
         PropType,
         toRefs,
     } from 'vue'
 
     import { message } from 'ant-design-vue'
     import whoami from '~/composables/user/whoami'
-    import { addSavedFilter, editSavedFilter } from './useSavedFilters'
+    import { addSavedFilter, editSavedFilter } from '../useSavedFilters'
     import { Components } from '~/api/atlas/client'
+    import EditSavedFilter from './editSavedFilter.vue'
 
     export default defineComponent({
         components: {
-            EditSavedFilter: defineAsyncComponent(
-                () => import('./editSavedFilter.vue')
-            ),
+            EditSavedFilter,
         },
         props: {
             appliedFilters: {
@@ -97,7 +91,7 @@
         },
         emits: ['savedFilterAdded'],
         setup(props, { emit }) {
-            const { username: myUsername, name: myName, email } = whoami()
+            const { username: myUsername, name: myName } = whoami()
             const { appliedFilters } = toRefs(props)
             const title = ref<string>('')
             const description = ref<string | undefined>('')

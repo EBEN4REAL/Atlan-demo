@@ -8,7 +8,7 @@
         />
         <div class="flex justify-end w-1/2">
             <span
-                class="flex items-center self-end mt-2 font-bold cursor-pointer  text-primary"
+                class="flex items-center self-end mt-2 font-bold cursor-pointer text-primary"
                 @click="redirectToDiscover"
                 >Assets
                 <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
@@ -21,7 +21,7 @@
                     <div
                         v-for="item in [1, 2, 3]"
                         :key="item"
-                        class="flex items-center justify-center h-32 my-4 bg-gray-300  w-72"
+                        class="flex items-center justify-center h-32 my-4 bg-gray-300 w-72"
                     >
                         Placeholder
                     </div>
@@ -34,11 +34,11 @@
 <script lang="ts">
     import { defineComponent, inject, computed, ref } from 'vue'
 
-    import SavedList from '@/home/saved/index.vue'
 
     import { useHead } from '@vueuse/head'
 
     import { useRouter } from 'vue-router'
+    import SavedList from '@/home/saved/index.vue'
     import { useUser } from '~/composables/user/useUsers'
 
     import Avatar from '~/components/common/avatar.vue'
@@ -49,6 +49,7 @@
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
     import { useTenantStore } from '~/services/keycloak/tenant/store'
+    import { useRecentTerms, useRecentAssets } from '~/composables/home/useHomeDSL'
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -70,10 +71,12 @@
             const keycloak = inject('$keycloak')
             const tenantStore = useTenantStore()
             const router = useRouter()
-
-            const logoUrl = computed(() => {
-                return `${window.location.origin}/api/service/avatars/_logo_`
-            })
+            // recent terms
+            const recentTerms = useRecentTerms()
+            console.log('recentTerms', recentTerms)
+            const recentAssets = useRecentAssets()
+            console.log('recentAssets', recentAssets)
+            const logoUrl = computed(() => `${window.location.origin}/api/service/avatars/_logo_`)
 
             const username = keycloak.tokenParsed.preferred_username || ''
 
@@ -174,6 +177,8 @@
                 dummyProjects,
                 logoUrl,
                 redirectToDiscover,
+                recentTerms,
+                recentAssets
             }
         },
     })

@@ -12,11 +12,14 @@ const useGlossaryList = (isHome?: Ref<boolean>) => {
     const body = ref({})
 
     const getBody = () => ({
-        typeName: 'AtlasGlossary',
-        excludeDeletedEntities: false,
-        includeClassificationAttributes: true,
-        includeSubClassifications: true,
-        includeSubTypes: true,
+        dsl: {
+            size: 50,
+            query: {
+                term: {
+                    "__typeName.keyword": "AtlasGlossary"
+                }
+            }
+        },
         attributes: [
             ...projection,
             'metadata',

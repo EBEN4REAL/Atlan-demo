@@ -40,7 +40,7 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 if (statuses?.includes('is_null')) statuses.push('isNull')
 
                 if (statuses?.length)
-                    query.filter('terms', 'Asset.certificateStatus', statuses)
+                    query.filter('terms', 'certificateStatus', statuses)
 
                 break
             }
@@ -68,27 +68,27 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 break
             }
             case 'terms': {
-                if (fltrObj?.operator === 'AND') {
-                    fltrObj?.checked?.forEach((val) => {
-                        query.filter('term', '__meanings', val)
-                    })
-                } else if (fltrObj?.operator === 'OR') {
-                    query.filter('terms', '__meanings', fltrObj?.checked)
+                if (fltrObj?.checked?.length) {
+                    if (fltrObj?.operator === 'AND') {
+                        fltrObj?.checked?.forEach((val) => {
+                            query.filter('term', '__meanings', val)
+                        })
+                    } else if (fltrObj?.operator === 'OR') {
+                        query.filter('terms', '__meanings', fltrObj?.checked)
+                    }
                 }
                 break
             }
             case 'owners': {
                 if (fltrObj?.noOwnerAssigned) {
-                    query.notQuery('exists', 'Asset.ownerUsers')
-                    query.notQuery('exists', 'Asset.ownerGroups')
+                    query.notQuery('exists', 'ownerUsers')
+                    query.notQuery('exists', 'ownerGroups')
                 }
                 const users: string[] = fltrObj.userValue
-                if (users?.length)
-                    query.filter('terms', 'Asset.ownerUsers', users)
+                if (users?.length) query.filter('terms', 'ownerUsers', users)
 
                 const groups: string[] = fltrObj.groupValue
-                if (groups?.length)
-                    query.filter('terms', 'Asset.ownerGroups', groups)
+                if (groups?.length) query.filter('terms', 'ownerGroups', groups)
 
                 break
             }
@@ -124,7 +124,7 @@ export function generateAssetQueryDSL(
     const dsl = useDiscoveryDSL(facets)
 
     if (queryText) {
-        dsl.orQuery('match', 'Asset.name', queryText)
+        dsl.orQuery('match', 'name', queryText)
         dsl.orQuery('match', '__typeName', queryText)
     }
 
@@ -147,7 +147,7 @@ export function generateAggregationDSL(
     dsl.filter('terms', '__typeName.keyword', applicableTypes)
 
     if (queryText) {
-        dsl.orQuery('match', 'Asset.name', queryText)
+        dsl.orQuery('match', 'name', queryText)
         dsl.orQuery('match', '__typeName', queryText)
     }
     dsl.aggregation('terms', '__typeName.keyword', { size: 20 }, 'typename')

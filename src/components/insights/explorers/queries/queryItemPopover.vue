@@ -13,7 +13,7 @@
                             />
                             <AtlanIcon 
                                 v-else 
-                                icon="PublicFolder" 
+                                icon="FolderClosed" 
                                 class="h-4" 
                             />
                     </div>

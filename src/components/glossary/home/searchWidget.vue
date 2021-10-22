@@ -101,14 +101,14 @@
         </a-dropdown>
         <span
             class="flex items-center self-end mt-2 font-bold cursor-pointer  text-primary"
-            @click="redirectToProfile(entities[0]?.typeName, entities[0]?.guid, { cta: 'glossaryContext'})"
+            @click="redirectToProfile(glossaryList[0]?.typeName, glossaryList[0]?.guid, { cta: 'glossaryContext'})"
             >Browse all Glossaries
             <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-1" />
         </span>
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, inject } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     // components
@@ -120,6 +120,8 @@
     // utils
     import redirect from '@/glossary/utils/redirectToProfile'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    
+    import { Glossary } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         components: {
@@ -130,10 +132,10 @@
         setup() {
             const searchQuery = ref<string>()
             const router = useRouter()
-            const { entities, isLoading, fetchAssetsPaginated } = useGtcSearch(
+            const glossaryList = inject<Glossary[]>('glossaryList', [])
+            const { entities,  isLoading, fetchAssetsPaginated } = useGtcSearch(
                 undefined,
                 ref(true),
-                'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary'
             )
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({
@@ -145,6 +147,7 @@
 
             return {
                 entities,
+                glossaryList,
                 onSearch,
                 searchQuery,
                 redirectToProfile,

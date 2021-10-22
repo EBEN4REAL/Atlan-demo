@@ -194,11 +194,11 @@
                         class="flex flex-col items-center justify-center h-full"
                     >
                         <div class="flex flex-col items-center">
-                            <img
-                                :src="emptyScreen"
-                                alt="No logs"
-                                class="w-2/5 m-auto mb-4"
-                            />
+                            <AtlanIcon
+                                icon="EmptySavedFilter"
+                                class="w-auto mb-4"
+                                style="height: 115px"
+                            ></AtlanIcon>
                             <span class="text-gray-500"
                                 >No Saved Filters Found</span
                             >

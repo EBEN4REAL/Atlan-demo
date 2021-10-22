@@ -143,9 +143,8 @@
 
             const formConfig = computed(() => {
                 try {
-                    if (data.value?.uiConfig?.length) {
-                        let configCopy =
-                            data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                    if (data.value?.uiConfig) {
+                        let configCopy = data.value?.uiConfig || '{}'
                         configCopy = configCopy
                             .replace(/\\n/g, '\\n')
                             .replace(/\\'/g, "\\'")
@@ -163,7 +162,11 @@
                 return {}
             })
 
-            const templateName = computed(() => data.value?.asset?.name)
+            const templateName = computed(
+                () =>
+                    data.value?.asset?.workflowtemplate.spec.templates[0].dag
+                        .tasks[0].templateRef.name || ''
+            )
 
             /** METHODS */
             // selectTab
@@ -177,23 +180,27 @@
 
             // handlePreview
             const handlePreview = (item, is) => {
-                if (is === 'dag') {
-                    selectedDag.value = item
-                } else selected.value = item
+                if (is === 'dag') selectedDag.value = item
+                else selected.value = item
             }
 
             // fetchUIConfig
             const fetchUIConfig = () => {
-                if (!templateName.value) return
+                if (!workflowTemplate.value) return
                 const {
                     data: config,
                     error: e,
                     isLoading: l,
-                } = getWorkflowConfigMap(templateName.value)
+                } = getWorkflowConfigMap(workflowTemplate.value)
 
                 watch(config, (v) => {
-                    if (config.value?.items)
-                        data.value.uiConfig = config.value?.items
+                    if (config.value?.records) {
+                        // TODO: Temporary fix - API filter doesn't seem to work
+                        const filteredRecords = config.value.records.filter(
+                            (x) => x.template_name === workflowTemplate.value
+                        )
+                        data.value.uiConfig = filteredRecords[0].uiconfig
+                    }
                 })
             }
 
@@ -217,11 +224,8 @@
                 )
 
                 watch(response, (v) => {
-                    console.log('tab v:', v)
-                    // workflowTemplate.value =
-                    //     v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
                     workflowTemplate.value =
-                        v.records[0].workflowtemplate.spec.workflowTemplateRef.name
+                        v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
                     data.value.asset = v.records[0]
                     data.value.error = error.value
                     fetchUIConfig()

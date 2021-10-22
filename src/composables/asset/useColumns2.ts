@@ -12,7 +12,6 @@ const staticColumnAttributes = [
     'description',
     'userDescription',
     'customDescription',
-    'owner',
     'expert',
     'files',
     'table',

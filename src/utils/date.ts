@@ -22,9 +22,7 @@ export const formatDateTime = (
         timeStyle: 'medium',
     },
     locale = 'en-US'
-) => {
-    return new Intl.DateTimeFormat(locale, config).format(date)
-}
+) => new Intl.DateTimeFormat(locale, config).format(date)
 
 /**
  *

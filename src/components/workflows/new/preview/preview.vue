@@ -145,18 +145,39 @@
                     name: workflowName.value,
                 },
                 spec: {
-                    arguments: {
-                        parameters: [
-                            ...selectedWorkflow.value?.workflowtemplate?.spec?.arguments?.parameters
-                                // eslint-disable-next-line no-prototype-builtins
-                                ?.filter((p) => !p.hasOwnProperty('value'))
-                                ?.map((e) => ({ name: e.name, value: '' })),
-                        ],
-                    },
-                    workflowTemplateRef: {
-                        name: selectedWorkflow.value.name,
-                        clusterScope: true,
-                    },
+                    templates: [
+                        {
+                            name: 'main',
+                            dag: {
+                                tasks: [
+                                    {
+                                        name: 'run',
+                                        arguments: {
+                                            parameters: [
+                                                ...selectedWorkflow.value?.workflowtemplate.spec.templates[0]?.inputs?.parameters
+                                                    // eslint-disable-next-line no-prototype-builtins
+                                                    ?.filter(
+                                                        (p) =>
+                                                            !p.hasOwnProperty(
+                                                                'value'
+                                                            )
+                                                    )
+                                                    ?.map((e) => ({
+                                                        name: e.name,
+                                                        value: '',
+                                                    })),
+                                            ],
+                                        },
+                                        templateRef: {
+                                            name: selectedWorkflow.value.name,
+                                            template: 'main',
+                                            clusterScope: true,
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    ],
                 },
             }))
 

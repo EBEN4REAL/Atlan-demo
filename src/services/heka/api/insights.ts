@@ -21,7 +21,13 @@ const GetAutoSuggestions = (
         },
     }) as Promise<autosuggestionResponse>
 }
+const AbortQuery = (body: Record<string, any>) => {
+    return useAPIPromise(KeyMaps.insights.ABORT_QUERY(), 'POST', {
+        body,
+    }) as Promise<any>
+}
 
 export const Insights = {
+    AbortQuery,
     GetAutoSuggestions,
 }

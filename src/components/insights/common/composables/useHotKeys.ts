@@ -17,7 +17,7 @@ export function useHotKeys() {
     function resultsPaneSizeToggle(outputPaneSizeParam: Ref<any>) {
         if (outputPaneSizeParam.value <= 10) {
             outputPaneSizeParam.value = outputPaneSize.value
-        } else outputPaneSizeParam.value = 4.5
+        } else outputPaneSizeParam.value = 0
     }
 
     return {

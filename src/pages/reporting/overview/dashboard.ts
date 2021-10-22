@@ -239,7 +239,7 @@ export const Metadata = {
                                         must_not: [
                                             {
                                                 term: {
-                                                    'Asset.connectorName': '',
+                                                    connectorName: '',
                                                 },
                                             },
                                         ],
@@ -251,7 +251,7 @@ export const Metadata = {
                     aggs: {
                         group_by_connector: {
                             terms: {
-                                field: 'Asset.connectorName',
+                                field: 'connectorName',
                                 size: 50,
                             },
                         },
@@ -335,7 +335,7 @@ export const Metadata = {
                                         must_not: [
                                             {
                                                 term: {
-                                                    'Asset.connectionName': '',
+                                                    connectionName: '',
                                                 },
                                             },
                                         ],
@@ -347,7 +347,7 @@ export const Metadata = {
                     aggs: {
                         group_by_connector: {
                             terms: {
-                                field: 'Asset.connectionName',
+                                field: 'connectionName',
                                 size: 50,
                             },
                         },
@@ -663,7 +663,7 @@ export const Metadata = {
                     aggs: {
                         group_by_traits: {
                             terms: {
-                                field: 'Asset.certificateStatus',
+                                field: 'certificateStatus',
                                 size: 20,
                             },
                         },

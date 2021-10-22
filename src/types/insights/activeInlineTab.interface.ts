@@ -47,11 +47,14 @@ export interface activeInlineTabInterface {
             activeTab: number
             result: {
                 title: string
+                runQueryId: undefined | string
                 isQueryRunning: string
                 totalRowsCount: number
                 executionTime: number
                 queryErrorObj: any
                 errorDecorations: any
+                eventSourceInstance: any
+                buttonDisable: boolean
             }
             metadata: Object
             queries: Object
@@ -64,6 +67,7 @@ export interface activeInlineTabInterface {
     }
     assetSidebar: {
         isVisible: boolean
+        openingPos: string | undefined
         assetInfo: assetInterface
         title: string
         id: string

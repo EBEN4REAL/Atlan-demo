@@ -36,7 +36,7 @@
             <template #prefix>
                 <AtlanIcon
                     icon="Add"
-                    class="h-4 text-gray group-hover:text-white"
+                    class="h-4 -mx-1.5 text-gray group-hover:text-white"
                 />
             </template>
         </Pill>

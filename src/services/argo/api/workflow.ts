@@ -52,7 +52,7 @@ const getWorkflowConfigMap = ({ immediate, options, params }) =>
 
 const getWorkflowByName = (filter, { immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.WORKFLOW,
+        KeyMaps.workflow.WORKFLOW_BY_NAME,
         'GET',
         {
             options,

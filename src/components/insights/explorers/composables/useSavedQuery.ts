@@ -99,6 +99,12 @@ export function useSavedQuery(
                         title: savedQuery.attributes.name,
                         isQueryRunning: '',
                         queryErrorObj: {},
+                        errorDecorations: [],
+                        totalRowsCount: -1,
+                        executionTime: -1,
+                        runQueryId: undefined,
+                        buttonDisable: false,
+                        eventSourceInstance: undefined,
                     },
                     metadata: {},
                     queries: {},
@@ -117,7 +123,8 @@ export function useSavedQuery(
                 id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
-        if (!isInlineTabAlreadyOpened(newTab, tabsArray)) {
+        const check = isInlineTabAlreadyOpened(newTab, tabsArray)
+        if (!check) {
             console.log('not opened')
             /* CAREFUL:-------Order is important here------ */
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
@@ -125,6 +132,7 @@ export function useSavedQuery(
             /* ----------------------------- */
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
+            return
         } else {
             // show user that this tab is already opened
             let key = undefined
@@ -186,7 +194,7 @@ export function useSavedQuery(
                     connectionId: connectionQualifiedName,
                     connectionQualifiedName,
                     description,
-                    owner: username.value,
+                    ownerUsers: username.value,
                     tenantId: 'default',
                     rawQuery,
                     compiledQuery,
@@ -292,7 +300,7 @@ export function useSavedQuery(
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
                     description,
-                    owner: username.value,
+                    ownerUsers: username.value,
                     tenantId: 'default',
                     rawQuery,
                     compiledQuery,
@@ -435,7 +443,7 @@ export function useSavedQuery(
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
                     description,
-                    owner: username.value,
+                    ownerUsers: username.value,
                     tenantId: 'default',
                     rawQuery,
                     compiledQuery,
@@ -562,7 +570,7 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName,
                     connectionQualifiedName,
-                    owner: username.value,
+                    ownerUsers: username.value,
                     tenantId: 'default',
                     connectionId: connectionGuid,
                     isPrivate: true,

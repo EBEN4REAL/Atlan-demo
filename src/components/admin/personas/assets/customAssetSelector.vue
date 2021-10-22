@@ -11,7 +11,11 @@
                 @keyup.enter="addExpr"
             >
                 <template #prefix>
-                    <span class="text-sm bg-gray-100 text-gray">
+                    <img
+                        :src="getImage(connectionQfName.split('/')[1])"
+                        class="w-auto h-3 mr-2"
+                    />
+                    <span class="text-sm text-gray">
                         {{ connectionQfName.split('/').slice(-1)[0] }}/
                     </span>
                 </template>
@@ -30,6 +34,7 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
+    import { useConnectionsStore } from '~/store/connections'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
@@ -55,7 +60,10 @@
                 regexes.value.splice(idx, 1)
             }
 
-            return { regexes, addExpr, removeExpr }
+            const connStore = useConnectionsStore()
+            const getImage = (id: string) => connStore.getImage(id)
+
+            return { regexes, addExpr, removeExpr, getImage }
         },
     })
 </script>

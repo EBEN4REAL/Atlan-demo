@@ -1,11 +1,12 @@
 <template>
     <div>
         <AssetSelectorDrawer
+            v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"
             v-model:assets="policy.assets"
-            connectionQfName="default/snowflake/development-test"
+            :connectionQfName="connectorData.attributeValue"
         />
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mb-6">
             <span class="text-base font-bold leading-8 text-gray-500"
                 >{{ policy.name }} details</span
             >
@@ -20,26 +21,27 @@
             ></AtlanBtn>
         </div>
 
-        <a-form layout="vertical" :wrapper-col="{ span: 12 }" :model="policy">
-            <a-form-item label="Name" name="name" required>
-                <a-input
-                    v-if="isEditing"
-                    v-model:value="policy.name"
-                    placeholder="Persona Name"
-                />
-                <span v-else>{{ policy.name }}</span>
-            </a-form-item>
-            <a-form-item label="Description" name="description">
-                <a-textarea
-                    v-if="isEditing"
-                    v-model:value="policy.description"
-                    showCount
-                    :maxlength="140"
-                    :auto-size="{ minRows: 1, maxRows: 3 }"
-                />
-                <span v-else>{{ policy.description }}</span>
-            </a-form-item>
-        </a-form>
+        <span class="mb-2 text-sm text-gray-500">Name</span>
+        <div class="max-w-xs mb-4">
+            <a-input
+                v-if="isEditing"
+                v-model:value="policy.name"
+                placeholder="Persona Name"
+            />
+            <span v-else>{{ policy.name }}</span>
+        </div>
+
+        <span class="mb-2 text-sm text-gray-500">Description</span>
+        <div class="max-w-xs mb-4">
+            <a-textarea
+                v-if="isEditing"
+                v-model:value="policy.description"
+                showCount
+                :maxlength="140"
+                :auto-size="{ minRows: 1, maxRows: 3 }"
+            />
+            <span v-else>{{ policy.description }}</span>
+        </div>
 
         <span class="mb-2 text-sm text-gray-500">Connection</span>
         <Connector class="max-w-xs mb-4" v-model:data="connectorData" />
@@ -157,14 +159,9 @@
                             conn.attributes?.qualifiedName ===
                             val.attributeValue
                     )
-                    policy.value.connectionId = found.guid
+                    policy.value.connectionId = found?.guid
                 },
             })
-
-            // const connectorData = ref({
-            //     attributeName: '',
-            //     attributeValue: '',
-            // })
 
             return {
                 connectorData,

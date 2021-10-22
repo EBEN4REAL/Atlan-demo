@@ -143,9 +143,8 @@
 
             const formConfig = computed(() => {
                 try {
-                    if (data.value?.uiConfig?.length) {
-                        let configCopy =
-                            data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                    if (data.value?.uiConfig) {
+                        let configCopy = data.value?.uiConfig || '{}'
                         configCopy = configCopy
                             .replace(/\\n/g, '\\n')
                             .replace(/\\'/g, "\\'")
@@ -195,8 +194,13 @@
                 } = getWorkflowConfigMap(workflowTemplate.value)
 
                 watch(config, (v) => {
-                    if (config.value?.items)
-                        data.value.uiConfig = config.value?.items
+                    if (config.value?.records) {
+                        // TODO: Temporary fix - API filter doesn't seem to work
+                        const filteredRecords = config.value.records.filter(
+                            (x) => x.template_name === workflowTemplate.value
+                        )
+                        data.value.uiConfig = filteredRecords[0].uiconfig
+                    }
                 })
             }
 

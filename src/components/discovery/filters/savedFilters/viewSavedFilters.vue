@@ -1,9 +1,9 @@
 <template>
-    <div class="pb-6 mt-1">
-        <div class="flex items-center justify-between p-4 mb-3">
+    <div>
+        <div class="flex items-center justify-between p-4">
             <SearchAndFilter
                 v-model:value="queryText"
-                placeholder="Search"
+                placeholder="Search saved"
                 :autofocus="true"
                 @change="handleSearch"
                 size="minimal"
@@ -50,7 +50,7 @@
         </div>
         <div class="w-full">
             <template v-if="activeTab === 'personal'">
-                <div class="w-full overflow-y-auto h-44">
+                <div class="w-full px-4 overflow-y-auto">
                     <div
                         v-if="isLoading"
                         class="flex items-center justify-center mt-3"
@@ -79,54 +79,17 @@
                             <a-popover placement="rightTop">
                                 <template #content>
                                     <div class="popover-container">
-                                        <div class="flex items-center mb-2">
-                                            <p
+                                        <div
+                                            class="flex items-center justify-between mb-2 "
+                                        >
+                                            <div
                                                 class="text-base font-bold text-gray-700 "
                                             >
                                                 {{ filter.name }}
-                                            </p>
-                                        </div>
-                                        <div class="flex items-end w-full">
-                                            <div class="">
-                                                <div class="mb-1 text-gray-700">
-                                                    Owned by
-                                                </div>
-                                                <a-popover>
-                                                    <template #content>
-                                                        <OwnerInfoCard
-                                                            :user="
-                                                                filter.ownerName
-                                                            "
-                                                        />
-                                                    </template>
-                                                    <Pill
-                                                        :label="
-                                                            filter.ownerName
-                                                        "
-                                                        ><template #prefix>
-                                                            <avatar
-                                                                class="-ml-2.5"
-                                                                :image-url="
-                                                                    KeyMaps.auth.avatar.GET_AVATAR(
-                                                                        {
-                                                                            username:
-                                                                                filter.ownerName,
-                                                                        }
-                                                                    )
-                                                                "
-                                                                :allow-upload="
-                                                                    false
-                                                                "
-                                                                :avatar-name="
-                                                                    filter.ownerName
-                                                                "
-                                                                avatar-size="small"
-                                                                :avatar-shape="'circle'" /></template></Pill
-                                                ></a-popover>
                                             </div>
 
-                                            <div
-                                                class="flex items-center cursor-pointer  ml-52 text-primary"
+                                            <a-button
+                                                type="primary"
                                                 @click.stop="
                                                     () =>
                                                         handleLoadFilter(filter)
@@ -137,12 +100,41 @@
                                                     icon="ArrowRight"
                                                     class="ml-1"
                                                 ></AtlanIcon>
+                                            </a-button>
+                                        </div>
+                                        <div class="flex items-end w-full">
+                                            <div class="">
+                                                <div class="mb-1 text-gray-500">
+                                                    Created by
+                                                </div>
+
+                                                <Pill :label="filter.ownerName"
+                                                    ><template #prefix>
+                                                        <avatar
+                                                            class="-ml-2.5"
+                                                            :image-url="
+                                                                KeyMaps.auth.avatar.GET_AVATAR(
+                                                                    {
+                                                                        username:
+                                                                            filter.ownerName,
+                                                                    }
+                                                                )
+                                                            "
+                                                            :allow-upload="
+                                                                false
+                                                            "
+                                                            :avatar-name="
+                                                                filter.ownerName
+                                                            "
+                                                            avatar-size="small"
+                                                            :avatar-shape="'circle'" /></template
+                                                ></Pill>
                                             </div>
                                         </div>
                                     </div>
                                 </template>
                                 <div
-                                    class="flex items-center justify-between px-2 py-1 text-gray-700 border rounded cursor-pointer  hover:text-primary hover:bg-primary-light"
+                                    class="p-2 my-1 text-gray-700 border rounded cursor-pointer  hover:bg-gray-200"
                                     :class="
                                         selected === filter.name
                                             ? '  border-primary bg-primary-light  text-primary'
@@ -150,20 +142,48 @@
                                     "
                                     @click.stop="() => handleLoadFilter(filter)"
                                 >
-                                    <Tooltip :tooltip-text="filter.name" />
+                                    <div
+                                        class="flex items-center justify-between "
+                                    >
+                                        <Tooltip :tooltip-text="filter.name" />
+                                        <div>
+                                            <a-tooltip placement="top">
+                                                <template #title
+                                                    >Load filter</template
+                                                >
+                                                <AtlanIcon
+                                                    icon="ArrowRight"
+                                                    class="w-4 h-4 my-auto text-gray-500 "
+                                                ></AtlanIcon>
+                                            </a-tooltip>
+                                        </div>
+                                    </div>
                                     <div>
-                                        <a-tooltip placement="top">
-                                            <template #title
-                                                >Load filter</template
-                                            >
-
-                                            <AtlanIcon
-                                                icon="Play"
-                                                class="w-4 h-4 my-auto text-gray-500 "
-                                            ></AtlanIcon>
-                                        </a-tooltip>
-                                    </div></div
-                            ></a-popover>
+                                        <div
+                                            class="flex items-center cursor-pointer "
+                                        >
+                                            <avatar
+                                                class="mr-1.5"
+                                                :image-url="
+                                                    KeyMaps.auth.avatar.GET_AVATAR(
+                                                        {
+                                                            username:
+                                                                filter.ownerName,
+                                                        }
+                                                    )
+                                                "
+                                                :allow-upload="false"
+                                                :avatar-name="filter.ownerName"
+                                                avatar-size="small"
+                                                :avatar-shape="'circle'"
+                                            />
+                                            <span class="text-xs">{{
+                                                filter.ownerName
+                                            }}</span>
+                                        </div>
+                                    </div>
+                                </div></a-popover
+                            >
                         </div>
                     </div>
                 </div>
@@ -287,6 +307,6 @@
 
 <style lang="less" scoped>
     .popover-container {
-        width: 440px !important;
+        min-width: 440px !important;
     }
 </style>

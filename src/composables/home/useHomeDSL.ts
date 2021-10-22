@@ -10,6 +10,7 @@ export function useRecentTerms() {
         gte: getRecentTimestamp().lastSevenDaysTimestamp,
         lt: getRecentTimestamp().currentTimestamp
       })
+      .size(5)
       .sort("__timestamp").build()
 
     const { replaceBody, body, isReady, error, data } = useIndexSearch(
@@ -34,6 +35,7 @@ export function useRecentAssets() {
     offset: '-7d',
     time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   })
+  .size(5)
   .build()
 
   const { replaceBody, body, isReady, error, data } = useIndexSearch(

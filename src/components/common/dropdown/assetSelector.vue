@@ -112,8 +112,11 @@
 <style lang="less" module>
     .connector {
         :global(.ant-select-selector) {
-            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
-            @apply rounded-lg !important;
+             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
+            background-color: #fbfbfb !important;
+            border: 1px solid #E9EBF1 !important;
+            color: #6F7590 !important;
+            border-radius: 8px !important;
         }
     }
 </style>

@@ -84,7 +84,7 @@
                 <!------------------------------->
                 <!-- Popover Allowed -->
                 <a-popover
-                    placement="rightTop"
+                    placement="right"
                     v-else-if="item.typeName === 'Query'"
                 >
                     <template #content>

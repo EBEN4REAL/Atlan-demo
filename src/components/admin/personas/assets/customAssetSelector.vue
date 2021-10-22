@@ -18,8 +18,8 @@
             </a-input>
             <AtlanIcon
                 @click="removeExpr(idx)"
-                icon="Decline"
-                class="flex-none cursor-pointer"
+                icon="Cross"
+                class="flex-none text-gray-500 cursor-pointer hover:text-gray"
             />
         </div>
         <button @click="addExpr" class="text-sm text-primary">

@@ -1,12 +1,12 @@
 <template>
     <div class="w-full">
         <a-tree-select
-            :class="$style.tree_selecttor"
             :value="selectedValue"
             style="width: 100%"
             v-model:treeExpandedKeys="expandedKeys"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
+            :class="$style.connector"
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
             :allowClear="true"
@@ -33,13 +33,6 @@
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
-        <AssetDropdown
-            v-if="connection"
-            :connector="filteredConnector"
-            :filter="data"
-            @change="handleChange"
-            @label-change="setPlaceholder($event, 'asset')"
-        ></AssetDropdown>
     </div>
 </template>
 
@@ -56,9 +49,7 @@
     } from 'vue'
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
-    import { Collapse } from '~/types'
     import { useConnectionsStore } from '~/store/connections'
-    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
@@ -75,20 +66,12 @@
                 required: false,
                 default: [],
             },
-            isLeafNodeSelectable: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
         },
-        components: {
-            AssetDropdown,
-        },
+        components: {},
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { getConnectorName } = useAssetInfo()
-            const { data, filterSourceIds, isLeafNodeSelectable } =
-                toRefs(props)
+            const { data, filterSourceIds } = toRefs(props)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
@@ -111,10 +94,7 @@
             const selectedValue = computed(
                 () => connection.value || connector.value || undefined
             )
-            // watch([connection, connector], () => {
-            //     selectedValue.value =
-            //         connection.value || connector.value || undefined
-            // })
+
             /* Remove the sources mentioned in filterIds array */
             const filterSourceList = (filterSourceIds: string[]) => {
                 return store.getSourceList.filter(
@@ -205,6 +185,22 @@
             watch([connector, connection], () => emitChangedFilters())
 
             const emitChangedFilters = () => {
+                const criterion: Components.Schemas.FilterCriteria[] = []
+
+                if (connection.value) {
+                    criterion?.push({
+                        attributeName: 'connectionQualifiedName',
+                        attributeValue: connection.value,
+                        operator: 'eq',
+                    })
+                } else if (connector.value) {
+                    criterion?.push({
+                        attributeName: 'connectorName',
+                        attributeValue: connector.value,
+                        operator: 'eq',
+                    })
+                }
+
                 emit('change')
             }
 
@@ -236,30 +232,8 @@
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
             const expandedKeys = ref<string[]>([])
-            const expandNode = (expanded: string[], node: any) => {
-                console.log(node.isLeaf)
-                if (node?.children.length > 0) {
-                    const key: string = node.eventKey
-                    const isExpanded = expandedKeys.value?.includes(key)
-                    if (!isExpanded) {
-                        if (node.dataRef.isRoot) {
-                            expandedKeys.value = []
-                        }
-                        expandedKeys.value?.push(key)
-                    } else if (isExpanded) {
-                        const index = expandedKeys.value?.indexOf(key)
-                        expandedKeys.value?.splice(index, 1)
-                    }
-                    expandedKeys.value = [...expandedKeys.value]
-                }
-            }
 
             const selectNode = (value, node?: any) => {
-                /* Checking if isLeafNodeSelectable by default it is selectable */
-                if (node?.children.length > 0 && !isLeafNodeSelectable.value) {
-                    expandNode([], node)
-                    return
-                }
                 const payload: Components.Schemas.FilterCriteria = {
                     attributeName: undefined,
                     attributeValue: undefined,
@@ -275,6 +249,7 @@
                 }
 
                 emit('update:data', payload)
+                emit('change')
             }
 
             return {
@@ -312,7 +287,7 @@
     }
 </style>
 <style lang="less" module>
-    .tree_selecttor {
+    .connector {
         :global(.ant-select-selector) {
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
             @apply rounded-lg !important;

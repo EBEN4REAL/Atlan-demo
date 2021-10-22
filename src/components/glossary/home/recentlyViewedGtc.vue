@@ -60,7 +60,7 @@
             const { entities, isLoading, fetchAssetsPaginated } = useGtcSearch(
                 undefined,
                 ref(true),
-                'AtlasGlossaryTerm,AtlasGlossaryCategory',
+                ['AtlasGlossaryTerm','AtlasGlossaryCategory'],
                 20
             )
 

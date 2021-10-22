@@ -142,6 +142,7 @@ export function useWorkflowTemplates(immediate: boolean = true) {
         console.log('Tranformed: ', AllFilters)
 
         const { filter: theFilters, sort } = AllFilters
+
         // rest list
         workflowList.value = []
         // reset offset
@@ -150,6 +151,18 @@ export function useWorkflowTemplates(immediate: boolean = true) {
 
         // set filter name && set filter
         filter.value = theFilters
+
+        //set default filter
+        filter.value['$and'] = [
+            {
+                labels: {
+                    $elemMatch: {
+                        'com.atlan.orchestration/verified': 'true',
+                    },
+                },
+            },
+        ]
+
         params.value.set(
             'filter',
             JSON.stringify(filter.value).replace(/\\/g, '')

@@ -6,7 +6,7 @@
         <div v-if="isLoading && category?.guid !== id">
             <LoadingView />
         </div>
-        <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+        <div v-else-if="category" class="flex flex-row h-full" :class="$style.tabClasses">
             <div
                 class="w-2/3"
                 ref="scrollDiv"
@@ -106,7 +106,11 @@
         onMounted,
         toRef,
         ref,
+        inject,
         provide,
+        ComputedRef,
+        WritableComputedRef,
+        Ref
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -160,24 +164,15 @@
 
             const router = useRouter()
 
-            const {
-                entity: category,
-                title,
-                shortDescription,
-                qualifiedName,
-                statusMessage,
-                statusObject,
-                error,
-                isLoading,
-                refetch,
-            } = useGTCEntity<Category>('category', guid, guid.value)
-
-            // const {
-            //     data: categoryTerms,
-            //     error: termsError,
-            //     isLoading: termsLoading,
-            //     fetchCategoryTermsPaginated,
-            // } = useCategoryTerms()
+            const category = inject<Ref<Category>>('currentEntity')
+            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
+            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const statusObject = inject<ComputedRef>('statusObject')
+            const error = inject<Ref>('profileError')
+            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const refetch = inject<() => void>('refreshEntity', () => {})
+            const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 

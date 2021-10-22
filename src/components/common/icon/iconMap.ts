@@ -39,6 +39,7 @@ import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
 import Edit from '~/assets/images/icons/edit.svg'
+import EmptySavedFilter from '~/assets/images/icons/empty_saved_filters.svg'
 import Decline from '~/assets/images/icons/decline.svg'
 import Approve from '~/assets/images/icons/approve.svg'
 import CategoryDraft from '~/assets/images/icons/category-wip.svg'
@@ -169,6 +170,7 @@ export default {
     Columns,
     BookmarkFilled,
     CopyOutlined,
+    EmptySavedFilter,
     Bookmark,
     BookmarkOutlined,
     ChevronDown,

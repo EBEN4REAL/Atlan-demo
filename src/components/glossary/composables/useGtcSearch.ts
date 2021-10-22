@@ -7,7 +7,7 @@ import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 import useBusinessMetadataStore from '~/store/businessMetadata'
 
-import { Category, Term } from '~/types/glossary/glossary.interface'
+import { Category, Glossary, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
 type Filters = {
     condition: string
@@ -23,12 +23,12 @@ type Filters = {
 export default function useGtcSearch(
     qualifiedName?: ComputedRef<string>,
     dependantFetchingKey?: Ref<any>,
-    type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm',
+    type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm' | string[],
     limit?: number
 ) {
-    const requestQuery = ref<string>()
+    const requestQuery = ref<string>('')
     const offsetLocal = ref(0)
-    const defaultLimit = limit || 50
+    const defaultLimit = limit || 20
     const limitLocal = ref<number>(defaultLimit)
     const localFilters = ref<Filters>()
 
@@ -56,11 +56,43 @@ export default function useGtcSearch(
 
     const refreshBody = () => {
         body.value = {
-            // typeName: 'AtlasGlossaryTerm,AtlasGlossaryCategory',
-            excludeDeletedEntities: true,
-            includeClassificationAttributes: true,
-            includeSubClassifications: true,
-            includeSubTypes: true,
+                
+            dsl: {
+                size: limitLocal.value,
+                from: offsetLocal.value,
+                query: {
+                    bool: {
+                        filter: [
+                            {
+                                terms: {
+                                    "__typeName.keyword": [
+                                        "AtlasGlossaryTerm",
+                                        "AtlasGlossaryCategory",
+                                        "AtlasGlossary"
+                                    ]
+                                }
+                            },
+                            {
+                                wildcard: {
+                                    qualifiedName: `*${qualifiedName?.value ?? '' }`
+                                }
+                            },
+                            {
+                                wildcard: {
+                                    "Asset.name": `*${requestQuery.value}*`   
+                                }
+                            }
+                        ]
+                    }
+                },
+                aggs: {
+                    group_by_typename: {
+                        terms: {
+                            field: "__typeName.keyword",
+                        }
+                    }
+                }
+            },
             relationAttributes: [
                 'readme',
                 'displayText',
@@ -91,67 +123,32 @@ export default function useGtcSearch(
                 ...BaseAttributes,
                 ...BasicSearchAttributes,
             ],
-            // entityFilters: {
-            //     condition: 'AND',
-            //     criterion: [
-            //         {
-            //             condition: 'OR',
-            //             criterion: [
-            //                 {
-            //                     attributeName: 'qualifiedName',
-            //                     attributeValue: `@${qualifiedName.value ?? ''}`,
-            //                     operator: 'endsWith',
-            //                 },
-            //             ],
-            //         },
-            //         ...(localFilters.value?.criterion ?? []),
-            //     ],
-            // },
-            // sortBy: "Catalog.popularityScore",
-            // sortOrder: "ASCENDING",
-            query: requestQuery.value,
-            offset: offsetLocal.value,
-            limit: limitLocal.value,
         }
+        let typeName: string[] =  [];
 
         if (qualifiedName && qualifiedName.value) {
             if (type === 'AtlasGlossaryCategory')
-                body.value.typeName = 'AtlasGlossaryCategory'
+                typeName = ['AtlasGlossaryCategory']
             else if (type === 'AtlasGlossaryTerm')
-                body.value.typeName = 'AtlasGlossaryTerm'
-            else body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory'
-            body.value.entityFilters = {
-                condition: 'AND',
-                criterion: [
-                    {
-                        condition: 'OR',
-                        criterion: [
-                            {
-                                attributeName: 'qualifiedName',
-                                attributeValue: `@${qualifiedName.value ?? ''}`,
-                                operator: 'endsWith',
-                            },
-                        ],
-                    },
-                    ...(localFilters.value?.criterion ?? []),
-                ],
-            }
+                typeName = ['AtlasGlossaryTerm']
+            else typeName = ['AtlasGlossaryTerm', 'AtlasGlossaryCategory']
+
         } else {
-            if (type && type != '') {
-                body.value.typeName = `${type}`
-            } else
-                body.value.typeName =
-                    'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary'
-            body.value.entityFilters = {
-                condition: 'AND',
-                criterion: [...(localFilters.value?.criterion ?? [])],
+            if (type && type !== '') {
+                typeName = [type]
+            }  else if(Array.isArray(type)) {
+                typeName = type
             }
+            else
+                typeName =
+                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory', 'AtlasGlossary']
         }
+        body.value.dsl.query.bool.filter[0].terms['__typeName.keyword'] = typeName
     }
 
     refreshBody()
 
-    const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([])
+    const entities: Ref<(Category | Term | Glossary)[]> = ref<(Category | Term)[]>([])
     const terms = computed(() =>
         entities.value.filter(
             (entity) => entity.typeName === 'AtlasGlossaryTerm'
@@ -180,12 +177,14 @@ export default function useGtcSearch(
             immediate:
                 dependantFetchingKey && dependantFetchingKey.value
                     ? true
-                    : qualifiedName.value
+                    : qualifiedName?.value
                     ? true
                     : false,
             revalidateOnFocus: false,
         },
     })
+    const approximateCount = computed(() => assets.value.approximateCount)
+
     offsetLocal.value += defaultLimit
     refreshBody()
 
@@ -278,6 +277,7 @@ export default function useGtcSearch(
         error,
         isLoading,
         referredEntities,
+        approximateCount,
         fetchAssets,
         fetchAssetsPaginated,
         deleteEntityFromList,

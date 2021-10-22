@@ -19,7 +19,6 @@ const useLoadQueryTree = () => {
         offset: 0,
         attributes: [
             'name',
-            'owner',
             'qualifiedName',
             'isPrivate',
             'folder',

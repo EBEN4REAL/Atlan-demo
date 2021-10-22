@@ -142,7 +142,13 @@ import Report from '~/assets/images/icons/report.svg'
 import Platform from '~/assets/images/icons/platform.svg'
 import Feedback from '~/assets/images/icons/feedback.svg'
 import Admin from '~/assets/images/icons/admin.svg'
+<<<<<<< Updated upstream
 import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
+=======
+import TableDeprecated from '~/assets/images/icons/table_deprecated.svg';
+import TableDraft from '~/assets/images/icons/table_draft.svg';
+import TableVerified from '~/assets/images/icons/table_verified.svg';
+>>>>>>> Stashed changes
 
 export default {
     IssuesFilled,
@@ -289,5 +295,11 @@ export default {
     Platform,
     Feedback,
     Admin,
+<<<<<<< Updated upstream
     ActivityLogs
+=======
+    TableDeprecated,
+    TableDraft,
+    TableVerified
+>>>>>>> Stashed changes
 }

@@ -102,7 +102,7 @@
                         return bodybuilder()
                             .filter(
                                 'term',
-                                `${typeName}.${item.attribute}`,
+                                `${item.attribute}`,
                                 asset.value[item.attribute]
                             )
                             .filter('term', '__typeName.keyword', typeName)

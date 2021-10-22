@@ -210,7 +210,7 @@
                     Object.assign({}, activeInlineTab.value)
                 activeInlineTabCopy.assetSidebar.assetInfo = item.value
                 activeInlineTabCopy.assetSidebar.isVisible = true
-                openAssetSidebar(activeInlineTabCopy)
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
 
             const splittedUsers = ref(splitArray(5, mixedOwnersAndGroups.value))

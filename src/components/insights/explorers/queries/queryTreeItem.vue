@@ -315,7 +315,7 @@
                                 Object.assign({}, activeInlineTab.value)
                             activeInlineTabCopy.assetSidebar.assetInfo = t
                             activeInlineTabCopy.assetSidebar.isVisible = true
-                            openAssetSidebar(activeInlineTabCopy)
+                            openAssetSidebar(activeInlineTabCopy, 'not_editor')
                         }
 
                         break

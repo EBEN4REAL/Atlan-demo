@@ -67,6 +67,7 @@ export interface activeInlineTabInterface {
     }
     assetSidebar: {
         isVisible: boolean
+        openingPos: string | undefined
         assetInfo: assetInterface
         title: string
         id: string

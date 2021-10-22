@@ -21,7 +21,7 @@
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
-                                    class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
+                                    class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                                     @click="handleAdd"
                                 >
                                     <fa icon="fal plus" class="" />
@@ -43,7 +43,7 @@
                                 "
                             >
                                 <div
-                                    class="flex items-center justify-between inline_tab"
+                                    class="flex items-center justify-between  inline_tab"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
@@ -64,8 +64,12 @@
                                         >
                                     </div>
                                     <div
-                                        v-if="(!tab.isSaved && tab.playground.editor.text.length>0)"
-                                        class="flex items-center mr-2 unsaved-dot"
+                                        v-if="
+                                            !tab.isSaved &&
+                                            tab.playground.editor.text.length >
+                                                0
+                                        "
+                                        class="flex items-center mr-2  unsaved-dot"
                                     >
                                         <div
                                             class="
@@ -286,6 +290,7 @@
                     },
                     assetSidebar: {
                         // for taking the previous state from active tab
+                        openingPos: undefined,
                         isVisible:
                             activeInlineTab.value?.assetSidebar?.isVisible ??
                             false,
@@ -355,12 +360,10 @@
                 unsavedPopover.value.show = false
             }
             const closePopOver = () => {
-
-                if(unsavedPopover?.value?.show) {
+                if (unsavedPopover?.value?.show) {
                     unsavedPopover.value.key = undefined
                     unsavedPopover.value.show = false
                 }
-                
             }
 
             const saveQueryOnCloseTab = (saveQueryDataParam: any) => {

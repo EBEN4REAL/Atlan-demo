@@ -19,7 +19,7 @@
                         <a-tooltip>
                             <template #title>Custom variables</template>
                             <div
-                                class="items-center justify-center px-1 rounded cursor-pointer hover:bg-gray-300"
+                                class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
                                 :class="showcustomToolBar ? 'bg-gray-300' : ''"
                                 @click="toggleCustomToolbar"
                             >
@@ -46,61 +46,54 @@
                                 <AtlanIcon icon="Readme" class="w-5 h-5" />
                             </div>
                         </a-tooltip>
-                        
+
+                        <div
+                            :class="fullSreenState ? 'bg-gray-300' : ''"
+                            class="
+                                items-center
+                                justify-center
+                                px-1
+                                ml-1
+                                py-0.5
+                                -mt-0.5
+                                rounded
+                                cursor-pointer
+                                hover:bg-gray-300
+                                group
+                            "
+                        >
                             <div
-                                :class="fullSreenState ? 'bg-gray-300' : ''"
                                 class="
                                     items-center
                                     justify-center
-                                    px-1
-                                    ml-1
-                                    py-0.5
-                                    -mt-0.5
                                     rounded
                                     cursor-pointer
                                     hover:bg-gray-300
-                                    group
+                                    py-0.5
                                 "
+                                @click="tFullScreen"
                             >
-                                <div
-                                    class="
-                                        items-center
-                                        justify-center
-                                        rounded
-                                        cursor-pointer
-                                        hover:bg-gray-300
-                                        py-0.5
-                                    "
-                                    @click="tFullScreen"
+                                <a-tooltip v-if="fullSreenState">
+                                    <template #title>
+                                        Exit full screen
+                                    </template>
+                                    <AtlanIcon
+                                        class="w-4 h-4 border-gray-500"
+                                        icon="ExitFullScreen"
+                                    />
+                                </a-tooltip>
+                                <a-tooltip
+                                    v-else
+                                    :overlayClassName="$style.tooltip"
                                 >
-                                    <a-tooltip 
-                                            v-if="fullSreenState"
-                                    >
-                                        <template #title>
-                                                Exit full screen
-                                        </template>
-                                        <AtlanIcon
-                                            class="w-4 h-4 border-gray-500"
-                                            icon="ExitFullScreen"
-                                        />
-                                    </a-tooltip>
-                                    <a-tooltip
-                                        v-else
-                                        :overlayClassName="$style.tooltip"
-                                    >
-                                        <template #title>
-                                                Go full screen
-                                        </template>
-                                        <AtlanIcon
-                                            class="w-4 h-4 border-gray-500"
-                                            icon="FullScreen"
-                                        />
-                                    </a-tooltip>
-
-                                    
-                                    
-                                </div>
+                                    <template #title> Go full screen </template>
+                                    <AtlanIcon
+                                        class="w-4 h-4 border-gray-500"
+                                        icon="FullScreen"
+                                    />
+                                </a-tooltip>
                             </div>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center">
@@ -662,7 +655,7 @@
                     closeAssetSidebar(activeInlineTabCopy)
                 } else {
                     activeInlineTabCopy.assetSidebar.isVisible = true
-                    openAssetSidebar(activeInlineTabCopy)
+                    openAssetSidebar(activeInlineTabCopy, 'editor')
                 }
             }
 
@@ -768,8 +761,6 @@
     }
 
     .tooltip {
-        
-        
     }
 </style>
 

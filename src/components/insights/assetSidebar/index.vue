@@ -1,7 +1,18 @@
 <template>
     <div
+        class="z-20 flex flex-col bg-white"
+        v-if="selectedAsset.openingPos === 'not_editor'"
+    >
+        <AssetPreview
+            :mutateTooltip="true"
+            :selectedAsset="selectedAsset"
+            @asset-mutation="() => {}"
+            page="discovery"
+        ></AssetPreview>
+    </div>
+    <div
         class="w-full h-full placeholder"
-        v-if="selectedAsset && !activeInlineTab?.queryId"
+        v-if="selectedAsset.openingPos === 'editor' && activeInlineTab?.queryId"
     >
         <div class="flex items-center justify-between w-full p-3">
             <span
@@ -17,17 +28,6 @@
                 <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
             </span>
         </div>
-    </div>
-    <div
-        class="z-20 flex flex-col bg-white"
-        v-else-if="selectedAsset && activeInlineTab?.queryId"
-    >
-        <AssetPreview
-            :mutateTooltip="true"
-            :selectedAsset="selectedAsset"
-            @asset-mutation="() => {}"
-            page="discovery"
-        ></AssetPreview>
     </div>
 </template>
 

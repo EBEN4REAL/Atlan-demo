@@ -1,10 +1,37 @@
-import bodybuilder from 'bodybuilder'
+import bodybuilder, { Bodybuilder } from 'bodybuilder'
+import { ISearchOperators } from '~/constant/advancedAttributes'
+
+function operatorToDSL(
+    query: Bodybuilder,
+    operator: ISearchOperators,
+    attribute: string,
+    value: string
+) {
+    if (operator === 'eq') return query.filter('term', attribute, value)
+    else if (operator === 'neq') return query.notQuery('term', attribute, value)
+    else if (operator === 'isNull')
+        return query.notQuery('exists', 'field', value)
+    else if (operator === 'notNull')
+        return query.query('exists', 'field', value)
+    else if (['gt', 'lt', 'gte', 'lte'].includes(operator))
+        return query.query('range', attribute, { [operator]: value })
+}
 
 export function useDiscoveryDSL(filters: Record<string, any>) {
     const query = bodybuilder()
     Object.keys(filters ?? {}).forEach((mkey) => {
         const fltrObj = filters[mkey]
         switch (mkey) {
+            case 'connector': {
+                const conn = fltrObj
+                if (conn.attributeValue)
+                    query.filter(
+                        'term',
+                        `Asset.${conn.attributeName}`,
+                        conn.attributeValue
+                    )
+                break
+            }
             case 'saved': {
                 break
             }
@@ -66,6 +93,17 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 break
             }
             case 'advanced': {
+                Object.keys(fltrObj?.applied || {})?.forEach((key) => {
+                    const fl = fltrObj?.applied[key]
+                    Object.keys(fl).forEach((flk) => {
+                        operatorToDSL(
+                            query,
+                            flk as ISearchOperators,
+                            key,
+                            fl[flk]
+                        )
+                    })
+                })
                 break
             }
             // for BM

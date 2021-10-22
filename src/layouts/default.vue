@@ -3,9 +3,8 @@
         <a-layout-header class="z-30 h-10 p-0 m-0">
             <div class="h-full px-4 bg-white border-b">
                 <NavMenu
-                    :page="activeKey[0]"
+                    :page="activeKey"
                     :is-sidebar-active="showNavbar"
-                    @change="handleChange"
                     @toggleNavbar="handleToggleNavbar"
                     @openNavbar="showNavbar = true"
                 />
@@ -28,14 +27,10 @@
                     :mask="false"
                     :class="$style.drawerStyles"
                 >
-                    <SidePanel
-                        :page="activeKey[0]"
-                        @change="handleChange"
-                        @closeNavbar="closeNavbar"
-                    />
+                    <SidePanel :page="activeKey" @closeNavbar="closeNavbar" />
                 </a-drawer>
                 <div v-else style="min-width: 264px">
-                    <SidePanel :page="activeKey[0]" @change="handleChange" />
+                    <SidePanel :page="activeKey" />
                 </div>
                 <div
                     class="w-full"
@@ -76,30 +71,21 @@
 
             const keys = useMagicKeys()
             const esc = keys.Escape
-            const activeKey = ref(['/'])
-            const pages: Record<string, string> = {
-                home: '/',
-                assets: '/assets',
-                glossary: '/glossary',
-                insights: '/insights',
-                connections: '/connections',
-                workflows: '/workflows',
-                reporting: '/reporting',
-                admin: '/admin',
-                platform: '/platform',
-                404: '/404',
-            }
+            const activeKey = ref('/')
+            const pages = [
+                '/',
+                '/assets',
+                '/glossary',
+                '/insights',
+                '/connections',
+                '/workflows',
+                '/reporting',
+                '/admin',
+                '/platform',
+            ]
+
             const curPath = computed(() => currentRoute.value.path)
 
-            const handleChange = (key: string) => {
-                if (key && Object.keys(pages).find((page) => page === key)) {
-                    activeKey.value = key === 'home' ? ['/'] : [key]
-                    router.push(pages[key])
-                } else {
-                    router.push(pages[404])
-                }
-                showNavbar.value = false
-            }
             const handleToggleNavbar = () => {
                 showNavbar.value = !showNavbar.value
             }
@@ -108,30 +94,28 @@
             }
 
             const updatePaths = () => {
-                const page = currentRoute.value.path.split('/')[1]
-                if (Object.keys(pages).find((item) => item === page)) {
-                    activeKey.value = [page]
-                } else {
-                    router.push(pages['home'])
-                }
+                const page = `/${currentRoute.value.path.split('/')[1]}`
+                if (pages.includes(page)) activeKey.value = page
+                else router.push('/')
             }
+
             watch(esc, (v) => {
                 if (v) {
                     closeNavbar()
                 }
             })
+
             const handleClick = () => {
                 if (showNavbar.value) showNavbar.value = false
             }
+
             watch(curPath, () => {
                 updatePaths()
             })
 
-            onMounted(() => {
-                updatePaths()
-            })
+            updatePaths()
+
             return {
-                handleChange,
                 activeKey,
                 handleToggleNavbar,
                 showNavbar,

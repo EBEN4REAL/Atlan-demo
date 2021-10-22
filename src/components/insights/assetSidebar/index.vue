@@ -1,8 +1,5 @@
 <template>
-    <div
-        class="z-20 flex flex-col bg-white"
-        v-if="selectedAsset.openingPos === 'not_editor'"
-    >
+    <div class="z-20 flex flex-col bg-white" v-if="activeInlineTab.label">
         <AssetPreview
             :mutateTooltip="true"
             :selectedAsset="selectedAsset"
@@ -10,7 +7,7 @@
             page="discovery"
         ></AssetPreview>
     </div>
-    <div
+    <!-- <div
         class="w-full h-full placeholder"
         v-if="selectedAsset.openingPos === 'editor' && activeInlineTab?.queryId"
     >
@@ -32,7 +29,8 @@
     <div
         class="w-full h-full placeholder"
         v-if="
-            selectedAsset.openingPos === 'editor' && !activeInlineTab?.queryId
+            !selectedAsset.openingPos === 'not_editor' &&
+            !activeInlineTab?.queryId
         "
     >
         <div class="flex items-center justify-between w-full p-3">
@@ -49,7 +47,7 @@
                 <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
             </span>
         </div>
-    </div>
+    </div> -->
 </template>
 
 <script lang="ts">

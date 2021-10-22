@@ -84,7 +84,7 @@
                 <!------------------------------->
                 <!-- Popover Allowed -->
                 <a-popover
-                    placement="rightTop"
+                    placement="right"
                     v-else-if="item.typeName === 'Query'"
                 >
                     <template #content>
@@ -166,11 +166,6 @@
                                             >
 
                                             <a-menu-item
-                                                v-if="
-                                                    canUserDeleteFolder(
-                                                        item?.attributes?.owner
-                                                    )
-                                                "
                                                 key="deleteFolder"
                                                 class="text-red-600"
                                                 @click="
@@ -320,7 +315,7 @@
                                 Object.assign({}, activeInlineTab.value)
                             activeInlineTabCopy.assetSidebar.assetInfo = t
                             activeInlineTabCopy.assetSidebar.isVisible = true
-                            openAssetSidebar(activeInlineTabCopy)
+                            openAssetSidebar(activeInlineTabCopy, 'not_editor')
                         }
 
                         break

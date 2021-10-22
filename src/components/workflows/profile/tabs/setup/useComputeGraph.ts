@@ -22,10 +22,14 @@ export default function useComputeGraph(
     const tasks = workflowData.value
     tasks.forEach((v) => {
         const id = v.name
+        let IdTrunc
+        if (id.length > 16) IdTrunc = `${id.slice(0, 16)}...`
+        else IdTrunc = id
+
         const nodeData = {
             id,
             displayName: id,
-            width: 180,
+            width: 190,
             height: 40,
             shape: 'html',
             data: {
@@ -41,7 +45,7 @@ export default function useComputeGraph(
                                 ? 'isSelectedNode'
                                 : ''
                         }">
-                            ${id}
+                            ${IdTrunc}
                         </div>`
                 },
                 shouldComponentUpdate(node) {
@@ -106,7 +110,7 @@ export default function useComputeGraph(
     }
 
     /* Zoom */
-    graph.value.zoom(-0.3)
+    graph.value.zoom(-0.4)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     return { model, edges, nodes }

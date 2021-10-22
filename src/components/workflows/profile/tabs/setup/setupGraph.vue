@@ -195,11 +195,19 @@
                 })
             }
 
+            watch(
+                graphData,
+                (newVal) => {
+                    initialize(true)
+                },
+                { deep: true }
+            )
+
             onMounted(() => {
-                watch(graphData, () => {
-                    if (graph.value) graph.value.dispose()
-                    initialize()
-                })
+                // watch(graphData, () => {
+                if (graph.value) graph.value.dispose()
+                initialize()
+                // })
             })
 
             return {
@@ -260,14 +268,15 @@
         &-node {
             border-radius: 10px;
             height: 40px;
-            width: 180px;
+            width: 190px;
             display: inline-flex;
             justify-content: center;
             align-items: center;
             background-color: #f3f3f3;
-            font-size: 20px;
+            font-size: 16px;
             color: #3e4359;
             border: 1px solid #e6e6eb;
+            padding: 0 0.5rem;
 
             &.isSelectedNode {
                 border: 2px solid #5277d7;

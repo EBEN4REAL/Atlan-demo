@@ -16,7 +16,7 @@
         </template>
         <!-- Modal body -->
 
-        <a-upload-dragger
+        <!-- <a-upload-dragger
             v-model:fileList="fileList"
             name="file"
             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -47,8 +47,9 @@
                     upload.
                 </span>
             </div>
-        </a-upload-dragger>
+        </a-upload-dragger> -->
         <!-- Modal footer -->
+        <FormGen :config="formConfig" @change="handleFormChange" />
         <template #footer>
             <div class="flex items-center">
                 <a-button class="px-2">Download sample CSV template</a-button>
@@ -59,22 +60,48 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, inject } from 'vue'
+    import { defineComponent, ref, inject, computed, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import {
         Glossary,
         Category,
         Term,
     } from '~/types/glossary/glossary.interface'
+    import FormGen from '~/components/common/formGenerator/index.vue'
+    import { createWorkflow } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
-        components: {},
-        props: {},
+        components: { FormGen },
+        props: {
+            entity: {
+                type: Object,
+                required: true,
+                default: () => {},
+            },
+        },
         emits: [],
         setup(props, { emit }) {
             const visible = ref<boolean>(false)
             const uploadStatus = ref()
             const handleStartUpload = inject('handleStartUpload')
+
+            const formConfig = ref([
+                {
+                    type: 'upload',
+                    id: 'test',
+                    label: 'Uploader',
+                    isVisible: true,
+                    requestConfig: {
+                        url: 'http://{{domain}}/api/service/files',
+                        formDataFormat: {
+                            name: 'name',
+                            file: '{{file}}',
+                            prefix: 'prefix',
+                        },
+                    },
+                },
+            ])
+
             const showModal = async () => {
                 visible.value = true
             }
@@ -102,6 +129,103 @@
                 console.log('custom upload request goes in this function')
                 handleStartUpload()
             }
+
+            const handleFormChange = (data) => {
+                console.log(data.key)
+                if (data.key) handleCreateWorkflow(data.key)
+            }
+            const handleCreateWorkflow = (s3Key) => {
+                const body = computed(() => ({
+                    metadata: {
+                        name: `atlan-glossary-bulk-upload-${props.entity.guid.slice(
+                            -8
+                        )}`,
+                    },
+                    spec: {
+                        arguments: {
+                            parameters: [
+                                {
+                                    name: 's3-file-key',
+                                    value: s3Key,
+                                },
+                                {
+                                    name: 'glossary-guid',
+                                    value: props.entity.guid,
+                                },
+                                {
+                                    name: 'glossary-type',
+                                    value: 'term',
+                                },
+                            ],
+                        },
+                        templates: [
+                            {
+                                name: 'main',
+                                dag: {
+                                    tasks: [
+                                        {
+                                            name: 'run',
+                                            arguments: {
+                                                parameters: [
+                                                    {
+                                                        name: 's3-file-key',
+                                                        value: s3Key,
+                                                    },
+                                                    {
+                                                        name: 'glossary-guid',
+                                                        value: props.entity
+                                                            .guid,
+                                                    },
+                                                    {
+                                                        name: 'glossary-type',
+                                                        value: 'term',
+                                                    },
+                                                ],
+                                            },
+                                            templateRef: {
+                                                name: 'atlan-glossary-bulk-upload',
+                                                template: 'main',
+                                                clusterScope: true,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                }))
+
+                console.log(body)
+
+                const { data, error, isLoading, mutate } = createWorkflow(
+                    body,
+                    false
+                )
+                message.loading({
+                    content: 'Creating new workflow ...',
+                    key: `${s3Key}`,
+                })
+
+                mutate()
+                watch([data, error], (v) => {
+                    if (data.value && !error.value) {
+                        console.log(data)
+                        message.success({
+                            content: `created!`,
+                            key: `${s3Key}`,
+                            duration: 2,
+                        })
+                    } else {
+                        console.log({ error: error.value })
+                        const errMsg = error.value?.response?.data?.message
+                        message.error({
+                            content: `${errMsg || `Failed to create workflow`}`,
+                            key: `${s3Key}`,
+                            duration: 5,
+                        })
+                    }
+                })
+            }
             return {
                 handleCancel,
                 showModal,
@@ -110,6 +234,8 @@
                 fileList: ref([]),
                 handleCustomRequest,
                 uploadStatus,
+                formConfig,
+                handleFormChange,
             }
         },
     })

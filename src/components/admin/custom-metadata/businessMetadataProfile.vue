@@ -71,7 +71,7 @@
                     Discard
                 </a-button>
                 <a-button
-                    v-if="isUpdated || localBm.guid === 'new'"
+                    v-if="(isUpdated && updatePermission ) || localBm.guid === 'new'"
                     class="rounded-md ant-btn ant-btn-primary"
                     :loading="loading"
                     :loading-text="'Saving...'"
@@ -115,6 +115,7 @@
                         <sup class="text-red">*</sup>
                     </label>
                     <input
+                        v-if="updatePermission"
                         id="name"
                         v-model="localBm.options.displayName"
                         type="text"
@@ -122,10 +123,17 @@
                         name="Name"
                         @input="onUpdate"
                     />
+                    <span 
+                        v-else 
+                        class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white rounded appearance-none  text-grey-darker border-grey"
+                    >
+                        {{localBm.options.displayName}}
+                    </span>
                 </div>
                 <div>
                     <label for="description" class="mb-1">Description</label>
                     <textarea
+                        v-if="updatePermission"
                         id="description"
                         v-model="localBm.description"
                         placeholder="Add some details about this metadata."
@@ -134,6 +142,12 @@
                         :rows="2"
                         @input="onUpdate"
                     ></textarea>
+                    <div
+                        v-else
+                        class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white rounded appearance-none  text-grey-darker border-grey"
+                    >
+                        {{ localBm.description }}
+                    </div>
                 </div>
                 <div class="mt-4">
                     <label for="description" class="block mb-1"
@@ -261,6 +275,7 @@
 
     // ? Store
     import useBusinessMetadataStore from '~/store/businessMetadata'
+    import { useAccessStore } from '~/services/access/accessStore'
 
     import { copyToClipboard } from '~/utils/clipboard'
 
@@ -289,6 +304,9 @@
         ],
         setup(props, context) {
             const store = useBusinessMetadataStore()
+            const accessStore = useAccessStore()
+
+            const updatePermission = computed(() => accessStore.checkPermission('UPDATE_BUSINESS_METADATA'))
             // * Data
             const localBm = ref({
                 name: '',
@@ -588,6 +606,7 @@
                 copyAPI,
                 searchedAttributes,
                 showArchiveMetadataModal,
+                updatePermission
             }
         },
     })

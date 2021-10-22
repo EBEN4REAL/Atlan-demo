@@ -38,7 +38,6 @@
             :projection="projection"
             :is-loading="isLoading"
             :is-load-more="isLoadMore"
-            :typename="assetTypeListString"
             v-model:autoSelect="autoSelect"
             @loadMore="loadMore"
             @bulkSelectChange="(list) => $emit('bulkSelectChange', list)"
@@ -108,11 +107,6 @@
                     return {}
                 },
             },
-            termName: {
-                type: String,
-                required: false,
-                default: undefined,
-            },
         },
         emits: ['preview', 'bulkSelectChange'],
         setup(props, { emit }) {
@@ -135,15 +129,18 @@
             const state = ref('active')
 
             // Get All Disoverable Asset Types
-            const initialTabs: Ref<string[]> = computed(() =>
-                useFilteredTabs({ connector: undefined, category: undefined })
+            const applicableTabs: Ref<string[]> = computed(() =>
+                useFilteredTabs({
+                    connector: facets.value?.connector,
+                    category: [],
+                })
             )
 
             const assetTypeList = computed(() => {
                 const filteredTabs = AssetTypeList.filter(
                     (item) =>
                         item.isDiscoverable == true &&
-                        initialTabs.value.includes(item.id)
+                        applicableTabs.value.includes(item.id)
                 )
 
                 return [
@@ -155,20 +152,16 @@
                 ]
             })
 
-            const assetTypeListString = computed(() =>
-                initialTabs.value.join(',')
-            )
-
             const {
                 list,
                 replaceBody,
                 isLoading,
                 searchScoreList,
                 mutateAssetInList,
-            } = useAssetListing(assetTypeListString.value, false)
+            } = useAssetListing('', false)
 
             const { assetTypeMap, refreshAggregation } = useAssetAggregation(
-                assetTypeListString.value,
+                '',
                 false
             )
 
@@ -216,7 +209,8 @@
                         ...generateAssetQueryDSL(
                             facets.value,
                             queryText.value,
-                            selectedTab.value
+                            selectedTab.value,
+                            applicableTabs.value
                         ),
                     },
                     attributes: [
@@ -230,7 +224,8 @@
                     refreshAggregation({
                         dsl: generateAggregationDSL(
                             facets.value,
-                            queryText.value
+                            queryText.value,
+                            applicableTabs.value
                         ),
                     })
             }
@@ -286,7 +281,7 @@
                 autoSelect,
                 handleClearFiltersFromList,
                 facets,
-                initialTabs,
+                applicableTabs,
                 searchScoreList,
                 list,
                 selectedTab,
@@ -308,7 +303,6 @@
                 handleState,
                 mutateAssetInList,
                 handleTabChange,
-                assetTypeListString,
             }
         },
     })

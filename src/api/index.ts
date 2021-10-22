@@ -17,23 +17,30 @@ export const getSavedQueryPath = (serviceName: string, path = '') =>
 
 export const getAxiosClient = () => axiosClient
 
-export const fetcher = (url, params, options): Promise<AxiosResponse['data']> =>
+export const fetcher = <T>(
+    url,
+    params,
+    options
+): Promise<AxiosResponse<T>['data']> =>
     // replacing params:{...params} with params
     // params won't necessarily be a destructurable object ex- URLSearchParams - getting used in ~/components/admin/users/userPreview/accessLogs.vue
     getAxiosClient().get(url, { params, ...options })
 
-export const fetcherPost = (
+export const fetcherPost = <T>(
     url,
     body,
     options
-): Promise<AxiosResponse['data']> => {
+): Promise<AxiosResponse<T>['data']> => {
     return getAxiosClient().post(url, body, options)
 }
 
-export const updater = (url, body, options): Promise<AxiosResponse['data']> =>
-    getAxiosClient().put(url, body, options)
+export const updater = <T>(
+    url,
+    body,
+    options
+): Promise<AxiosResponse<T>['data']> => getAxiosClient().put(url, body, options)
 
-export const deleter = (url, options): Promise<AxiosResponse['data']> =>
+export const deleter = <T>(url, options): Promise<AxiosResponse<T>['data']> =>
     getAxiosClient().delete(url, options)
 
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {

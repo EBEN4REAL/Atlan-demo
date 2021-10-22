@@ -6,7 +6,7 @@
                 class="flex w-full m-0"
                 v-if="isPopoverAllowed(item?.typeName)"
             >
-                <a-popover placement="rightTop">
+                <a-popover placement="right">
                     <template #content>
                         <div>
                             <SchemaTreeItemPopover :item="item" />
@@ -467,7 +467,11 @@
                         )}\" LIMIT 50;\n`
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
-                        modifyActiveInlineTab(activeInlineTabCopy, inlineTabs)
+                        modifyActiveInlineTab(
+                            activeInlineTabCopy,
+                            inlineTabs,
+                            activeInlineTabCopy.isSaved
+                        )
                         selectionObject.value.startLineNumber = 2
                         selectionObject.value.startColumnNumber = 1
                         selectionObject.value.endLineNumber = 2
@@ -487,7 +491,7 @@
                                 Object.assign({}, activeInlineTab.value)
                             activeInlineTabCopy.assetSidebar.assetInfo = t
                             activeInlineTabCopy.assetSidebar.isVisible = true
-                            openAssetSidebar(activeInlineTabCopy)
+                            openAssetSidebar(activeInlineTabCopy, 'not_editor')
                         }
 
                         break

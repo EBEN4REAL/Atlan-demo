@@ -3,6 +3,7 @@
         <div class="h-full overflow-x-hidden" :class="$style.schemaTreeStyles">
             <div v-if="treeData.length">
                 <a-tree
+                    v-bind="$attrs"
                     :expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
                     :loadedKeys="loadedKeys"
@@ -25,7 +26,7 @@
                         />
                         <div
                             v-else
-                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                            class="flex flex-row w-full text-sm font-bold leading-5 text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -44,19 +45,34 @@
             </div>
             <div
                 v-else-if="!treeData.length"
-                class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
-                <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
-                <p class="mt-6 mb-0 text-base text-gray-700">
-                    No schemas available
-                </p>
+                <div
+                    v-if="activeInlineTab.explorer.schema.connectors.attributeName==='connectionQualifiedName'"
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
+
+                >
+                    <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
+                    <p class="mt-6 mb-0 text-base text-gray-700">
+                        No databases available
+                    </p>
+                </div>
+                <div
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
+                    v-else-if="activeInlineTab.explorer.schema.connectors.attributeName==='databaseQualifiedName'"
+                >
+                    <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
+                    <p class="mt-6 mb-0 text-base text-gray-700">
+                        No schemas available
+                    </p>
+                </div>
+                
             </div>
         </div>
     </div>
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, computed, PropType, ref, toRef, watch } from 'vue'
+    import { defineComponent, computed, PropType, ref, toRef, watch, ComputedRef, inject } from 'vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
     // components
@@ -68,6 +84,8 @@
     import Classifications from '@common/sidebar/classifications.vue'
     import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
     import SchemaTreeItem from './schemaTreeItem.vue'
+    // import useAssetInfo from '~/composables/asset/useAssetInfo';
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     // composables
 
@@ -132,10 +150,16 @@
                 default: () => [],
             },
         },
+        inheritAttrs: false,
         setup(props, { emit }) {
-            // data
+
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+
             return {
                 StatusList,
+                activeInlineTab
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

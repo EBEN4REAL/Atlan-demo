@@ -16,6 +16,7 @@
             <Loading />
             <!-- ------------- -->
             <!-- Output table -->
+
             <table
                 class="relative block w-full p-0 m-0 overflow-auto table-height"
                 v-if="
@@ -28,10 +29,18 @@
                 <thead>
                     <tr>
                         <th
+                            class="sticky top-0 w-8 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            style="width: 32px; min-width: 32px; z-index: 4"
+                        >
+                            #
+                        </th>
+
+                        <th
                             v-for="(col, index) in activeInlineTab.playground
                                 .editor.columnList"
                             :key="index"
                             class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            style="z-index: 3"
                         >
                             {{ col.title }}
                         </th>
@@ -44,6 +53,12 @@
                             .dataList"
                         :key="index"
                     >
+                        <td
+                            class="sticky left-0 w-8 px-4 py-2 text-xs text-gray-700 truncate bg-white border  border-gray-light"
+                            style="width: 32px; min-width: 32px; z-index: 2"
+                        >
+                            {{ index + 1 }}
+                        </td>
                         <td
                             v-for="(rowData, index) in row"
                             :key="index"
@@ -71,7 +86,7 @@
                     isQueryRunning === 'success' &&
                     LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
                 "
-             -->
+            -->
             <LineError
                 :errorDecorations="errorDecorations"
                 v-if="
@@ -80,9 +95,9 @@
                 "
             />
 
-            <!--  -->
             <!-- Output pane footer -->
-            <ResultPaneFooter />
+
+            <!-- <ResultPaneFooter /> -->
         </div>
     </div>
 </template>
@@ -153,21 +168,24 @@
                 activeInlineTab.value?.playground?.resultsPane?.result
                     ?.errorDecorations
 
-            watch(queryErrorObj, () => {
-                if (
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.errorDecorations
-                ) {
-                    /* Resetting the red dot from the editor if it error is not line type */
-                    const editorI = toRaw(editorInstance.value)
-                    activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                        editorI.deltaDecorations(
-                            activeInlineTab.value?.playground?.resultsPane
-                                ?.result?.errorDecorations,
-                            []
-                        )
-                }
-            })
+            // watch(queryErrorObj, () => {
+            //     /* Resetting the red dot from the editor if it error is not line type */
+            //     const editorI = toRaw(editorInstance.value)
+            //     if (activeInlineTab.value) {
+            //         activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+            //             editorI.deltaDecorations(
+            //                 activeInlineTab.value?.playground?.resultsPane
+            //                     ?.result?.errorDecorations,
+            //                 []
+            //             )
+            //     }
+            // })
+
+            // console.log()
+
+            // const printData = () => {
+            //     console.log('table data: ', activeInlineTab)
+            // }
 
             return {
                 errorDecorations,
@@ -179,23 +197,17 @@
                 outputPaneSize,
                 queryExecutionTime,
                 activeInlineTab,
+                // printData
             }
         },
     })
 </script>
 <style lang="less" scoped>
-    .table-height {
-        height: 80%;
-    }
-
     .placeholder {
         background-color: #f4f4f4;
     }
     .table_height {
         height: 100%;
-    }
-    .bottom_footer {
-        height: 8%;
     }
 
     @font-face {

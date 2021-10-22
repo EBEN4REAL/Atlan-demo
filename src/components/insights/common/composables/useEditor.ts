@@ -121,7 +121,7 @@ export function useEditor(
         themeName: string
     ) {
         if (themeName) {
-            console.log(monacoInstance.editor.setTheme, themeName)
+            // console.log(monacoInstance.editor.setTheme, themeName)
             monacoInstance.editor.setTheme(themeName)
             editorConfig.value.theme = themeName
         }
@@ -142,7 +142,7 @@ export function useEditor(
         editorConfig: Ref<editorConfigInterface>,
         size: number
     ) {
-        console.log(size)
+        // console.log(size)
         // console.log(editorInstance.getModel())
         editorInstance.updateOptions({ fontSize: size })
         editorConfig.value.fontSize = size
@@ -176,7 +176,7 @@ export function useEditor(
         )
     }
 
-    const changeMoustacheTemplateColor = (
+    const setMoustacheTemplateColor = (
         editorInstance: any,
         monacoInstance: any,
         matches: any
@@ -200,6 +200,10 @@ export function useEditor(
         })
         // older moustacheDecorations needed
         decorations = editorInstance?.deltaDecorations(decorations, el)
+    }
+    const clearMoustacheTemplateColor = (editorInstance: any) => {
+        // older moustacheDecorations needed
+        decorations = editorInstance?.deltaDecorations(decorations ?? [], [])
     }
     const findCustomVariableMatches = (
         editorInstance: any,
@@ -246,19 +250,90 @@ export function useEditor(
             )
         }
     }
+    const resetErrorDecorations = (
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        editor: any
+    ) => {
+        if (activeInlineTab.value) {
+            activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                editor.deltaDecorations(
+                    activeInlineTab.value.playground.resultsPane.result
+                        .errorDecorations,
+                    []
+                )
+        }
+    }
+
+    const setErrorDecorations = (
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        editor: any,
+        monaco: any
+    ) => {
+        if (
+            activeInlineTab.value &&
+            activeInlineTab.value.playground.resultsPane.result.errorDecorations
+                ?.length > 0
+        ) {
+            const lineRegex = /(?:line )([0-9]+)/gim
+            /* [["Line 3", "3"], ["line 3", "3"]] */
+            const linesInfo = [
+                ...activeInlineTab.value.playground.resultsPane.result.queryErrorObj.errorMessage?.matchAll(
+                    lineRegex
+                ),
+            ]
+            let startLine
+            if (
+                linesInfo?.length &&
+                linesInfo[0]?.length > 1 &&
+                activeInlineTab.value.playground.resultsPane.result
+                    .errorDecorations?.length > 0
+            ) {
+                startLine = linesInfo[0][1]
+                activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                    editor.deltaDecorations(
+                        activeInlineTab.value.playground.resultsPane.result
+                            .errorDecorations,
+                        [
+                            {
+                                range: new monaco.Range(
+                                    Number(startLine),
+                                    1,
+                                    Number(startLine),
+                                    1
+                                ),
+                                options: {
+                                    linesDecorationsClassName:
+                                        'edtiorErrorDotDecoration',
+                                },
+                            },
+                        ]
+                    )
+            }
+        }
+    }
     const editorConfig = ref({
         theme: 'vs',
         tabSpace: 3,
         fontSize: 14,
     })
 
+    const editorHoverConfig = ref({
+        theme: 'vs',
+        tabSpace: 3,
+        fontSize: 14,
+    })
+
     return {
+        clearMoustacheTemplateColor,
+        setErrorDecorations,
+        resetErrorDecorations,
         toggleGhostCursor,
         findCustomVariableMatches,
-        changeMoustacheTemplateColor,
+        setMoustacheTemplateColor,
         setFontSizes,
         setTabSpaces,
         editorConfig,
+        editorHoverConfig,
         setEditorTheme,
         setEditorFocusedState,
         setEditorPos,

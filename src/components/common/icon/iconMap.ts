@@ -39,6 +39,7 @@ import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
 import Edit from '~/assets/images/icons/edit.svg'
+import EmptySavedFilter from '~/assets/images/icons/empty_saved_filters.svg'
 import Decline from '~/assets/images/icons/decline.svg'
 import Approve from '~/assets/images/icons/approve.svg'
 import CategoryDraft from '~/assets/images/icons/category-wip.svg'
@@ -124,6 +125,8 @@ import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
+import Retry from '~/assets/images/icons/retry.svg'
+import Recenter from '~/assets/images/icons/recenter.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
 import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
 import Hourglass from '~/assets/images/icons/hourglass.svg'
@@ -140,6 +143,10 @@ import Report from '~/assets/images/icons/report.svg'
 import Platform from '~/assets/images/icons/platform.svg'
 import Feedback from '~/assets/images/icons/feedback.svg'
 import Admin from '~/assets/images/icons/admin.svg'
+import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
+import TableDeprecated from '~/assets/images/icons/table_deprecated.svg';
+import TableDraft from '~/assets/images/icons/table_draft.svg';
+import TableVerified from '~/assets/images/icons/table_verified.svg';
 
 export default {
     IssuesFilled,
@@ -163,6 +170,7 @@ export default {
     Columns,
     BookmarkFilled,
     CopyOutlined,
+    EmptySavedFilter,
     Bookmark,
     BookmarkOutlined,
     ChevronDown,
@@ -268,6 +276,8 @@ export default {
     Minimap,
     FullScreenBoth,
     Minus,
+    Retry,
+    Recenter,
     AssetsInactiveLight,
     AssetsActiveLight,
     Hourglass,
@@ -284,4 +294,8 @@ export default {
     Platform,
     Feedback,
     Admin,
+    ActivityLogs,
+    TableDeprecated,
+    TableDraft,
+    TableVerified
 }

@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="flex flex-wrap items-center flex-grow max-w-10 gap-x-1 gap-y-1.5"
-    >
+    <div class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5">
         <template v-for="(item, index) in data">
             <a-popover
                 v-if="popoverTrigger"
@@ -38,7 +36,7 @@
             <template #prefix>
                 <AtlanIcon
                     icon="Add"
-                    class="h-4 text-gray group-hover:text-white"
+                    class="h-4 -mx-1.5 text-gray group-hover:text-white"
                 />
             </template>
         </Pill>
@@ -46,49 +44,49 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs } from 'vue'
-import Pill from './pill.vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
+    import Pill from './pill.vue'
 
-export default defineComponent({
-    name: 'PillGroup',
-    props: {
-        labelKey: {
-            type: String,
-            default: () => '',
+    export default defineComponent({
+        name: 'PillGroup',
+        props: {
+            labelKey: {
+                type: String,
+                default: () => '',
+            },
+            readOnly: {
+                type: Boolean,
+                default: () => false,
+            },
+            data: {
+                type: Array as PropType<any[]>,
+                default: () => [],
+            },
+            popoverTrigger: {
+                type: String as PropType<
+                    '' | 'hover' | 'focus' | 'click' | 'contextmenu'
+                >,
+                default: () => '',
+            },
         },
-        readOnly: {
-            type: Boolean,
-            default: () => false,
-        },
-        data: {
-            type: Array as PropType<any[]>,
-            default: () => [],
-        },
-        popoverTrigger: {
-            type: String as PropType<
-                '' | 'hover' | 'focus' | 'click' | 'contextmenu'
-            >,
-            default: () => '',
-        },
-    },
-    emits: ['delete', 'update:data', 'select', 'add'],
-    components: { Pill },
-    setup(prop, { emit }) {
-        const { data } = toRefs(prop)
-        function handleDelete(index: number) {
-            emit('delete', data.value[index])
+        emits: ['delete', 'update:data', 'select', 'add'],
+        components: { Pill },
+        setup(prop, { emit }) {
+            const { data } = toRefs(prop)
+            function handleDelete(index: number) {
+                emit('delete', data.value[index])
 
-            const newData = [...data.value]
-            newData.splice(index, 1)
-            emit('update:data', newData)
-        }
-        function handleClick(item: any, index: number) {
-            emit('select', item, index)
-        }
-        function handleAdd() {
-            emit('add')
-        }
-        return { handleDelete, handleClick, handleAdd }
-    },
-})
+                const newData = [...data.value]
+                newData.splice(index, 1)
+                emit('update:data', newData)
+            }
+            function handleClick(item: any, index: number) {
+                emit('select', item, index)
+            }
+            function handleAdd() {
+                emit('add')
+            }
+            return { handleDelete, handleClick, handleAdd }
+        },
+    })
 </script>

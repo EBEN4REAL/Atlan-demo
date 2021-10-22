@@ -27,9 +27,6 @@
                     />
                     <span v-else>{{ persona.description }}</span>
                 </a-form-item>
-                <a-form-item label="Admins" name="admins">
-                    {{ selectedPersonaDirty.admins }}
-                </a-form-item>
                 <a-form-item
                     v-if="selectedPersonaDirty.createdAt"
                     label="Created On"
@@ -37,26 +34,22 @@
                 >
                     {{ selectedPersonaDirty.createdAt }}
                 </a-form-item>
-                <a-divider />
-
-                <a-form-item label="Scopes">
-                    <div class="mb-3" v-for="scope in scopeList">
-                        <span
-                            class="block mb-1 text-sm text-gray-500 capitalize"
-                            >{{ scope.type }}</span
-                        >
-                        <a-checkbox-group
-                            :value="
-                                selectedPersonaDirty.metadataPolicies[0]
-                                    ?.actions
-                            "
-                            :name="scope.type"
-                            :options="scope.scopes"
-                        />
-                    </div>
-                </a-form-item>
             </a-form>
             <a-divider />
+            <PersonaPolicy
+                v-for="(policy, idx) in selectedPersonaDirty.metadataPolicies"
+                :policy="policy"
+                @delete="deletePolicy(idx)"
+            />
+            <AtlanBtn
+                class="ml-auto"
+                v-if="isEditing"
+                size="sm"
+                @click="addPolicy"
+                color="primary"
+                padding="compact"
+                >Add policy</AtlanBtn
+            >
         </div>
     </template>
     <div v-else class="flex items-center justify-center h-full">
@@ -66,9 +59,11 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
-    import useScopeService from '~/services/heracles/composables/scopes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
+    import AtlanBtn from '@/UI/button.vue'
+
+    import PersonaPolicy from './policies/policy.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import {
         isEditing,
@@ -77,7 +72,12 @@
 
     export default defineComponent({
         name: 'PersonaScopes',
-        components: { SearchAndFilter, MinimalTab },
+        components: {
+            SearchAndFilter,
+            MinimalTab,
+            PersonaPolicy,
+            AtlanBtn,
+        },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
@@ -103,14 +103,28 @@
                 { key: 'ug', label: 'Users & Groups' },
             ]
 
-            const { scopeList } = useScopeService().listScopes()
+            function addPolicy() {
+                selectedPersonaDirty.value?.metadataPolicies?.push({
+                    actions: [],
+                    assets: [],
+                    connectionId: '',
+                    allow: true,
+                    name: '',
+                    description: '',
+                })
+            }
+
+            function deletePolicy(idx: number) {
+                selectedPersonaDirty.value?.metadataPolicies?.splice(idx, 1)
+            }
 
             return {
-                scopeList,
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,
                 isEditing,
+                addPolicy,
+                deletePolicy,
             }
         },
     })

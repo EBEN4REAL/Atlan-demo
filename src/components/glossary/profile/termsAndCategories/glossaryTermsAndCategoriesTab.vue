@@ -58,6 +58,7 @@
                         :projection="projection"
                         :isLoading="isLoading"
                         :selectedEntity="selectedEntity"
+                        :approximateCount="approximateCount"
                         @loadMore="loadMore"
                         @gtcCardClicked="onEntitySelect"
                         @bulkSelectChange="
@@ -196,7 +197,7 @@
         emits: ['entityPreview', 'firstCardReachedTop', 'bulkSelectChange'],
         setup(props, { emit }) {
             // data
-            const glossaryQualifiedName = computed(() => props.qualifiedName)
+            const glossaryQualifiedName = computed(() => props.qualifiedName ?? '')
 
             const searchQuery = ref<string>()
             const activeKey = ref(0)
@@ -214,11 +215,10 @@
             const {
                 entities,
                 referredEntities,
-                error,
                 isLoading,
                 fetchAssetsPaginated,
-                fetchAssets,
                 deleteEntityFromList,
+                approximateCount,
             } = useGtcSearch(glossaryQualifiedName)
 
             const projectionOptions = [
@@ -372,6 +372,7 @@
                 showFiltersPane,
                 initialFilters,
                 handleFilterInitialize,
+                approximateCount
             }
         },
     })

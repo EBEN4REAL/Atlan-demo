@@ -1,9 +1,10 @@
 <template>
     <ExplorerLayout
+        v-if="permissions.list"
         title="Enumerations"
         sub-title="Create & manage Enumerations"
     >
-        <template #action>
+        <template v-if="permissions.create" #action>
             <AtlanBtn
                 class="flex-none"
                 size="sm"
@@ -31,10 +32,11 @@
         />
         <span v-else>No Enum Selected</span>
     </ExplorerLayout>
+    <NoAcces v-else />
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, computed } from 'vue'
     import { useHead } from '@vueuse/head'
 
     import useEnums from '@/admin/enums/composables/useEnums'
@@ -44,6 +46,8 @@
     import AtlanBtn from '@/UI/button.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import { useAccessStore } from '~/services/access/accessStore'
+    import NoAcces from '@/admin/common/noAccessPage.vue'
 
     export default defineComponent({
         components: {
@@ -53,11 +57,17 @@
             ExplorerLayout,
             SearchAndFilter,
             AtlanBtn,
+            NoAcces
         },
         setup() {
             useHead({
                 title: 'Enums',
             })
+            const accessStore = useAccessStore()
+            const permissions = computed(() => ({
+                list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
+                create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
+            }))
             const { enumListData, selectedId, selectedEnum, addToList } =
                 useEnums()
             const addModalVisible = ref(false)
@@ -71,6 +81,7 @@
                 addModalVisible,
                 selectedId,
                 selectedEnum,
+                permissions,
                 toggleAddModal,
                 addToList,
             }

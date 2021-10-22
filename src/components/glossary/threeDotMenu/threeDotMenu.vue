@@ -450,6 +450,7 @@
             )
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
+            const refetchGlossaryList = inject<() => void>('refetchGlossaryList', () => {})
             const refreshEntity = inject<() => void>('refreshEntity', () => {})
             const showCategories = ref(false)
             const refetchGlossaryTree = inject<
@@ -525,6 +526,7 @@
                             }
                         }
                     }
+                    if(refetchGlossaryList) refetchGlossaryList()
                 })
 
                 isModalVisible.value = false

@@ -16,6 +16,7 @@
             >
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
+                        v-if="workflowTemplate"
                         :is="tab.component"
                         :key="activeKey || id"
                         :ref="
@@ -23,7 +24,8 @@
                                 refs[tab.id] = el
                             }
                         "
-                        :selected-run-id="selectedRunId"
+                        :selected-run-name="selectedRunName"
+                        :workflow-template="workflowTemplate"
                         class="bg-transparent"
                         @change="handlePreview"
                     ></component>
@@ -37,6 +39,7 @@
                 :selected-workflow="selected"
                 :selected-dag="selectedDag"
                 :form-config="formConfig"
+                @change="selectedRunName = $event"
             />
         </div>
         <WorkflowLogs
@@ -93,10 +96,6 @@
             ),
         },
         props: {
-            selectedRunId: {
-                type: String,
-                required: true,
-            },
             id: {
                 type: String,
                 required: true,
@@ -111,8 +110,10 @@
             /** DATA */
             const activeKey = ref(1)
             const data = ref({})
+            const selectedRunName = ref(null)
             const selected = ref(null)
             const selectedDag = ref('')
+            const workflowTemplate = ref('')
             const workflowLogsIsOpen = ref(false)
             const refs: { [key: string]: any } = ref({})
             const tabs = [
@@ -126,11 +127,11 @@
                     name: 'Monitor',
                     component: 'monitor',
                 },
-                {
-                    id: 3,
-                    name: 'Settings',
-                    component: 'settings',
-                },
+                // {
+                //     id: 3,
+                //     name: 'Settings',
+                //     component: 'settings',
+                // },
             ]
 
             /** UTILS */
@@ -142,9 +143,8 @@
 
             const formConfig = computed(() => {
                 try {
-                    if (data.value?.uiConfig?.length) {
-                        let configCopy =
-                            data.value.uiConfig[0]?.data?.uiConfig || '{}'
+                    if (data.value?.uiConfig) {
+                        let configCopy = data.value?.uiConfig || '{}'
                         configCopy = configCopy
                             .replace(/\\n/g, '\\n')
                             .replace(/\\'/g, "\\'")
@@ -162,7 +162,11 @@
                 return {}
             })
 
-            const templateName = computed(() => data.value?.asset?.name)
+            const templateName = computed(
+                () =>
+                    data.value?.asset?.workflowtemplate.spec.templates[0].dag
+                        .tasks[0].templateRef.name || ''
+            )
 
             /** METHODS */
             // selectTab
@@ -176,23 +180,27 @@
 
             // handlePreview
             const handlePreview = (item, is) => {
-                if (is === 'dag') {
-                    selectedDag.value = item
-                } else selected.value = item
+                if (is === 'dag') selectedDag.value = item
+                else selected.value = item
             }
 
             // fetchUIConfig
             const fetchUIConfig = () => {
-                if (!templateName.value) return
+                if (!workflowTemplate.value) return
                 const {
                     data: config,
                     error: e,
                     isLoading: l,
-                } = getWorkflowConfigMap(templateName.value)
+                } = getWorkflowConfigMap(workflowTemplate.value)
 
                 watch(config, (v) => {
-                    if (config.value?.items)
-                        data.value.uiConfig = config.value?.items
+                    if (config.value?.records) {
+                        // TODO: Temporary fix - API filter doesn't seem to work
+                        const filteredRecords = config.value.records.filter(
+                            (x) => x.template_name === workflowTemplate.value
+                        )
+                        data.value.uiConfig = filteredRecords[0].uiconfig
+                    }
                 })
             }
 
@@ -208,13 +216,20 @@
                     fetchUIConfig()
                     return
                 }
-                mutate()
+
+                const filter = { name: `${id.value}` }
+
+                const { workflow: response, error } = useWorkflowByName(
+                    JSON.stringify(filter)
+                )
 
                 watch(response, (v) => {
-                    data.value.asset = v?.records[0]
+                    workflowTemplate.value =
+                        v.records[0].workflowtemplate.spec.templates[0].dag.tasks[0].templateRef.name
+                    data.value.asset = v.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
-                    handlePreview(data.value?.asset, null)
+                    handlePreview(data.value.asset, null)
                 })
             }
 
@@ -244,6 +259,7 @@
                 emit,
                 activeKey,
                 selected,
+                selectedRunName,
                 tabs,
                 handlePreview,
                 refs,
@@ -251,6 +267,7 @@
                 data,
                 selectTab,
                 templateName,
+                workflowTemplate,
                 formConfig,
                 workflowLogsIsOpen,
             }

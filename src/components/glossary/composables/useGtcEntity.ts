@@ -24,13 +24,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     cache?: boolean | string,
     watchForGuidChange: boolean = true
 ) => {
-    const keyMap = {
-        glossary: 'AtlasGlossary',
-        category: 'AtlasGlossaryCategory',
-        term: 'AtlasGlossaryTerm',
-    }
-
-    const guidLocal = ref<string>()
+    console.log('useGtcEntity called')
     const body = ref({})
 
     const relatedTerms = [
@@ -53,11 +47,14 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     )
 
     const getBody = () => ({
-        typeName: keyMap[isRef(type) ? type.value : type],
-        excludeDeletedEntities: false,
-        includeClassificationAttributes: true,
-        includeSubClassifications: true,
-        includeSubTypes: true,
+        dsl: {
+            size: 10,
+            query: {
+                term: {
+                    __guid: entityGuid.value,
+                },
+            },
+        },
         attributes: [
             ...projection,
             'assignedEntities',
@@ -90,16 +87,6 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             'description',
             'shortDescription',
         ],
-        entityFilters: {
-            condition: 'AND',
-            criterion: [
-                {
-                    attributeName: '__guid',
-                    attributeValue: entityGuid.value,
-                    operator: 'eq',
-                },
-            ],
-        },
     })
 
     body.value = getBody()

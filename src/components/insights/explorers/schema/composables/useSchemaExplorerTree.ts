@@ -1,4 +1,4 @@
-import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
+import { watch, ref, Ref, onMounted } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
 import {
@@ -36,11 +36,11 @@ type CustomTreeDataItem =
 
 interface useSchemaExplorerTreeProps {
     emit: any
-    connectionQualifiedName?: ComputedRef<string | undefined>
-    databaseQualifiedName?: ComputedRef<string | undefined>
-    schemaQualifiedName?: ComputedRef<string | undefined>
+    connectionQualifiedName?: Ref<string | undefined>
+    databaseQualifiedName?: Ref<string | undefined>
+    schemaQualifiedName?: Ref<string | undefined>
     cacheKey?: string
-    initSelectedKeys?: ComputedRef<string | undefined>
+    initSelectedKeys?: Ref<string | undefined>
     isAccordion?: boolean
 }
 

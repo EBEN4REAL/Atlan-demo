@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300 facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
             <AssetFilters
                 :ref="
@@ -25,6 +25,12 @@
                         :autofocus="true"
                         @change="handleSearchChange"
                     >
+                        <template #categoryFilter>
+                            <AssetCategoryFilter
+                                v-model:checked="assetCategoryFilter"
+                                @change="handleCategoryChange"
+                            />
+                        </template>
                         <template #filter>
                             <Preferences
                                 :default-projection="projection"
@@ -76,7 +82,6 @@
                     :projection="projection"
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
-                    :typename="assetTypeListString"
                     @loadMore="loadMore"
                 />
             </div>
@@ -100,7 +105,7 @@
     import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
-
+    import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import { useAssetListing, useAssetAggregation } from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
@@ -134,6 +139,7 @@
             EmptyView,
             AssetDropdown,
             SearchAndFilter,
+            AssetCategoryFilter,
         },
         props: {
             showFilters: {
@@ -164,6 +170,7 @@
             const sortOrder = ref('default')
             const state = ref('active')
             const facets = ref({})
+            const assetCategoryFilter = ref([])
 
             // Initialization via IIFE
             ;(() => {
@@ -175,13 +182,14 @@
                 if (qry.sortOrder) sortOrder.value = qry.sortOrder
                 if (qry.state) state.value = qry.state
                 if (qry.facets) facets.value = qry.facets
+                if (qry.category) assetCategoryFilter.value = qry.category
             })()
 
             // Get All Disoverable Asset Types
-            const initialTabs: Ref<string[]> = computed(() =>
+            const applicableTabs: Ref<string[]> = computed(() =>
                 useFilteredTabs({
                     connector: facets.value?.connector,
-                    category: facets.value?.assetCategory?.checked,
+                    category: assetCategoryFilter.value,
                 })
             )
 
@@ -189,7 +197,7 @@
                 const filteredTabs = AssetTypeList.filter(
                     (item) =>
                         item.isDiscoverable == true &&
-                        initialTabs.value.includes(item.id)
+                        applicableTabs.value.includes(item.id)
                 )
 
                 return [
@@ -201,20 +209,16 @@
                 ]
             })
 
-            const assetTypeListString = computed(() =>
-                initialTabs.value.join(',')
-            )
-
             const {
                 list,
                 replaceBody,
                 isLoading,
                 searchScoreList,
                 mutateAssetInList,
-            } = useAssetListing(assetTypeListString.value, false)
+            } = useAssetListing('', false)
 
             const { assetTypeMap, refreshAggregation } = useAssetAggregation(
-                assetTypeListString.value,
+                '',
                 false
             )
 
@@ -252,11 +256,11 @@
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
-                let placeholder = 'Search for assets'
+                let placeholder = 'Search assets across Atlan...'
                 if (placeholderLabel.value.asset) {
-                    placeholder += ` in ${placeholderLabel.value.asset}`
+                    placeholder = `Search for assets in ${placeholderLabel.value.asset}`
                 } else if (placeholderLabel.value.connector) {
-                    placeholder += ` in ${placeholderLabel.value.connector}`
+                    placeholder = `Search for assets in ${placeholderLabel.value.connector}`
                 }
                 return placeholder
             })
@@ -287,7 +291,8 @@
                         ...generateAssetQueryDSL(
                             facets.value,
                             queryText.value,
-                            selectedTab.value
+                            selectedTab.value,
+                            applicableTabs.value
                         ),
                     },
                     attributes: [
@@ -328,22 +333,27 @@
                     refreshAggregation({
                         dsl: generateAggregationDSL(
                             facets.value,
-                            queryText.value
+                            queryText.value,
+                            applicableTabs.value
                         ),
                     })
             }
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
             const setRouterOptions = () => {
-                const routerOptions: Record<string, any> = {
-                    facets: generateFacetConfigForRouter(),
-                }
+                const routerOptions: Record<string, any> = {}
+
+                const urlFacets = generateFacetConfigForRouter()
+                if (Object.keys(urlFacets).length)
+                    routerOptions.facets = urlFacets
                 if (queryText.value) routerOptions.queryText = queryText.value
                 if (selectedTab.value !== 'Catalog')
                     routerOptions.selectedTab = selectedTab.value
                 if (sortOrder.value !== 'default')
                     routerOptions.sortOrder = sortOrder.value
                 if (state.value !== 'active') routerOptions.state = state.value
+                if (assetCategoryFilter.value.length)
+                    routerOptions.category = assetCategoryFilter.value
 
                 const routerQuery = serializeQuery(routerOptions)
                 router.push(`/assets?${routerQuery}`)
@@ -380,7 +390,13 @@
                 updateBody()
             }
 
-            const handleFilterChange = (filterMapData: Record<string, any>) => {
+            function handleCategoryChange() {
+                offset.value = 0
+                isAggregate.value = true
+                updateBody()
+                setRouterOptions()
+            }
+            function handleFilterChange(filterMapData: Record<string, any>) {
                 facets.value = filterMapData
                 offset.value = 0
                 isAggregate.value = true
@@ -388,17 +404,17 @@
                 setRouterOptions()
             }
 
-            // const handlePreview = (item) => {
+            // function handlePreview = (item) => {
             //     emit('preview', item)
             // }
-            const loadMore = () => {
+            function loadMore() {
                 autoSelect.value = false
                 offset.value += limit.value
                 isAggregate.value = false
                 updateBody()
             }
 
-            const handleClearFiltersFromList = () => {
+            function handleClearFiltersFromList() {
                 queryText.value = ''
                 assetFilterRef.value?.resetAllFilters()
             }
@@ -423,11 +439,13 @@
             return {
                 autoSelect,
                 handleClearFiltersFromList,
+                handleCategoryChange,
                 assetFilterRef,
-                initialTabs,
+                applicableTabs,
                 searchScoreList,
                 list,
                 selectedTab,
+                assetCategoryFilter,
                 assetTypeLabel,
                 assetTypeList,
                 assetTypeMap,
@@ -452,7 +470,6 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
-                assetTypeListString,
             }
         },
         data() {

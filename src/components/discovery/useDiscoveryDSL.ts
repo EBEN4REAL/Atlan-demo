@@ -68,9 +68,13 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 break
             }
             case 'terms': {
-                const terms: string[] = fltrObj
-                if (terms?.length) query.filter('terms', '__meanings', terms)
-
+                if (fltrObj?.operator === 'AND') {
+                    fltrObj?.checked?.forEach((val) => {
+                        query.filter('term', '__meanings', val)
+                    })
+                } else if (fltrObj?.operator === 'OR') {
+                    query.filter('terms', '__meanings', fltrObj?.checked)
+                }
                 break
             }
             case 'owners': {
@@ -114,24 +118,34 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
 export function generateAssetQueryDSL(
     facets: Record<string, any>,
     queryText: string,
-    assetType: string
+    assetType: string,
+    applicableTypes: string[]
 ) {
     const dsl = useDiscoveryDSL(facets)
+
     if (queryText) {
         dsl.orQuery('match', 'Asset.name', queryText)
         dsl.orQuery('match', '__typeName', queryText)
     }
-    if (assetType !== 'Catalog') {
+
+    // Filter by all applicable types - based on selected category
+    // Only if the current tab is not catalog (All)
+    if (assetType !== 'Catalog')
         dsl.filter('term', '__typeName.keyword', assetType)
-    }
+    else dsl.filter('terms', '__typeName.keyword', applicableTypes)
+
     return dsl.build()
 }
 
 export function generateAggregationDSL(
     facets: Record<string, any>,
-    queryText: string
+    queryText: string,
+    applicableTypes: string[]
 ) {
     const dsl = useDiscoveryDSL(facets)
+
+    dsl.filter('terms', '__typeName.keyword', applicableTypes)
+
     if (queryText) {
         dsl.orQuery('match', 'Asset.name', queryText)
         dsl.orQuery('match', '__typeName', queryText)

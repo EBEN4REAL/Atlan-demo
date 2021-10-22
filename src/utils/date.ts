@@ -22,9 +22,7 @@ export const formatDateTime = (
         timeStyle: 'medium',
     },
     locale = 'en-US'
-) => {
-    return new Intl.DateTimeFormat(locale, config).format(date)
-}
+) => new Intl.DateTimeFormat(locale, config).format(date)
 
 /**
  *
@@ -59,15 +57,4 @@ export function timeDiffCalc(date_future, date_now) {
     else string = `${minutes}m ${seconds}s`
 
     return string
-}
-
-export function getRecentTimestamp() {
-    const currentDate = new Date();
-    const sevenDaysAgo = currentDate.getDate() - 7;
-    currentDate.setDate(sevenDaysAgo);
-    const recentTimestamp = {
-        lastSevenDaysTimestamp: new Date(currentDate).getTime(),
-        currentTimestamp: new Date().getTime()
-    }
-    return recentTimestamp
 }

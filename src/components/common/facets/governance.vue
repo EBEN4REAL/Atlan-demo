@@ -9,7 +9,19 @@
                 placeholder="Search accross Glossaries"
                 size="minimal"
                 @change="onSearch"
-            />
+            >
+                <template #filter>
+                    <div class="flex justify-between mb-2">
+                        <p class="mb-0 text-sm text-gray-500">Operator</p>
+                    </div>
+                    <CustomRadioButton
+                        :data="data.operator"
+                        class="pb-4"
+                        :list="operationFilterCheckboxes"
+                        @change="handleOperatorChange"
+                    />
+                </template>
+            </SearchAndFilter>
             <div
                 class="mt-2 overflow-y-auto max-h-64"
                 :class="$style.filterTree"
@@ -113,6 +125,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { useDebounceFn } from '@vueuse/core'
 
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import LoadingView from '@common/loaders/section.vue'
     import getEntityStatusIcon from '~/components/glossary/tree/utils/getIcon'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
@@ -131,7 +144,7 @@
                 default: false,
             },
         },
-        components: { LoadingView, SearchAndFilter },
+        components: { LoadingView, SearchAndFilter, CustomRadioButton },
         emits: ['update:data', 'change'],
         setup(props, { emit }) {
             const searchQuery = ref<string>()
@@ -155,14 +168,15 @@
 
                 emit('change')
             }
+
             const handleCheckboxChange = () => {
                 if (checkedTerms.value?.length)
-                    emit(
-                        'update:data',
-                        checkedTerms.value.map(
+                    emit('update:data', {
+                        ...data.value,
+                        checked: checkedTerms.value.map(
                             (term: Term) => term.attributes?.qualifiedName
-                        )
-                    )
+                        ),
+                    })
                 else emit('update:data', [])
                 emit('change')
             }
@@ -205,9 +219,25 @@
                 }
             }, 300)
 
+            const operationFilterCheckboxes = [
+                { id: 'OR', label: 'OR' },
+                { id: 'AND', label: 'AND' },
+            ]
+
+            const handleOperatorChange = (val: string) => {
+                emit('update:data', {
+                    ...data.value,
+                    operator: val,
+                })
+                // if there are no classifications selected, do not trigger the API call
+                if (!data?.value?.checked?.length) return
+                emit('change')
+            }
+
             return {
                 data,
-
+                operationFilterCheckboxes,
+                handleOperatorChange,
                 getEntityStatusIcon,
                 onCheck,
                 treeData,

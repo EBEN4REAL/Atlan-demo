@@ -20,9 +20,12 @@
                 Save
             </AtlanButton>
         </div>
-        <div v-else class="flex flex-col items-center">
-            <img :src="emptyScreen" alt="No Runs" class="w-2/5 m-auto mb-4" />
-            <span class="text-gray-500">No Form found</span>
+        <div v-else class="flex flex-col items-center h-full">
+            <EmptyState
+                :EmptyScreen="EmptyScreen"
+                desc="No form attached to this dag."
+                descClass="text-center w-56"
+            />
         </div>
     </template>
     <a-tabs
@@ -46,7 +49,7 @@
 
             <div
                 class="flex flex-col"
-                :style="{ height: 'calc(100vh - 7.8rem)' }"
+                :style="{ height: 'calc(100vh - 0.8rem)' }"
             >
                 <div
                     class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
@@ -77,6 +80,9 @@
         computed,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
+    import EmptyState from '~/components/common/empty/index.vue'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
+
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
     import { message } from 'ant-design-vue'
@@ -85,12 +91,12 @@
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import FormBuilder from '@/common/formGenerator/index.vue'
     import { updateWorkflowByName } from '~/composables/workflow/useWorkFlowList'
-    import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
         name: 'ProfileWorkflowPreview',
         components: {
             Tooltip,
+            EmptyState,
             AssetLogo,
             StatusBadge,
             SidePanelTabHeaders,
@@ -138,7 +144,7 @@
                 {
                     name: 'Run History',
                     component: 'runs',
-                    icon: 'RunHistory',
+                    icon: 'ActivityLogs',
                     tooltip: 'Run History',
                 },
             ]
@@ -187,17 +193,20 @@
             const handleChange = (v) => {
                 Object.entries(v).forEach(([key, value]) => {
                     const index =
-                        body.value.spec.arguments.parameters.findIndex(
+                        body.value.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters.findIndex(
                             (e) => e.name === key
                         )
                     if (index > -1)
-                        body.value.spec.arguments.parameters[index].value =
-                            value
+                        body.value.spec.templates[0].dag.tasks[0].arguments.parameters[
+                            index
+                        ].value = value
                     else
-                        body.value.spec.arguments.parameters.push({
-                            name: key,
-                            value,
-                        })
+                        body.value.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters?.push(
+                            {
+                                name: key,
+                                value,
+                            }
+                        )
                 })
             }
 
@@ -232,7 +241,7 @@
                 activeKey,
                 filteredTabs,
                 emit,
-                emptyScreen,
+                EmptyScreen,
             }
         },
     })

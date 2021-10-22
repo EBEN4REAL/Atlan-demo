@@ -1,14 +1,13 @@
 import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
 import { KeyMaps } from '~/services/heka/heka_keyMaps'
-import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { generateQueryStringParamsFromObj } from '~/utils/queryString'
 
 export default function useProject() {
-    const { getParsedQuery, formatter } = useEditor()
+    const { getParsedQuery } = useEditor()
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const columnList: Ref<
@@ -27,6 +26,7 @@ export default function useProject() {
     const queryErrorObj = ref()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
+        // console.log('columns: ', columns)
         if (columns.length > 0) {
             columnList.value = []
             columns.map((col: any) => {
@@ -37,36 +37,59 @@ export default function useProject() {
                     key: col.columnName,
                 })
             })
+
+            // columnList.value.unshift({
+            //     title: 'KEY',
+            //     dataIndex: 'key',
+            //     width: 'fit-content',
+            //     key: 'key',
+            // })
         }
+
+        
     }
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
         const columns = toRaw(columnList.value)
+        // console.log('columns: ', columns)
+        // console.log('rows: ', rows)
+
+
         rows.map((result: any) => {
+            // console.log(result)
             let tmp = {}
             result.map((row, rowindex) => {
                 tmp = {
                     ...tmp,
                     ...{
-                        [columns[rowindex].dataIndex]: row,
-                        key: rowindex,
+                        // key: rowindex,
+                        [columns[rowindex].dataIndex]: row
+                        // key: rowindex,
                     },
                 }
             })
             dataList.value.push(tmp)
         })
+        // console.log('rows: ', dataList)
     }
 
     const queryRun = (
         activeInlineTab: Ref<activeInlineTabInterface>,
         getData: (rows: any[], columns: any[], executionTime: number) => void,
-        limitRows?: Ref<{ checked: boolean; rowsCount: number }>
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
+        onCompletion?: Function,
+        onQueryIdGeneration?: Function
     ) => {
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
         let queryText
+        /* Setting it undefined for new run */
+        if (activeInlineTab.value.playground.resultsPane.result.runQueryId) {
+            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                undefined
+        }
 
         queryText = getParsedQuery(
             activeInlineTab.value.playground.editor.variables,
@@ -122,6 +145,21 @@ export default function useProject() {
                 if (!isLoading.value && error.value === undefined) {
                     const { subscribe } = sse.value
                     subscribe('', (message: any) => {
+                        /* Saving the queryId */
+                        if (
+                            message?.queryId &&
+                            !activeInlineTab.value.playground.resultsPane.result
+                                .runQueryId
+                        ) {
+                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                                message?.queryId
+                            if (onQueryIdGeneration)
+                                onQueryIdGeneration(
+                                    message?.queryId,
+                                    eventSource
+                                )
+                        }
+                        /* ---------------------------------- */
                         console.log(message, 'message')
                         if (message?.columns)
                             setColumns(columnList, message.columns)
@@ -144,6 +182,17 @@ export default function useProject() {
                                 message?.details.executionTime
                             activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
                                 message?.details.totalRowsStreamed
+                            activeInlineTab.value.playground.resultsPane.result.errorDecorations =
+                                []
+                            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+                                {}
+                            /* Setting it undefined for new run */
+
+                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                                undefined
+                            /* Callback will be called when request completed */
+                            if (onCompletion) onCompletion('success')
+
                             /* ------------------- */
                         }
                         if (message?.details?.status === 'error') {
@@ -162,6 +211,12 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
                                 'error'
                             /* ------------------- */
+                            /* Setting it undefined for new run */
+
+                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                                undefined
+                            /* Callback will be called when request completed */
+                            if (onCompletion) onCompletion('error')
                         }
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
@@ -174,6 +229,10 @@ export default function useProject() {
                         // for closing the connection in case of error
                         eventSource.close()
                     }
+                    /* Setting it undefined for new run */
+
+                    activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                        undefined
                     setColumns(columnList, [])
                     setRows(dataList, columnList, [])
                     getData([], [], -1)

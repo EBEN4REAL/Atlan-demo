@@ -2,21 +2,24 @@
     <div
         class="flex items-center gap-3 px-4 py-2"
         :class="{
-            'bg-blue-50': currRunId === r.uid,
-            'hover:bg-gray-50 cursor-pointer': selectEnabled,
+            'bg-primary-light': currRunName === r.name,
+            'hover:bg-gray-100 cursor-pointer': selectEnabled,
         }"
-        @click="() => emit('select', r.uid)"
+        @click="() => emit('select', r.name)"
     >
         <AtlanIcon :icon="r.phase === 'Success' ? 'RunSuccess' : 'RunFailed'" />
         <div class="">
             <div
                 class="text-base truncate overflow-ellipsis whitespace-nowrap"
-                :class="{ 'font-bold': currRunId === r.uid }"
+                :class="{ 'font-bold': currRunName === r.name }"
             >
                 <span>
                     {{ r.name }}
                 </span>
-                <a-spin v-if="isLoading && currRunId === r.uid" class="ml-2" />
+                <a-spin
+                    v-if="isLoading && currRunName === r.name"
+                    class="ml-2"
+                />
             </div>
             <div>
                 <p class="tracking-wide text-gray-500">
@@ -50,7 +53,7 @@
                 type: Object,
                 required: true,
             },
-            currRunId: {
+            currRunName: {
                 type: String,
                 required: false,
                 default: '',

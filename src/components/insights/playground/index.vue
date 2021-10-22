@@ -64,7 +64,7 @@
                                         >
                                     </div>
                                     <div
-                                        v-if="!tab.isSaved"
+                                        v-if="(!tab.isSaved && tab.playground.editor.text.length>0)"
                                         class="flex items-center mr-2 unsaved-dot"
                                     >
                                         <div

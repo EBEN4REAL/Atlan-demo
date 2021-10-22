@@ -68,12 +68,14 @@ export function useDiscoveryDSL(filters: Record<string, any>) {
                 break
             }
             case 'terms': {
-                if (fltrObj?.operator === 'AND') {
-                    fltrObj?.checked?.forEach((val) => {
-                        query.filter('term', '__meanings', val)
-                    })
-                } else if (fltrObj?.operator === 'OR') {
-                    query.filter('terms', '__meanings', fltrObj?.checked)
+                if (fltrObj?.checked?.length) {
+                    if (fltrObj?.operator === 'AND') {
+                        fltrObj?.checked?.forEach((val) => {
+                            query.filter('term', '__meanings', val)
+                        })
+                    } else if (fltrObj?.operator === 'OR') {
+                        query.filter('terms', '__meanings', fltrObj?.checked)
+                    }
                 }
                 break
             }

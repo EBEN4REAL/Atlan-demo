@@ -58,7 +58,9 @@ export function useAssetAggregation(
     const assetTypeMap = computed(() => {
         return data.value?.aggregations?.typename?.buckets.reduce(
             (acc, bct: { key: string; doc_count: number }) => {
-                acc[bct.key] = bct.doc_count
+                let typeName =
+                    bct.key.charAt(0).toUpperCase() + bct.key.slice(1)
+                acc[typeName] = bct.doc_count
                 return acc
             },
             {}

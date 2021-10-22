@@ -207,7 +207,7 @@
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'untitled',
+                    label: 'Untitled',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,

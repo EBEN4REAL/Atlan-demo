@@ -59,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center w-full">
+                <div class="flex items-center w-full mt-1">
                     <a-tooltip
                         placement="left"
                         :mouse-enter-delay="0.5"

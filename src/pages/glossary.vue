@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed, provide } from 'vue'
+    import { defineComponent, ref, watch, computed, provide, toRef } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRouter, useRoute } from 'vue-router'
 
@@ -82,7 +82,7 @@
                         router.currentRoute.value.path.split('/').length - 1
                     ] === 'glossary'
             )
-            const guid = ref<string>(route.params.id as string)
+            const guid = toRef(props, 'id')
             // const currentGuid = ref(router.currentRoute.params?.id)
             const currentType = ref(
                 router.currentRoute.value.fullPath.split('/')[
@@ -121,10 +121,10 @@
                 statusMessage,
                 isLoading,
                 refetch,
-            } = useGTCEntity<Term>(
+            } = useGTCEntity<Glossary | Term| Category>(
                 currentType.value,
-                currentGuid,
-                currentGuid.value,
+                guid,
+                false,
                 true
             )
             // * Get all available BMs and save on storez
@@ -143,11 +143,22 @@
                     refetchGlossaryList()
                 }
             })
+            watch(router.currentRoute, (newRoute) => {
+            guid.value = newRoute.params.id as string
+            currentType.value = 
+                newRoute.fullPath.split('/')[
+                    router.currentRoute.value.fullPath.split('/').length - 2
+                ] as 'glossary' | 'category' | 'term'
+            
+
+            })
+
+            provide('refetchGlossaryList', refetchGlossaryList)
+            provide('glossaryList', glossaryList)
 
             provide('updateTreeNode', updateNode)
             provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
-            provide('refetchGlossaryList', refetchGlossaryList)
             provide('reorderTreeNodes', reOrderNodes)
 
             provide('currentEntity', entity)

@@ -7,7 +7,7 @@ import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 import useBusinessMetadataStore from '~/store/businessMetadata'
 
-import { Category, Term } from '~/types/glossary/glossary.interface'
+import { Category, Glossary, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
 type Filters = {
     condition: string
@@ -148,7 +148,7 @@ export default function useGtcSearch(
 
     refreshBody()
 
-    const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([])
+    const entities: Ref<(Category | Term | Glossary)[]> = ref<(Category | Term)[]>([])
     const terms = computed(() =>
         entities.value.filter(
             (entity) => entity.typeName === 'AtlasGlossaryTerm'

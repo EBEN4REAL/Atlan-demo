@@ -51,7 +51,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             size: 10,
             query: {
                 term: {
-                    __guid: entityGuid.value,
+                    __guid: entityGuid.value ?? '',
                 },
             },
         },

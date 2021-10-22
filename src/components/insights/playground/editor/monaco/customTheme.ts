@@ -3,6 +3,7 @@ export const createAtlanTheme = (monaco: any) => {
         base: 'vs', // can also be vs-dark or hc-black
         inherit: true, // can also be false to completely replace the builtin rules
         rules: [
+
             { token: '', foreground: '#3E4359', background: 'fffffe' },
             { token: 'invalid', foreground: 'cd3131' },
             { token: 'emphasis', fontStyle: 'italic' },
@@ -60,7 +61,11 @@ export const createAtlanTheme = (monaco: any) => {
             { token: 'predefined.sql', foreground: '5277D7' },
         ],
         colors: {
+<<<<<<< Updated upstream
             'editorLineNumber.foreground': '#A5A5A5',
+=======
+            'editorLineNumber.foreground': '#a5a5a5'
+>>>>>>> Stashed changes
         },
     })
 }

@@ -8,8 +8,7 @@ import { useCustomVariable } from '~/components/insights/playground/editor/commo
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
-    activeInlineTab?: Ref<activeInlineTabInterface>,
-    sqlVariables?: Ref<CustomVaribaleInterface[]>
+    activeInlineTab?: Ref<activeInlineTabInterface>
 ) {
     let decorations = []
     let cursorDecorations = []

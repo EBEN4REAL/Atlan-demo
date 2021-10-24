@@ -1,11 +1,10 @@
 <template>
     <div class="flex h-full" id="fullScreenId">
         <!--Sidebar navigation pane start -->
-        <div class="bg-white border-r sidebar-nav"
-        >
+        <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="relative flex flex-col items-center text-xs sidebar-nav-icon"
+                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -65,8 +64,7 @@
                 :min-size="
                     activeInlineTab?.assetSidebar?.isVisible ? 50.5 : 75.5
                 "
-                :style="{marginLeft: explorerPaneSize===0 ? '-1px' : '0px'}"
-
+                :style="{ marginLeft: explorerPaneSize === 0 ? '-1px' : '0px' }"
             >
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
@@ -181,10 +179,6 @@
             }
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()
-            const { sqlVariables, initializeSqlVariables } = useCustomVariable(
-                toRaw(editorInstance.value),
-                toRaw(monacoInstance.value)
-            )
 
             const setEditorInstance = (
                 editorInstanceParam: any,
@@ -212,7 +206,6 @@
                 editorConfig: editorConfig,
                 editorHoverConfig: editorHoverConfig,
                 monacoInstance: monacoInstance,
-                sqlVariables: sqlVariables,
                 explorerPaneSize: explorerPaneSize,
                 outputPaneSize: outputPaneSize,
                 fullSreenState: fullSreenState,
@@ -220,11 +213,9 @@
             }
             useProvide(provideData)
             /*-------------------------------------*/
-            initializeSqlVariables(activeInlineTab)
 
             /* Watchers for syncing in localstorage*/
             watch(activeInlineTabKey, () => {
-                initializeSqlVariables(activeInlineTab)
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })

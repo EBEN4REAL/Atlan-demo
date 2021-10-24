@@ -57,9 +57,6 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const sqlVariables = inject('sqlVariables') as Ref<
-                CustomVaribaleInterface[]
-            >
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorPos = inject('editorPos') as Ref<{
                 column: number
@@ -81,7 +78,7 @@
                 setEditorFocusedState,
                 findCustomVariableMatches,
                 setMoustacheTemplateColor,
-            } = useEditor(tabs, activeInlineTab, sqlVariables)
+            } = useEditor(tabs, activeInlineTab)
             const { isLineError } = useResultPane(tabs)
 
             const isSelectedWordIsTableName = (word: string): boolean => {

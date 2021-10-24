@@ -28,7 +28,7 @@
                 </a-button>
             </div>
             <div
-                v-if="sqlVariables && sqlVariables.length === 0"
+                v-if="sqlVariables?.length === 0"
                 class="flex items-center mb-1 ml-2"
             >
                 <!-- <span class="flex items-center justify-center text-gray-500">
@@ -51,8 +51,8 @@
             </div>
             <div
                 v-else
-                v-for="variable in sqlVariables"
-                :key="variable.key"
+                v-for="(variable, i) in sqlVariables"
+                :key="`${variable.key + i}`"
                 class="flex flex-col mx-1"
             >
                 <p
@@ -238,7 +238,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref, toRaw, ComputedRef } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        ref,
+        watch,
+        toRaw,
+        ComputedRef,
+        computed,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { editor } from 'monaco-editor'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
@@ -253,9 +262,20 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const sqlVariables = inject('sqlVariables') as Ref<
-                CustomVaribaleInterface[]
-            >
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<activeInlineTabInterface>
+            const sqlVariables: Ref<CustomVaribaleInterface[]> = ref([])
+            watch(
+                [activeInlineTab, activeInlineTabKey],
+                () => {
+                    if (activeInlineTabKey.value) {
+                        sqlVariables.value =
+                            activeInlineTab.value.playground.editor.variables
+                    }
+                },
+                { immediate: true }
+            )
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const editorInstanceRef = inject(
                 'editorInstance'
@@ -276,10 +296,12 @@
                 currVariable.value = undefined
             }
             const cancelEdit = (variable: CustomVaribaleInterface) => {
-                const index = sqlVariables.value.findIndex(
-                    (v) => v.key === variable.key
-                )
-                sqlVariables.value[index] = currVariable.value
+                const index =
+                    activeInlineTab.value.playground.editor.variables.findIndex(
+                        (v) => v.key === variable.key
+                    )
+                activeInlineTab.value.playground.editor.variables[index] =
+                    currVariable.value
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
             }

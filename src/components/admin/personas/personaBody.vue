@@ -5,22 +5,54 @@
         <div class="px-5 pt-4 pb-2 overflow-y-auto">
             <PersonaMeta v-if="activeTabKey === 'details'" :persona="persona" />
             <template v-else-if="activeTabKey === 'policies'">
-                <PersonaPolicy
+                <MetadataPolicy
                     v-for="(
                         policy, idx
                     ) in selectedPersonaDirty.metadataPolicies"
+                    :key="idx"
                     :policy="policy"
-                    @delete="deletePolicy(idx)"
+                    @delete="deletePolicy('meta', idx)"
                 />
-                <AtlanBtn
-                    class="ml-auto"
-                    v-if="isEditing"
-                    size="sm"
-                    @click="addPolicy"
-                    color="primary"
-                    padding="compact"
-                    >Add policy</AtlanBtn
-                >
+                <DataPolicy
+                    v-for="(policy, idx) in selectedPersonaDirty.datapolicies"
+                    :key="idx"
+                    :policy="policy"
+                    @delete="deletePolicy('data', idx)"
+                />
+
+                <a-dropdown trigger="click">
+                    <AtlanBtn
+                        v-if="isEditing"
+                        class="flex-none mx-auto"
+                        color="primary"
+                        padding="compact"
+                        size="sm"
+                        @click.prevent
+                        >Add new policy</AtlanBtn
+                    >
+
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="(
+                                    option, index
+                                ) in addPolicyDropdownConfig"
+                                :key="index"
+                                @click="option.handleClick()"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        v-if="option.icon"
+                                        :icon="option.icon"
+                                    />
+                                    <span class="pl-2 text-sm">{{
+                                        option.title
+                                    }}</span>
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
             </template>
         </div>
     </template>
@@ -31,24 +63,26 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
 
-    import PersonaPolicy from './policies/metadataPolicyItem.vue'
+    import MetadataPolicy from './policies/metadataPolicyItem.vue'
+    import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './personaMeta.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import {
         isEditing,
         selectedPersonaDirty,
+        addPolicy,
+        deletePolicy,
     } from './composables/useEditPersona'
 
     export default defineComponent({
-        name: 'PersonaScopes',
+        name: 'PersonaBody',
         components: {
-            SearchAndFilter,
             MinimalTab,
-            PersonaPolicy,
+            MetadataPolicy,
+            DataPolicy,
             AtlanBtn,
             PersonaMeta,
         },
@@ -58,8 +92,7 @@
                 required: true,
             },
         },
-        emits: ['update:persona', 'update:isEditMode'],
-        setup(props, { emit }) {
+        setup(props) {
             // Persona related stuff
             const { persona } = toRefs(props)
 
@@ -79,28 +112,26 @@
 
             const activeTabKey = ref('details')
 
-            function addPolicy() {
-                selectedPersonaDirty.value?.metadataPolicies?.push({
-                    actions: [],
-                    assets: [],
-                    connectionId: '',
-                    allow: true,
-                    name: '',
-                    description: '',
-                })
-            }
-
-            function deletePolicy(idx: number) {
-                selectedPersonaDirty.value?.metadataPolicies?.splice(idx, 1)
-            }
+            const addPolicyDropdownConfig = [
+                {
+                    title: 'Metadata Policy',
+                    icon: 'Add',
+                    handleClick: () => addPolicy('meta'),
+                },
+                {
+                    title: 'Data Policy',
+                    icon: 'Add',
+                    handleClick: () => addPolicy('data'),
+                },
+            ]
 
             return {
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,
                 isEditing,
-                addPolicy,
                 deletePolicy,
+                addPolicyDropdownConfig,
             }
         },
     })

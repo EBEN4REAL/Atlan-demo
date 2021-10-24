@@ -78,7 +78,7 @@
                         users: [],
                         groups: [],
                         personaType: 'persona',
-                        dataPolicies: [],
+                        datapolicies: [],
                     })
                     message.success(`${title.value} persona Created`)
                     reFetchList()

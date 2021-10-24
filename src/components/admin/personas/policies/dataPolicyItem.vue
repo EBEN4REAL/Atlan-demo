@@ -4,7 +4,7 @@
             v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"
             v-model:assets="policy.assets"
-            :connectionQfName="connectorData.attributeValue"
+            :connection-qf-name="connectorData.attributeValue"
         />
         <div class="flex items-center justify-between mb-6">
             <span class="text-base font-bold leading-8 text-gray-500"
@@ -14,9 +14,9 @@
             <AtlanBtn
                 v-if="isEditing"
                 size="sm"
-                @click="removePolicy"
                 color="secondary"
                 padding="compact"
+                @click="removePolicy"
                 ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
             ></AtlanBtn>
         </div>
@@ -63,9 +63,10 @@
         </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500">Query permissions</span>
         </div>
-        <MetadataScopes class="mb-6" v-model:actions="policy.actions" />
+        <!-- <MetadataScopes class="mb-6" v-model:actions="policy.actions" /> -->
+        <DataScopes class="mb-6" v-model:actions="policy.actions" />
         <div class="flex items-center gap-x-2">
             <a-switch
                 :disabled="!isEditing"
@@ -98,26 +99,26 @@
     import Pill from '@/UI/pill/pill.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Connector from '../connector.vue'
-    import MetadataScopes from './metadataScopes.vue'
+    import DataScopes from './dataScopes.vue'
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import { useConnectionsStore } from '~/store/connections'
 
-    import { MetadataPolicies } from '~/types/accessPolicies/personas'
+    import { DataPolicies } from '~/types/accessPolicies/personas'
     import { isEditing } from '../composables/useEditPersona'
 
     export default defineComponent({
-        name: 'MetadataPolicy',
+        name: 'DataPolicy',
         components: {
             AtlanBtn,
             Pill,
             Connector,
-            MetadataScopes,
+            DataScopes,
             PillGroup,
             AssetSelectorDrawer,
         },
         props: {
             policy: {
-                type: Object as PropType<MetadataPolicies>,
+                type: Object as PropType<DataPolicies>,
                 required: true,
             },
         },

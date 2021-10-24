@@ -44,7 +44,7 @@
     } from './composables/useEditPersona'
 
     export default defineComponent({
-        name: 'PersonaScopes',
+        name: 'PersonaMeta',
         components: {},
         props: {
             persona: {

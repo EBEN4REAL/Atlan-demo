@@ -44,10 +44,7 @@
 
         <AddPersona v-model:visible="modalVisible" />
         <PersonaHeader :persona="selectedPersona" />
-        <PersonaDetails
-            v-if="selectedPersona"
-            v-model:persona="selectedPersona"
-        />
+        <PersonaBody v-if="selectedPersona" v-model:persona="selectedPersona" />
     </ExplorerLayout>
 </template>
 
@@ -56,7 +53,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
-    import PersonaDetails from './personaBody.vue'
+    import PersonaBody from './personaBody.vue'
     import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
     import AddPersona from './addPersona.vue'
@@ -73,7 +70,7 @@
         components: {
             AtlanBtn,
             SearchAndFilter,
-            PersonaDetails,
+            PersonaBody,
             PersonaHeader,
             ExplorerLayout,
             ExplorerList,

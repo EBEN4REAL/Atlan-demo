@@ -53,7 +53,7 @@
             },
         },
         emits: ['update:persona', 'update:isEditMode'],
-        setup(props, { emit }) {
+        setup() {
             return { isEditing, selectedPersonaDirty }
         },
     })

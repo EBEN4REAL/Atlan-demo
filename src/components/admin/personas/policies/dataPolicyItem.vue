@@ -96,7 +96,6 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import Pill from '@/UI/pill/pill.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Connector from '../connector.vue'
     import DataScopes from './dataScopes.vue'
@@ -110,7 +109,6 @@
         name: 'DataPolicy',
         components: {
             AtlanBtn,
-            Pill,
             Connector,
             DataScopes,
             PillGroup,

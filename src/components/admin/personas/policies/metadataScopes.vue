@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
     import { isEditing } from '../composables/useEditPersona'
     import useScopeService from '~/services/heracles/composables/scopes'
 

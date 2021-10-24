@@ -3,53 +3,25 @@
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
 
         <div class="px-5 pt-4 pb-2 overflow-y-auto">
-            <a-form
-                :key="selectedPersonaDirty.id"
-                layout="vertical"
-                :wrapper-col="{ span: 12 }"
-                :model="selectedPersonaDirty"
-            >
-                <a-form-item label="Name" name="displayName" required>
-                    <a-input
-                        v-if="isEditing"
-                        v-model:value="selectedPersonaDirty.displayName"
-                        placeholder="Persona Name"
-                    />
-                    <span v-else>{{ persona.displayName }}</span>
-                </a-form-item>
-                <a-form-item label="Description" name="description">
-                    <a-textarea
-                        v-if="isEditing"
-                        v-model:value="selectedPersonaDirty.description"
-                        showCount
-                        :maxlength="140"
-                        :auto-size="{ minRows: 1, maxRows: 3 }"
-                    />
-                    <span v-else>{{ persona.description }}</span>
-                </a-form-item>
-                <a-form-item
-                    v-if="selectedPersonaDirty.createdAt"
-                    label="Created On"
-                    name="createdAt"
+            <PersonaMeta v-if="activeTabKey === 'details'" :persona="persona" />
+            <template v-else-if="activeTabKey === 'policies'">
+                <PersonaPolicy
+                    v-for="(
+                        policy, idx
+                    ) in selectedPersonaDirty.metadataPolicies"
+                    :policy="policy"
+                    @delete="deletePolicy(idx)"
+                />
+                <AtlanBtn
+                    class="ml-auto"
+                    v-if="isEditing"
+                    size="sm"
+                    @click="addPolicy"
+                    color="primary"
+                    padding="compact"
+                    >Add policy</AtlanBtn
                 >
-                    {{ selectedPersonaDirty.createdAt }}
-                </a-form-item>
-            </a-form>
-            <a-divider />
-            <PersonaPolicy
-                v-for="(policy, idx) in selectedPersonaDirty.metadataPolicies"
-                :policy="policy"
-                @delete="deletePolicy(idx)"
-            />
-            <AtlanBtn
-                class="ml-auto"
-                v-if="isEditing"
-                size="sm"
-                @click="addPolicy"
-                color="primary"
-                padding="compact"
-                >Add policy</AtlanBtn
-            >
+            </template>
         </div>
     </template>
     <div v-else class="flex items-center justify-center h-full">
@@ -63,7 +35,8 @@
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
 
-    import PersonaPolicy from './policies/policy.vue'
+    import PersonaPolicy from './policies/metadataPolicyItem.vue'
+    import PersonaMeta from './personaMeta.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import {
         isEditing,
@@ -77,6 +50,7 @@
             MinimalTab,
             PersonaPolicy,
             AtlanBtn,
+            PersonaMeta,
         },
         props: {
             persona: {
@@ -97,11 +71,13 @@
                 { immediate: true }
             )
 
-            const activeTabKey = ref('ov')
             const tabConfig = [
-                { key: 'ov', label: 'Overview' },
-                { key: 'ug', label: 'Users & Groups' },
+                { key: 'details', label: 'Overview' },
+                { key: 'policies', label: 'Policies' },
+                { key: 'users', label: 'Users & Groups' },
             ]
+
+            const activeTabKey = ref('details')
 
             function addPolicy() {
                 selectedPersonaDirty.value?.metadataPolicies?.push({

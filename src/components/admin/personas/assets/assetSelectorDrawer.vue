@@ -48,7 +48,7 @@
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Search from your assets</span
                     >
-                    <AssetsWrapper :dataMap="filterConfig" />
+                    <AssetsWrapper class="h-full" :dataMap="filterConfig" />
                 </template>
                 <template v-else-if="activeTab === 'custom'">
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"

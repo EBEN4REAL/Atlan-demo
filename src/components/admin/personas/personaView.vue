@@ -56,7 +56,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
-    import PersonaDetails from './personaDetails.vue'
+    import PersonaDetails from './personaBody.vue'
     import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
     import AddPersona from './addPersona.vue'

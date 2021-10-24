@@ -45,7 +45,11 @@
         </div>
 
         <span class="mb-2 text-sm text-gray-500">Connection</span>
-        <Connector v-model:data="connectorData" class="max-w-xs mb-4" />
+        <Connector
+            v-model:data="connectorData"
+            class="max-w-xs mb-4"
+            :disabled="!isEditing"
+        />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
@@ -65,8 +69,19 @@
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Query permissions</span>
         </div>
-        <!-- <MetadataScopes class="mb-6" v-model:actions="policy.actions" /> -->
-        <DataScopes v-model:actions="policy.actions" class="mb-6" />
+        <DataScopes v-model:actions="policy.actions" class="mb-4" />
+
+        <div class="flex items-center mb-2 gap-x-1">
+            <AtlanIcon class="text-gray-500" icon="Globe" />
+            <span class="text-sm text-gray-500">Masking</span>
+        </div>
+        <a-select
+            v-model:value="policy.maskingOption"
+            :options="maskingOptions"
+            class="mb-6 w-80"
+            :disabled="!isEditing"
+        />
+
         <div class="flex items-center gap-x-2">
             <a-switch
                 :disabled="!isEditing"
@@ -100,7 +115,6 @@
     import Connector from '../connector.vue'
     import DataScopes from './dataScopes.vue'
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
-    import { useConnectionsStore } from '~/store/connections'
 
     import { DataPolicies } from '~/types/accessPolicies/personas'
     import { isEditing } from '../composables/useEditPersona'
@@ -124,7 +138,7 @@
         setup(props, { emit }) {
             const { policy } = toRefs(props)
             const assetSelectorVisible = ref(false)
-            const connectionStore = useConnectionsStore()
+
             function removePolicy() {
                 emit('delete')
             }
@@ -144,24 +158,49 @@
             })
 
             const connectorData = computed({
-                get: () => {
-                    const found = connectionStore.getList.find(
-                        (conn) => conn.guid === policy.value.connectionId
-                    )
-                    return {
-                        attributeName: found ? 'connectionQualifiedName' : '',
-                        attributeValue: found?.attributes?.qualifiedName,
-                    }
-                },
+                get: () => ({
+                    attributeName: 'connectionQualifiedName',
+                    attributeValue: policy.value.connectionName,
+                }),
                 set: (val) => {
-                    const found = connectionStore.getList.find(
-                        (conn) =>
-                            conn.attributes?.qualifiedName ===
-                            val.attributeValue
-                    )
-                    policy.value.connectionId = found?.guid
+                    policy.value.connectionName =
+                        val.attributeName === 'connectionQualifiedName'
+                            ? val.attributeValue
+                            : ''
                 },
             })
+
+            // FIXME: Take it out to a config file
+            const maskingOptions = [
+                {
+                    value: 'MASK_REDACT',
+                    label: 'MASK_REDACT',
+                },
+                {
+                    value: 'MASK_HASH',
+                    label: 'MASK_HASH',
+                },
+                {
+                    value: 'MASK_SHOW_LAST_4',
+                    label: 'MASK_SHOW_LAST_4',
+                },
+                {
+                    value: 'MASK_SHOW_FIRST_4',
+                    label: 'MASK_SHOW_FIRST_4',
+                },
+                {
+                    value: 'MASK_NULL',
+                    label: 'MASK_NULL',
+                },
+                {
+                    value: 'MASK_NONE',
+                    label: 'MASK_NONE',
+                },
+                {
+                    value: 'MASK_DATE_SHOW_YEAR',
+                    label: 'MASK_DATE_SHOW_YEAR',
+                },
+            ]
 
             return {
                 connectorData,
@@ -170,6 +209,7 @@
                 removePolicy,
                 openAssetSelector,
                 assets,
+                maskingOptions,
             }
         },
     })

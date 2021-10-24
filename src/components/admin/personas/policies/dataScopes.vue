@@ -3,13 +3,14 @@
         name="dataScopes"
         :value="actions"
         :options="options"
+        :disabled="!isEditing"
         @update:value="$emit('update:actions', $event)"
     />
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    // import { isEditing } from '../composables/useEditPersona'
+    import { isEditing } from '../composables/useEditPersona'
 
     export default defineComponent({
         name: 'DataScopes',
@@ -23,7 +24,7 @@
         emits: ['update:actions'],
         setup() {
             const options = [{ label: 'Select', value: 'select' }]
-            return { options }
+            return { options, isEditing }
         },
     })
 </script>

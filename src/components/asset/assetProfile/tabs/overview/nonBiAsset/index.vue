@@ -13,60 +13,26 @@
         <tableSummary :edit-permission="editPermission" />
 
         <!-- Column and Table Preview-->
-        <div class="w-full">
+        <div class="flex flex-col w-full">
             <!-- Preview Selector-->
-            <a-button-group class="mb-4 rounded shadow">
-                <a-button
-                    :class="
-                        activePreviewTabKey === 'column-preview'
-                            ? 'text-primary font-bold'
-                            : 'text-gray-500'
-                    "
-                    @click="setActiveTab('column-preview')"
-                >
-                    Column Preview
-                </a-button>
-                <a-tooltip
-                    placement="right"
-                    :title="
-                        !showTablePreview &&
-                        'No sample data found for this asset'
-                    "
-                >
-                    <a-button
-                        :class="
-                            activePreviewTabKey === 'table-preview'
-                                ? 'text-primary font-bold'
-                                : 'text-gray-500'
-                        "
-                        :disabled="!showTablePreview"
-                        @click="setActiveTab('table-preview')"
-                        >Sample Data</a-button
-                    ></a-tooltip
-                >
-            </a-button-group>
-
-            <!--  <keep-alive>
-                <component
-                    :is="
-                        activePreviewTabKey === 'column-preview' &&
-                        'overviewColumns'
-                    "
+            <a-tooltip
+                placement="right"
+                :title="
+                    !showTablePreview && 'No sample data found for this asset'
+                "
+            >
+                <RaisedTab
+                    v-model:active="activePreviewTabKey"
+                    class="flex-none flex-grow-0 mb-4 mr-auto"
+                    :data="tabConfig"
+                    :disabled="!showTablePreview"
                 />
-            </keep-alive>
+            </a-tooltip>
 
             <keep-alive>
-                <component
-                    :is="
-                        activePreviewTabKey === 'table-preview' &&
-                        'overviewTable'
-                    "
-                />
-            </keep-alive> -->
-
-            <overviewColumns v-if="activePreviewTabKey === 'column-preview'" />
-
-            <overviewTable v-if="activePreviewTabKey === 'table-preview'" />
+                <overviewColumns v-if="activePreviewTabKey === 'column'" />
+                <overviewTable v-else-if="activePreviewTabKey === 'table'" />
+            </keep-alive>
         </div>
 
         <!-- Readme widget -->
@@ -100,6 +66,7 @@
     import Resources from '@/asset/assetProfile/widgets/resources/resources.vue'
     import tableSummary from '@/asset/assetProfile/tabs/overview/nonBiAsset/tableSummary.vue'
     import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -113,6 +80,7 @@
             Resources,
             Announcements,
             tableSummary,
+            RaisedTab,
             overviewColumns: defineAsyncComponent(
                 () =>
                     import(
@@ -134,12 +102,11 @@
             },
         },
         setup() {
-            const activePreviewTabKey: Ref<'column-preview' | 'table-preview'> =
-                ref('column-preview')
-
-            function setActiveTab(tabName: 'column-preview' | 'table-preview') {
-                activePreviewTabKey.value = tabName
-            }
+            const activePreviewTabKey: Ref<'column' | 'table'> = ref('column')
+            const tabConfig = [
+                { key: 'column', label: 'Column Preview' },
+                { key: 'table', label: 'Sample Data' },
+            ]
 
             /** INJECTIONS */
             // const assetDataInjection = inject('assetData')
@@ -167,9 +134,9 @@
                 // assetData,
                 showTablePreview,
                 assetType,
-                setActiveTab,
                 activePreviewTabKey,
                 selectedAsset,
+                tabConfig,
             }
         },
     })

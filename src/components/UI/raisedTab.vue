@@ -5,7 +5,7 @@
             :key="item.key"
             class="tab-btn"
             :class="{ active: item.key === active }"
-            v-bind="$attrs"
+            :disabled="disabled"
             @click="$emit('update:active', item.key)"
         >
             {{ item.label }}
@@ -22,7 +22,6 @@
     }
     export default defineComponent({
         name: 'RaisedTab',
-        inheritAttrs: false,
         props: {
             active: {
                 type: String,
@@ -31,6 +30,11 @@
             data: {
                 type: Array as PropType<TabConfig[]>,
                 required: true,
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
             },
         },
         emits: ['update:active'],
@@ -59,7 +63,7 @@
         }
 
         &:disabled {
-            @apply opacity-70 text-opacity-70;
+            @apply text-opacity-70;
             @apply cursor-not-allowed;
             box-shadow: none !important;
         }

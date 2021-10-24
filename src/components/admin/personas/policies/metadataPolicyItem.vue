@@ -45,7 +45,11 @@
         </div>
 
         <span class="mb-2 text-sm text-gray-500">Connection</span>
-        <Connector v-model:data="connectorData" class="max-w-xs mb-4" />
+        <Connector
+            v-model:data="connectorData"
+            class="max-w-xs mb-4"
+            :disabled="!isEditing"
+        />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="AssetsInactive" />

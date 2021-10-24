@@ -10,6 +10,7 @@
             placeholder="Select a connector"
             dropdown-class-name="connectorDropdown"
             :allow-clear="true"
+            :disabled="disabled"
             @change="onChange"
             @select="selectNode"
         >
@@ -62,12 +63,16 @@
                 required: true,
             },
             filterSourceIds: {
-                type: Object as PropType<string[]>,
+                type: Array as PropType<string[]>,
                 required: false,
-                default: [],
+                default: () => [],
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
             },
         },
-        components: {},
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { getConnectorName } = useAssetInfo()
@@ -76,10 +81,9 @@
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
                     return data.value?.attributeValue
-                
-                    const qfChunks = data.value?.attributeValue?.split('/')
-                    return qfChunks?.length > 1 ? qfChunks[1] : ''
-                
+
+                const qfChunks = data.value?.attributeValue?.split('/')
+                return qfChunks?.length > 1 ? qfChunks[1] : ''
             })
 
             // QualifiedName format -> tenant/connector/connection/.../.../...
@@ -96,7 +100,8 @@
             )
 
             /* Remove the sources mentioned in filterIds array */
-            const filterSourceList = (filterSourceIds: string[]) => store.getSourceList.filter(
+            const filterSourceList = (filterSourceIds: string[]) =>
+                store.getSourceList.filter(
                     (item) => !filterSourceIds.includes(item.id)
                 )
 
@@ -115,7 +120,8 @@
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             console.log(checkedValues.value, 'model')
 
-            const transformConnectionsToTree = (connectorId: string) => store.getList
+            const transformConnectionsToTree = (connectorId: string) =>
+                store.getList
                     .filter(
                         (connection) =>
                             getConnectorName(connection?.attributes) ===

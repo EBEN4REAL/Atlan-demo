@@ -12,14 +12,26 @@
 
         <a-collapse-panel v-for="(scope, idx) in scopeList" :key="idx">
             <template #header>
-                <a-checkbox checked="true" @click.stop="">{{
-                    scope.type
-                }}</a-checkbox>
+                <a-checkbox
+                    :checked="
+                        groupedActions[idx].scopes.length ===
+                        scopeList[idx].scopes.length
+                    "
+                    :indeterminate="
+                        0 < groupedActions[idx].scopes.length &&
+                        groupedActions[idx].scopes.length <
+                            scopeList[idx].scopes.length
+                    "
+                    :disabled="!isEditing"
+                    @click.stop="toggleCheckAll(idx)"
+                ></a-checkbox>
+                {{ scope.type }}
             </template>
             <a-checkbox-group
                 :value="groupedActions[idx].scopes"
                 :name="scope.type"
                 :options="scope.scopes"
+                :disabled="!isEditing"
                 @update:value="updateSelection(scope.type, $event)"
             />
         </a-collapse-panel>
@@ -68,11 +80,21 @@
                 emit('update:actions', allScopes)
             }
 
+            function toggleCheckAll(idx: number) {
+                if (
+                    groupedActions.value[idx].scopes.length <
+                    scopeList[idx].scopes.length
+                )
+                    updateSelection(scopeList[idx].type, scopeList[idx].scopes)
+                else updateSelection(scopeList[idx].type, [])
+            }
+
             return {
                 scopeList,
                 isEditing,
                 groupedActions,
                 updateSelection,
+                toggleCheckAll,
             }
         },
     })

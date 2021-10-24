@@ -18,7 +18,7 @@
             <a-textarea
                 v-if="isEditing"
                 v-model:value="selectedPersonaDirty.description"
-                showCount
+                show-count
                 :maxlength="140"
                 :auto-size="{ minRows: 1, maxRows: 3 }"
             />

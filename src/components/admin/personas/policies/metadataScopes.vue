@@ -1,5 +1,5 @@
 <template>
-    <a-collapse expandIconPosition="right">
+    <a-collapse expand-icon-position="right">
         <template #expandIcon="{ isActive }">
             <div>
                 <AtlanIcon
@@ -12,15 +12,15 @@
 
         <a-collapse-panel v-for="(scope, idx) in scopeList" :key="idx">
             <template #header>
-                <a-checkbox @click.stop="" checked="true">{{
+                <a-checkbox checked="true" @click.stop="">{{
                     scope.type
                 }}</a-checkbox>
             </template>
             <a-checkbox-group
                 :value="groupedActions[idx].scopes"
-                @update:value="updateSelection(scope.type, $event)"
                 :name="scope.type"
                 :options="scope.scopes"
+                @update:value="updateSelection(scope.type, $event)"
             />
         </a-collapse-panel>
     </a-collapse>

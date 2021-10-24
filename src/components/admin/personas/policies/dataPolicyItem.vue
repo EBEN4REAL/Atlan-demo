@@ -36,7 +36,7 @@
             <a-textarea
                 v-if="isEditing"
                 v-model:value="policy.description"
-                showCount
+                show-count
                 placeholder="About the policy"
                 :maxlength="140"
                 :auto-size="{ minRows: 1, maxRows: 3 }"
@@ -45,7 +45,7 @@
         </div>
 
         <span class="mb-2 text-sm text-gray-500">Connection</span>
-        <Connector class="max-w-xs mb-4" v-model:data="connectorData" />
+        <Connector v-model:data="connectorData" class="max-w-xs mb-4" />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
@@ -66,7 +66,7 @@
             <span class="text-sm text-gray-500">Query permissions</span>
         </div>
         <!-- <MetadataScopes class="mb-6" v-model:actions="policy.actions" /> -->
-        <DataScopes class="mb-6" v-model:actions="policy.actions" />
+        <DataScopes v-model:actions="policy.actions" class="mb-6" />
         <div class="flex items-center gap-x-2">
             <a-switch
                 :disabled="!isEditing"

@@ -1,7 +1,7 @@
 <template>
     <a-drawer
         placement="right"
-        :destroyOnClose="true"
+        :destroy-on-close="true"
         :visible="isVisible"
         :get-container="false"
         :closable="false"
@@ -26,8 +26,8 @@
             </div>
 
             <RaisedTab
-                class="mt-3 ml-4 mr-auto"
                 v-model:active="activeTab"
+                class="mt-3 ml-4 mr-auto"
                 :data="tabConfig"
             />
             <a-divider class="my-4" />
@@ -40,7 +40,7 @@
                     <div class="h-full p-4 overflow-y-auto">
                         <AssetBrowserTree
                             v-model:assets="checkedKeys"
-                            :connectionQfName="connectionQfName"
+                            :connection-qf-name="connectionQfName"
                         />
                     </div>
                 </template>
@@ -48,16 +48,16 @@
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Search from your assets</span
                     >
-                    <AssetsWrapper class="h-full" :dataMap="filterConfig" />
+                    <AssetsWrapper class="h-full" :data-map="filterConfig" />
                 </template>
                 <template v-else-if="activeTab === 'custom'">
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Select assets matching
                     </span>
                     <CustomAssetSelector
-                        class="h-full py-4"
                         v-model:assets="regexKeys"
-                        :connectionQfName="connectionQfName"
+                        class="h-full py-4"
+                        :connection-qf-name="connectionQfName"
                     />
                 </template>
             </keep-alive>
@@ -87,11 +87,11 @@
         toRefs,
         watch,
     } from 'vue'
+    import AssetsWrapper from '@common/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
     import CustomAssetSelector from './customAssetSelector.vue'
-    import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',

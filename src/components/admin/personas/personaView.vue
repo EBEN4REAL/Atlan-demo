@@ -1,7 +1,7 @@
 <template>
     <ExplorerLayout
         title="Personas"
-        subTitle="Access controls for user personas"
+        sub-title="Access controls for user personas"
     >
         <template #action>
             <AtlanBtn
@@ -17,17 +17,17 @@
         </template>
         <template #sidebar>
             <SearchAndFilter
-                placeholder="Search for personas"
                 v-model:value="searchTerm"
+                placeholder="Search for personas"
                 class="mx-4 mt-6 mb-4 bg-white"
                 :autofocus="true"
             />
 
             <ExplorerList
+                v-model:selected="selectedPersonaId"
                 :disabled="isEditing"
                 :list="filteredPersonas"
-                v-model:selected="selectedPersonaId"
-                dataKey="id"
+                data-key="id"
             >
                 <template #default="{ item, isSelected }">
                     <span

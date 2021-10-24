@@ -1,13 +1,13 @@
 <template>
     <div class="mx-4">
         <div
-            class="flex items-center justify-start my-2 gap-x-2"
             v-for="(_, idx) in regexes"
+            class="flex items-center justify-start my-2 gap-x-2"
         >
             <a-input
+                v-model:value="regexes[idx]"
                 class="flex-grow"
                 placeholder="database/schema/table/column"
-                v-model:value="regexes[idx]"
                 @keyup.enter="addExpr"
             >
                 <template #prefix>
@@ -21,12 +21,12 @@
                 </template>
             </a-input>
             <AtlanIcon
-                @click="removeExpr(idx)"
                 icon="Cross"
                 class="flex-none text-gray-500 cursor-pointer hover:text-gray"
+                @click="removeExpr(idx)"
             />
         </div>
-        <button @click="addExpr" class="text-sm text-primary">
+        <button class="text-sm text-primary" @click="addExpr">
             + Add expression
         </button>
     </div>

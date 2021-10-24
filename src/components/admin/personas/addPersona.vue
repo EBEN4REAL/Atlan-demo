@@ -16,8 +16,8 @@
             />
 
             <textarea
-                class="text-sm text-gray-500 clean-input"
                 v-model="description"
+                class="text-sm text-gray-500 clean-input"
                 maxlength="140"
                 rows="2"
                 placeholder="Add description..."

@@ -2,12 +2,14 @@
     <div class="mx-4">
         <div
             v-for="(_, idx) in regexes"
+            :key="idx"
             class="flex items-center justify-start my-2 gap-x-2"
         >
             <a-input
                 v-model:value="regexes[idx]"
                 class="flex-grow"
                 placeholder="database/schema/table/column"
+                @change="updateAssets"
                 @keyup.enter="addExpr"
             >
                 <template #prefix>
@@ -33,7 +35,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
     import { useConnectionsStore } from '~/store/connections'
     import AtlanBtn from '@/UI/button.vue'
 
@@ -52,18 +54,30 @@
         },
         emits: ['update:assets'],
         setup(props, { emit }) {
-            const regexes = ref([] as String[])
+            const { connectionQfName } = toRefs(props)
+            const regexes = ref([''] as String[])
             function addExpr() {
+                regexes.value = regexes.value.filter((val) => val.trim().length)
                 regexes.value.push('')
             }
+
             function removeExpr(idx: number) {
                 regexes.value.splice(idx, 1)
+            }
+
+            function updateAssets() {
+                emit(
+                    'update:assets',
+                    regexes.value
+                        .filter((val) => val.trim().length)
+                        .map((val) => `${connectionQfName.value}/${val}`)
+                )
             }
 
             const connStore = useConnectionsStore()
             const getImage = (id: string) => connStore.getImage(id)
 
-            return { regexes, addExpr, removeExpr, getImage }
+            return { regexes, addExpr, removeExpr, getImage, updateAssets }
         },
     })
 </script>

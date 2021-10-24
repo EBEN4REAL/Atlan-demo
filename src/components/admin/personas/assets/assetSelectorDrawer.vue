@@ -62,12 +62,16 @@
                 </template>
             </keep-alive>
 
+            <a-divider />
             <div class="flex items-center justify-end m-2 gap-x-2">
+                <span class="text-base font-bold text-gray-500"
+                    >{{ selectedAssetCount || 'No' }} items selected</span
+                >
                 <AtlanBtn
                     size="sm"
                     padding="compact"
                     color="secondary"
-                    @click="() => (isVisible = false)"
+                    @click="resetAssetState"
                     >Cancel</AtlanBtn
                 >
                 <AtlanBtn size="sm" padding="compact" @click="saveAssets"
@@ -132,8 +136,14 @@
             const checkedKeys = ref([] as string[])
             const regexKeys = ref([] as string[])
 
+            function resetAssetState() {
+                checkedKeys.value = []
+                regexKeys.value = []
+                isVisible.value = false
+            }
+
             function saveAssets() {
-                // TODO: Change this implementation
+                // TODO: Optional* Change this implementation
                 // Use a WritableComputedRef and the @check event
                 // to see which node got selected or unselected and
                 // use a set to maintain the state
@@ -143,14 +153,12 @@
                     ...regexKeys.value,
                 ])
                 emit('update:assets', [...assetSet])
-                isVisible.value = false
+                resetAssetState()
             }
 
-            function discardAssets() {
-                checkedKeys.value = []
-                regexKeys.value = []
-                isVisible.value = false
-            }
+            const selectedAssetCount = computed(
+                () => checkedKeys.value.length + assets.value.length
+            )
 
             const filterConfig = computed(() => ({
                 connector: {
@@ -160,7 +168,7 @@
             }))
 
             // Tab related data
-            const activeTab = ref('tree')
+            const activeTab = ref('custom')
             const tabConfig = [
                 { key: 'tree', label: 'Browse' },
                 { key: 'list', label: 'Search' },
@@ -174,7 +182,8 @@
                 checkedKeys,
                 regexKeys,
                 saveAssets,
-                discardAssets,
+                resetAssetState,
+                selectedAssetCount,
                 filterConfig,
             }
         },

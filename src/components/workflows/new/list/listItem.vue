@@ -41,7 +41,7 @@
                     <h3
                         class="flex-shrink mb-0 overflow-hidden text-xl font-bold truncate cursor-pointer  t text-primary overflow-ellipsis whitespace-nowrap"
                     >
-                        {{ item.workflowtemplate?.metadata.name }}
+                        {{ item.name }}
                     </h3>
                 </div>
                 <div class="flex items-center gap-x-3">
@@ -49,7 +49,7 @@
                         <span class="text-gray-500"> 2dajuumnr-xmvlm</span>
                     </div>
                     <div
-                        v-if="item.metadata?.labels['created-by']"
+                        v-if="item?.labels['created-by']"
                         style="color: rgb(196, 196, 196)"
                     >
                         •

@@ -4,7 +4,7 @@
             v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"
             v-model:assets="policy.assets"
-            :connectionQfName="connectorData.attributeValue"
+            :connection-qf-name="connectorData.attributeValue"
         />
         <div class="flex items-center justify-between mb-6">
             <span class="text-base font-bold leading-8 text-gray-500"
@@ -14,9 +14,9 @@
             <AtlanBtn
                 v-if="isEditing"
                 size="sm"
-                @click="removePolicy"
                 color="secondary"
                 padding="compact"
+                @click="removePolicy"
                 ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
             ></AtlanBtn>
         </div>
@@ -26,7 +26,7 @@
             <a-input
                 v-if="isEditing"
                 v-model:value="policy.name"
-                placeholder="Persona Name"
+                placeholder="Policy Name"
             />
             <span v-else>{{ policy.name }}</span>
         </div>
@@ -36,7 +36,8 @@
             <a-textarea
                 v-if="isEditing"
                 v-model:value="policy.description"
-                showCount
+                show-count
+                placeholder="About the policy"
                 :maxlength="140"
                 :auto-size="{ minRows: 1, maxRows: 3 }"
             />
@@ -44,7 +45,11 @@
         </div>
 
         <span class="mb-2 text-sm text-gray-500">Connection</span>
-        <Connector class="max-w-xs mb-4" v-model:data="connectorData" />
+        <Connector
+            v-model:data="connectorData"
+            class="max-w-xs mb-4"
+            :disabled="!isEditing"
+        />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
@@ -64,7 +69,7 @@
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Metadata permissions</span>
         </div>
-        <MetadataScopes class="mb-6" v-model:actions="policy.actions" />
+        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
         <div class="flex items-center gap-x-2">
             <a-switch
                 :disabled="!isEditing"
@@ -94,7 +99,6 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    import Pill from '@/UI/pill/pill.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Connector from '../connector.vue'
     import MetadataScopes from './metadataScopes.vue'
@@ -105,10 +109,9 @@
     import { isEditing } from '../composables/useEditPersona'
 
     export default defineComponent({
-        name: 'PersonaPolicy',
+        name: 'MetadataPolicy',
         components: {
             AtlanBtn,
-            Pill,
             Connector,
             MetadataScopes,
             PillGroup,

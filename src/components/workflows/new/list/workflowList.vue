@@ -8,9 +8,7 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="
-                    item.workflowtemplate?.metadata?.uid === selectedItemId
-                "
+                :is-selected="item.name === selectedItemId"
                 @click="handlePreview(item)"
             ></ListItem>
         </template>

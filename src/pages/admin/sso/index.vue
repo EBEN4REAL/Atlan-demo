@@ -1,10 +1,10 @@
 <template>
-    <div class="px-12 mx-auto my-8 text-gray-600 bg-white rounded">
+    <div class="flex flex-col justify-center h-full bg-primary-light">
         <DisplaySSO
             v-if="identityProviders.length"
             :provider-details="identityProviders[0] || {}"
         />
-        <div class="p-12" v-else>
+        <div class="flex flex-col justify-center h-3/4" v-else>
             <EmptySSOScreen />
         </div>
     </div>

@@ -324,6 +324,7 @@
                 if (action === 'add') {
                     handleAdd()
                 } else {
+                    /* For closing the tab */
                     console.log(targetKey)
                     let crossedTabState: boolean = false
                     tabs.value.forEach((tab) => {
@@ -333,8 +334,22 @@
                     })
                     /* If it is unsaved then show popover confirm */
                     if (!crossedTabState) {
-                        unsavedPopover.value.key = targetKey as string
-                        unsavedPopover.value.show = true
+                        /* If content is empty */
+                        const tab = tabs.value.find(
+                            (tab) => tab.key === targetKey
+                        )
+                        if (tab?.playground?.editor?.text?.length > 0) {
+                            unsavedPopover.value.key = targetKey as string
+                            unsavedPopover.value.show = true
+                        } else {
+                            /* Delete the tab if content is empty */
+                            inlineTabRemove(
+                                targetKey as string,
+                                tabs,
+                                activeInlineTabKey,
+                                pushGuidToURL
+                            )
+                        }
                     } else {
                         inlineTabRemove(
                             targetKey as string,

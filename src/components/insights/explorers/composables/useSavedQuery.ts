@@ -295,10 +295,11 @@ export function useSavedQuery(
                     name,
                     qualifiedName,
                     connectionName,
-                    defaultSchemaQualifiedName,
+                    defaultSchemaQualifiedName:
+                        defaultSchemaQualifiedName ?? '',
                     certificateStatus,
                     isSnippet: isSQLSnippet,
-                    connectionQualifiedName,
+                    connectionQualifiedName: connectionQualifiedName ?? '',
                     description,
                     ownerUsers: username.value,
                     tenantId: 'default',

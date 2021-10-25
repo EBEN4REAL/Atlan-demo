@@ -175,25 +175,10 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         }
         return sqlVariables.value
     }
-    function initializeSqlVariables(
-        activeInlineTab: ComputedRef<activeInlineTabInterface | undefined>
-    ) {
-        const newSqlVariables = JSON.parse(
-            JSON.stringify(
-                toRaw(activeInlineTab.value)?.playground?.editor?.variables ??
-                    []
-            )
-        )
-        console.log('initializarion', activeInlineTab.value)
-        setSqlVariables(sqlVariables, newSqlVariables)
-    }
-    const sqlVariables: Ref<CustomVaribaleInterface[]> = ref([])
 
     return {
         deleteVariable,
-        initializeSqlVariables,
         isSqlVariablesChanged,
-        sqlVariables,
         setSqlVariables,
         addVariable,
         saveVariable,

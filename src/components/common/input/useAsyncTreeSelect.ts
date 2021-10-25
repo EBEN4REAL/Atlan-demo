@@ -1,11 +1,11 @@
 
 
-import { computed, ref } from 'vue'
+import { computed, ref, Ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 
-export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, valueObject: { [x: string]: string; }) {
+export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, valueObject: Ref<{ [x: string]: string; }>) {
 
     const getData = (res: any) => {
         const { rootPath, labelPath, valuePath } = resConfig;
@@ -48,8 +48,15 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, value
             parsedUrl = parsedUrl.replace('{{parent}}', n.value)
 
         try {
-            const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body })
-            // eslint-disable-next-line no-param-reassign // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
+            const response = await useAPIPromise(
+                getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
+                method,
+                {
+                    params: genParams(valueObject.value, params),
+                    body
+                })
+            // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
+            // eslint-disable-next-line no-param-reassign 
             n.dataRef.children = [...getData(response)].map(r => ({ pid: n.value, title: r.label, isLeaf: true, key: `${n.value}/${r.value}`, value: `${n.value}/${r.value}`, val: r.value }));
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig

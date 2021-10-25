@@ -389,7 +389,9 @@
         background-color: rgba(255, 239, 208, 1);
     }
     .information-border {
-        @apply border-primary;
+        background-color: #F5FAFF;
+        border-color: #5277D7;
+        // @apply border-primary;
     }
     .issue-border {
         border-color: rgba(207, 89, 46, 1);

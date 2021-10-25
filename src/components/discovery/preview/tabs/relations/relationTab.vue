@@ -35,7 +35,7 @@
                 <div class="">
                     <fa
                         icon="fas chevron-down"
-                        class="ml-1 transition-transform transform duration-300"
+                        class="ml-1 transition-transform duration-300 transform"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -120,6 +120,7 @@
                     useEntityRelationships(selectedAsset.value.guid)
 
                 relationshipAssets.value = relationshipAssetTypes.value
+                console.log(relationshipAssetTypes.value)
                 assetId.value = selectedAsset.value.guid
                 loading.value = isLoading.value
             }

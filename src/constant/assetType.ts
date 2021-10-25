@@ -107,12 +107,12 @@ export const AssetTypeList: {
         {
             id: 'QueryFolder',
             label: 'QueryFolder',
-            nameAttribute: 'queryFolderName',
-            qualifiedNameAttribute: 'queryFolderQualifiedName',
+            nameAttribute: 'parentFolder',
+            qualifiedNameAttribute: 'parentFolderQualifiedName',
             parents: ['Connection', 'Database', 'Schema'],
             children: [],
             isDiscoverable: true,
-            orderWeight: 70,
+            orderWeight: 60,
             count: 0,
         },
         {

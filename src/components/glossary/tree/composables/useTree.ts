@@ -57,19 +57,9 @@ const useTree = ({
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)
 
-    const currentGuid = ref<string>(route.params.id as string)
-    const fetchGuid = ref<string>(currentGuid.value)
-    const currentType = ref(
-        router.currentRoute.value.fullPath.split('/')[
-            router.currentRoute.value.fullPath.split('/').length - 2
-        ] as 'glossary' | 'category' | 'term'
-    )
-    const fetchType = ref(currentType.value)
 
-    const currentEntity = ref<Glossary | Category | Term>()
     const {
         entity: fetchedEntity,
-        referredEntities,
         error,
         isLoading,
         refetch,
@@ -989,7 +979,6 @@ const useTree = ({
     }
 
     const reInitTree = () => {
-        fetchGuid.value = currentGuid.value
         refetch()
     }
 
@@ -1209,35 +1198,22 @@ const useTree = ({
         }
     }
 
+    const collapseAll = () => {
+        expandedKeys.value = []
+    }
+    
     watch(fetchedEntity, (newEntity) => {
-        console.log('bruh moment', newEntity)
         if (newEntity?.typeName === 'AtlasGlossary') {
             if (parentGlossary.value?.guid !== newEntity.guid) {
                 parentGlossary.value = newEntity
                 treeData.value = []
                 initTreeData(parentGlossary.value.guid)
-                // refetchGlossary('root')
             }
         }
-        //  else if (
-        //     newEntity?.typeName === 'AtlasGlossaryCategory' ||
-        //     newEntity?.typeName === 'AtlasGlossaryTerm'
-        // ) {
-        //     if (!treeData.value?.length) {
-        //             fetchType.value = 'glossary'
-        //             fetchGuid.value = newEntity?.attributes?.anchor?.guid
-        //             refetch()
-        //         // }
-        //         currentEntity.value = fetchedEntity.value
-        //     }
-        // }
     })
 
-    const collapseAll = () => {
-        expandedKeys.value = []
-    }
+
     watch(parentGlossaryGuid, (n) => {
-        console.log(parentGlossaryGuid.value, n, 'bruh')
         isInitingTree.value = true
         expandedKeys.value = []
         loadedKeys.value = []
@@ -1247,29 +1223,6 @@ const useTree = ({
         () => route.params.id,
         (newId) => {
             if (!filterMode) {
-                // currentGuid.value = newId as string
-                // currentType.value = router.currentRoute.value.fullPath.split(
-                //     '/'
-                // )[router.currentRoute.value.fullPath.split('/').length - 2] as
-                //     | 'glossary'
-                //     | 'category'
-                //     | 'term'
-
-                // fetchType.value = currentType.value
-                // fetchGuid.value = currentGuid.value
-
-                // if (
-                //     !treeData.value?.length ||
-                //     !parentGlossary.value?.guid ||
-                //     (parentGlossary.value?.guid !== currentGuid.value &&
-                //         currentType.value === 'glossary')
-                // ) {
-                //     isInitingTree.value = true
-                //     expandedKeys.value = []
-                //     loadedKeys.value = []
-                //     refetch()
-                // }
-
                 selectedKeys.value = [newId as string]
             }
         }
@@ -1284,8 +1237,6 @@ const useTree = ({
     return {
         treeData,
         loadedKeys,
-        currentGuid,
-        currentType,
         parentGlossary,
         isInitingTree,
         selectedKeys,

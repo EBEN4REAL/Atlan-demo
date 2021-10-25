@@ -20,7 +20,7 @@
                     :drag-and-drop="dragAndDropNode"
                     :parent-glossary="parentGlossary"
                     :is-loading="isInitingTree"
-                    :current-guid="currentGuid"
+                    :current-guid="guid"
                     :loaded-keys="loadedKeys"
                     :selected-keys="selectedKeys"
                     :expanded-keys="expandedKeys"
@@ -111,7 +111,6 @@
             const {
                 treeData,
                 loadedKeys,
-                currentGuid,
                 glossaryList,
                 onLoadData,
                 parentGlossary,
@@ -190,7 +189,6 @@
                 isInitingTree,
                 isHome,
                 guid,
-                currentGuid,
             }
         },
     })

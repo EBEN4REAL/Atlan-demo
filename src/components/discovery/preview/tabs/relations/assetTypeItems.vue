@@ -106,7 +106,7 @@
 
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
-                // storeDiscovery.setSelectedAsset(item)
+                storeDiscovery.setSelectedAsset(item)
                 // ctx.emit('preview', item)
                 // context.emit('preview', item)
                 if (page.value === 'biOverview') {

@@ -10,7 +10,7 @@
         ><span>Getting relations</span>
     </div> -->
         <!-- preloader ends here -->
-        <div class="mb-1">
+        <div class="px-3 mb-1">
             <!-- searchbar -->
             <SearchAndFilter v-model:value="queryText">
                 <!-- filters -->

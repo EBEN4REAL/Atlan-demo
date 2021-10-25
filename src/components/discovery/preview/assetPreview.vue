@@ -41,6 +41,20 @@
                                     ><AtlanIcon icon="Share" /></a-button
                             ></a-tooltip>
                             <a-tooltip
+                                v-if="isQueryAsset(selectedAsset)"
+                                placement="bottom"
+                                :mouse-enter-delay="0.5"
+                                title="Run query in insights"
+                            >
+                                <a-button
+                                    class="w-8 h-8"
+                                    size="small"
+                                    @click="handleOpenProfile"
+                                >
+                                    <AtlanIcon icon="Play" /> </a-button
+                            ></a-tooltip>
+                            <a-tooltip
+                                v-else
                                 placement="bottom"
                                 :mouse-enter-delay="0.5"
                                 title="Open profile"

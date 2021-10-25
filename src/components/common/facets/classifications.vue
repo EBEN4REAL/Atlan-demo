@@ -57,7 +57,7 @@
                 @change="handleChange"
             >
                 <div class="flex flex-col w-full">
-                    <div class="h-40 overflow-y-scroll">
+                    <div class="h-auto overflow-y-scroll max-h-40">
                         <template
                             v-for="item in classificationsList"
                             :key="item?.guid + classificationFilterOptionsData"

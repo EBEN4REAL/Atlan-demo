@@ -148,7 +148,6 @@
                 checkedList,
                 cssClasses: {
                     textSize: 'text-sm',
-                    paddingY: 'py-2',
                 },
             }
         },

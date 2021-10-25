@@ -5,78 +5,61 @@
         >
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
                 <a-menu
-                    v-auth="['test']"
                     mode="inline"
                     :class="$style.sidebar"
                     @click="handleClick"
                     v-model:selectedKeys="current"
                     :inlineIndent="0"
                 >
-                    <a-menu-item-group
-                        v-if="sectionPermissions.workspace"
-                        title="Workspace"
-                    >
+                    <a-menu-item-group title="Workspace">
                         <a-menu-item
-                            v-if="activePermissions.overview"
+                            v-auth="[map.UPDATE_WORKSPACE]"
                             key="overview"
                             >Overview</a-menu-item
                         >
-                        <a-menu-item
-                            v-if="activePermissions.members"
-                            key="members"
+                        <a-menu-item v-auth="[map.LIST_USERS]" key="members"
                             >Members</a-menu-item
                         >
-                        <a-menu-item
-                            v-if="activePermissions.groups"
-                            key="groups"
+                        <a-menu-item v-auth="[map.LIST_GROUPS]" key="groups"
                             >Groups</a-menu-item
                         >
-                        <a-menu-item v-if="activePermissions.sso" key="sso"
+                        <a-menu-item key="sso" v-auth="[map.UPDATE_SSO]"
                             >SSO</a-menu-item
                         >
-                        <a-menu-item v-if="activePermissions.smtp" key="smtp"
+                        <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]"
                             >SMTP</a-menu-item
                         >
                         <a-menu-item
-                            v-if="activePermissions.integrations"
+                            v-auth="[map.UPDATE_INTEGRATIONS]"
                             key="integrations"
                             >Integrations</a-menu-item
                         >
                     </a-menu-item-group>
 
-                    <a-menu-item-group
-                        v-if="sectionPermissions.accessControl"
-                        title="Access Control"
-                    >
-                        <a-menu-item
-                            v-if="activePermissions.personas"
-                            key="personas"
+                    <a-menu-item-group title="Access Control">
+                        <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
                             >Personas</a-menu-item
                         >
-                        <a-menu-item
-                            v-if="activePermissions.apiKeys"
-                            key="apikeys"
+                        <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
                             >API Keys</a-menu-item
                         >
                     </a-menu-item-group>
-                    <a-menu-item-group
-                        v-if="sectionPermissions.governance"
-                        title="Governance"
-                    >
+                    <a-menu-item-group title="Governance">
                         <a-menu-item
-                            v-if="activePermissions.classifications"
+                            v-auth="[map.LIST_CLASSIFICATION]"
                             key="classifications"
                             >Classifications</a-menu-item
                         >
-                        <a-menu-item
-                            v-if="activePermissions.requests"
-                            key="requests"
+                        <a-menu-item v-auth="[map.LIST_REQUEST]" key="requests"
                             >Requests</a-menu-item
                         >
-                        <a-menu-item key="custom-metadata">
+                        <a-menu-item
+                            key="custom-metadata"
+                            v-auth="[map.LIST_BUSINESS_METADATA]"
+                        >
                             Custom Metadata
                         </a-menu-item>
-                        <a-menu-item v-if="activePermissions.enums" key="enums">
+                        <a-menu-item key="enums" v-auth="[map.LIST_ENUM]">
                             Enums
                         </a-menu-item>
                     </a-menu-item-group>
@@ -93,6 +76,7 @@
     import { computed, defineComponent, ref } from 'vue'
     import { useRouter, useRoute } from 'vue-router'
     import { useAccessStore } from '~/services/access/accessStore'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         setup() {
@@ -104,42 +88,6 @@
                 router.push(`/admin/${key}`)
             }
 
-            const activePermissions = computed(() => ({
-                overview: accessStore.checkPermission('UPDATE_WORKSPACE'),
-                members: accessStore.checkPermission('LIST_USERS'),
-                groups: accessStore.checkPermission('LIST_GROUPS'),
-                sso: true,
-                smtp: true,
-                integrations: true,
-                personas: accessStore.checkPermission('LIST_PERSONA'),
-                purpose: accessStore.checkPermission('LIST_PURPOSE'),
-                apiKeys: accessStore.checkPermission('LIST_APIKEY'),
-                classifications: accessStore.checkPermission(
-                    'LIST_CLASSIFICATION'
-                ),
-                requests: accessStore.checkPermission('LIST_REQUEST'),
-                metaData: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
-                enums: accessStore.checkPermission('LIST_ENUM'),
-            }))
-            const sectionPermissions = computed(() => ({
-                workspace: accessStore.checkAnyPermissionExists([
-                    'UPDATE_WORKSPACE',
-                    'LIST_USERS',
-                    'LIST_GROUPS',
-                ]),
-                accessControl: accessStore.checkAnyPermissionExists([
-                    'LIST_PERSONA',
-                    'LIST_PURPOSE',
-                    'LIST_APIKEY',
-                ]),
-                governance: accessStore.checkAnyPermissionExists([
-                    'LIST_CLASSIFICATION',
-                    'LIST_REQUEST',
-                    'LIST_BUSINESS_METADATA',
-                    'LIST_ENUM',
-                ]),
-            }))
-
             const initialRoute = route.path.split('/').slice(-1)
             const current = ref(
                 initialRoute[0] === 'admin' ? ['members'] : initialRoute
@@ -148,8 +96,7 @@
             return {
                 handleClick,
                 current,
-                activePermissions,
-                sectionPermissions,
+                map,
             }
         },
     })

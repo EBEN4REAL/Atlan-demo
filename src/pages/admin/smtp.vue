@@ -1,5 +1,6 @@
 <template>
-    <SmtpForm />
+    <SmtpForm v-if="isAccess" />
+    <NoAccess v-else />
 </template>
 
 <script lang="ts">
@@ -7,10 +8,12 @@
     import SmtpForm from '@/admin/smtp/smtpForm.vue'
     import { useHead } from '@vueuse/head'
     import useAuth from '~/services2/service/composable/useAuth'
+    import NoAccess from '@/admin/common/noAccessPage.vue'
 
     export default defineComponent({
         components: {
             SmtpForm,
+            NoAccess,
         },
         setup() {
             useHead({
@@ -22,3 +25,10 @@
     })
 </script>
 <style lang="less" module></style>
+
+<route lang="yaml">
+meta:
+    layout: default
+    requiresAuth: true
+    permissions: [UPDATE_WORKSPACE]
+</route>

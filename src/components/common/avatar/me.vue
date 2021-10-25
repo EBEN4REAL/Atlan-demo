@@ -5,11 +5,14 @@
         </div>
 
         <div v-else class="flex items-center">
-            <a-avatar
-                :size="28"
-                class="mr-1 border border-primary"
-                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+            <avatar
+                :image-url="avatarURL"
+                :allow-upload="false"
+                :avatar-name="username"
+                avatar-size="medium"
+                :avatar-shape="'circle'"
             />
+
             <div class="text-sm text-gray-700 capitalize">
                 {{ name }}
             </div>
@@ -66,9 +69,15 @@
     import { defineComponent, inject } from 'vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import whoami from '~/composables/user/whoami'
+    import useUserData from '~/services2/service/composable/useUserData'
+
+    import Avatar from '~/components/common/avatar.vue'
 
     export default defineComponent({
         name: 'UserPersonalAvatar',
+        components: {
+            Avatar,
+        },
         props: {},
         setup() {
             const keycloak = inject('$keycloak')
@@ -79,18 +88,21 @@
                     })
                 )
             }
-            const { username, name } = whoami()
+
+            const { name, username, avatarURL } = useUserData()
             // user preview drawer
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
             const handleClickUser = (username: string) => {
                 setUserUniqueAttribute(username, 'username')
                 showUserPreview()
             }
+
             return {
                 handleLogout,
                 handleClickUser,
                 username,
                 name,
+                avatarURL,
             }
         },
         data() {

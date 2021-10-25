@@ -1,5 +1,6 @@
 <template>
-    <GroupList />
+    <GroupList v-if="isAccess"></GroupList>
+    <NoAccess v-else />
 </template>
 
 <script lang="ts">
@@ -7,10 +8,12 @@
     import { useHead } from '@vueuse/head'
     import GroupList from '@/admin/groups/index.vue'
     import useAuth from '~/services2/service/composable/useAuth'
+    import NoAccess from '@/admin/common/noAccessPage.vue'
 
     export default defineComponent({
         components: {
             GroupList,
+            NoAccess,
         },
         setup() {
             useHead({
@@ -27,4 +30,5 @@
 meta:
     layout: default
     requiresAuth: true
+    permissions: [LIST_GROUPS]
 </route>

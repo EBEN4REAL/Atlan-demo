@@ -1,5 +1,6 @@
 <template>
-    <IntegrationsView />
+    <IntegrationsView v-if="isAccess" />
+    <NoAccess v-else />
 </template>
 
 <script lang="ts">
@@ -7,10 +8,12 @@
     import { useHead } from '@vueuse/head'
     import IntegrationsView from '@/admin/integrations/integrationsView.vue'
     import useAuth from '~/services2/service/composable/useAuth'
+    import NoAccess from '@/admin/common/noAccessPage.vue'
 
     export default defineComponent({
         components: {
             IntegrationsView,
+            NoAccess,
         },
         setup() {
             useHead({
@@ -26,4 +29,5 @@
 meta:
     layout: default
     requiresAuth: true
+    permissions: [UPDATE_WORKSPACE]
 </route>

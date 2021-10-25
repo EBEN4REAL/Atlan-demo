@@ -1,5 +1,8 @@
 <template>
-    <div class="flex flex-col justify-center h-full bg-primary-light">
+    <div
+        class="flex flex-col justify-center h-full bg-primary-light"
+        v-if="isAccess"
+    >
         <DisplaySSO
             v-if="identityProviders.length"
             :provider-details="identityProviders[0] || {}"
@@ -8,31 +11,31 @@
             <EmptySSOScreen />
         </div>
     </div>
+    <NoAccess v-else />
 </template>
 <script lang="ts">
-    import { defineComponent, computed } from 'vue'
+    import { defineComponent } from 'vue'
     import EmptySSOScreen from '@/admin/sso/configure/emptySSOScreen.vue'
     import DisplaySSO from '@/admin/sso/update/displaySSO.vue'
     import { useHead } from '@vueuse/head'
-    import { useTenantStore } from '~/services/keycloak/tenant/store'
     import useAuth from '~/services2/service/composable/useAuth'
+    import NoAccess from '@/admin/common/noAccessPage.vue'
+
+    import useTenantData from '~/services2/service/composable/useTenantData'
 
     export default defineComponent({
         name: 'SSO',
         components: {
             EmptySSOScreen,
             DisplaySSO,
+            NoAccess,
         },
         setup() {
             useHead({
                 title: 'SSO',
             })
 
-            const tenantStore = useTenantStore()
-            const identityProviders = computed(
-                () => tenantStore.getIdentityProviders
-            )
-
+            const { identityProviders } = useTenantData()
             const { isAccess } = useAuth()
 
             return {
@@ -52,4 +55,5 @@
 meta:
     layout: default
     requiresAuth: true
+    permissions: [UPDATE_WORKSPACE]
 </route>

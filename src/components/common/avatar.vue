@@ -21,6 +21,7 @@
                         class="flex items-center justify-center w-full h-full"
                     ></a-spin>
                 </div>
+
                 <a-avatar
                     v-else
                     :key="uploadKey"
@@ -32,6 +33,7 @@
                         getNameInitials(getNameInTitleCase(avatarName))
                     }}</a-avatar
                 >
+                {{ updatedImageUrl }}
             </a-upload>
         </div>
         <div v-else>

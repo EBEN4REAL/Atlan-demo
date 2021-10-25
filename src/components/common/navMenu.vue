@@ -11,9 +11,11 @@
 
             <router-link to="/">
                 <img
+                    v-if="logoUrl"
                     :src="logoUrl"
                     class="w-auto h-8 cursor-pointer select-none"
                 />
+                <p class="font-bold text-md" v-else>{{ logoName }}</p>
             </router-link>
 
             <atlan-icon v-if="!isHome" icon="ChevronRight" class="h-4 mx-1" />
@@ -23,6 +25,7 @@
         </div>
         <div class="flex items-center justify-self-end">
             <atlan-icon icon="Search" class="h-5 mr-3" />
+
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" />
             <!-- <AtlanIcon icon="Notification" class="h-5 mr-3" /> -->
             <UserPersonalAvatar class="self-center pl-3 border-l" />
@@ -34,7 +37,7 @@
     import { computed, defineComponent, watch, ref } from 'vue'
     import { useRoute } from 'vue-router'
     import UserPersonalAvatar from '~/components/common/avatar/me.vue'
-    import { useTenantStore } from '~/services/keycloak/tenant/store'
+    import { useTenantStore } from '~/store/tenant'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -57,14 +60,24 @@
                 }
                 return false
             })
-            const logoUrl = ref('')
-            watch(
-                tenantStore,
-                () => {
-                    logoUrl.value = `${window.location.origin}/api/service/avatars/_logo_`
-                },
-                { deep: true }
-            )
+
+            const logoUrl = computed(() => {
+                if (tenantStore.displayNameHtml) {
+                    return `${window.location.origin}/api/service/avatars/_logo_`
+                }
+            })
+            const logoName = computed(() => {
+                return tenantStore.displayName
+            })
+
+            // const logoUrl = ref('')
+            // watch(
+            //     tenantStore,
+            //     () => {
+            //         logoUrl.value = `${window.location.origin}/api/service/avatars/_logo_`
+            //     },
+            //     { deep: true }
+            // )
             // const logoUrl = computed(() => {
             //     return `${window.location.origin}/api/service/avatars/_logo_`
             // })
@@ -77,7 +90,7 @@
                 '/admin': 'Admin Centre',
             }
 
-            return { navKeys, isHome, logoUrl }
+            return { navKeys, isHome, logoUrl, logoName }
         },
     })
 </script>

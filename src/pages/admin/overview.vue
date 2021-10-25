@@ -1,5 +1,6 @@
 <template>
-    <OrgOverview></OrgOverview>
+    <OrgOverview v-if="isAccess"></OrgOverview>
+    <NoAccess v-else />
 </template>
 
 <script lang="ts">
@@ -25,5 +26,5 @@
 meta:
     layout: default
     requiresAuth: true
-    permissions: UPDATE_WORKSPACE
+    permissions: [UPDATE_WORKSPACE]
 </route>

@@ -18,7 +18,6 @@ export default function useTenant() {
     watch(data, () => {
         tenantStore.setTenant(data.value)
     })
-
     return {
         data,
     }

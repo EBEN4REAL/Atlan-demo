@@ -22,6 +22,7 @@ export default function useEntityRelationships(guid) {
                         })
                 }
             )
+            console.log(relationshipAssets.value)
         } else {
             // if data not found
             console.log(

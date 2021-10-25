@@ -140,7 +140,6 @@
                     useEntityRelationships(selectedAsset.value.guid)
 
                 relationshipAssets.value = relationshipAssetTypes.value
-                console.log(relationshipAssetTypes.value)
                 assetId.value = selectedAsset.value.guid
                 loading.value = isLoading.value
             }

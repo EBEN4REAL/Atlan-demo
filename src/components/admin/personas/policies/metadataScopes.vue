@@ -1,5 +1,5 @@
 <template>
-    <a-collapse expandIconPosition="right">
+    <a-collapse expand-icon-position="right">
         <template #expandIcon="{ isActive }">
             <div>
                 <AtlanIcon
@@ -12,22 +12,34 @@
 
         <a-collapse-panel v-for="(scope, idx) in scopeList" :key="idx">
             <template #header>
-                <a-checkbox @click.stop="" checked="true">{{
-                    scope.type
-                }}</a-checkbox>
+                <a-checkbox
+                    :checked="
+                        groupedActions[idx].scopes.length ===
+                        scopeList[idx].scopes.length
+                    "
+                    :indeterminate="
+                        0 < groupedActions[idx].scopes.length &&
+                        groupedActions[idx].scopes.length <
+                            scopeList[idx].scopes.length
+                    "
+                    :disabled="!isEditing"
+                    @click.stop="toggleCheckAll(idx)"
+                ></a-checkbox>
+                {{ scope.type }}
             </template>
             <a-checkbox-group
                 :value="groupedActions[idx].scopes"
-                @update:value="updateSelection(scope.type, $event)"
                 :name="scope.type"
                 :options="scope.scopes"
+                :disabled="!isEditing"
+                @update:value="updateSelection(scope.type, $event)"
             />
         </a-collapse-panel>
     </a-collapse>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
     import { isEditing } from '../composables/useEditPersona'
     import useScopeService from '~/services/heracles/composables/scopes'
 
@@ -68,11 +80,21 @@
                 emit('update:actions', allScopes)
             }
 
+            function toggleCheckAll(idx: number) {
+                if (
+                    groupedActions.value[idx].scopes.length <
+                    scopeList[idx].scopes.length
+                )
+                    updateSelection(scopeList[idx].type, scopeList[idx].scopes)
+                else updateSelection(scopeList[idx].type, [])
+            }
+
             return {
                 scopeList,
                 isEditing,
                 groupedActions,
                 updateSelection,
+                toggleCheckAll,
             }
         },
     })

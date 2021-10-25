@@ -4,59 +4,47 @@
     </div>
     <a-modal
         v-model:visible="visible"
-        :class="$style.input"
         width="800px"
         :closable="false"
+        :footer="null"
     >
-        <template #title>
-            <div class="font-bold text-gray-700">Save Filters</div>
-        </template>
-        <template #footer>
-            <div class="flex items-center justify-end w-full">
-                <a-button @click="handleCancel">Cancel</a-button>
-                <a-button type="primary" @click="handleOk"> Save </a-button>
-            </div>
-        </template>
-        <a-button-group class="mb-2 text-xs rounded shadow">
-            <a-button
-                :class="
-                    activeTab === 'new'
-                        ? 'text-primary font-bold'
-                        : 'text-gray-500'
-                "
-                @click="setActiveTab('new')"
-            >
-                New saved filter
-            </a-button>
-
-            <a-button
-                :class="
-                    activeTab === 'replace'
-                        ? 'text-primary font-bold'
-                        : 'text-gray-500'
-                "
-                @click="setActiveTab('replace')"
-                >Replace existing</a-button
-            >
-        </a-button-group>
-        <div v-if="activeTab === 'new'">
-            <a-input
-                ref="titleBar"
-                v-model:value="title"
-                placeholder="Saved filter name..."
-                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-                :class="$style.titleInput"
+        <template #title />
+        <div class="flex flex-col items-stretch pb-4 gap-y-1">
+            <p class="mb-2 text-base font-bold text-gray">Save Filters</p>
+            <RaisedTab
+                v-model:active="activeTab"
+                class="mb-2 mr-auto"
+                :data="tabConfig"
             />
-            <a-textarea
-                v-model:value="description"
-                placeholder="Add description..."
-                class="text-gray-500 border-0 shadow-none outline-none"
-                :maxlength="140"
-                :rows="2"
+            <template v-if="activeTab === 'new'">
+                <input
+                    ref="titleBar"
+                    v-model="title"
+                    placeholder="Saved filter name..."
+                    type="text"
+                    class="text-lg font-bold text-gray-700 clean-input"
+                    @keyup.esc="$event?.target?.blur()"
+                />
+
+                <textarea
+                    v-model="description"
+                    class="text-sm text-gray-500 clean-input"
+                    maxlength="140"
+                    rows="2"
+                    placeholder="Add description..."
+                    @keyup.esc="$event?.target?.blur()"
+                />
+            </template>
+            <EditSavedFilter
+                v-if="activeTab === 'replace'"
+                @replaceFilter="handleReplaceFilterSelection"
             />
         </div>
-        <div v-if="activeTab === 'replace'">
-            <EditSavedFilter @replaceFilter="handleReplaceFilterSelection" />
+        <div class="flex items-center justify-end gap-x-4">
+            <AtlanBtn color="secondary" padding="compact" @click="handleCancel"
+                >Cancel</AtlanBtn
+            >
+            <AtlanBtn padding="compact" @click="handleOk">Save</AtlanBtn>
         </div>
     </a-modal>
 </template>
@@ -78,10 +66,14 @@
     import { addSavedFilter, editSavedFilter } from '../useSavedFilters'
     import { Components } from '~/api/atlas/client'
     import EditSavedFilter from './editSavedFilter.vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
+    import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
         components: {
             EditSavedFilter,
+            RaisedTab,
+            AtlanBtn,
         },
         props: {
             appliedFilters: {
@@ -91,17 +83,19 @@
         },
         emits: ['savedFilterAdded'],
         setup(props, { emit }) {
-            const { username: myUsername, name: myName } = whoami()
+            const { username: myUsername } = whoami()
             const { appliedFilters } = toRefs(props)
             const title = ref<string>('')
             const description = ref<string | undefined>('')
             const replaceSelectedFilter = ref()
             const visible = ref<boolean>(false)
-            const activeTab: Ref<'new' | 'replace'> = ref('new')
 
-            function setActiveTab(tabName: 'new' | 'replace') {
-                activeTab.value = tabName
-            }
+            const activeTab = ref('new')
+
+            const tabConfig = [
+                { key: 'new', label: 'New saved filter' },
+                { key: 'replace', label: 'Replace existing' },
+            ]
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
@@ -175,38 +169,19 @@
                 titleBar,
                 myUsername,
                 activeTab,
-                setActiveTab,
+                tabConfig,
                 handleReplaceFilterSelection,
             }
         },
     })
 </script>
 
-<style lang="less" module>
-    .input {
-        :global(.ant-input:focus
-                .ant-input:hover
-                .ant-input::selection
-                .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
-        }
-        :global(.ant-input) {
-            @apply shadow-none outline-none px-0 border-0 !important;
-        }
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4  !important;
-        }
+<style lang="less" scoped>
+    .clean-input {
+        @apply block bg-transparent border-0 shadow-none outline-none;
 
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-4 pt-0 pb-4 !important;
-        }
-    }
-    .titleInput {
-        :global(.ant-input::-webkit-input-placeholder) {
-            @apply font-bold text-gray-500 !important;
+        &:focus {
+            @apply outline-none;
         }
     }
 </style>

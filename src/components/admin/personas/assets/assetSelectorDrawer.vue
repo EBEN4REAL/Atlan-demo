@@ -1,7 +1,7 @@
 <template>
     <a-drawer
         placement="right"
-        :destroyOnClose="true"
+        :destroy-on-close="true"
         :visible="isVisible"
         :get-container="false"
         :closable="false"
@@ -26,8 +26,8 @@
             </div>
 
             <RaisedTab
-                class="mt-3 ml-4 mr-auto"
                 v-model:active="activeTab"
+                class="mt-3 ml-4 mr-auto"
                 :data="tabConfig"
             />
             <a-divider class="my-4" />
@@ -40,7 +40,7 @@
                     <div class="h-full p-4 overflow-y-auto">
                         <AssetBrowserTree
                             v-model:assets="checkedKeys"
-                            :connectionQfName="connectionQfName"
+                            :connection-qf-name="connectionQfName"
                         />
                     </div>
                 </template>
@@ -48,26 +48,30 @@
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Search from your assets</span
                     >
-                    <AssetsWrapper :dataMap="filterConfig" />
+                    <AssetsWrapper class="h-full" :data-map="filterConfig" />
                 </template>
                 <template v-else-if="activeTab === 'custom'">
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Select assets matching
                     </span>
                     <CustomAssetSelector
-                        class="h-full py-4"
                         v-model:assets="regexKeys"
-                        :connectionQfName="connectionQfName"
+                        class="h-full py-4"
+                        :connection-qf-name="connectionQfName"
                     />
                 </template>
             </keep-alive>
 
+            <a-divider />
             <div class="flex items-center justify-end m-2 gap-x-2">
+                <span class="text-base font-bold text-gray-500"
+                    >{{ selectedAssetCount || 'No' }} items selected</span
+                >
                 <AtlanBtn
                     size="sm"
                     padding="compact"
                     color="secondary"
-                    @click="() => (isVisible = false)"
+                    @click="resetAssetState"
                     >Cancel</AtlanBtn
                 >
                 <AtlanBtn size="sm" padding="compact" @click="saveAssets"
@@ -87,11 +91,11 @@
         toRefs,
         watch,
     } from 'vue'
+    import AssetsWrapper from '@common/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
     import CustomAssetSelector from './customAssetSelector.vue'
-    import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -132,8 +136,14 @@
             const checkedKeys = ref([] as string[])
             const regexKeys = ref([] as string[])
 
+            function resetAssetState() {
+                checkedKeys.value = []
+                regexKeys.value = []
+                isVisible.value = false
+            }
+
             function saveAssets() {
-                // TODO: Change this implementation
+                // TODO: Optional* Change this implementation
                 // Use a WritableComputedRef and the @check event
                 // to see which node got selected or unselected and
                 // use a set to maintain the state
@@ -143,14 +153,12 @@
                     ...regexKeys.value,
                 ])
                 emit('update:assets', [...assetSet])
-                isVisible.value = false
+                resetAssetState()
             }
 
-            function discardAssets() {
-                checkedKeys.value = []
-                regexKeys.value = []
-                isVisible.value = false
-            }
+            const selectedAssetCount = computed(
+                () => checkedKeys.value.length + assets.value.length
+            )
 
             const filterConfig = computed(() => ({
                 connector: {
@@ -160,7 +168,7 @@
             }))
 
             // Tab related data
-            const activeTab = ref('tree')
+            const activeTab = ref('custom')
             const tabConfig = [
                 { key: 'tree', label: 'Browse' },
                 { key: 'list', label: 'Search' },
@@ -174,7 +182,8 @@
                 checkedKeys,
                 regexKeys,
                 saveAssets,
-                discardAssets,
+                resetAssetState,
+                selectedAssetCount,
                 filterConfig,
             }
         },

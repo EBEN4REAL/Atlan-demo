@@ -277,11 +277,23 @@ export function getWorkflowConfigMap(name, immediate: boolean = true) {
 }
 
 export function createWorkflow(body, immediate: boolean = true) {
+    const params = ref({
+        submit: true
+    });
+
     const { data, error, isLoading, mutate } = Workflows.createWorkflow({
         body,
         immediate,
-        options: {},
+        params,
+        options: {
+
+        },
     })
 
-    return { data, error, isLoading, mutate }
+    const execute = (now) => {
+        params.value.submit = now
+        mutate()
+    }
+
+    return { data, error, isLoading, execute }
 }

@@ -19,12 +19,15 @@
         ></a-input>
         <template #footer>
             <div class="flex items-center justify-end space-x-3">
+                <a-checkbox v-model:checked="runNow" class="mr-auto"
+                    >Run Immediately?</a-checkbox
+                >
                 <a-button @click="visible = false">Cancel</a-button>
                 <a-button
                     type="primary"
                     :loading="isLoading"
                     @click="handleCreate"
-                    >Create</a-button
+                    >{{ runNow ? 'Create & Run' : 'Create' }}</a-button
                 >
             </div>
         </template>
@@ -63,8 +66,8 @@
                 desc="
             No information available for this workflow template
         "
-                descClass="text-center w-56 mb-24"
-                :EmptyScreen="EmptyScreen"
+                desc-class="w-56 mb-24 text-center"
+                :empty-screen="EmptyScreen"
             />
         </template>
     </div>
@@ -98,6 +101,7 @@
     import Loader from '@common/loaders/page.vue'
     import ErrorView from '@common/error/index.vue'
     import { message } from 'ant-design-vue'
+    import EmptyView from '@common/empty/index.vue'
     import {
         createWorkflow,
         getWorkflowConfigMap,
@@ -105,7 +109,6 @@
     import AtlanButton from '@/UI/button.vue'
     import PreviewHeader from '@/workflows/shared/previewHeader.vue'
     import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
-    import EmptyView from '@common/empty/index.vue'
 
     export default defineComponent({
         name: 'SetupWorkflowPreview',
@@ -184,7 +187,8 @@
                 },
             }))
 
-            const { data, error, isLoading, mutate } = createWorkflow(
+            const runNow = ref(true)
+            const { data, error, isLoading, execute } = createWorkflow(
                 body,
                 false
             )
@@ -194,7 +198,7 @@
                     content: 'Creating new workflow ...',
                     key: `${workflowName.value}`,
                 })
-                mutate()
+                execute(runNow.value)
 
                 watch([data, error], (v) => {
                     if (data.value && !error.value) {
@@ -257,6 +261,7 @@
 
             return {
                 overview,
+                runNow,
                 handleSetupWorkflow,
                 handleCreate,
                 configMap,

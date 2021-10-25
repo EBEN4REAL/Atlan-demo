@@ -3,23 +3,18 @@
         <div
             class="relative flex flex-col justify-start w-full overflow-x-auto rounded  table_height"
         >
+            <Loading v-if="isQueryRunning === 'loading'" />
             <!-- Error on running a query -->
             <!-- v-if="!LINE_ERROR_NAMES.includes(queryErrorObj.errorName)" -->
-            <QueryError
-                v-if="
-                    isQueryRunning === 'error' &&
-                    !LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
-                "
-            />
+
             <!-- ---------------------- -->
-            <!-- Loading on running a query -->
-            <Loading />
+
             <!-- ------------- -->
             <!-- Output table -->
 
             <table
                 class="relative block w-full p-0 m-0 overflow-auto table-height"
-                v-if="
+                v-else-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
                     isQueryRunning === 'success'
                         ? true
@@ -73,7 +68,7 @@
 
             <!-- First screen -->
             <div
-                v-if="isQueryRunning === ''"
+                v-else-if="isQueryRunning === ''"
                 class="flex flex-col items-center justify-center w-full h-full"
             >
                 <img :src="ResultsImg" class="text-white" :draggable="false" />
@@ -87,13 +82,20 @@
                     LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
                 "
             -->
+            <QueryError
+                v-if="
+                    isQueryRunning === 'error' &&
+                    !LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
+                "
+            />
             <LineError
                 :errorDecorations="errorDecorations"
-                v-if="
+                v-else-if="
                     isQueryRunning === 'error' &&
                     LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
                 "
             />
+            <!-- Loading on running a query -->
 
             <!-- Output pane footer -->
 

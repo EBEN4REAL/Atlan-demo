@@ -181,7 +181,7 @@
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
                             "
-                            @click="updateQuery"
+                            @click="saveOrUpdate"
                         >
                             <template #icon>
                                 <AtlanIcon class="mr-1" icon="Save" />
@@ -236,7 +236,7 @@
                                 h-6
                                 py-0.5
                             "
-                            @click="openSaveQueryModal"
+                            @click="saveOrUpdate"
                         >
                             <template #icon>
                                 <AtlanIcon class="mr-1" icon="Save" />
@@ -660,6 +660,14 @@
                     openAssetSidebar(activeInlineTabCopy, 'editor')
                 }
             }
+            const saveOrUpdate = () => {
+                const queryId = activeInlineTab.value?.queryId
+                if (queryId) {
+                    updateQuery()
+                } else {
+                    openSaveQueryModal()
+                }
+            }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
                 ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -668,6 +676,7 @@
                 editorPos: editorPos,
                 editorFocused: editorFocused,
                 toggleRun: toggleRun,
+                saveOrUpdate: saveOrUpdate,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -686,6 +695,13 @@
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault()
                         toggleRun()
+                    }
+                    //prevent the default action
+                }
+                if (e.key === 'S') {
+                    if (e.metaKey || e.ctrlKey) {
+                        e.preventDefault()
+                        saveOrUpdate()
                     }
                     //prevent the default action
                 }
@@ -714,6 +730,7 @@
 
             /* ------------------------------------------ */
             return {
+                saveOrUpdate,
                 toggleExplorerPane,
                 editorConfig,
                 canUserUpdateQuery,

@@ -59,6 +59,7 @@
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const toggleRun = inject('toggleRun') as Function
+            const saveOrUpdate = inject('saveOrUpdate') as Function
             const editorPos = inject('editorPos') as Ref<{
                 column: number
                 lineNumber: number
@@ -228,6 +229,12 @@
                     monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
                     function () {
                         toggleRun()
+                    }
+                )
+                editor?.addCommand(
+                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+                    function () {
+                        saveOrUpdate()
                     }
                 )
                 /* -------------------------------------------- */

@@ -379,7 +379,7 @@ export async function useAutoSuggestions(
     /* Remove tokens which are special characters */
     tokens = tokens.filter((token) => {
         let t = true
-        t = !token.match(/[-[\]{}()*+?'."\\/^$|#\s\t]/g) && token !== ''
+        t = !token.match(/[-[\]{};()*+?'."\\/^$|#\s\t]/g) && token !== ''
         return t
     })
     // tokens.push(' ')

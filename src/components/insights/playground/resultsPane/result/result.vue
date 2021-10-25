@@ -83,7 +83,7 @@
                 "
             -->
             <QueryError
-                v-if="
+                v-else-if="
                     isQueryRunning === 'error' &&
                     !LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
                 "

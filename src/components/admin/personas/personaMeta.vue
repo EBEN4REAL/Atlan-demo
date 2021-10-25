@@ -1,67 +1,69 @@
 <template>
-    <a-form
-        v-if="selectedPersonaDirty"
-        :key="selectedPersonaDirty.id"
-        layout="vertical"
-        :wrapper-col="{ span: 12 }"
-        :model="selectedPersonaDirty"
-        class="px-5 border-b border-gray-300"
-    >
-        <a-form-item label="Name" name="displayName" required>
-            <a-input
-                v-if="isEditing"
-                v-model:value="selectedPersonaDirty.displayName"
-                placeholder="Persona Name"
-            />
-            <span v-else>{{ persona.displayName }}</span>
-        </a-form-item>
-        <a-form-item label="Description" name="description">
-            <a-textarea
-                v-if="isEditing"
-                v-model:value="selectedPersonaDirty.description"
-                show-count
-                :maxlength="140"
-                :auto-size="{ minRows: 1, maxRows: 3 }"
-            />
-            <span v-else>{{ persona.description }}</span>
-        </a-form-item>
-        <a-form-item
-            v-if="selectedPersonaDirty.createdAt"
-            label="Created On"
-            name="createdAt"
+    <div>
+        <a-form
+            v-if="selectedPersonaDirty"
+            :key="selectedPersonaDirty.id"
+            layout="vertical"
+            :wrapper-col="{ span: 12 }"
+            :model="selectedPersonaDirty"
+            class="px-5 border-b border-gray-300"
         >
-            {{ selectedPersonaDirty.createdAt }}
-        </a-form-item>
-        <a-form-item
-            v-if="selectedPersonaDirty.createdBy"
-            label="Created By"
-            name="createdBy"
-        >
-            {{ selectedPersonaDirty.createdBy }}
-        </a-form-item>
-    </a-form>
-    <div class="details-section" @click="setActiveTab('policies')">
-        <AtlanIcon icon="Policy" class="h-6" />
-        <span class="text-sm font-bold">Policies</span>
-        <span class="data-policy-pill">
-            <b>{{ persona.datapolicies?.length || 'No' }}</b> Data policies
-        </span>
-        <span class="metadata-policy-pill">
-            <b>{{ persona.metadataPolicies?.length || 'No' }}</b> Metadata
-            policies
-        </span>
-        <AtlanIcon icon="ArrowRight" class="h-6 ml-auto" />
-    </div>
-    <div class="details-section" @click="setActiveTab('users')">
-        <AtlanIcon icon="GroupStatic" class="h-6" />
-        <span class="text-sm font-bold">Users and Groups</span>
-        <span class="user-group-pill">
-            <b>{{ persona.users?.length || 'No' }}</b> Users
-        </span>
-        <span class="user-group-pill">
-            <b>{{ persona.groups?.length || 'No' }}</b> Groups
-        </span>
-        <AtlanIcon icon="ArrowRight" class="h-6 ml-auto" />
+            <a-form-item label="Name" name="displayName" required>
+                <a-input
+                    v-if="isEditing"
+                    v-model:value="selectedPersonaDirty.displayName"
+                    placeholder="Persona Name"
+                />
+                <span v-else>{{ persona.displayName }}</span>
+            </a-form-item>
+            <a-form-item label="Description" name="description">
+                <a-textarea
+                    v-if="isEditing"
+                    v-model:value="selectedPersonaDirty.description"
+                    show-count
+                    :maxlength="140"
+                    :auto-size="{ minRows: 1, maxRows: 3 }"
+                />
+                <span v-else>{{ persona.description }}</span>
+            </a-form-item>
+            <a-form-item
+                v-if="selectedPersonaDirty.createdAt"
+                label="Created On"
+                name="createdAt"
+            >
+                {{ selectedPersonaDirty.createdAt }}
+            </a-form-item>
+            <a-form-item
+                v-if="selectedPersonaDirty.createdBy"
+                label="Created By"
+                name="createdBy"
+            >
+                {{ selectedPersonaDirty.createdBy }}
+            </a-form-item>
+        </a-form>
+        <div class="details-section" @click="setActiveTab('policies')">
+            <AtlanIcon icon="Policy" class="h-6" />
+            <span class="text-sm font-bold">Policies</span>
+            <span class="data-policy-pill">
+                <b>{{ persona.datapolicies?.length || 'No' }}</b> Data policies
+            </span>
+            <span class="metadata-policy-pill">
+                <b>{{ persona.metadataPolicies?.length || 'No' }}</b> Metadata
+                policies
+            </span>
+            <AtlanIcon icon="ArrowRight" class="h-6 ml-auto" />
+        </div>
+        <div class="details-section" @click="setActiveTab('users')">
+            <AtlanIcon icon="GroupStatic" class="h-6" />
+            <span class="text-sm font-bold">Users and Groups</span>
+            <span class="user-group-pill">
+                <b>{{ persona.users?.length || 'No' }}</b> Users
+            </span>
+            <span class="user-group-pill">
+                <b>{{ persona.groups?.length || 'No' }}</b> Groups
+            </span>
+            <AtlanIcon icon="ArrowRight" class="h-6 ml-auto" />
+        </div>
     </div>
 </template>
 

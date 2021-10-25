@@ -18,7 +18,7 @@
                 >
                     <template #tabBarExtraContent>
                         <div class="inline-flex items-center ml-1 mr-2">
-                            <a-tooltip placement="top">
+                            <a-tooltip color="#363636" placement="top">
                                 <template #title>New query</template>
                                 <span
                                     class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"

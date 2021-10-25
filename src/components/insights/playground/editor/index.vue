@@ -10,7 +10,7 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <a-tooltip>
+                        <a-tooltip color="#363636">
                             <template #title>Custom variables</template>
                             <div
                                 class="items-center justify-center px-1 rounded cursor-pointer hover:bg-gray-300"
@@ -18,7 +18,7 @@
                                 @click="toggleCustomToolbar"
                             >{&nbsp;}</div>
                         </a-tooltip>
-                        <a-tooltip>
+                        <a-tooltip color="#363636">
                             <template #title>Format text</template>
                             <div
                                 class="items-center justify-center px-1 ml-2 py-0.5 -mt-0.5 rounded cursor-pointer hover:bg-gray-300 group"
@@ -36,14 +36,18 @@
                                 class="items-center justify-center rounded cursor-pointer hover:bg-gray-300 py-0.5"
                                 @click="tFullScreen"
                             >
-                                <a-tooltip v-if="fullSreenState">
+                                <a-tooltip color="#363636" v-if="fullSreenState">
                                     <template #title>Exit full screen</template>
                                     <AtlanIcon
                                         class="w-4 h-4 border-gray-500"
                                         icon="ExitFullScreen"
                                     />
                                 </a-tooltip>
-                                <a-tooltip v-else :overlayClassName="$style.tooltip">
+                                <a-tooltip
+                                    color="#363636"
+                                    v-else
+                                    :overlayClassName="$style.tooltip"
+                                >
                                     <template #title>Go full screen</template>
                                     <AtlanIcon class="w-4 h-4 border-gray-500" icon="FullScreen" />
                                 </a-tooltip>
@@ -159,6 +163,7 @@
                             class="transition duration-150 hover:text-primary"
                         >
                             <a-tooltip
+                                color="#363636"
                                 class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
                             >
                                 <template #title>
@@ -268,14 +273,14 @@
                     <span class="ml-2 mr-4">Spaces:&nbsp;{{ editorConfig.tabSpace }}</span>
                     <div class="flex items-center justify-center">
                         <div class @click="togglePane">
-                            <a-tooltip>
+                            <a-tooltip color="#363636">
                                 <template #title>Toggle output pane ( ctrl + j )</template>
 
                                 <AtlanIcon icon="OutputpaneTrigger" class="w-4 h-4 text-gray-500" />
                             </a-tooltip>
                         </div>
                         <div class="ml-2" @click="toggleAssetPreview">
-                            <a-tooltip>
+                            <a-tooltip color="#363636">
                                 <template #title>Toggle asset preview</template>
 
                                 <AtlanIcon icon="SidebarTrigger" class="w-4 h-4 text-gray-500" />

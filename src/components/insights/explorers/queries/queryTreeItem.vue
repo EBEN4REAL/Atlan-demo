@@ -104,7 +104,7 @@
                                         () => actionClick('info', item)
                                     "
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip color="#363636" placement="top">
                                         <template #title>Open preview sidebar</template>
                                         <AtlanIcon
                                             icon="Info"

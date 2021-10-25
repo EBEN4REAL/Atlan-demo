@@ -22,9 +22,10 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         | Ref<'glossary' | 'category' | 'term'>,
     entityGuid: Ref<string>,
     cache?: boolean | string,
+    from: string,
     watchForGuidChange: boolean = true
 ) => {
-    console.log('useGtcEntity called')
+    console.log('useGtcEntity called', entityGuid.value)
     const body = ref({})
 
     const relatedTerms = [
@@ -56,6 +57,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             },
         },
         attributes: [
+            from,
             ...projection,
             'assignedEntities',
             'atlanSchema',
@@ -130,13 +132,14 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     const statusMessage = computed(
         () => entity.value?.attributes?.assetStatusMessage ?? ''
     )
-
     const statusObject = computed(() =>
         StatusList.find(
             (status) =>
                 status.id === entity.value?.attributes?.certificateStatus
         )
     )
+    const parentGlossaryGuid = ref<string | undefined>('')
+
 
     watch(entityGuid, (newGuid) => {
         if (watchForGuidChange) {
@@ -144,11 +147,17 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             mutate()
         }
     })
+    watch(entity, (newEntity) => {
+        if(newEntity) {
+            if(newEntity.typeName === 'AtlasGlossary') parentGlossaryGuid.value =  newEntity.guid
+            else parentGlossaryGuid.value = newEntity.attributes?.anchor?.guid
+        }
+    })
 
     const refetch = () => {
         body.value = getBody()
         mutate()
-        console.log('refetching')
+        console.log('refetching', entityGuid.value, body.value)
         console.log(entity)
     }
 
@@ -164,6 +173,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         refetch,
         mutate,
         statusMessage,
+        parentGlossaryGuid
     }
 }
 

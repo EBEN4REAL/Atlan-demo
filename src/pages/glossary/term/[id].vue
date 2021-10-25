@@ -116,7 +116,6 @@
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
-    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // assets
@@ -173,6 +172,7 @@
                 accessStore.checkPermission('READ_TERM')
             )
 
+            // TODO: move to glossary.vue
             // ? Re fetch after bm projection loads or first fetch after  bm projection loads ?
             watch(
                 BMListLoaded,
@@ -233,8 +233,6 @@
             watch(guid, () => {
                 currentTab.value = '1'
             })
-            // Providers
-            provide('refreshEntity', refetch)
 
             return {
                 term,

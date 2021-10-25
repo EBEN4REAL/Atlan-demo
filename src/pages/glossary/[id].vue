@@ -51,6 +51,7 @@
                                             v-model:value="newName"
                                             style="width: 200px"
                                         />
+                                        // TODO: remove old untitled glossary flow
                                         <a-button
                                             v-if="newName"
                                             class="ml-4"
@@ -152,7 +153,6 @@
     import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
     // composables
-    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
     // import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
     // import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'

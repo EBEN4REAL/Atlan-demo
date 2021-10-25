@@ -15,18 +15,27 @@ import store from '~/utils/storage'
 // composables
 import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
 
-const useTree = (
-    emit: any,
-    optimisticUpdate?: boolean,
-    isHome?: ComputedRef<boolean>,
-    filterMode?: boolean,
-    cacheKey?: string,
-    isAccordion?: boolean
-) => {
+interface UseTreeParams {
+    emit: any;
+    parentGlossaryGuid: Ref<string | undefined>
+    optimisticUpdate?: boolean;
+    filterMode?: boolean;
+    cacheKey?: string;
+    isAccordion?: boolean;
+}
+
+const useTree = ({
+    emit,
+    optimisticUpdate,
+    filterMode,
+    cacheKey,
+    isAccordion,
+    parentGlossaryGuid
+}: UseTreeParams) => {
     const route = useRoute()
     const router = useRouter()
     const defaultLimit = 5
-
+    console.log('bruh', parentGlossaryGuid.value)
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     // categories will map to strings since categories can only have one parent ( they only belong to 1 category )
     // terms will map to string[] as a term can be inside multiple categories ( they can belong to multiple categories )
@@ -65,11 +74,10 @@ const useTree = (
         isLoading,
         refetch,
     } = useGTCEntity<Glossary | Term | Category>(
-        // type,
-        // currentGuid,
-        fetchType,
-        fetchGuid,
-        true,
+        'glossary',
+        parentGlossaryGuid,
+        false,
+        'tree',
         false
     )
 
@@ -80,7 +88,7 @@ const useTree = (
             | Components.Schemas.AtlasGlossaryCategory
             | Components.Schemas.AtlasGlossaryTerm,
         type: 'term' | 'category',
-        parentGlossaryGuid: string,
+        glossaryGuid: string,
         isRoot?: Boolean,
         parentCategoryId?: string
     ) => {
@@ -88,7 +96,7 @@ const useTree = (
             ...item,
             title: item.name,
             key: item.guid,
-            glossaryID: parentGlossaryGuid,
+            glossaryID: glossaryGuid,
             parentCategoryId: parentCategoryId,
             type,
             isRoot,
@@ -1201,78 +1209,68 @@ const useTree = (
         }
     }
 
-    watch(fetchGuid, (newGuid) => {
-        if (
-            fetchType.value === 'glossary' &&
-            parentGlossary.value?.guid !== newGuid
-        ) {
-            isInitingTree.value = true
-            expandedKeys.value = []
-            loadedKeys.value = []
-        }
-    })
-
     watch(fetchedEntity, (newEntity) => {
+        console.log('bruh moment', newEntity)
         if (newEntity?.typeName === 'AtlasGlossary') {
             if (parentGlossary.value?.guid !== newEntity.guid) {
                 parentGlossary.value = newEntity
                 treeData.value = []
-                initTreeData(fetchGuid.value)
+                initTreeData(parentGlossary.value.guid)
                 // refetchGlossary('root')
             }
-        } else if (
-            newEntity?.typeName === 'AtlasGlossaryCategory' ||
-            newEntity?.typeName === 'AtlasGlossaryTerm'
-        ) {
-            if (!treeData.value?.length) {
-                // if (
-                //     referredEntities?.value[newEntity?.attributes?.anchor?.guid]
-                //         ?.guid
-                // ) {
-                //     parentGlossary.value =
-                //         referredEntities.value[newEntity.attributes.anchor.guid]
-
-                //     if (parentGlossary.value?.guid)
-                //         initTreeData(parentGlossary.value.guid)
-                // } else {
-                    fetchType.value = 'glossary'
-                    fetchGuid.value = newEntity?.attributes?.anchor?.guid
-                    refetch()
-                // }
-                currentEntity.value = fetchedEntity.value
-            }
         }
+        //  else if (
+        //     newEntity?.typeName === 'AtlasGlossaryCategory' ||
+        //     newEntity?.typeName === 'AtlasGlossaryTerm'
+        // ) {
+        //     if (!treeData.value?.length) {
+        //             fetchType.value = 'glossary'
+        //             fetchGuid.value = newEntity?.attributes?.anchor?.guid
+        //             refetch()
+        //         // }
+        //         currentEntity.value = fetchedEntity.value
+        //     }
+        // }
     })
 
     const collapseAll = () => {
         expandedKeys.value = []
     }
-
+    watch(parentGlossaryGuid, (n) => {
+        console.log(parentGlossaryGuid.value, n, 'bruh')
+        isInitingTree.value = true
+        expandedKeys.value = []
+        loadedKeys.value = []
+        refetch()
+    })
     watch(
         () => route.params.id,
         (newId) => {
             if (!filterMode) {
-                currentGuid.value = newId as string
-                currentType.value = router.currentRoute.value.fullPath.split(
-                    '/'
-                )[router.currentRoute.value.fullPath.split('/').length - 2] as
-                    | 'glossary'
-                    | 'category'
-                    | 'term'
+                // currentGuid.value = newId as string
+                // currentType.value = router.currentRoute.value.fullPath.split(
+                //     '/'
+                // )[router.currentRoute.value.fullPath.split('/').length - 2] as
+                //     | 'glossary'
+                //     | 'category'
+                //     | 'term'
 
-                fetchType.value = currentType.value
-                fetchGuid.value = currentGuid.value
+                // fetchType.value = currentType.value
+                // fetchGuid.value = currentGuid.value
 
-                if (
-                    !treeData.value?.length ||
-                    !parentGlossary.value?.guid ||
-                    (parentGlossary.value?.guid !== currentGuid.value &&
-                        currentType.value === 'glossary')
-                ) {
-                    refetch()
-                }
+                // if (
+                //     !treeData.value?.length ||
+                //     !parentGlossary.value?.guid ||
+                //     (parentGlossary.value?.guid !== currentGuid.value &&
+                //         currentType.value === 'glossary')
+                // ) {
+                //     isInitingTree.value = true
+                //     expandedKeys.value = []
+                //     loadedKeys.value = []
+                //     refetch()
+                // }
 
-                selectedKeys.value = [currentGuid.value]
+                selectedKeys.value = [newId as string]
             }
         }
     )

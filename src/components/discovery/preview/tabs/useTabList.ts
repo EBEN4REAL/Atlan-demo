@@ -68,6 +68,18 @@ export default function useAssetDetailsTabList(
             tooltip: 'Columns',
         },
         {
+            name: 'Relations',
+            component: 'relations',
+            exclude: [
+                'Connection',
+                'Database',
+                'Schema',
+            ],
+            visibleOn: ['discovery'],
+            icon: 'Relation',
+            tooltip: 'Relationships',
+        },
+        {
             name: 'Activity',
             component: 'activity',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
@@ -78,23 +90,7 @@ export default function useAssetDetailsTabList(
             icon: 'Activity',
             tooltip: 'Activity',
         },
-        {
-            name: 'Relations',
-            component: 'relations',
-            exclude: [
-                'Connection',
-                'Database',
-                'Schema',
-                'View',
-                'Table',
-                'TablePartition',
-                'MaterialisedView',
-                'Column',
-            ],
-            visibleOn: ['discovery'],
-            icon: 'Relation',
-            tooltip: 'Related Assets',
-        },
+
         // {
         //     name: 'Chat',
         //     component: 'chat',

@@ -54,6 +54,11 @@
                     </template>
                 </a-dropdown>
             </div>
+            <PersonaUsersGroups
+                v-else-if="activeTabKey === 'users'"
+                class="px-5"
+                :persona="persona"
+            />
         </div>
     </template>
     <div v-else class="flex items-center justify-center h-full">
@@ -66,6 +71,7 @@
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
 
+    import PersonaUsersGroups from './personaUsersGroups.vue'
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './personaMeta.vue'
@@ -77,6 +83,7 @@
         deletePolicy,
     } from './composables/useEditPersona'
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
+
     export default defineComponent({
         name: 'PersonaBody',
         components: {
@@ -85,6 +92,7 @@
             DataPolicy,
             AtlanBtn,
             PersonaMeta,
+            PersonaUsersGroups,
         },
         props: {
             persona: {

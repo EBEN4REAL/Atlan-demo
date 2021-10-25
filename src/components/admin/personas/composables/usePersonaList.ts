@@ -11,7 +11,7 @@ export const selectedPersonaId = ref('')
 export const selectedPersona = computed(() => {
     if (selectedPersonaId.value)
         return personaList.value.find((ps) => ps.id === selectedPersonaId.value)
-    else return undefined
+    return undefined
 })
 
 // Filtered Persona List
@@ -23,7 +23,7 @@ export const filteredPersonas = computed(() => {
                 .displayName!.toLowerCase()
                 .includes(searchTerm.value.toLowerCase())
         )
-    else return personaList.value
+    return personaList.value
 })
 
 invoke(async () => {

@@ -215,6 +215,11 @@ export const KeyMaps = {
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
         ARCHIVED_WORKFLOW_RUN: ({ filter }: PathParams) =>
             getAPIPath('/service', `/runs/archived?filter=${filter}`),
+        LIVE_WORKFLOW_RUN: ({ workflowTemplate }: PathParams) =>
+            getAPIPath(
+                '/service',
+                `runs?limit=10&labelSelector=workflows.argoproj.io/workflow-template=${workflowTemplate}`
+            ),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
         WORKFLOW_TEMPLATE_NAME: ({ filter }: PathParams) =>
             getAPIPath('/service', `/workflowtemplates?filter=${filter}`),

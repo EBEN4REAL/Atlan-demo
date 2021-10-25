@@ -63,6 +63,8 @@
         watch,
         ref,
     } from 'vue'
+    import useWorkflowLiveRun from '@/glossary/profile/overview/useWorkflowLiveRun'
+
     export default defineComponent({
         components: {},
         props: {},
@@ -70,6 +72,7 @@
             // data
             const bulkUploadTriggers = inject('bulkUploadTriggers')
             const percentage = ref(20)
+            const workflowTemplate = ref()
             let nIntervId
 
             // methods
@@ -78,15 +81,19 @@
                 clearInterval(nIntervId)
                 nIntervId = null
             }
-
             // get progress fn triggered every 30sec
             const getProgress = () => {
                 console.log('getting progress ')
-                if (pecentage.value < 80) percentage.value += 20
+                if (percentage.value < 80) percentage.value += 20
+                const { data, error } = useWorkflowLiveRun(
+                    workflowTemplate.value
+                )
+                console.log(data, error)
                 if (percentage.value >= 100) stopGetProgress()
             }
             const triggerUpload = (workflowName) => {
                 console.log(workflowName)
+                workflowTemplate.value = workflowName
                 if (!nIntervId) {
                     nIntervId = setInterval(getProgress, 10000)
                 }
@@ -95,14 +102,14 @@
                 bulkUploadTriggers.startUpload,
                 () => {
                     if (bulkUploadTriggers.startUpload.value) {
-                        triggerUpload(bulkUploadTriggers.workflowName)
+                        triggerUpload(bulkUploadTriggers.workflowName.value)
                     }
                 },
                 { immediate: true }
             )
             return {
-                startUpload: true,
-                percentage: 10,
+                startUpload: bulkUploadTriggers.startUpload,
+                percentage,
             }
         },
     })

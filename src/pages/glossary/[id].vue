@@ -292,7 +292,7 @@
             }
             provide('bulkUploadTriggers', {
                 startUpload,
-                workflowName: workflow.value,
+                workflowName: workflow,
             })
             provide('handleStartUpload', handleStartUpload)
 

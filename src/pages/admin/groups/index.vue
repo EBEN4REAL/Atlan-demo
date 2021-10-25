@@ -6,6 +6,7 @@
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
     import GroupList from '@/admin/groups/index.vue'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         components: {
@@ -15,6 +16,9 @@
             useHead({
                 title: 'Groups',
             })
+            const { isAccess } = useAuth()
+
+            return { isAccess }
         },
     })
 </script>

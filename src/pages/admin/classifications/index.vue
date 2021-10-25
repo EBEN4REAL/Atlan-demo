@@ -2,8 +2,14 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
+    import useAuth from '~/services2/service/composable/useAuth'
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
+        setup() {
+            const { isAccess } = useAuth()
+
+            return { isAccess }
+        },
     })
 </script>
 

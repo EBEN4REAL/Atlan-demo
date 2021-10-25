@@ -80,6 +80,7 @@
         <div class="px-3">
             <template v-for="nav in bottomNavKeys" :key="nav.label">
                 <router-link
+                    v-auth="nav.auth"
                     :to="nav.path"
                     class="w-full mx-0 menu-item"
                     :class="{ active: nav.path === page }"
@@ -110,6 +111,8 @@
     import { useMagicKeys } from '@vueuse/core'
     import UserPersonalAvatar from '~/components/common/avatar/meLarge.vue'
     import whoami from '~/composables/user/whoami'
+    import map from '~/constant/accessControl/map'
+    import page from '~/constant/accessControl/page'
 
     export default defineComponent({
         name: 'HomeSidePanel',
@@ -156,16 +159,19 @@
                     path: '/admin',
                     icon: 'Admin',
                     label: 'Admin Center',
+                    auth: page.PAGE_ADMIN,
                 },
                 {
                     path: '/reporting',
                     icon: 'Report',
                     label: 'Reporting Center',
+                    auth: page.PAGE_REPORTING,
                 },
                 {
                     path: '/platform',
                     icon: 'Platform',
                     label: 'Platform Center',
+                    auth: page.PAGE_PLATFORM,
                 },
                 {
                     path: '/#',
@@ -190,6 +196,7 @@
                 username,
                 name,
                 bottomNavKeys,
+                map,
             }
         },
     })

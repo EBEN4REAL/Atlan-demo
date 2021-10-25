@@ -106,7 +106,7 @@
         watch,
         Ref,
         computed,
-        onMounted
+        onMounted,
     } from 'vue'
 
     import { useRouter } from 'vue-router'
@@ -123,6 +123,7 @@
     import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { useAccessStore } from '~/services/access/accessStore'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         name: 'ClassificationProfile',
@@ -131,10 +132,16 @@
                 type: String as PropType<String>,
             },
         },
-        components: { AtlanBtn, ExplorerLayout, SearchAndFilter, ExplorerList, NoAcces },
+        components: {
+            AtlanBtn,
+            ExplorerLayout,
+            SearchAndFilter,
+            ExplorerList,
+            NoAcces,
+        },
         setup(props) {
             const store = useClassificationStore()
-            const accessStore  = useAccessStore();
+            const accessStore = useAccessStore()
             const router = useRouter()
             const modalVisible = ref(false)
             const createClassificationStatus = ref('')
@@ -146,10 +153,10 @@
                 name: string
                 description: string
             }
-            
+
             const permissions = computed(() => ({
                 list: accessStore.checkPermission('LIST_CLASSIFICATION'),
-                create: accessStore.checkPermission('CREATE_CLASSIFICATION')
+                create: accessStore.checkPermission('CREATE_CLASSIFICATION'),
             }))
             const treeData = computed(() => store.classificationTree)
 
@@ -379,7 +386,10 @@
             })
             const handleClickUser = () => {}
 
+            const { isAccess } = useAuth()
+
             return {
+                isAccess,
                 selectedClassificationNameFromRoute,
                 handleClickUser,
                 createClassificationStatus,
@@ -400,7 +410,7 @@
                 formState,
                 rules,
                 handleSelectNode,
-                permissions
+                permissions,
             }
         },
     })

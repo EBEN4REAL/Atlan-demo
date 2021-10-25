@@ -41,7 +41,7 @@
                     <h3
                         class="flex-shrink mb-0 overflow-hidden text-xl font-bold truncate cursor-pointer  t text-primary overflow-ellipsis whitespace-nowrap"
                     >
-                        {{ item.workflowtemplate.metadata.name }}
+                        {{ item.workflowtemplate?.metadata.name }}
                     </h3>
                 </div>
                 <div class="flex items-center gap-x-3">

@@ -7,12 +7,15 @@
     import { useHead } from '@vueuse/head'
 
     import PersonaView from '@/admin/personas/personaView.vue'
+    import useAuth from '~/services2/service/composable/useAuth'
     export default defineComponent({
         components: { PersonaView },
         setup() {
             useHead({
                 title: 'Personas',
             })
+            const { isAccess } = useAuth()
+            return { isAccess }
         },
     })
 </script>

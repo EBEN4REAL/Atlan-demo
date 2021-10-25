@@ -3,7 +3,6 @@ import { state } from './state'
 import { actions } from './actions'
 import { getters } from './getters'
 
-
 export const useAccessStore = defineStore({
     // name of the store
     // it is used in devtools and allows restoring state

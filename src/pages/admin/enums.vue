@@ -48,6 +48,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { useAccessStore } from '~/services/access/accessStore'
     import NoAcces from '@/admin/common/noAccessPage.vue'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         components: {
@@ -57,7 +58,7 @@
             ExplorerLayout,
             SearchAndFilter,
             AtlanBtn,
-            NoAcces
+            NoAcces,
         },
         setup() {
             useHead({
@@ -76,6 +77,8 @@
                 addModalVisible.value = state
             }
 
+            const { isAccess } = useAuth()
+
             return {
                 enumListData,
                 addModalVisible,
@@ -84,6 +87,7 @@
                 permissions,
                 toggleAddModal,
                 addToList,
+                isAccess,
             }
         },
     })

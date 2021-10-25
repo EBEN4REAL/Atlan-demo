@@ -51,7 +51,6 @@
     import { useRouter } from 'vue-router'
     import { useMagicKeys } from '@vueuse/core'
 
-    import KeycloakMixin from '~/mixins/keycloak'
     import PreviewDrawer from '~/components/common/previewDrawer.vue'
     import NavMenu from '~/components/common/navMenu.vue'
     import SidePanel from '~/components/home/sidePanel.vue'
@@ -63,7 +62,7 @@
             NavMenu,
             SidePanel,
         },
-        mixins: [KeycloakMixin],
+
         setup() {
             const router = useRouter()
             const showNavbar = ref(false)
@@ -96,7 +95,7 @@
             const updatePaths = () => {
                 const page = `/${currentRoute.value.path.split('/')[1]}`
                 if (pages.includes(page)) activeKey.value = page
-                else router.push('/')
+                // else router.push('/')
             }
 
             watch(esc, (v) => {

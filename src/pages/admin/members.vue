@@ -1,25 +1,33 @@
 <template>
-  <Users></Users>
+    <Users v-if="isAccess"></Users>
+    <NoAccess v-else />
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import Users from "@/admin/users/index.vue";
-import { useHead } from "@vueuse/head";
+    import { defineComponent } from 'vue'
+    import { useHead } from '@vueuse/head'
+    import Users from '@/admin/users/index.vue'
+    import NoAccess from '@/admin/common/noAccessPage.vue'
+    import useAuth from '~/services2/service/composable/useAuth'
 
-export default defineComponent({
-  components: {
-    Users,
-  },
-  setup() {
-    useHead({
-      title: "Members",
-    });
-  },
-});
+    export default defineComponent({
+        components: {
+            Users,
+            NoAccess,
+        },
+        setup() {
+            useHead({
+                title: 'Members',
+            })
+            const { isAccess } = useAuth()
+            return { isAccess }
+        },
+    })
 </script>
 <style lang="less" module></style>
 <route lang="yaml">
-    meta:
+meta:
     layout: default
     requiresAuth: true
-    </route>
+    permissions: [LIST_USERS]
+    redirect: false
+</route>

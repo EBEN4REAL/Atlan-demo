@@ -9,6 +9,7 @@
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
     import Health from '@/admin/health/health.vue'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         components: {
@@ -18,6 +19,8 @@
             useHead({
                 title: 'Health page',
             })
+            const { isAccess } = useAuth()
+            return { isAccess }
         },
     })
 </script>

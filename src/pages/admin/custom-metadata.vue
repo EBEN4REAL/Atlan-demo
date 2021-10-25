@@ -68,6 +68,7 @@
 
     import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
     import NoAcces from '@/admin/common/noAccessPage.vue'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         name: 'BusinessMetadata',
@@ -77,13 +78,13 @@
             ExplorerLayout,
             SearchAndFilter,
             AtlanBtn,
-            NoAcces
+            NoAcces,
         },
         setup() {
             useHead({
                 title: computed(() => 'Custom Metadata'),
             })
-            const accessStore = useAccessStore();
+            const accessStore = useAccessStore()
             const permissions = computed(() => ({
                 list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
                 create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
@@ -111,7 +112,10 @@
                 fetchBMonStore()
             })
 
+            const { isAccess } = useAuth()
+
             return {
+                isAccess,
                 EmptyBusinessMetadata,
                 businessMetadataList,
                 businessMetadataListError,
@@ -127,7 +131,7 @@
                 searchedBusinessMetadataList,
                 selectedBm,
                 updatedBm,
-                permissions
+                permissions,
             }
         },
     })

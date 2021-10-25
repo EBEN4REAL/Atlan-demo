@@ -210,6 +210,8 @@ export const KeyMaps = {
     workflow: {
         WORKFLOW: () => getAPIPath('/service', `/workflows`),
         CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        LIST_CONFIGMAP: ({ name }: PathParams) =>
+            getAPIPath('/service', `/configmap`),
         WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),

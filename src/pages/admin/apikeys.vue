@@ -5,6 +5,7 @@
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
     import ListAPIKeys from '~/components/admin/apikeys/listApiKeys.vue'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         components: { ListAPIKeys },
@@ -12,6 +13,11 @@
             useHead({
                 title: 'API keys',
             })
+            const { isAccess } = useAuth()
+
+            return {
+                isAccess,
+            }
         },
     })
 </script>

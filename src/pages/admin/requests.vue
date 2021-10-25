@@ -10,6 +10,7 @@
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { Classification } from '~/api/atlas/classification'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         components: { RequestList },
@@ -24,6 +25,9 @@
             if (!isClassificationInitializedInStore()) {
                 initializeClassificationsInStore()
             }
+
+            const { isAccess } = useAuth()
+            return { isAccess }
         },
     })
 </script>

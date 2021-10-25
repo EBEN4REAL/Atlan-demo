@@ -30,7 +30,7 @@ const getWorkflows = ({ immediate, options, params }) =>
 
 const getWorkflowTemplates = ({ immediate, options, params }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.WORKFLOW_TEMPLATE,
+        KeyMaps.workflow.WORKFLOW_CONFIG_MAP,
         'GET',
         {
             options,

@@ -27,7 +27,7 @@
                         :selected-run-name="selectedRunName"
                         :workflow-template="workflowTemplate"
                         class="bg-transparent"
-                        @change="handlePreview"
+                        @change="updateSelected"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -40,6 +40,7 @@
                 :selected-dag="selectedDag"
                 :form-config="formConfig"
                 @change="selectedRunName = $event"
+                @updateSelected="updateSelected"
             />
         </div>
         <WorkflowLogs
@@ -178,8 +179,8 @@
                 )
             }
 
-            // handlePreview
-            const handlePreview = (item, is) => {
+            // updateSelected
+            const updateSelected = (item, is) => {
                 if (is === 'dag') selectedDag.value = item
                 else selected.value = item
             }
@@ -229,7 +230,7 @@
                     data.value.asset = v.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
-                    handlePreview(data.value.asset, null)
+                    updateSelected(data.value.asset, null)
                 })
             }
 
@@ -261,7 +262,7 @@
                 selected,
                 selectedRunName,
                 tabs,
-                handlePreview,
+                updateSelected,
                 refs,
                 selectedDag,
                 data,

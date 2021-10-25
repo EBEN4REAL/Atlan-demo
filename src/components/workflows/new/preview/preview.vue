@@ -160,10 +160,12 @@
                                         name: 'run',
                                         arguments: {
                                             parameters: [
+                                                // FIXME update with latest
                                                 ...selectedWorkflow.value?.workflowtemplate.spec.templates[0]?.inputs?.parameters
                                                     // eslint-disable-next-line no-prototype-builtins
                                                     ?.filter(
                                                         (p) =>
+                                                            // eslint-disable-next-line no-prototype-builtins
                                                             !p.hasOwnProperty(
                                                                 'value'
                                                             )

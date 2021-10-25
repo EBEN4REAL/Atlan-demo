@@ -268,7 +268,7 @@
             }
 
             const handlePreview = (item) => {
-                selectedItemId.value = item.workflowtemplate.metadata.uid
+                selectedItemId.value = item.name
                 selected.value = item
             }
 

@@ -1,6 +1,6 @@
 <template>
     <PreviewHeader
-        :name="selectedWorkflow.name"
+        :name="selectedWorkflow.display_name"
         type="workflow template"
         :show-utility-buttons="false"
         :icon="images.icon"
@@ -40,12 +40,41 @@
             :error="workflowTemplateError"
         ></ErrorView>
         <template v-else>
-            <div
-                class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
-            >
-                Overview
+            <div class="p-4">
+                <div class="mb-3">
+                    <p class="mb-1 text-sm text-gray-500">Description</p>
+                    <p class="text-gray">{{ selectedWorkflow.description }}</p>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="mb-1 text-sm text-gray-500">Package</p>
+                        <p class="text-gray">
+                            {{ selectedWorkflow.package_name }},v{{
+                                selectedWorkflow.labels[
+                                    'org.argopm.package.version'
+                                ]
+                            }}
+                        </p>
+                    </div>
+                    <AtlanButton
+                        class="m-2"
+                        size="sm"
+                        padding="compact"
+                        color="light"
+                        @click="handleClickSupport"
+                    >
+                        Need Help?
+                    </AtlanButton>
+                </div>
+                <!-- <div>
+                    <p class="mb-1 text-sm text-gray-500"></p>
+                    <p class="text-gray">
+                        {{ selectedWorkflow.helpdesk_link }}
+                    </p>
+                </div> -->
             </div>
-            <div
+            <!-- <div
                 v-if="Object.values(overview).length"
                 class="w-full px-5 mt-2 overflow-y-auto"
                 style="max-height: calc(100vh - 14rem)"
@@ -60,15 +89,15 @@
                         {{ v }}
                     </div>
                 </span>
-            </div>
-            <EmptyView
+            </div> -->
+            <!-- <EmptyView
                 v-else
                 desc="
             No information available for this workflow template
         "
                 desc-class="w-56 mb-24 text-center"
                 :empty-screen="EmptyScreen"
-            />
+            /> -->
         </template>
     </div>
     <AtlanButton
@@ -139,6 +168,15 @@
 
             const handleSetupWorkflow = () => {
                 visible.value = true
+            }
+
+            const handleClickSupport = () => {
+                window
+                    .open(
+                        `https://marketplace.atlan.com/-/web/detail/${selectedWorkflow.value.package_name}`,
+                        '_blank'
+                    )
+                    .focus()
             }
 
             const {
@@ -274,6 +312,7 @@
                 images,
                 visible,
                 workflowName,
+                handleClickSupport,
             }
         },
     })

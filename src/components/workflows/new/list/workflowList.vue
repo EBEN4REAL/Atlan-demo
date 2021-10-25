@@ -1,17 +1,21 @@
 <template>
-    <VirtualList
+    <div class="grid grid-cols-2 gap-4 px-4">
+        <ListItem
+            v-for="item in list"
+            :item="item"
+            :key="item.name"
+            :is-selected="item.name === selectedItemId"
+            @click="handlePreview(item)"
+        ></ListItem>
+    </div>
+
+    <!-- <VirtualList
         :class="{ 'animate-pulse': isLoading }"
         :data="list"
         data-key="metadata"
         variable-height
     >
-        <template #default="{ item }">
-            <ListItem
-                :item="item"
-                :is-selected="item.name === selectedItemId"
-                @click="handlePreview(item)"
-            ></ListItem>
-        </template>
+        <template #default="{ item }"> </template>
         <template #footer>
             <div
                 v-if="isLoadMore || isLoading"
@@ -19,13 +23,13 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="handleLoadMore"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -54,7 +58,7 @@
                 </button>
             </div>
         </template>
-    </VirtualList>
+    </VirtualList> -->
 </template>
 
 <script lang="ts">
@@ -105,18 +109,6 @@
             function handlePreview(item: any) {
                 emit('preview', item)
             }
-
-            // select first asset automatically conditionally acc to  autoSelect prop
-
-            // watch(
-            //     list,
-            //     () => {
-            //         if (autoSelect.value) {
-            //             if (list.value.length) handlePreview(list.value[0])
-            //         } else emit('update:autoSelect', true)
-            //     },
-            //     { immediate: true }
-            // )
 
             const handleLoadMore = () => {
                 emit('loadMore')

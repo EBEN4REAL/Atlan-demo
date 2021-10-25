@@ -1,21 +1,19 @@
 <template>
     <div class="flex px-5 py-3 border-b gap-x-3">
-        <img v-if="icon" :src="icon" class="h-11" />
-        <div class="w-full">
-            <div class="flex items-center justify-between mb-0 text-sm">
-                <div class="flex items-center flex-none">
-                    <span
-                        class="text-sm tracking-wider text-gray-700 uppercase"
-                        >{{ type }}</span
-                    >
-                </div>
-                <div v-if="showUtilityButtons" class="flex space-x-2">
-                    <UtilityButtons />
+        <div class="flex items-center mb-0 overflow-hidden">
+            <div class="pr-3">
+                <img :src="icon" class="w-10 h-auto" />
+            </div>
+            <div class="flex flex-col">
+                <p
+                    class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary overflow-ellipsis whitespace-nowrap"
+                >
+                    {{ name }}
+                </p>
+                <div class="leading-none text-gray-500 uppercase">
+                    CONNECTOR
                 </div>
             </div>
-            <h3 class="text-lg font-bold text-primary">
-                {{ name }}
-            </h3>
         </div>
     </div>
 </template>

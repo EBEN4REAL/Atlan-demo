@@ -1,69 +1,39 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex mx-3 border cursor-pointer"
+        class="p-3"
         :class="
             isSelected
                 ? 'border-primary rounded bg-primary-light'
-                : 'bg-white border-transparent'
+                : 'bg-white border border-gray-200'
         "
     >
-        <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent  w-96"
-            :class="{ ' border-gray-200': !isSelected }"
-        >
-            <a-checkbox
-                v-if="showCheckBox"
-                class="self-center mr-6"
-                :checked="isChecked"
-                @click.stop
-                @change="(e) => $emit('listItem:check', e, item)"
-            />
-            <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
-            >
-                <div class="flex items-center gap-x-3">
-                    <div class="flex text-sm text-gray-500">
-                        <div class="mr-2">
-                            <img
-                                src="/src/assets/images/source/snowflake.png"
-                                class="flex-none w-auto h-3.5 mb-0.5"
-                            />
-                        </div>
-                        <span class="text-gray-500">Template</span>
-                    </div>
-                    <div style="color: rgb(196, 196, 196)">•</div>
-                    <div class="flex text-sm text-gray-500">
-                        <span class="text-gray-500">Metadata</span>
+        <div class="box-border flex flex-col h-full">
+            <div class="flex items-center mb-0 overflow-hidden">
+                <div class="pr-3">
+                    <img :src="item.icon" class="w-10 h-auto" />
+                </div>
+                <div class="flex flex-col">
+                    <p
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary overflow-ellipsis whitespace-nowrap"
+                    >
+                        {{ item.display_name }}
+                    </p>
+                    <div class="leading-none text-gray-500 uppercase">
+                        CONNECTOR
                     </div>
                 </div>
-                <div class="flex items-center mb-0 overflow-hidden">
-                    <h3
-                        class="flex-shrink mb-0 overflow-hidden text-xl font-bold truncate cursor-pointer  t text-primary overflow-ellipsis whitespace-nowrap"
+            </div>
+            <div class="flex items-center mb-0 overflow-hidden">
+                <p class="text-gray-500">
+                    {{ item.description }}
+                </p>
+            </div>
+            <div class="flex items-end flex-grow gap-x-3">
+                <div class="flex text-sm text-gray-500">
+                    <span class="text-gray-500">
+                        v{{ item.labels['org.argopm.package.version'] }}</span
                     >
-                        {{ item.name }}
-                    </h3>
-                </div>
-                <div class="flex items-center gap-x-3">
-                    <div class="flex text-sm text-gray-500">
-                        <span class="text-gray-500"> 2dajuumnr-xmvlm</span>
-                    </div>
-                    <div
-                        v-if="item?.labels['created-by']"
-                        style="color: rgb(196, 196, 196)"
-                    >
-                        •
-                    </div>
-                    <div
-                        class="flex items-center text-sm text-gray-500 gap-x-1"
-                    >
-                        <AtlanIcon icon="User" />
-                        <span>Creators name</span>
-                    </div>
-                    <div style="color: rgb(196, 196, 196)">•</div>
-                    <div class="flex text-sm text-gray-500">
-                        <span class="text-gray-500">Scheduled</span>
-                    </div>
                 </div>
             </div>
         </div>

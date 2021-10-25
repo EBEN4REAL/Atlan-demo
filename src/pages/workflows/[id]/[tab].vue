@@ -72,7 +72,7 @@
     // Composables
     import {
         useWorkflowByName,
-        getWorkflowConfigMap,
+        getWorkflowConfigMapByName,
     } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
@@ -192,7 +192,7 @@
                     data: config,
                     error: e,
                     isLoading: l,
-                } = getWorkflowConfigMap(workflowTemplate.value)
+                } = getWorkflowConfigMapByName(workflowTemplate.value)
 
                 watch(config, (v) => {
                     if (config.value?.records) {

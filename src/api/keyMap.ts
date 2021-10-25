@@ -214,8 +214,10 @@ export const KeyMaps = {
         ARCHIVED_WORKFLOW_RUN: ({ filter }: PathParams) =>
             getAPIPath('/service', `/runs/archived?filter=${filter}`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
+        // TODO REMOVE this, use workflow template
         WORKFLOW_TEMPLATE_NAME: ({ filter }: PathParams) =>
             getAPIPath('/service', `/workflowtemplates?filter=${filter}`),
+        // TODO REMOVE this, use workflow 
         WORKFLOW_BY_NAME: ({ filter }: PathParams) =>
             getAPIPath('/service', `/workflows?filter=${filter}`),
         WORKFLOW_CONFIG_MAP: () => getAPIPath('/service', `/configmaps`),

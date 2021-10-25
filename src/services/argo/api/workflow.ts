@@ -28,28 +28,31 @@ const getWorkflows = ({ immediate, options, params }) =>
         { immediate }
     )
 
-const getWorkflowTemplates = ({ immediate, options, params }) =>
+const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.WORKFLOW_TEMPLATE,
+        'GET',
+        {
+            options,
+            pathVariables,
+            params,
+        },
+        { immediate }
+    )
+
+const getWorkflowConfigMap = ({ pathVariables, immediate, options, params }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW_CONFIG_MAP,
         'GET',
         {
+            pathVariables,
             options,
             params,
         },
         { immediate }
     )
 
-const getWorkflowConfigMap = ({ immediate, options, params }) =>
-    useAPIAsyncState(
-        KeyMaps.workflow.WORKFLOW_CONFIG_MAP,
-        'GET',
-        {
-            options,
-            params,
-        },
-        { immediate }
-    )
-
+// ! depreciated, use filter on /workflow
 const getWorkflowByName = (filter, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.WORKFLOW_BY_NAME,
@@ -77,15 +80,14 @@ const updateWorkflowByName = (name, body, { immediate, options }) =>
         { immediate }
     )
 
-const getWorkflowTemplateByName = (filter, { immediate, options }) =>
+// ! depreciated, use filter on /workflowtemplate
+const getWorkflowTemplateByName = ({ params, immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.WORKFLOW_TEMPLATE_NAME,
+        KeyMaps.workflow.WORKFLOW_TEMPLATE,
         'GET',
         {
             options,
-            pathVariables: {
-                filter,
-            },
+            params,
         },
         { immediate }
     )

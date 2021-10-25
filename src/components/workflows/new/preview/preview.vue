@@ -34,10 +34,10 @@
     </a-modal>
 
     <div class="flex-grow">
-        <Loader v-if="configLoading"></Loader>
+        <Loader v-if="workflowTemplateLoading"></Loader>
         <ErrorView
-            v-else-if="!configLoading && configMapError"
-            :error="configMapError"
+            v-else-if="!workflowTemplateLoading && workflowTemplateError"
+            :error="workflowTemplateError"
         ></ErrorView>
         <template v-else>
             <div
@@ -71,7 +71,6 @@
             />
         </template>
     </div>
-    <!-- <div class=""> -->
     <AtlanButton
         class="m-2"
         size="sm"
@@ -81,7 +80,6 @@
     >
         Use this template <AtlanIcon icon="ArrowRight" class="inline" />
     </AtlanButton>
-    <!-- </div> -->
 </template>
 
 <script lang="ts">
@@ -104,7 +102,7 @@
     import EmptyView from '@common/empty/index.vue'
     import {
         createWorkflow,
-        getWorkflowConfigMap,
+        useWorkflowTemplateByName,
     } from '~/composables/workflow/useWorkFlowList'
     import AtlanButton from '@/UI/button.vue'
     import PreviewHeader from '@/workflows/shared/previewHeader.vue'
@@ -143,6 +141,16 @@
                 visible.value = true
             }
 
+            const {
+                workflowTemplate,
+                error: workflowTemplateError,
+                isLoading: workflowTemplateLoading,
+                changeName,
+            } = useWorkflowTemplateByName(
+                selectedWorkflow.value.template_name,
+                true
+            )
+
             const body = computed(() => ({
                 metadata: {
                     name: workflowName.value,
@@ -161,7 +169,7 @@
                                         arguments: {
                                             parameters: [
                                                 // FIXME update with latest
-                                                ...selectedWorkflow.value?.workflowtemplate.spec.templates[0]?.inputs?.parameters
+                                                ...workflowTemplate.value?.workflowtemplate.spec.templates[0]?.inputs?.parameters
                                                     // eslint-disable-next-line no-prototype-builtins
                                                     ?.filter(
                                                         (p) =>
@@ -177,7 +185,8 @@
                                             ],
                                         },
                                         templateRef: {
-                                            name: selectedWorkflow.value.name,
+                                            name: selectedWorkflow.value
+                                                .template_name,
                                             template: 'main',
                                             clusterScope: true,
                                         },
@@ -227,17 +236,11 @@
                 })
             }
 
-            const {
-                data: configMap,
-                error: configMapError,
-                isLoading: configLoading,
-                changeName: mutateConfigMap,
-            } = getWorkflowConfigMap(selectedWorkflow.value.name, true)
+            // xxx
 
             const overview = computed(() => {
                 const info = {
-                    ...(configMap.value?.items?.length &&
-                        configMap.value?.items[0]?.data),
+                    ...selectedWorkflow.value.data,
                 }
                 delete info.templates
                 delete info.uiConfig
@@ -247,29 +250,25 @@
             })
 
             const images = computed(() => ({
-                icon:
-                    configMap.value?.items?.length &&
-                    configMap.value?.items[0]?.data.icon,
-                logo:
-                    configMap.value?.items?.length &&
-                    configMap.value?.items[0]?.data.logo,
+                icon: selectedWorkflow.value.icon,
+                logo: selectedWorkflow.value.logo,
             }))
 
             function init() {
-                mutateConfigMap(selectedWorkflow.value.name)
+                changeName(selectedWorkflow.value.template_name)
             }
 
             watch(selectedWorkflow, init, { deep: true })
 
             return {
                 overview,
+                workflowTemplate,
                 runNow,
                 handleSetupWorkflow,
                 handleCreate,
-                configMap,
                 isLoading,
-                configMapError,
-                configLoading,
+                workflowTemplateError,
+                workflowTemplateLoading,
                 body,
                 EmptyScreen,
                 images,

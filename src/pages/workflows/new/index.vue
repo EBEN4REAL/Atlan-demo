@@ -131,7 +131,7 @@
     import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
     import { transformToFilters } from '~/components/workflows/discovery/filters/useFilterTransform'
 
-    import { useWorkflowTemplates } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowConfigMaps } from '~/composables/workflow/useWorkFlowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/new/cards.vue'
     import SetupPreview from '@/workflows/new/preview/preview.vue'
@@ -198,7 +198,7 @@
                 isLoading,
                 filterList,
                 mutate,
-            } = useWorkflowTemplates(false)
+            } = useWorkflowConfigMaps(false)
 
             const isLoadMore = computed(
                 () => filter_record.value > workflowList.value.length

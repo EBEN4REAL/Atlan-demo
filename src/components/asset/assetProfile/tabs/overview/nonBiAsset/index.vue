@@ -29,10 +29,8 @@
                 />
             </a-tooltip>
 
-            <keep-alive>
-                <overviewColumns v-if="activePreviewTabKey === 'column'" />
-                <overviewTable v-else-if="activePreviewTabKey === 'table'" />
-            </keep-alive>
+            <overviewColumns v-if="activePreviewTabKey === 'column'" />
+            <overviewTable v-else-if="activePreviewTabKey === 'table'" />
         </div>
 
         <!-- Readme widget -->

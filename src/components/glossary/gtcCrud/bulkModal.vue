@@ -201,6 +201,11 @@
                             duration: 2,
                         })
                         visible.value = false
+                        handleStartUpload(
+                            `atlan-glossary-bulk-upload-${props.entity.guid.slice(
+                                -8
+                            )}`
+                        )
                         setTimeout(() => {
                             redirectToProfile(
                                 'AtlasGlossary',

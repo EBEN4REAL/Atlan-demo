@@ -135,7 +135,8 @@
         computed,
         inject,
         ComputedRef,
-        Ref
+        Ref,
+        provide,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -206,14 +207,23 @@
             const temp = ref(false) // flag for sticky header
             const landByRedirect = false
             const accessStore = useAccessStore()
+            const startUpload = ref()
+            const workflow = ref()
 
             const glossary = inject<Ref<Glossary>>('currentEntity')
-            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
-            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
-            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const title =
+                inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>(
+                'currentShortDescription'
+            )
+            const qualifiedName = inject<ComputedRef<string>>(
+                'currentQualifiedName'
+            )
             const statusObject = inject<ComputedRef>('statusObject')
             const error = inject<Ref>('profileError')
-            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const isLoading = inject<Ref<boolean> | undefined>(
+                'profileIsLoading'
+            )
             const refetch = inject<() => void>('refreshEntity', () => {})
             const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
@@ -274,6 +284,17 @@
                 store.setBulkSelectedAssets([])
                 store.setBulkMode(false)
             }
+
+            const handleStartUpload = (workflowName) => {
+                console.log('starting upload', workflowName)
+                workflow.value = workflowName
+                startUpload.value = true
+            }
+            provide('bulkUploadTriggers', {
+                startUpload,
+                workflowName: workflow.value,
+            })
+            provide('handleStartUpload', handleStartUpload)
 
             return {
                 glossary,

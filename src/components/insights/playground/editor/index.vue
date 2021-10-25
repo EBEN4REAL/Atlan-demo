@@ -765,7 +765,6 @@
 </style>
 <style lang="less" module>
     .checkbox_style {
-        margin-top: 2.65px;
         :global(.ant-checkbox-inner::after) {
             width: 4px !important;
             height: 7px !important;

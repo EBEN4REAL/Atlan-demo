@@ -11,15 +11,15 @@
                 @change="onSearch"
             >
                 <template #filter>
-                    <div class="flex justify-between mb-2">
-                        <p class="mb-0 text-sm text-gray-500">Operator</p>
+                    <div class="flex flex-col gap-y-1">
+                        <span class="text-sm text-gray-500">Operator</span>
+                        <RaisedTab
+                            :active="data.operator"
+                            class="mr-auto"
+                            :data="operationFilterConfig"
+                            @update:active="handleOperatorChange"
+                        />
                     </div>
-                    <CustomRadioButton
-                        :data="data.operator"
-                        class="pb-4"
-                        :list="operationFilterCheckboxes"
-                        @change="handleOperatorChange"
-                    />
                 </template>
             </SearchAndFilter>
             <div
@@ -121,17 +121,23 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import useTree from '~/components/glossary/tree/composables/useTree'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { useDebounceFn } from '@vueuse/core'
 
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
-    import LoadingView from '@common/loaders/section.vue'
-    import getEntityStatusIcon from '~/components/glossary/tree/utils/getIcon'
-    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+    import useTree from '@/glossary/tree/composables/useTree'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import LoadingView from '@/common/loaders/section.vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
+    import getEntityStatusIcon from '@/glossary/tree/utils/getIcon'
+    import useGtcSearch from '@/glossary/composables/useGtcSearch'
+
     import { Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
+        components: {
+            LoadingView,
+            SearchAndFilter,
+            RaisedTab,
+        },
         props: {
             data: {
                 type: Object,
@@ -144,7 +150,6 @@
                 default: false,
             },
         },
-        components: { LoadingView, SearchAndFilter, CustomRadioButton },
         emits: ['update:data', 'change'],
         setup(props, { emit }) {
             const searchQuery = ref<string>()
@@ -219,9 +224,9 @@
                 }
             }, 300)
 
-            const operationFilterCheckboxes = [
-                { id: 'OR', label: 'OR' },
-                { id: 'AND', label: 'AND' },
+            const operationFilterConfig = [
+                { key: 'OR', label: 'OR' },
+                { key: 'AND', label: 'AND' },
             ]
 
             const handleOperatorChange = (val: string) => {
@@ -236,7 +241,7 @@
 
             return {
                 data,
-                operationFilterCheckboxes,
+                operationFilterConfig,
                 handleOperatorChange,
                 getEntityStatusIcon,
                 onCheck,

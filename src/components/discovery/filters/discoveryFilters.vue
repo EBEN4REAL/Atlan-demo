@@ -66,29 +66,12 @@
             </div>
         </div>
     </div>
-    <div v-else class="flex items-center px-4 pt-4 pb-2 text-sm bg-gray-100">
-        <a-button-group class="rounded shadow">
-            <a-button
-                :class="
-                    activeTab === 'all'
-                        ? 'text-primary font-bold'
-                        : 'text-gray-500'
-                "
-                @click="setActiveTab('all')"
-            >
-                Filters
-            </a-button>
-
-            <a-button
-                :class="
-                    activeTab === 'saved'
-                        ? 'text-primary font-bold'
-                        : 'text-gray-500'
-                "
-                @click="setActiveTab('saved')"
-                >Saved Filters</a-button
-            >
-        </a-button-group>
+    <div v-else class="flex items-center px-4 pt-4 pb-2 text-sm bg-white">
+        <RaisedTab
+            v-model:active="activeTab"
+            class="mr-auto"
+            :data="tabConfig"
+        />
     </div>
     <div v-if="activeTab === 'all'" class="h-full overflow-y-auto bg-gray-100">
         <Connector
@@ -192,6 +175,7 @@
         Ref,
         watch,
     } from 'vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
     import { List } from './filters'
@@ -202,6 +186,7 @@
     export default defineComponent({
         name: 'DiscoveryFacets',
         components: {
+            RaisedTab,
             Status: defineAsyncComponent(
                 () => import('@common/facets/status.vue')
             ),
@@ -253,11 +238,16 @@
             const dirtyTimestamp = ref('dirty_')
             const updateSavedFilters: Ref<boolean> = ref(false)
 
-            const activeTab: Ref<'all' | 'saved'> = ref('all')
+            const activeTab = ref('all')
+            const tabConfig = [
+                { key: 'all', label: 'Filters' },
+                { key: 'saved', label: 'Saved Filters' },
+            ]
 
             function setActiveTab(tabName: 'all' | 'saved') {
                 activeTab.value = tabName
             }
+
             /**
              * @desc combines static List with mapped BM object that has filter support
              * */
@@ -520,7 +510,6 @@
                 refresh()
             }
 
-            console.log(dynamicList, 'list')
             return {
                 resetAllFilters,
                 totalAppliedFiltersCount,
@@ -541,6 +530,7 @@
                 handleSavedFilterChange,
                 handleSavedFilterAdded,
                 updateSavedFilters,
+                tabConfig,
             }
         },
     })

@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, Ref } from 'vue'
 import { useAPIPromise } from '~/services/api/useAPI';
 import { ReqConfig, ResConfig } from './asyncSelect.interface';
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
@@ -6,7 +6,7 @@ import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 export default function useAsyncSelector(
     reqConfig: ReqConfig,
     resConfig: ResConfig,
-    valueObject: { [x: string]: string; },
+    valueObject: Ref<{ [x: string]: string; }>,
     getConfig: { rootPath: string, requestConfig: ReqConfig }) {
     const asyncData = ref()
 
@@ -116,7 +116,13 @@ export default function useAsyncSelector(
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body: getParsedBody(addFormValues) })
+            const response = await useAPIPromise(
+                getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
+                method,
+                {
+                    params: genParams(valueObject.value, params),
+                    body: getParsedBody(addFormValues)
+                })
             setData(response);
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig
@@ -134,9 +140,13 @@ export default function useAsyncSelector(
         const { addFormValues } = reqConfig;
         if (addFormValues?.length && !valueObject.value) return true
 
+        const dependentKeys: string[] = []
+
+        // ? check for missing values in URL
+        const { url } = reqConfig;
+        dependentKeys.push(...keyIDs(url))
         // ? check for missing values in params
         const { params } = reqConfig
-        const dependentKeys: string[] = []
         if (typeof params === 'object')
             Object.values(params as object).forEach(v => {
                 if (typeof v === 'string')

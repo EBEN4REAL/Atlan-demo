@@ -143,6 +143,9 @@
             const body = computed(() => ({
                 metadata: {
                     name: workflowName.value,
+                    labels: {
+                        'com.atlan.orchestration/atlan-ui': 'true',
+                    },
                 },
                 spec: {
                     templates: [

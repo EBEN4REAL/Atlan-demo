@@ -1,10 +1,12 @@
 <template>
     <div class="flex items-center gap-x-0.5 p-0.5 rounded bg-gray-100">
         <button
-            @click="$emit('update:active', item.key)"
-            class="tab-btn"
             v-for="item in data"
+            :key="item.key"
+            class="tab-btn"
             :class="{ active: item.key === active }"
+            :disabled="disabled"
+            @click="$emit('update:active', item.key)"
         >
             {{ item.label }}
         </button>
@@ -12,14 +14,14 @@
 </template>
 
 <script lang="ts">
+    import { defineComponent, PropType } from 'vue'
+
     interface TabConfig {
         key: string
         label: string
     }
-    import { defineComponent, PropType } from 'vue'
     export default defineComponent({
         name: 'RaisedTab',
-        emits: ['update:active'],
         props: {
             active: {
                 type: String,
@@ -29,7 +31,13 @@
                 type: Array as PropType<TabConfig[]>,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
+        emits: ['update:active'],
     })
 </script>
 
@@ -55,7 +63,7 @@
         }
 
         &:disabled {
-            @apply opacity-70 text-opacity-70;
+            @apply text-opacity-70;
             @apply cursor-not-allowed;
             box-shadow: none !important;
         }

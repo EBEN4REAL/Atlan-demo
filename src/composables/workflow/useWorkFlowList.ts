@@ -80,8 +80,13 @@ export function useWorkflowSearchList(immediate: boolean = true) {
 }
 
 export function useArchivedRunList(filter, immediate: boolean = true) {
+
+    const pathVariables = ref({
+        filter
+    })
+
     const { data, error, isLoading, mutate } = Workflows.getArchivedRunList(
-        filter,
+        pathVariables,
         { immediate, options: {} }
     )
 
@@ -97,7 +102,7 @@ export function useArchivedRunList(filter, immediate: boolean = true) {
         )
 
     const reFetch = (name) => {
-        pathVariables.value.name = name
+        pathVariables.value.filter = JSON.stringify({ "labels": { "$elemMatch": { "workflows.argoproj.io/workflow-template": name } } })
         mutate()
     }
 

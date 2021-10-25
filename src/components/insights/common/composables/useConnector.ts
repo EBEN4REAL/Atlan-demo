@@ -25,11 +25,7 @@ export function useConnector() {
                 activeInlineTabCopy.explorer.queries.connectors.connector =
                     connectorsData.value
             }
-            modifyActiveInlineTab(
-                activeInlineTabCopy,
-                tabs,
-                activeInlineTabCopy.isSaved
-            )
+            modifyActiveInlineTab(activeInlineTabCopy, tabs, false)
 
             console.log(connectorsData, 'Connectors Data')
         }

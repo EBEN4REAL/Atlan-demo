@@ -157,7 +157,7 @@
         </div>
         <div class="flex justify-end w-full mt-3 text-primary">
             <div class="flex items-center cursor-pointer" @click="oSidebar">
-                View in sidebar
+                view info
                 <AtlanIcon icon="ArrowRight" class="ml-1"></AtlanIcon>
             </div>
         </div>

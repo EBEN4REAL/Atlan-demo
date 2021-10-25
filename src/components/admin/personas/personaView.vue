@@ -1,7 +1,7 @@
 <template>
     <ExplorerLayout
         title="Personas"
-        subTitle="Access controls for user personas"
+        sub-title="Access controls for user personas"
     >
         <template #action>
             <AtlanBtn
@@ -17,17 +17,17 @@
         </template>
         <template #sidebar>
             <SearchAndFilter
-                placeholder="Search for personas"
                 v-model:value="searchTerm"
+                placeholder="Search for personas"
                 class="mx-4 mt-6 mb-4 bg-white"
                 :autofocus="true"
             />
 
             <ExplorerList
+                v-model:selected="selectedPersonaId"
                 :disabled="isEditing"
                 :list="filteredPersonas"
-                v-model:selected="selectedPersonaId"
-                dataKey="id"
+                data-key="id"
             >
                 <template #default="{ item, isSelected }">
                     <span
@@ -44,10 +44,7 @@
 
         <AddPersona v-model:visible="modalVisible" />
         <PersonaHeader :persona="selectedPersona" />
-        <PersonaDetails
-            v-if="selectedPersona"
-            v-model:persona="selectedPersona"
-        />
+        <PersonaBody v-if="selectedPersona" v-model:persona="selectedPersona" />
     </ExplorerLayout>
 </template>
 
@@ -56,7 +53,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
-    import PersonaDetails from './personaDetails.vue'
+    import PersonaBody from './personaBody.vue'
     import PersonaHeader from './personaHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
     import AddPersona from './addPersona.vue'
@@ -73,7 +70,7 @@
         components: {
             AtlanBtn,
             SearchAndFilter,
-            PersonaDetails,
+            PersonaBody,
             PersonaHeader,
             ExplorerLayout,
             ExplorerList,

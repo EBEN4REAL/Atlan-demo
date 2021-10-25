@@ -9,16 +9,27 @@
         :show-upload-list="false"
         @change="onFileUpload"
     >
-        <a-button ghost type="primary"> Import from XML </a-button>
+        <AtlanBtn
+            color="secondary"
+            padding="compact"
+            size="sm"
+            @click="downloadMetadataFile"
+        >
+            <span class="ml-1">Import from XML</span>
+        </AtlanBtn>
     </a-upload>
 </template>
   <script lang="ts">
 import { defineComponent, ref, reactive, toRaw } from 'vue'
 // @ts-ignore
 import xmlToJson from '~/utils/library/xmltojson'
+import AtlanBtn from '@/UI/button.vue'
 
 export default defineComponent({
     name: 'ImportMetadataFromXML',
+    components: {
+        AtlanBtn,
+    },
     emits: ['setSSODetails'],
     setup(_, context) {
         const fileList = ref<any>([])

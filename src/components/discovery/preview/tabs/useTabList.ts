@@ -31,6 +31,10 @@ export default function useAssetDetailsTabList(
             name: 'Custom Metadata',
             component: 'businessMetadataTab',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            exclude: [
+                'Query',
+                'QueryFolder',
+            ],
             icon: 'Metadata',
             tooltip: 'Custom metadata',
         },
@@ -39,6 +43,8 @@ export default function useAssetDetailsTabList(
             component: 'columns',
             exclude: [
                 'Column',
+                'Query',
+                'QueryFolder',
                 'TableauWorkbook',
                 'TableauWorksheet',
                 'TableauSite',
@@ -65,6 +71,10 @@ export default function useAssetDetailsTabList(
             name: 'Activity',
             component: 'activity',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            exclude: [
+                'Query',
+                'QueryFolder',
+            ],
             icon: 'Activity',
             tooltip: 'Activity',
         },
@@ -100,6 +110,10 @@ export default function useAssetDetailsTabList(
             name: 'Lineage',
             component: 'lineage',
             visibleOn: ['discovery'],
+            exclude: [
+                'Query',
+                'QueryFolder',
+            ],
             icon: 'Lineage',
             tooltip: 'Lineage',
         },

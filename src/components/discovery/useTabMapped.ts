@@ -41,8 +41,7 @@ const integrationTypeMapping = {
         'TableauCalculatedField',
     ],
     athena: [],
-    postgres: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'Column', 'Query',
-        'QueryFolder',],
+    postgres: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'Column', 'Query', 'QueryFolder'],
 }
 
 const categoryTypeMapping = {
@@ -65,7 +64,7 @@ const categoryTypeMapping = {
         'PowerBIDataset',
     ],
     businessTerms: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-    queries: ['Query', 'QueryFolder',]
+    queries: ['Query', 'QueryFolder']
 }
 
 export function tabsByConnector(

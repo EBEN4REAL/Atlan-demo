@@ -220,11 +220,21 @@
                 if (tabs.value.length < 1) return true
                 return false
             }
-
+            const getLastUntitledNumber = () => {
+                let max_number = 1
+                const untitledRegex = /(?:Untitled )([0-9]+)/gim
+                tabs.value?.forEach((tab) => {
+                    const d = [...tab.label.matchAll(untitledRegex)]
+                    if (d.length > 0) {
+                        max_number = Math.max(Number(d[0][1]) + 1, 1)
+                    }
+                })
+                return max_number
+            }
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'Untitled',
+                    label: `Untitled ${getLastUntitledNumber()}`,
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,

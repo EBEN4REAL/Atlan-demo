@@ -75,7 +75,7 @@
                     <a-input
                         :ref="titleBarRef"
                         v-model:value="title"
-                        placeholder="Untitled query"
+                        :placeholder="`Untitled ${getLastUntitledNumber()}`"
                         class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
                     />
                 </div>
@@ -154,9 +154,11 @@
 
 <script lang="ts">
     import {
+        ComputedRef,
         defineComponent,
         Ref,
         ref,
+        inject,
         onMounted,
         nextTick,
         PropType,
@@ -167,6 +169,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: { StatusBadge, QueryFolderSelector },
@@ -204,6 +207,10 @@
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const selectedParentFolder = ref<Folder | null>(null)
+            const untitledRegex = /(?:Untitled )([0-9]+)/gim
+            const inlineTabs = inject('inlineTabs') as ComputedRef<
+                activeInlineTabInterface[]
+            >
             const {
                 savedQueryType: queryType,
                 connector: currentConnector,
@@ -223,9 +230,23 @@
                 isSQLSnippet.value = false
                 currentStatus.value = 'DRAFT'
             }
+            const getLastUntitledNumber = () => {
+                let max_number = 1
+                const untitledRegex = /(?:Untitled )([0-9]+)/gim
+                inlineTabs.value?.forEach((tab) => {
+                    const d = [...tab.label.matchAll(untitledRegex)]
+                    if (d.length > 0) {
+                        max_number = Number(d[0][1])
+                    }
+                })
+                return max_number
+            }
             const createSaveQuery = () => {
                 const saveQueryData = {
-                    title: title.value,
+                    title:
+                        title.value !== ''
+                            ? title.value
+                            : `Untitled ${getLastUntitledNumber()}`,
                     description: description.value,
                     isSQLSnippet: isSQLSnippet.value,
                     certificateStatus: currentStatus.value,
@@ -244,6 +265,7 @@
                 selectedParentFolder.value = folder
             }
             return {
+                getLastUntitledNumber,
                 parentFolderQF,
                 title,
                 queryType,

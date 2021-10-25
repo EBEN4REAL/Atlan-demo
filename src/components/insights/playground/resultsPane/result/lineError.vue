@@ -194,6 +194,7 @@
                 lineDesc: string
             ) => {
                 const t = lineDesc.split(' ')
+
                 let html = ''
 
                 if (pos.value?.endLine) {
@@ -201,6 +202,8 @@
                         let tokensTillNow = ''
                         t.forEach((token) => {
                             if (token !== '') {
+                                const color = getTokenColor(token)
+                                html += `<div style="color:${color}">`
                                 const chars = token.split('')
                                 chars.forEach((char, z) => {
                                     if (
@@ -223,6 +226,7 @@
                                     }
                                 })
                                 html += `<span>&nbsp;</span>`
+                                html += `</div>`
                                 tokensTillNow += ' '
                             } else {
                                 if (

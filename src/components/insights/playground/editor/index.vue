@@ -499,6 +499,7 @@
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         inlineTabs,
+                        true,
                         saveQueryDataInLocalStorage
                     )
                 }

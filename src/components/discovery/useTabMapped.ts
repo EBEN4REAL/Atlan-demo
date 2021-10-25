@@ -6,6 +6,8 @@ export const allTypeNames = [
     'TablePartition',
     'MaterialisedView',
     'Column',
+    'Query',
+    'QueryFolder',
     'TableauSite',
     'TableauProject',
     'TableauWorkbook',
@@ -25,6 +27,8 @@ const integrationTypeMapping = {
         'TablePartition',
         'MaterialisedView',
         'Column',
+        'Query',
+        'QueryFolder',
     ],
     tableau: [
         'TableauSite',
@@ -37,7 +41,8 @@ const integrationTypeMapping = {
         'TableauCalculatedField',
     ],
     athena: [],
-    postgres: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'Column'],
+    postgres: ['View', 'Table', 'TablePartition', 'MaterialisedView', 'Column', 'Query',
+        'QueryFolder',],
 }
 
 const categoryTypeMapping = {
@@ -59,7 +64,8 @@ const categoryTypeMapping = {
         'TableauDatasource',
         'PowerBIDataset',
     ],
-    businessTerms: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory']
+    businessTerms: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+    queries: ['Query', 'QueryFolder',]
 }
 
 export function tabsByConnector(

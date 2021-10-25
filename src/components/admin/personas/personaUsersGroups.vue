@@ -6,7 +6,7 @@
         :scroll="{ y: 'calc(100vh - 20rem)' }"
         :table-layout="'fixed'"
         :data-source="userList"
-        :columns="columns"
+        :columns="userColumns"
         :row-key="(user) => user.id"
         :pagination="false"
         :loading="isLoading"
@@ -74,9 +74,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-
-    import userAPI from '~/services/heracles/apis/users'
-    import { getFormattedUser } from '~/composables/user/useUsers'
+    import usePersonaUsers from './composables/usePersonaUsers'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
@@ -92,54 +90,11 @@
         emits: ['delete'],
         setup(props, { emit }) {
             const { persona } = toRefs(props)
-            const personaUsers = computed(() => persona.value.users!)
-
-            const { getUsersBulk } = userAPI
-
-            const { data, isLoading, mutate, error } =
-                getUsersBulk(personaUsers)
-
-            const userList = computed(() =>
-                data.value.map((usr) => getFormattedUser(usr))
-            )
-            watch(
-                () => persona.value.id,
-                () => mutate()
-            )
-
             const listType = ref('users')
 
-            const columns = [
-                {
-                    title: 'User',
-                    key: 'user',
-                    sorter: true,
-                    width: 220,
-                    slots: { customRender: 'name' },
-                    sortKey: 'first_name',
-                },
-                {
-                    title: 'Groups',
-                    key: 'group',
-                    sorter: true,
-                    width: 150,
-                    slots: { customRender: 'group' },
-                    sortKey: 'group_count',
-                    dataIndex: 'group_count_string',
-                },
-                {
-                    title: 'Status',
-                    key: 'status',
-                    slots: { customRender: 'status' },
-                    filterMultiple: false,
-                    width: 150,
-                },
-                {
-                    title: 'Actions',
-                    width: 120,
-                    slots: { customRender: 'actions' },
-                },
-            ]
+            const { usePersonaLists, userColumns } = usePersonaUsers
+            const { isLoading, userList, userListError } =
+                usePersonaLists(persona)
 
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
@@ -151,15 +106,15 @@
                 showUserPreview()
             }
 
-            whenever(error, () => {
+            whenever(userListError, () => {
                 message.error('Failed to get users')
-                console.error(error.value)
+                console.error(userListError.value)
             })
 
             return {
                 userList,
                 listType,
-                columns,
+                userColumns,
                 imageUrl,
                 showUserPreviewDrawer,
                 isLoading,

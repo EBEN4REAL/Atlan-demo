@@ -1,86 +1,102 @@
 <template>
     <div>
-        <section
+        <div
             v-if="showConfigOptions"
-            class="flex flex-col items-center justify-center w-full text-center  h-96"
+            class="flex flex-col items-center justify-center h-64 px-10 m-auto text-center bg-white border rounded  configure-wrapper"
         >
-            <span class="block mb-8 text-3xl font-medium text-center">
-                Single Sign On
+            <span class="mb-8 text-lg text-center text-gray">
+                Choose your SAML provider
             </span>
-            <img :src="emptySSOImage" class="h-48 p-2 mx-auto" />
-            <strong class="block py-8 pb-4 text-lg">
-                Integrate Login with SAML 2.0
-            </strong>
 
-            <a-select
-                placeholder="Configure"
-                style="width: 200px"
-                @change="configureSSO"
-            >
-                <a-select-option
-                    v-for="provider in topSAMLProviders"
-                    :value="provider.alias"
+            <div class="flex justify-center w-full">
+                <div
+                    v-for="(provider, index) in samlProviders"
                     :key="provider.alias"
+                    class="py-5 border rounded-sm cursor-pointer  provider-wrapper"
+                    @click="setSelectedOption(provider.alias)"
+                    :class="[
+                        index !== samlProviders.length - 1 ? 'mr-4' : '',
+                        selectedOption === provider.alias
+                            ? 'bg-primary-light border rounded border-primary'
+                            : '',
+                    ]"
                 >
-                    <div class="flex">
+                    <div class="flex flex-col justify-center">
                         <img
                             v-if="!provider.isCustomSaml"
                             :src="provider.image"
                             :alt="provider.title"
-                            class="self-center w-4 h-4 mr-2"
+                            class="self-center w-4 h-4 mb-2"
+                        />
+                        <AtlanIcon
+                            v-else
+                            icon="PrimaryKey"
+                            class="self-center mb-2 text-alert"
                         />
 
                         <span>{{ provider.title }}</span>
                     </div>
-                </a-select-option>
-                <a-select-option value="custom">
-                    <div class="flex">
-                        <AtlanIcon
-                            icon="PrimaryKey"
-                            class="self-center mr-2 text-alert"
-                        />SAML
-                    </div>
-                </a-select-option>
-                <!-- <a-select-option value="google"> Google </a-select-option>
-                <a-select-option value="azure"> Azure </a-select-option>
-                <a-select-option value="okta"> Okta </a-select-option>
-                <a-select-option value="custom"> SAML </a-select-option> -->
-            </a-select>
-        </section>
+                </div>
+            </div>
+            <div class="flex justify-end w-full mt-6">
+                <AtlanBtn
+                    @click="configureSSO"
+                    :disabled="!selectedOption"
+                    padding="compact"
+                    :bold="true"
+                    :class="
+                        !selectedOption
+                            ? 'bg-gray-300 text-white border-gray-300'
+                            : 'bg-primary text-white border-primary'
+                    "
+                >
+                    Configure</AtlanBtn
+                >
+            </div>
+        </div>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import emptySSOImage from '~/assets/images/emptyCreds.png'
 import ConfigureNewSSO from './configureNewSSO.vue'
 import { useRouter } from 'vue-router'
-import { topSAMLProviders } from '~/constant/saml'
+import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
+import AtlanBtn from '@/UI/button.vue'
 
 export default defineComponent({
-    components: { ConfigureNewSSO },
+    components: { ConfigureNewSSO, AtlanBtn },
     setup() {
         const router = useRouter()
         const showConfigOptions = ref(true)
         const selectedOption = ref('')
 
-        const configureSSO = (option: string) => {
+        const setSelectedOption = (option: string) => {
             selectedOption.value = option
+        }
+        const configureSSO = () => {
             showConfigOptions.value = false
             router.push(`/admin/sso/configure/${selectedOption.value}`)
         }
-
         const showConfigScreen = () => {
             showConfigOptions.value = true
             selectedOption.value = ''
         }
 
+        const samlProviders = computed(() => {
+            return [
+                ...topSAMLProviders,
+                { ...customSamlProvider, alias: 'custom' },
+            ]
+        })
         return {
             emptySSOImage,
             configureSSO,
             showConfigOptions,
             selectedOption,
             showConfigScreen,
-            topSAMLProviders,
+            samlProviders,
+            setSelectedOption,
         }
     },
 })
@@ -88,6 +104,13 @@ export default defineComponent({
 <style lang="less">
 .ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder {
     @apply text-gray-500 !important;
+}
+.configure-wrapper {
+    max-width: 43.5rem;
+    max-height: 17rem;
+    .provider-wrapper {
+        width: 8.75rem;
+    }
 }
 </style>
 <route lang="yaml">

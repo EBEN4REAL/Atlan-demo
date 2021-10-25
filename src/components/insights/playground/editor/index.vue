@@ -543,13 +543,21 @@
                         .runQueryId
                 const currState = !queryId ? 'run' : 'abort'
                 if (currState === 'run') {
+                    /* Get selected Text from editor */
+                    const selectedText = toRaw(editorInstance.value)
+                        .getModel()
+                        .getValueInRange(
+                            toRaw(editorInstance.value).getSelection()
+                        )
+
                     useAddEvent('insights', 'query', 'run', undefined)
                     queryRun(
                         activeInlineTab,
                         getData,
                         limitRows,
                         onRunCompletion,
-                        onQueryIdGeneration
+                        onQueryIdGeneration,
+                        selectedText
                     )
                 } else {
                     /* Abort Query logic */

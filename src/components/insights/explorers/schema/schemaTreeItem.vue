@@ -465,7 +465,9 @@
                         )}}} preview *\/\nSELECT * FROM \"${title(
                             item.value
                         )}\" LIMIT 50;\n`
+                        /* TODO: WILL PICK UP THE SEMICOLON FEATURE LATER */
                         const newText = `${newQuery}${prevText}`
+                        // const newText = `${newQuery}`
                         activeInlineTabCopy.playground.editor.text = newText
                         modifyActiveInlineTab(
                             activeInlineTabCopy,

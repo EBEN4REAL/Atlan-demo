@@ -6,18 +6,16 @@
         :closable="false"
     >
         <template #title />
-        <p class="mb-4 text-sm font-bold text-gray">{{ title }}</p>
+        <p class="mb-4 text-base font-bold text-gray">{{ title }}</p>
         <slot />
         <div class="flex items-center justify-end gap-x-4">
             <AtlanBtn
-                @click="$emit('cancel')"
                 color="secondary"
                 padding="compact"
+                @click="$emit('cancel')"
                 >Cancel</AtlanBtn
             >
-            <AtlanBtn @click="$emit('ok')" color="primary" padding="compact"
-                >Create</AtlanBtn
-            >
+            <AtlanBtn padding="compact" @click="$emit('ok')">Create</AtlanBtn>
         </div>
     </a-modal>
 </template>
@@ -27,8 +25,8 @@
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
+        components: { AtlanBtn },
         props: { title: String },
         emits: ['cancel', 'ok'],
-        components: { AtlanBtn },
     })
 </script>

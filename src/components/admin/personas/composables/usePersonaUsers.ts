@@ -1,9 +1,9 @@
-import { computed, Ref, watch } from 'vue'
+import { computed, ComputedRef, Ref, watch } from 'vue'
 import { getFormattedUser } from '~/composables/user/useUsers'
-import userAPI from '~/services/heracles/apis/users'
+import userAPI, { IUser } from '~/services/heracles/apis/users'
 import { IPersona } from '~/types/accessPolicies/personas'
 
-function usePersonaLists(persona: Ref<IPersona>) {
+function usePersonaUserList(persona: Ref<IPersona>) {
     const personaUsers = computed(() => persona.value.users!)
 
     const { getUsersBulk } = userAPI
@@ -15,7 +15,7 @@ function usePersonaLists(persona: Ref<IPersona>) {
         error: userListError,
     } = getUsersBulk(personaUsers)
 
-    const userList = computed(() =>
+    const userList: ComputedRef<IUser[]> = computed(() =>
         data.value.map((usr) => getFormattedUser(usr))
     )
 
@@ -65,5 +65,5 @@ const userColumns = [
 
 export default {
     userColumns,
-    usePersonaLists,
+    usePersonaUserList,
 }

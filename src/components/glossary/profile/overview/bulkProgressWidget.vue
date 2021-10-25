@@ -82,13 +82,13 @@
             // get progress fn triggered every 30sec
             const getProgress = () => {
                 console.log('getting progress ')
-                percentage.value += 20
+                if (pecentage.value < 80) percentage.value += 20
                 if (percentage.value >= 100) stopGetProgress()
             }
             const triggerUpload = (workflowName) => {
                 console.log(workflowName)
                 if (!nIntervId) {
-                    nIntervId = setInterval(getProgress, 1000)
+                    nIntervId = setInterval(getProgress, 10000)
                 }
             }
             watch(

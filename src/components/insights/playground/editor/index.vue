@@ -363,6 +363,8 @@
 
 <script lang="ts">
     import {
+        onMounted,
+        onUnmounted,
         computed,
         defineComponent,
         inject,
@@ -534,7 +536,7 @@
                 activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
                     eventSource
             }
-            const toggleRun = () => {
+            function toggleRun() {
                 const queryId =
                     activeInlineTab.value.playground.resultsPane.result
                         .runQueryId
@@ -676,6 +678,21 @@
                     editorPos.value.lineNumber = pos.lineNumber
                     console.log(pos)
                 }
+            })
+            const _keyListener = (e) => {
+                if (e.key === 'Enter') {
+                    if (e.metaKey || e.ctrlKey) {
+                        e.preventDefault()
+                        toggleRun()
+                    }
+                    //prevent the default action
+                }
+            }
+            onMounted(() => {
+                window.addEventListener('keydown', _keyListener)
+            })
+            onUnmounted(() => {
+                window.removeEventListener('keydown', _keyListener)
             })
 
             /* Handlng the Fullscreen esc key logic */

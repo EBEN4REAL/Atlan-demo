@@ -90,15 +90,13 @@ const getWorkflowTemplateByName = (filter, { immediate, options }) =>
         { immediate }
     )
 
-const getArchivedRunList = (filter, { immediate, options }) =>
+const getArchivedRunList = (pathVariables, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
         'GET',
         {
             options,
-            pathVariables: {
-                filter,
-            },
+            pathVariables
         },
         { immediate }
     )

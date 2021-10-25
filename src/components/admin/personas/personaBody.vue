@@ -2,9 +2,9 @@
     <template v-if="selectedPersonaDirty">
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
 
-        <div class="px-5 pt-4 pb-2 overflow-y-auto">
+        <div class="pt-4 pb-2 overflow-y-auto">
             <PersonaMeta v-if="activeTabKey === 'details'" :persona="persona" />
-            <template v-else-if="activeTabKey === 'policies'">
+            <div v-else-if="activeTabKey === 'policies'" class="px-5">
                 <MetadataPolicy
                     v-for="(
                         policy, idx
@@ -53,7 +53,7 @@
                         </a-menu>
                     </template>
                 </a-dropdown>
-            </template>
+            </div>
         </div>
     </template>
     <div v-else class="flex items-center justify-center h-full">
@@ -76,7 +76,7 @@
         addPolicy,
         deletePolicy,
     } from './composables/useEditPersona'
-
+    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     export default defineComponent({
         name: 'PersonaBody',
         components: {
@@ -103,14 +103,6 @@
                 },
                 { immediate: true }
             )
-
-            const tabConfig = [
-                { key: 'details', label: 'Overview' },
-                { key: 'policies', label: 'Policies' },
-                { key: 'users', label: 'Users & Groups' },
-            ]
-
-            const activeTabKey = ref('details')
 
             const addPolicyDropdownConfig = [
                 {

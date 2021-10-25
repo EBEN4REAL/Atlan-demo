@@ -1,5 +1,5 @@
 <template>
-    <div class="px-3 pt-4">
+    <div class="px-0 pt-4">
         <!-- preloader -->
         <!-- TODO: isLoading from useAPI doesnt work fine  -->
         <!-- <div
@@ -17,9 +17,16 @@
                 <template #filter>
                     <a-checkbox-group
                         v-model:value="checkedList"
-                        :options="plainOptions"
                         class="flex flex-col"
-                    />
+                    >
+                        <div v-for="item in plainOptions" :key="item.id">
+                            <a-checkbox :value="item.id"
+                                ><span class="text-gray">
+                                    {{ item.label }}
+                                </span>
+                            </a-checkbox>
+                        </div>
+                    </a-checkbox-group>
                 </template>
             </SearchAndFilter>
         </div>
@@ -112,8 +119,21 @@
 
             const checkedList = ref(['description'])
             const { selectedAsset } = toRefs(props)
-            // TODO: define these flter types in constant folder
-            const plainOptions = ['description', 'owners', 'business terms']
+
+            const plainOptions = [
+                {
+                    id: 'description',
+                    label: 'Description',
+                },
+                {
+                    id: 'classifications',
+                    label: 'Classifications',
+                },
+                {
+                    id: 'terms',
+                    label: 'Business Terms',
+                },
+            ]
 
             const fetchData = () => {
                 const { relationshipAssetTypes, isLoading } =

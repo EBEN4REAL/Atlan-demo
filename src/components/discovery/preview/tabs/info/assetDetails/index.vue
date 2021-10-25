@@ -48,6 +48,11 @@
             @update:selected-asset="mutateSelectedAsset"
         />
 
+        <Query
+            v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'"
+            :selected-asset="selectedAsset"
+        />
+
         <Owners
             v-if="
                 selectedAsset.guid &&
@@ -89,6 +94,7 @@
     import Owners from '@common/sidebar/owners.vue'
     import Experts from '@common/sidebar/experts.vue'
     import Status from '@common/sidebar/status.vue'
+    import Query from '@common/sidebar/query.vue'
     import { format } from 'sql-formatter'
 
     export default defineComponent({
@@ -98,6 +104,7 @@
             Description,
             Status,
             Owners,
+            Query,
             RowInfoHoverCard,
             Definition,
         },

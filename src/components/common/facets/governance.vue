@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-6">
+    <div>
         <div v-if="isInitingTree">
             <LoadingView size="small" class="w-1 h-1 mt-4 mr-4" />
         </div>

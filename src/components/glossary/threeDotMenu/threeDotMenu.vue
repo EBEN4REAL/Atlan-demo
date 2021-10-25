@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="!noPermissions"
-        class="group-hover:opacity-100 leading-5"
+        class="leading-5 group-hover:opacity-100"
         :class="{
             'opacity-100': isVisible,
             'opacity-0 treeMode': treeMode,
@@ -12,8 +12,8 @@
             v-model:visible="isVisible"
             :trigger="treeMode ? ['click'] : ['click']"
             :class="{
-                [$style.treeMode] : treeMode,
-                [$style.threeDotMenu]: true
+                [$style.treeMode]: treeMode,
+                [$style.threeDotMenu]: true,
             }"
             @click.stop="() => {}"
         >
@@ -106,7 +106,32 @@
                             </template>
                         </AddGtcModal>
                     </a-menu-item>
+                    <!-- bulk upload term -->
+                    <a-menu-item
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName === 'AtlasGlossary' &&
+                            permissions.CREATE_TERM
+                        "
+                        key="add"
+                        @click="closeMenu"
+                    >
+                        <BulkModal :entity="entity">
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Term"
+                                        class="m-0 mr-2 text-primary"
+                                    />
+                                    <p class="p-0 m-0 capitalize">
+                                        Bulk upload terms
+                                    </p>
+                                </div>
+                            </template>
+                        </BulkModal>
+                    </a-menu-item>
 
+                    <!-- Create new term  -->
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -379,6 +404,7 @@
     import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
     import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
+    import BulkModal from '@/glossary/gtcCrud/bulkModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
@@ -402,6 +428,7 @@
             AddGtcModal,
             Categories,
             ModalHeader,
+            BulkModal,
         },
         props: {
             entity: {
@@ -450,7 +477,10 @@
             )
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
-            const refetchGlossaryList = inject<() => void>('refetchGlossaryList', () => {})
+            const refetchGlossaryList = inject<() => void>(
+                'refetchGlossaryList',
+                () => {}
+            )
             const refreshEntity = inject<() => void>('refreshEntity', () => {})
             const showCategories = ref(false)
             const refetchGlossaryTree = inject<
@@ -526,7 +556,7 @@
                             }
                         }
                     }
-                    if(refetchGlossaryList) refetchGlossaryList()
+                    if (refetchGlossaryList) refetchGlossaryList()
                 })
 
                 isModalVisible.value = false
@@ -649,7 +679,7 @@
             padding: 9px 16px !important;
             margin: 0;
         }
-        :global( .ant-dropdown-menu-submenu-title) {
+        :global(.ant-dropdown-menu-submenu-title) {
             padding: 9px 16px !important;
             margin: 0;
         }

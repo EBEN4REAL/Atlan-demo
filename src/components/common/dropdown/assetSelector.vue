@@ -28,13 +28,12 @@
                 <img :src="typeName" class="w-auto h-3 mr-2" />
             </div>
         </template>
-        <template #option="item">
+        <!-- <template #option="item">
             <div class="flex">
                 <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-0.5 mr-1" />
-                <!--  -->
                 <p>{{ item.label }}</p>
             </div>
-        </template>
+        </template> -->
 
         <!-- <template #menuItemSelectedIcon>
             <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-0.5" />

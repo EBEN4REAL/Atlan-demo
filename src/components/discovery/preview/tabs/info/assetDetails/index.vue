@@ -49,9 +49,24 @@
         />
 
         <Owners
-            v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
+            v-if="
+                selectedAsset.guid &&
+                selectedAsset.typeName !== 'Column' &&
+                selectedAsset.typeName !== 'Query' &&
+                selectedAsset.typeName !== 'QueryFolder'
+            "
             :selected-asset="selectedAsset"
             :edit-permission="userHasEditPermission"
+            @update:selected-asset="mutateSelectedAsset"
+        />
+        <Owners
+            v-if="
+                selectedAsset.guid &&
+                (selectedAsset.typeName === 'Query' ||
+                    selectedAsset.typeName === 'QueryFolder')
+            "
+            :selected-asset="selectedAsset"
+            :edit-permission="false"
             @update:selected-asset="mutateSelectedAsset"
         />
 

@@ -12,7 +12,7 @@
         <!-- preloader ends here -->
         <div class="px-3 mb-1">
             <!-- searchbar -->
-            <SearchAndFilter v-model:value="queryText">
+            <SearchAndFilter v-model:value="queryText" size="minimal">
                 <!-- filters -->
                 <template #filter>
                     <a-checkbox-group

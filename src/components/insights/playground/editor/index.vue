@@ -667,6 +667,7 @@
             const provideData: provideDataInterface = {
                 editorPos: editorPos,
                 editorFocused: editorFocused,
+                toggleRun: toggleRun,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -679,6 +680,7 @@
                     console.log(pos)
                 }
             })
+
             const _keyListener = (e) => {
                 if (e.key === 'Enter') {
                     if (e.metaKey || e.ctrlKey) {
@@ -763,7 +765,6 @@
 </style>
 <style lang="less" module>
     .checkbox_style {
-        margin-top: 2.65px;
         :global(.ant-checkbox-inner::after) {
             width: 4px !important;
             height: 7px !important;

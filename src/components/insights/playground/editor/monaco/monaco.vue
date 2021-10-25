@@ -57,10 +57,8 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const sqlVariables = inject('sqlVariables') as Ref<
-                CustomVaribaleInterface[]
-            >
             const editorFocused = inject('editorFocused') as Ref<boolean>
+            const toggleRun = inject('toggleRun') as Function
             const editorPos = inject('editorPos') as Ref<{
                 column: number
                 lineNumber: number
@@ -81,7 +79,7 @@
                 setEditorFocusedState,
                 findCustomVariableMatches,
                 setMoustacheTemplateColor,
-            } = useEditor(tabs, activeInlineTab, sqlVariables)
+            } = useEditor(tabs, activeInlineTab)
             const { isLineError } = useResultPane(tabs)
 
             const isSelectedWordIsTableName = (word: string): boolean => {
@@ -225,6 +223,14 @@
                 /* ----------------------------------- */
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
+                /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
+                editor?.addCommand(
+                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+                    function () {
+                        toggleRun()
+                    }
+                )
+                /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
                     if (isLineError(activeInlineTab)) {
                         resetErrorDecorations(activeInlineTab, editor)

@@ -512,7 +512,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
 
 export const InfoTabInNonBiOverview: { [key: string]: AssetTab } = {
     Column: {
-        panels: [assetDetails, linkedAsset, usage, columnProfile, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
 }
 

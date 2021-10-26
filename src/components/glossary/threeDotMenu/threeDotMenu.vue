@@ -126,6 +126,7 @@
                                           ?.uniqueAttributes?.qualifiedName
                             "
                             :categoryId="categoryId"
+                            :categoryQualifiedName="categoryQf"
                         >
                             <template #header>
                                 <ModalHeader
@@ -159,6 +160,7 @@
                                     ?.qualifiedName
                             "
                             :categoryId="categoryId"
+                            :categoryQualifiedName="categoryQf"
                         >
                             <template #header>
                                 <ModalHeader
@@ -470,6 +472,11 @@
                     return props.entity?.guid
                 return ''
             })
+            const categoryQf = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossaryCategory')
+                    return props.entity?.attributes?.qualifiedName
+                return ''
+            })
 
             const {
                 deleteGlossary,
@@ -479,7 +486,6 @@
                 isLoading,
             } = useDeleteGlossary()
 
-            const { createTerm, createCategory } = useCreateGlossary()
             const serviceMap = {
                 AtlasGlossaryTerm: deleteTerm,
                 AtlasGlossaryCategory: deleteCategory,
@@ -550,26 +556,7 @@
                     content: 'Copied!',
                 })
             }
-            // create new term
-            const createNewTerm = () => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    createTerm(props.entity?.guid ?? '')
-                else
-                    createTerm(
-                        props.entity?.attributes?.anchor?.guid ?? '',
-                        props.entity.guid
-                    )
-            }
-            // create new category
-            const createNewCategory = () => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    createCategory(props.entity?.guid ?? '')
-                else
-                    createCategory(
-                        props.entity?.attributes?.anchor?.guid ?? '',
-                        props.entity.guid
-                    )
-            }
+
             const redirectToProfile = redirect(router)
 
             // update tree on archive or create new entity
@@ -632,12 +619,11 @@
                 handleOk,
                 handleCancel,
                 showModal,
-                createNewTerm,
-                createNewCategory,
                 closeMenu,
                 redirectToProfile,
                 glossaryId,
                 categoryId,
+                categoryQf,
                 showCategories,
             }
         },

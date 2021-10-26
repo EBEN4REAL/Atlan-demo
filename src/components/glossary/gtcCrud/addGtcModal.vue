@@ -192,6 +192,11 @@
                 required: false,
                 default: '',
             },
+            categoryQualifiedName: {
+                type: String,
+                required: false,
+                default: '',
+            },
             mode: {
                 type: String,
                 required: false,
@@ -425,10 +430,12 @@
                         })
                     }
                 } else {
+                    console.log(props.glossaryId, props.entity?.attributes?.anchor?.guid)
                     if (props.entityType === 'term')
                         createTerm(
-                            props.glossaryId,
+                            props.glossaryId ?? props.entity?.attributes?.anchor?.guid,
                             props.categoryId,
+                            props.categoryQualifiedName ?? props.entity?.attributes?.qualifiedName,
                             `${!title.value ? 'Untitled term' : title.value}`,
                             description.value,
                             currentStatus.value,
@@ -438,8 +445,9 @@
                         )
                     else if (props.entityType === 'category')
                         createCategory(
-                            props.glossaryId,
-                            props.categoryId,
+                            props.glossaryId ?? props.entity?.attributes?.anchor?.guid,
+                            props.categoryId ?? props.entity?.attributes?.qualifiedName,
+                            props.categoryQualifiedName,
                             `${
                                 !title.value ? 'Untitled category' : title.value
                             }`,

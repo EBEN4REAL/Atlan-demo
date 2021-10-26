@@ -320,7 +320,7 @@
                                                         ...entity,
                                                         anchor: {
                                                             guid: entity.anchor
-                                                                .glossaryGuid,
+                                                                .guid,
                                                             uniqueAttributes: {
                                                                 qualifiedName:
                                                                     parentGlossary
@@ -612,9 +612,6 @@
 
             const refetchGlossaryList = inject('refetchGlossaryList')
 
-            const { createTerm, createCategory, createGlossary } =
-                useCreateGlossary()
-
             const router = useRouter()
 
             const glossaryContextOpen = ref(router.currentRoute.value.query.cta === 'glossaryContext')
@@ -640,13 +637,6 @@
                 else router.push(`/glossary/${type}/${guid}`)
             }
             const backToHome = () => router.push('/glossary')
-
-            const createNewTerm = () => {
-                createTerm(props.parentGlossary?.guid ?? '')
-            }
-            const createNewCategory = () => {
-                createCategory(props.parentGlossary?.guid ?? '')
-            }
 
             const onSearch = useDebounceFn(() => {
                 if (searchQuery.value?.length) {
@@ -676,11 +666,6 @@
             return {
                 redirectToProfile,
                 backToHome,
-                createNewCategory,
-                createNewTerm,
-                createTerm,
-                createGlossary,
-                createCategory,
                 StatusList,
                 getEntityStatusIcon,
                 glossaryContextDropdown,

@@ -126,6 +126,9 @@
             columns: defineAsyncComponent(
                 () => import('@/asset/assetProfile/tabs/columns/index.vue')
             ),
+            queries: defineAsyncComponent(
+                () => import('@/asset/assetProfile/tabs/queries/index.vue')
+            ),
             relationships: defineAsyncComponent(
                 () =>
                     import(
@@ -181,6 +184,11 @@
                     id: 3,
                     name: 'Columns',
                     component: 'columns',
+                },
+                {
+                    id: 4,
+                    name: 'Queries',
+                    component: 'queries',
                 },
             ]
 
@@ -255,8 +263,8 @@
 
             // handlePreview
             const handlePreview = (item) => {
-              // context.emit('preview', item)
-              storeDiscovery.setSelectedAsset(item)
+                // context.emit('preview', item)
+                storeDiscovery.setSelectedAsset(item)
             }
 
             // fetch

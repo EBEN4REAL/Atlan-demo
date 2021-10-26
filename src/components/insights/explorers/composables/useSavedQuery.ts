@@ -38,7 +38,15 @@ export function useSavedQuery(
         modifyActiveInlineTab,
         modifyActiveInlineTabEditor,
     } = useInlineTab(treeSelectedKeys)
+
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+        let decodedVariables = decodeBase64Data(
+            savedQuery.attributes.variablesSchemaBase64
+        ) as CustomVaribaleInterface[]
+        // debugger
+        // console.log(decodedVariables, savedQuery)
+        // if (!Array.isArray(decodedVariables)) decodedVariables = []
+
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedName =
             savedQuery.attributes.defaultSchemaQualifiedName
@@ -83,9 +91,7 @@ export function useSavedQuery(
                     text: savedQuery.attributes.rawQuery,
                     dataList: [],
                     columnList: [],
-                    variables: decodeBase64Data(
-                        savedQuery.attributes.variablesSchemaBase64
-                    ) as CustomVaribaleInterface[],
+                    variables: decodedVariables,
                     limitRows: {
                         checked: false,
                         rowsCount: -1,
@@ -167,13 +173,12 @@ export function useSavedQuery(
         const certificateStatus = activeInlineTab?.status
         const description = activeInlineTab?.description
         const isSQLSnippet = activeInlineTab?.isSQLSnippet
-        const editorInstanceRaw = toRaw(editorInstance.value)
         /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
         const qualifiedName = activeInlineTab?.qualifiedName
-        const rawQuery = editorInstanceRaw?.getValue()
+        const rawQuery = activeInlineTab?.playground?.editor?.text
         const compiledQuery = getParsedQuery(
             activeInlineTab?.playground.editor.variables,
-            editorInstanceRaw?.getValue() as string
+            activeInlineTab?.playground?.editor?.text
         )
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
@@ -201,6 +206,7 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     isPrivate: true,
                 },
+                guid: activeInlineTab?.queryId,
                 // relationshipAttributes: {
                 //     folder: {
                 //         guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
@@ -224,6 +230,7 @@ export function useSavedQuery(
                     message.success({
                         content: `${name} query saved!`,
                     })
+
                     /* Not present in response */
                     activeInlineTabCopy.updateTime = Date.now()
                     activeInlineTabCopy.updatedBy = username.value
@@ -363,6 +370,7 @@ export function useSavedQuery(
                     activeInlineTabCopy.updateTime = Date.now()
                     activeInlineTabCopy.updatedBy = username.value
                     /* ----------------------------------------------- */
+                    activeInlineTabCopy.qualifiedName = qualifiedName
                     activeInlineTabCopy.queryId = guid
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                     if (routeToGuid) {

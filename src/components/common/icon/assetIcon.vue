@@ -8,9 +8,11 @@
             />
         </div>
 
-        <span class="pl-1 text-sm tracking-wider text-gray-500 uppercase">{{
-            text
-        }}</span>
+        <span
+            v-if="textRequired"
+            class="pl-1 tracking-wider text-gray-500 uppercase"
+            >{{ text }}</span
+        >
     </div>
 </template>
 
@@ -32,6 +34,11 @@
                 required: false,
             },
             imageRequired: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            textRequired: {
                 type: Boolean,
                 required: false,
                 default: true,

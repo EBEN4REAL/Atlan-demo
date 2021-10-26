@@ -16,17 +16,24 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <a-tooltip>
+                        <a-tooltip color="#363636">
                             <template #title>Custom variables</template>
                             <div
-                                class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
+                                class="
+                                    items-center
+                                    justify-center
+                                    px-1
+                                    rounded
+                                    cursor-pointer
+                                    hover:bg-gray-300
+                                "
                                 :class="showcustomToolBar ? 'bg-gray-300' : ''"
                                 @click="toggleCustomToolbar"
                             >
                                 {&nbsp;}
                             </div>
                         </a-tooltip>
-                        <a-tooltip>
+                        <a-tooltip color="#363636">
                             <template #title>Format text</template>
                             <div
                                 class="
@@ -73,20 +80,22 @@
                                 "
                                 @click="tFullScreen"
                             >
-                                <a-tooltip v-if="fullSreenState">
-                                    <template #title>
-                                        Exit full screen
-                                    </template>
+                                <a-tooltip
+                                    color="#363636"
+                                    v-if="fullSreenState"
+                                >
+                                    <template #title>Exit full screen</template>
                                     <AtlanIcon
                                         class="w-4 h-4 border-gray-500"
                                         icon="ExitFullScreen"
                                     />
                                 </a-tooltip>
                                 <a-tooltip
+                                    color="#363636"
                                     v-else
                                     :overlayClassName="$style.tooltip"
                                 >
-                                    <template #title> Go full screen </template>
+                                    <template #title>Go full screen</template>
                                     <AtlanIcon
                                         class="w-4 h-4 border-gray-500"
                                         icon="FullScreen"
@@ -100,7 +109,7 @@
                     <div class="flex text-sm">
                         <div class="flex">
                             <AtlanBtn
-                                class="flex items-center h-6 button-shadow"
+                                class="flex items-center h-6 px-3 button-shadow"
                                 size="sm"
                                 color="primary"
                                 padding="compact"
@@ -119,7 +128,7 @@
                                         "
                                         style="margin-right: 2.5px"
                                         icon="Play"
-                                        class="text-white rounded button-shadow"
+                                        class="text-white rounded"
                                     ></AtlanIcon>
                                     <AtlanIcon
                                         v-else
@@ -160,7 +169,11 @@
                                 </div>
                             </AtlanBtn>
                         </div>
-                        <a-button
+
+                        <AtlanBtn
+                            size="sm"
+                            color="secondary"
+                            padding="compact"
                             v-if="
                                 activeInlineTab.queryId &&
                                 !activeInlineTab.isSaved
@@ -169,108 +182,156 @@
                                 flex
                                 items-center
                                 justify-between
-                                button-shadow
-                                border-none
-                                ml-2
                                 h-6
-                                py-0.5
+                                ml-2
+                                border-none
+                                button-shadow
+                                group
                             "
-                            :loading="isUpdating"
                             :class="isUpdating ? 'px-4.5' : 'px-2'"
                             :disabled="
-                                activeInlineTab.queryId &&
-                                activeInlineTab.isSaved
+                                activeInlineTab.isSaved &&
+                                activeInlineTab.queryId
                             "
-                            @click="updateQuery"
+                            @click="saveOrUpdate"
                         >
-                            <template #icon>
-                                <AtlanIcon class="mr-1" icon="Save" />
-                            </template>
+                            <div
+                                class="
+                                    flex
+                                    items-center
+                                    transition
+                                    duration-150
+                                    rounded
+                                    group-hover:text-primary
+                                "
+                            >
+                                <AtlanIcon
+                                    v-if="!isUpdating"
+                                    style="margin-right: 2.5px"
+                                    icon="Save"
+                                ></AtlanIcon>
+                                <AtlanIcon
+                                    v-else
+                                    icon="CircleLoader"
+                                    style="margin-right: 2.5px"
+                                    class="w-4 h-4 animate-spin"
+                                ></AtlanIcon>
+                                <!-- <AtlanIcon style="margin-right: 2.5px" icon="Save"></AtlanIcon> -->
 
-                            Update
-                        </a-button>
+                                <span>Update</span>
+                            </div>
+                        </AtlanBtn>
 
                         <div
                             v-else-if="
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
                             "
+                            class="transition duration-150 hover:text-primary"
                         >
                             <a-tooltip
+                                color="#363636"
                                 class="
-                                    opacity-70
                                     flex
-                                    px-2
                                     items-center
-                                    button-shadow
+                                    h-6
+                                    px-3
+                                    ml-2
                                     border-none
                                     cursor-pointer
-                                    ml-2
-                                    h-6
-                                    py-0.5
+                                    opacity-70
+                                    button-shadow
                                 "
                             >
-                                <template #title
-                                    >{{
+                                <template #title>
+                                    {{
                                         useTimeAgo(activeInlineTab?.updateTime)
                                     }}
-                                    by {{ activeInlineTab.updatedBy }}</template
-                                >
-                                <AtlanIcon
-                                    class="mr-1 text-primary"
-                                    icon="Check"
-                                />
-
-                                Saved
+                                    by {{ activeInlineTab.updatedBy }}
+                                </template>
+                                <AtlanIcon class="mr-1" icon="Check" />Saved
                             </a-tooltip>
                         </div>
-                        <a-button
+
+                        <AtlanBtn
+                            size="sm"
+                            color="secondary"
+                            padding="compact"
                             v-else
                             class="
                                 flex
                                 items-center
-                                button-shadow
-                                border-none
+                                h-6
                                 px-3
                                 ml-2
-                                h-6
-                                py-0.5
+                                border-none
+                                button-shadow
                             "
-                            @click="openSaveQueryModal"
+                            @click="saveOrUpdate"
                         >
-                            <template #icon>
-                                <AtlanIcon class="mr-1" icon="Save" />
-                            </template>
-
-                            Save
-                        </a-button>
-                        <a-dropdown>
-                            <template #overlay>
-                                <a-menu>
-                                    <a-menu-item key="1" @click="copyURL">
-                                        Copy link
-                                    </a-menu-item>
-                                    <!-- <a-menu-item key="2">
-                            Share via other integration
-                        </a-menu-item>
-                        <a-menu-item key="3"> Share via slack </a-menu-item> -->
-                                </a-menu>
-                            </template>
-                            <a-button
+                            <div
                                 class="
                                     flex
                                     items-center
-                                    ml-2
-                                    h-6
-                                    py-0.5
-                                    button-shadow
-                                    border-none
+                                    transition
+                                    duration-150
+                                    group-hover:text-primary
                                 "
                             >
-                                <AtlanIcon class="mr-1" icon="Share" /><span
-                                    >Share</span
-                                ></a-button
+                                <AtlanIcon
+                                    style="margin-right: 2.5px"
+                                    icon="Save"
+                                ></AtlanIcon>
+
+                                <span>Save</span>
+                            </div>
+                        </AtlanBtn>
+
+                        <a-dropdown>
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item key="1" @click="copyURL"
+                                        >Copy link</a-menu-item
+                                    >
+                                </a-menu>
+                            </template>
+                            <AtlanBtn
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                class="
+                                    flex
+                                    items-center
+                                    h-6
+                                    px-3
+                                    ml-2
+                                    border-none
+                                    button-shadow
+                                    group
+                                "
                             >
+                                <div
+                                    class="
+                                        flex
+                                        items-center
+                                        transition
+                                        duration-150
+                                        group-hover:text-primary
+                                    "
+                                >
+                                    <AtlanIcon
+                                        style="margin-right: 2.5px"
+                                        icon="Share"
+                                        class="
+                                            transition
+                                            duration-150
+                                            group-hover:text-primary
+                                        "
+                                    ></AtlanIcon>
+
+                                    <span>Share</span>
+                                </div>
+                            </AtlanBtn>
                         </a-dropdown>
                         <ThreeDotMenu />
                     </div>
@@ -290,7 +351,20 @@
             <Monaco @editorInstance="setInstance" />
 
             <div
-                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
+                class="
+                    absolute
+                    bottom-0
+                    left-0
+                    flex
+                    items-center
+                    justify-between
+                    w-full
+                    px-3
+                    pt-1
+                    pb-1
+                    text-xs text-gray-500
+                    bg-white
+                "
             >
                 <div class="flex items-center">
                     <!-- <WarehouseConnector /> -->
@@ -302,7 +376,7 @@
                         />
                         <!-- <span class="mr-4">
                             Output limit:&nbsp;{{ limitRows.rowsCount }}
-                        </span> -->
+                        </span>-->
                         <div class="flex items-center">
                             <a-checkbox
                                 :class="$style.checkbox_style"
@@ -321,19 +395,19 @@
 
                 <div class="flex items-center">
                     <div class="flex" v-if="editorFocused">
-                        <span class="mr-2">
-                            Ln:&nbsp;{{ editorPos.lineNumber }}
-                        </span>
-                        <span class="mr-2">
-                            Col:&nbsp; {{ editorPos.column }}
-                        </span>
+                        <span class="mr-2"
+                            >Ln:&nbsp;{{ editorPos.lineNumber }}</span
+                        >
+                        <span class="mr-2"
+                            >Col:&nbsp; {{ editorPos.column }}</span
+                        >
                     </div>
-                    <span class="ml-2 mr-4">
-                        Spaces:&nbsp;{{ editorConfig.tabSpace }}
-                    </span>
+                    <span class="ml-2 mr-4"
+                        >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
+                    >
                     <div class="flex items-center justify-center">
-                        <div class="" @click="togglePane">
-                            <a-tooltip>
+                        <div class @click="togglePane">
+                            <a-tooltip color="#363636">
                                 <template #title
                                     >Toggle output pane ( ctrl + j )</template
                                 >
@@ -345,7 +419,7 @@
                             </a-tooltip>
                         </div>
                         <div class="ml-2" @click="toggleAssetPreview">
-                            <a-tooltip>
+                            <a-tooltip color="#363636">
                                 <template #title>Toggle asset preview</template>
 
                                 <AtlanIcon
@@ -499,6 +573,7 @@
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         inlineTabs,
+                        true,
                         saveQueryDataInLocalStorage
                     )
                 }
@@ -542,13 +617,21 @@
                         .runQueryId
                 const currState = !queryId ? 'run' : 'abort'
                 if (currState === 'run') {
+                    /* Get selected Text from editor */
+                    const selectedText = toRaw(editorInstance.value)
+                        .getModel()
+                        .getValueInRange(
+                            toRaw(editorInstance.value).getSelection()
+                        )
+
                     useAddEvent('insights', 'query', 'run', undefined)
                     queryRun(
                         activeInlineTab,
                         getData,
                         limitRows,
                         onRunCompletion,
-                        onQueryIdGeneration
+                        onQueryIdGeneration,
+                        selectedText
                     )
                 } else {
                     /* Abort Query logic */
@@ -660,14 +743,23 @@
                     openAssetSidebar(activeInlineTabCopy, 'editor')
                 }
             }
+            const saveOrUpdate = () => {
+                const queryId = activeInlineTab.value?.queryId
+                if (queryId) {
+                    updateQuery()
+                } else {
+                    openSaveQueryModal()
+                }
+            }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
-                ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-                */
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
             const provideData: provideDataInterface = {
                 editorPos: editorPos,
                 editorFocused: editorFocused,
                 toggleRun: toggleRun,
+                saveOrUpdate: saveOrUpdate,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -686,6 +778,13 @@
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault()
                         toggleRun()
+                    }
+                    //prevent the default action
+                }
+                if (e.key === 'S') {
+                    if (e.metaKey || e.ctrlKey) {
+                        e.preventDefault()
+                        saveOrUpdate()
                     }
                     //prevent the default action
                 }
@@ -714,6 +813,7 @@
 
             /* ------------------------------------------ */
             return {
+                saveOrUpdate,
                 toggleExplorerPane,
                 editorConfig,
                 canUserUpdateQuery,

@@ -44,7 +44,7 @@ export const SourceList = [
                 level: 3,
             },
         ],
-        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView']
+        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView', 'Query', 'QueryFolder']
     },
     {
         id: 'tableau',
@@ -64,14 +64,14 @@ export const SourceList = [
         label: 'Postgres',
         image: postgres,
         hierarchy: [],
-        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView']
+        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView', 'Query', 'QueryFolder']
     },
     {
         id: 'athena',
         label: 'Athena',
         image: athena,
         hierarchy: [],
-        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView']
+        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView', 'Query', 'QueryFolder']
     },
     {
         id: 'powerBI',

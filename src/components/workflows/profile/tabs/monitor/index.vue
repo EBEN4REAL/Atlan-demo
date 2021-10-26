@@ -63,14 +63,11 @@
                     },
                 },
             }
-            const { runList, isLoading } = useArchivedRunList(
-                JSON.stringify(filter),
-                true
-            )
+            const { runList, isLoading } = useArchivedRunList({ filter }, true)
 
             watch(runList, (newVal) => {
                 records.value = newVal.records
-                graphData.value = newVal.records[0]
+                graphData.value = {} // TODO Ebuka this was because the API was broken
             })
 
             /** Watchers */

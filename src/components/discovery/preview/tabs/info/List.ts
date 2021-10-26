@@ -101,6 +101,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
     Column: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],
     },
+    Query: {
+        panels: [assetDetails, linkedAsset],
+    },
+    QueryFolder: {
+        panels: [assetDetails, linkedAsset],
+    },
     TableauWorkbook: {
         panels: [
             tableauProperties,

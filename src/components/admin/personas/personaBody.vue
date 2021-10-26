@@ -2,23 +2,59 @@
     <template v-if="selectedPersonaDirty">
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
 
-        <div class="px-5 pt-4 pb-2 overflow-y-auto">
-            <PersonaMeta v-if="activeTabKey === 'details'" :persona="persona" />
-            <template v-else-if="activeTabKey === 'policies'">
-                <MetadataPolicy
+        <div class="overflow-y-auto">
+            <PersonaMeta
+                v-if="activeTabKey === 'details'"
+                class="pt-4 pb-2"
+                :persona="persona"
+            />
+            <div v-else-if="activeTabKey === 'policies'">
+                <template
                     v-for="(
                         policy, idx
                     ) in selectedPersonaDirty.metadataPolicies"
                     :key="idx"
-                    :policy="policy"
-                    @delete="deletePolicy('meta', idx)"
-                />
-                <DataPolicy
+                >
+                    <!-- Render it if the policy is being edited -->
+                    <MetadataPolicy
+                        v-if="policyEditMap.metadataPolicies[idx]"
+                        class="px-5"
+                        :policy="policy"
+                        @delete="deletePolicy('meta', idx)"
+                        @save="removeEditFlag('meta', idx)"
+                        @cancel="removeEditFlag('meta', idx)"
+                    />
+                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
+                    <PolicyCard
+                        v-else
+                        class="px-5"
+                        :policy="policy"
+                        type="meta"
+                        @edit="setEditFlag('meta', idx)"
+                    />
+                </template>
+                <template
                     v-for="(policy, idx) in selectedPersonaDirty.datapolicies"
                     :key="idx"
-                    :policy="policy"
-                    @delete="deletePolicy('data', idx)"
-                />
+                >
+                    <!-- Render it if the policy is being edited -->
+                    <DataPolicy
+                        v-if="policyEditMap.dataPolicies[idx]"
+                        class="px-5"
+                        :policy="policy"
+                        @delete="deletePolicy('data', idx)"
+                        @save="removeEditFlag('meta', idx)"
+                        @cancel="removeEditFlag('meta', idx)"
+                    />
+                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
+                    <PolicyCard
+                        v-else
+                        class="px-5"
+                        :policy="policy"
+                        type="data"
+                        @edit="setEditFlag('data', idx)"
+                    />
+                </template>
 
                 <a-dropdown trigger="click">
                     <AtlanBtn
@@ -53,7 +89,12 @@
                         </a-menu>
                     </template>
                 </a-dropdown>
-            </template>
+            </div>
+            <PersonaUsersGroups
+                v-else-if="activeTabKey === 'users'"
+                class="px-5 pt-4 pb-2"
+                :persona="persona"
+            />
         </div>
     </template>
     <div v-else class="flex items-center justify-center h-full">
@@ -62,10 +103,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
+    import { defineComponent, PropType, toRefs, watch } from 'vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
 
+    import PolicyCard from './policies/collapsedPolicyCard.vue'
+    import PersonaUsersGroups from './personaUsersGroups.vue'
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './personaMeta.vue'
@@ -75,16 +118,22 @@
         selectedPersonaDirty,
         addPolicy,
         deletePolicy,
+        policyEditMap,
+        setEditFlag,
+        removeEditFlag,
     } from './composables/useEditPersona'
+    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
 
     export default defineComponent({
         name: 'PersonaBody',
         components: {
             MinimalTab,
+            PolicyCard,
             MetadataPolicy,
             DataPolicy,
             AtlanBtn,
             PersonaMeta,
+            PersonaUsersGroups,
         },
         props: {
             persona: {
@@ -103,14 +152,6 @@
                 },
                 { immediate: true }
             )
-
-            const tabConfig = [
-                { key: 'details', label: 'Overview' },
-                { key: 'policies', label: 'Policies' },
-                { key: 'users', label: 'Users & Groups' },
-            ]
-
-            const activeTabKey = ref('details')
 
             const addPolicyDropdownConfig = [
                 {
@@ -132,6 +173,9 @@
                 isEditing,
                 deletePolicy,
                 addPolicyDropdownConfig,
+                policyEditMap,
+                setEditFlag,
+                removeEditFlag,
             }
         },
     })

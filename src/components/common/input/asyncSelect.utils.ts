@@ -12,11 +12,11 @@ export const getStringFromPath = (data: object | Array<any>, path: string): any 
     const r = /\{\{(\.[\w\W]*?)\}\}/g
     // ? Wrapping old string version eg ".parent.child[0]" with {{ }} for bakward compatibility
     const varArr = path.match(r);
-    let label: unknown = undefined;
+    let label: unknown;
     let missingValues = false;
-    if (varArr?.length) {
-        label = path
-        try {
+    try {
+        if (varArr?.length) {
+            label = path
             varArr.forEach(p => {
                 const pathParts = p.split('{{')[1].split('}}')[0].split('.').slice(1)
                 let word: unknown = data;
@@ -32,25 +32,26 @@ export const getStringFromPath = (data: object | Array<any>, path: string): any 
                     missingValues = true
                 label = (label as string).replace(p, word as string)
             })
-        } catch { return undefined }
 
-    }
-    else {
-        // ? backward compatible with ".records.displayName[0]"
-        const labelPathParts = path.split('.').slice(1)
-        if (labelPathParts.length)
-            label = data;
-        labelPathParts.forEach((p: string) => {
-            if (!p) return
-            const isArr = arrayReg.test(p)
-            if (isArr) {
-                const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
-                label = (label as string)[p.split('[')[0]][index]
-            } else label = (label as string)[p]
-            if (typeof label === 'undefined')
-                missingValues = true
-        })
-    }
+        }
+        else {
+            // ? backward compatible with ".records.displayName[0]"
+            const labelPathParts = path.split('.').slice(1)
+            if (labelPathParts.length)
+                label = data;
+            labelPathParts.forEach((p: string) => {
+                if (!p) return
+                const isArr = arrayReg.test(p)
+                if (isArr) {
+                    const index = parseInt(p.match(/(?<=\[).+?(?=\])/)[0], 10)
+                    label = (label as string)[p.split('[')[0]][index]
+                } else label = (label as string)[p]
+                if (typeof label === 'undefined')
+                    missingValues = true
+            })
+        }
+    } catch { return undefined }
+
     return missingValues ? undefined : label;
 }
 

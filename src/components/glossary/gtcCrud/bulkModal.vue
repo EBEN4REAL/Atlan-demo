@@ -96,6 +96,8 @@
                         name: `atlan-glossary-bulk-upload-${props.entity.guid.slice(
                             -8
                         )}`,
+                        namespace: 'default',
+                        labels: {},
                     },
                     spec: {
                         arguments: {
@@ -148,18 +150,19 @@
                                 },
                             },
                         ],
+                        entrypoint: 'main',
                     },
                 }))
-                const { data, error, isLoading, mutate } = createWorkflow(
+                const { data, error, isLoading, execute } = createWorkflow(
                     body,
-                    false
+                    true
                 )
                 message.loading({
                     content: 'Creating new workflow ...',
                     key: `${s3Key}`,
                 })
 
-                mutate()
+                execute(true)
                 watch([data, error], (v) => {
                     if (data.value && !error.value) {
                         console.log(data)

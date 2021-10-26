@@ -94,7 +94,14 @@ TR
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, PropType, inject, Ref, toRefs } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        inject,
+        Ref,
+        toRefs,
+        ComputedRef,
+    } from 'vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
     // components
@@ -175,7 +182,7 @@ TR
             >
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>

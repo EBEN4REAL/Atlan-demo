@@ -29,13 +29,18 @@ const attributes = [
     ...BasicSearchAttributes,
 ];
 
-const useLoadGlossaryTreeData = () => {
-    const defaultLimit = 10;
+interface AdditionalParams {
+    offset?: number;
+    limit?: number;
+}
 
-    const getRootCategories = async (glossaryQualifiedName: Ref<string>, offset?: number) => {
+const useLoadGlossaryTreeData = () => {
+    const defaultLimit = 2;
+
+    const getRootCategories = async (glossaryQualifiedName: Ref<string>, { limit, offset }: AdditionalParams) => {
         const body = {
             dsl: {
-                size: defaultLimit,
+                size: limit ?? defaultLimit,
                 from: offset ?? 0,
                 query: {
                     bool: {
@@ -67,10 +72,10 @@ const useLoadGlossaryTreeData = () => {
             body,
         }) as Promise<BasicSearchResponse<Category>>
     }
-    const getAllCategories = async (glossaryQualifiedName: string, offset?: number) => {
+    const getAllCategories = async (glossaryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
             dsl: {
-                size: defaultLimit,
+                size: 100,
                 from: offset ?? 0,
                 query: {
                     bool: {
@@ -95,10 +100,10 @@ const useLoadGlossaryTreeData = () => {
             body,
         }) as Promise<BasicSearchResponse<Category>>
     }
-    const getRootTerms = async (glossaryQualifiedName: string, offset?: number) => {
+    const getRootTerms = async (glossaryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
             dsl: {
-                size: defaultLimit,
+                size: limit ?? defaultLimit,
                 from: offset ?? 0,
                 query: {
                     bool: {
@@ -130,10 +135,10 @@ const useLoadGlossaryTreeData = () => {
             body,
         }) as Promise<BasicSearchResponse<Term>>
     }
-    const getSubCategories = async (categoryQualifiedName: string, offset?: number) => {
+    const getSubCategories = async (categoryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
             dsl: {
-                size: defaultLimit,
+                size: limit ?? defaultLimit,
                 from: offset ?? 0,
                 query: {
                     bool: {
@@ -160,10 +165,10 @@ const useLoadGlossaryTreeData = () => {
             body,
         }) as Promise<BasicSearchResponse<Category>>
     }
-    const getSubTerms = async (categoryQualifiedName: string, offset?: number) => {
+    const getSubTerms = async (categoryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
             dsl: {
-                size: defaultLimit,
+                size: limit ?? defaultLimit,
                 from: offset ?? 0,
                 query: {
                     bool: {

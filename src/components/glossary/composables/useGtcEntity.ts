@@ -103,8 +103,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         },
     })
 
-    const entity = computed(() =>
-        data.value?.entities ? (data.value?.entities[0] as T) : undefined
+    const entity = ref(
+        
     )
 
     const referredEntities = computed(
@@ -143,6 +143,9 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             body.value = getBody()
             mutate()
         }
+    })
+    watch(data, (newData) => {
+        entity.value = newData?.entities ? (data.value?.entities[0] as T) : undefined
     })
     watch(entity, (newEntity) => {
         if(newEntity) {

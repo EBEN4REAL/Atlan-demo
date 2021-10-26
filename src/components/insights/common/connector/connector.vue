@@ -11,21 +11,25 @@
             dropdownClassName="connectorDropdown"
             :allowClear="true"
             @change="onChange"
+            :tree-data-simple-mode="true"
             @select="selectNode"
         >
             <template #title="node">
-                <div class="flex items-center" v-if="node?.img">
-                    <img :src="node.img" class="w-auto h-3 mr-2" />
-                    <span class="">{{
-                        capitalizeFirstLetter(node.value)
-                    }}</span>
+                <div class="flex items-center" v-if="node.type == 'connector'">
+                    <img :src="node.image" class="w-auto h-4 mr-1" />
+                    <div v-if="node.type == 'connector'" class="text-gray-700">
+                        {{ capitalizeFirstLetter(node.name) }}
+                    </div>
                 </div>
-                <div class="flex items-center" v-if="node?.integrationName">
-                    <img
-                        :src="getImage(node?.integrationName)"
-                        class="w-auto h-3 mr-2"
-                    />
-                    <span class="">{{ node.name }}</span>
+                <div class="flex flex-col" v-else>
+                    <div class="flex items-center">
+                        <img :src="node.image" class="w-auto h-4 mr-1" />
+                        <div class="">{{ node.name }}</div>
+                    </div>
+
+                    <div class="text-xs text-gray-500">
+                        {{ node.count }} assets
+                    </div>
                 </div>
             </template>
 
@@ -33,8 +37,8 @@
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
+
         <AssetDropdown
-            v-if="connection"
             :connector="filteredConnector"
             :filter="data"
             @change="handleChange"
@@ -60,6 +64,7 @@
     import { useConnectionsStore } from '~/store/connections'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useConnectionData from '~/services2/meta/composable/useConnectionData'
 
     export default defineComponent({
         props: {
@@ -86,6 +91,45 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
+            const { list, sourceList } = useConnectionData()
+
+            const treeData = computed(() => {
+                const mappedConnection = list.map((i) => ({
+                    id: i.attributes.qualifiedName,
+                    key: i.attributes.qualifiedName,
+                    pId: i.attributes.connectorName,
+                    name: i.attributes.displayName || i.attributes.name,
+                    value: i.attributes.qualifiedName,
+                    connector: i.attributes.connectorName,
+                    image: sourceList.find(
+                        (s) => s.id === i.attributes.connectorName
+                    )?.image,
+                    count: i.attributes.assetCount,
+                    type: 'connection',
+                    isLeaf: true,
+                    children: null,
+                    slots: {
+                        title: 'title',
+                    },
+                }))
+                const mappedConnector = sourceList.map((i) => ({
+                    id: i.id,
+                    name: i.id,
+                    key: i.id,
+                    value: i.id,
+                    connector: i.id,
+                    image: i.image,
+                    isLeaf: false,
+                    children: null,
+                    type: 'connector',
+                    slots: {
+                        title: 'title',
+                    },
+                }))
+                mappedConnection.push(...mappedConnector)
+                return mappedConnection
+            })
+
             const { getConnectorName } = useAssetInfo()
             const { data, filterSourceIds, isLeafNodeSelectable } =
                 toRefs(props)
@@ -116,91 +160,29 @@
             //         connection.value || connector.value || undefined
             // })
             /* Remove the sources mentioned in filterIds array */
-            const filterSourceList = (filterSourceIds: string[]) => {
-                return store.getSourceList.filter(
-                    (item) => !filterSourceIds.includes(item.id)
-                )
-            }
+            // const filterSourceList = (filterSourceIds: string[]) => {
+            //     return store.getSourceList.filter(
+            //         (item) => !filterSourceIds.includes(item.id)
+            //     )
+            // }
 
             const store = useConnectionsStore()
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
             else fetch all the sourcelist from store */
-            const filteredList = computed(() =>
-                filterSourceIds.value.length > 0
-                    ? filterSourceList(filterSourceIds.value)
-                    : store.getSourceList
-            )
+            const filteredList = computed(() => {
+                return filterSourceIds.value.length > 0
+                    ? sourceList.filter(
+                          (item) => !filterSourceIds.value.includes(item.id)
+                      )
+                    : sourceList
+            })
+
             const getImage = (id: string) => store.getImage(id)
-            const list = computed(() => List)
+
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             console.log(checkedValues.value, 'model')
-
-            const transformConnectionsToTree = (connectorId: string) => {
-                return store.getList
-                    .filter(
-                        (connection) =>
-                            getConnectorName(connection?.attributes) ===
-                            connectorId
-                    )
-                    .sort((a, b) =>
-                        a.attributes.name?.toLowerCase() >
-                        b.attributes.name?.toLowerCase()
-                            ? 1
-                            : b.attributes.name?.toLowerCase() >
-                              a.attributes.name?.toLowerCase()
-                            ? -1
-                            : 0
-                    )
-                    .map((connection) => {
-                        if (
-                            getConnectorName(connection?.attributes) ===
-                            connectorId
-                        ) {
-                            return {
-                                key: connection.attributes.qualifiedName,
-                                name:
-                                    connection.attributes.name ||
-                                    connection.attributes.qualifiedName,
-                                value: connection.attributes.qualifiedName,
-                                connector: getConnectorName(
-                                    connection?.attributes
-                                ),
-                                connection: connection.attributes.qualifiedName,
-                                integrationName: getConnectorName(
-                                    connection?.attributes
-                                ),
-                                slots: {
-                                    title: 'title',
-                                },
-                            }
-                        }
-                    })
-            }
-
-            const transformConnectorToTree = (data: any) => {
-                const tree: Record<string, any>[] = []
-                data.forEach((item: any) => {
-                    let treeNodeObj = {
-                        value: item.id,
-                        key: item.id,
-                        img: item.image,
-                        connector: item.id,
-                        connection: undefined,
-                        slots: {
-                            title: 'title',
-                        },
-                        children: transformConnectionsToTree(item.id),
-                    }
-                    tree.push(treeNodeObj)
-                })
-                return tree
-            }
-
-            const treeData = computed(() =>
-                transformConnectorToTree(filteredList.value)
-            )
 
             watch([connector, connection], () => emitChangedFilters())
 
@@ -227,9 +209,13 @@
                 }
             }
 
-            const filteredConnector = computed(() =>
-                store.getSourceList?.find((item) => item.id === connector.value)
-            )
+            const filteredConnector = computed(() => {
+                console.log('filtered', filteredList)
+
+                return filteredList.value.find(
+                    (item) => item.id === connector.value
+                )
+            })
 
             function setPlaceholder(label: string, type: string) {
                 placeholderLabel.value[type] = label
@@ -314,11 +300,8 @@
 <style lang="less" module>
     .tree_selecttor {
         :global(.ant-select-selector) {
-            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
-            background-color: #fbfbfb !important;
-            border: 1px solid #E9EBF1 !important;
-            color: #6F7590 !important;
-            border-radius: 8px !important;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+            @apply rounded-lg !important;
         }
     }
 </style>

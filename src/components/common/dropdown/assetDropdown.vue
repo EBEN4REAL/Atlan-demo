@@ -55,6 +55,8 @@
         setup(props, { emit }) {
             const { connector, filter } = toRefs(props)
 
+            console.log(connector.value)
+
             const list: ComputedRef<any[]> = computed(
                 () =>
                     connector.value?.hierarchy.filter(
@@ -86,10 +88,13 @@
             )
 
             const isDisabled = (index: number) => {
-                if (index == 0 && hasConnection.value) {
+                if (index === 0 && hasConnection.value) {
                     return false
                 } else if (index > 0) {
                     const item = list.value[index - 1]
+
+                    console.log(item)
+                    console.log(asset.value)
                     return !asset.value?.[item.attribute]
                 }
             }

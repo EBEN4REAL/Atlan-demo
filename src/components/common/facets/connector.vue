@@ -146,7 +146,7 @@
             )
             const filteredList = computed(() =>
                 filterSourceIds.value.length > 0
-                    ? list.filter(
+                    ? sourceList.filter(
                           (item) => !filterSourceIds.value.includes(item.id)
                       )
                     : sourceList

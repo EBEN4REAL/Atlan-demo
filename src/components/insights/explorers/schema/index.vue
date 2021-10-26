@@ -3,7 +3,6 @@
         <div class="w-full p-4 pb-1">
             <Connector
                 class=""
-                :filterSourceIds="['tableau', 'athena']"
                 :isLeafNodeSelectable="false"
                 v-model:data="connectorsData"
                 :item="{

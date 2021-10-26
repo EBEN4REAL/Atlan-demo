@@ -7,14 +7,19 @@
         <slot name="prefix" />
         <slot v-if="$slots.label" name="label" />
         <span v-else class="text-sm" :class="{ 'font-bold': bold }">
-            <slot />
-        </span>
+            <AtlanIcon
+                v-if="isLoading"
+                icon="CircleLoader"
+                class="inline mb-0.5 animate-spin"
+            ></AtlanIcon></span
+        ><slot />
         <slot name="suffix" />
     </button>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+
 export default defineComponent({
     name: 'AtlanButton',
     props: {
@@ -43,8 +48,13 @@ export default defineComponent({
             default: () => false,
             required: false,
         },
+        isLoading: {
+            type: Boolean,
+            default: () => false,
+            required: false,
+        },
     },
-    setup(prop, { emit }) { },
+    setup(prop, { emit }) {},
 })
 </script>
 

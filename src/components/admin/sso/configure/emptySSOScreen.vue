@@ -13,13 +13,13 @@
                     v-for="(provider, index) in samlProviders"
                     :key="provider.alias"
                     class="py-5 border rounded-sm cursor-pointer  provider-wrapper"
-                    @click="setSelectedOption(provider.alias)"
                     :class="[
                         index !== samlProviders.length - 1 ? 'mr-4' : '',
                         selectedOption === provider.alias
                             ? 'bg-primary-light border rounded border-primary'
                             : '',
                     ]"
+                    @click="setSelectedOption(provider.alias)"
                 >
                     <div class="flex flex-col justify-center">
                         <img
@@ -40,7 +40,6 @@
             </div>
             <div class="flex justify-end w-full mt-6">
                 <AtlanBtn
-                    @click="configureSSO"
                     :disabled="!selectedOption"
                     padding="compact"
                     :bold="true"
@@ -49,6 +48,7 @@
                             ? 'bg-gray-300 text-white border-gray-300'
                             : 'bg-primary text-white border-primary'
                     "
+                    @click="configureSSO"
                 >
                     Configure</AtlanBtn
                 >
@@ -58,14 +58,14 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import emptySSOImage from '~/assets/images/emptyCreds.png'
-import ConfigureNewSSO from './configureNewSSO.vue'
 import { useRouter } from 'vue-router'
+import emptySSOImage from '~/assets/images/emptyCreds.png'
+
 import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
 import AtlanBtn from '@/UI/button.vue'
 
 export default defineComponent({
-    components: { ConfigureNewSSO, AtlanBtn },
+    components: { AtlanBtn },
     setup() {
         const router = useRouter()
         const showConfigOptions = ref(true)
@@ -83,12 +83,10 @@ export default defineComponent({
             selectedOption.value = ''
         }
 
-        const samlProviders = computed(() => {
-            return [
-                ...topSAMLProviders,
-                { ...customSamlProvider, alias: 'custom' },
-            ]
-        })
+        const samlProviders = computed(() => [
+            ...topSAMLProviders,
+            { ...customSamlProvider, alias: 'custom' },
+        ])
         return {
             emptySSOImage,
             configureSSO,

@@ -112,6 +112,8 @@
             )
 
             const handleChange = () => {
+                /* Here we are making a change, so isSaved will be false */
+                // activeInlineTab.value.isSaved = false
                 setConnectorsDataInInlineTab(
                     activeInlineTab,
                     tabs,

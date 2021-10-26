@@ -37,7 +37,11 @@
                     </div>-->
                 </div>
                 <div>
-                    <a-dropdown placement="bottomLeft" :trigger="['click']" @click.stop="() => { }">
+                    <a-dropdown
+                        placement="bottomLeft"
+                        :trigger="['click']"
+                        @click.stop="() => {}"
+                    >
                         <template #overlay>
                             <a-menu>
                                 <a-menu-item
@@ -71,21 +75,35 @@
                         :ref="titleBarRef"
                         v-model:value="title"
                         :placeholder="`Untitled ${getLastUntitledNumber()}`"
-                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none"
+                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
                     />
                 </div>
                 <a-textarea
                     v-model:value="description"
                     placeholder="Add Description"
-                    class="text-sm text-gray-500 border-0 shadow-none outline-none"
+                    class="text-sm text-gray-500 border-0 shadow-none outline-none "
                     :rows="3"
                     show-count
                     :maxlength="140"
                 />
             </div>
             <div class="flex items-center w-full">
-                <div class="flex items-center border rounded px-2 py-0.5 mr-3 text-xs">
-                    <AtlanIcon icon="Term" class="h-4 m-0 mr-1.5 -mt-0.5 text-purple-500" />
+                <div
+                    class="
+                        flex
+                        items-center
+                        border
+                        rounded
+                        px-2
+                        py-0.5
+                        mr-3
+                        text-xs
+                    "
+                >
+                    <AtlanIcon
+                        icon="Term"
+                        class="h-4 m-0 mr-1.5 -mt-0.5 text-purple-500"
+                    />
                     <span>Terms</span>
                 </div>
                 <!-- <div
@@ -113,7 +131,9 @@
                         >Make SQL snippet</a-checkbox
                     >
                 </div>-->
-                <div class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer">
+                <div
+                    class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer "
+                >
                     <!-- <div @click="closeModal" class="hover:text-primary">
                         Cancel
                     </div>-->
@@ -122,7 +142,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-3 border-none hover:text-primary"
+                        class="flex items-center justify-between h-6 py-1 ml-3 border-none  hover:text-primary"
                         @click="closeModal"
                     >
                         <span>Cancel</span>
@@ -132,7 +152,7 @@
                         size="sm"
                         color="primary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-2 border-none"
+                        class="flex items-center justify-between h-6 py-1 ml-2 border-none "
                         @click="createSaveQuery"
                     >
                         <div class="flex items-center text-white rounded">
@@ -159,163 +179,163 @@
 </template>
 
 <script lang="ts">
-import {
-    ComputedRef,
-    defineComponent,
-    Ref,
-    ref,
-    inject,
-    onMounted,
-    nextTick,
-    PropType,
-    toRefs,
-    watch,
-} from 'vue'
-import { List } from '~/constant/status'
-import StatusBadge from '@common/badge/status/index.vue'
-import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
-import { Folder } from '~/types/insights/savedQuery.interface'
-import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import AtlanBtn from '~/components/UI/button.vue'
+    import {
+        ComputedRef,
+        defineComponent,
+        Ref,
+        ref,
+        inject,
+        onMounted,
+        nextTick,
+        PropType,
+        toRefs,
+        watch,
+    } from 'vue'
+    import { List } from '~/constant/status'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
+    import { Folder } from '~/types/insights/savedQuery.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import AtlanBtn from '~/components/UI/button.vue'
 
-export default defineComponent({
-    components: { StatusBadge, QueryFolderSelector, AtlanBtn },
-    props: {
-        showSaveQueryModal: {
-            type: Object as PropType<boolean>,
-            required: true,
+    export default defineComponent({
+        components: { StatusBadge, QueryFolderSelector, AtlanBtn },
+        props: {
+            showSaveQueryModal: {
+                type: Object as PropType<boolean>,
+                required: true,
+            },
+            saveQueryLoading: {
+                type: Object as PropType<boolean>,
+                required: true,
+            },
+            parentFolderQF: {
+                type: String,
+                required: true,
+                default: 'root',
+            },
+            connector: {
+                type: String as PropType<string | undefined>,
+                required: true,
+                default: '',
+            },
+            savedQueryType: {
+                type: String as PropType<'personal' | 'all'>,
+                required: true,
+                default: 'personal',
+            },
         },
-        saveQueryLoading: {
-            type: Object as PropType<boolean>,
-            required: true,
-        },
-        parentFolderQF: {
-            type: String,
-            required: true,
-            default: 'root',
-        },
-        connector: {
-            type: String as PropType<string | undefined>,
-            required: true,
-            default: '',
-        },
-        savedQueryType: {
-            type: String as PropType<'personal' | 'all'>,
-            required: true,
-            default: 'personal',
-        },
-    },
-    emits: ['update:showSaveQueryModal', 'onSaveQuery'],
-    setup(props, { emit }) {
-        const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
-        const currentStatus: Ref<string | undefined> = ref('DRAFT')
-        const title: Ref<string> = ref('')
-        const description: Ref<string | undefined> = ref('')
-        const isSQLSnippet: Ref<boolean | undefined> = ref(false)
-        const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
-        const selectedParentFolder = ref<Folder | null>(null)
-        const untitledRegex = /(?:Untitled )([0-9]+)/gim
-        const inlineTabs = inject('inlineTabs') as ComputedRef<
-            activeInlineTabInterface[]
-        >
-        const {
-            savedQueryType: queryType,
-            connector: currentConnector,
-            parentFolderQF,
-        } = toRefs(props)
-        const handleMenuClick = (status) => {
-            currentStatus.value = status.id
-            console.log(currentStatus.value)
-        }
-        const closeModal = () => {
-            emit('update:showSaveQueryModal', false)
-        }
-        const clearData = () => {
-            title.value = ''
-            description.value = ''
-            isSQLSnippet.value = false
-            currentStatus.value = 'DRAFT'
-        }
-        const getLastUntitledNumber = () => {
-            let max_number = 1
+        emits: ['update:showSaveQueryModal', 'onSaveQuery'],
+        setup(props, { emit }) {
+            const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
+            const currentStatus: Ref<string | undefined> = ref('DRAFT')
+            const title: Ref<string> = ref('')
+            const description: Ref<string | undefined> = ref('')
+            const isSQLSnippet: Ref<boolean | undefined> = ref(false)
+            const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
+            const selectedParentFolder = ref<Folder | null>(null)
             const untitledRegex = /(?:Untitled )([0-9]+)/gim
-            inlineTabs.value?.forEach((tab) => {
-                const d = [...tab.label.matchAll(untitledRegex)]
-                if (d.length > 0) {
-                    max_number = Number(d[0][1])
-                }
-            })
-            return max_number
-        }
-        const createSaveQuery = () => {
-            const saveQueryData = {
-                title:
-                    title.value !== ''
-                        ? title.value
-                        : `Untitled ${getLastUntitledNumber()}`,
-                description: description.value,
-                isSQLSnippet: isSQLSnippet.value,
-                certificateStatus: currentStatus.value,
-                parentQF:
-                    selectedParentFolder.value?.attributes?.qualifiedName,
-                parentGuid: selectedParentFolder.value?.guid,
+            const inlineTabs = inject('inlineTabs') as ComputedRef<
+                activeInlineTabInterface[]
+            >
+            const {
+                savedQueryType: queryType,
+                connector: currentConnector,
+                parentFolderQF,
+            } = toRefs(props)
+            const handleMenuClick = (status) => {
+                currentStatus.value = status.id
+                console.log(currentStatus.value)
             }
-            emit('onSaveQuery', saveQueryData)
-        }
-        onMounted(async () => {
-            await nextTick()
-            titleBarRef.value?.focus()
-        })
-        const selectFolder = (folder: Folder) => {
-            selectedParentFolder.value = folder
-        }
-        return {
-            getLastUntitledNumber,
-            parentFolderQF,
-            title,
-            queryType,
-            currentConnector,
-            description,
-            isSQLSnippet,
-            titleBarRef,
-            currentStatus,
-            List,
-            showSaveQueryModal,
-            saveQueryLoading,
-            clearData,
-            closeModal,
-            createSaveQuery,
-            handleMenuClick,
-            selectFolder,
-        }
-    },
-})
+            const closeModal = () => {
+                emit('update:showSaveQueryModal', false)
+            }
+            const clearData = () => {
+                title.value = ''
+                description.value = ''
+                isSQLSnippet.value = false
+                currentStatus.value = 'DRAFT'
+            }
+            const getLastUntitledNumber = () => {
+                let max_number = 1
+                const untitledRegex = /(?:Untitled )([0-9]+)/gim
+                inlineTabs.value?.forEach((tab) => {
+                    const d = [...tab.label.matchAll(untitledRegex)]
+                    if (d.length > 0) {
+                        max_number = Number(d[0][1])
+                    }
+                })
+                return max_number
+            }
+            const createSaveQuery = () => {
+                const saveQueryData = {
+                    title:
+                        title.value !== ''
+                            ? title.value
+                            : `Untitled ${getLastUntitledNumber()}`,
+                    description: description.value,
+                    isSQLSnippet: isSQLSnippet.value,
+                    certificateStatus: currentStatus.value,
+                    parentQF:
+                        selectedParentFolder.value?.attributes?.qualifiedName,
+                    parentGuid: selectedParentFolder.value?.guid,
+                }
+                emit('onSaveQuery', saveQueryData)
+            }
+            onMounted(async () => {
+                await nextTick()
+                titleBarRef.value?.focus()
+            })
+            const selectFolder = (folder: Folder) => {
+                selectedParentFolder.value = folder
+            }
+            return {
+                getLastUntitledNumber,
+                parentFolderQF,
+                title,
+                queryType,
+                currentConnector,
+                description,
+                isSQLSnippet,
+                titleBarRef,
+                currentStatus,
+                List,
+                showSaveQueryModal,
+                saveQueryLoading,
+                clearData,
+                closeModal,
+                createSaveQuery,
+                handleMenuClick,
+                selectFolder,
+            }
+        },
+    })
 </script>
 <style lang="less" scoped>
-.placeholder {
-    background-color: #f4f4f4;
-}
-.absolute-center {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
+    .placeholder {
+        background-color: #f4f4f4;
+    }
+    .absolute-center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
 </style>
 <style lang="less" module>
-.input {
-    :global(.ant-input:focus
-            .ant-input:hover
-            .ant-input::selection
-            .focus-visible) {
-        @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
+    .input {
+        :global(.ant-input:focus
+                .ant-input:hover
+                .ant-input::selection
+                .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none border-0 px-0 !important;
+        }
+        :global(.ant-modal-body) {
+            @apply p-0 !important;
+        }
     }
-    :global(.ant-input) {
-        @apply shadow-none outline-none border-0 px-0 !important;
-    }
-    :global(.ant-modal-body) {
-        @apply p-0 !important;
-    }
-}
 </style>
 
 <route lang="yaml">

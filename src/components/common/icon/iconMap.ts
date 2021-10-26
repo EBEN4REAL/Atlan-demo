@@ -42,7 +42,6 @@ import Edit from '~/assets/images/icons/edit.svg'
 import EmptySavedFilter from '~/assets/images/icons/empty_saved_filters.svg'
 import Decline from '~/assets/images/icons/decline.svg'
 import Approve from '~/assets/images/icons/approve.svg'
-import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
 import GlossaryInactive from '~/assets/images/icons/glossary_inactive.svg'
@@ -144,9 +143,11 @@ import Platform from '~/assets/images/icons/platform.svg'
 import Feedback from '~/assets/images/icons/feedback.svg'
 import Admin from '~/assets/images/icons/admin.svg'
 import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
-import TableDeprecated from '~/assets/images/icons/table_deprecated.svg';
-import TableDraft from '~/assets/images/icons/table_draft.svg';
-import TableVerified from '~/assets/images/icons/table_verified.svg';
+import TableDeprecated from '~/assets/images/icons/table_deprecated.svg'
+import TableDraft from '~/assets/images/icons/table_draft.svg'
+import TableVerified from '~/assets/images/icons/table_verified.svg'
+import Policy from '~/assets/images/icons/policy.svg'
+import Key from '~/assets/images/icons/key.svg'
 
 export default {
     IssuesFilled,
@@ -211,7 +212,6 @@ export default {
     Edit,
     Approve,
     Decline,
-    CategoryDraft,
     Lock,
     EmptyGlossary,
     Glossary,
@@ -297,5 +297,7 @@ export default {
     ActivityLogs,
     TableDeprecated,
     TableDraft,
-    TableVerified
+    TableVerified,
+    Policy,
+    Key,
 }

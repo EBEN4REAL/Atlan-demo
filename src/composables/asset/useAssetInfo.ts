@@ -126,6 +126,9 @@ export default function useAssetInfo() {
     const viewDefinition = (asset: assetInterface) =>
         attributes(asset)?.viewDefinition || ''
 
+
+    const qualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.qualifiedName
     const schemaName = (asset: assetInterface) => attributes(asset)?.schemaName
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName
@@ -526,5 +529,6 @@ export default function useAssetInfo() {
         getTableauHierarchy,
         previewURL,
         viewDefinition,
+        qualifiedName,
     }
 }

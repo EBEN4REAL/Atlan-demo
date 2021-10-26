@@ -51,7 +51,7 @@
                             :asset-type="item.displayText"
                             :asset-id="selectedAsset.guid"
                             :css-classes="cssClasses"
-                            page="BiOverview"
+                            page="biOverview"
                             @preview="handlePreview"
                         />
                     </div>
@@ -112,7 +112,7 @@
             // store
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
-            
+
             const filteredAssets = computed(() =>
                 relationshipAssetTypes.value.filter(
                     (el) =>

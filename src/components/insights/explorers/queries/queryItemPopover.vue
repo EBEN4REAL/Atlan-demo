@@ -270,7 +270,6 @@
             watch(
                 item,
                 () => {
-                    console.log(item, 'item')
                     mixedTermsAndClassifications.value = []
                     mixedOwnersAndGroups.value = []
                     const classifications =

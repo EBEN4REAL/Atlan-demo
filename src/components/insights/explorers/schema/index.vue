@@ -75,6 +75,7 @@
         components: { Connector, SchemaTree },
         props: {},
         setup(props, { emit }) {
+            const isSchemaInitialized = ref(true)
             const tables: tableInterface[] = tablesData
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const activeInlineTab = inject(

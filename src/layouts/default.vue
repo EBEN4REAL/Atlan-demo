@@ -7,6 +7,7 @@
                     :is-sidebar-active="showNavbar"
                     @toggleNavbar="handleToggleNavbar"
                     @openNavbar="showNavbar = true"
+                    @openCmndK="isCmndKVisible = true"
                 />
             </div>
         </a-layout-header>

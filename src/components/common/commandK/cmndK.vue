@@ -2,7 +2,7 @@
     <div>
         <a-modal
             :visible="isVisible"
-            width="620px"
+            width="800px"
             :class="$style.modalStyles"
             :closable="false"
             @cancel="$emit('closeModal')"
@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col overflow-y-auto max-h-96">
+            <div class="flex flex-col overflow-y-auto max-h-80">
                 <div
                     v-if="!list?.length && queryText.length"
                     class="flex flex-col items-center justify-center pt-12 pb-20 "
@@ -68,7 +68,7 @@
                     >
                 </div>
                 <div v-for="item in list" v-else :key="item?.guid">
-                    <AssetCard :item="item" />
+                    <AssetCard :item="item" @closeModal="$emit('closeModal')" />
                 </div>
             </div>
             <template #footer>

@@ -26,6 +26,7 @@
                                 : `/assets/${item.guid}/overview`
                         "
                         class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        @click="$emit('closeModal')"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -127,7 +128,7 @@
                 },
             },
         },
-        emits: [],
+        emits: ['closeModal'],
         setup() {
             const {
                 description,

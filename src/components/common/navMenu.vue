@@ -22,7 +22,11 @@
             >
         </div>
         <div class="flex items-center justify-self-end">
-            <atlan-icon icon="Search" class="h-5 mr-3" />
+            <atlan-icon
+                icon="Search"
+                class="h-5 mr-3 cursor-pointer"
+                @click="$emit('openCmndK')"
+            />
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" />
             <!-- <AtlanIcon icon="Notification" class="h-5 mr-3" /> -->
             <UserPersonalAvatar class="self-center pl-3 border-l" />
@@ -47,7 +51,7 @@
                 default: false,
             },
         },
-        emits: ['toggleNavbar', 'openNavbar'],
+        emits: ['toggleNavbar', 'openNavbar', 'openCmndK'],
         setup(props, { emit }) {
             const route = useRoute()
             const tenantStore = useTenantStore()

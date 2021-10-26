@@ -16,7 +16,6 @@ const getWorkflowLiveRun = (workflowTemplate, { immediate, options }) =>
     )
 
 function useWorkflowLiveRun(workflowTemplate, immediate: boolean = true) {
-    console.log(workflowTemplate)
     const { data, error, isLoading, mutate } = getWorkflowLiveRun(
         workflowTemplate,
         {

@@ -83,19 +83,29 @@
             }
             // get progress fn triggered every 30sec
             const getProgress = () => {
-                console.log('getting progress ')
                 if (percentage.value < 80) percentage.value += 20
                 const { data, error } = useWorkflowLiveRun(
                     workflowTemplate.value
                 )
-                console.log(data, error)
+                watch([data, error], (v) => {
+                    if (data.value && !error.value) {
+                        if (
+                            data.value.items[0] &&
+                            data.value.items[0].status?.phase === 'Succeeded'
+                        )
+                            percentage.value = 100
+                    } else {
+                        console.log('error in getting live run')
+                        stopGetProgress()
+                    }
+                })
+
                 if (percentage.value >= 100) stopGetProgress()
             }
             const triggerUpload = (workflowName) => {
-                console.log(workflowName)
                 workflowTemplate.value = workflowName
                 if (!nIntervId) {
-                    nIntervId = setInterval(getProgress, 10000)
+                    nIntervId = setInterval(getProgress, 45000)
                 }
             }
             watch(

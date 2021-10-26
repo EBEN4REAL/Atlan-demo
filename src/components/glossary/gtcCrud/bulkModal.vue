@@ -87,7 +87,6 @@
             }
 
             const handleFormChange = (data) => {
-                console.log(data.key)
                 if (data.key) handleCreateWorkflow(data.key)
             }
             const handleCreateWorkflow = (s3Key) => {
@@ -155,7 +154,7 @@
                 }))
                 const { data, error, isLoading, execute } = createWorkflow(
                     body,
-                    true
+                    false
                 )
                 message.loading({
                     content: 'Creating new workflow ...',

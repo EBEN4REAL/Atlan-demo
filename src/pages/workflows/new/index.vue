@@ -92,7 +92,15 @@
                                 : `height: calc(100vh - 29rem)`
                         "
                     >
+                        <EmptyState
+                            v-if="workflowList.length === 0 && !isLoading"
+                            desc="Sorry! We couldn’t find any workflow templates. try resetting your filters."
+                            button-text="Reset filters"
+                            :empty-screen="EmptyScreen"
+                            @event="handleClearFiltersFromList"
+                        />
                         <WorkflowList
+                            v-else
                             v-model:autoSelect="autoSelect"
                             class="pt-2 bg-white"
                             :list="workflowList"
@@ -235,7 +243,12 @@
                 // console.log(filters.value)
                 console.log({ ...AllFilters.value.facetsFilters })
                 const filters = transformToFilters(AllFilters.value)
-                isFilterAppplied.value = !!Object?.keys(filters?.filter).length
+                //! check if filter is user specific applied check to show empty state
+                console.log({ filters })
+
+                const filterCopy = filters?.filter
+                if (filterCopy.$and?.length === 1) delete filterCopy.$and
+                isFilterAppplied.value = !!Object?.keys(filterCopy).length
                 filterList(filters)
             }
             if (!workflowList.value.length) shootQuery()

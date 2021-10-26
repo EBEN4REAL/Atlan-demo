@@ -1,46 +1,56 @@
 <template>
-    <div
-        class="flex flex-col justify-center h-full bg-primary-light"
-        v-if="isAccess"
-    >
-        <DisplaySSO
+    <div class="flex flex-col justify-center h-full bg-primary-light">
+        <component
+            :is="
+                identityProviders.length && alias
+                    ? 'router-view'
+                    : 'EmptySSOScreen'
+            "
+            class="flex flex-col justify-center h-3/4"
+        />
+        <!-- <DisplaySSO
             v-if="identityProviders.length"
             :provider-details="identityProviders[0] || {}"
         />
-        <div class="flex flex-col justify-center h-3/4" v-else>
+        <div v-else class="flex flex-col justify-center h-3/4">
             <EmptySSOScreen />
-        </div>
+        </div> -->
     </div>
     <NoAccess v-else />
 </template>
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, computed, watch } from 'vue'
+    import { useHead } from '@vueuse/head'
+    import { useRouter } from 'vue-router'
     import EmptySSOScreen from '@/admin/sso/configure/emptySSOScreen.vue'
     import DisplaySSO from '@/admin/sso/update/displaySSO.vue'
-    import { useHead } from '@vueuse/head'
-    import useAuth from '~/services2/service/composable/useAuth'
-    import NoAccess from '@/admin/common/noAccessPage.vue'
-
-    import useTenantData from '~/services2/service/composable/useTenantData'
+    import { useTenantStore } from '~/services/keycloak/tenant/store'
 
     export default defineComponent({
         name: 'SSO',
         components: {
             EmptySSOScreen,
             DisplaySSO,
-            NoAccess,
         },
         setup() {
             useHead({
                 title: 'SSO',
             })
-
-            const { identityProviders } = useTenantData()
-            const { isAccess } = useAuth()
-
+            const router = useRouter()
+            const tenantStore = useTenantStore()
+            const identityProviders = computed(
+                () => tenantStore.getIdentityProviders
+            )
+            const alias = computed(() => identityProviders?.value?.[0]?.alias)
+            if (
+                alias.value &&
+                identityProviders.value &&
+                identityProviders.value.length
+            )
+                router.push(`/admin/sso/${alias.value}`)
             return {
                 identityProviders,
-                isAccess,
+                alias,
             }
         },
     })

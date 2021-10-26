@@ -195,6 +195,7 @@
                     renderLineHighlight: 'none',
                     theme: 'atlan-light',
                     fontSize: 12,
+                    fontFamily: 'Hack',
                     minimap: {
                         enabled: false,
                     },
@@ -388,6 +389,31 @@
     }
     .c {
         font-family: 'Courier New', Courier, monospace;
+    }
+
+    @font-face {
+        font-family: 'Hack';
+        src: url('~/assets/fonts/hack/Hack-BoldItalic.ttf');
+        font-weight: bold;
+        font-style: italic;
+    }
+    @font-face {
+        font-family: 'Hack';
+        src: url('~/assets/fonts/hack/Hack-Italic.ttf');
+        font-style: italic;
+        font-weight: normal;
+    }
+    @font-face {
+        font-family: 'Hack';
+        src: url('~/assets/fonts/hack/Hack-Bold.ttf');
+        font-weight: bold;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'Hack';
+        src: url('~/assets/fonts/hack/Hack-Regular.ttf');
+        font-style: normal;
+        font-weight: normal;
     }
 </style>
 <style lang="less">

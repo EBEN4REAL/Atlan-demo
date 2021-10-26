@@ -26,6 +26,7 @@
                         "
                         :selected-run-name="selectedRunName"
                         :workflow-template="workflowTemplate"
+                        :workflow="id"
                         class="bg-transparent"
                         @change="updateSelected"
                     ></component>
@@ -141,6 +142,7 @@
 
             /** COMPUTED */
             const id = computed(() => route?.params?.id || '')
+            const tab = computed(() => route?.params?.tab || '')
 
             const formConfig = computed(() => {
                 try {
@@ -197,9 +199,11 @@
                 watch(config, (v) => {
                     if (config.value?.records) {
                         // TODO: Temporary fix - API filter doesn't seem to work
+
                         const filteredRecords = config.value.records.filter(
                             (x) => x.template_name === workflowTemplate.value
                         )
+
                         data.value.uiConfig = filteredRecords[0].uiconfig
                     }
                 })
@@ -239,6 +243,14 @@
                 if (n && !o) fetch()
             })
 
+            watch(tab, (n, o) => {
+                if (!n) return
+                const currTab = tabs.find(
+                    (i) => i.name.toLowerCase() === n.toLowerCase()
+                )
+                activeKey.value = currTab.id
+            })
+
             /** LIFECYCLES */
             onMounted(async () => {
                 await fetch()
@@ -249,10 +261,6 @@
                     (i) => i.name.toLowerCase() === tab.toLowerCase()
                 )
                 activeKey.value = currTab.id
-            })
-
-            watch(id, (n, o) => {
-                if (n && !o) fetch()
             })
 
             return {

@@ -7,7 +7,15 @@
         }"
         @click="() => emit('select', r.name)"
     >
-        <AtlanIcon :icon="r.phase === 'Success' ? 'RunSuccess' : 'RunFailed'" />
+        <AtlanIcon
+            :icon="
+                r.phase === 'Succeeded'
+                    ? 'RunSuccess'
+                    : r.phase === 'Running'
+                    ? 'Running'
+                    : 'RunFailed'
+            "
+        />
         <div class="">
             <div
                 class="text-base truncate overflow-ellipsis whitespace-nowrap"
@@ -23,7 +31,7 @@
             </div>
             <div>
                 <p class="tracking-wide text-gray-500">
-                    <span class="mb-1 text-sm">
+                    <span v-if="r.phase !== 'Running'" class="mb-1 text-sm">
                         {{
                             timeDiffCalc(
                                 new Date(r.started_at),
@@ -31,8 +39,13 @@
                             )
                         }}
                     </span>
-                    <span class="text-gray-400"> &bull; </span>
-                    <span class="mb-1 text-sm">
+                    <span v-if="r.phase !== 'Running'" class="text-gray-400">
+                        &bull;
+                    </span>
+                    <span v-if="r.phase === 'Running'" class="mb-1 text-sm">
+                        {{ timeAgo(r.started_at) }}</span
+                    >
+                    <span v-else class="mb-1 text-sm">
                         {{ timeAgo(r.finished_at) }}</span
                     >
                 </p>

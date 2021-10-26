@@ -1,132 +1,107 @@
 <template>
-    <div v-if="Object.keys(ssoProvider).length">
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center text-2xl">
-                <img
-                    v-if="!provider.isCustomSaml"
-                    :src="provider.image"
-                    alt="provider"
-                    class="w-6 mr-2"
-                />
-                <fa
-                    v-else
-                    icon="fas key"
-                    class="p-1 mr-2 text-3xl bg-yellow-400 rounded"
-                />
-                <span>{{ provider.title || 'SAML 2.0' }}</span>
-            </div>
-            <a-button type="link" @click="showConfigScreen">
-                <fa icon="fal times" class="text-xl text-gray-600"></fa>
-            </a-button>
-        </div>
-        <a-divider />
-        <div class="my-4">
+    <div class="mx-auto text-gray-600 bg-white rounded">
+        <div class="mt-5 provider-wrapper">
             <div>
-                <a-form
-                    ref="form"
-                    label-align="left"
-                    :label-col="{ span: 10 }"
-                    :wrapper-col="{ span: 12, offset: 2 }"
-                    :model="ssoForm"
-                    :colon="false"
-                >
-                    <div class="metadata-container">
-                        <span
-                            class="block mb-4 text-lg font-medium text-gray-600"
-                        >
-                            Service provider metadata
-                        </span>
-                        <a-form-item label="Atlan SAML Assertion URL:">
-                            <a-input
-                                :default-value="
+                <div class="mb-16">
+                    <div class="mb-6 font-bold text-gray-700">
+                        Service provider metadata
+                    </div>
+                    <div class="mb-4">
+                        <div class="mb-2.5">Atlan SAML Assertion URL</div>
+                        <div class="flex justify-between mb-2 text-gray-500">
+                            <div class="mr-3 break-all">
+                                {{
                                     getSamlAssertionUrl(ssoForm.alias)
                                         .redirectUrl
-                                "
-                                class="metadata-input"
-                                disabled
+                                }}
+                            </div>
+                            <div
+                                class="flex items-center cursor-pointer  text-primary"
                             >
-                                <template #addonAfter>
-                                    <span
-                                        class="flex items-center justify-between  copyBtn"
-                                        @click="
-                                            copyText(
-                                                getSamlAssertionUrl(
-                                                    ssoForm.alias
-                                                ).redirectUrl
-                                            )
-                                        "
-                                    >
-                                        <!-- <a-icon class="mr-1" type="copy" /> -->
-                                        Copy
-                                    </span>
-                                </template>
-                            </a-input>
-                        </a-form-item>
-
-                        <a-form-item label="Atlan Audience URL (SP Entity ID):">
-                            <a-input
-                                :default-value="
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="mb-0.5"
+                                    @click="
+                                        copyText(
+                                            getSamlAssertionUrl(ssoForm.alias)
+                                                .redirectUrl
+                                        )
+                                    "
+                                ></AtlanIcon>
+                                <div class="ml-1">Copy</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="mb-2.5">
+                            Atlan Audience URL (SP Entity ID)
+                        </div>
+                        <div class="flex justify-between mb-2 text-gray-500">
+                            <div class="mr-3 break-all">
+                                {{
                                     getSamlAssertionUrl(ssoForm.alias)
                                         .audienceUrl
-                                "
-                                class="metadata-input"
-                                disabled
+                                }}
+                            </div>
+                            <div
+                                class="flex items-center cursor-pointer  text-primary"
                             >
-                                <template #addonAfter>
-                                    <span
-                                        class="flex items-center justify-between  copyBtn"
-                                        @click="
-                                            copyText(
-                                                getSamlAssertionUrl(
-                                                    ssoForm.alias
-                                                ).audienceUrl
-                                            )
-                                        "
-                                    >
-                                        <!-- <a-icon class="mr-1" type="copy" /> -->
-                                        Copy
-                                    </span>
-                                </template>
-                            </a-input>
-                        </a-form-item>
-
-                        <a-form-item label="Atlan SSO SAML Metadata:">
-                            <a-button
-                                class="block px-0 mr-auto"
-                                type="link"
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="mb-0.5"
+                                    @click="
+                                        copyText(
+                                            getSamlAssertionUrl(ssoForm.alias)
+                                                .audienceUrl
+                                        )
+                                    "
+                                ></AtlanIcon>
+                                <div class="ml-1">Copy</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="mb-2.5">Atlan SSO metadata</div>
+                        <div>
+                            <AtlanBtn
+                                color="secondary"
+                                padding="compact"
+                                size="sm"
+                                class="shadow-sm"
                                 @click="downloadMetadataFile"
                             >
                                 <div class="flex flex-row items-center">
-                                    <span class="mr-1">Download Metadata</span>
                                     <fa
                                         icon="fal arrow-down"
                                         class="text-sm"
                                     ></fa>
+                                    <span class="ml-1"
+                                        >Download metadata file</span
+                                    >
                                 </div>
-                            </a-button>
-                        </a-form-item>
+                            </AtlanBtn>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between mt-8">
-                        <span class="text-lg font-medium text-gray-600"
-                            >Identity provider metadata</span
-                        >
-                        <ImportMetadataFromXML @setSSODetails="setSSODetails" />
+                </div>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="font-bold text-gray-700">
+                        Identity provider metadata
                     </div>
-                    <a-divider class="my-4 mb-8" />
+                    <ImportMetadataFromXML @setSSODetails="setSSODetails" />
+                </div>
+
+                <a-form
+                    ref="form"
+                    label-align="left"
+                    :model="ssoForm"
+                    :colon="false"
+                    layout="vertical"
+                >
                     <a-form-item>
                         <template #label>
-                            <span class="flex flex-col h-48">
-                                <strong class="mb-2 text-gray-600">
-                                    SAML SSO URL:
-                                </strong>
-                                <span class="mb-2 leading-3 text-gray"
-                                    >Enter your SAML 2.0 Endpoint.</span
-                                >
-                                <span class="leading-3 text-gray"
-                                    >This is where users will be redirected to
-                                    login.</span
-                                >
-                            </span>
+                            <div class="">
+                                <div class="mb-2">SAML SSO URL</div>
+                            </div>
                         </template>
                         <a-input
                             v-model:value="ssoForm.singleSignOnServiceUrl"
@@ -134,62 +109,40 @@
                     </a-form-item>
                     <a-form-item>
                         <template #label>
-                            <span class="flex flex-col h-48">
-                                <strong class="mb-2 text-gray-600">
-                                    Public Certificate:
-                                </strong>
-                                <span class="leading-3 text-gray"
-                                    >x.509 Certificate</span
-                                >
-                                <span class="leading-3"
-                                    >Paste or
-                                    <ImportText
-                                        @importCertificate="importCertificate"
-                                    />
-                                </span>
+                            <span>
+                                <div class="mb-2">Path Certificate</div>
                             </span>
                         </template>
                         <a-textarea
                             v-model:value="ssoForm.signingCertificate"
                             :rows="4"
                         />
+                        <span class="text-gray-500"
+                            >Paste x.509 Certificate here or
+                            <ImportText
+                                @importCertificate="importCertificate"
+                            />
+                        </span>
                     </a-form-item>
-                    <div class="flex justify-end mt-10">
+                    <div class="flex justify-end mt-3">
                         <div>
-                            <a-button class="mx-5" @click="showConfigScreen">
-                                Cancel
-                            </a-button>
-                        </div>
-                        <div>
-                            <a-button
-                                class="px-6"
+                            <AtlanBtn
                                 type="primary"
-                                :loading="isLoading"
+                                :is-loading="isLoading"
+                                padding="compact"
+                                size="sm"
+                                class="px-5"
                                 @click="updateSSO"
                             >
-                                Update
-                            </a-button>
+                                <span v-if="isLoading" class="font-bold"
+                                    >Updating</span
+                                >
+                                <span v-else class="font-bold">Update</span>
+                            </AtlanBtn>
                         </div>
                     </div>
                 </a-form>
             </div>
-        </div>
-    </div>
-    <div v-else>
-        <div class="w-full p-4 text-center h-96">
-            <img
-                :src="emptySSOImage"
-                class="h-48 p-2 mx-auto"
-                alt="Empty Image"
-            />
-            <strong class="block py-8 text-lg"
-                >Oops! SSO provider doesn't exist.</strong
-            >
-            <router-link to="/admin/sso">
-                <a-button style="width: 150px" type="primary">
-                    Go Back
-                </a-button>
-            </router-link>
         </div>
     </div>
 </template>
@@ -209,6 +162,7 @@
     import ImportMetadataFromXML from '../common/importMetadataFromXML.vue'
     import ImportText from '../common/importText.vue'
     import { useTenantStore } from '~/services/keycloak/tenant/store'
+    import AtlanBtn from '@/UI/button.vue'
 
     import {
         topSAMLProviders,
@@ -222,8 +176,6 @@
 
     import { IdentityProvider } from '~/api/auth/identityProvider'
     import { Tenant } from '~/api/auth/tenant'
-    import useTenantData from '~/services2/service/composable/useTenantData'
-    import useTenant from '~/services2/service/composable/useTenant'
 
     interface FormState {
         alias: string
@@ -232,12 +184,15 @@
     }
 
     export default defineComponent({
-        components: { ImportMetadataFromXML, ImportText },
+        components: { ImportMetadataFromXML, ImportText, AtlanBtn },
         props: ['alias'],
         setup(props, context) {
-            const { identityProviders } = useTenantData()
+            console.log(context, 'context')
+            const tenantStore = useTenantStore()
             const router = useRouter()
-
+            const tenantData: any = computed(() => tenantStore.getTenant)
+            const identityProviders: Array<any> =
+                tenantData?.value?.identityProviders || []
             const ssoProvider: any = computed(() => {
                 const ssoProviders = identityProviders.filter((idp) => {
                     if (idp?.alias === props.alias) return idp
@@ -279,6 +234,7 @@
                 signingCertificate: string
                 singleSignOnServiceUrl: string
             }) => {
+                console.log('value recieved from xml=>', metadata)
                 ssoForm.signingCertificate = metadata?.signingCertificate
                 ssoForm.singleSignOnServiceUrl =
                     metadata?.singleSignOnServiceUrl
@@ -297,6 +253,7 @@
                                 ssoForm.singleSignOnServiceUrl,
                         },
                     }
+                    console.log(config)
                     await IdentityProvider.updateIDP(props.alias, config)
                     isLoading.value = false
                     await updateTenant()
@@ -340,7 +297,8 @@
             }
 
             const updateTenant = async () => {
-                useTenant()
+                const tenantResponse: any = await Tenant.Get()
+                tenantStore.setData(tenantResponse)
             }
 
             onMounted(() => {
@@ -383,5 +341,8 @@
     }
     .metadata-input .ant-input-disabled {
         background-color: white;
+    }
+    .provider-wrapper {
+        max-width: 38rem;
     }
 </style>

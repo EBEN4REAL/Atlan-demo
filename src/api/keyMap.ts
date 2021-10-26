@@ -210,9 +210,11 @@ export const KeyMaps = {
     workflow: {
         WORKFLOW: () => getAPIPath('/service', `/workflows`),
         CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        RUN_WORKFLOW: () => getAPIPath('/service', `/workflows/submit`),
         WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
-        ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
+        WORKFLOW_RUN: ({ labelSelector }: PathParams) =>
+            getAPIPath('/service', `/runs?labelSelector=${labelSelector}`),
         ARCHIVED_WORKFLOW_RUN: ({ filter }: PathParams) =>
             getAPIPath('/service', `/runs/archived?filter=${filter}`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
@@ -220,6 +222,6 @@ export const KeyMaps = {
             getAPIPath('/service', `/workflowtemplates?filter=${filter}`),
         WORKFLOW_BY_NAME: ({ filter }: PathParams) =>
             getAPIPath('/service', `/workflows?filter=${filter}`),
-        WORKFLOW_CONFIG_MAP: () => getAPIPath('/service', `/configmap`),
+        WORKFLOW_CONFIG_MAP: () => getAPIPath('/service', `/configmaps`),
     },
 }

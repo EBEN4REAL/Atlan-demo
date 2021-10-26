@@ -16,10 +16,13 @@
                     placeholder="Search"
                 >
                     <template #suffix>
-                        <AtlanIcon icon="Search" />    
+                        <AtlanIcon icon="Search" />
                     </template>
                 </a-input>
-                <a-button class="flex items-center w-8 h-8 p-2 mt-2" :class="$style.filterButton">
+                <a-button
+                    class="flex items-center w-8 h-8 p-2 mt-2"
+                    :class="$style.filterButton"
+                >
                     <AtlanIcon icon="Filter" />
                 </a-button>
             </div>
@@ -68,11 +71,11 @@
             </div>
             <div
                 v-if="!searchQuery?.length"
-                class="relative w-full h-full px-4 pt-0 overflow-y-auto"
+                class="relative w-full px-4 pt-0 overflow-y-auto"
                 :style="
                     fullSreenState
                         ? 'height: calc( 100vh - 140px )'
-                        : 'height: calc( 100vh - 40px )'
+                        : 'height: calc( 100vh - 120px )'
                 "
             >
                 <!--explorer pane start -->
@@ -116,11 +119,11 @@
             </div>
             <div
                 v-else
-                class="relative w-full h-full p-3 pt-0 pl-6 overflow-y-auto"
+                class="relative w-full p-3 pt-0 pl-6 overflow-y-auto"
                 :style="
                     fullSreenState
                         ? 'height: calc( 100vh- 140px )'
-                        : 'height: calc( 100vh- 40px )'
+                        : 'height: calc( 100vh- 120px )'
                 "
             >
                 <div v-if="searchLoading" class="pl-6">
@@ -151,7 +154,7 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
                     >
                         Sorry, we couldn’t find<br />
                         the query you were looking for
@@ -636,31 +639,28 @@
     .z-2 {
         z-index: 2;
     }
-
-  
 </style>
 
 <style lang="css" module>
     .inputSearch {
-         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
         background-color: #fff !important;
-        border: 1px solid #E9EBF1 !important;
-        color: #6F7590 !important;
+        border: 1px solid #e9ebf1 !important;
+        color: #6f7590 !important;
         border-radius: 8px !important;
     }
-        :global(.ant-input) {
-            color: #6F7590 !important;
-        }
-        input::placeholder{
-            color: #6F7590 !important;
-        }
+    :global(.ant-input) {
+        color: #6f7590 !important;
+    }
+    input::placeholder {
+        color: #6f7590 !important;
+    }
     .filterButton {
-        background: #FFFFFF;
-        border: 1px solid #E9EBF1;
+        background: #ffffff;
+        border: 1px solid #e9ebf1;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
     }
-
 </style>
 
 <route lang="yaml">

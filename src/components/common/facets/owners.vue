@@ -1,5 +1,5 @@
 <template>
-    <div class=" pb-6 mt-1">
+    <div class="pb-6 mt-1">
         <div class="flex items-center justify-between mb-3">
             <SearchAndFilter
                 v-model:value="queryText"
@@ -202,7 +202,8 @@
         props: {
             item: {
                 type: Object as PropType<Collapse>,
-                required: true,
+                required: false,
+                default: () => {},
             },
             data: {
                 type: Object,

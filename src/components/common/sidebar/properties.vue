@@ -23,6 +23,17 @@
             <p class="mb-0 text-gray-700">{{ selectedAsset?.guid }}</p>
         </div>
         <div>
+            <p class="mb-1 text-sm tracking-wide text-gray-500">
+                Qualified Name
+            </p>
+            <p class="mb-0 text-gray-700">
+                <Tooltip
+                    :tooltip-text="qualifiedName(selectedAsset)"
+                    :rows="2"
+                />
+            </p>
+        </div>
+        <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Last updated</p>
             <p class="mb-0 text-gray-700">
                 {{ updatedAt(selectedAsset) }},
@@ -82,9 +93,10 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import AtlanIcon from '@common/icon/atlanIcon.vue'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: { AtlanIcon },
+        components: { AtlanIcon, Tooltip },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -103,6 +115,7 @@
                 sourceCreatedAt,
                 sourceCreatedBy,
                 sourceUpdatedBy,
+                qualifiedName,
             } = useAssetInfo()
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
@@ -122,6 +135,7 @@
                 sourceCreatedAt,
                 sourceCreatedBy,
                 sourceUpdatedBy,
+                qualifiedName,
             }
         },
     })

@@ -16,4 +16,10 @@ export const heracles_keymap = {
         ACT_ON_REQUEST: ({ id }: PathParams) =>
             getAPIPath('auth', `/requests/${id}/action`),
     },
+    users: {
+        LIST_USERS_BULK: () => getAPIPath('/service', '/users/bulk'),
+    },
+    groups: {
+        LIST_GROUPS: () => getAPIPath('/service', '/groups'),
+    },
 }

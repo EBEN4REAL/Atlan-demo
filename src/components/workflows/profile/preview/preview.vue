@@ -6,7 +6,7 @@
                     ref="formRef"
                     :config="formConfig[selectedDag]"
                     :default-values="defaultValues"
-                    :globalValues="selectedWorkflow"
+                    :global-values="selectedWorkflow"
                     @change="handleChange"
                 />
             </div>
@@ -22,9 +22,9 @@
         </div>
         <div v-else class="flex flex-col items-center h-full">
             <EmptyState
-                :EmptyScreen="EmptyScreen"
-                desc="No form attached to this dag."
-                descClass="text-center w-56"
+                :empty-screen="EmptyScreen"
+                desc="No UI config found."
+                desc-class="w-56 text-center"
             />
         </div>
     </template>
@@ -80,12 +80,12 @@
         computed,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
-    import EmptyState from '~/components/common/empty/index.vue'
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
     import { message } from 'ant-design-vue'
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
+    import EmptyState from '~/components/common/empty/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
@@ -125,7 +125,7 @@
                 default: null,
             },
         },
-        emits: ['assetMutation', 'closeSidebar', 'change'],
+        emits: ['assetMutation', 'closeSidebar', 'change', 'updateSelected'],
         setup(props, { emit }) {
             const { selectedWorkflow } = toRefs(props)
 
@@ -173,13 +173,23 @@
                     })
                     mutate()
                     watch([workflow, error], () => {
-                        if (workflow.value && !error.value && !isLoading.value)
+                        if (
+                            workflow.value &&
+                            !error.value &&
+                            !isLoading.value
+                        ) {
                             message.success({
                                 content: `Saved!`,
                                 duration: 2,
                                 key: `${props.selectedDag}`,
                             })
-                        else if (error.value) {
+                            // update the selected workflow
+                            console.log({ wf: workflow.value })
+                            emit('updateSelected', {
+                                ...selectedWorkflow.value,
+                                workflowtemplate: workflow.value,
+                            })
+                        } else if (error.value) {
                             const errMsg = error.value?.response?.data?.message
                             message.error({
                                 content: `${errMsg || `Failed to save."`}`,
@@ -213,16 +223,19 @@
             const defaultValues = computed(() => {
                 const temp = {}
                 const valueArr =
-                    selectedWorkflow.value?.workflowtemplate?.spec?.arguments
-                        ?.parameters
+                    selectedWorkflow.value.workflowtemplate.spec.templates[0]
+                        .dag.tasks[0].arguments.parameters
                 if (valueArr?.length)
                     valueArr.forEach((v) => {
-                        const some = props.formConfig[props.selectedDag]?.some(
+                        const some = props.formConfig[props.selectedDag]?.find(
                             (c) => c.id === v.name
                         )
+
                         // eslint-disable-next-line no-prototype-builtins
                         if (some && v.hasOwnProperty('value') && v.value !== '')
-                            temp[v.name] = v.value
+                            temp[v.name] = some.stringifyValue
+                                ? JSON.parse(v.value)
+                                : v.value
                     })
                 return temp
             })

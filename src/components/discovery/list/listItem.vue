@@ -53,6 +53,10 @@
                         :to="
                             isColumnAsset(item)
                                 ? getColumnUrl(item)
+                                : isQueryAsset(item)
+                                ? getQueryUrl(item)
+                                : isQueryFolderAsset(item)
+                                ? null
                                 : `/assets/${item.guid}/overview`
                         "
                         class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
@@ -359,10 +363,16 @@
             }
 
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
+            const isQueryAsset = (asset) => assetType(asset) === 'Query'
+            const isQueryFolderAsset = (asset) =>
+                assetType(asset) === 'QueryFolder'
 
             const getColumnUrl = (asset) => {
                 const tableGuid = asset?.attributes?.table?.guid
                 return `/assets/${tableGuid}/overview?column=${asset.guid}`
+            }
+            const getQueryUrl = (asset) => {
+                return `/insights?id=${asset.guid}`
             }
 
             function getClassificationDisplayname(name: string) {
@@ -373,6 +383,9 @@
             return {
                 isColumnAsset,
                 getColumnUrl,
+                getQueryUrl,
+                isQueryAsset,
+                isQueryFolderAsset,
                 description,
                 logo,
                 dataTypeImage,

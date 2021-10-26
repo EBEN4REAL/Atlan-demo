@@ -375,11 +375,12 @@ export async function useAutoSuggestions(
         textTillChangedIndex + 1
     )
 
-    let tokens = editorTextTillCursorPos.split(/[ ,]+/gm)
+    let tokens = editorTextTillCursorPos.split(/[ ,\n;)(]+/gm)
+    console.log(tokens, 'tokk')
     /* Remove tokens which are special characters */
     tokens = tokens.filter((token) => {
         let t = true
-        t = !token.match(/[-[\]{}()*+?'."\\/^$|#\s\t]/g) && token !== ''
+        t = !token.match(/[-[\]{};/\n()*+?'."\\/^$|#\s\t]/g) && token !== ''
         return t
     })
     // tokens.push(' ')

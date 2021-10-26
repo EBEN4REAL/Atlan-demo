@@ -75,7 +75,8 @@ export default function useProject() {
         getData: (rows: any[], columns: any[], executionTime: number) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
-        onQueryIdGeneration?: Function
+        onQueryIdGeneration?: Function,
+        selectedText?: string
     ) => {
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
@@ -87,11 +88,18 @@ export default function useProject() {
             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                 undefined
         }
-
-        queryText = getParsedQuery(
-            activeInlineTab.value.playground.editor.variables,
-            activeInlineTab.value.playground.editor.text
-        )
+        /* Checking If any text is selected */
+        if (selectedText && selectedText !== '') {
+            queryText = getParsedQuery(
+                activeInlineTab.value.playground.editor.variables,
+                selectedText
+            )
+        } else {
+            queryText = getParsedQuery(
+                activeInlineTab.value.playground.editor.variables,
+                activeInlineTab.value.playground.editor.text
+            )
+        }
 
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))

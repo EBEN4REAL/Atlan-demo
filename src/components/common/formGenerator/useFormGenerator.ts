@@ -119,48 +119,6 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
 
   const setGlobal = (vO) => { testModal.value = { ...testModal.value, "$global": vO } }
 
-  const init = () => {
-    testModal.value = {}
-    processedSchema.value = []
-    setGlobal(gV)
-
-
-    formConfig.value.forEach((f) => {
-
-      if (!privateTypes.includes(f.type)) {
-        const o: ProcessedSchema = preProcessSchema(f)
-        processedSchema.value.push(o)
-        testModal.value[o.id] = o.value
-      } else if (f.type === 'group') {
-        const pf = { ...f, ...(f.children && { children: f.children.map((fs: Schema) => preProcessSchema(fs)) } || {}) }
-        processedSchema.value.push(pf)
-        if (f.children)
-          f.children.forEach(c => {
-            const t = preProcessSchema(c)
-            testModal.value[t.id] = t.value
-          })
-      } else {
-        expandOther(f).forEach(o => {
-          if (o.type === 'group') {
-            const po = { ...o, ...(o.children && { children: o.children.map(c => preProcessSchema(c)) } || {}) }
-            processedSchema.value.push(po)
-            if (po.children)
-              po.children.forEach(c => {
-                testModal.value[c.id] = c.value
-              })
-          } else {
-            const x = preProcessSchema(o)
-            processedSchema.value.push(x)
-            testModal.value[x.id] = x.value
-          }
-        })
-      }
-    })
-
-    testModal.value = { ...testModal.value, ...dV }
-    finalConfigObject(processedSchema.value)
-  }
-
   const generateTemplateValue = (s, id, isStringfied) => {
     if (!processedSchema.value.length) return s
     const finalString = getStringFromPath(testModal.value, s);
@@ -230,6 +188,49 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
     console.table({ config: temp })
     return temp
   }
+  const init = () => {
+    testModal.value = {}
+    processedSchema.value = []
+    setGlobal(gV)
+
+
+    formConfig.value.forEach((f) => {
+
+      if (!privateTypes.includes(f.type)) {
+        const o: ProcessedSchema = preProcessSchema(f)
+        processedSchema.value.push(o)
+        testModal.value[o.id] = o.value
+      } else if (f.type === 'group') {
+        const pf = { ...f, ...(f.children && { children: f.children.map((fs: Schema) => preProcessSchema(fs)) } || {}) }
+        processedSchema.value.push(pf)
+        if (f.children)
+          f.children.forEach(c => {
+            const t = preProcessSchema(c)
+            testModal.value[t.id] = t.value
+          })
+      } else {
+        expandOther(f).forEach(o => {
+          if (o.type === 'group') {
+            const po = { ...o, ...(o.children && { children: o.children.map(c => preProcessSchema(c)) } || {}) }
+            processedSchema.value.push(po)
+            if (po.children)
+              po.children.forEach(c => {
+                testModal.value[c.id] = c.value
+              })
+          } else {
+            const x = preProcessSchema(o)
+            processedSchema.value.push(x)
+            testModal.value[x.id] = x.value
+          }
+        })
+      }
+    })
+
+    testModal.value = { ...testModal.value, ...dV.value }
+    finalConfigObject(processedSchema.value)
+  }
+
+
 
 
   // rules
@@ -350,7 +351,7 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   }
 
   const handleInputChange = (v) => {
-    // temp fix
+    // temp fix for glossary 
     if (v)
       emit('change', v)
     handleConditional()

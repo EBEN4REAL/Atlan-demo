@@ -34,27 +34,6 @@ export function useAssetListing(
         }
     })
 
-    return {
-        data,
-        list,
-        isLoading,
-        replaceBody,
-        body,
-        mutateAssetInList,
-        searchScoreList: [],
-    }
-}
-
-export function useAssetAggregation(
-    typeName?: string,
-    immediate: boolean = true
-) {
-    const {
-        replaceBody,
-        data,
-        isLoading: isAggregateLoading,
-    } = useIndexSearch({}, '', immediate)
-
     const assetTypeMap = computed(() => {
         return data.value?.aggregations?.typename?.buckets.reduce(
             (acc, bct: { key: string; doc_count: number }) => {
@@ -83,6 +62,42 @@ export function useAssetAggregation(
             initialValue
         )
         return sum
+    })
+
+    return {
+        data,
+        list,
+        isLoading,
+        replaceBody,
+        assetTypeMap,
+        assetTypeList,
+        assetTypeSum,
+        body,
+        mutateAssetInList,
+        searchScoreList: [],
+    }
+}
+
+export function useAssetAggregation(
+    typeName?: string,
+    immediate: boolean = true
+) {
+    const {
+        replaceBody,
+        data,
+        isLoading: isAggregateLoading,
+    } = useIndexSearch({}, '', immediate)
+
+    const assetTypeMap = computed(() => {
+        return data.value?.aggregations?.typename?.buckets.reduce(
+            (acc, bct: { key: string; doc_count: number }) => {
+                let typeName =
+                    bct.key.charAt(0).toUpperCase() + bct.key.slice(1)
+                acc[typeName] = bct.doc_count
+                return acc
+            },
+            {}
+        )
     })
 
     function refreshAggregation(query: any) {

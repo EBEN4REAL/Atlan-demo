@@ -14,7 +14,6 @@
                 @refresh="handleFilterChange"
             ></AssetFilters>
         </div>
-
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
                 <div class="bg-white">
@@ -46,7 +45,7 @@
 
                     <AssetTabs
                         v-model="selectedTab"
-                        class="mt-1 mb-3"
+                        class="mt-2 mb-3"
                         :asset-type-list="assetTypeList"
                         :asset-type-map="assetTypeMap"
                         :total="totalSum"
@@ -66,7 +65,7 @@
                         >Searching...</span
                     >
                 </div> -->
-                <div
+                <!-- <div
                     v-if="list && list.length <= 0 && !isLoading"
                     class="flex-grow"
                 >
@@ -83,7 +82,7 @@
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     @loadMore="loadMore"
-                />
+                /> -->
             </div>
         </div>
     </div>
@@ -124,6 +123,7 @@
     import {
         generateAggregationDSL,
         generateAssetQueryDSL,
+        generateAssetPostQueryDSL,
     } from './useDiscoveryDSL'
 
     export default defineComponent({
@@ -211,15 +211,16 @@
             const {
                 list,
                 replaceBody,
+                assetTypeMap,
                 isLoading,
                 searchScoreList,
                 mutateAssetInList,
             } = useAssetListing('', false)
 
-            const { assetTypeMap, refreshAggregation } = useAssetAggregation(
-                '',
-                false
-            )
+            // const { assetTypeMap, refreshAggregation } = useAssetAggregation(
+            //     '',
+            //     false
+            // )
 
             const store = useBusinessMetadataStore()
             const BMListLoaded = computed(
@@ -287,6 +288,14 @@
                     dsl: {
                         size: limit.value,
                         from: offset.value,
+
+                        post_filter: generateAssetPostQueryDSL(
+                            facets.value,
+                            queryText.value,
+                            selectedTab.value,
+                            applicableTabs.value
+                        ).query,
+                        ...generateAggregationDSL(),
                         ...generateAssetQueryDSL(
                             facets.value,
                             queryText.value,
@@ -329,14 +338,13 @@
                     // delete initialBody.sortOrder
                 }
                 replaceBody(initialBody)
-                if (isAggregate.value)
-                    refreshAggregation({
-                        dsl: generateAggregationDSL(
-                            facets.value,
-                            queryText.value,
-                            applicableTabs.value
-                        ),
-                    })
+                // if (isAggregate.value)
+                //     refreshAggregation({
+                //         dsl: generateAggregationDSL(
+                //             facets.value,
+                //             queryText.value
+                //         ),
+                //     })
             }
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
@@ -400,6 +408,9 @@
                 facets.value = filterMapData
                 offset.value = 0
                 isAggregate.value = true
+
+                console.log(facets.value)
+
                 updateBody()
                 setRouterOptions()
             }

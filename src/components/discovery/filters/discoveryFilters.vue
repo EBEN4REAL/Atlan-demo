@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-between p-4 text-sm bg-gray-100 border-b border-gray-300 "
+        class="flex items-center justify-between px-4 py-3 text-sm bg-gray-100"
         v-if="totalAppliedFiltersCount"
     >
         <div class="font-medium text-gray-500">
@@ -66,14 +66,14 @@
             </div>
         </div>
     </div>
-    <div v-else class="flex items-center px-4 pt-4 pb-2 text-sm bg-white">
-        <RaisedTab
+    <div v-else class="flex items-center px-4 py-2 text-sm bg-white">
+        <RaisedTabSmall
             v-model:active="activeTab"
             class="mr-auto"
             :data="tabConfig"
         />
     </div>
-    <div v-if="activeTab === 'all'" class="h-full overflow-y-auto bg-gray-100">
+    <div v-if="activeTab === 'all'" class="h-full overflow-y-auto">
         <Connector
             class="px-4 py-3"
             :data="dataMap.connector"
@@ -175,7 +175,7 @@
         Ref,
         watch,
     } from 'vue'
-    import RaisedTab from '@/UI/raisedTab.vue'
+    import RaisedTabSmall from '@/UI/raisedTabSmall.vue'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
     import { List } from './filters'
@@ -186,7 +186,7 @@
     export default defineComponent({
         name: 'DiscoveryFacets',
         components: {
-            RaisedTab,
+            RaisedTabSmall,
             Status: defineAsyncComponent(
                 () => import('@common/facets/status.vue')
             ),
@@ -316,13 +316,13 @@
             )
 
             const refresh = () => {
+                console.log(dataMap.value)
                 emit('refresh', dataMap.value)
             }
             const handleChange = () => {
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 refresh()
-                // updateChangesInStore(value);
             }
 
             const handleSavedFilterChange = (payload) => {

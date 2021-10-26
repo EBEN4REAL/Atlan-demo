@@ -44,8 +44,7 @@
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    // import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
-    import { decodeQuery } from '~/utils/helper/routerHelper'
+
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
@@ -65,7 +64,6 @@
             BulkNotification,
         },
         setup() {
-            
             useHead({
                 title: 'Assets',
             })
@@ -91,13 +89,15 @@
                 isItem.value ? 'profile' : 'discovery'
             )
             watch(isItem, (newData) => {
-              if(!newData){
-                nextTick(() => {
-                  assetDiscovery.value.mutateAssetInList(selectedAsset.value)
-                })
-                // setTimeout(() => {
-                // }, 300);
-              }
+                if (!newData) {
+                    nextTick(() => {
+                        assetDiscovery.value.mutateAssetInList(
+                            selectedAsset.value
+                        )
+                    })
+                    // setTimeout(() => {
+                    // }, 300);
+                }
             })
             // * Get all available BMs and save on store
             const { fetchBMonStore } = useBusinessMetadata()

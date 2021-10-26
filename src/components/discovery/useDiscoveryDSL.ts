@@ -130,6 +130,23 @@ export function generateAssetQueryDSL(
 
     // Filter by all applicable types - based on selected category
     // Only if the current tab is not catalog (All)
+    // if (assetType !== 'Catalog')
+    //     dsl.filter('term', '__typeName.keyword', assetType)
+    // else dsl.filter('terms', '__typeName.keyword', applicableTypes)
+
+    return dsl.build()
+}
+
+export function generateAssetPostQueryDSL(
+    facets: Record<string, any>,
+    queryText: string,
+    assetType: string,
+    applicableTypes: string[]
+) {
+    const dsl = bodybuilder()
+
+    // Filter by all applicable types - based on selected category
+    // Only if the current tab is not catalog (All)
     if (assetType !== 'Catalog')
         dsl.filter('term', '__typeName.keyword', assetType)
     else dsl.filter('terms', '__typeName.keyword', applicableTypes)
@@ -137,20 +154,9 @@ export function generateAssetQueryDSL(
     return dsl.build()
 }
 
-export function generateAggregationDSL(
-    facets: Record<string, any>,
-    queryText: string,
-    applicableTypes: string[]
-) {
-    const dsl = useDiscoveryDSL(facets)
-
-    dsl.filter('terms', '__typeName.keyword', applicableTypes)
-
-    if (queryText) {
-        dsl.orQuery('match', 'name', queryText)
-        dsl.orQuery('match', '__typeName', queryText)
-    }
-    dsl.aggregation('terms', '__typeName.keyword', { size: 20 }, 'typename')
-    dsl.size(0)
+export function generateAggregationDSL() {
+    const dsl = bodybuilder()
+    dsl.aggregation('terms', '__typeName.keyword', { size: 100 }, 'typename')
+    // dsl.aggregation('terms', 'certificateStatus', { size: 100 }, 'certificate')
     return dsl.build()
 }

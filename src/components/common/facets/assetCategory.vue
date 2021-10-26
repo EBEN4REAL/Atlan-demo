@@ -2,7 +2,7 @@
     <a-dropdown :trigger="['click']" v-model:visible="dropdownVisible">
         <a-button
             @click.prevent
-            class="flex items-center justify-between w-3/12 h-full p-3 bg-gray-100 border-none  category-selector"
+            class="flex items-center justify-between h-full p-3 border-0 border-r border-gray-200 rounded-none  category-selector"
             ><span class="text-xs text-gray-700 capitalize truncate">{{
                 applied?.length > 0 ? getFiltersAppliedString : 'All'
             }}</span>

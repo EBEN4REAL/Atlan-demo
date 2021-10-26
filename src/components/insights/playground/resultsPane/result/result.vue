@@ -79,6 +79,46 @@
                     LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
                 "
             />
+
+            <div
+                class="flex justify-center"
+                v-if="isQueryRunning === 'loading' && activeInlineTab.playground
+                .resultsPane.result
+                .runQueryId"
+            >
+                <AtlanBtn
+                    class="flex items-center justify-between h-6 px-4 py-1 border button-shadow"
+                    size="lg"
+                    color="secondary"
+                    padding="compact"
+                    :disabled="
+                        activeInlineTab.playground.resultsPane
+                            .result.buttonDisable
+                    "
+                    @click="abortQuery"
+                >
+                    <span
+                        v-if="
+                            activeInlineTab.playground
+                                .resultsPane.result
+                                .runQueryId &&
+                            !activeInlineTab.playground
+                                .resultsPane.result
+                                .buttonDisable
+                        "
+                        class="text-gray-700"
+                    >Abort</span>
+                    <span
+                        v-else="
+                                activeInlineTab.playground
+                                    .resultsPane.result
+                                    .buttonDisable
+                            "
+                        class="text-gray-700"
+                    >Aborting</span>
+                </AtlanBtn>
+            </div>
+
             <!-- Loading on running a query -->
 
             <!-- Output pane footer -->
@@ -108,6 +148,8 @@ import Loading from './loading.vue'
 import ResultPaneFooter from './resultPaneFooter.vue'
 import LineError from './lineError.vue'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+import HEKA_SERVICE_API from '~/services/heka/index'
+import AtlanBtn from '~/components/UI/button.vue'
 
 export default defineComponent({
     components: {
@@ -117,6 +159,7 @@ export default defineComponent({
         Tooltip,
         Loading,
         QueryError,
+        AtlanBtn
     },
     props: {
         dataList: {
@@ -173,6 +216,54 @@ export default defineComponent({
         //     console.log('table data: ', activeInlineTab)
         // }
 
+        function abortQuery() {
+            const queryId =
+                activeInlineTab.value.playground.resultsPane.result
+                    .runQueryId
+            const currState = !queryId ? 'run' : 'abort'
+            if (currState === 'abort') {
+
+                activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                    true
+                const body = {
+                    queryId:
+                        activeInlineTab.value.playground.resultsPane.result
+                            .runQueryId,
+                    dataSourceName: getConnectionQualifiedName(
+                        activeInlineTab.value.explorer.schema.connectors
+                            .attributeValue
+                    ),
+                }
+                /* Change loading state */
+                HEKA_SERVICE_API.Insights.AbortQuery(body).then(() => {
+                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                        ''
+                    if (
+                        activeInlineTab.value.playground.resultsPane.result
+                            .eventSourceInstance?.close
+                    ) {
+                        activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
+                        activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+                            undefined
+
+                        activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                            false
+                        activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                            undefined
+                        /* For syncing with local storage */
+                        const activeInlineTabCopy: activeInlineTabInterface =
+                            Object.assign({}, activeInlineTab.value)
+                        modifyActiveInlineTab(
+                            activeInlineTabCopy,
+                            inlineTabs,
+                            activeInlineTabCopy.isSaved
+                        )
+                        console.log('connection closed succesfully')
+                    }
+                })
+            }
+        }
+
         return {
             errorDecorations,
             LINE_ERROR_NAMES,
@@ -183,12 +274,18 @@ export default defineComponent({
             outputPaneSize,
             queryExecutionTime,
             activeInlineTab,
+
+            abortQuery
             // printData
         }
     },
 })
 </script>
+
 <style lang="less" scoped>
+.button-shadow {
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
+}
 .placeholder {
     background-color: #f4f4f4;
 }

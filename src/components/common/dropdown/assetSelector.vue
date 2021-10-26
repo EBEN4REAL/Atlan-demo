@@ -12,40 +12,28 @@
         filter-option
         allow-clear
     >
-        <!-- <template #dropdownRender="{ menuNode: menu }">
-            <v-nodes :vnodes="menu" />
-
-            <a-divider style="margin: 4px 0" />
-            <div class="px-3">
-                {{ list.length }} of {{ totalCount }} &nbsp;{{ typeName }}
-            </div>
-        </template>
-        <template #suffixIcon>
-            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-        </template>-->
         <template #title>
             <div class="flex items-center">
                 <img :src="typeName" class="w-auto h-3 mr-2" />
             </div>
         </template>
-        <!-- <template #option="item">
+
+        <template #option="item">
             <div class="flex">
-                <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-0.5 mr-1" />
+                <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-1 mr-1" />
                 <p>{{ item.label }}</p>
             </div>
-        </template> -->
+        </template>
 
         <!-- <template #menuItemSelectedIcon>
             <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-0.5" />
-        </template> -->
+        </template>-->
 
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
 
             <a-divider style="margin: 4px 0" />
-            <div class="px-3">
-                {{ list.length }} of {{ totalCount }} &nbsp;{{ typeName }}
-            </div>
+            <div class="px-3">{{ list.length }} of {{ totalCount }} &nbsp;{{ typeName }}</div>
         </template>
         <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
@@ -54,96 +42,96 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, toRefs, computed } from 'vue'
-    import { useAssetListing } from '@/discovery/useAssetListing'
+import { defineComponent, watch, toRefs, computed } from 'vue'
+import { useAssetListing } from '@/discovery/useAssetListing'
 
-    export default defineComponent({
-        name: 'AssetSelector',
-        components: {
-            VNodes: (_, { attrs }) => attrs.vnodes,
+export default defineComponent({
+    name: 'AssetSelector',
+    components: {
+        VNodes: (_, { attrs }) => attrs.vnodes,
+    },
+    props: {
+        modelValue: {
+            type: String,
+            required: false,
         },
-        props: {
-            modelValue: {
-                type: String,
-                required: false,
-            },
-            filters: {
-                type: Object,
-                required: false,
-            },
-            placeholder: {
-                type: String,
-                required: true,
-            },
-            typeName: {
-                type: String,
-                required: false,
-            },
-            disabled: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
+        filters: {
+            type: Object,
+            required: false,
         },
-        emits: ['update:modelValue', 'change'],
-        setup(props, { emit }) {
-            const { disabled, filters, typeName } = toRefs(props)
-
-            const initialBody = {
-                dsl: filters.value,
-                attributes: ['name', 'displayName'],
-            }
-
-            const { list, replaceBody, data, isLoading } = useAssetListing(
-                '',
-                false
-            )
-
-            const totalCount = computed(() => data.value?.approximateCount || 0)
-
-            watch(
-                [disabled, filters],
-                () => {
-                    if (!disabled.value) {
-                        initialBody.dsl = filters.value
-                        replaceBody(initialBody)
-                    }
-                },
-                { immediate: true }
-            )
-
-            const handleChange = (checkedValues: string) => {
-                emit('update:modelValue', checkedValues)
-                emit('change', checkedValues)
-            }
-
-            const dropdownOption = computed(() =>
-                list.value.map((ls) => ({
-                    label: ls.attributes?.displayName || ls.attributes?.name,
-                    value: ls.attributes.qualifiedName,
-                }))
-            )
-
-            return {
-                typeName,
-                list,
-                handleChange,
-                totalCount,
-                data,
-                isLoading,
-                dropdownOption,
-            }
+        placeholder: {
+            type: String,
+            required: true,
         },
-    })
+        typeName: {
+            type: String,
+            required: false,
+        },
+        disabled: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+    },
+    emits: ['update:modelValue', 'change'],
+    setup(props, { emit }) {
+        const { disabled, filters, typeName } = toRefs(props)
+
+        const initialBody = {
+            dsl: filters.value,
+            attributes: ['name', 'displayName'],
+        }
+
+        const { list, replaceBody, data, isLoading } = useAssetListing(
+            '',
+            false
+        )
+
+        const totalCount = computed(() => data.value?.approximateCount || 0)
+
+        watch(
+            [disabled, filters],
+            () => {
+                if (!disabled.value) {
+                    initialBody.dsl = filters.value
+                    replaceBody(initialBody)
+                }
+            },
+            { immediate: true }
+        )
+
+        const handleChange = (checkedValues: string) => {
+            emit('update:modelValue', checkedValues)
+            emit('change', checkedValues)
+        }
+
+        const dropdownOption = computed(() =>
+            list.value.map((ls) => ({
+                label: ls.attributes?.displayName || ls.attributes?.name,
+                value: ls.attributes.qualifiedName,
+            }))
+        )
+
+        return {
+            typeName,
+            list,
+            handleChange,
+            totalCount,
+            data,
+            isLoading,
+            dropdownOption,
+        }
+    },
+})
 </script>
 <style lang="less" module>
-    .connector {
-        :global(.ant-select-selector) {
-            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
-            background-color: #fbfbfb !important;
-            border: 1px solid #e9ebf1 !important;
-            color: #6f7590 !important;
-            border-radius: 8px !important;
-        }
+.connector {
+    :global(.ant-select-selector) {
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
+        background-color: #fbfbfb !important;
+        border: 1px solid #e9ebf1 !important;
+        color: #6f7590 !important;
+        border-radius: 8px !important;
     }
+}
 </style>

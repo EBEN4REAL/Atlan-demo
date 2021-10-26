@@ -69,7 +69,7 @@
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
-                :max-size="25"
+                :max-size="activeInlineTab?.assetSidebar?.isVisible ? 25 : 0"
                 :min-size="0"
                 :size="
                     activeInlineTab?.assetSidebar?.isVisible
@@ -317,14 +317,14 @@
                 content: '';
                 position: absolute;
                 top: 50%;
-                left: 50%;
+                left: -10%;
                 @apply bg-transparent;
                 -webkit-transition: background-color 0.3s;
                 transition: background-color 0.3s;
                 transform: translateY(-50%);
-                width: 10px;
+                width: 15px;
                 height: 100%;
-                margin-left: 0px;
+                margin-left: -8px;
                 @apply z-50 !important;
             }
         }

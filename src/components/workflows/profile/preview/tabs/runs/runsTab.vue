@@ -6,7 +6,7 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="runList.records.length">
+    <template v-else-if="list.length">
         <div class="flex px-4 mt-4 mb-4">
             <a-input-search
                 v-model:value="searchText"
@@ -20,9 +20,7 @@
             </a-button>
         </div>
         <RunCard
-            v-for="(r, x) in searchText
-                ? filterList(searchText)
-                : runList.records"
+            v-for="(r, x) in searchText ? filterList(searchText) : list"
             :key="x"
             :r="r"
             :curr-run-name="currRunName"
@@ -38,30 +36,32 @@
                 ? 'There are no runs for this workflow. '
                 : 'Sorry, we couldn’t find the workflow you were looking for.'
         "
-        :EmptyScreen="EmptyScreen"
-        descClass="text-center w-56"
-        buttonIcon="ArrowRight"
-        :buttonText="error ? '' : 'Run Workflow'"
+        :empty-screen="EmptyScreen"
+        desc-class="w-56 text-center"
+        button-icon="ArrowRight"
+        :button-text="error ? '' : 'Run Workflow'"
     />
 </template>
 
 <script lang="ts">
-    import {
-        watch,
-        defineComponent,
-        PropType,
-        toRefs,
-        ref,
-        computed,
-    } from 'vue'
-    import { useRoute } from 'vue-router'
+    // Vue
+    import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
 
+    // Components
     import EmptyView from '@common/empty/index.vue'
+    import RunCard from '@/workflows/shared/runCard.vue'
+
+    // Assets
     import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
+    // Types
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
-    import RunCard from '@/workflows/shared/runCard.vue'
+
+    // Composables
+    import {
+        getRunList,
+        getArchivedRunList,
+    } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: { RunCard, EmptyView },
@@ -76,56 +76,76 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
-            const route = useRoute()
-            const { selectedWorkflow: item } = toRefs(props)
-
+            const { selectedWorkflow } = toRefs(props)
+            const isLoadingRunGraph = ref(false)
+            const currRunName = ref('')
             const searchText = ref('')
-            const id = computed(() => route?.params?.id || '')
+            const list = ref([])
+
+            // getRunList
+            const labelSelector = `workflows.argoproj.io/workflow-template=${selectedWorkflow.value.name},workflows.argoproj.io/phase=Running`
+            const { liveList } = getRunList(labelSelector, true)
+
+            // getArchivedRunList
             const filter = {
                 labels: {
                     $elemMatch: {
-                        'workflows.argoproj.io/workflow-template': `${id.value}`,
+                        'workflows.argoproj.io/workflow-template': `${selectedWorkflow.value.name}`,
                     },
                 },
             }
-            const { runList, error, isLoading, reFetch, filterList } =
-                useArchivedRunList(JSON.stringify(filter), true)
+            const { archivedList, error, isLoading, reFetch, filterList } =
+                getArchivedRunList(JSON.stringify(filter), true)
 
-            const isLoadingRunGraph = ref(false)
-            const currRunName = ref('')
-
-            const loadRunGraph = (id) => {
-                if (currRunName.value === id) return
-                currRunName.value = id
+            // loadRunGraph
+            const loadRunGraph = () => {
+                if (currRunName.value === selectedWorkflow.value.name) return
+                currRunName.value = selectedWorkflow.value.name
                 isLoadingRunGraph.value = true
-                emit('change', id)
+                emit('change', selectedWorkflow.value.name)
                 setTimeout(() => {
                     isLoadingRunGraph.value = false
                 }, 2500)
             }
 
-            watch(runList, (newVal) => {
-                if (newVal) currRunName.value = newVal.records[0].name
+            // watcher
+            watch([liveList, archivedList], ([newX, newY]) => {
+                if (newX && newY) {
+                    let liveRunItems = []
+                    let archivedRunItems = []
+                    if (newX?.items?.length)
+                        liveRunItems = newX.items.map((x) => {
+                            const { status, metadata, spec } = x
+                            const { name, uid } = metadata
+                            const {
+                                startedAt: started_at,
+                                finishedAt: finished_at,
+                                phase,
+                            } = status
+                            const obj = {
+                                name,
+                                uid,
+                                started_at,
+                                finished_at,
+                                phase,
+                            }
+                            obj.workflow = { status, metadata, spec }
+                            return obj
+                        })
+
+                    if (newY?.records?.length) archivedRunItems = newY.records
+
+                    list.value = [...liveRunItems, ...archivedRunItems]
+                    currRunName.value = list.value[0]?.name
+                }
             })
 
-            // watch(
-            //     item,
-            //     (n, o) => {
-            //         console.log(n, o)
-            //         if (!o) reFetch(n.name)
-            //         else if (n.name !== o.name) reFetch(n.name)
-            //     },
-            //     {
-            //         immediate: true,
-            //         deep: true,
-            //     }
-            // )
-
             return {
-                filterList,
-                item,
                 searchText,
-                runList,
+                list,
+                filterList,
+                liveList,
+                archivedList,
                 error,
                 isLoading,
                 emit,

@@ -151,6 +151,7 @@
                                           ?.uniqueAttributes?.qualifiedName
                             "
                             :categoryId="categoryId"
+                            :categoryQualifiedName="categoryQf"
                         >
                             <template #header>
                                 <ModalHeader
@@ -184,6 +185,7 @@
                                     ?.qualifiedName
                             "
                             :categoryId="categoryId"
+                            :categoryQualifiedName="categoryQf"
                         >
                             <template #header>
                                 <ModalHeader
@@ -392,6 +394,7 @@
         inject,
         toRefs,
         watch,
+        Ref,
         computed,
     } from 'vue'
     import { useRouter } from 'vue-router'
@@ -470,6 +473,7 @@
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
+            const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
 
             const handleFetchListInj: Function | undefined = inject(
                 'handleFetchList',
@@ -486,6 +490,7 @@
             const refetchGlossaryTree = inject<
                 (
                     guid: string | 'root',
+                    categoryQualifiedName?: string,
                     refreshEntityType?: 'term' | 'category'
                 ) => void
             >('refetchGlossaryTree')
@@ -499,6 +504,11 @@
                     return props.entity?.guid
                 return ''
             })
+            const categoryQf = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossaryCategory')
+                    return props.entity?.attributes?.qualifiedName
+                return ''
+            })
 
             const {
                 deleteGlossary,
@@ -508,7 +518,6 @@
                 isLoading,
             } = useDeleteGlossary()
 
-            const { createTerm, createCategory } = useCreateGlossary()
             const serviceMap = {
                 AtlasGlossaryTerm: deleteTerm,
                 AtlasGlossaryCategory: deleteCategory,
@@ -524,39 +533,44 @@
             const handleOk = () => {
                 const { data } = serviceMap[props.entity?.typeName](
                     props.entity?.guid,
-                    !props.showLinks,
+                    !props.showLinks || currentProfile?.value?.guid === props.entity?.guid,
                     props.entity?.attributes?.anchor?.guid
                 )
                 if (handleFetchListInj) handleFetchListInj(props.entity)
                 watch(data, () => {
-                    if (refreshEntity) refreshEntity()
-                    if (refetchGlossaryTree) {
-                        if (
-                            props.entity?.typeName === 'AtlasGlossaryCategory'
-                        ) {
-                            refetchGlossaryTree(
-                                props.entity?.attributes?.parentCategory
-                                    ?.guid ?? 'root',
-                                'category'
-                            )
-                        } else if (
-                            props.entity?.typeName === 'AtlasGlossaryTerm'
-                        ) {
-                            if (props.entity?.attributes?.categories?.length) {
-                                props.entity?.attributes?.categories?.forEach(
-                                    (category) => {
-                                        refetchGlossaryTree(
-                                            category.guid,
-                                            'term'
-                                        )
-                                    }
+                    if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
+                    setTimeout(() => {
+
+                        if (refetchGlossaryTree) {
+                            if (
+                                props.entity?.typeName === 'AtlasGlossaryCategory'
+                            ) {
+                                refetchGlossaryTree(
+                                    props.entity?.attributes?.parentCategory
+                                        ?.guid ?? 'root',
+                                    props.entity?.attributes?.qualifiedName,
+                                    'category'
                                 )
-                            } else {
-                                refetchGlossaryTree('root', 'term')
+                            } else if (
+                                props.entity?.typeName === 'AtlasGlossaryTerm'
+                            ) {
+                                if (props.entity?.attributes?.categories?.length) {
+                                    props.entity?.attributes?.categories?.forEach(
+                                        (category) => {
+                                            refetchGlossaryTree(
+                                                category.guid,
+                                                category?.uniqueAttributes?.qualifiedName,
+                                                'term'
+                                            )
+                                        }
+                                    )
+                                } else {
+                                    refetchGlossaryTree('root', '','term')
+                                }
                             }
                         }
-                    }
-                    if (refetchGlossaryList) refetchGlossaryList()
+                    }, 500)
+                    if(refetchGlossaryList && props.entity.typeName === 'AtlasGlossary') refetchGlossaryList()
                 })
 
                 isModalVisible.value = false
@@ -577,26 +591,7 @@
                     content: 'Copied!',
                 })
             }
-            // create new term
-            const createNewTerm = () => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    createTerm(props.entity?.guid ?? '')
-                else
-                    createTerm(
-                        props.entity?.attributes?.anchor?.guid ?? '',
-                        props.entity.guid
-                    )
-            }
-            // create new category
-            const createNewCategory = () => {
-                if (props.entity?.typeName === 'AtlasGlossary')
-                    createCategory(props.entity?.guid ?? '')
-                else
-                    createCategory(
-                        props.entity?.attributes?.anchor?.guid ?? '',
-                        props.entity.guid
-                    )
-            }
+
             const redirectToProfile = redirect(router)
 
             // update tree on archive or create new entity
@@ -659,12 +654,11 @@
                 handleOk,
                 handleCancel,
                 showModal,
-                createNewTerm,
-                createNewCategory,
                 closeMenu,
                 redirectToProfile,
                 glossaryId,
                 categoryId,
+                categoryQf,
                 showCategories,
             }
         },

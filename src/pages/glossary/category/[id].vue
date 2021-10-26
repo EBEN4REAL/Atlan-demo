@@ -3,7 +3,7 @@
         <NoAccessPage />
     </div>
     <div v-else>
-        <div v-if="isLoading && category?.guid !== id">
+        <div v-if="!category || (isLoading && category?.guid !== id)">
             <LoadingView />
         </div>
         <div v-else-if="category" class="flex flex-row h-full" :class="$style.tabClasses">
@@ -124,7 +124,6 @@
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
-    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
     // import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
@@ -244,9 +243,6 @@
                 bulkSelectedAssets.value = [...list.value]
                 console.log(bulkSelectedAssets.value)
             }
-
-            // Providers
-            provide('refreshEntity', refetch)
 
             return {
                 category,

@@ -180,6 +180,7 @@ export const KeyMaps = {
             getAPIPath('auth', `/credentials/${id}/test`),
         UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) =>
             getAPIPath('auth', `/credentials/${id}`),
+        INDEX_SEARCH: () => getAPIPath('meta', '/search/indexsearch'),
     },
     connection: {
         TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),

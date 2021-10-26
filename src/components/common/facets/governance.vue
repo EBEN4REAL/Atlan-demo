@@ -195,12 +195,11 @@
                 selectNode,
                 reInitTree,
                 collapseAll,
-            } = useTree(
+            } = useTree({
                 emit,
-                true,
-                computed(() => false),
-                true
-            )
+                filterMode: true,
+                parentGlossaryGuid: ref()
+            })
             const {
                 entities: searchResults,
                 terms: searchTerms,

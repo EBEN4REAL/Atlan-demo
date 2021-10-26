@@ -28,7 +28,7 @@
             </p>
             <p class="mb-0 text-gray-700">
                 <Tooltip
-                    :tooltip-text="qualifiedName(selectedAsset)"
+                    :tooltip-text="selectedAsset.attributes?.qualifiedName"
                     :rows="2"
                 />
             </p>

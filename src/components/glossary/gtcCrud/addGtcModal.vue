@@ -192,6 +192,11 @@
                 required: false,
                 default: '',
             },
+            categoryQualifiedName: {
+                type: String,
+                required: false,
+                default: '',
+            },
             mode: {
                 type: String,
                 required: false,
@@ -228,6 +233,8 @@
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
             const refreshEntity = inject<() => void>('refreshEntity')
+            const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
+
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
             const reorderTreeNodes =
@@ -319,7 +326,7 @@
                             true
                         )
                         watch(updateData, () => {
-                            if (refreshEntity) refreshEntity()
+                            if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
                             if (updateTreeNode) {
                                 updateTreeNode({
                                     guid: props.entity?.guid,
@@ -372,7 +379,7 @@
                             }
                         })
                     } else {
-                        if (refreshEntity) refreshEntity()
+                        if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
                         const { data, error, isLoading } =
                             GlossaryApi.UpdateGlossaryTerm(
                                 props.entity.guid ?? '',
@@ -397,7 +404,7 @@
                             )
                         watch(data, (newData) => {
                             if (newData?.guid) {
-                                if (refreshEntity) refreshEntity()
+                                if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
                                 if (reorderTreeNodes) {
                                     addedCategories.value.forEach(
                                         (category: any) => {
@@ -427,8 +434,9 @@
                 } else {
                     if (props.entityType === 'term')
                         createTerm(
-                            props.glossaryId,
+                            props.glossaryId ?? props.entity?.attributes?.anchor?.guid,
                             props.categoryId,
+                            props.categoryQualifiedName ?? props.entity?.attributes?.qualifiedName,
                             `${!title.value ? 'Untitled term' : title.value}`,
                             description.value,
                             currentStatus.value,
@@ -438,8 +446,9 @@
                         )
                     else if (props.entityType === 'category')
                         createCategory(
-                            props.glossaryId,
-                            props.categoryId,
+                            props.glossaryId ?? props.entity?.attributes?.anchor?.guid,
+                            props.categoryId ?? props.entity?.attributes?.qualifiedName,
+                            props.categoryQualifiedName,
                             `${
                                 !title.value ? 'Untitled category' : title.value
                             }`,

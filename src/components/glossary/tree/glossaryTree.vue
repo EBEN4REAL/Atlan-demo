@@ -190,11 +190,11 @@
                         </div>
 
                         <div
-                            class="flex content-center  my-autoc tree-glossary-actions parent-group-hover"
+                            class="flex content-center  my-auto tree-glossary-actioans parenat-group-hover"
                         >
                             <div
                                 v-if="expandedKeys.length"
-                                class="flex bg-opacity-0 cursor-pointer  w-7 h-7 py-auto"
+                                class="flex bg-opacity-0 cursor-pointer  w-6 h-6 py-auto"
                                 @click="collapseAll"
                             >
                                 <AtlanIcon
@@ -203,18 +203,18 @@
                                 />
                             </div>
                             <div
-                                class="flex flex-col justify-center p-2 bg-opacity-0 "
+                                class="flex flex-col justify-center bg-opacity-0 "
                             >
                                 <AddCta
-                                    class="w-7 h-7 ml-0.5"
+                                    class="w-6 h-6 ml-0.5"
                                     :entity="parentGlossary"
                                 />                   
                             </div>
                             <div
-                                class="flex flex-col justify-center mt-1 bg-opacity-0 "
+                                class="flex flex-col justify-center bg-opacity-0 "
                             >
                                 <ThreeDotMenu
-                                    class="w-7 h-7 ml-0.5"
+                                    class="w-6 h-6 ml-0.5"
                                     :entity="parentGlossary"
                                     :showLinks="false"
                                     :treeMode="true"
@@ -320,7 +320,7 @@
                                                         ...entity,
                                                         anchor: {
                                                             guid: entity.anchor
-                                                                .glossaryGuid,
+                                                                .guid,
                                                             uniqueAttributes: {
                                                                 qualifiedName:
                                                                     parentGlossary
@@ -336,12 +336,12 @@
                                                         parentCategory: {
                                                             guid: entity
                                                                 .parentCategory
-                                                                ?.categoryGuid,
+                                                                ?.guid,
                                                         },
                                                         categories:
                                                             entity.categories?.map(
                                                                 (category) => ({
-                                                                    guid: category?.categoryGuid,
+                                                                    guid: category?.guid,
                                                                 })
                                                             ),
                                                     },
@@ -612,9 +612,6 @@
 
             const refetchGlossaryList = inject('refetchGlossaryList')
 
-            const { createTerm, createCategory, createGlossary } =
-                useCreateGlossary()
-
             const router = useRouter()
 
             const glossaryContextOpen = ref(router.currentRoute.value.query.cta === 'glossaryContext')
@@ -640,13 +637,6 @@
                 else router.push(`/glossary/${type}/${guid}`)
             }
             const backToHome = () => router.push('/glossary')
-
-            const createNewTerm = () => {
-                createTerm(props.parentGlossary?.guid ?? '')
-            }
-            const createNewCategory = () => {
-                createCategory(props.parentGlossary?.guid ?? '')
-            }
 
             const onSearch = useDebounceFn(() => {
                 if (searchQuery.value?.length) {
@@ -676,11 +666,6 @@
             return {
                 redirectToProfile,
                 backToHome,
-                createNewCategory,
-                createNewTerm,
-                createTerm,
-                createGlossary,
-                createCategory,
                 StatusList,
                 getEntityStatusIcon,
                 glossaryContextDropdown,

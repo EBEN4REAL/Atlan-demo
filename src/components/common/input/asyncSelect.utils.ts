@@ -12,7 +12,7 @@ export const getStringFromPath = (data: object | Array<any>, path: string): any 
     const r = /\{\{(\.[\w\W]*?)\}\}/g
     // ? Wrapping old string version eg ".parent.child[0]" with {{ }} for bakward compatibility
     const varArr = path.match(r);
-    let label: unknown = undefined;
+    let label: unknown;
     let missingValues = false;
     if (varArr?.length) {
         label = path

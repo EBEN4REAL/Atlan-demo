@@ -116,6 +116,7 @@ export default function useAsyncSelector(
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
+            console.log("getStringFromPath(valueObject.value, parsedUrl)", getStringFromPath(valueObject.value, parsedUrl))
             const response = await useAPIPromise(
                 getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
@@ -127,7 +128,7 @@ export default function useAsyncSelector(
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig
             shouldRefetch.value = true;
-            console.log({ e: e.response })
+            console.log('loadData', e)
             errorM.value = errorMessage || errorLabelPath && getStringFromPath(e, errorLabelPath) || 'Some error occured'
             loadDataError.value = true;
         }

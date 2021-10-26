@@ -34,9 +34,8 @@
                                 ></component>
                                 <span
                                     class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                    >{{ title(item) }}</span
                                 >
-                                    {{ title(item) }}
-                                </span>
                                 <StatusBadge
                                     v-if="certificateStatus(item)"
                                     :key="item?.guid"
@@ -62,7 +61,7 @@
                                     class="pl-2 ml-20"
                                     @click="() => actionClick('add', item)"
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip color="#363636" placement="top">
                                         <template #title
                                             >Place name in editor</template
                                         >
@@ -87,7 +86,7 @@
                                     "
                                     @click="() => actionClick('info', item)"
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip color="#363636" placement="top">
                                         <template #title
                                             >Open preview sidebar</template
                                         >
@@ -135,8 +134,7 @@
                                         <AtlanIcon
                                             icon="PrimaryKey"
                                             class="w-4 h-4 my-auto mr-1  primary-key-color"
-                                        >
-                                        </AtlanIcon>
+                                        ></AtlanIcon>
                                         <span class="primary-key-color"
                                             >Pkey</span
                                         >
@@ -161,9 +159,8 @@
 
                             <span
                                 class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                >{{ title(item) }}</span
                             >
-                                {{ title(item) }}
-                            </span>
                             <StatusBadge
                                 v-if="certificateStatus(item)"
                                 :key="item?.guid"
@@ -189,7 +186,7 @@
                                     class="pl-2 ml-24"
                                     @click="() => actionClick('add', item)"
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip color="#363636" placement="top">
                                         <template #title
                                             >Place name in editor</template
                                         >
@@ -213,7 +210,7 @@
                                     "
                                     @click="() => actionClick('info', item)"
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip color="#363636" placement="top">
                                         <template #title
                                             >Open preview sidebar</template
                                         >
@@ -231,10 +228,10 @@
                                 </div>
                                 <!-- Add pr-2 for next icon -->
                                 <div
-                                    class=""
+                                    class
                                     @click="() => actionClick('play', item)"
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip color="#363636" placement="top">
                                         <template #title>Preview data</template>
 
                                         <AtlanIcon
@@ -294,9 +291,8 @@
 
                         <span
                             class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            >{{ title(item) }}</span
                         >
-                            {{ title(item) }}
-                        </span>
                         <StatusBadge
                             v-if="certificateStatus(item)"
                             :key="item?.guid"
@@ -321,7 +317,7 @@
                                 class="pl-2 ml-24"
                                 @click="() => actionClick('add', item)"
                             >
-                                <a-tooltip placement="top">
+                                <a-tooltip color="#363636" placement="top">
                                     <template #title
                                         >Place name in editor</template
                                     >
@@ -493,7 +489,6 @@
                             activeInlineTabCopy.assetSidebar.isVisible = true
                             openAssetSidebar(activeInlineTabCopy, 'not_editor')
                         }
-
                         break
                     }
                     case 'bookmark': {

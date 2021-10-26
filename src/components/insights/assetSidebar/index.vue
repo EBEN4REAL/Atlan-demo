@@ -1,5 +1,5 @@
 <template>
-    <div class="z-20 flex flex-col bg-white" v-if="activeInlineTab.label">
+    <div class="z-20 flex flex-col bg-white" v-if="selectedAsset?.guid">
         <AssetPreview
             :mutateTooltip="true"
             :selectedAsset="selectedAsset"
@@ -7,6 +7,7 @@
             page="discovery"
         ></AssetPreview>
     </div>
+    <div></div>
     <!-- <div
         class="w-full h-full placeholder"
         v-if="selectedAsset.openingPos === 'editor' && activeInlineTab?.queryId"

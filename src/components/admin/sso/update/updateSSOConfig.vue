@@ -47,7 +47,7 @@
                             >
                                 <template #addonAfter>
                                     <span
-                                        class="flex items-center justify-between copyBtn"
+                                        class="flex items-center justify-between  copyBtn"
                                         @click="
                                             copyText(
                                                 getSamlAssertionUrl(
@@ -74,7 +74,7 @@
                             >
                                 <template #addonAfter>
                                     <span
-                                        class="flex items-center justify-between copyBtn"
+                                        class="flex items-center justify-between  copyBtn"
                                         @click="
                                             copyText(
                                                 getSamlAssertionUrl(
@@ -202,94 +202,92 @@
         computed,
         onMounted,
         toRaw,
-    } from 'vue';
-    import { message } from 'ant-design-vue';
-    import { useRouter } from 'vue-router';
-    import emptySSOImage from '~/assets/images/emptyCreds.png';
-    import ImportMetadataFromXML from '../common/importMetadataFromXML.vue';
-    import ImportText from '../common/importText.vue';
-    import { useTenantStore } from '~/services/keycloak/tenant/store';
+    } from 'vue'
+    import { message } from 'ant-design-vue'
+    import { useRouter } from 'vue-router'
+    import emptySSOImage from '~/assets/images/emptyCreds.png'
+    import ImportMetadataFromXML from '../common/importMetadataFromXML.vue'
+    import ImportText from '../common/importText.vue'
+    import { useTenantStore } from '~/services/keycloak/tenant/store'
 
     import {
         topSAMLProviders,
         customSamlProvider,
         downloadMetadata,
-    } from '~/constant/saml';
-    import { getEnv } from '~/modules/__env';
-    import { copyToClipboard } from '~/utils/clipboard';
+    } from '~/constant/saml'
+    import { getEnv } from '~/modules/__env'
+    import { copyToClipboard } from '~/utils/clipboard'
     // @ts-ignore
-    import { downloadFile } from '~/utils/library/download';
+    import { downloadFile } from '~/utils/library/download'
 
-    import { IdentityProvider } from '~/api/auth/identityProvider';
-    import { Tenant } from '~/api/auth/tenant';
+    import { IdentityProvider } from '~/api/auth/identityProvider'
+    import { Tenant } from '~/api/auth/tenant'
+    import useTenantData from '~/services2/service/composable/useTenantData'
+    import useTenant from '~/services2/service/composable/useTenant'
 
     interface FormState {
-        alias: string;
-        singleSignOnServiceUrl: string;
-        signingCertificate: string;
+        alias: string
+        singleSignOnServiceUrl: string
+        signingCertificate: string
     }
 
     export default defineComponent({
         components: { ImportMetadataFromXML, ImportText },
         props: ['alias'],
         setup(props, context) {
-            console.log(context, 'context');
-            const tenantStore = useTenantStore();
-            const router = useRouter();
-            const tenantData: any = computed(() => tenantStore.getTenant);
-            const identityProviders: Array<any> =
-                tenantData?.value?.identityProviders || [];
+            const { identityProviders } = useTenantData()
+            const router = useRouter()
+
             const ssoProvider: any = computed(() => {
                 const ssoProviders = identityProviders.filter((idp) => {
-                    if (idp?.alias === props.alias) return idp;
-                });
-                return ssoProviders[0] || {};
-            });
+                    if (idp?.alias === props.alias) return idp
+                })
+                return ssoProviders[0] || {}
+            })
 
             const ssoForm: UnwrapRef<FormState> = reactive({
                 alias: props.alias,
                 singleSignOnServiceUrl: '',
                 signingCertificate: '',
-            });
-            const isLoading = ref(false);
+            })
+            const isLoading = ref(false)
 
             const samlProvider = topSAMLProviders.find(
                 (data) => data.alias === props.alias
-            );
-            const provider: any = samlProvider || customSamlProvider;
+            )
+            const provider: any = samlProvider || customSamlProvider
 
             const getSamlAssertionUrl = (alias: string) => {
-                const baseUrl = `${window.location.protocol}//${window.location.host}/auth`;
+                const baseUrl = `${window.location.protocol}//${window.location.host}/auth`
                 const redirectUrl = `${baseUrl}/realms/${
                     getEnv().DEFAULT_REALM
-                }/broker/${alias}/endpoint`;
+                }/broker/${alias}/endpoint`
                 const audienceUrl = `${baseUrl}/realms/${
                     getEnv().DEFAULT_REALM
-                }`;
+                }`
                 return {
                     redirectUrl,
                     audienceUrl,
-                };
-            };
+                }
+            }
 
             const importCertificate = (text: string) => {
-                ssoForm.signingCertificate = text;
-            };
+                ssoForm.signingCertificate = text
+            }
 
             const setSSODetails = (metadata: {
-                signingCertificate: string;
-                singleSignOnServiceUrl: string;
+                signingCertificate: string
+                singleSignOnServiceUrl: string
             }) => {
-                console.log('value recieved from xml=>', metadata);
-                ssoForm.signingCertificate = metadata?.signingCertificate;
+                ssoForm.signingCertificate = metadata?.signingCertificate
                 ssoForm.singleSignOnServiceUrl =
-                    metadata?.singleSignOnServiceUrl;
-            };
+                    metadata?.singleSignOnServiceUrl
+            }
 
             const updateSSO = async () => {
                 try {
-                    isLoading.value = true;
-                    const data: any = toRaw(ssoProvider.value);
+                    isLoading.value = true
+                    const data: any = toRaw(ssoProvider.value)
                     const config = {
                         ...data,
                         config: {
@@ -298,35 +296,34 @@
                             singleSignOnServiceUrl:
                                 ssoForm.singleSignOnServiceUrl,
                         },
-                    };
-                    console.log(config);
-                    await IdentityProvider.updateIDP(props.alias, config);
-                    isLoading.value = false;
-                    await updateTenant();
+                    }
+                    await IdentityProvider.updateIDP(props.alias, config)
+                    isLoading.value = false
+                    await updateTenant()
                     message.success({
                         content: 'Details Updated',
-                    });
-                    showConfigScreen();
+                    })
+                    showConfigScreen()
                 } catch (error) {
                     message.error({
                         content: 'Update failed',
-                    });
-                    isLoading.value = false;
+                    })
+                    isLoading.value = false
                 }
-            };
+            }
 
             const copyText = (url: string) => {
-                copyToClipboard(url);
-                message.success('URL copied');
-            };
+                copyToClipboard(url)
+                message.success('URL copied')
+            }
 
             const showConfigScreen = () => {
-                console.log('back');
-                router.push('/admin/sso');
-            };
+                console.log('back')
+                router.push('/admin/sso')
+            }
 
             const downloadMetadataFile = () => {
-                const metaData: any = downloadMetadata;
+                const metaData: any = downloadMetadata
                 const templateMetadata = metaData.template
                     .replace(
                         /{{redirectUrl}}/g,
@@ -335,24 +332,23 @@
                     .replace(
                         /{{audienceUrl}}/g,
                         getSamlAssertionUrl(ssoForm.alias).audienceUrl
-                    );
-                const data = templateMetadata.trim();
-                const filename = 'AtlanSPMetadata.xml';
-                const type = 'text/xml';
-                downloadFile(data, filename, type);
-            };
+                    )
+                const data = templateMetadata.trim()
+                const filename = 'AtlanSPMetadata.xml'
+                const type = 'text/xml'
+                downloadFile(data, filename, type)
+            }
 
             const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.Get();
-                tenantStore.setData(tenantResponse);
-            };
+                useTenant()
+            }
 
             onMounted(() => {
-                const data: any = toRaw(ssoProvider.value);
+                const data: any = toRaw(ssoProvider.value)
                 ssoForm.singleSignOnServiceUrl =
-                    data?.config?.singleSignOnServiceUrl;
-                ssoForm.signingCertificate = data?.config?.signingCertificate;
-            });
+                    data?.config?.singleSignOnServiceUrl
+                ssoForm.signingCertificate = data?.config?.signingCertificate
+            })
 
             return {
                 ssoForm,
@@ -369,9 +365,9 @@
                 updateSSO,
                 emptySSOImage,
                 downloadMetadataFile,
-            };
+            }
         },
-    });
+    })
 </script>
 <style lang="less" scoped>
     .copyBtn {

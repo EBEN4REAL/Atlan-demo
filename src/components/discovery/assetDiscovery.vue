@@ -93,8 +93,6 @@
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
 
-    // import { useDebounceFn } from "@vueuse/core";
-    // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
     import { computed, defineComponent, ref, watch, Ref } from 'vue'
     import { useRouter } from 'vue-router'

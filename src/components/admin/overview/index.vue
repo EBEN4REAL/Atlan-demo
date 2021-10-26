@@ -7,7 +7,7 @@
                     <OrgLogo
                         :image-url="logoUrl"
                         :allow-upload="true"
-                        :avatar-name="tenantName"
+                        :avatar-name="name"
                         :avatar-size="100"
                         :bordered="true"
                         class="mt-2"
@@ -59,6 +59,8 @@
     import { KeyMaps } from '~/api/keyMap'
     import { useAPIAsyncState } from '~/services/api/useAPI'
     import { useAccessStore } from '~/services/access/accessStore'
+    import useTenantData from '~/services2/service/composable/useTenantData'
+    import useTenantUpdate from '~/services2/service/composable/useTenantUpdate'
 
     export default defineComponent({
         name: 'OrgOverview',
@@ -67,41 +69,22 @@
             OrgLogo,
         },
         setup() {
-            const tenantStore = useTenantStore()
-            const accessStore = useAccessStore()
-            const newTenantName: Ref<string> = ref('')
+            const { name, displayNameHtml } = useTenantData()
+
+            const newTenantName: Ref<string> = ref(name)
             const updateStatus = ref('')
-            const tenantName: ComputedRef<string> = computed(
-                () => tenantStore.getTenant?.displayName ?? ''
-            )
-            const updatePermission = computed(() =>
-                accessStore.checkPermission('UPDATE_WORKSPACE')
-            )
-            // initialise tenant name in the input
-            watch(
-                tenantStore,
-                () => {
-                    newTenantName.value = tenantStore.getTenant
-                        ?.displayName as string
-                },
-                { immediate: true }
-            )
-            const tenantId: ComputedRef<string> = computed(
-                () => tenantStore.getTenant?.id ?? ''
-            )
+
             const logoUrl = computed(
                 () => `${window.location.origin}/api/service/avatars/_logo_`
             )
+
             const updateTenant = () => {
                 try {
                     updateStatus.value = 'loading'
-                    const { data, error, isLoading } = useAPIAsyncState(
-                        KeyMaps.auth.tenant.UPDATE_TENANT,
-                        'POST',
-                        {
-                            body: { displayName: newTenantName.value },
-                        }
-                    )
+                    const { data, error, isLoading } = useTenantUpdate({
+                        displayName: newTenantName.value,
+                    })
+
                     watch([data, error, isLoading], () => {
                         if (isLoading.value === false) {
                             if (error.value === undefined) {
@@ -109,11 +92,6 @@
                                 setTimeout(() => {
                                     updateStatus.value = ''
                                 }, 2500)
-                                tenantStore.refreshImage()
-                                tenantStore.setData({
-                                    ...tenantStore.getTenant,
-                                    displayName: newTenantName.value,
-                                })
                             } else {
                                 updateStatus.value = 'error'
                                 setTimeout(async () => {
@@ -147,16 +125,11 @@
             }
             return {
                 newTenantName,
-                tenantName,
-                tenantId,
-                KeyMaps,
-                updateTenant,
+                name,
                 logoUrl,
-                updateStatus,
                 getStatusIcon,
                 getIconClass,
                 onEdit,
-                updatePermission,
             }
         },
     })

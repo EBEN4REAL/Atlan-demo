@@ -25,7 +25,7 @@
     import TurndownService from 'turndown'
     import * as monaco from 'monaco-editor'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-    import fetchColumnList from '~/composables/columns/fetchColumnList'
+
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import {

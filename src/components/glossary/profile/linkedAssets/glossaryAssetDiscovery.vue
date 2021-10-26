@@ -193,11 +193,11 @@
 <script lang="ts">
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
-    import HeirarchySelect from '@common/tree/heirarchy/index.vue'
+
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     // import { useDebounceFn } from "@vueuse/core";
-    // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
+
     import { useDebounceFn } from '@vueuse/core'
     import {
         computed,

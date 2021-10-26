@@ -25,7 +25,7 @@
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
     import SourceMixin from '~/mixins/source'
-    import fetchConnectionList from '~/composables/connection/fetchConnectionList'
+
     import { useConnectionsStore } from '~/store/connections'
 
     export default defineComponent({
@@ -43,12 +43,6 @@
 
             const connectorsDropdown = ref(null)
             const searchValue = ref('')
-            // const { list } = fetchConnectionList(now);
-            // const sourceMap = computed(() => {
-            //   return [
-            //     ...new Set(list.value?.map((item) => item.attributes.integrationName)),
-            //   ];
-            // });
 
             const filteredList = computed(() =>
                 store.getSourceList?.filter((item) =>

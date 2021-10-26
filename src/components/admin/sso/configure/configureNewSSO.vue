@@ -73,7 +73,7 @@
                             >
                                 <div class="mr-3 break-all">
                                     {{
-                                        getSamlAssertionUrl(samlProvider.alias)
+                                        getSamlAssertionUrl(config.alias)
                                             .redirectUrl
                                     }}
                                 </div>
@@ -86,7 +86,7 @@
                                         @click="
                                             copyText(
                                                 getSamlAssertionUrl(
-                                                    samlProvider.alias
+                                                    config.alias
                                                 ).redirectUrl
                                             )
                                         "
@@ -104,7 +104,7 @@
                             >
                                 <div class="mr-3 break-all">
                                     {{
-                                        getSamlAssertionUrl(samlProvider.alias)
+                                        getSamlAssertionUrl(config.alias)
                                             .audienceUrl
                                     }}
                                 </div>
@@ -117,7 +117,7 @@
                                         @click="
                                             copyText(
                                                 getSamlAssertionUrl(
-                                                    samlProvider.alias
+                                                    config.alias
                                                 ).audienceUrl
                                             )
                                         "
@@ -275,7 +275,7 @@
                                     class="px-5"
                                     @click="onSubmit"
                                 >
-                                    <span class="font-bold">Update</span>
+                                    <span class="font-bold">Configure</span>
                                 </AtlanBtn>
                             </div>
                         </div>

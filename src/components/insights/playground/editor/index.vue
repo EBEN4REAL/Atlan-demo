@@ -131,7 +131,7 @@
                                 activeInlineTab.isSaved &&
                                 activeInlineTab.queryId
                             "
-                            @click="updateQuery"
+                            @click="saveOrUpdate"
                         >
                             <div
                                 class="flex items-center transition duration-150 rounded group-hover:text-primary"
@@ -181,8 +181,8 @@
                             color="secondary"
                             padding="compact"
                             v-else
-                            class="flex items-center h-6 px-3 ml-2 border-none button-shadow group"
-                            @click="openSaveQueryModal"
+                            class="flex items-center button-shadow border-none px-3 ml-2 h-6 py-0.5"
+                            @click="saveOrUpdate"
                         >
                             <div
                                 class="flex items-center transition duration-150 group-hover:text-primary"
@@ -292,6 +292,7 @@
         </div>
     </div>
 </template>
+
 
 <script lang="ts">
 import {
@@ -431,6 +432,7 @@ export default defineComponent({
                 modifyActiveInlineTabEditor(
                     activeInlineTabCopy,
                     inlineTabs,
+                    true,
                     saveQueryDataInLocalStorage
                 )
             }
@@ -474,13 +476,21 @@ export default defineComponent({
                     .runQueryId
             const currState = !queryId ? 'run' : 'abort'
             if (currState === 'run') {
+                /* Get selected Text from editor */
+                const selectedText = toRaw(editorInstance.value)
+                    .getModel()
+                    .getValueInRange(
+                        toRaw(editorInstance.value).getSelection()
+                    )
+
                 useAddEvent('insights', 'query', 'run', undefined)
                 queryRun(
                     activeInlineTab,
                     getData,
                     limitRows,
                     onRunCompletion,
-                    onQueryIdGeneration
+                    onQueryIdGeneration,
+                    selectedText
                 )
             } else {
                 /* Abort Query logic */
@@ -592,6 +602,14 @@ export default defineComponent({
                 openAssetSidebar(activeInlineTabCopy, 'editor')
             }
         }
+        const saveOrUpdate = () => {
+            const queryId = activeInlineTab.value?.queryId
+            if (queryId) {
+                updateQuery()
+            } else {
+                openSaveQueryModal()
+            }
+        }
 
         /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -600,6 +618,7 @@ export default defineComponent({
             editorPos: editorPos,
             editorFocused: editorFocused,
             toggleRun: toggleRun,
+            saveOrUpdate: saveOrUpdate,
         }
         useProvide(provideData)
         /*-------------------------------------*/
@@ -618,6 +637,13 @@ export default defineComponent({
                 if (e.metaKey || e.ctrlKey) {
                     e.preventDefault()
                     toggleRun()
+                }
+                //prevent the default action
+            }
+            if (e.key === 'S') {
+                if (e.metaKey || e.ctrlKey) {
+                    e.preventDefault()
+                    saveOrUpdate()
                 }
                 //prevent the default action
             }
@@ -645,8 +671,8 @@ export default defineComponent({
         // })
 
         /* ------------------------------------------ */
-
         return {
+            saveOrUpdate,
             toggleExplorerPane,
             editorConfig,
             canUserUpdateQuery,
@@ -709,10 +735,6 @@ export default defineComponent({
     :global(.ant-checkbox + span) {
         @apply px-1 !important;
     }
-}
-
-.text-primary {
-    color: #5277d6;
 }
 
 .tooltip {

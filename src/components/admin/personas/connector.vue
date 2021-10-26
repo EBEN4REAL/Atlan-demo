@@ -1,26 +1,27 @@
 <template>
     <div class="w-full">
         <a-tree-select
+            v-model:treeExpandedKeys="expandedKeys"
             :value="selectedValue"
             style="width: 100%"
-            v-model:treeExpandedKeys="expandedKeys"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
             placeholder="Select a connector"
-            dropdownClassName="connectorDropdown"
-            :allowClear="true"
+            dropdown-class-name="connectorDropdown"
+            :allow-clear="true"
+            :disabled="disabled"
             @change="onChange"
             @select="selectNode"
         >
             <template #title="node">
-                <div class="flex items-center" v-if="node?.img">
+                <div v-if="node?.img" class="flex items-center">
                     <img :src="node.img" class="w-auto h-3 mr-2" />
                     <span class="">{{
                         capitalizeFirstLetter(node.value)
                     }}</span>
                 </div>
-                <div class="flex items-center" v-if="node?.integrationName">
+                <div v-if="node?.integrationName" class="flex items-center">
                     <img
                         :src="getImage(node?.integrationName)"
                         class="w-auto h-3 mr-2"
@@ -37,7 +38,6 @@
 </template>
 
 <script lang="ts">
-    import { capitalizeFirstLetter } from '~/utils/string'
     import {
         computed,
         defineComponent,
@@ -47,6 +47,7 @@
         toRefs,
         watch,
     } from 'vue'
+    import { capitalizeFirstLetter } from '~/utils/string'
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
     import { useConnectionsStore } from '~/store/connections'
@@ -62,12 +63,16 @@
                 required: true,
             },
             filterSourceIds: {
-                type: Object as PropType<string[]>,
+                type: Array as PropType<string[]>,
                 required: false,
-                default: [],
+                default: () => [],
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
             },
         },
-        components: {},
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { getConnectorName } = useAssetInfo()
@@ -76,15 +81,14 @@
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
                     return data.value?.attributeValue
-                else {
-                    let qfChunks = data.value?.attributeValue?.split('/')
-                    return qfChunks?.length > 1 ? qfChunks[1] : ''
-                }
+
+                const qfChunks = data.value?.attributeValue?.split('/')
+                return qfChunks?.length > 1 ? qfChunks[1] : ''
             })
 
             // QualifiedName format -> tenant/connector/connection/.../.../...
             const connection = computed(() => {
-                let qfChunks = data.value?.attributeValue?.split('/')
+                const qfChunks = data.value?.attributeValue?.split('/')
                 return qfChunks?.length > 2
                     ? qfChunks.slice(0, 3).join('/')
                     : ''
@@ -96,11 +100,10 @@
             )
 
             /* Remove the sources mentioned in filterIds array */
-            const filterSourceList = (filterSourceIds: string[]) => {
-                return store.getSourceList.filter(
+            const filterSourceList = (filterSourceIds: string[]) =>
+                store.getSourceList.filter(
                     (item) => !filterSourceIds.includes(item.id)
                 )
-            }
 
             const store = useConnectionsStore()
             // console.log(store.get(), 'sourceMap')
@@ -117,8 +120,8 @@
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             console.log(checkedValues.value, 'model')
 
-            const transformConnectionsToTree = (connectorId: string) => {
-                return store.getList
+            const transformConnectionsToTree = (connectorId: string) =>
+                store.getList
                     .filter(
                         (connection) =>
                             getConnectorName(connection?.attributes) ===
@@ -157,12 +160,11 @@
                             }
                         }
                     })
-            }
 
             const transformConnectorToTree = (data: any) => {
                 const tree: Record<string, any>[] = []
                 data.forEach((item: any) => {
-                    let treeNodeObj = {
+                    const treeNodeObj = {
                         value: item.id,
                         key: item.id,
                         img: item.image,

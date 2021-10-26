@@ -18,7 +18,7 @@
                 >
                     <template #tabBarExtraContent>
                         <div class="inline-flex items-center ml-1 mr-2">
-                            <a-tooltip color="#363636" placement="top">
+                            <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
                                     class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
@@ -60,14 +60,14 @@
                                         <div
                                             class="w-1.5 h-1.5 rounded-full bg-primary -mt-0.5 absolute right-2.5"
                                         ></div>
+                                        <div
+                                            v-if="
+                                                tab.isSaved ||
+                                                tab.playground.editor.text.length === 0
+                                            "
+                                            class="flex items-center mr-2"
+                                        ></div>
                                     </div>
-                                    <div
-                                        v-if="
-                                            tab.isSaved ||
-                                            tab.playground.editor.text.length === 0
-                                        "
-                                        class="flex items-center mr-2"
-                                    ></div>
                                 </div>
                                 <template #overlay>
                                     <a-menu>
@@ -198,11 +198,21 @@ export default defineComponent({
             if (tabs.value.length < 1) return true
             return false
         }
-
+        const getLastUntitledNumber = () => {
+            let max_number = 1
+            const untitledRegex = /(?:Untitled )([0-9]+)/gim
+            tabs.value?.forEach((tab) => {
+                const d = [...tab.label.matchAll(untitledRegex)]
+                if (d.length > 0) {
+                    max_number = Math.max(Number(d[0][1]) + 1, 1)
+                }
+            })
+            return max_number
+        }
         const handleAdd = () => {
             const key = String(new Date().getTime())
             const inlineTabData: activeInlineTabInterface = {
-                label: 'Untitled',
+                label: `Untitled ${getLastUntitledNumber()}`,
                 key,
                 favico: 'https://atlan.com/favicon.ico',
                 isSaved: false,

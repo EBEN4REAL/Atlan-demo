@@ -16,7 +16,7 @@
             }}</span>
         </div>
         <div class="w-full p-2 mt-3 bg-gray-100 rounded error-lines-area">
-            <template v-for="(item, i) in renderedLines.reverse()" :key="i">
+            <template v-for="(item, i) in renderedLines" :key="i">
                 <div class="flex">
                     <span class="mr-2" style="color: #a5a5a5">{{
                         item.index
@@ -166,12 +166,10 @@
                 { immediate: true }
             )
 
-            console.log(renderedLines.value, 'renderedLines')
-            /* IMP FOR FIRST TIME RENDER */
+            // /* IMP FOR FIRST TIME RENDER */
             renderedLines.value.reverse()
 
             const getTokenColor = (token: string) => {
-                console.log(token)
                 /* Noram gray color */
                 let color = '#3E4359'
                 if (languageTokens.keywords.includes(token)) {
@@ -187,6 +185,7 @@
                         color = '#5277D7'
                     }
                 }
+                console.log(token, color)
                 return color
             }
 
@@ -195,13 +194,16 @@
                 lineDesc: string
             ) => {
                 const t = lineDesc.split(' ')
+
                 let html = ''
-                console.log(pos, 'positon')
+
                 if (pos.value?.endLine) {
                     if (Number(lineIndex) === Number(pos.value.endLine)) {
                         let tokensTillNow = ''
                         t.forEach((token) => {
                             if (token !== '') {
+                                const color = getTokenColor(token)
+                                html += `<div style="color:${color}">`
                                 const chars = token.split('')
                                 chars.forEach((char, z) => {
                                     if (
@@ -224,6 +226,7 @@
                                     }
                                 })
                                 html += `<span>&nbsp;</span>`
+                                html += `</div>`
                                 tokensTillNow += ' '
                             } else {
                                 if (

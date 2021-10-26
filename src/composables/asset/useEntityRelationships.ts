@@ -15,13 +15,14 @@ export default function useEntityRelationships(guid) {
                 (el) => {
                     const element =
                         data.value?.entity?.relationshipAttributes[el]
-                    if (element && element?.length !== 0)
+                    if (element && element?.length !== 0 && element.typeName !== "Schema")
                         relationshipAssets.value.push({
                             displayText: el,
                             length: element?.length || 1,
                         })
                 }
             )
+            console.log(relationshipAssets.value)
         } else {
             // if data not found
             console.log(

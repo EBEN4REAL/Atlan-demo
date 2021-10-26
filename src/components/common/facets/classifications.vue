@@ -1,53 +1,36 @@
 <template>
     <div class="pb-6 mt-1">
-        <div class="">
-            <SearchAndFilter
-                v-model:value="classificationSearchText"
-                :placeholder="`Search ${classificationsList.length} classifications`"
-                :autofocus="true"
-                size="minimal"
-            >
-                <template #filter>
-                    <div class="p-0">
-                        <div class="flex justify-between mb-2">
-                            <p class="mb-0 text-sm text-gray-500">Sort by</p>
-                        </div>
-                        <CustomRadioButton
-                            v-model:data="classificationFilterOptionsData"
-                            class="pb-4 border-b"
-                            :list="classificationFilterCheckboxes"
-                        />
-                    </div>
-                    <div class="mt-4">
-                        <div class="flex justify-between mb-2">
-                            <p class="mb-0 text-sm text-gray-500">Operator</p>
-                        </div>
-                        <CustomRadioButton
-                            :data="data.operator"
-                            class="pb-4 border-b"
-                            :list="operationFilterCheckboxes"
-                            @change="handleOperatorChange"
-                        />
-                    </div>
-                    <div class="pb-2 mt-4">
-                        <div class="flex justify-between mb-2">
-                            <p class="mb-0 text-sm text-gray-500">Added by</p>
-                        </div>
-                        <a-radio-group
-                            :value="data.addedBy"
-                            class="rounded"
-                            @update:value="handleAddedByChange"
-                        >
-                            <a-radio-button
-                                v-for="filter in addedByFilterCheckboxes"
-                                :value="filter.value"
-                                >{{ filter.label }}</a-radio-button
-                            >
-                        </a-radio-group>
-                    </div>
-                </template>
-            </SearchAndFilter>
-        </div>
+        <SearchAndFilter
+            v-model:value="classificationSearchText"
+            :placeholder="`Search ${classificationsList.length} classifications`"
+            :autofocus="true"
+            size="minimal"
+        >
+            <template #filter>
+                <div class="flex flex-col gap-y-1">
+                    <span class="text-sm text-gray-500">Sort by</span>
+                    <RaisedTab
+                        v-model:active="classificationFilterOptionsData"
+                        class="mb-3 mr-auto"
+                        :data="classificationFilterConfig"
+                    />
+                    <span class="text-sm text-gray-500">Operator</span>
+                    <RaisedTab
+                        class="mb-3 mr-auto"
+                        :active="data.operator"
+                        :data="operationFilterConfig"
+                        @update:active="handleOperatorChange"
+                    />
+                    <span class="text-sm text-gray-500">Added by</span>
+                    <RaisedTab
+                        class="mr-auto"
+                        :active="data.addedBy"
+                        :data="addedByFilterConfig"
+                        @update:active="handleAddedByChange"
+                    />
+                </div>
+            </template>
+        </SearchAndFilter>
 
         <div class="mt-4">
             <a-checkbox-group
@@ -57,7 +40,7 @@
                 @change="handleChange"
             >
                 <div class="flex flex-col w-full">
-                    <div class="h-40 overflow-y-scroll">
+                    <div class="h-auto overflow-y-scroll max-h-40">
                         <template
                             v-for="item in classificationsList"
                             :key="item?.guid + classificationFilterOptionsData"
@@ -106,7 +89,7 @@
         toRaw,
         computed,
     } from 'vue'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import RaisedTab from '@/UI/raisedTab.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { Collapse } from '~/types'
     import { classificationInterface } from '~/types/classifications/classification.interface'
@@ -115,7 +98,7 @@
 
     export default defineComponent({
         name: 'Classifications',
-        components: { CustomRadioButton, SearchAndFilter },
+        components: { SearchAndFilter, RaisedTab },
         props: {
             item: {
                 type: Object as PropType<Collapse>,
@@ -134,33 +117,33 @@
 
             const classificationsStore = useClassificationStore()
 
-            const classificationFilterCheckboxes = [
+            const classificationFilterConfig = [
                 {
-                    id: 'asc',
+                    key: 'asc',
                     label: 'A-Z',
                 },
                 {
-                    id: 'dsc',
+                    key: 'dsc',
                     label: 'Z-A',
                 },
             ]
-            const addedByFilterCheckboxes = [
+            const addedByFilterConfig = [
                 {
-                    value: 'all',
+                    key: 'all',
                     label: 'All',
                 },
                 {
-                    value: 'propagation',
+                    key: 'propagation',
                     label: 'Propagation',
                 },
             ]
-            const operationFilterCheckboxes = [
+            const operationFilterConfig = [
                 {
-                    id: 'OR',
+                    key: 'OR',
                     label: 'OR',
                 },
                 {
-                    id: 'AND',
+                    key: 'AND',
                     label: 'AND',
                 },
             ]
@@ -301,10 +284,10 @@
                 handleChange,
                 noClassificationsToggle,
                 hideClassifications,
-                classificationFilterCheckboxes,
+                classificationFilterConfig,
                 classificationFilterOptionsData,
-                operationFilterCheckboxes,
-                addedByFilterCheckboxes,
+                operationFilterConfig,
+                addedByFilterConfig,
                 handleAddedByChange,
             }
         },

@@ -11,18 +11,14 @@
     <VirtualList v-else :data="list.entities" :data-key="keyField">
         <template #default="{ item }">
             <ListItem
-                v-if="item.typeName !== 'Column'"
                 :item="item"
                 :projection="projections"
-                class="p-0 m-0 border-b cursor-pointer"
+                class="p-0 m-0 cursor-pointer"
                 :css-classes="cssClasses"
                 :show-asset-type-icon="false"
                 :is-selected="item.guid === selectedAssetId"
                 @click="handlePreview(item)"
             ></ListItem>
-            <div v-else class="mx-5 my-2">
-                <ColumnListItem :asset="item" />
-            </div>
         </template>
     </VirtualList>
     <teleport to="#overAssetPreviewSidebar">
@@ -113,7 +109,7 @@
                 storeDiscovery.setSelectedAsset(item)
                 // ctx.emit('preview', item)
                 // context.emit('preview', item)
-                if (page.value === 'BiOverview') {
+                if (page.value === 'biOverview') {
                     selectedAssetData.value = item
                     showAssetSidebar.value = true
                 }

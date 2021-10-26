@@ -31,7 +31,7 @@ export default function useProject() {
             columnList.value = []
             columns.map((col: any) => {
                 columnList.value.push({
-                    title: col.columnName.split('_').join(' '),
+                    title: col.columnName.split('_').join('_'),
                     dataIndex: col.columnName,
                     width: 'fit-content',
                     key: col.columnName,
@@ -45,15 +45,12 @@ export default function useProject() {
             //     key: 'key',
             // })
         }
-
-        
     }
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
         const columns = toRaw(columnList.value)
         // console.log('columns: ', columns)
         // console.log('rows: ', rows)
-
 
         rows.map((result: any) => {
             // console.log(result)
@@ -63,7 +60,7 @@ export default function useProject() {
                     ...tmp,
                     ...{
                         // key: rowindex,
-                        [columns[rowindex].dataIndex]: row
+                        [columns[rowindex].dataIndex]: row,
                         // key: rowindex,
                     },
                 }
@@ -78,7 +75,8 @@ export default function useProject() {
         getData: (rows: any[], columns: any[], executionTime: number) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
-        onQueryIdGeneration?: Function
+        onQueryIdGeneration?: Function,
+        selectedText?: string
     ) => {
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
@@ -90,11 +88,18 @@ export default function useProject() {
             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                 undefined
         }
-
-        queryText = getParsedQuery(
-            activeInlineTab.value.playground.editor.variables,
-            activeInlineTab.value.playground.editor.text
-        )
+        /* Checking If any text is selected */
+        if (selectedText && selectedText !== '') {
+            queryText = getParsedQuery(
+                activeInlineTab.value.playground.editor.variables,
+                selectedText
+            )
+        } else {
+            queryText = getParsedQuery(
+                activeInlineTab.value.playground.editor.variables,
+                activeInlineTab.value.playground.editor.text
+            )
+        }
 
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))

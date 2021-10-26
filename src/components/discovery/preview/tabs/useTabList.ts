@@ -31,6 +31,10 @@ export default function useAssetDetailsTabList(
             name: 'Custom Metadata',
             component: 'businessMetadataTab',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            exclude: [
+                'Query',
+                'QueryFolder',
+            ],
             icon: 'Metadata',
             tooltip: 'Custom metadata',
         },
@@ -39,6 +43,8 @@ export default function useAssetDetailsTabList(
             component: 'columns',
             exclude: [
                 'Column',
+                'Query',
+                'QueryFolder',
                 'TableauWorkbook',
                 'TableauWorksheet',
                 'TableauSite',
@@ -62,29 +68,29 @@ export default function useAssetDetailsTabList(
             tooltip: 'Columns',
         },
         {
-            name: 'Activity',
-            component: 'activity',
-            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
-            icon: 'Activity',
-            tooltip: 'Activity',
-        },
-        {
             name: 'Relations',
             component: 'relations',
             exclude: [
                 'Connection',
                 'Database',
                 'Schema',
-                'View',
-                'Table',
-                'TablePartition',
-                'MaterialisedView',
-                'Column',
             ],
             visibleOn: ['discovery'],
             icon: 'Relation',
-            tooltip: 'Related Assets',
+            tooltip: 'Relationships',
         },
+        {
+            name: 'Activity',
+            component: 'activity',
+            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            exclude: [
+                'Query',
+                'QueryFolder',
+            ],
+            icon: 'Activity',
+            tooltip: 'Activity',
+        },
+
         // {
         //     name: 'Chat',
         //     component: 'chat',
@@ -100,6 +106,10 @@ export default function useAssetDetailsTabList(
             name: 'Lineage',
             component: 'lineage',
             visibleOn: ['discovery'],
+            exclude: [
+                'Query',
+                'QueryFolder',
+            ],
             icon: 'Lineage',
             tooltip: 'Lineage',
         },

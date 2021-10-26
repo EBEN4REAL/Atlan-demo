@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col px-5" v-if="persona">
+    <div v-if="persona" class="flex flex-col px-5">
         <div class="flex items-center mb-2 gap-x-2">
             <AtlanIcon icon="User" class="text-primary" />
             <span class="text-sm tracking-wide text-gray-500 uppercase"
@@ -9,16 +9,16 @@
             <template v-if="isEditing">
                 <AtlanBtn
                     size="sm"
-                    @click="discardPersona"
                     color="secondary"
                     padding="compact"
+                    @click="discardPersona"
                     >Discard</AtlanBtn
                 >
                 <AtlanBtn
                     size="sm"
-                    @click="saveEditedPersona"
                     color="primary"
                     padding="compact"
+                    @click="saveEditedPersona"
                     >Save</AtlanBtn
                 >
             </template>

@@ -16,10 +16,12 @@ export const transformFacets = (facetsFilters) => {
 // transform Allfilters 
 export const transformToFilters = (AllFilters) => {
   // console.log('facetsFilters: ', AllFilters.facetsFilters)
-  const output = {}
+  const output = {
+    "$and": [{ "labels": { "$elemMatch": { 'com.atlan.orchestration/atlan-ui': 'true' } } }]
+  }
   const { facetsFilters, searchText, sortOrder } = AllFilters
   const transformedFilters = transformFacets(facetsFilters)
   if (searchText) output.name = { $ilike: `%${searchText}%` }
-  if (transformedFilters.length > 0) output.$or = transformedFilters
+  if (transformedFilters.length > 0) output.$and.push({ "$or": transformedFilters })
   return { filter: output, sort: sortOrder }
 }

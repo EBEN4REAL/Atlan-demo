@@ -92,27 +92,52 @@ const getWorkflowTemplateByName = ({ params, immediate, options }) =>
         { immediate }
     )
 
-const getArchivedRunList = (pathVariables, { immediate, options, params}) =>
-    useAPIAsyncState(
-        KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
+const getRunList = (labelSelector, { immediate, options }) =>
+    useAPISWRV(
+        KeyMaps.workflow.WORKFLOW_RUN,
         'GET',
-      {
-            params,
+        `getRunList${Math.random().toString(36).substring(2, 15)}`,
+        {
             options,
-            pathVariables
-        },
-        { immediate }
+            pathVariables: {
+                labelSelector,
+            },
+        }
+        // { immediate }
     )
 
-const getArchivedWorkflowRun = (guid, { immediate, options }) =>
+const getArchivedRunList = (filter, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
         'GET',
         {
             options,
             pathVariables: {
-                guid,
+                filter,
             },
+        },
+        { immediate }
+    )
+
+// const getArchivedRunList = (pathVariables, { immediate, options, params}) =>
+//     useAPIAsyncState(
+//         KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
+//         'GET',
+//       {
+//             params,
+//             options,
+//             pathVariables
+//         },
+//         { immediate }
+//     )
+
+const runWorkflowByName = ({ body, immediate, options }) =>
+    useAPIAsyncState(
+        KeyMaps.workflow.RUN_WORKFLOW,
+        'POST',
+        {
+            body,
+            options,
         },
         { immediate }
     )
@@ -132,12 +157,13 @@ const createWorkflow = ({ params, body, immediate, options }) =>
 export const Workflows = {
     URL,
     List,
+    getRunList,
     getArchivedRunList,
     updateWorkflowByName,
     getWorkflowByName,
     getWorkflows,
     createWorkflow,
-    getArchivedWorkflowRun,
+    runWorkflowByName,
     getWorkflowTemplates,
     getWorkflowConfigMap,
     getWorkflowTemplateByName,

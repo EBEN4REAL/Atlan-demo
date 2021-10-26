@@ -51,4 +51,11 @@ export const List = [
         description: 'Business Terms',
         popoverText: 'Business Terms & Categories',
     },
+    {
+        id: 'queries',
+        include: ['Query', 'QueryFolder'],
+        label: 'Queries',
+        description: 'Queries',
+        popoverText: 'Query and Query Folder',
+    },
 ]

@@ -1,17 +1,20 @@
 <template>
     <div class="flex flex-col w-full px-5 gap-y-4">
-        <!-- <Terms :selectedAsset="selectedAsset" /> -->
         <Classification
+            v-if="
+                selectedAsset.guid &&
+                selectedAsset.typeName !== 'Query' &&
+                selectedAsset.typeName !== 'QueryFolder'
+            "
             :selected-asset="selectedAsset"
             :edit-permission="userHasEditPermission"
         />
-
         <LinkTerms
+            v-if="selectedAsset.guid"
             :selected-asset="selectedAsset"
             :edit-permission="userHasEditPermission"
             @update:selected-asset="mutateSelectedAsset"
         />
-        <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
     </div>
 </template>
 

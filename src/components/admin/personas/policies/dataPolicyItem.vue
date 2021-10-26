@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="border-b border-gray-300 py-6">
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"
@@ -103,8 +103,23 @@
                     </p>
                 </template>
             </a-tooltip>
+
+            <AtlanBtn
+                class="ml-auto"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                @click="$emit('cancel')"
+                >Cancel</AtlanBtn
+            >
+            <AtlanBtn
+                size="sm"
+                color="primary"
+                padding="compact"
+                @click="$emit('save')"
+                >Save</AtlanBtn
+            >
         </div>
-        <a-divider />
     </div>
 </template>
 
@@ -134,7 +149,7 @@
                 required: true,
             },
         },
-        emits: ['delete'],
+        emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
             const assetSelectorVisible = ref(false)
@@ -210,6 +225,7 @@
                 openAssetSelector,
                 assets,
                 maskingOptions,
+                removeEditFlag,
             }
         },
     })

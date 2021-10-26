@@ -59,7 +59,7 @@ const getUserStatus = (user: any) => {
         status: 'Active',
     }
 }
-const getFormattedUser = (user: any) => {
+export const getFormattedUser = (user: any) => {
     const localUser = {
         ...user,
         name: getUserName(user),

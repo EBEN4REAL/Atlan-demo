@@ -16,38 +16,6 @@
         </template>
         <!-- Modal body -->
 
-        <!-- <a-upload-dragger
-            v-model:fileList="fileList"
-            name="file"
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            @change="handleUploadChange"
-            :showUploadList="false"
-            accept=".pdf,.xlsx"
-        >
-            <div
-                v-if="uploadStatus === 'uploading'"
-                class="flex flex-col items-center justify-center h-52"
-            >
-                <a-spin />
-                <span class="text-gray-500">Importing your data....</span>
-            </div>
-            <div v-else class="flex items-center px-12 h-52">
-                <div>
-                    <a-button type="primary" class="mb-2"
-                        >Upload data from file</a-button
-                    >
-                    <span class="text-gray-500"
-                        >.csv and .tcsv file formats supported</span
-                    >
-                </div>
-                <span class="ml-12 text-gray-500"
-                    >Click the button on the left or drag and drop here to
-                    upload a valid CSV file containing data. You’ll be able to
-                    clean up or remove any corrupted data before finalizing your
-                    upload.
-                </span>
-            </div>
-        </a-upload-dragger> -->
         <div class="flex space-x-32">
             <FormGen :config="formConfig" @change="handleFormChange" />
             <span class="ml-12 text-gray-500"

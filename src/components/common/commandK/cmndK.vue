@@ -26,6 +26,25 @@
                     />
                 </div>
             </template>
+            <div class="flex flex-col">
+                <span class="px-4 pt-4 pb-2 text-xs text-gray-500"
+                    >I’m trying to find...</span
+                >
+                <div class="flex items-center px-4 pb-6 space-x-2">
+                    <template v-for="cat in assetCategoryFilter" :key="cat">
+                        <div
+                            class="flex items-center px-3 py-1 capitalize border rounded "
+                        >
+                            <atlan-icon
+                                icon="Term"
+                                class="h-4 mr-2 text-primary"
+                            />
+                            {{ cat }}
+                        </div>
+                    </template>
+                </div>
+            </div>
+
             <div class="flex flex-col overflow-y-auto max-h-96">
                 <div
                     v-if="!list?.length && queryText.length"
@@ -37,6 +56,17 @@
                         <span class="font-bold"> "{{ queryText }}"</span>
                     </span>
                 </div>
+                <div
+                    v-else-if="!list.length && !queryText.length"
+                    class="flex flex-col px-4 mb-6"
+                >
+                    <span class="mb-2 text-xs text-gray-500"
+                        >Recent Searches</span
+                    >
+                    <span class="mb-2 text-xs text-gray-500"
+                        >You haven’t searched for anything just yet ...</span
+                    >
+                </div>
                 <div v-for="item in list" v-else :key="item?.guid">
                     <AssetCard :item="item" />
                 </div>
@@ -44,7 +74,7 @@
             <template #footer>
                 <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
                     <span>
-                        Protip: Add
+                        💡 Protip: Add
                         <span class="text-primary">description:</span>
                         to search for just within description
                     </span>
@@ -175,6 +205,7 @@
                 handleSearchChange,
                 queryText,
                 dynamicSearchPlaceholder,
+                assetCategoryFilter,
             }
         },
     })
@@ -203,7 +234,7 @@
             @apply border-0 border-t-0 px-0 pt-0 pb-0 border-b-0  !important;
         }
         :global(.ant-modal-body) {
-            @apply px-0 pt-0 pb-4 !important;
+            @apply px-0 pt-4 pb-0 !important;
         }
     }
     .titleInput {

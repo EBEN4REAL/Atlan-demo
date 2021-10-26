@@ -92,7 +92,15 @@
                                 : `height: calc(100vh - 29rem)`
                         "
                     >
+                        <EmptyState
+                            v-if="workflowList.length === 0 && !isLoading"
+                            desc="Sorry! We couldn’t find any workflow templates. try resetting your filters."
+                            button-text="Reset filters"
+                            :empty-screen="EmptyScreen"
+                            @event="handleClearFiltersFromList"
+                        />
                         <WorkflowList
+                            v-else
                             v-model:autoSelect="autoSelect"
                             class="pt-2 bg-white"
                             :list="workflowList"

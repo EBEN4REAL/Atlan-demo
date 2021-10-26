@@ -234,7 +234,7 @@
             @apply border-0 border-t-0 px-0 pt-0 pb-0 border-b-0  !important;
         }
         :global(.ant-modal-body) {
-            @apply px-0 pt-4 pb-0 !important;
+            @apply px-0 pt-0 pb-0 !important;
         }
     }
     .titleInput {

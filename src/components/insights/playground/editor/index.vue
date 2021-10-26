@@ -181,7 +181,7 @@
                             color="secondary"
                             padding="compact"
                             v-else
-                            class="flex items-center button-shadow border-none px-3 ml-2 h-6 py-0.5"
+                            class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
                             @click="saveOrUpdate"
                         >
                             <div

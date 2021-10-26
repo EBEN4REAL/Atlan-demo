@@ -3,7 +3,7 @@
         <NoAccessPage />
     </div>
     <div v-else>
-        <div v-if="isLoading && term?.guid !== id">
+        <div v-if="!term || (isLoading && term?.guid !== id)">
             <LoadingView />
         </div>
         <div v-else-if="term" class="flex flex-row h-full" :class="$style.tabClasses">

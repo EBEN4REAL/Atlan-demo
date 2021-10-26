@@ -104,7 +104,6 @@
                 currentType.value,
                 guid,
                 false,
-                'glossary',
                 true
             )
 

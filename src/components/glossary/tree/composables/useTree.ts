@@ -8,6 +8,7 @@ import { Components } from '~/api/atlas/client'
 
 import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 import useGlossaryList from '~/components/glossary/tree/composables/useGlossaryList'
+import useLoadGlossaryTreeData from '~/components/glossary/tree/composables/useLoadGlossaryTreeData'
 
 import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
 import store from '~/utils/storage'
@@ -67,11 +68,16 @@ const useTree = ({
         'glossary',
         parentGlossaryGuid,
         false,
-        'tree',
         false
     )
 
     const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
+    const {
+        getRootCategories,
+        getRootTerms,
+        getSubCategories,
+        getSubTerms
+     } = useLoadGlossaryTreeData();
 
     const returnTreeDataItemAttributes = (
         item:

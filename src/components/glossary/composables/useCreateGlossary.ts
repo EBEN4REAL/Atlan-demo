@@ -159,13 +159,15 @@ const useCreateGlossary = () => {
                     duration: 2,
                 })
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(
-                        parentCategoryGuid || parentCategoryGuid !== ''
-                            ? parentCategoryGuid
-                            : 'root',
-                        parentCategoryQf,
-                        'category'
-                    )
+                    setTimeout(() => {
+                        refetchGlossaryTree(
+                            parentCategoryGuid || parentCategoryGuid !== ''
+                                ? parentCategoryGuid
+                                : 'root',
+                            parentCategoryQf,
+                            'category'
+                        )
+                    }, 500)
                 }
             }
         })
@@ -243,13 +245,15 @@ const useCreateGlossary = () => {
                     duration: 2,
                 })
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(
-                        parentCategoryGuid || parentCategoryGuid !== ''
-                            ? parentCategoryGuid
-                            : 'root',
-                            parentCategoryQf,
-                        'term'
-                    )
+                    setTimeout(() => {
+                        refetchGlossaryTree(
+                            parentCategoryGuid || parentCategoryGuid !== ''
+                                ? parentCategoryGuid
+                                : 'root',
+                                parentCategoryQf,
+                            'term'
+                        )
+                    }, 500)
                 }
             }
         })
@@ -257,7 +261,7 @@ const useCreateGlossary = () => {
             error.value = newError?.value
             const errMsg = createError.value?.response?.data?.errorMessage
             message.error({
-                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                content: `${errMsg?.slice(0, 1)?.toUpperCase()}${errMsg?.slice(
                     1
                 )}`,
                 key: `${title}`,

@@ -168,10 +168,6 @@
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
 
-            const handleFetchListInj: Function | undefined = inject(
-                'handleFetchList',
-                () => null
-            )
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
             const refreshEntity = inject<() => void>('refreshEntity', () => {})

@@ -369,6 +369,7 @@
         inject,
         toRefs,
         watch,
+        Ref,
         computed,
     } from 'vue'
     import { useRouter } from 'vue-router'
@@ -445,6 +446,7 @@
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
+            const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
 
             const handleFetchListInj: Function | undefined = inject(
                 'handleFetchList',
@@ -501,41 +503,44 @@
             const handleOk = () => {
                 const { data } = serviceMap[props.entity?.typeName](
                     props.entity?.guid,
-                    !props.showLinks,
+                    !props.showLinks || currentProfile?.value?.guid === props.entity?.guid,
                     props.entity?.attributes?.anchor?.guid
                 )
                 if (handleFetchListInj) handleFetchListInj(props.entity)
                 watch(data, () => {
-                    if (refreshEntity) refreshEntity()
-                    if (refetchGlossaryTree) {
-                        if (
-                            props.entity?.typeName === 'AtlasGlossaryCategory'
-                        ) {
-                            refetchGlossaryTree(
-                                props.entity?.attributes?.parentCategory
-                                    ?.guid ?? 'root',
-                                props.entity?.attributes?.qualifiedName,
-                                'category'
-                            )
-                        } else if (
-                            props.entity?.typeName === 'AtlasGlossaryTerm'
-                        ) {
-                            if (props.entity?.attributes?.categories?.length) {
-                                props.entity?.attributes?.categories?.forEach(
-                                    (category) => {
-                                        refetchGlossaryTree(
-                                            category.guid,
-                                            category?.uniqueAttributes?.qualifiedName,
-                                            'term'
-                                        )
-                                    }
+                    if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
+                    setTimeout(() => {
+
+                        if (refetchGlossaryTree) {
+                            if (
+                                props.entity?.typeName === 'AtlasGlossaryCategory'
+                            ) {
+                                refetchGlossaryTree(
+                                    props.entity?.attributes?.parentCategory
+                                        ?.guid ?? 'root',
+                                    props.entity?.attributes?.qualifiedName,
+                                    'category'
                                 )
-                            } else {
-                                refetchGlossaryTree('root', '','term')
+                            } else if (
+                                props.entity?.typeName === 'AtlasGlossaryTerm'
+                            ) {
+                                if (props.entity?.attributes?.categories?.length) {
+                                    props.entity?.attributes?.categories?.forEach(
+                                        (category) => {
+                                            refetchGlossaryTree(
+                                                category.guid,
+                                                category?.uniqueAttributes?.qualifiedName,
+                                                'term'
+                                            )
+                                        }
+                                    )
+                                } else {
+                                    refetchGlossaryTree('root', '','term')
+                                }
                             }
                         }
-                    }
-                    if(refetchGlossaryList) refetchGlossaryList()
+                    }, 500)
+                    if(refetchGlossaryList && props.entity.typeName === 'AtlasGlossary') refetchGlossaryList()
                 })
 
                 isModalVisible.value = false

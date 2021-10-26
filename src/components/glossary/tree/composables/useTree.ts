@@ -37,7 +37,7 @@ const useTree = ({
 }: UseTreeParams) => {
     const route = useRoute()
     const router = useRouter()
-    const defaultLimit = 2
+    const defaultLimit = 20
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     // categories will map to strings since categories can only have one parent ( they only belong to 1 category )
     // terms will map to string[] as a term can be inside multiple categories ( they can belong to multiple categories )

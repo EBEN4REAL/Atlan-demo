@@ -336,12 +336,12 @@
                                                         parentCategory: {
                                                             guid: entity
                                                                 .parentCategory
-                                                                ?.categoryGuid,
+                                                                ?.guid,
                                                         },
                                                         categories:
                                                             entity.categories?.map(
                                                                 (category) => ({
-                                                                    guid: category?.categoryGuid,
+                                                                    guid: category?.guid,
                                                                 })
                                                             ),
                                                     },

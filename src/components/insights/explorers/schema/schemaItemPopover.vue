@@ -94,7 +94,7 @@
         <div class="flex justify-end w-full mt-3 text-primary">
             <div class="flex items-center cursor-pointer" @click="oSidebar">
                 view info
-                <AtlanIcon icon="ArrowRight" class="ml-1"></AtlanIcon>
+                <AtlanIcon icon="Info" class="ml-0.5"></AtlanIcon>
             </div>
         </div>
     </div>

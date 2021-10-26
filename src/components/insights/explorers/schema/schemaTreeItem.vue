@@ -121,7 +121,7 @@
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </a-tooltip>
-                                </div> -->
+                                </div>-->
                             </div>
                             <div
                                 class="flex items-center text-xs text-gray-500"
@@ -140,7 +140,7 @@
                                         >
                                     </div>
                                 </div>
-                                <span> {{ dataType(item) }}</span>
+                                <span>{{ dataType(item) }}</span>
                             </div>
                         </div>
                         <!------------------------------->
@@ -251,7 +251,7 @@
                                         () => actionClick('bookmark', item)
                                     "
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip color="#363636"  placement="top">
                                         <template #title>Bookmark</template>
 
                                         <AtlanIcon
@@ -264,7 +264,7 @@
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </a-tooltip>
-                                </div> -->
+                                </div>-->
                             </div>
                         </div>
                         <!------------------------------->
@@ -456,9 +456,9 @@
                         const prevText =
                             activeInlineTabCopy.playground.editor.text
                         // new text
-                        const newQuery = `\/* ${title(
+                        const newQuery = `\/* {{${title(
                             item.value
-                        )} preview *\/\nSELECT * FROM \"${title(
+                        )}}} preview *\/\nSELECT * FROM \"${title(
                             item.value
                         )}\" LIMIT 50;\n`
                         const newText = `${newQuery}${prevText}`
@@ -485,16 +485,51 @@
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
-                            activeInlineTabCopy.assetSidebar.assetInfo = t
-                            activeInlineTabCopy.assetSidebar.isVisible = true
-                            openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                            // previous text
+                            const prevText =
+                                activeInlineTabCopy.playground.editor.text
+                            // new text
+                            const newQuery = `\/* ${title(
+                                item.value
+                            )} preview *\/\nSELECT * FROM \"${title(
+                                item.value
+                            )}\" LIMIT 50;\n`
+                            /* TODO: WILL PICK UP THE SEMICOLON FEATURE LATER */
+                            const newText = `${newQuery}${prevText}`
+                            // const newText = `${newQuery}`
+                            activeInlineTabCopy.playground.editor.text = newText
+                            modifyActiveInlineTab(
+                                activeInlineTabCopy,
+                                inlineTabs,
+                                activeInlineTabCopy.isSaved
+                            )
+                            selectionObject.value.startLineNumber = 2
+                            selectionObject.value.startColumnNumber = 1
+                            selectionObject.value.endLineNumber = 2
+                            selectionObject.value.endColumnNumber =
+                                newQuery.length + 1 // +1 for semicolon
+                            queryRun(activeInlineTab, getData)
+
+                            break
                         }
-                        break
+                        case 'info': {
+                            // i button clicked on the same node -> close the sidebar
+                            if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                                /* Close it if it is already opened */
+                                closeAssetSidebar(activeInlineTab.value)
+                            } else {
+                                const activeInlineTabCopy: activeInlineTabInterface =
+                                    Object.assign({}, activeInlineTab.value)
+                                activeInlineTabCopy.assetSidebar.assetInfo = t
+                                activeInlineTabCopy.assetSidebar.isVisible = true
+                                openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                            }
+                            break
+                        }
+                        case 'bookmark': {
+                            break
+                        }
                     }
-                    case 'bookmark': {
-                        break
-                    }
-                }
             }
 
             return {

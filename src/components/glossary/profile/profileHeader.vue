@@ -133,15 +133,9 @@
             <div class="flex flex-col justify-center w-full">
                 <div class="flex">
                     <span
-                        v-if="!isNewEntity"
                         class="mr-2 text-xl leading-6 truncate"
                         >{{ title }}</span
                     >
-                    <span
-                        v-if="isNewEntity"
-                        class="mr-2 text-xl italic leading-6 text-gray-500"
-                        >Untitled {{ assetTypeLabel[entity?.typeName] }}
-                    </span>
                     <a-popover
                         v-if="statusMessage"
                         trigger="hover"
@@ -214,12 +208,6 @@
                 required: true,
                 default: '',
             },
-            isNewEntity: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-
             statusObject: {
                 type: Object,
                 required: true,

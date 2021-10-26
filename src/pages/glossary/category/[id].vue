@@ -20,7 +20,6 @@
                 <ProfileHeader
                     :title="title"
                     :entity="category"
-                    :isNewEntity="isNewCategory"
                     :statusMessage="statusMessage"
                     :statusObject="statusObject"
                     :shortDescription="shortDescription"
@@ -35,26 +34,6 @@
                     >
                         <a-tab-pane key="1" tab="Overview">
                             <div class="px-5 mt-4">
-                                <div v-if="isNewCategory" class="mb-4">
-                                    <p
-                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
-                                    >
-                                        Name
-                                    </p>
-                                    <div class="flex">
-                                        <a-input
-                                            v-model:value="newName"
-                                            style="width: 200px"
-                                        />
-                                        <a-button
-                                            v-if="newName"
-                                            class="ml-4"
-                                            type="primary"
-                                            @click="updateTitle"
-                                            >Submit</a-button
-                                        >
-                                    </div>
-                                </div>
                                 <GlossaryProfileOverview
                                     :entity="category"
                                     :header-reached-top="headerReachedTop"
@@ -124,7 +103,6 @@
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
-    // import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
@@ -155,13 +133,11 @@
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
-            const newName = ref('')
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
             const temp = ref(false) // Flag for sticky header
             const bulkSelectedAssets = ref([])
 
-            const router = useRouter()
 
             const category = inject<Ref<Category>>('currentEntity')
             const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
@@ -173,8 +149,6 @@
             const refetch = inject<() => void>('refreshEntity', () => {})
             const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
-            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
-
             // computed
             const termCount = computed(
                 () => category.value?.attributes?.terms?.length ?? 0
@@ -183,9 +157,6 @@
                 () =>
                     category.value?.attributes?.qualifiedName?.split('@')[1] ??
                     ''
-            )
-            const isNewCategory = computed(
-                () => title.value === 'Untitled Category'
             )
 
             const accessStore = useAccessStore()
@@ -201,12 +172,6 @@
             const handlClosePreviewPanel = () => {
                 showPreviewPanel.value = false
             }
-
-            const updateTitle = () => {
-                updateEntity('category', category.value?.guid ?? '', {
-                    name: newName.value,
-                })
-            }
             const handleScroll = () => {
                 if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
                     headerReachedTop.value = true
@@ -221,23 +186,6 @@
                 temp.value = true
             }
 
-            // lifecycle methods and watchers
-            // onMounted(() => {
-            //     fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
-            // })
-
-            watch(guid, (newGuid) => {
-                // fetchCategoryTermsPaginated({
-                //     guid: newGuid,
-                //     refreshSamePage: true,
-                // })
-                newName.value = ''
-            })
-
-            watch(updatedEntity, () => {
-                refetch()
-                newName.value = ''
-            })
             // upate bulk list for sidebar
             const updateBulkSelection = (list) => {
                 bulkSelectedAssets.value = [...list.value]
@@ -246,7 +194,6 @@
 
             return {
                 category,
-                // categoryTerms,
                 currentTab,
                 previewEntity,
                 showPreviewPanel,
@@ -258,16 +205,12 @@
                 qualifiedName,
                 error,
                 isLoading,
-                // termsLoading,
                 guid,
                 statusObject,
-                isNewCategory,
-                newName,
                 scrollDiv,
                 headerReachedTop,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
-                updateTitle,
                 handleScroll,
                 handleFirstCardReachedTop,
                 updateBulkSelection,

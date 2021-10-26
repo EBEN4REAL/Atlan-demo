@@ -17,7 +17,6 @@
                 <ProfileHeader
                     :title="title"
                     :entity="term"
-                    :isNewEntity="isNewTerm"
                     :statusMessage="statusMessage"
                     :statusObject="statusObject"
                     :shortDescription="shortDescription"
@@ -31,26 +30,6 @@
                     >
                         <a-tab-pane key="1" tab="Overview">
                             <div class="px-5 mt-4">
-                                <div v-if="isNewTerm" class="mb-4">
-                                    <p
-                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
-                                    >
-                                        Name
-                                    </p>
-                                    <div class="flex">
-                                        <a-input
-                                            v-model:value="newName"
-                                            style="width: 200px"
-                                        />
-                                        <a-button
-                                            v-if="newName"
-                                            class="ml-4"
-                                            type="primary"
-                                            @click="updateTitle"
-                                            >Submit</a-button
-                                        >
-                                    </div>
-                                </div>
                                 <GlossaryProfileOverview
                                     :entity="term"
                                     :header-reached-top="headerReachedTop"
@@ -145,8 +124,6 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
-            const newName = ref('')
-            const router = useRouter()
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
             const temp = ref(false)
@@ -188,8 +165,6 @@
                 { immediate: true }
             )
 
-            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
-
             // computed
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
@@ -199,18 +174,12 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
-            const isNewTerm = computed(() => title.value === 'Untitled Term')
 
             // methods
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
 
-            const updateTitle = () => {
-                updateEntity('term', term.value?.guid ?? '', {
-                    name: newName.value,
-                })
-            }
             const handleScroll = () => {
                 if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
                     headerReachedTop.value = true
@@ -224,11 +193,6 @@
                 headerReachedTop.value = false
                 temp.value = true
             }
-
-            watch(updatedEntity, () => {
-                refetch()
-                newName.value = ''
-            })
 
             watch(guid, () => {
                 currentTab.value = '1'
@@ -248,11 +212,8 @@
                 parentGlossaryName,
                 previewEntity,
                 statusObject,
-                isNewTerm,
-                newName,
                 handlePreview,
                 refetch,
-                updateTitle,
                 scrollDiv,
                 headerReachedTop,
                 handleScroll,

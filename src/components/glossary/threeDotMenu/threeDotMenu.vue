@@ -596,7 +596,7 @@
 
             // update tree on archive or create new entity
             const updateTree = (selectedAsset: Glossary | Category | Term) => {
-                if (updateTreeNode) {
+                if (updateTreeNode && !props.treeMode) {
                     updateTreeNode({
                         guid: selectedAsset.guid,
                         entity: selectedAsset,

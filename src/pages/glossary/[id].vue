@@ -112,15 +112,6 @@
                 :glossaryQualifiedName="glossary?.attributes?.qualifiedName"
                 :visible="addTermModalOpen"
             >
-                <!-- <template #header>
-                    <ModalHeader :entity="glossary" entity-to-add="term" />
-                </template>
-                <template #trigger>
-                    <div class="flex items-center">
-                        <AtlanIcon icon="Term" class="m-0 mr-2" />
-                        <p class="p-0 m-0">Create New Term</p>
-                    </div>
-                </template> -->
             </AddGtcModal>
         </div>
     </div>

@@ -103,9 +103,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         },
     })
 
-    const entity = ref(
-        
-    )
+    const entity = ref()
 
     const referredEntities = computed(
         () =>
@@ -145,7 +143,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         }
     })
     watch(data, (newData) => {
-        entity.value = newData?.entities ? (data.value?.entities[0] as T) : undefined
+        entity.value = newData?.entities ? (newData.entities[0] as T) : undefined
     })
     watch(entity, (newEntity) => {
         if(newEntity) {
@@ -157,8 +155,6 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     const refetch = () => {
         body.value = getBody()
         mutate()
-        console.log('refetching', entityGuid.value, body.value)
-        console.log(entity)
     }
 
     return {

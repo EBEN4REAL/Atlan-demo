@@ -109,16 +109,16 @@
                 }
             }
             watch(
-                bulkUploadTriggers.startUpload,
+                bulkUploadTriggers?.startUpload,
                 () => {
-                    if (bulkUploadTriggers.startUpload.value) {
-                        triggerUpload(bulkUploadTriggers.workflowName.value)
+                    if (bulkUploadTriggers?.startUpload?.value) {
+                        triggerUpload(bulkUploadTriggers?.workflowName?.value)
                     }
                 },
                 { immediate: true }
             )
             return {
-                startUpload: bulkUploadTriggers.startUpload,
+                startUpload: bulkUploadTriggers?.startUpload,
                 percentage,
             }
         },

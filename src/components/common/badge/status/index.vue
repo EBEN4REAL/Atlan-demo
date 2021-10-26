@@ -130,7 +130,7 @@ export default defineComponent({
 
         // console.log('status data: ', { icon, iconId, label })
 
-        const icons = isTree.value ? fileIcon.value : icon.value;
+        const icons = isTree.value ? fileIcon : icon;
 
         const timeAgo = (time: string | number) => useTimeAgo(time).value
         return { statusId, icon, label, timeAgo, iconId, icons }

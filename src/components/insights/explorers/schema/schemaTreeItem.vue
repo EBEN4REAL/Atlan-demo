@@ -458,9 +458,9 @@
                         // new text
                         const newQuery = `\/* ${title(
                             item.value
-                        )} preview *\/\nSELECT * FROM \"${title(
+                        )} preview *\/\nSELECT * FROM ${title(
                             item.value
-                        )}\" LIMIT 50;\n`
+                        )} LIMIT 50;\n`
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
                         modifyActiveInlineTab(

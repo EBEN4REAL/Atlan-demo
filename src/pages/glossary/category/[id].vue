@@ -1,12 +1,16 @@
 <template>
-    <div v-if="id === '-1' || !userHasAccess">
+    <div v-if="id === '-1' || !isAccess">
         <NoAccessPage />
     </div>
     <div v-else>
         <div v-if="isLoading && category?.guid !== id">
             <LoadingView />
         </div>
-        <div v-else-if="category" class="flex flex-row h-full" :class="$style.tabClasses">
+        <div
+            v-else-if="category"
+            class="flex flex-row h-full"
+            :class="$style.tabClasses"
+        >
             <div
                 class="w-2/3"
                 ref="scrollDiv"
@@ -110,7 +114,7 @@
         provide,
         ComputedRef,
         WritableComputedRef,
-        Ref
+        Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -151,6 +155,8 @@
             },
         },
         setup(props) {
+            const { isAccess } = useAuth()
+
             // data
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
@@ -165,12 +171,19 @@
             const router = useRouter()
 
             const category = inject<Ref<Category>>('currentEntity')
-            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
-            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
-            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const title =
+                inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>(
+                'currentShortDescription'
+            )
+            const qualifiedName = inject<ComputedRef<string>>(
+                'currentQualifiedName'
+            )
             const statusObject = inject<ComputedRef>('statusObject')
             const error = inject<Ref>('profileError')
-            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const isLoading = inject<Ref<boolean> | undefined>(
+                'profileIsLoading'
+            )
             const refetch = inject<() => void>('refreshEntity', () => {})
             const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
@@ -187,11 +200,6 @@
             )
             const isNewCategory = computed(
                 () => title.value === 'Untitled Category'
-            )
-
-            const accessStore = useAccessStore()
-            const userHasAccess = computed(() =>
-                accessStore.checkPermission('READ_CATEGORY')
             )
 
             // methods
@@ -249,6 +257,7 @@
             provide('refreshEntity', refetch)
 
             return {
+                isAccess,
                 category,
                 // categoryTerms,
                 currentTab,
@@ -302,4 +311,5 @@
 meta:
     layout: default
     requiresAuth: true
+    permissions: [READ_CATEGORY]
 </route>

@@ -1,12 +1,16 @@
 <template>
-    <div v-if="id === '-1' || !userHasAccess">
+    <div v-if="id === '-1' || !isAccess">
         <NoAccessPage />
     </div>
     <div v-else>
         <div v-if="isLoading && term?.guid !== id">
             <LoadingView />
         </div>
-        <div v-else-if="term" class="flex flex-row h-full" :class="$style.tabClasses">
+        <div
+            v-else-if="term"
+            class="flex flex-row h-full"
+            :class="$style.tabClasses"
+        >
             <div
                 ref="scrollDiv"
                 class="w-2/3"
@@ -103,7 +107,7 @@
         inject,
         ComputedRef,
         WritableComputedRef,
-        Ref
+        Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -124,6 +128,7 @@
 
     import useBusinessMetadataStore from '~/store/businessMetadata'
     import { useAccessStore } from '~/services/access/accessStore'
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         components: {
@@ -152,26 +157,30 @@
             const headerReachedTop = ref(false)
             const temp = ref(false)
 
-
             const term = inject<Ref<Term>>('currentEntity')
-            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
-            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
-            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const title =
+                inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>(
+                'currentShortDescription'
+            )
+            const qualifiedName = inject<ComputedRef<string>>(
+                'currentQualifiedName'
+            )
             const statusObject = inject<ComputedRef>('statusObject')
             const error = inject<Ref>('profileError')
-            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const isLoading = inject<Ref<boolean> | undefined>(
+                'profileIsLoading'
+            )
             const refetch = inject<() => void>('refreshEntity', () => {})
             const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
-            const accessStore = useAccessStore()
             const BMListLoaded = computed(
                 () => store.getBusinessMetadataListLoaded
             )
 
             const store = useBusinessMetadataStore()
-            const userHasAccess = computed(() =>
-                accessStore.checkPermission('READ_TERM')
-            )
+
+            const { isAccess } = useAuth()
 
             // ? Re fetch after bm projection loads or first fetch after  bm projection loads ?
             watch(
@@ -259,7 +268,7 @@
                 headerReachedTop,
                 handleScroll,
                 handleFirstCardReachedTop,
-                userHasAccess,
+                isAccess,
             }
         },
     })
@@ -299,4 +308,5 @@
 meta:
     layout: default
     requiresAuth: true
+    permissions: [READ_TERM]
 </route>

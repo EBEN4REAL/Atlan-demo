@@ -1,5 +1,5 @@
 <template>
-    <div v-if="id === '-1' || !userHasAccess">
+    <div v-if="id === '-1' || !isAccess">
         <NoAccessPage />
     </div>
     <div v-else>
@@ -135,7 +135,7 @@
         computed,
         inject,
         ComputedRef,
-        Ref
+        Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -166,6 +166,8 @@
     } from '~/types/glossary/glossary.interface'
 
     import { useAccessStore } from '~/services/access/accessStore'
+
+    import useAuth from '~/services2/service/composable/useAuth'
 
     export default defineComponent({
         components: {
@@ -208,21 +210,27 @@
             const accessStore = useAccessStore()
 
             const glossary = inject<Ref<Glossary>>('currentEntity')
-            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
-            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
-            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const title =
+                inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>(
+                'currentShortDescription'
+            )
+            const qualifiedName = inject<ComputedRef<string>>(
+                'currentQualifiedName'
+            )
             const statusObject = inject<ComputedRef>('statusObject')
             const error = inject<Ref>('profileError')
-            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const isLoading = inject<Ref<boolean> | undefined>(
+                'profileIsLoading'
+            )
             const refetch = inject<() => void>('refreshEntity', () => {})
             const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
             const isNewGlossary = computed(
                 () => title.value === 'Untitled Glossary'
             )
-            const userHasAccess = computed(() =>
-                accessStore.checkPermission('READ_GLOSSARY')
-            )
+
+            const { isAccess } = useAuth()
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
@@ -300,7 +308,7 @@
                 handleFirstCardReachedTop,
                 handleCloseBulk,
                 store,
-                userHasAccess,
+                isAccess,
                 addTermModalOpen,
             }
         },
@@ -337,4 +345,5 @@
 meta:
     layout: default
     requiresAuth: true
+    permissions: [READ_GLOSSARY]
 </route>

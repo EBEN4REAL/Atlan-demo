@@ -176,7 +176,7 @@ const useTree = ({
 
             categoryList?.forEach((category) => {
                 // if category is root level, i.e `categoryGuid` does not exist
-                if (!category.attributes.parentCategory) {
+                if (!category.attributes.parentCategory?.guid) {
                     if (category.guid) nodeToParentKeyMap[category.guid] = 'root'
                     treeData.value.push(
                         returnTreeDataItemAttributes(category, 'category', guid)
@@ -235,22 +235,18 @@ const useTree = ({
         if (treeNode.dataRef.children) {
         } else if (treeNode.dataRef.type === 'glossary') {
             try {
-                const response = await GlossaryApi.ListCategoryForGlossary(
-                    treeNode.dataRef.key,
-                    {}
-                )
-                const termsList = await GlossaryApi.ListTermsForGlossary(
-                    treeNode.dataRef.key
-                )
-                categoryMap[treeNode.dataRef.key] = response
-                response.forEach((element) => {
+                const categoryList = (await getAllCategories(treeNode.dataRef.qualifiedName)).entities ?? []
+                const termsList = ( await getRootTerms(treeNode.dataRef.qualifiedName) ).entities ?? []
+
+                categoryMap[treeNode.dataRef.key] = categoryList
+                categoryList.forEach((category) => {
                     if (!treeNode.dataRef.children) {
                         treeNode.dataRef.children = []
                     }
-                    if (!element.parentCategory?.categoryGuid) {
+                    if (!category.attributes?.parentCategory?.guid) {
                         treeNode.dataRef.children.push(
                             returnTreeDataItemAttributes(
-                                element,
+                                category,
                                 'category',
                                 treeNode.dataRef.key,
                                 true
@@ -258,13 +254,13 @@ const useTree = ({
                         )
                     }
                 })
-                termsList.forEach((element) => {
+                termsList.forEach((term) => {
                     if (!treeNode.dataRef.children) {
                         treeNode.dataRef.children = []
                     }
                     treeNode.dataRef.children.push(
                         returnTreeDataItemAttributes(
-                            element,
+                            term,
                             'term',
                             treeNode.dataRef.key
                         )
@@ -277,21 +273,21 @@ const useTree = ({
             }
         } else if (treeNode.dataRef.type === 'category') {
             // find all categories which are children
-            const children = categoryMap[treeNode.dataRef.glossaryID]?.filter(
-                (item) =>
-                    item.parentCategory?.categoryGuid === treeNode.dataRef.key
+            const childrenCategories = categoryMap[treeNode.dataRef.glossaryID]?.filter(
+                (category) =>
+                    category.attributes.parentCategory?.guid === treeNode.dataRef.key
             )
 
-            children?.forEach((child) => {
+            childrenCategories?.forEach((category) => {
                 if (!treeNode.dataRef.children) {
                     treeNode.dataRef.children = []
                 }
-                if (child.guid) {
-                    nodeToParentKeyMap[child.guid] = treeNode.dataRef.key
+                if (category.guid) {
+                    nodeToParentKeyMap[category.guid] = treeNode.dataRef.key
                 }
                 treeNode.dataRef.children.push(
                     returnTreeDataItemAttributes(
-                        child,
+                        category,
                         'category',
                         treeNode.dataRef.glossaryID,
                         true,
@@ -300,35 +296,32 @@ const useTree = ({
                 )
             })
             try {
-                const termsList = await GlossaryApi.ListTermsForCategory(
-                    treeNode.dataRef.key,
-                    {
-                        limit: defaultLimit,
-                    }
-                )
-                termsList.forEach((element) => {
+                console.log(treeNode.dataRef)
+                const termsList = (await getSubTerms(treeNode.dataRef.qualifiedName)).entities ?? []
+
+                termsList.forEach((term) => {
                     if (!treeNode.dataRef.children) {
                         treeNode.dataRef.children = []
                     }
-                    if (element.guid) {
+                    if (term.guid) {
                         const currentParentList =
-                            nodeToParentKeyMap[element.guid]
+                            nodeToParentKeyMap[term.guid]
                         if (
                             currentParentList &&
                             currentParentList.length &&
                             typeof currentParentList !== 'string'
                         ) {
                             currentParentList.push(treeNode.dataRef.key)
-                            nodeToParentKeyMap[element.guid] = currentParentList
+                            nodeToParentKeyMap[term.guid] = currentParentList
                         } else {
-                            nodeToParentKeyMap[element.guid] = [
+                            nodeToParentKeyMap[term.guid] = [
                                 treeNode.dataRef.key,
                             ]
                         }
                     }
                     treeNode.dataRef.children.push(
                         returnTreeDataItemAttributes(
-                            element,
+                            term,
                             'term',
                             treeNode.dataRef.key,
                             false,

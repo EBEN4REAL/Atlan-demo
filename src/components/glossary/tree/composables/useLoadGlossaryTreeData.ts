@@ -130,7 +130,7 @@ const useLoadGlossaryTreeData = () => {
             body,
         }) as Promise<BasicSearchResponse<Term>>
     }
-    const getSubCategories = async (categoryQualifiedName: Ref<string>, offset?: number) => {
+    const getSubCategories = async (categoryQualifiedName: string, offset?: number) => {
         const body = {
             dsl: {
                 size: defaultLimit,
@@ -146,7 +146,7 @@ const useLoadGlossaryTreeData = () => {
                             {
                                 terms: {
                                     __categories: [
-                                        categoryQualifiedName.value
+                                        categoryQualifiedName
                                     ]
                                 }
                             }
@@ -160,7 +160,7 @@ const useLoadGlossaryTreeData = () => {
             body,
         }) as Promise<BasicSearchResponse<Category>>
     }
-    const getSubTerms = async (categoryQualifiedName: Ref<string>, offset?: number) => {
+    const getSubTerms = async (categoryQualifiedName: string, offset?: number) => {
         const body = {
             dsl: {
                 size: defaultLimit,
@@ -176,7 +176,7 @@ const useLoadGlossaryTreeData = () => {
                             {
                                 terms: {
                                     __categories: [
-                                        categoryQualifiedName.value
+                                        categoryQualifiedName
                                     ]
                                 }
                             }

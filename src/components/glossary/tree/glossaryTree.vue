@@ -8,8 +8,9 @@
                     v-model:value="currentGlossaryGuid"
                     :open="glossaryContextOpen"
                     :options="glossaryContextDropdown"
-                    :dropdownMatchSelectWidth="false"
-                    dropdownClassName="pr-0.5"
+                    :dropdownMatchSelectWidth="true"
+                    dropdownClassName="pr-0.5 w-60"
+                    class="pr-0.5 w-60"
                     @click="glossaryContextOpen = !glossaryContextOpen"
                     @select="glossaryContextOpen = false"
                     @blur="glossaryContextOpen = false"
@@ -190,11 +191,11 @@
                         </div>
 
                         <div
-                            class="flex content-center  my-auto tree-glossary-actioans parenat-group-hover"
+                            class="flex content-center my-auto  tree-glossary-actioans parenat-group-hover"
                         >
                             <div
                                 v-if="expandedKeys.length"
-                                class="flex bg-opacity-0 cursor-pointer  w-6 h-6 py-auto"
+                                class="flex w-6 h-6 bg-opacity-0 cursor-pointer  py-auto"
                                 @click="collapseAll"
                             >
                                 <AtlanIcon
@@ -208,7 +209,7 @@
                                 <AddCta
                                     class="w-6 h-6 ml-0.5"
                                     :entity="parentGlossary"
-                                />                   
+                                />
                             </div>
                             <div
                                 class="flex flex-col justify-center bg-opacity-0 "
@@ -597,7 +598,7 @@
                 parentGlossary.value?.guid ?? 'all'
             )
             const glossaryContextDropdown = computed(() => {
-            const list = glossaryList.value.map((glossary) => ({
+                const list = glossaryList.value.map((glossary) => ({
                     value: glossary.guid,
                     label: glossary.attributes.name,
                     status: glossary.attributes.certificateStatus,
@@ -614,7 +615,9 @@
 
             const router = useRouter()
 
-            const glossaryContextOpen = ref(router.currentRoute.value.query.cta === 'glossaryContext')
+            const glossaryContextOpen = ref(
+                router.currentRoute.value.query.cta === 'glossaryContext'
+            )
 
             const parentGlossaryQualifiedName = computed(() =>
                 home.value
@@ -683,7 +686,7 @@
                 onSearch,
                 currentGlossaryGuid,
                 refetchGlossaryList,
-                glossaryContextOpen
+                glossaryContextOpen,
             }
         },
     })

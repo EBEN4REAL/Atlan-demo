@@ -177,6 +177,7 @@
             const refetchGlossaryTree = inject<
                 (
                     guid: string | 'root',
+                    categoryQualifiedName: string,
                     refreshEntityType?: 'term' | 'category'
                 ) => void
             >('refetchGlossaryTree')

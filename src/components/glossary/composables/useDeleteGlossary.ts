@@ -9,7 +9,7 @@ const useDeleteGlossary = () => {
     const isLoading = ref<boolean | null>();
     const router = useRouter()
     
-    const refetchGlossaryTree = inject<(guid: string | 'root', refetchEntityType?: 'term' | 'category') => void>('refetchGlossaryTree')
+    const refetchGlossaryTree = inject<(guid: string | 'root', categoryQualifiedName?: string, refetchEntityType?: 'term' | 'category') => void>('refetchGlossaryTree')
 
     const redirectAfterDelete = (type: 'glossary' | 'category' | 'term', guid: string) => {
         error.value = null;

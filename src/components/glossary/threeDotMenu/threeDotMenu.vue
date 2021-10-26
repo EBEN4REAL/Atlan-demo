@@ -456,6 +456,7 @@
             const refetchGlossaryTree = inject<
                 (
                     guid: string | 'root',
+                    categoryQualifiedName?: string,
                     refreshEntityType?: 'term' | 'category'
                 ) => void
             >('refetchGlossaryTree')
@@ -507,6 +508,7 @@
                             refetchGlossaryTree(
                                 props.entity?.attributes?.parentCategory
                                     ?.guid ?? 'root',
+                                props.entity?.attributes?.qualifiedName,
                                 'category'
                             )
                         } else if (
@@ -517,12 +519,13 @@
                                     (category) => {
                                         refetchGlossaryTree(
                                             category.guid,
+                                            category?.uniqueAttributes?.qualifiedName,
                                             'term'
                                         )
                                     }
                                 )
                             } else {
-                                refetchGlossaryTree('root', 'term')
+                                refetchGlossaryTree('root', '','term')
                             }
                         }
                     }

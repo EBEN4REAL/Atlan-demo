@@ -296,7 +296,6 @@ const useTree = ({
                 )
             })
             try {
-                console.log(treeNode.dataRef)
                 const termsList = (await getSubTerms(treeNode.dataRef.qualifiedName)).entities ?? []
 
                 termsList.forEach((term) => {
@@ -499,30 +498,30 @@ const useTree = ({
      */
     const refetchNode = async (
         guid: string | 'root',
+        categoryQaulifiedName?: string,
         refetchEntityType?: 'category' | 'term'
     ) => {
         // if the root level of the tree needs a refetch
         if (guid === 'root' && parentGlossary.value?.guid) {
             let categoryList:
-                | Components.Schemas.AtlasGlossaryCategory[]
-                | null = null
-            let termsList: Components.Schemas.AtlasGlossaryTerm[] | null = null
+                Category[] | null = null
+
+            let termsList: Term[] | null = null
 
             if (refetchEntityType === 'category' || !refetchEntityType) {
-                categoryList = await GlossaryApi.ListCategoryForGlossary(
-                    parentGlossary.value?.guid
-                )
+                categoryList = (await getAllCategories(parentGlossary.value?.attributes?.qualifiedName)).entities ?? []
             }
             if (refetchEntityType === 'term' || !refetchEntityType) {
-                termsList = await GlossaryApi.ListTermsForGlossary(
-                    parentGlossary.value?.guid
-                )
+                termsList = (await getRootTerms(
+                    parentGlossary.value?.attributes?.qualifiedName
+                )).entities ?? []
             }
 
-            categoryMap[parentGlossary.value?.guid] = categoryList
-
+            
             const updatedTreeData: TreeDataItem[] = []
             if (categoryList !== null) {
+                categoryMap[parentGlossary.value?.guid ?? ''] = categoryList
+
                 categoryList.forEach((category) => {
                     const existingCategory = treeData.value.find(
                         (entity) => entity.guid === category.guid
@@ -530,7 +529,7 @@ const useTree = ({
                     // if the category already exists,ignore it so as to maintain the expanded state
                     if (existingCategory) {
                         updatedTreeData.push(existingCategory)
-                    } else if (!category.parentCategory?.categoryGuid) {
+                    } else if (!category.attributes?.parentCategory?.guid) {
                         // if a new category is found at the root level, append it
 
                         nodeToParentKeyMap[category.guid] = 'root'
@@ -588,10 +587,10 @@ const useTree = ({
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
                     let categoryList:
-                        | Components.Schemas.AtlasGlossaryCategory[]
+                        | Category[]
                         | null = null
                     let termsList:
-                        | Components.Schemas.AtlasGlossaryTerm[]
+                        | Term[]
                         | null = null
 
                     if (
@@ -599,17 +598,15 @@ const useTree = ({
                         !refetchEntityType
                     ) {
                         categoryList =
-                            await GlossaryApi.ListCategoryForGlossary(
-                                parentGlossary.value?.guid ?? ''
-                            )
+                        (await getAllCategories(parentGlossary.value?.attributes?.qualifiedName)).entities ?? []
                     }
                     if (refetchEntityType === 'term' || !refetchEntityType) {
-                        termsList = await GlossaryApi.ListTermsForCategory(guid)
+                        termsList = (await getSubTerms(categoryQaulifiedName ?? '')).entities ?? []
                     }
-                    categoryMap[parentGlossary.value?.guid ?? ''] = categoryList
                     const updatedChildren: TreeDataItem[] = []
-
+                    
                     if (categoryList !== null) {
+                        categoryMap[parentGlossary.value?.guid ?? ''] = categoryList
                         categoryList.forEach((category) => {
                             const existingCategory = node.children?.find(
                                 (entity) => entity.guid === category.guid
@@ -619,7 +616,7 @@ const useTree = ({
                             if (existingCategory) {
                                 updatedChildren.push(existingCategory)
                             } else if (
-                                category.parentCategory?.categoryGuid ===
+                                category.attributes?.parentCategory?.guid ===
                                 node.key
                             ) {
                                 nodeToParentKeyMap[category?.guid ?? ''] =
@@ -953,7 +950,7 @@ const useTree = ({
                             watch(data, async (newData) => {
                                 if (newData?.guid) {
                                     await refetchNode('root')
-                                    refetchNode(node.dataRef.guid)
+                                    refetchNode(node.dataRef.guid, node.dataRef.qualifiedName, 'term')
                                 }
                             })
                         }

@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col">
         <div
-            class="flex items-center flex-1 px-3 pt-2 pb-3 transition-all duration-300  hover:bg-gray-100 hover:border-none"
+            class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300  hover:bg-gray-100 hover:border-none"
         >
             <AssetLogo :asset="item" :textRequired="false" variant="lg" />
             <div class="flex flex-col flex-1 overflow-hidden lg:pr-16">

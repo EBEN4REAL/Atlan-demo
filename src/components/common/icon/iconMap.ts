@@ -148,6 +148,7 @@ import TableDeprecated from '~/assets/images/icons/table_deprecated.svg'
 import TableDraft from '~/assets/images/icons/table_draft.svg'
 import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Key from '~/assets/images/icons/key.svg'
+import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 
 export default {
     IssuesFilled,
@@ -300,4 +301,5 @@ export default {
     TableDraft,
     TableVerified,
     Key,
+    NoResultsFound,
 }

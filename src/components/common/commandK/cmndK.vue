@@ -2,25 +2,54 @@
     <div>
         <a-modal
             :visible="isVisible"
-            :footer="null"
             width="620px"
             :class="$style.modalStyles"
+            :closable="false"
             @cancel="$emit('closeModal')"
         >
             <template #title>
-                <a-input
-                    v-model:value="queryText"
-                    class="border-0"
-                    :placeholder="dynamicSearchPlaceholder"
-                    :allowClear="true"
-                    @change="handleSearchChange"
-                />
+                <div class="flex items-center px-4">
+                    <atlan-icon icon="Search" class="w-auto h-5 mr-1" />
+                    <a-input
+                        v-model:value="queryText"
+                        class="pr-4 text-base text-gray-500 border-0 shadow-none outline-none "
+                        :class="$style.modalStyles"
+                        :placeholder="dynamicSearchPlaceholder"
+                        :allowClear="true"
+                        @change="handleSearchChange"
+                    >
+                    </a-input>
+                    <atlan-icon
+                        icon="Cancel"
+                        class="w-auto h-5 mr-1 text-gray-500 cursor-pointer"
+                        @click="$emit('closeModal')"
+                    />
+                </div>
             </template>
-            <div class="flex flex-col overflow-y-auto h-96">
-                <div v-for="item in list" :key="item?.guid">
+            <div class="flex flex-col overflow-y-auto max-h-96">
+                <div
+                    v-if="!list?.length && queryText.length"
+                    class="flex flex-col items-center justify-center pt-12 pb-20 "
+                >
+                    <atlan-icon icon="NoResultsFound" class="w-auto h-40" />
+                    <span class="flex items-center">
+                        No results found for
+                        <span class="font-bold"> "{{ queryText }}"</span>
+                    </span>
+                </div>
+                <div v-for="item in list" v-else :key="item?.guid">
                     <AssetCard :item="item" />
                 </div>
             </div>
+            <template #footer>
+                <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
+                    <span>
+                        Protip: Add
+                        <span class="text-primary">description:</span>
+                        to search for just within description
+                    </span>
+                </div>
+            </template>
         </a-modal>
     </div>
 </template>
@@ -154,7 +183,7 @@
 <style lang="less" module>
     .modalStyles {
         :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 border-green-600 !important;
         }
         :global(.ant-input):focus,
         :global(.ant-input):hover {
@@ -163,13 +192,15 @@
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;
         }
-
+        :global(.focus-visible) {
+            @apply shadow-none outline-none px-0 border-0 border-green-600 !important;
+        }
         :global(.ant-modal-header) {
-            @apply px-4  !important;
+            @apply px-0  !important;
         }
 
         :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 border-b-0  !important;
+            @apply border-0 border-t-0 px-0 pt-0 pb-0 border-b-0  !important;
         }
         :global(.ant-modal-body) {
             @apply px-0 pt-0 pb-4 !important;

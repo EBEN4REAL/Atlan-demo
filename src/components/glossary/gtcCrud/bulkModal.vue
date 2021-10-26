@@ -58,6 +58,7 @@
             const visible = ref<boolean>(false)
             const uploadStatus = ref()
             const handleStartUpload = inject('handleStartUpload')
+            const handleStopUpload = inject('handleStopUpload')
             const router = useRouter()
             const redirectToProfile = redirect(router)
 
@@ -80,6 +81,7 @@
 
             const showModal = async () => {
                 visible.value = true
+                handleStopUpload()
             }
 
             const handleCancel = () => {
@@ -87,14 +89,16 @@
             }
 
             const handleFormChange = (data) => {
-                if (data.key) handleCreateWorkflow(data.key)
+                if (data.key) {
+                    handleCreateWorkflow(data.key)
+                }
             }
             const handleCreateWorkflow = (s3Key) => {
                 const body = computed(() => ({
                     metadata: {
-                        name: `atlan-glossary-bulk-upload-${props.entity.guid.slice(
+                        name: `atlan-gtc-bulk-upload-${props.entity.guid.slice(
                             -8
-                        )}`,
+                        )}-${s3Key.slice(8, 14)}`,
                         namespace: 'default',
                         labels: {},
                     },
@@ -172,9 +176,9 @@
                         })
                         visible.value = false
                         handleStartUpload(
-                            `atlan-glossary-bulk-upload-${props.entity.guid.slice(
+                            `atlan-gtc-bulk-upload-${props.entity.guid.slice(
                                 -8
-                            )}`
+                            )}-${s3Key.slice(8, 14)}`
                         )
                         setTimeout(() => {
                             redirectToProfile(

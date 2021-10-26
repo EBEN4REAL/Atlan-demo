@@ -51,7 +51,8 @@
                                             v-model:value="newName"
                                             style="width: 200px"
                                         />
-                                        // TODO: remove old untitled glossary flow
+                                        // TODO: remove old untitled glossary
+                                        flow
                                         <a-button
                                             v-if="newName"
                                             class="ml-4"
@@ -281,11 +282,16 @@
                 workflow.value = workflowName
                 startUpload.value = true
             }
+            const handleStopUpload = () => {
+                startUpload.value = false
+            }
+
             provide('bulkUploadTriggers', {
                 startUpload,
                 workflowName: workflow,
             })
             provide('handleStartUpload', handleStartUpload)
+            provide('handleStopUpload', handleStopUpload)
 
             return {
                 glossary,

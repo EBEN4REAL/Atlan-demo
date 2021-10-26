@@ -103,6 +103,7 @@
                 if (percentage.value >= 100) stopGetProgress()
             }
             const triggerUpload = (workflowName) => {
+                percentage.value = 20
                 workflowTemplate.value = workflowName
                 if (!nIntervId) {
                     nIntervId = setInterval(getProgress, 45000)

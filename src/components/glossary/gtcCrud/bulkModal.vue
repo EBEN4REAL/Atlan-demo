@@ -48,11 +48,20 @@
                 </span>
             </div>
         </a-upload-dragger> -->
+        <div class="flex space-x-32">
+            <FormGen :config="formConfig" @change="handleFormChange" />
+            <span class="ml-12 text-gray-500"
+                >Click the button on the left to upload a valid CSV file
+                containing data. You’ll be able to clean up or remove any
+                corrupted data before finalizing your upload.
+            </span>
+        </div>
         <!-- Modal footer -->
-        <FormGen :config="formConfig" @change="handleFormChange" />
         <template #footer>
             <div class="flex items-center">
-                <a-button class="px-2">Download sample CSV template</a-button>
+                <a-button class="px-2" @click="handleDownload"
+                    >Download sample CSV template</a-button
+                >
                 <span class="text-primary ml-7">Learn more</span>
             </div>
         </template>
@@ -60,15 +69,12 @@
 </template>
 
 <script lang="ts">
+    import { useRouter } from 'vue-router'
     import { defineComponent, ref, inject, computed, watch } from 'vue'
     import { message } from 'ant-design-vue'
-    import {
-        Glossary,
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
     import FormGen from '~/components/common/formGenerator/index.vue'
     import { createWorkflow } from '~/composables/workflow/useWorkFlowList'
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         components: { FormGen },
@@ -84,12 +90,14 @@
             const visible = ref<boolean>(false)
             const uploadStatus = ref()
             const handleStartUpload = inject('handleStartUpload')
+            const router = useRouter()
+            const redirectToProfile = redirect(router)
 
             const formConfig = ref([
                 {
                     type: 'upload',
                     id: 'test',
-                    label: 'Uploader',
+                    label: '',
                     isVisible: true,
                     requestConfig: {
                         url: 'http://{{domain}}/api/service/files',
@@ -108,26 +116,6 @@
 
             const handleCancel = () => {
                 visible.value = false
-            }
-
-            const handleUploadChange = (info: FileInfo) => {
-                const { status } = info.file
-                uploadStatus.value = status
-                if (status !== 'uploading') {
-                    console.log(info.file, info.fileList)
-                }
-                if (status === 'done') {
-                    message.success(
-                        `${info.file.name} file uploaded successfully.`
-                    )
-                } else if (status === 'error') {
-                    message.error(`${info.file.name} file upload failed.`)
-                    handleStartUpload()
-                }
-            }
-            const handleCustomRequest = () => {
-                console.log('custom upload request goes in this function')
-                handleStartUpload()
             }
 
             const handleFormChange = (data) => {
@@ -194,9 +182,6 @@
                         ],
                     },
                 }))
-
-                console.log(body)
-
                 const { data, error, isLoading, mutate } = createWorkflow(
                     body,
                     false
@@ -211,10 +196,25 @@
                     if (data.value && !error.value) {
                         console.log(data)
                         message.success({
-                            content: `created!`,
+                            content: `Starting bulk upload!`,
                             key: `${s3Key}`,
                             duration: 2,
                         })
+                        visible.value = false
+                        handleStartUpload(
+                            `atlan-glossary-bulk-upload-${props.entity.guid.slice(
+                                -8
+                            )}`
+                        )
+                        setTimeout(() => {
+                            redirectToProfile(
+                                'AtlasGlossary',
+                                props.entity?.guid,
+                                {
+                                    tab: 'overview',
+                                }
+                            )
+                        }, 2000)
                     } else {
                         console.log({ error: error.value })
                         const errMsg = error.value?.response?.data?.message
@@ -226,16 +226,18 @@
                     }
                 })
             }
+            const handleDownload = () => {
+                window.open('/src/assets/samples/sample_terms.csv')
+            }
             return {
                 handleCancel,
                 showModal,
                 visible,
-                handleUploadChange,
                 fileList: ref([]),
-                handleCustomRequest,
                 uploadStatus,
                 formConfig,
                 handleFormChange,
+                handleDownload,
             }
         },
     })

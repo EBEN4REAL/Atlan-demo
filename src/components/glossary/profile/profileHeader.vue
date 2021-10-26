@@ -114,14 +114,14 @@
                 >
             </a-dropdown>
             <ThreeDotMenu :entity="entity" :showLinks="false" />
-            <BulkModal :entity="entity">
+            <!-- <BulkModal :entity="entity">
                 <template #trigger>
                     <div class="flex items-center">
                         <AtlanIcon icon="Term" class="m-0 mr-2 text-primary" />
                         <p class="p-0 m-0 capitalize">Bulk upload terms</p>
                     </div>
                 </template>
-            </BulkModal>
+            </BulkModal> -->
         </div>
     </div>
 
@@ -194,11 +194,9 @@
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import redirect from '@/glossary/utils/redirectToProfile'
-    import BulkModal from '@/glossary/gtcCrud/bulkModal.vue'
     export default defineComponent({
         components: {
             ThreeDotMenu,
-            BulkModal,
         },
         props: {
             title: {

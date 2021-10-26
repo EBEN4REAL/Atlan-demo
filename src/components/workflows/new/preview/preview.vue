@@ -17,11 +17,12 @@
             :placeholder="`Untitled Workflow`"
             class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
         ></a-input>
+        <p class="text-red-600" v-if="invalidName">warning</p>
         <template #footer>
             <div class="flex items-center justify-end space-x-3">
-                <a-checkbox v-model:checked="runNow" class="mr-auto"
+                <!-- <a-checkbox v-model:checked="runNow" class="mr-auto"
                     >Run Immediately?</a-checkbox
-                >
+                > -->
                 <a-button @click="visible = false">Cancel</a-button>
                 <a-button
                     type="primary"
@@ -136,6 +137,12 @@
             const router = useRouter()
 
             const workflowName = ref('')
+
+            const invalidName = computed(() => {
+                const r =
+                    /[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/
+                return r.test(workflowName.value)
+            })
 
             const handleSetupWorkflow = () => {
                 visible.value = true
@@ -262,6 +269,7 @@
 
             return {
                 overview,
+                invalidName,
                 workflowTemplate,
                 runNow,
                 handleSetupWorkflow,

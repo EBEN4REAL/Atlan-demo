@@ -63,11 +63,39 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.glossary.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Category>>
     }
-    const getRootTerms = async (glossaryQualifiedName: Ref<string>, offset?: number) => {
+    const getAllCategories = async (glossaryQualifiedName: string, offset?: number) => {
+        const body = {
+            dsl: {
+                size: defaultLimit,
+                from: offset ?? 0,
+                query: {
+                    bool: {
+                        filter: [
+                            {
+                                wildcard: {
+                                    qualifiedName: `*${glossaryQualifiedName}`
+                                }
+                            },
+                            {
+                                term: {
+                                    "__typeName.keyword":  "AtlasGlossaryCategory"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            attributes
+        }
+        return useAPIPromise(KeyMaps.glossary.INDEX_SEARCH(), 'POST', {
+            body,
+        }) as Promise<BasicSearchResponse<Category>>
+    }
+    const getRootTerms = async (glossaryQualifiedName: string, offset?: number) => {
         const body = {
             dsl: {
                 size: defaultLimit,
@@ -98,7 +126,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.glossary.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Term>>
     }
@@ -128,7 +156,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.glossary.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Category>>
     }
@@ -158,7 +186,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(KeyMaps.glossary.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Term>>
     }
@@ -167,7 +195,8 @@ const useLoadGlossaryTreeData = () => {
         getRootCategories,
         getRootTerms,
         getSubCategories,
-        getSubTerms
+        getSubTerms,
+        getAllCategories
     }
 }
 

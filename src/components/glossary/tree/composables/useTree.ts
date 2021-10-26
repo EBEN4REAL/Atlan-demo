@@ -43,7 +43,7 @@ const useTree = ({
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
 
     const categoryMap: {
-        [key: string]: Components.Schemas.AtlasGlossaryCategory[]
+        [key: string]: Category[]
     } = {}
     const treeData = ref<TreeDataItem[]>([])
     const parentGlossary = ref<Glossary>()
@@ -76,13 +76,14 @@ const useTree = ({
         getRootCategories,
         getRootTerms,
         getSubCategories,
-        getSubTerms
+        getSubTerms,
+        getAllCategories
      } = useLoadGlossaryTreeData();
 
     const returnTreeDataItemAttributes = (
         item:
-            | Components.Schemas.AtlasGlossaryCategory
-            | Components.Schemas.AtlasGlossaryTerm,
+            | Category
+            | Term,
         type: 'term' | 'category',
         glossaryGuid: string,
         isRoot?: Boolean,
@@ -90,7 +91,8 @@ const useTree = ({
     ) => {
         return {
             ...item,
-            title: item.name,
+            ...item.attributes,
+            title: item.attributes.name,
             key: item.guid,
             glossaryID: glossaryGuid,
             parentCategoryId: parentCategoryId,
@@ -152,22 +154,19 @@ const useTree = ({
      * Reinitializes the entire tree while and **loses the expanded state of the tree**
      * @param guid - Guid of the parent Glossary
      */
-    const initTreeData = async (guid?: string) => {
-        if (guid) {
-            let categoryList;
+    const initTreeData = async (guid?: string, qualifiedName?: string) => {
+        if (qualifiedName && guid) {
+            let categoryList: Category[];
             try{
-                categoryList = await GlossaryApi.ListCategoryForGlossary(
-                    guid,
-                    {}
-                ) // all categories in a glossary
+                const categoriesData = await getAllCategories(qualifiedName) // all categories in a glossary
+                categoryList = categoriesData.entities ?? []
             } catch {
                 categoryList = []
             }
-            let termsList;
+            let termsList: Term[];
             try {
-                termsList = await GlossaryApi.ListTermsForGlossary(guid, {
-                    limit: defaultLimit,
-                }) // root level terms
+                const termsData = await getRootTerms(qualifiedName) // root level terms
+                termsList = termsData.entities ?? []
             } catch {
                 termsList = []
             }
@@ -175,30 +174,25 @@ const useTree = ({
             categoryMap[guid] = categoryList
             treeData.value = []
 
-            categoryList?.forEach((element) => {
+            categoryList?.forEach((category) => {
                 // if category is root level, i.e `categoryGuid` does not exist
-                if (!element.parentCategory?.categoryGuid) {
-                    if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
+                if (!category.attributes.parentCategory) {
+                    if (category.guid) nodeToParentKeyMap[category.guid] = 'root'
                     treeData.value.push(
-                        returnTreeDataItemAttributes(element, 'category', guid)
+                        returnTreeDataItemAttributes(category, 'category', guid)
                     )
                 }
             })
-            termsList?.forEach((element) => {
-                if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
+            termsList?.forEach((term) => {
+                if (term.guid) nodeToParentKeyMap[term.guid] = 'root'
                 treeData.value.push(
-                    returnTreeDataItemAttributes(element, 'term', guid)
+                    returnTreeDataItemAttributes(term, 'term', guid)
                 )
             })
             checkAndAddLoadMoreNode(termsList, defaultLimit, 'root', 'root')
 
             isInitingTree.value = false
-            // selectedKeys.value.push(guid)
-            // Logic to expand tree
-            // if(currentEntity.value?.typeName === 'AtlasGlossaryCategory'){
-            //     loadedKeys.value.push(currentEntity.value?.attributes?.parentCategory?.guid)
 
-            // }
         } else {
             treeData.value = []
             if (glossaryList.value?.length) {
@@ -1213,7 +1207,7 @@ const useTree = ({
             if (parentGlossary.value?.guid !== newEntity.guid) {
                 parentGlossary.value = newEntity
                 treeData.value = []
-                initTreeData(parentGlossary.value.guid)
+                initTreeData(parentGlossary.value?.guid, parentGlossary.value?.attributes?.qualifiedName)
             }
         }
     })

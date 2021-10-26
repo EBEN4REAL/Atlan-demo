@@ -65,7 +65,7 @@
                         >Searching...</span
                     >
                 </div> -->
-                <!-- <div
+                <div
                     v-if="list && list.length <= 0 && !isLoading"
                     class="flex-grow"
                 >
@@ -82,7 +82,7 @@
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     @loadMore="loadMore"
-                /> -->
+                />
             </div>
         </div>
     </div>

@@ -19,13 +19,17 @@
         >
             <template #title="node">
                 <div class="flex items-center" v-if="node.type == 'connector'">
-                    <img :src="node.image" class="w-auto h-4 mr-2" />
+                    <img :src="node.image" class="w-auto h-4 mr-1" />
                     <div v-if="node.type == 'connector'" class="text-gray-700">
                         {{ capitalizeFirstLetter(node.name) }}
                     </div>
                 </div>
                 <div class="flex flex-col" v-else>
-                    <div class="">{{ node.name }}</div>
+                    <div class="flex items-center">
+                        <img :src="node.image" class="w-auto h-4 mr-1" />
+                        <div class="">{{ node.name }}</div>
+                    </div>
+
                     <div class="text-xs text-gray-500">
                         {{ node.count }} assets
                     </div>
@@ -36,13 +40,13 @@
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
-        <!-- <AssetDropdown
+        <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
             :filter="data"
             @change="handleChange"
             @label-change="setPlaceholder($event, 'asset')"
-        ></AssetDropdown> -->
+        ></AssetDropdown>
     </div>
 </template>
 
@@ -88,6 +92,9 @@
                     name: i.attributes.displayName || i.attributes.name,
                     value: i.attributes.qualifiedName,
                     connector: i.attributes.connectorName,
+                    image: sourceList.find(
+                        (s) => s.id === i.attributes.connectorName
+                    )?.image,
                     count: i.attributes.assetCount,
                     type: 'connection',
                     isLeaf: true,
@@ -145,6 +152,15 @@
                     : sourceList
             )
 
+            const filteredConnector = computed(() =>
+                filteredList.value.find((item) => item.id === connector.value)
+            )
+
+            function setPlaceholder(label: string, type: string) {
+                placeholderLabel.value[type] = label
+                if (type === 'connector') placeholderLabel.value.asset = ''
+            }
+
             const expandedKeys = ref<string[]>([])
 
             const selectNode = (value, node?: any) => {
@@ -177,7 +193,40 @@
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
 
+            const emitChangedFilters = () => {
+                const criterion: Components.Schemas.FilterCriteria[] = []
+                if (connection.value) {
+                    criterion?.push({
+                        attributeName: 'connectionQualifiedName',
+                        attributeValue: connection.value,
+                        operator: 'eq',
+                    })
+                } else if (connector.value) {
+                    criterion?.push({
+                        attributeName: 'connectorName',
+                        attributeValue: connector.value,
+                        operator: 'eq',
+                    })
+                }
+                emit('change')
+            }
+
+            const handleChange = ({
+                attributeName,
+                attributeValue,
+            }: Record<string, string>) => {
+                if (attributeName && attributeValue) {
+                    emit('update:data', { attributeName, attributeValue })
+                    emit('change')
+                } else {
+                    selectNode(data.value?.attributeValue)
+                    emitChangedFilters()
+                }
+            }
+
             return {
+                data,
+                handleChange,
                 onChange,
                 expandedKeys,
                 selectNode,
@@ -189,6 +238,9 @@
                 capitalizeFirstLetter,
                 connector,
                 connection,
+                filteredConnector,
+                placeholderLabel,
+                setPlaceholder,
             }
         },
     })
@@ -199,7 +251,7 @@
             width: 18px !important;
             height: 24px !important;
             line-height: 24px !important;
-            margin-top: -4px !important;
+            margin-top: -12px !important;
         }
         .ant-select-switcher-icon {
             font-weight: normal !important;

@@ -87,6 +87,7 @@
             const assetType = ref<String>(props.modelValue)
 
             const handleChange = () => {
+                console.log('sadasd')
                 emit('update:modelValue', assetType.value)
             }
 

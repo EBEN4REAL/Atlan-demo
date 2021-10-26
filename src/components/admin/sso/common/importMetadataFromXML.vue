@@ -13,6 +13,7 @@
             color="secondary"
             padding="compact"
             size="sm"
+            class="shadow-sm"
             @click="downloadMetadataFile"
         >
             <span class="ml-1">Import from XML</span>

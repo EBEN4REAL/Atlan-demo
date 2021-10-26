@@ -1,205 +1,150 @@
 <template>
-    <DefaultLayout>
-        <template #header>
-            <div class="flex items-center pb-3 -mt-3 text-2xl text-gray">
-                <span>Single Sign on</span>
-            </div>
-        </template>
-        <div class="px-2 mx-auto text-gray-600 bg-white rounded">
-            <div v-if="Object.keys(ssoProvider).length">
-                <div class="flex items-center justify-between mb-5">
-                    <div class="flex items-center text-lg">
-                        <img
-                            v-if="!provider.isCustomSaml"
-                            :src="provider.image"
-                            alt="provider"
-                            class="w-4 mr-2"
-                        />
-                        <fa
-                            v-else
-                            icon="fas key"
-                            class="p-1 mr-2 text-3xl bg-yellow-400 rounded"
-                        />
-                        <span>{{ provider.title || 'SAML 2.0' }}</span>
+    <div class="mx-auto text-gray-600 bg-white rounded">
+        <div class="mt-5 provider-wrapper">
+            <div>
+                <div class="mb-16">
+                    <div class="mb-6 font-bold text-gray-700">
+                        Service provider metadata
                     </div>
-                </div>
-                <MinimalTab
-                    v-model:active="activeTabKey"
-                    :data="tabConfig"
-                    class="sso-tabs"
-                />
-                <div class="mt-5 provider-wrapper">
-                    <div>
-                        <div class="mb-16">
-                            <div class="mb-6 font-bold text-gray-700">
-                                Service provider metadata
+                    <div class="mb-4">
+                        <div class="mb-2.5">Atlan SAML Assertion URL</div>
+                        <div class="flex justify-between mb-2 text-gray-500">
+                            <div class="mr-3 break-all">
+                                {{
+                                    getSamlAssertionUrl(ssoForm.alias)
+                                        .redirectUrl
+                                }}
                             </div>
-                            <div class="mb-4">
-                                <div class="mb-2.5">
-                                    Atlan SAML Assertion URL
-                                </div>
-                                <div
-                                    class="flex justify-between mb-2 text-gray-500 "
-                                >
-                                    <div class="mr-3 break-all">
-                                        {{
+                            <div
+                                class="flex items-center cursor-pointer  text-primary"
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="mb-0.5"
+                                    @click="
+                                        copyText(
                                             getSamlAssertionUrl(ssoForm.alias)
                                                 .redirectUrl
-                                        }}
-                                    </div>
-                                    <div
-                                        class="flex items-center cursor-pointer  text-primary"
-                                    >
-                                        <AtlanIcon
-                                            icon="CopyOutlined"
-                                            class="mb-0.5"
-                                            @click="
-                                                copyText(
-                                                    getSamlAssertionUrl(
-                                                        ssoForm.alias
-                                                    ).redirectUrl
-                                                )
-                                            "
-                                        ></AtlanIcon>
-                                        <div class="ml-1">Copy</div>
-                                    </div>
-                                </div>
+                                        )
+                                    "
+                                ></AtlanIcon>
+                                <div class="ml-1">Copy</div>
                             </div>
-                            <div class="mb-4">
-                                <div class="mb-2.5">
-                                    Atlan Audience URL (SP Entity ID)
-                                </div>
-                                <div
-                                    class="flex justify-between mb-2 text-gray-500 "
-                                >
-                                    <div class="mr-3 break-all">
-                                        {{
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="mb-2.5">
+                            Atlan Audience URL (SP Entity ID)
+                        </div>
+                        <div class="flex justify-between mb-2 text-gray-500">
+                            <div class="mr-3 break-all">
+                                {{
+                                    getSamlAssertionUrl(ssoForm.alias)
+                                        .audienceUrl
+                                }}
+                            </div>
+                            <div
+                                class="flex items-center cursor-pointer  text-primary"
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="mb-0.5"
+                                    @click="
+                                        copyText(
                                             getSamlAssertionUrl(ssoForm.alias)
                                                 .audienceUrl
-                                        }}
-                                    </div>
-                                    <div
-                                        class="flex items-center cursor-pointer  text-primary"
-                                    >
-                                        <AtlanIcon
-                                            icon="CopyOutlined"
-                                            class="mb-0.5"
-                                            @click="
-                                                copyText(
-                                                    getSamlAssertionUrl(
-                                                        ssoForm.alias
-                                                    ).audienceUrl
-                                                )
-                                            "
-                                        ></AtlanIcon>
-                                        <div class="ml-1">Copy</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="mb-2.5">Atlan SSO metadata</div>
-                                <div>
-                                    <AtlanBtn
-                                        color="secondary"
-                                        padding="compact"
-                                        size="sm"
-                                        @click="downloadMetadataFile"
-                                    >
-                                        <div class="flex flex-row items-center">
-                                            <fa
-                                                icon="fal arrow-down"
-                                                class="text-sm"
-                                            ></fa>
-                                            <span class="ml-1"
-                                                >Download metadata file</span
-                                            >
-                                        </div>
-                                    </AtlanBtn>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="font-bold text-gray-700">
-                                Identity provider metadata
-                            </div>
-                            <ImportMetadataFromXML
-                                @setSSODetails="setSSODetails"
-                            />
-                        </div>
-
-                        <a-form
-                            ref="form"
-                            label-align="left"
-                            :model="ssoForm"
-                            :colon="false"
-                            layout="vertical"
-                        >
-                            <a-form-item>
-                                <template #label>
-                                    <div class="">
-                                        <div class="mb-2">SAML SSO URL</div>
-                                    </div>
-                                </template>
-                                <a-input
-                                    v-model:value="
-                                        ssoForm.singleSignOnServiceUrl
+                                        )
                                     "
-                                />
-                            </a-form-item>
-                            <a-form-item>
-                                <template #label>
-                                    <span>
-                                        <div class="mb-2">Path Certificate</div>
-                                    </span>
-                                </template>
-                                <a-textarea
-                                    v-model:value="ssoForm.signingCertificate"
-                                    :rows="4"
-                                />
-                                <span class="text-gray-500"
-                                    >Paste x.509 Certificate here or
-                                    <ImportText
-                                        @importCertificate="importCertificate"
-                                    />
-                                </span>
-                            </a-form-item>
-                            <div class="flex justify-end mt-3">
-                                <div>
-                                    <AtlanBtn
-                                        type="primary"
-                                        :loading="isLoading"
-                                        padding="compact"
-                                        size="sm"
-                                        class="px-5"
-                                        @click="updateSSO"
-                                    >
-                                        <span class="font-bold">Update</span>
-                                    </AtlanBtn>
-                                </div>
+                                ></AtlanIcon>
+                                <div class="ml-1">Copy</div>
                             </div>
-                        </a-form>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="mb-2.5">Atlan SSO metadata</div>
+                        <div>
+                            <AtlanBtn
+                                color="secondary"
+                                padding="compact"
+                                size="sm"
+                                class="shadow-sm"
+                                @click="downloadMetadataFile"
+                            >
+                                <div class="flex flex-row items-center">
+                                    <fa
+                                        icon="fal arrow-down"
+                                        class="text-sm"
+                                    ></fa>
+                                    <span class="ml-1"
+                                        >Download metadata file</span
+                                    >
+                                </div>
+                            </AtlanBtn>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div v-else>
-                <div class="w-full p-4 text-center h-96">
-                    <img
-                        :src="emptySSOImage"
-                        class="h-48 p-2 mx-auto"
-                        alt="Empty Image"
-                    />
-                    <strong class="block py-8 text-lg"
-                        >Oops! SSO provider doesn't exist.</strong
-                    >
-                    <router-link to="/admin/sso">
-                        <a-button style="width: 150px" type="primary">
-                            Go Back
-                        </a-button>
-                    </router-link>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="font-bold text-gray-700">
+                        Identity provider metadata
+                    </div>
+                    <ImportMetadataFromXML @setSSODetails="setSSODetails" />
                 </div>
+
+                <a-form
+                    ref="form"
+                    label-align="left"
+                    :model="ssoForm"
+                    :colon="false"
+                    layout="vertical"
+                >
+                    <a-form-item>
+                        <template #label>
+                            <div class="">
+                                <div class="mb-2">SAML SSO URL</div>
+                            </div>
+                        </template>
+                        <a-input
+                            v-model:value="ssoForm.singleSignOnServiceUrl"
+                        />
+                    </a-form-item>
+                    <a-form-item>
+                        <template #label>
+                            <span>
+                                <div class="mb-2">Path Certificate</div>
+                            </span>
+                        </template>
+                        <a-textarea
+                            v-model:value="ssoForm.signingCertificate"
+                            :rows="4"
+                        />
+                        <span class="text-gray-500"
+                            >Paste x.509 Certificate here or
+                            <ImportText
+                                @importCertificate="importCertificate"
+                            />
+                        </span>
+                    </a-form-item>
+                    <div class="flex justify-end mt-3">
+                        <div>
+                            <AtlanBtn
+                                type="primary"
+                                :is-loading="isLoading"
+                                padding="compact"
+                                size="sm"
+                                class="px-5"
+                                @click="updateSSO"
+                            >
+                                <span v-if="isLoading" class="font-bold"
+                                    >Updating</span
+                                >
+                                <span v-else class="font-bold">Update</span>
+                            </AtlanBtn>
+                        </div>
+                    </div>
+                </a-form>
             </div>
         </div>
-    </DefaultLayout>
+    </div>
 </template>
 <script lang="ts">
 import {
@@ -231,7 +176,6 @@ import { downloadFile } from '~/utils/library/download'
 
 import { IdentityProvider } from '~/api/auth/identityProvider'
 import { Tenant } from '~/api/auth/tenant'
-import MinimalTab from '@/UI/minimalTab.vue'
 
 interface FormState {
     alias: string
@@ -240,7 +184,7 @@ interface FormState {
 }
 
 export default defineComponent({
-    components: { ImportMetadataFromXML, ImportText, AtlanBtn, MinimalTab },
+    components: { ImportMetadataFromXML, ImportText, AtlanBtn },
     props: ['alias'],
     setup(props, context) {
         console.log(context, 'context')
@@ -359,20 +303,7 @@ export default defineComponent({
                 data?.config?.singleSignOnServiceUrl
             ssoForm.signingCertificate = data?.config?.signingCertificate
         })
-        const tabConfig = computed(() => [
-            {
-                label: 'Overview',
-                key: 'overview',
-            },
-            {
-                label: 'Configure',
-                key: 'configure',
-            },
-        ])
-        const activeTabKey = ref('overview')
-        const changeActiveTab = (key) => {
-            activeTabKey.value = key
-        }
+
         return {
             ssoForm,
             labelCol: { span: 4 },
@@ -388,10 +319,6 @@ export default defineComponent({
             updateSSO,
             emptySSOImage,
             downloadMetadataFile,
-            tabConfig,
-            activeTabKey,
-            changeActiveTab,
-            MinimalTab,
         }
     },
 })

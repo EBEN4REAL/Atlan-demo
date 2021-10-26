@@ -1,7 +1,11 @@
 <template>
     <div class="flex flex-col justify-center h-full bg-primary-light">
         <component
-            :is="identityProviders.length ? 'router-view' : 'EmptySSOScreen'"
+            :is="
+                identityProviders.length && alias
+                    ? 'router-view'
+                    : 'EmptySSOScreen'
+            "
             class="flex flex-col justify-center h-3/4"
         />
         <!-- <DisplaySSO
@@ -14,8 +18,9 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, watch } from 'vue'
 import { useHead } from '@vueuse/head'
+import { useRouter } from 'vue-router'
 import EmptySSOScreen from '@/admin/sso/configure/emptySSOScreen.vue'
 import DisplaySSO from '@/admin/sso/update/displaySSO.vue'
 import { useTenantStore } from '~/services/keycloak/tenant/store'
@@ -30,13 +35,21 @@ export default defineComponent({
         useHead({
             title: 'SSO',
         })
-
+        const router = useRouter()
         const tenantStore = useTenantStore()
         const identityProviders = computed(
             () => tenantStore.getIdentityProviders
         )
+        const alias = computed(() => identityProviders?.value?.[0]?.alias)
+        if (
+            alias.value &&
+            identityProviders.value &&
+            identityProviders.value.length
+        )
+            router.push(`/admin/sso/${alias.value}`)
         return {
             identityProviders,
+            alias,
         }
     },
 })

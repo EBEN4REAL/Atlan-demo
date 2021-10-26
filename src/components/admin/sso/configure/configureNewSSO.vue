@@ -2,13 +2,39 @@
     <DefaultLayout>
         <template #header>
             <div class="flex items-center pb-3 -mt-3 text-2xl text-gray">
-                <div class="flex mr-3 cursor-pointer" @click="showConfigScreen">
-                    <AtlanIcon icon="CaretLeft" class="h-6" />
-                </div>
-                <span>Single Sign on</span>
+                <!-- <div class="flex mr-3 cursor-pointer" @click="showConfigScreen"> -->
+                <a-button
+                    class="
+                        pl-0
+                        pr-0
+                        border-transparent
+                        shadow-none
+                        hover:border-gray-300 hover:px-1
+                        py-0.5
+                    "
+                    @click="$router.back()"
+                >
+                    <atlan-icon
+                        icon="ArrowRight"
+                        class="w-5 h-5 text-gray-500 transform rotate-180"
+                    />
+                </a-button>
+                <!-- <AtlanBtn
+                    padding="compact"
+                    size="sm"
+                    class="px-0 bg-transparent border-none hover:border hover:border-gray"
+                    @click="showConfigScreen"
+                >
+                    <AtlanIcon
+                        icon="ArrowRight"
+                        class="transform rotate-180 text-gray"
+                    />
+                </AtlanBtn> -->
+
+                <span class="ml-0.5">Single Sign on</span>
             </div>
         </template>
-        <div class="px-2 mx-auto text-gray-600 bg-white rounded">
+        <div class="mx-auto text-gray-600 bg-white rounded">
             <div class="flex items-center justify-between mb-5">
                 <div class="flex items-center text-lg">
                     <img
@@ -24,9 +50,6 @@
                     />
                     <span>{{ provider.title || 'SAML 2.0' }}</span>
                 </div>
-                <!-- <a-button type="link" @click="showConfigScreen">
-                    <fa icon="fal times" class="text-xl text-gray-600"></fa>
-                </a-button> -->
             </div>
 
             <span v-if="provider.isCustomSaml" class="block my-2">
@@ -79,17 +102,16 @@
                                 </div>
                                 <div
                                     class="flex items-center cursor-pointer  text-primary"
+                                    @click="
+                                        copyText(
+                                            getSamlAssertionUrl(config.alias)
+                                                .redirectUrl
+                                        )
+                                    "
                                 >
                                     <AtlanIcon
                                         icon="CopyOutlined"
                                         class="mb-0.5"
-                                        @click="
-                                            copyText(
-                                                getSamlAssertionUrl(
-                                                    config.alias
-                                                ).redirectUrl
-                                            )
-                                        "
                                     ></AtlanIcon>
                                     <div class="ml-1">Copy</div>
                                 </div>
@@ -110,17 +132,16 @@
                                 </div>
                                 <div
                                     class="flex items-center cursor-pointer  text-primary"
+                                    @click="
+                                        copyText(
+                                            getSamlAssertionUrl(config.alias)
+                                                .audienceUrl
+                                        )
+                                    "
                                 >
                                     <AtlanIcon
                                         icon="CopyOutlined"
                                         class="mb-0.5"
-                                        @click="
-                                            copyText(
-                                                getSamlAssertionUrl(
-                                                    config.alias
-                                                ).audienceUrl
-                                            )
-                                        "
                                     ></AtlanIcon>
                                     <div class="ml-1">Copy</div>
                                 </div>
@@ -133,6 +154,7 @@
                                     color="secondary"
                                     padding="compact"
                                     size="sm"
+                                    class="shadow-sm"
                                     @click="downloadMetadataFile"
                                 >
                                     <div class="flex flex-row items-center">
@@ -269,13 +291,18 @@
                             <div>
                                 <AtlanBtn
                                     type="primary"
-                                    :loading="isLoading"
+                                    :is-loading="isLoading"
                                     padding="compact"
                                     size="sm"
                                     class="px-5"
                                     @click="onSubmit"
                                 >
-                                    <span class="font-bold">Configure</span>
+                                    <span v-if="isLoading" class="font-bold"
+                                        >Configuring</span
+                                    >
+                                    <span v-else class="font-bold"
+                                        >Configure</span
+                                    >
                                 </AtlanBtn>
                             </div>
                         </div>
@@ -337,7 +364,7 @@ export default defineComponent({
     },
     props: ['selectedProvider'],
     emits: ['showConfigScreen'],
-    setup(props, context) {
+    setup() {
         const route = useRoute()
         const router = useRouter()
         const alias = ref(route?.params?.alias ?? '')
@@ -401,7 +428,7 @@ export default defineComponent({
         })
 
         const showConfigScreen = () => {
-            router.push('/admin/sso')
+            router.push(`/admin/sso/${ssoForm.alias}`)
         }
 
         const changeAlias = (e: Event) => {

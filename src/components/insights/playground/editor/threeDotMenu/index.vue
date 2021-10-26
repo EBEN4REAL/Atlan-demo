@@ -53,7 +53,9 @@
                                 "
                                 @click="() => themeChange('vs')"
                                 @mouseover="() => themeHoverChange('vs')"
-                                @mouseleave="() => themeHoverChange(editorConfig.theme)"
+                                @mouseleave="
+                                    () => themeHoverChange(editorConfig.theme)
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> Light </span>
                                     <AtlanIcon
@@ -77,7 +79,9 @@
                                 "
                                 @click="() => themeChange('vs-dark')"
                                 @mouseover="() => themeHoverChange('vs-dark')"
-                                @mouseleave="() => themeChange(editorConfig.theme)"
+                                @mouseleave="
+                                    () => themeChange(editorConfig.theme)
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> Dark </span>
                                     <AtlanIcon
@@ -125,7 +129,9 @@
                                 "
                                 @click="() => tabChange(2)"
                                 @mouseover="() => tabHoverChange(2)"
-                                @mouseleave="() => tabHoverChange(editorConfig.tabSpace)"
+                                @mouseleave="
+                                    () => tabHoverChange(editorConfig.tabSpace)
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> 2 </span>
                                     <AtlanIcon
@@ -144,7 +150,9 @@
                                 "
                                 @click="() => tabChange(3)"
                                 @mouseover="() => tabHoverChange(3)"
-                                @mouseleave="() => tabHoverChange(editorConfig.tabSpace)"
+                                @mouseleave="
+                                    () => tabHoverChange(editorConfig.tabSpace)
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> 3 </span>
                                     <AtlanIcon
@@ -163,7 +171,9 @@
                                 "
                                 @click="() => tabChange(4)"
                                 @mouseover="() => tabHoverChange(4)"
-                                @mouseleave="() => tabHoverChange(editorConfig.tabSpace)"
+                                @mouseleave="
+                                    () => tabHoverChange(editorConfig.tabSpace)
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> 4 </span>
                                     <AtlanIcon
@@ -205,7 +215,12 @@
                                 "
                                 @click="() => fontSizeChange(12)"
                                 @mouseover="() => fontSizeHoverChange(12)"
-                                @mouseleave="() => fontSizeHoverChange(editorConfig.fontSize)"
+                                @mouseleave="
+                                    () =>
+                                        fontSizeHoverChange(
+                                            editorConfig.fontSize
+                                        )
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> 12 </span>
                                     <AtlanIcon
@@ -224,14 +239,17 @@
                                 key="14"
                                 :class="
                                     isThisFontSizeActive(editorConfig, 14)
-                                    
                                         ? 'bg-primary-light'
                                         : ''
                                 "
                                 @click="() => fontSizeChange(14)"
-
                                 @mouseover="() => fontSizeHoverChange(14)"
-                                @mouseleave="() => fontSizeHoverChange(editorConfig.fontSize)"
+                                @mouseleave="
+                                    () =>
+                                        fontSizeHoverChange(
+                                            editorConfig.fontSize
+                                        )
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> 14 </span>
                                     <AtlanIcon
@@ -254,9 +272,13 @@
                                         : ''
                                 "
                                 @click="() => fontSizeChange(16)"
-
                                 @mouseover="() => fontSizeHoverChange(16)"
-                                @mouseleave="() => fontSizeHoverChange(editorConfig.fontSize)"
+                                @mouseleave="
+                                    () =>
+                                        fontSizeHoverChange(
+                                            editorConfig.fontSize
+                                        )
+                                "
                                 ><div class="flex items-center justify-between">
                                     <span> 16 </span>
                                     <AtlanIcon
@@ -345,7 +367,6 @@
             const editorHoverConfig = inject(
                 'editorHoverConfig'
             ) as Ref<editorConfigInterface>
-            
 
             const selectedKeys = ref([editorConfig.value.theme])
             const monacoInstance = inject('monacoInstance') as Ref<any>
@@ -367,7 +388,7 @@
             const themeChange = (theme: string) => {
                 setEditorTheme(toRaw(monacoInstance.value), editorConfig, theme)
             }
-            console.log("editor data: ", editorConfig.value)
+            console.log('editor data: ', editorConfig.value)
 
             const tabChange = (tabSpace: number) => {
                 setTabSpaces(
@@ -385,7 +406,11 @@
             }
 
             const themeHoverChange = (theme: string) => {
-                setEditorTheme(toRaw(monacoInstance.value), editorHoverConfig, theme)
+                setEditorTheme(
+                    toRaw(monacoInstance.value),
+                    editorHoverConfig,
+                    theme
+                )
             }
 
             const tabHoverChange = (tabSpace: number) => {
@@ -402,7 +427,6 @@
                     fontSize
                 )
             }
-
 
             const duplicateQuery = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
@@ -439,7 +463,7 @@
                 isActive,
                 themeHoverChange,
                 fontSizeHoverChange,
-                tabHoverChange
+                tabHoverChange,
             }
         },
     })

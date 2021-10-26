@@ -26,7 +26,7 @@
                         />
                         <div
                             v-else
-                            class="flex flex-row w-full text-sm font-bold leading-5 text-primary"
+                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -43,13 +43,13 @@
             <div v-else-if="isLoading" class="flex items-center justify-center">
                 <LoadingView />
             </div>
-            <div
-                v-else-if="!treeData.length"
-            >
+            <div v-else-if="!treeData.length">
                 <div
-                    v-if="activeInlineTab.explorer.schema.connectors.attributeName==='connectionQualifiedName'"
-                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
-
+                    v-if="
+                        activeInlineTab?.explorer?.schema?.connectors
+                            ?.attributeName === 'connectionQualifiedName'
+                    "
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
                 >
                     <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                     <p class="mt-6 mb-0 text-base text-gray-700">
@@ -57,22 +57,33 @@
                     </p>
                 </div>
                 <div
-                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
-                    v-else-if="activeInlineTab.explorer.schema.connectors.attributeName==='databaseQualifiedName'"
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    v-else-if="
+                        activeInlineTab?.explorer?.schema?.connectors
+                            ?.attributeName === 'databaseQualifiedName'
+                    "
                 >
                     <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                     <p class="mt-6 mb-0 text-base text-gray-700">
                         No schemas available
                     </p>
                 </div>
-                
             </div>
         </div>
     </div>
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, computed, PropType, ref, toRef, watch, ComputedRef, inject } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        PropType,
+        ref,
+        toRef,
+        watch,
+        ComputedRef,
+        inject,
+    } from 'vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
     // components
@@ -152,14 +163,13 @@
         },
         inheritAttrs: false,
         setup(props, { emit }) {
-
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
             return {
                 StatusList,
-                activeInlineTab
+                activeInlineTab,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

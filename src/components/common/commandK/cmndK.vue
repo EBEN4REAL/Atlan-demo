@@ -7,7 +7,15 @@
             :class="$style.modalStyles"
             @cancel="$emit('closeModal')"
         >
-            <template #title> searchBar goes here </template>
+            <template #title>
+                <a-input
+                    v-model:value="queryText"
+                    class="border-0"
+                    :placeholder="dynamicSearchPlaceholder"
+                    :allowClear="true"
+                    @change="handleSearchChange"
+                />
+            </template>
             <div class="flex flex-col overflow-y-auto h-96">
                 <div v-for="item in list" :key="item?.guid">
                     <AssetCard :item="item" />
@@ -26,6 +34,7 @@
         toRefs,
     } from 'vue'
     import { useAssetListing } from '@/discovery/useAssetListing.ts'
+    import { useDebounceFn } from '@vueuse/core'
     import {
         BaseAttributes,
         BasicSearchAttributes,
@@ -35,10 +44,11 @@
     import { AssetTypeList } from '~/constant/assetType'
     import { useFilteredTabs } from '@/discovery/useTabMapped.ts'
     import AssetCard from '@/common/commandK/assetCard.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard },
+        components: { AssetCard, SearchAndFilter },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -60,6 +70,9 @@
             const offset = ref(0)
             const facets = ref({})
             const selectedTab = ref('Catalog')
+            const dynamicSearchPlaceholder = ref(
+                'Search for tables, columns, terms and more...'
+            )
             const assetTypeList = computed(() => {
                 const filteredTabs = AssetTypeList.filter(
                     (item) => item.isDiscoverable == true
@@ -115,17 +128,24 @@
 
                 replaceBody(initialBody)
             }
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                updateBody()
+            }, 150)
 
             console.log(list)
-            watch(isVisible, () => {
-                if (isVisible.value) {
-                    console.log('updateBody')
-                    updateBody()
-                }
-            })
+            // watch(isVisible, () => {
+            //     if (isVisible.value) {
+            //         console.log('updateBody')
+            //         updateBody()
+            //     }
+            // })
             return {
                 isVisible,
                 list,
+                handleSearchChange,
+                queryText,
+                dynamicSearchPlaceholder,
             }
         },
     })
@@ -133,6 +153,17 @@
 
 <style lang="less" module>
     .modalStyles {
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input):focus,
+        :global(.ant-input):hover {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
+
         :global(.ant-modal-header) {
             @apply px-4  !important;
         }

@@ -12,11 +12,11 @@
         filter-option
         allow-clear
     >
-        <template #title>
+        <!-- <template #title>
             <div class="flex items-center">
                 <img :src="typeName" class="w-auto h-3 mr-2" />
             </div>
-        </template>
+        </template>-->
 
         <template #option="item">
             <div class="flex">
@@ -105,12 +105,18 @@ export default defineComponent({
             emit('change', checkedValues)
         }
 
-        const dropdownOption = computed(() =>
-            list.value.map((ls) => ({
+        const dropdownOption = computed(() => {
+            let data = list.value.map((ls) => ({
                 label: ls.attributes?.displayName || ls.attributes?.name,
                 value: ls.attributes.qualifiedName,
             }))
-        )
+            data.sort((x, y) => {
+                if (x.label < y.label) return -1;
+                if (x.label > y.label) return 1;
+                return 0;
+            })
+            return data;
+        })
 
         return {
             typeName,

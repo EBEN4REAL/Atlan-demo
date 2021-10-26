@@ -116,7 +116,6 @@ export default function useAsyncSelector(
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         try {
-            console.log("getStringFromPath(valueObject.value, parsedUrl)", getStringFromPath(valueObject.value, parsedUrl))
             const response = await useAPIPromise(
                 getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,

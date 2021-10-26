@@ -208,7 +208,10 @@
                 console.log({ ...AllFilters.value.facetsFilters })
                 console.log('filters', transformToFilters(AllFilters.value))
                 const filters = transformToFilters(AllFilters.value)
-                isFilterAppplied.value = !!Object?.keys(filters?.filter).length
+                //! check if filter is user specific applied check to show empty state
+                const filterCopy = filters?.filter
+                if (filterCopy.$and?.length === 1) delete filterCopy.$and
+                isFilterAppplied.value = !!Object?.keys(filterCopy).length
                 filterList(filters)
             }
             if (!workflowList.value.length) shootQuery()

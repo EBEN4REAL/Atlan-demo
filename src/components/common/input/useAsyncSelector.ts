@@ -89,6 +89,8 @@ export default function useAsyncSelector(
         let parsedUrl = url;
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
+        if (document.location.hostname === 'localhost')
+            parsedUrl = parsedUrl.replace('https', 'http')
         try {
             const response = await useAPIPromise(parsedUrl, method, { params: genParams(valueObject.value, params), body })
             setConfigData(response)
@@ -115,6 +117,8 @@ export default function useAsyncSelector(
         let parsedUrl = url;
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
+        if (document.location.hostname === 'localhost')
+            parsedUrl = parsedUrl.replace('https', 'http')
         try {
             const response = await useAPIPromise(
                 getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,

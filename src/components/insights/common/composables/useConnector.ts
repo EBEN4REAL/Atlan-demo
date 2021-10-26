@@ -119,6 +119,8 @@ export function useConnector() {
             attributeValues = attributeValue?.split('/')
             if (attributeValues.length > 4) {
                 name = `${attributeValues[3]}.${attributeValues[4]}`
+            } else if (attributeValues.length > 3) {
+                name = `${attributeValues[3]}`
             }
         }
 

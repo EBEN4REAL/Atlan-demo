@@ -17,18 +17,19 @@
             :placeholder="`Untitled Workflow`"
             class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
         ></a-input>
-        <p class="text-red-600" v-if="invalidName">warning</p>
+        <p v-if="invalidName" class="mt-3 text-red-600">
+            Name consist of lower case alphanumeric characters, '-' or '.', and
+            must start and end with an alphanumeric character
+        </p>
         <template #footer>
             <div class="flex items-center justify-end space-x-3">
-                <!-- <a-checkbox v-model:checked="runNow" class="mr-auto"
-                    >Run Immediately?</a-checkbox
-                > -->
                 <a-button @click="visible = false">Cancel</a-button>
                 <a-button
                     type="primary"
                     :loading="isLoading"
+                    :disabled="invalidName || !workflowName"
                     @click="handleCreate"
-                    >{{ runNow ? 'Create & Run' : 'Create' }}</a-button
+                    >Create</a-button
                 >
             </div>
         </template>
@@ -139,9 +140,10 @@
             const workflowName = ref('')
 
             const invalidName = computed(() => {
+                if (!workflowName.value) return false
                 const r =
-                    /[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/
-                return r.test(workflowName.value)
+                    /[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/
+                return !r.test(workflowName.value)
             })
 
             const handleSetupWorkflow = () => {
@@ -205,7 +207,6 @@
                 },
             }))
 
-            const runNow = ref(true)
             const { data, error, isLoading, execute } = createWorkflow(
                 body,
                 false
@@ -216,7 +217,7 @@
                     content: 'Creating new workflow ...',
                     key: `${workflowName.value}`,
                 })
-                execute(runNow.value)
+                execute(false)
 
                 watch([data, error], (v) => {
                     if (data.value && !error.value) {
@@ -271,7 +272,6 @@
                 overview,
                 invalidName,
                 workflowTemplate,
-                runNow,
                 handleSetupWorkflow,
                 handleCreate,
                 isLoading,

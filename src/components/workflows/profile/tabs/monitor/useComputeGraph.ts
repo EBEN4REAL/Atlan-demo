@@ -6,6 +6,7 @@ export default function useComputeGraph(
     graphLayout,
     workflowData,
     currZoom,
+    currZoomDec,
     reload
 ) {
     const edges = ref([])
@@ -26,8 +27,8 @@ export default function useComputeGraph(
             const { id, phase, displayName, startedAt, finishedAt } = v
 
             let displayNameTrunc
-            if (displayName.length > 16)
-                displayNameTrunc = `${displayName.slice(0, 16)}...`
+            if (displayName.length > 15)
+                displayNameTrunc = `${displayName.slice(0, 15)}...`
             else displayNameTrunc = displayName
 
             const isBase = baseEntity === id
@@ -37,7 +38,9 @@ export default function useComputeGraph(
                 displayName,
                 isBase,
                 width: 190,
-                height: 55,
+                height: ['Running', 'Omitted', 'Pending'].includes(phase)
+                    ? 39
+                    : 55,
                 shape: 'html',
                 data: {
                     id,
@@ -53,6 +56,14 @@ export default function useComputeGraph(
                                 : ''
                         } ${phase}">
                             <div>
+                                <svg width="30" height="30" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 ${
+                                    phase === 'Running' ? 'block' : 'hidden'
+                                }">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9 15C12.3137 15 15 12.3137 15 9C15 5.68629 12.3137 3 9 3C5.68629 3 3 5.68629 3 9C3 12.3137 5.68629 15 9 15ZM9 13C11.2091 13 13 11.2091 13 9C13 6.79086 11.2091 5 9 5C6.79086 5 5 6.79086 5 9C5 11.2091 6.79086 13 9 13Z" fill="#BDCDF4"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.8778 12.4939C14.6076 11.475 15 10.2533 15 9L9 9H13C13 9.83556 12.7383 10.6501 12.2518 11.3294C11.7652 12.0087 11.0781 12.5185 10.287 12.7873C9.49582 13.0561 8.64037 13.0705 7.84067 12.8283C7.04098 12.5861 6.3372 12.0996 5.82812 11.4371C5.31905 10.7745 5.03024 9.96913 5.00225 9.13404C4.97425 8.29895 5.20846 7.47606 5.67202 6.78087C6.13557 6.08569 6.80518 5.55313 7.58686 5.25794C8.36812 4.96291 9.22212 4.9198 10.0291 5.13465L10.5436 3.20197C9.33258 2.87954 8.05095 2.94443 6.87865 3.38753C5.70634 3.83062 4.70221 4.62969 4.00719 5.67256C3.31217 6.71544 2.96115 7.94977 3.00341 9.2023C3.04566 10.4548 3.47907 11.6627 4.2428 12.6564C5.00652 13.65 6.06222 14.3796 7.26173 14.7427C8.46123 15.1058 9.74432 15.0841 10.9309 14.6808C12.1175 14.2775 13.148 13.5127 13.8778 12.4939Z" fill="#5277D7"/>
+                                </svg>
+
+
                                 <svg width="22" height="22" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 ${
                                     phase === 'Succeeded' ? 'block' : 'hidden'
                                 }">
@@ -77,7 +88,9 @@ export default function useComputeGraph(
                                 </svg>
 
                                 <svg width="26" height="26" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 ${
-                                    phase === 'Omitted' ? 'block' : 'hidden'
+                                    ['Omitted', 'Pending'].includes(phase)
+                                        ? 'block'
+                                        : 'hidden'
                                 }">
                                     <path d="M11.5993 2.28946H6.32862C5.48759 2.28946 4.94747 3.18287 5.33827 3.92758L7.7274 8.4803C7.89817 8.80573 7.89817 9.19428 7.7274 9.51971L5.33827 14.0724C4.94747 14.8171 5.48759 15.7106 6.32862 15.7106H11.6714C12.5125 15.7106 13.0526 14.8172 12.6618 14.0725L10.2691 9.51263C10.1004 9.19114 10.0983 8.80777 10.2633 8.48441L12.5954 3.91643C12.9753 3.17228 12.4348 2.28946 11.5993 2.28946Z" stroke="#EFAC00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M10.5 11.4999H7.50003L5.21146 14.1444L6.21139 15.1444L12 15.4999L12.5001 14.1444L10.5 11.4999Z" fill="#EFAC00"/>
@@ -87,10 +100,16 @@ export default function useComputeGraph(
                             </div>
                             <div>
                                 <div>${displayNameTrunc}</div>
-                                <div class="text-gray-500">${timeDiffCalc(
-                                    new Date(startedAt),
-                                    new Date(finishedAt)
-                                )} </div>                           
+                                <div class="text-gray-500 ${
+                                    ['Running', 'Omitted', 'Pending'].includes(
+                                        phase
+                                    )
+                                        ? 'hidden'
+                                        : 'block'
+                                }">${timeDiffCalc(
+                            new Date(startedAt),
+                            new Date(finishedAt)
+                        )} </div>                           
                             </div>
                         </div>`
                     },
@@ -119,7 +138,7 @@ export default function useComputeGraph(
 
         if (!children || type === 'TaskGroup') return
 
-        if (k === baseEntity)
+        if (k === baseEntity && outboundNodes)
             outboundNodes.forEach((x) => {
                 const relation = {}
                 relation.fromEntityId = x

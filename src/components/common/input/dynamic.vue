@@ -194,6 +194,7 @@
         PropType,
         ref,
         watch,
+        onMounted,
     } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
@@ -342,7 +343,7 @@
         },
         emits: ['update:modelValue', 'change', 'blur', 'getGlobal'],
         setup(props, { emit }) {
-            const { valueObject } = toRefs(props)
+            const { valueObject, modelValue } = toRefs(props)
 
             const {
                 errorM,
@@ -433,6 +434,27 @@
                 emit('update:modelValue', result)
                 emit('change', result)
             }
+
+            /**
+             * @params vO valueObject, consist of db and schema in the form {"db" : ["schenma_1", "schenma_2"]}
+             * @returns parsed value as need by antD component
+             */
+            const parseDBSchemaValue = (vO) => {
+                if (!vO) return []
+                const allValues: string[] = []
+                Object.entries(vO).forEach(([d, s]) => {
+                    if (s.length)
+                        allValues.push(...s.map((schema) => `${d}/${schema}`))
+                    else allValues.push(d)
+                })
+                return allValues
+            }
+            onMounted(() => {
+                if (props.dataType === 'asyncTreeSelect')
+                    value.value = parseDBSchemaValue(modelValue.value)
+                // for async select, load on mount if possible
+                else if (open && shouldRefetch.value) loadData()
+            })
 
             const handleChange = (e, timeStamp) => {
                 if (

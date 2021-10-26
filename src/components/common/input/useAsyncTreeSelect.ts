@@ -46,6 +46,8 @@ export default function useAsyncTreeSelect(rootData, reqConfig, resConfig, value
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         if (parsedUrl.includes('{{parent}}'))
             parsedUrl = parsedUrl.replace('{{parent}}', n.value)
+        if (document.location.hostname === 'localhost')
+            parsedUrl = parsedUrl.replace('https', 'http')
 
         try {
             const response = await useAPIPromise(

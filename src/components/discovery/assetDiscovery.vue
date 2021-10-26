@@ -113,6 +113,7 @@
         BaseAttributes,
         BasicSearchAttributes,
         tableauAttributes,
+        SavedQueryAttributes,
     } from '~/constant/projection'
     // TODO: Uncomment all tracing related code
     // import useTracking from '~/modules/tracking'
@@ -299,6 +300,7 @@
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...tableauAttributes,
+                        ...SavedQueryAttributes,
                         ...BMAttributeProjection.value,
                     ],
                 }

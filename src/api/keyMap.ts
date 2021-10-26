@@ -212,6 +212,7 @@ export const KeyMaps = {
     workflow: {
         WORKFLOW: () => getAPIPath('/service', `/workflows`),
         CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows`),
+        RUN_WORKFLOW: () => getAPIPath('/service', `/workflows/submit`),
         WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
         ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
@@ -220,8 +221,10 @@ export const KeyMaps = {
                 '/service',
                 `runs?limit=10&labelSelector=workflows.argoproj.io/workflow-template=${workflowTemplate}`
             ),
-        ARCHIVED_WORKFLOW_RUN: ({}: PathParams) =>
-            getAPIPath('/service', `/runs/archived?`),
+        WORKFLOW_RUN: ({ labelSelector }: PathParams) =>
+            getAPIPath('/service', `/runs?labelSelector=${labelSelector}`),
+        ARCHIVED_WORKFLOW_RUN: ({ filter }: PathParams) =>
+            getAPIPath('/service', `/runs/archived?filter=${filter}`),
         WORKFLOW_TEMPLATE: () => getAPIPath('/service', `/workflowtemplates`),
         // TODO REMOVE this, use workflow template
         WORKFLOW_TEMPLATE_NAME: ({ filter }: PathParams) =>

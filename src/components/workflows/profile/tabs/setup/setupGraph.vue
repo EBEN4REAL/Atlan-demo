@@ -24,7 +24,11 @@
                         <template #title>
                             <span>run workflow</span>
                         </template>
-                        <AtlanIcon icon="Play" class="outline-none"></AtlanIcon>
+                        <AtlanIcon
+                            @click="onRunWorkflow()"
+                            :icon="isWorkflowRunning ? 'Running' : 'Play'"
+                            class="outline-none"
+                        ></AtlanIcon>
                     </a-tooltip>
                 </div>
 
@@ -127,10 +131,15 @@
     import useComputeGraph from './useComputeGraph'
     import useHighlight from './useHighlight'
     import useTransformGraph from './useTransformGraph'
+    import useControlGraph from './useControlGraph'
 
     export default defineComponent({
         name: 'SetupGraph',
         props: {
+            workflow: {
+                type: String,
+                required: true,
+            },
             graphData: {
                 type: Object,
                 required: true,
@@ -138,18 +147,25 @@
         },
         setup(props, { emit }) {
             /** DATA */
+            const { graphData, workflow } = toRefs(props)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const setupContainer = ref(null)
             const highlightLoadingCords = ref({})
             const graph = ref(null)
-            const { graphData } = toRefs(props)
             const highlightedNode = ref('')
             const currZoom = ref('...')
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
+            const isWorkflowRunning = ref(false)
 
             /** METHODS */
+            // controls
+            const { run } = useControlGraph()
+            const onRunWorkflow = async () => {
+                await run(workflow, isWorkflowRunning)
+            }
+
             // transform
             const { zoom, fullscreen } = useTransformGraph(graph, currZoom)
             const onFullscreen = () => {
@@ -217,8 +233,10 @@
                 currZoom,
                 showMinimap,
                 isFullscreen,
+                isWorkflowRunning,
                 zoom,
                 onFullscreen,
+                onRunWorkflow,
             }
         },
     })

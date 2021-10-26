@@ -207,7 +207,6 @@
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const selectedParentFolder = ref<Folder | null>(null)
-            const untitledRegex = /(?:Untitled )([0-9]+)/gim
             const inlineTabs = inject('inlineTabs') as ComputedRef<
                 activeInlineTabInterface[]
             >

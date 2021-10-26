@@ -10,9 +10,40 @@
             ></a-input-search>
             <RunSort @change="handleSortChange" />
         </div>
+        <!-- <div
+        v-if="isLoading"
+        class="flex items-center justify-center h-full text-sm leading-none"
+    >
+        <a-spin size="small" class="mr-2 leading-none"></a-spin
+        ><span>Getting Runs</span>
+    </div> -->
+        <!-- <template v-else-if="list.length">
+        <div class="flex px-4 mt-4 mb-4">
+            <a-input-search
+                v-model:value="searchText"
+                placeholder="Search Members"
+                class="mr-1"
+                size="default"
+                :allow-clear="true"
+            ></a-input-search>
+            <a-button class="p-2 ml-2 rounded">
+                <AtlanIcon icon="FilterDot" class="h-4" />
+            </a-button>
+        </div>
+        <RunCard
+            v-for="(r, x) in searchText ? filterList(searchText) : list"
+            :key="x"
+            :r="r"
+            :curr-run-name="currRunName"
+            :is-loading="isLoadingRunGraph"
+            :select-enabled="true"
+            @select="loadRunGraph"
+        />
+    </template> -->
+
         <VirtualList
             :class="{ 'animate-pulse': isLoading }"
-            :data="runList"
+            :data="list"
             data-key="metadata"
             variable-height
         >
@@ -68,8 +99,9 @@
                 </div>
             </template>
         </VirtualList>
+
         <EmptyView
-            v-if="runList.length === 0 && !isLoading"
+            v-if="list.length === 0 && !isLoading"
             :desc="
                 !error
                     ? 'There are no runs for this workflow. '
@@ -84,6 +116,7 @@
 </template>
 
 <script lang="ts">
+    // Vue
     import {
         watch,
         defineComponent,
@@ -92,17 +125,24 @@
         ref,
         computed,
     } from 'vue'
-    import { useRoute } from 'vue-router'
 
+    // Components
     import EmptyView from '@common/empty/index.vue'
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
-
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
     import RunCard from '@/workflows/shared/runCard.vue'
-
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RunSort from './runSort.vue'
+
+    // Assets
+    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
+
+    // Types
+    import { assetInterface } from '~/types/assets/asset.interface'
+
+    // Composables
+    import {
+        getRunList,
+        getArchivedRunList,
+    } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: { RunCard, EmptyView, VirtualList, RunSort },
@@ -117,50 +157,80 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
-            const route = useRoute()
             const { selectedWorkflow: item } = toRefs(props)
-
+            const isLoadingRunGraph = ref(false)
+            const currRunName = ref('')
             const searchText = ref('')
-            const id = computed(() => route?.params?.id || '')
+            const list = ref([])
             const sort = ref('')
+
+            // getRunList
+            const labelSelector = `workflows.argoproj.io/workflow-template=${item.value.name},workflows.argoproj.io/phase=Running`
+            const { liveList } = getRunList(labelSelector, true)
+
+            // getArchivedRunList
             const filter = ref({
                 labels: {
                     $elemMatch: {
-                        'workflows.argoproj.io/workflow-template': `${id.value}`,
+                        'workflows.argoproj.io/workflow-template': `${item.value.name}`,
                     },
                 },
             })
+
             const {
-                runList,
+                archivedList,
                 error,
                 isLoading,
                 loadMore,
                 totalCount,
                 filter_record,
-                loadData,
-            } = useArchivedRunList({}, false)
+            } = getArchivedRunList(JSON.stringify(filter.value), true)
 
-            loadData({ filter: filter.value })
-
-            const isLoadMore = computed(
-                () => filter_record.value > runList.value.length
-            )
-
-            const isLoadingRunGraph = ref(false)
-            const currRunName = ref('')
-
-            const loadRunGraph = (id) => {
-                if (currRunName.value === id) return
-                currRunName.value = id
+            // loadRunGraph
+            const loadRunGraph = () => {
+                if (currRunName.value === item.value.name) return
+                currRunName.value = item.value.name
                 isLoadingRunGraph.value = true
-                emit('change', id)
+                emit('change', item.value.name)
                 setTimeout(() => {
                     isLoadingRunGraph.value = false
                 }, 2500)
             }
 
-            watch(runList, (newVal) => {
-                if (newVal) currRunName.value = newVal[0].name
+            const isLoadMore = computed(
+                () => filter_record.value > list.value.length
+            )
+
+            // watcher
+            watch([liveList, archivedList], ([newX, newY]) => {
+                if (newX && newY) {
+                    let liveRunItems = []
+                    let archivedRunItems = []
+                    if (newX?.items?.length)
+                        liveRunItems = newX.items.map((x) => {
+                            const { status, metadata, spec } = x
+                            const { name, uid } = metadata
+                            const {
+                                startedAt: started_at,
+                                finishedAt: finished_at,
+                                phase,
+                            } = status
+                            const obj = {
+                                name,
+                                uid,
+                                started_at,
+                                finished_at,
+                                phase,
+                            }
+                            obj.workflow = { status, metadata, spec }
+                            return obj
+                        })
+
+                    if (newY?.records?.length) archivedRunItems = newY.records
+
+                    list.value = [...liveRunItems, ...archivedRunItems]
+                    currRunName.value = list.value[0]?.name
+                }
             })
 
             const handleSortChange = () => {}
@@ -168,7 +238,9 @@
             return {
                 item,
                 searchText,
-                runList,
+                list,
+                liveList,
+                archivedList,
                 error,
                 isLoading,
                 emit,

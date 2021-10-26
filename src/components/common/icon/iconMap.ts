@@ -126,6 +126,7 @@ import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
 import Retry from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
+import Running from '~/assets/images/icons/running.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
 import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
 import Hourglass from '~/assets/images/icons/hourglass.svg'
@@ -279,6 +280,7 @@ export default {
     Minus,
     Retry,
     Recenter,
+    Running,
     AssetsInactiveLight,
     AssetsActiveLight,
     Hourglass,

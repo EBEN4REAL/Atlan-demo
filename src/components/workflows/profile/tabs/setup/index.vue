@@ -16,6 +16,7 @@
         <div v-else-if="tasks" class="absolute w-full h-full">
             <SetupGraph
                 :graph-data="tasks"
+                :workflow="workflow"
                 @change="emit('change', $event, 'dag')"
             />
         </div>
@@ -38,6 +39,10 @@
         name: 'WorkflowSetupTab',
         components: { SetupGraph, EmptyView },
         props: {
+            workflow: {
+                type: String,
+                required: true,
+            },
             workflowTemplate: {
                 type: String,
                 required: true,

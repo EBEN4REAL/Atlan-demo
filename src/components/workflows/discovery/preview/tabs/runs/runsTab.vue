@@ -6,12 +6,25 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="runList?.length">
+    <template v-else-if="list.length">
+        <div class="flex px-4 mt-4 mb-4">
+            <a-input-search
+                v-model:value="searchText"
+                placeholder="Search Members"
+                class="mr-1"
+                size="default"
+                :allow-clear="true"
+            ></a-input-search>
+            <a-button class="p-2 ml-2 rounded">
+                <AtlanIcon icon="FilterDot" class="h-4" />
+            </a-button>
+        </div>
         <RunCard
-            v-for="(r, x) in runList"
+            v-for="(r, x) in searchText ? filterList(searchText) : list"
             :key="x"
             :r="r"
-            :select-enabled="false"
+            :curr-run-name="currRunName"
+            :select-enabled="true"
         />
     </template>
     <EmptyView
@@ -21,23 +34,29 @@
                 ? 'There are no runs for this workflow. '
                 : 'Sorry, we couldn’t find the workflow you were looking for.'
         "
-        :EmptyScreen="EmptyScreen"
-        descClass="text-center w-56"
-        buttonIcon="ArrowRight"
-        :buttonText="error ? '' : 'Run Workflow'"
+        :empty-screen="EmptyScreen"
+        desc-class="w-56 text-center"
+        button-icon="ArrowRight"
+        :button-text="error ? '' : 'Run Workflow'"
     />
 </template>
 
 <script lang="ts">
-    import { watch, computed, defineComponent, PropType, toRefs } from 'vue'
+    // Vue
+    import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
 
-    import { useTimeAgo } from '@vueuse/core'
+    // Components
     import EmptyView from '@common/empty/index.vue'
+    import RunCard from '@/workflows/shared/runCard.vue'
+
+    // Assets
     import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
+    // Types
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useArchivedRunList } from '~/composables/workflow/useWorkFlowList'
-    import RunCard from '@/workflows/shared/runCard.vue'
+
+    // Composables
+    import { getArchivedRunList } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
         components: { RunCard, EmptyView },
@@ -51,37 +70,43 @@
             },
         },
         emits: ['change'],
-        setup(props) {
+        setup(props, { emit }) {
             const { selectedWorkflow } = toRefs(props)
+            const searchText = ref('')
+            const list = ref([])
 
-            const { runList, error, isLoading, reFetch } = useArchivedRunList(
-                '',
-                false
-            )
-
-            function timeAgo(time: number) {
-                return useTimeAgo(time).value
+            // getArchivedRunList
+            const filter = {
+                labels: {
+                    $elemMatch: {
+                        'workflows.argoproj.io/workflow-template': `${selectedWorkflow.value.name}`,
+                    },
+                },
             }
 
-            watch(
-                selectedWorkflow,
-                (n, o) => {
-                    console.log(n, o)
-                    if (!o) reFetch(n.name)
-                    else if (n.name !== o.name) reFetch(n.name)
-                },
-                {
-                    immediate: true,
-                    deep: true,
+            const { archivedList, error, isLoading, filterList } =
+                getArchivedRunList(JSON.stringify(filter), true)
+
+            // watcher
+            watch(archivedList, (newVal) => {
+                if (newVal) {
+                    let archivedRunItems = []
+
+                    if (newVal?.records?.length) archivedRunItems = newY.records
+
+                    list.value = [...archivedRunItems]
                 }
-            )
+            })
 
             return {
-                runList,
+                searchText,
+                list,
+                filterList,
+                archivedList,
                 error,
                 isLoading,
+                emit,
                 EmptyScreen,
-                timeAgo,
             }
         },
     })

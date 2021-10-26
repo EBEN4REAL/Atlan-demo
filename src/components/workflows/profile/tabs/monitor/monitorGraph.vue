@@ -120,6 +120,7 @@
     import useComputeGraph from './useComputeGraph'
     import useHighlight from './useHighlight'
     import useTransformGraph from './useTransformGraph'
+    import useControlGraph from './useControlGraph'
 
     export default defineComponent({
         name: 'MonitorGraph',
@@ -139,6 +140,7 @@
             const { graphData } = toRefs(props)
             const highlightedNode = ref('')
             const currZoom = ref('...')
+            const currZoomDec = ref(null)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
 
@@ -167,6 +169,7 @@
                     graphLayout,
                     graphData,
                     currZoom,
+                    currZoomDec,
                     reload
                 )
 
@@ -190,7 +193,7 @@
 
             watch(
                 graphData,
-                (newVal) => {
+                () => {
                     initialize(true)
                 },
                 { deep: true }
@@ -207,6 +210,7 @@
                 monitorContainer,
                 graphContainer,
                 currZoom,
+                currZoomDec,
                 showMinimap,
                 isFullscreen,
                 zoom,
@@ -281,6 +285,12 @@
             &.Omitted {
                 background-color: #f3f3f3;
                 border: 1.5px solid #e6e6eb;
+            }
+
+            &.Running,
+            &.Omitted,
+            &.Pending {
+                height: 39px;
             }
         }
     }

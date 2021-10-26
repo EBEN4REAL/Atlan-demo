@@ -8,6 +8,7 @@ export const SavedQueryAttributes = [
     'compiledQuery',
     'connectionId',
     'isPrivate',
+    'variablesSchemaBase64',
     'isSnippet',
 ]
 export const ConnectionAttributes = [

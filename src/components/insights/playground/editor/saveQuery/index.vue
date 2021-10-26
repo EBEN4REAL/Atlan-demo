@@ -23,7 +23,7 @@
                                     class="h-4 m-0 -ml-0.5 -mt-0.5 absolute"
                                 />
                             </div>
-                        </div> -->
+                        </div>-->
                         <QueryFolderSelector
                             :connector="currentConnector"
                             :savedQueryType="queryType"
@@ -34,7 +34,7 @@
                     <!-- <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
                     <div class="flex items-center ml-1">
                         <span>{{ title }}</span>
-                    </div> -->
+                    </div>-->
                 </div>
                 <div>
                     <a-dropdown
@@ -54,7 +54,6 @@
                                             :is="item.icon"
                                             class="w-auto h-4 ml-1 mr-2 pushtop"
                                         />
-
                                         {{ item.label }}
                                     </div>
                                 </a-menu-item>
@@ -71,11 +70,11 @@
                 </div>
             </div>
             <div class="my-2">
-                <div class="">
+                <div class>
                     <a-input
                         :ref="titleBarRef"
                         v-model:value="title"
-                        placeholder="Untitled query"
+                        :placeholder="`Untitled ${getLastUntitledNumber()}`"
                         class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
                     />
                 </div>
@@ -124,28 +123,55 @@
                         class="h-4 m-0 mr-1.5 -mt-0.5 text-pink-400"
                     />
                     <span>Classifications</span>
-                </div> -->
+                </div>-->
                 <!-- <div>
                     <a-checkbox
                         v-model:checked="isSQLSnippet"
                         class="text-xs text-gray-500"
                         >Make SQL snippet</a-checkbox
                     >
-                </div> -->
+                </div>-->
                 <div
-                    class="flex items-center justify-end flex-1 text-gray-700 cursor-pointer "
+                    class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer "
                 >
-                    <div @click="closeModal" class="hover:text-primary">
+                    <!-- <div @click="closeModal" class="hover:text-primary">
                         Cancel
-                    </div>
-                    <a-button
+                    </div>-->
+
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        class="flex items-center justify-between h-6 py-1 ml-3 border-none  hover:text-primary"
+                        @click="closeModal"
+                    >
+                        <span>Cancel</span>
+                    </AtlanBtn>
+
+                    <AtlanBtn
+                        size="sm"
+                        color="primary"
+                        padding="compact"
+                        class="flex items-center justify-between h-6 py-1 ml-2 border-none "
                         @click="createSaveQuery"
+                    >
+                        <div class="flex items-center text-white rounded">
+                            <AtlanIcon
+                                v-if="saveQueryLoading"
+                                icon="CircleLoader"
+                                style="margin-right: 4px"
+                                class="w-4 h-4 text-white animate-spin"
+                            ></AtlanIcon>
+
+                            <span>Create</span>
+                        </div>
+                    </AtlanBtn>
+
+                    <!-- <a-button
                         type="primary border-none"
                         class="flex items-center justify-between ml-4"
                         :loading="saveQueryLoading"
-                    >
-                        Create
-                    </a-button>
+                    ></a-button>-->
                 </div>
             </div>
         </div>
@@ -154,9 +180,11 @@
 
 <script lang="ts">
     import {
+        ComputedRef,
         defineComponent,
         Ref,
         ref,
+        inject,
         onMounted,
         nextTick,
         PropType,
@@ -167,9 +195,11 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     export default defineComponent({
-        components: { StatusBadge, QueryFolderSelector },
+        components: { StatusBadge, QueryFolderSelector, AtlanBtn },
         props: {
             showSaveQueryModal: {
                 type: Object as PropType<boolean>,
@@ -204,12 +234,15 @@
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const selectedParentFolder = ref<Folder | null>(null)
+            const untitledRegex = /(?:Untitled )([0-9]+)/gim
+            const inlineTabs = inject('inlineTabs') as ComputedRef<
+                activeInlineTabInterface[]
+            >
             const {
                 savedQueryType: queryType,
                 connector: currentConnector,
                 parentFolderQF,
             } = toRefs(props)
-
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id
                 console.log(currentStatus.value)
@@ -223,9 +256,23 @@
                 isSQLSnippet.value = false
                 currentStatus.value = 'DRAFT'
             }
+            const getLastUntitledNumber = () => {
+                let max_number = 1
+                const untitledRegex = /(?:Untitled )([0-9]+)/gim
+                inlineTabs.value?.forEach((tab) => {
+                    const d = [...tab.label.matchAll(untitledRegex)]
+                    if (d.length > 0) {
+                        max_number = Number(d[0][1])
+                    }
+                })
+                return max_number
+            }
             const createSaveQuery = () => {
                 const saveQueryData = {
-                    title: title.value,
+                    title:
+                        title.value !== ''
+                            ? title.value
+                            : `Untitled ${getLastUntitledNumber()}`,
                     description: description.value,
                     isSQLSnippet: isSQLSnippet.value,
                     certificateStatus: currentStatus.value,
@@ -235,7 +282,6 @@
                 }
                 emit('onSaveQuery', saveQueryData)
             }
-
             onMounted(async () => {
                 await nextTick()
                 titleBarRef.value?.focus()
@@ -244,6 +290,7 @@
                 selectedParentFolder.value = folder
             }
             return {
+                getLastUntitledNumber,
                 parentFolderQF,
                 title,
                 queryType,

@@ -38,7 +38,15 @@ export function useSavedQuery(
         modifyActiveInlineTab,
         modifyActiveInlineTabEditor,
     } = useInlineTab(treeSelectedKeys)
+
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+        let decodedVariables = decodeBase64Data(
+            savedQuery.attributes.variablesSchemaBase64
+        ) as CustomVaribaleInterface[]
+        // debugger
+        // console.log(decodedVariables, savedQuery)
+        // if (!Array.isArray(decodedVariables)) decodedVariables = []
+
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedName =
             savedQuery.attributes.defaultSchemaQualifiedName
@@ -83,9 +91,7 @@ export function useSavedQuery(
                     text: savedQuery.attributes.rawQuery,
                     dataList: [],
                     columnList: [],
-                    variables: decodeBase64Data(
-                        savedQuery.attributes.variablesSchemaBase64
-                    ) as CustomVaribaleInterface[],
+                    variables: decodedVariables,
                     limitRows: {
                         checked: false,
                         rowsCount: -1,

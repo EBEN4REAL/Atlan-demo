@@ -1,5 +1,5 @@
 <template>
-    <a-popover placement="left">
+    <a-popover placement="left" :visible="isVisible" @mouseenter="handleHover" @mouseleave="handleHover">
         <template #content>
             <pre>{{ displaySQL }}</pre>
         </template>
@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { computed, defineComponent, toRefs, ref } from 'vue'
     import { format } from 'sql-formatter'
     import { highlight } from 'sql-highlight'
 
@@ -33,9 +33,17 @@
                 //     linesBetweenQueries: 1, // Defaults to 1
                 // })
             })
+            const isVisible = ref(false)
+
+            const handleHover = () => {
+                if (!displaySQL.value) return
+                isVisible.value = !isVisible.value
+            }
 
             return {
                 displaySQL,
+                handleHover,
+                isVisible
             }
         },
     })

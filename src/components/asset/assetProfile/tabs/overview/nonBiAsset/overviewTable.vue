@@ -7,7 +7,7 @@
         ><span>Getting sample data</span>
     </div>
     <div v-else class="w-full p-0 m-0 border rounded border-gray-light">
-        <table class="relative w-full p-0 m-0 overflow-auto table_data h-96">
+        <table class="relative block w-full p-0 m-0 overflow-auto h-96">
             <thead>
                 <tr>
                     <th
@@ -153,13 +153,6 @@
 </script>
 
 <style lang="less" scoped>
-    .table_data {
-        tr {
-            th:first-child {
-                position: sticky !important;
-            }
-        }
-    }
     table {
         td,
         th {

@@ -28,7 +28,7 @@
                         :workflow-template="workflowTemplate"
                         :workflow="id"
                         class="bg-transparent"
-                        @change="handlePreview"
+                        @change="updateSelected"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -41,6 +41,7 @@
                 :selected-dag="selectedDag"
                 :form-config="formConfig"
                 @change="selectedRunName = $event"
+                @updateSelected="updateSelected"
             />
         </div>
         <WorkflowLogs
@@ -72,7 +73,7 @@
     // Composables
     import {
         useWorkflowByName,
-        getWorkflowConfigMap,
+        getWorkflowConfigMapByName,
     } from '~/composables/workflow/useWorkFlowList'
 
     export default defineComponent({
@@ -180,8 +181,8 @@
                 )
             }
 
-            // handlePreview
-            const handlePreview = (item, is) => {
+            // updateSelected
+            const updateSelected = (item, is) => {
                 if (is === 'dag') selectedDag.value = item
                 else selected.value = item
             }
@@ -193,7 +194,7 @@
                     data: config,
                     error: e,
                     isLoading: l,
-                } = getWorkflowConfigMap(workflowTemplate.value)
+                } = getWorkflowConfigMapByName(workflowTemplate.value)
 
                 watch(config, (v) => {
                     if (config.value?.records) {
@@ -233,7 +234,7 @@
                     data.value.asset = v.records[0]
                     data.value.error = error.value
                     fetchUIConfig()
-                    handlePreview(data.value.asset, null)
+                    updateSelected(data.value.asset, null)
                 })
             }
 
@@ -269,7 +270,7 @@
                 selected,
                 selectedRunName,
                 tabs,
-                handlePreview,
+                updateSelected,
                 refs,
                 selectedDag,
                 data,

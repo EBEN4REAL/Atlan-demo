@@ -12,6 +12,33 @@
         filter-option
         allow-clear
     >
+        <!-- <template #dropdownRender="{ menuNode: menu }">
+            <v-nodes :vnodes="menu" />
+
+            <a-divider style="margin: 4px 0" />
+            <div class="px-3">
+                {{ list.length }} of {{ totalCount }} &nbsp;{{ typeName }}
+            </div>
+        </template>
+        <template #suffixIcon>
+            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
+        </template>-->
+        <template #title>
+            <div class="flex items-center">
+                <img :src="typeName" class="w-auto h-3 mr-2" />
+            </div>
+        </template>
+        <!-- <template #option="item">
+            <div class="flex">
+                <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-0.5 mr-1" />
+                <p>{{ item.label }}</p>
+            </div>
+        </template> -->
+
+        <!-- <template #menuItemSelectedIcon>
+            <AtlanIcon :icon="typeName" class="h-4 mt-0.5 ml-0.5" />
+        </template> -->
+
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
 
@@ -112,10 +139,10 @@
 <style lang="less" module>
     .connector {
         :global(.ant-select-selector) {
-             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
             background-color: #fbfbfb !important;
-            border: 1px solid #E9EBF1 !important;
-            color: #6F7590 !important;
+            border: 1px solid #e9ebf1 !important;
+            color: #6f7590 !important;
             border-radius: 8px !important;
         }
     }

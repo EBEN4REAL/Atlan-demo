@@ -1,5 +1,6 @@
 <template>
-    <SchemaTree
+    <div></div>
+    <!-- <SchemaTree
         :tree-data="treeData"
         :checkable="true"
         :on-load-data="onLoadData"
@@ -10,7 +11,7 @@
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
         v-model:checkedKeys="checkedKeys"
-    />
+    /> -->
 </template>
 
 <script lang="ts">

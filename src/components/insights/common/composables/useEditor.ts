@@ -8,8 +8,7 @@ import { useCustomVariable } from '~/components/insights/playground/editor/commo
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
-    activeInlineTab?: Ref<activeInlineTabInterface>,
-    sqlVariables?: Ref<CustomVaribaleInterface[]>
+    activeInlineTab?: Ref<activeInlineTabInterface>
 ) {
     let decorations = []
     let cursorDecorations = []
@@ -66,16 +65,19 @@ export function useEditor(
         })
     }
     function moustacheInterpolator(query, variables) {
-        query.match(/{{\s*[\w\.]+\s*}}/gm).map((x) => {
-            query = query.replace(x, (a) => {
+        let q: string = query.slice()
+        q.replaceAll(/[ ,;)(]+/gm, ' ')
+        const matches = q.match(/{{\s*[\w\.]+\s*}}/gm) ?? []
+        matches.map((x) => {
+            q = q.replace(x, (a) => {
                 const temp = a.match(/[\w\.]+/)[0]
                 return variables[temp]
             })
         })
-        if (/{{\s*[\w\.]+\s*}}/gm.test(query)) {
-            return moustacheInterpolator(query, variables)
+        if (/{{\s*[\w\.]+\s*}}/gm.test(q)) {
+            return moustacheInterpolator(q, variables)
         }
-        return query
+        return q
     }
     function removeMoustacheSpaces(text) {
         let t = text.replaceAll('{ { ', '{{')

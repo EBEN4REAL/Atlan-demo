@@ -12,8 +12,6 @@ import {
 } from '~/types/insights/autosuggestionEntity.interface'
 import axios from 'axios'
 import TurndownService from 'turndown'
-import { List } from `~/constant/status.ts`
-
 export interface suggestionKeywordInterface {
     label: string
     detail: string
@@ -208,7 +206,8 @@ export function entitiesToEditorKeyword(
     })
 }
 
-function getLocalSQLSugggestions(currentWord: string) {
+function getLocalSQLSugggestions(currWrd: string) {
+    let currentWord = currWrd.toUpperCase()
     const sqlKeywords = getSqlKeywords()
     let suggestions = sqlKeywords.filter((keyword) =>
         keyword.label.includes(currentWord?.toUpperCase())
@@ -219,11 +218,12 @@ function getLocalSQLSugggestions(currentWord: string) {
     })
 }
 function getLastMappedKeyword(
-    tokens: string[],
+    token_param: string[],
     mappingKeywords,
     mappingKeywordsKeys
 ) {
     // console.log(tokens)
+    let tokens = token_param.map((token) => token.toUpperCase())
     for (let i = tokens.length - 1; i >= 0; i--) {
         /* type- TABLE/COLUMN/SQL keyword */
         if (mappingKeywordsKeys.includes(tokens[i])) {
@@ -332,7 +332,7 @@ export async function useAutoSuggestions(
     activeInlineTab: Ref<activeInlineTabInterface>,
     cancelTokenSource: Ref<any>
 ) {
-    console.log(changes, 'changes')
+    // console.log(changes, 'changes')
     const changedText = changes.text
     /* -------_EXITING CONDITIONS-------------- */
     if (!triggerCharacters.includes(changedText))
@@ -375,15 +375,15 @@ export async function useAutoSuggestions(
         textTillChangedIndex + 1
     )
 
-    let tokens = editorTextTillCursorPos.split(/[ ,]+/gm)
+    let tokens = editorTextTillCursorPos.split(/[ ,\n;"')(]+/gm)
+    console.log(tokens, 'tokk')
     /* Remove tokens which are special characters */
     tokens = tokens.filter((token) => {
         let t = true
-        t = !token.match(/[-[\]{}()*+?'."\\/^$|#\s\t]/g) && token !== ''
+        t = !token.match(/[-[\]{};/\n()*+?'."\\/^$|#\s\t]/g) && token !== ''
         return t
     })
     // tokens.push(' ')
-    console.log(tokens, 'tokens')
     let currentWord = tokens[tokens.length - 1]
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {

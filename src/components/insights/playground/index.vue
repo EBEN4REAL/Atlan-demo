@@ -21,10 +21,10 @@
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
-                                    class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
+                                    class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                                     @click="handleAdd"
                                 >
-                                    <fa icon="fal plus" class="" />
+                                    <fa icon="fal plus" class />
                                 </span>
                             </a-tooltip>
                         </div>
@@ -43,7 +43,7 @@
                                 "
                             >
                                 <div
-                                    class="flex items-center justify-between inline_tab"
+                                    class="flex items-center justify-between  inline_tab"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
@@ -64,10 +64,14 @@
                                         >
                                     </div>
                                     <div
-                                        v-if="(!tab.isSaved && tab.playground.editor.text.length>0)"
-                                        class="flex items-center mr-2 unsaved-dot"
+                                        v-if="!tab.isSaved"
+                                        class="flex items-center mr-2  unsaved-dot"
                                     >
                                         <div
+                                            v-if="
+                                                tab.playground.editor.text
+                                                    .length > 0 || tab?.queryId
+                                            "
                                             class="
                                                 w-1.5
                                                 h-1.5
@@ -85,7 +89,9 @@
                                         <UnsavedPopover
                                             @closeTab="closeTabConfirm"
                                             @closePopup="closePopOver"
-                                            @saveTab="saveTabConfirm"
+                                            @saveTab="
+                                                () => saveTabConfirm(tab.key)
+                                            "
                                             :unsavedPopover="unsavedPopover"
                                             :isSaving="isSaving"
                                         />
@@ -114,11 +120,11 @@
                     min-size="30"
                     class="overflow-x-hidden"
                 >
-                    <Editor
-                /></pane>
+                    <Editor />
+                </pane>
                 <pane min-size="0" :size="outputPaneSize" max-size="70">
-                    <ResultsPane
-                /></pane>
+                    <ResultsPane />
+                </pane>
             </splitpanes>
         </div>
         <ResultPaneFooter v-if="activeInlineTabKey" />
@@ -216,11 +222,21 @@
                 if (tabs.value.length < 1) return true
                 return false
             }
-
+            const getLastUntitledNumber = () => {
+                let max_number = 1
+                const untitledRegex = /(?:Untitled )([0-9]+)/gim
+                tabs.value?.forEach((tab) => {
+                    const d = [...tab.label.matchAll(untitledRegex)]
+                    if (d.length > 0) {
+                        max_number = Math.max(Number(d[0][1]) + 1, 1)
+                    }
+                })
+                return max_number
+            }
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'Untitled',
+                    label: `Untitled ${getLastUntitledNumber()}`,
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
@@ -286,6 +302,7 @@
                     },
                     assetSidebar: {
                         // for taking the previous state from active tab
+                        openingPos: undefined,
                         isVisible:
                             activeInlineTab.value?.assetSidebar?.isVisible ??
                             false,
@@ -319,6 +336,7 @@
                 if (action === 'add') {
                     handleAdd()
                 } else {
+                    /* For closing the tab */
                     console.log(targetKey)
                     let crossedTabState: boolean = false
                     tabs.value.forEach((tab) => {
@@ -328,8 +346,22 @@
                     })
                     /* If it is unsaved then show popover confirm */
                     if (!crossedTabState) {
-                        unsavedPopover.value.key = targetKey as string
-                        unsavedPopover.value.show = true
+                        /* If content is empty */
+                        const tab = tabs.value.find(
+                            (tab) => tab.key === targetKey
+                        )
+                        if (tab?.playground?.editor?.text?.length > 0) {
+                            unsavedPopover.value.key = targetKey as string
+                            unsavedPopover.value.show = true
+                        } else {
+                            /* Delete the tab if content is empty */
+                            inlineTabRemove(
+                                targetKey as string,
+                                tabs,
+                                activeInlineTabKey,
+                                pushGuidToURL
+                            )
+                        }
                     } else {
                         inlineTabRemove(
                             targetKey as string,
@@ -355,12 +387,10 @@
                 unsavedPopover.value.show = false
             }
             const closePopOver = () => {
-
-                if(unsavedPopover?.value?.show) {
+                if (unsavedPopover?.value?.show) {
                     unsavedPopover.value.key = undefined
                     unsavedPopover.value.show = false
                 }
-                
             }
 
             const saveQueryOnCloseTab = (saveQueryDataParam: any) => {
@@ -400,6 +430,7 @@
                 }
             }
             const saveTabConfirm = (key: string) => {
+                console.log(key, 'keyyy')
                 /* Saving the key */
                 saveCloseTabKey.value = key
                 let tabData: activeInlineTabInterface | undefined
@@ -410,6 +441,7 @@
                 })
 
                 if (tabData?.queryId) {
+                    console.log(tabData, key, 'updayte')
                     /* If this tab already saved to database */
                     updateSavedQuery(editorInstance, isSaving, tabData)
                     inlineTabRemove(

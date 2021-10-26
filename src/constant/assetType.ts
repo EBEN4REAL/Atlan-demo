@@ -94,6 +94,27 @@ export const AssetTypeList: {
             count: 0,
         },
         {
+            id: 'Query',
+            label: 'Query',
+            nameAttribute: 'queryName',
+            qualifiedNameAttribute: 'queryQualifiedName',
+            parents: ['Connection', 'Database', 'Schema'],
+            children: [],
+            isDiscoverable: true,
+            orderWeight: 70,
+            count: 0,
+        },
+        {
+            id: 'QueryFolder',
+            label: 'QueryFolder',
+            qualifiedNameAttribute: 'parentFolderQualifiedName',
+            parents: ['Connection', 'Database', 'Schema'],
+            children: ['Query'],
+            isDiscoverable: true,
+            orderWeight: 60,
+            count: 0,
+        },
+        {
             id: 'TableauSite',
             label: 'Tableau Site',
             nameAttribute: 'siteName',
@@ -111,7 +132,7 @@ export const AssetTypeList: {
         {
             id: 'TableauWorkbook',
             label: 'Tableau Workbook',
-            nameAttribute:'workbookName',
+            nameAttribute: 'workbookName',
             isDiscoverable: true,
             parents: ['TableauProject'],
         },
@@ -130,7 +151,7 @@ export const AssetTypeList: {
         {
             id: 'TableauDatasource',
             label: 'Tableau Datasource',
-            nameAttribute:'datasourceName',
+            nameAttribute: 'datasourceName',
             isDiscoverable: true,
             parents: ['TableauWorkbook'],
         },
@@ -139,7 +160,7 @@ export const AssetTypeList: {
             label: 'Tableau Datasource Field',
             parents: ['TableauWorkbook'],
         },
-        {   
+        {
             id: 'TableauCalculatedField',
             label: 'Tableau Calculated Field',
             parents: ['TableauWorkbook'],

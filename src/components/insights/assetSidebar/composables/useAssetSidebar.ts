@@ -22,16 +22,36 @@ export function useAssetSidebar(
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
 
-    const openAssetSidebar = (activeInlineTabCopy: any) => {
-        if (activeInlineTab.value) {
-            const index = tabsArray.value.findIndex(
-                (tab) => tab.key === activeInlineTab.value?.key
-            )
-            if (index !== -1) {
-                tabsArray.value[index].assetSidebar =
-                    activeInlineTabCopy.assetSidebar
-                // syncying inline tabarray in localstorage
-                syncInlineTabsInLocalStorage(tabsArray.value)
+    const openAssetSidebar = (activeInlineTabCopy: any, pos: string) => {
+        switch (pos) {
+            case 'not_editor': {
+                if (activeInlineTab.value) {
+                    const index = tabsArray.value.findIndex(
+                        (tab) => tab.key === activeInlineTab.value?.key
+                    )
+                    const t = activeInlineTabCopy.assetSidebar
+                    t.openingPos = 'not_editor'
+                    if (index !== -1) {
+                        tabsArray.value[index].assetSidebar = t
+                        // syncying inline tabarray in localstorage
+                        syncInlineTabsInLocalStorage(tabsArray.value)
+                    }
+                }
+            }
+            case 'default': {
+                if (activeInlineTab.value) {
+                    const index = tabsArray.value.findIndex(
+                        (tab) => tab.key === activeInlineTab.value?.key
+                    )
+                    const t = activeInlineTabCopy.assetSidebar
+                    t.openingPos = 'editor'
+                    if (index !== -1) {
+                        tabsArray.value[index].assetSidebar =
+                            activeInlineTabCopy.assetSidebar
+                        // syncying inline tabarray in localstorage
+                        syncInlineTabsInLocalStorage(tabsArray.value)
+                    }
+                }
             }
         }
     }

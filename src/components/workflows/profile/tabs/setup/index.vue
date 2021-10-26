@@ -54,9 +54,8 @@
             const { workflowTemplate } = toRefs(props)
 
             /** DATA */
-            const filter = { name: `${workflowTemplate.value}` }
             const { data, isLoading } = useWorkflowTemplateByName(
-                JSON.stringify(filter)
+                workflowTemplate.value
             )
 
             watch(data, (newVal) => {

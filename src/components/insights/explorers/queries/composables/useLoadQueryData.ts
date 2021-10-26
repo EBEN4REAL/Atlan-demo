@@ -8,7 +8,11 @@ import {
 
 import { useAPIPromise } from '~/services/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import {
+    BaseAttributes,
+    BasicSearchAttributes,
+    SavedQueryAttributes,
+} from '~/constant/projection'
 
 import whoami from '~/composables/user/whoami'
 
@@ -51,6 +55,7 @@ const useLoadQueryData = ({
         'rawQuery',
         ...BaseAttributes,
         ...BasicSearchAttributes,
+        ...SavedQueryAttributes,
     ]
     const body = ref()
 
@@ -110,11 +115,11 @@ const useLoadQueryData = ({
                     },
                 ],
             })
-            // body.value.entityFilters.criterion.push({
-            //     attributeName: 'owner',
-            //     attributeValue: username.value,
-            //     operator: 'eq',
-            // })
+            body.value.entityFilters.criterion.push({
+                attributeName: 'ownerUsers',
+                attributeValue: username.value,
+                operator: 'eq',
+            })
         }
     }
 

@@ -16,8 +16,8 @@
             />
 
             <textarea
-                class="text-sm text-gray-500 clean-input"
                 v-model="description"
+                class="text-sm text-gray-500 clean-input"
                 maxlength="140"
                 rows="2"
                 placeholder="Add description..."
@@ -30,9 +30,9 @@
 <script lang="ts">
     import { message } from 'ant-design-vue'
     import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
+    import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
     import usePersonaService from '~/services/heracles/composables/personas'
-    import { whenever } from '@vueuse/core'
     import {
         reFetchList,
         selectedPersonaId,
@@ -78,7 +78,7 @@
                         users: [],
                         groups: [],
                         personaType: 'persona',
-                        dataPolicies: [],
+                        datapolicies: [],
                     })
                     message.success(`${title.value} persona Created`)
                     reFetchList()

@@ -14,13 +14,15 @@ export function useClassifications() {
             Classification.getClassificationList<typedefsInterface>({
                 cache: false,
             })
-
-        watch([classificationData, classificationError], () => {
-            if (classificationData.value) {
+            
+            watch([classificationData, classificationError], () => {
+                if (classificationData.value) {
                 const classifications =
-                    classificationData.value.classificationDefs || []
+                classificationData.value.classificationDefs || []
+                // Hide atlan_ classifications, issue number DISCV-317
+                const filteredClassifications = classifications?.filter((el) => !el.displayName?.toLowerCase().startsWith('atlan_'))
 
-                classificationsStore.setClassifications(classifications ?? [])
+                classificationsStore.setClassifications(filteredClassifications ?? [])
                 classificationsStore.initializeFilterTree()
                 classificationsStore.setClassificationsStatus('success')
             } else {

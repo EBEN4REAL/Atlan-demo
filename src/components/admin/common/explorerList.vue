@@ -1,15 +1,15 @@
 <template>
     <div class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-1">
         <div
-            class="px-3 py-2 rounded cursor-pointer"
             v-for="(item, index) in list"
+            :key="item[dataKey]"
             :class="[
                 item[dataKey] === selected
                     ? 'bg-gray-300'
                     : 'hover:bg-gray-light',
                 disabled ? 'cursor-not-allowed opacity-70' : '',
             ]"
-            :key="item[dataKey]"
+            class="px-3 py-2 truncate rounded cursor-pointer"
             @click="
                 () => {
                     if (!disabled) {

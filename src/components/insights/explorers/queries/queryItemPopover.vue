@@ -4,27 +4,25 @@
             <div class="flex items-center flex-1 mr-5 text-xs">
                 <div class="flex items-center h-full">
                     <div class="relative w-4 h-4 mr-1 -mt-1 overflow-hidden">
-                            <AtlanIcon
-                                v-if="savedQueryType ===
-                                    'personal'
-                                "
-                                icon="PrivateFolder"
-                                class="h-4"
-                            />
-                            <AtlanIcon 
-                                v-else 
-                                icon="FolderClosed" 
-                                class="h-4" 
-                            />
+                        <AtlanIcon
+                            v-if="savedQueryType === 'personal'"
+                            icon="PrivateFolder"
+                            class="h-4"
+                        />
+                        <AtlanIcon v-else icon="FolderClosed" class="h-4" />
                     </div>
 
                     <span>Metrics</span>
                 </div>
-                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full -mt-0.5"></div>
+                <div
+                    class="w-1 h-1 mx-2 bg-gray-500 rounded-full -mt-0.5"
+                ></div>
                 <div class="flex items-center h-full">
                     <span>Last run 5 days ago</span>
                 </div>
-                <div class="w-1 h-1 mx-2 bg-gray-500 rounded-full -mt-0.5"></div>
+                <div
+                    class="w-1 h-1 mx-2 bg-gray-500 rounded-full -mt-0.5"
+                ></div>
                 <div class="flex items-center h-full">
                     <span>308 total runs</span>
                 </div>
@@ -159,7 +157,7 @@
         </div>
         <div class="flex justify-end w-full mt-3 text-primary">
             <div class="flex items-center cursor-pointer" @click="oSidebar">
-                View in sidebar
+                view info
                 <AtlanIcon icon="ArrowRight" class="ml-1"></AtlanIcon>
             </div>
         </div>
@@ -220,7 +218,7 @@
             const savedQueryType = inject('savedQueryType') as Ref<
                 'all' | 'personal'
             >
-            
+
             const { openAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
@@ -244,7 +242,7 @@
                     Object.assign({}, activeInlineTab.value)
                 activeInlineTabCopy.assetSidebar.assetInfo = item.value
                 activeInlineTabCopy.assetSidebar.isVisible = true
-                openAssetSidebar(activeInlineTabCopy)
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
 
             const splittedUsers = ref(splitArray(5, mixedOwnersAndGroups.value))
@@ -272,7 +270,6 @@
             watch(
                 item,
                 () => {
-                    console.log(item, 'item')
                     mixedTermsAndClassifications.value = []
                     mixedOwnersAndGroups.value = []
                     const classifications =
@@ -318,7 +315,7 @@
                 mixedTermsAndClassifications,
                 KeyMaps,
                 List,
-                savedQueryType
+                savedQueryType,
             }
         },
     })

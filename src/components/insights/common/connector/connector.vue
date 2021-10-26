@@ -205,22 +205,6 @@
             watch([connector, connection], () => emitChangedFilters())
 
             const emitChangedFilters = () => {
-                const criterion: Components.Schemas.FilterCriteria[] = []
-
-                if (connection.value) {
-                    criterion?.push({
-                        attributeName: 'connectionQualifiedName',
-                        attributeValue: connection.value,
-                        operator: 'eq',
-                    })
-                } else if (connector.value) {
-                    criterion?.push({
-                        attributeName: 'connectorName',
-                        attributeValue: connector.value,
-                        operator: 'eq',
-                    })
-                }
-
                 emit('change')
             }
 
@@ -239,7 +223,6 @@
 
             const onChange = (value) => {
                 if (!value) {
-                    console.log('inside undefined')
                     selectNode(undefined, undefined)
                 }
             }

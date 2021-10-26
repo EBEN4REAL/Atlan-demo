@@ -75,6 +75,7 @@
         components: { Connector, SchemaTree },
         props: {},
         setup(props, { emit }) {
+            const isSchemaInitialized = ref(true)
             const tables: tableInterface[] = tablesData
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const activeInlineTab = inject(
@@ -112,6 +113,8 @@
             )
 
             const handleChange = () => {
+                /* Here we are making a change, so isSaved will be false */
+                // activeInlineTab.value.isSaved = false
                 setConnectorsDataInInlineTab(
                     activeInlineTab,
                     tabs,

@@ -1,22 +1,45 @@
 <template>
-    <div>
-        <span class="mb-1 text-sm text-gray-700">SCOPES</span>
-        <div class="mb-3" v-for="(scope, idx) in scopeList">
-            <span class="block mb-1 text-sm text-gray-500 capitalize">{{
-                scope.type
-            }}</span>
+    <a-collapse expand-icon-position="right">
+        <template #expandIcon="{ isActive }">
+            <div>
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                    :class="isActive ? '-rotate-180' : 'rotate-0'"
+                />
+            </div>
+        </template>
+
+        <a-collapse-panel v-for="(scope, idx) in scopeList" :key="idx">
+            <template #header>
+                <a-checkbox
+                    :checked="
+                        groupedActions[idx].scopes.length ===
+                        scopeList[idx].scopes.length
+                    "
+                    :indeterminate="
+                        0 < groupedActions[idx].scopes.length &&
+                        groupedActions[idx].scopes.length <
+                            scopeList[idx].scopes.length
+                    "
+                    :disabled="!isEditing"
+                    @click.stop="toggleCheckAll(idx)"
+                ></a-checkbox>
+                {{ scope.type }}
+            </template>
             <a-checkbox-group
                 :value="groupedActions[idx].scopes"
-                @update:value="updateSelection(scope.type, $event)"
                 :name="scope.type"
                 :options="scope.scopes"
+                :disabled="!isEditing"
+                @update:value="updateSelection(scope.type, $event)"
             />
-        </div>
-    </div>
+        </a-collapse-panel>
+    </a-collapse>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
     import { isEditing } from '../composables/useEditPersona'
     import useScopeService from '~/services/heracles/composables/scopes'
 
@@ -57,11 +80,21 @@
                 emit('update:actions', allScopes)
             }
 
+            function toggleCheckAll(idx: number) {
+                if (
+                    groupedActions.value[idx].scopes.length <
+                    scopeList[idx].scopes.length
+                )
+                    updateSelection(scopeList[idx].type, scopeList[idx].scopes)
+                else updateSelection(scopeList[idx].type, [])
+            }
+
             return {
                 scopeList,
                 isEditing,
                 groupedActions,
                 updateSelection,
+                toggleCheckAll,
             }
         },
     })

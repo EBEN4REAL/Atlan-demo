@@ -7,6 +7,7 @@
                     :is-sidebar-active="showNavbar"
                     @toggleNavbar="handleToggleNavbar"
                     @openNavbar="showNavbar = true"
+                    @openCmndK="isCmndKVisible = true"
                 />
             </div>
         </a-layout-header>
@@ -37,6 +38,10 @@
                     @click="handleClick"
                     @mouseover="showNavbar = false"
                 >
+                    <CmndK
+                        :isCmndKVisible="isCmndKVisible"
+                        @closeModal="isCmndKVisible = false"
+                    />
                     <router-view />
                 </div>
             </a-layout-content>
@@ -49,12 +54,13 @@
 <script lang="ts">
     import { defineComponent, ref, onMounted, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useMagicKeys } from '@vueuse/core'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     import KeycloakMixin from '~/mixins/keycloak'
     import PreviewDrawer from '~/components/common/previewDrawer.vue'
     import NavMenu from '~/components/common/navMenu.vue'
     import SidePanel from '~/components/home/sidePanel.vue'
+    import CmndK from '~/components/common/commandK/cmndK.vue'
 
     export default defineComponent({
         name: 'Default Layout',
@@ -62,6 +68,7 @@
             PreviewDrawer,
             NavMenu,
             SidePanel,
+            CmndK,
         },
         mixins: [KeycloakMixin],
         setup() {
@@ -83,8 +90,25 @@
                 '/admin',
                 '/platform',
             ]
-
             const curPath = computed(() => currentRoute.value.path)
+            // shortcut keys for command k
+            const { control, meta, meta_K } = keys
+            const keyK = keys.K
+            const isCmndKVisible = ref<boolean>(false)
+            const showModal = () => {
+                isCmndKVisible.value = true
+            }
+
+            // watch for shortcut keys for command k
+            whenever(keyK, () => {
+                if (
+                    (keyK.value && control.value) ||
+                    (keyK.value && meta.value)
+                ) {
+                    showModal()
+                    keyK.value = false
+                }
+            })
 
             const handleToggleNavbar = () => {
                 showNavbar.value = !showNavbar.value
@@ -122,6 +146,7 @@
                 currentRoute,
                 closeNavbar,
                 handleClick,
+                isCmndKVisible,
             }
         },
     })

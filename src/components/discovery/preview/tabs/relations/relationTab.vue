@@ -1,5 +1,5 @@
 <template>
-    <div class="px-3 pt-4">
+    <div class="px-0 pt-4">
         <!-- preloader -->
         <!-- TODO: isLoading from useAPI doesnt work fine  -->
         <!-- <div
@@ -10,16 +10,23 @@
         ><span>Getting relations</span>
     </div> -->
         <!-- preloader ends here -->
-        <div class="mb-1">
+        <div class="px-3 mb-1">
             <!-- searchbar -->
-            <SearchAndFilter v-model:value="queryText">
+            <SearchAndFilter v-model:value="queryText" size="minimal">
                 <!-- filters -->
                 <template #filter>
                     <a-checkbox-group
                         v-model:value="checkedList"
-                        :options="plainOptions"
                         class="flex flex-col"
-                    />
+                    >
+                        <div v-for="item in plainOptions" :key="item.id">
+                            <a-checkbox :value="item.id"
+                                ><span class="text-gray">
+                                    {{ item.label }}
+                                </span>
+                            </a-checkbox>
+                        </div>
+                    </a-checkbox-group>
                 </template>
             </SearchAndFilter>
         </div>
@@ -35,7 +42,7 @@
                 <div class="">
                     <fa
                         icon="fas chevron-down"
-                        class="ml-1 transition-transform transform duration-300"
+                        class="ml-1 transition-transform duration-300 transform"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -112,8 +119,21 @@
 
             const checkedList = ref(['description'])
             const { selectedAsset } = toRefs(props)
-            // TODO: define these flter types in constant folder
-            const plainOptions = ['description', 'owners', 'business terms']
+
+            const plainOptions = [
+                {
+                    id: 'description',
+                    label: 'Description',
+                },
+                {
+                    id: 'classifications',
+                    label: 'Classifications',
+                },
+                {
+                    id: 'terms',
+                    label: 'Business Terms',
+                },
+            ]
 
             const fetchData = () => {
                 const { relationshipAssetTypes, isLoading } =
@@ -147,7 +167,6 @@
                 checkedList,
                 cssClasses: {
                     textSize: 'text-sm',
-                    paddingY: 'py-2',
                 },
             }
         },

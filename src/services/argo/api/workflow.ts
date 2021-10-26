@@ -90,6 +90,20 @@ const getWorkflowTemplateByName = (filter, { immediate, options }) =>
         { immediate }
     )
 
+const getRunList = (labelSelector, { immediate, options }) =>
+    useAPISWRV(
+        KeyMaps.workflow.WORKFLOW_RUN,
+        'GET',
+        `getRunList${Math.random().toString(36).substring(2, 15)}`,
+        {
+            options,
+            pathVariables: {
+                labelSelector,
+            },
+        }
+        // { immediate }
+    )
+
 const getArchivedRunList = (filter, { immediate, options }) =>
     useAPIAsyncState(
         KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
@@ -103,15 +117,13 @@ const getArchivedRunList = (filter, { immediate, options }) =>
         { immediate }
     )
 
-const getArchivedWorkflowRun = (guid, { immediate, options }) =>
+const runWorkflowByName = ({ body, immediate, options }) =>
     useAPIAsyncState(
-        KeyMaps.workflow.ARCHIVED_WORKFLOW_RUN,
-        'GET',
+        KeyMaps.workflow.RUN_WORKFLOW,
+        'POST',
         {
+            body,
             options,
-            pathVariables: {
-                guid,
-            },
         },
         { immediate }
     )
@@ -130,12 +142,13 @@ const createWorkflow = ({ body, immediate, options }) =>
 export const Workflows = {
     URL,
     List,
+    getRunList,
     getArchivedRunList,
     updateWorkflowByName,
     getWorkflowByName,
     getWorkflows,
     createWorkflow,
-    getArchivedWorkflowRun,
+    runWorkflowByName,
     getWorkflowTemplates,
     getWorkflowConfigMap,
     getWorkflowTemplateByName,

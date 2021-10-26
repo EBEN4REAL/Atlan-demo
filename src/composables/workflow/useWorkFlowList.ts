@@ -79,20 +79,35 @@ export function useWorkflowSearchList(immediate: boolean = true) {
     }
 }
 
-export function useArchivedRunList(filter, immediate: boolean = true) {
+export function getRunList(labelSelector, immediate: boolean = true) {
+    const { data, error, isLoading } = Workflows.getRunList(labelSelector, {
+        immediate,
+        options: { refreshInterval: 60000 },
+    })
+    // refreshInterval: 30000
+
+    const liveList = ref([])
+
+    watch(data, () => {
+        liveList.value = data.value
+    })
+
+    return { liveList, error, isLoading }
+}
+
+export function getArchivedRunList(filter, immediate: boolean = true) {
     const { data, error, isLoading, mutate } = Workflows.getArchivedRunList(
         filter,
         { immediate, options: {} }
     )
 
-    const runList = ref([])
+    const archivedList = ref([])
     watch(data, () => {
-        console.log('useArchivedRunList', data.value)
-        runList.value = data.value
+        archivedList.value = data.value
     })
 
     const filterList = (text) =>
-        runList.value.filter((wf) =>
+        archivedList.value.filter((wf) =>
             wf.name.toLowerCase().includes(text.toLowerCase())
         )
 
@@ -101,7 +116,7 @@ export function useArchivedRunList(filter, immediate: boolean = true) {
         mutate()
     }
 
-    return { runList, error, isLoading, filterList, mutate, reFetch }
+    return { archivedList, error, isLoading, filterList, mutate, reFetch }
 }
 
 export function useWorkflowTemplates(immediate: boolean = true) {
@@ -201,21 +216,6 @@ export function useWorkflowTemplateByName(filter, immediate: boolean = true) {
     }
 }
 
-export function useArchivedWorkflowRun(guid, immediate: boolean = true) {
-    const { data, error, isLoading, mutate } = Workflows.getArchivedWorkflowRun(
-        guid,
-        { immediate, options: {} }
-    )
-
-    const runDeets = ref([])
-
-    watch(data, () => {
-        runDeets.value = data.value
-    })
-
-    return { runDeets, error, isLoading, mutate }
-}
-
 export function useWorkflowByName(filter, immediate: boolean = true) {
     const { data, error, isLoading, mutate } = Workflows.getWorkflowByName(
         filter,
@@ -269,6 +269,21 @@ export function getWorkflowConfigMap(name, immediate: boolean = true) {
     }
 
     return { data, error, isLoading, mutate, changeName }
+}
+
+export function runWorkflowByName(body, immediate: boolean = true) {
+    const { data, error, isLoading, mutate } = Workflows.runWorkflowByName({
+        body,
+        immediate,
+        options: {},
+    })
+
+    return {
+        data,
+        error,
+        isLoading,
+        mutate,
+    }
 }
 
 export function createWorkflow(body, immediate: boolean = true) {

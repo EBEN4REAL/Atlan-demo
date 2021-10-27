@@ -8,7 +8,7 @@
     </div>
     <!-- preloader ends here -->
     <!-- related asset list with assetTpe type  -->
-    <VirtualList v-else :data="list.entities" :data-key="keyField">
+    <VirtualList v-else :data="list.entities" :data-key="keyField" class="mb-2">
         <template #default="{ item }">
             <ListItem
                 :item="item"

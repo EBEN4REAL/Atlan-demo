@@ -10,30 +10,25 @@
             />
 
             <SearchAndFilter v-model:value="queryText" class="w-1/2">
-                <!-- filters -->
-                <template #filter>
-                    <a-checkbox-group
-                        v-model:value="checkedList"
-                        class="flex flex-col"
-                    >
-                        <div v-for="item in plainOptions" :key="item.id">
-                            <a-checkbox :value="item.id"
-                                ><span class="text-gray">
-                                    {{ item.label }}
-                                </span>
-                            </a-checkbox>
-                        </div>
-                    </a-checkbox-group>
-                </template>
             </SearchAndFilter>
         </div>
         <div class="pl-12 pr-2">
-            <AssetTypeItems
-                :projections="checkedList"
-                asset-type="queries"
-                :asset-id="selectedAsset.guid"
-                :css-classes="cssClasses"
-            />
+            <KeepAlive>
+                <AssetTypeItems
+                    v-if="activePreviewTabKey === 'card'"
+                    :projections="checkedList"
+                    asset-type="queries"
+                    :asset-id="selectedAsset.guid"
+                    :css-classes="cssClasses"
+                />
+                <AssetTypeItems
+                    v-else-if="activePreviewTabKey === 'compact'"
+                    :projections="[]"
+                    asset-type="queries"
+                    :asset-id="selectedAsset.guid"
+                    :css-classes="cssClasses"
+                />
+            </KeepAlive>
         </div>
     </div>
 </template>
@@ -80,7 +75,6 @@
             ]
 
             const queryText = ref('')
-            const activeKeys = ref([])
 
             const checkedList = ref(['description', 'classifications', 'terms'])
 
@@ -92,29 +86,12 @@
             const storeDiscovery = useDiscoveryStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
 
-            const plainOptions = [
-                {
-                    id: 'description',
-                    label: 'Description',
-                },
-                {
-                    id: 'classifications',
-                    label: 'Classifications',
-                },
-                {
-                    id: 'terms',
-                    label: 'Business Terms',
-                },
-            ]
-
             return {
                 assetType,
                 activePreviewTabKey,
                 selectedAsset,
                 tabConfig,
                 queryText,
-                plainOptions,
-                activeKeys,
                 checkedList,
                 cssClasses: {
                     textSize: 'text-sm',

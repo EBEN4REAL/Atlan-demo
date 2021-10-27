@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen min-w-screen">
+  <div class="flex items-center justify-center min-h-screen mt-1 min-w-screen">
     <a-spin :size="size"></a-spin>
   </div>
 </template>
@@ -19,7 +19,7 @@ export default defineComponent({
     },
   },
   computed: {},
-  mounted() {},
+  mounted() { },
   methods: {},
 });
 </script>

@@ -1,8 +1,8 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div class="flex flex-col mx-3 my-1">
+    <div class="flex flex-col mx-3">
         <div
-            class="flex items-start flex-1 px-3 py-6 transition-all duration-300 border rounded  hover:shadow hover:border-none"
+            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border rounded  hover:shadow-lg hover:border-none"
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
@@ -145,19 +145,22 @@
                 </div>
                 <!-- Description -->
                 <div
-                    v-if="projection?.includes('description')"
+                    v-if="
+                        projection?.includes('description') &&
+                        description(item)?.length
+                    "
                     class="mt-2 mb-1 text-sm text-gray-500 truncate-overflow"
                     style="max-width: 80%"
                 >
-                    <span v-if="description(item)?.length">{{
-                        description(item)
-                    }}</span>
+                    {{ description(item) }}
                 </div>
                 <!-- Classification and terms -->
                 <template
                     v-if="
-                        projection?.includes('classifications') ||
-                        projection?.includes('terms')
+                        (projection?.includes('classifications') ||
+                            projection?.includes('terms')) &&
+                        (item.classificationNames?.length ||
+                            item.meanings?.length)
                     "
                 >
                     <ScrollStrip>
@@ -209,6 +212,7 @@
                 @unlinkAsset="$emit('unlinkAsset', item)"
             />
         </div>
+
         <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
     </div>
 </template>
@@ -216,7 +220,7 @@
 <script lang="ts">
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { computed, defineComponent, PropType, Ref, ref } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import Pill from '@/UI/pill/pill.vue'
     import CertificatePopover from '~/components/common/certificatePopover.vue'
     import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'

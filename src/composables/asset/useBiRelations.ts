@@ -4,7 +4,7 @@ import { fetcher } from '~/api'
 import { GET_ASSET_RELATIONSHIP } from '~/api/keyMaps/asset'
 import keyMaps from '~/api/keyMaps'
 
-import { BasicSearchAttributes, tableauAttributes } from '~/constant/projection'
+import { BasicSearchAttributes, tableauAttributes, SavedQueryAttributes, ColumnAttributes } from '~/constant/projection'
 import useBusinessMetadataStore from '~/store/businessMetadata'
 
 // TODO : delete this composable and merge with ./useColumns.ts or make a generic composable to fetch all kinds or relationships
@@ -21,6 +21,8 @@ function constructRequest(guid: string, assetType: string) {
         ...BasicSearchAttributes,
         ...useBusinessMetadataStore().getBusinessMetadataListProjections,
         ...tableauAttributes,
+        ...SavedQueryAttributes,
+        ...ColumnAttributes
     ]
 
     const paramsObj: any = {

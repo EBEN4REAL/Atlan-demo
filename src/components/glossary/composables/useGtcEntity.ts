@@ -24,7 +24,6 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     cache?: boolean | string,
     watchForGuidChange: boolean = true
 ) => {
-    console.log('useGtcEntity called')
     const body = ref({})
 
     const relatedTerms = [
@@ -51,7 +50,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             size: 10,
             query: {
                 term: {
-                    __guid: entityGuid.value,
+                    __guid: entityGuid.value ?? '',
                 },
             },
         },
@@ -104,9 +103,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         },
     })
 
-    const entity = computed(() =>
-        data.value?.entities ? (data.value?.entities[0] as T) : undefined
-    )
+    const entity = ref()
 
     const referredEntities = computed(
         () =>
@@ -130,13 +127,14 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     const statusMessage = computed(
         () => entity.value?.attributes?.assetStatusMessage ?? ''
     )
-
     const statusObject = computed(() =>
         StatusList.find(
             (status) =>
                 status.id === entity.value?.attributes?.certificateStatus
         )
     )
+    const parentGlossaryGuid = ref<string | undefined>('')
+
 
     watch(entityGuid, (newGuid) => {
         if (watchForGuidChange) {
@@ -144,12 +142,19 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             mutate()
         }
     })
+    watch(data, (newData) => {
+        entity.value = newData?.entities ? (newData.entities[0] as T) : undefined
+    })
+    watch(entity, (newEntity) => {
+        if(newEntity) {
+            if(newEntity.typeName === 'AtlasGlossary') parentGlossaryGuid.value =  newEntity.guid
+            else parentGlossaryGuid.value = newEntity.attributes?.anchor?.guid
+        }
+    })
 
     const refetch = () => {
         body.value = getBody()
         mutate()
-        console.log('refetching')
-        console.log(entity)
     }
 
     return {
@@ -164,6 +169,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         refetch,
         mutate,
         statusMessage,
+        parentGlossaryGuid
     }
 }
 

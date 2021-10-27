@@ -79,7 +79,7 @@ export default function useGtcSearch(
                             },
                             {
                                 wildcard: {
-                                    "Asset.name": `*${requestQuery.value}*`   
+                                    "name": `*${requestQuery.value}*`   
                                 }
                             }
                         ]
@@ -134,11 +134,12 @@ export default function useGtcSearch(
             else typeName = ['AtlasGlossaryTerm', 'AtlasGlossaryCategory']
 
         } else {
-            if (type && type !== '') {
-                typeName = [type]
-            }  else if(Array.isArray(type)) {
-                typeName = type
+            if(Array.isArray(type)) {
+                typeName = [...type]
             }
+            else if (type && type !== '') {
+                typeName = [type]
+            }  
             else
                 typeName =
                     ['AtlasGlossaryTerm', 'AtlasGlossaryCategory', 'AtlasGlossary']

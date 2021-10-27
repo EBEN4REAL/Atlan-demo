@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="pb-2 mt-1">
         <div v-if="isInitingTree">
             <LoadingView size="small" class="w-1 h-1 mt-4 mr-4" />
         </div>
@@ -195,12 +195,11 @@
                 selectNode,
                 reInitTree,
                 collapseAll,
-            } = useTree(
+            } = useTree({
                 emit,
-                true,
-                computed(() => false),
-                true
-            )
+                filterMode: true,
+                parentGlossaryGuid: ref()
+            })
             const {
                 entities: searchResults,
                 terms: searchTerms,

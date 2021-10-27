@@ -66,8 +66,8 @@
             </div>
         </div>
     </div>
-    <div v-else class="flex items-center px-4 py-2 text-sm bg-white">
-        <RaisedTabSmall
+    <div v-else class="flex items-center px-4 pt-4 pb-2 text-sm bg-gray-100">
+        <RaisedTab
             v-model:active="activeTab"
             class="mr-auto"
             :data="tabConfig"

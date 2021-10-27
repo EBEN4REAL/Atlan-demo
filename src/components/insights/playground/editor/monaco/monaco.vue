@@ -83,19 +83,6 @@
             } = useEditor(tabs, activeInlineTab)
             const { isLineError } = useResultPane(tabs)
 
-            const isSelectedWordIsTableName = (word: string): boolean => {
-                switch (word) {
-                    case 'superstore_sales_data_2016-present': {
-                        return true
-                    }
-                    case 'superstore_sales_data_2016': {
-                        return true
-                    }
-                    default: {
-                        return false
-                    }
-                }
-            }
             const findAndChangeCustomVariablesColor = () => {
                 if (activeInlineTab.value) {
                     const matches =
@@ -238,6 +225,20 @@
                         saveOrUpdate()
                     }
                 )
+                // /* For command pallete keybinding */
+                // editor?.addCommand(
+                //     monaco.KeyMod.CtrlCmd |
+                //         monaco.KeyCode.Shift |
+                //         monaco.KeyCode.KEY_P,
+                //     function () {
+                //         editor?.trigger(
+                //             'editor',
+                //             'editor.action.quickCommand',
+                //             undefined
+                //         )
+                //     }
+                // )
+
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
                     if (isLineError(activeInlineTab)) {

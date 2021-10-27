@@ -120,6 +120,7 @@ export const KeyMaps = {
             getAPIPath('meta', `/entity/guid/${guid}/businessmetadata`),
     },
     glossary: {
+        CREATE_WORKFLOW: () => getAPIPath('/service', `/workflows?submit=true`),
         CREATE_GLOSSARY: () => getAPIPath('meta', '/glossary'),
         CREATE_GLOSSARY_CATEGORY: () =>
             getAPIPath('meta', '/glossary/category'),
@@ -179,6 +180,7 @@ export const KeyMaps = {
             getAPIPath('auth', `/credentials/${id}/test`),
         UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) =>
             getAPIPath('auth', `/credentials/${id}`),
+        INDEX_SEARCH: () => getAPIPath('meta', '/search/indexsearch'),
     },
     connection: {
         TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
@@ -215,6 +217,12 @@ export const KeyMaps = {
         RUN_WORKFLOW: () => getAPIPath('/service', `/workflows/submit`),
         WORKFLOW_UPDATE_BY_NAME: ({ name }: PathParams) =>
             getAPIPath('/service', `/workflows/${name}`),
+        ARCHIVED_WORKFLOW: () => getAPIPath('/service', `/archived-workflows`),
+        LIVE_WORKFLOW_RUN: ({ workflowTemplate }: PathParams) =>
+            getAPIPath(
+                '/service',
+                `runs?limit=10&labelSelector=workflows.argoproj.io/workflow-template=${workflowTemplate}`
+            ),
         WORKFLOW_RUN: ({ labelSelector }: PathParams) =>
             getAPIPath('/service', `/runs?labelSelector=${labelSelector}`),
         ARCHIVED_WORKFLOW_RUN: ({ filter }: PathParams) =>

@@ -64,6 +64,7 @@
                             :show-chip-style-status="false"
                             :show-no-status="true"
                             :show-label="true"
+                            :isTree="false"
                             class="p-0 cursor-pointer"
                         ></StatusBadge>
                     </a-dropdown>
@@ -228,7 +229,8 @@
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
             const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
-            const currentStatus: Ref<string | undefined> = ref('DRAFT')
+            /* Initial status will be null */
+            const currentStatus: Ref<string | undefined> = ref('is_null')
             const title: Ref<string> = ref('')
             const description: Ref<string | undefined> = ref('')
             const isSQLSnippet: Ref<boolean | undefined> = ref(false)

@@ -6,6 +6,7 @@
         :class="{ 'overflow-y-auto ': headerReachedTop }"
         :style="headerReachedTop ? 'max-height: calc(100vh - 220px)' : ''"
     >
+        <BulkProgressWidget />
         <Announcements :asset="entity" class="mb-3" />
         <SummaryWidget :entity="entity" />
         <Readme
@@ -23,6 +24,7 @@
 
     import Readme from '@/common/readme/index.vue'
     import SummaryWidget from '@/glossary/profile/overview/summaryWidget.vue'
+    import BulkProgressWidget from '@/glossary/profile/overview/bulkProgressWidget.vue'
     import Announcements from '@/asset/assetProfile/widgets/announcements/announcements.vue'
 
     import {
@@ -32,7 +34,12 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { Readme, SummaryWidget, Announcements },
+        components: {
+            Readme,
+            SummaryWidget,
+            Announcements,
+            BulkProgressWidget,
+        },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,

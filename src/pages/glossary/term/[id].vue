@@ -3,7 +3,7 @@
         <NoAccessPage />
     </div>
     <div v-else>
-        <div v-if="isLoading && term?.guid !== id">
+        <div v-if="!term || (isLoading && term?.guid !== id)">
             <LoadingView />
         </div>
         <div
@@ -21,7 +21,6 @@
                 <ProfileHeader
                     :title="title"
                     :entity="term"
-                    :isNewEntity="isNewTerm"
                     :statusMessage="statusMessage"
                     :statusObject="statusObject"
                     :shortDescription="shortDescription"
@@ -35,26 +34,6 @@
                     >
                         <a-tab-pane key="1" tab="Overview">
                             <div class="px-5 mt-4">
-                                <div v-if="isNewTerm" class="mb-4">
-                                    <p
-                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
-                                    >
-                                        Name
-                                    </p>
-                                    <div class="flex">
-                                        <a-input
-                                            v-model:value="newName"
-                                            style="width: 200px"
-                                        />
-                                        <a-button
-                                            v-if="newName"
-                                            class="ml-4"
-                                            type="primary"
-                                            @click="updateTitle"
-                                            >Submit</a-button
-                                        >
-                                    </div>
-                                </div>
                                 <GlossaryProfileOverview
                                     :entity="term"
                                     :header-reached-top="headerReachedTop"
@@ -109,7 +88,6 @@
         WritableComputedRef,
         Ref,
     } from 'vue'
-    import { useRouter } from 'vue-router'
 
     // components
     import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
@@ -120,8 +98,6 @@
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
-    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // assets
     import { Term } from '~/types/glossary/glossary.interface'
@@ -151,8 +127,6 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
-            const newName = ref('')
-            const router = useRouter()
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
             const temp = ref(false)
@@ -182,6 +156,7 @@
 
             const { isAccess } = useAuth()
 
+            // TODO: move to glossary.vue
             // ? Re fetch after bm projection loads or first fetch after  bm projection loads ?
             watch(
                 BMListLoaded,
@@ -197,8 +172,6 @@
                 { immediate: true }
             )
 
-            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
-
             // computed
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
@@ -208,18 +181,12 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
-            const isNewTerm = computed(() => title.value === 'Untitled Term')
 
             // methods
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
 
-            const updateTitle = () => {
-                updateEntity('term', term.value?.guid ?? '', {
-                    name: newName.value,
-                })
-            }
             const handleScroll = () => {
                 if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
                     headerReachedTop.value = true
@@ -234,16 +201,9 @@
                 temp.value = true
             }
 
-            watch(updatedEntity, () => {
-                refetch()
-                newName.value = ''
-            })
-
             watch(guid, () => {
                 currentTab.value = '1'
             })
-            // Providers
-            provide('refreshEntity', refetch)
 
             return {
                 term,
@@ -259,11 +219,8 @@
                 parentGlossaryName,
                 previewEntity,
                 statusObject,
-                isNewTerm,
-                newName,
                 handlePreview,
                 refetch,
-                updateTitle,
                 scrollDiv,
                 headerReachedTop,
                 handleScroll,

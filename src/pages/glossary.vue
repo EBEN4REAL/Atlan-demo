@@ -20,7 +20,7 @@
                     :drag-and-drop="dragAndDropNode"
                     :parent-glossary="parentGlossary"
                     :is-loading="isInitingTree"
-                    :current-guid="currentGuid"
+                    :current-guid="guid"
                     :loaded-keys="loadedKeys"
                     :selected-keys="selectedKeys"
                     :expanded-keys="expandedKeys"
@@ -89,11 +89,27 @@
                     router.currentRoute.value.fullPath.split('/').length - 2
                 ] as 'glossary' | 'category' | 'term'
             )
+            const {
+                entity,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                statusMessage,
+                isLoading,
+                refetch,
+                parentGlossaryGuid
+            } = useGTCEntity<Glossary | Term| Category>(
+                currentType.value,
+                guid,
+                false,
+                true
+            )
 
             const {
                 treeData,
                 loadedKeys,
-                currentGuid,
                 glossaryList,
                 onLoadData,
                 parentGlossary,
@@ -109,24 +125,8 @@
                 refetchGlossaryList,
                 collapseAll,
                 reOrderNodes,
-            } = useTree(emit, true, isHome)
+            } = useTree({emit, optimisticUpdate: true, parentGlossaryGuid})
 
-            const {
-                entity,
-                title,
-                shortDescription,
-                qualifiedName,
-                statusObject,
-                error,
-                statusMessage,
-                isLoading,
-                refetch,
-            } = useGTCEntity<Glossary | Term| Category>(
-                currentType.value,
-                guid,
-                false,
-                true
-            )
             // * Get all available BMs and save on storez
             const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
@@ -188,7 +188,6 @@
                 isInitingTree,
                 isHome,
                 guid,
-                currentGuid,
             }
         },
     })

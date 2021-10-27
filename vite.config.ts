@@ -3,11 +3,8 @@ import { defineConfig, loadEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
-import { resolve } from 'path'
-import commonjs from '@rollup/plugin-commonjs'
 import getAntDesignVariables from './src/styles/antd_variables'
 import postcss from './postcss.config.js'
-import VueI18n from '@intlify/vite-plugin-vue-i18n'
 import styleImport from 'vite-plugin-style-import'
 import svgLoader from 'vite-svg-loader'
 // import Components from 'unplugin-vue-components/vite'
@@ -56,7 +53,6 @@ export default defineConfig(({ mode }) => {
             },
         },
         plugins: [
-            //commonjs({enforce: 'pre'}),
             visualizer(),
             Vue({
                 include: [/\.vue$/],
@@ -69,11 +65,6 @@ export default defineConfig(({ mode }) => {
             // https://github.com/JohnCampionJr/vite-plugin-vue-layouts
             Layouts(),
             // https://github.com/antfu/vite-plugin-pwa
-
-            // https://github.com/intlify/vite-plugin-vue-i18n
-            VueI18n({
-                include: [path.resolve(__dirname, 'locales/**')],
-            }),
             styleImport({
                 libs: [],
             }),

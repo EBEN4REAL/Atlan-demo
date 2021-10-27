@@ -1,4 +1,4 @@
-import { Ref, ref } from 'vue'
+import { Ref, ref, computed } from 'vue'
 
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
@@ -47,11 +47,37 @@ export default function useIndexSearch(
     const { data, mutate, error, isLoading, isValidating } =
         Discovery.IndexSearch(body, options)
 
+    const list = computed(() => {
+        if (data?.value.entities) {
+            return data?.value.entities
+        }
+        return []
+    })
+
+    const aggregationMap = (key) => {
+        if (data?.value.aggregations[key]) {
+            return data?.value.aggregations[key].buckets
+        }
+        return {}
+    }
+
+    const typenameAggregation = computed(() => {
+        return aggregationMap('typename')
+    })
+
+    const refresh = () => {
+        mutate()
+    }
+
     return {
         data,
+        list,
+        aggregationMap,
         mutate,
+        refresh,
         error,
         isLoading,
         isValidating,
+        typenameAggregation,
     }
 }

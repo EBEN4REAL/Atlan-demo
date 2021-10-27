@@ -3,21 +3,6 @@
         class="flex items-center w-full transition duration-300 searchbar h-7"
         :class="size"
     >
-        <a-popover
-            v-if="$slots.categoryFilter"
-            trigger="click"
-            placement="bottomLeft"
-            class="pr-2 mx-2 bg-gray-100 border-r"
-        >
-            <template #content>
-                <slot name="categoryFilter" />
-            </template>
-
-            <div class="flex gap-1 hover:text-primary">
-                <AtlanIcon icon="Globe" class="w-4 h-4" />
-                <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
-            </div>
-        </a-popover>
         <!-- <slot name="categoryFilter" /> -->
 
         <div class="flex items-center justify-between flex-grow pl-1">

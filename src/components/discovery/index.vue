@@ -22,35 +22,21 @@
                         :autofocus="true"
                         size="large"
                     >
-                        <template #preFilter>
-                            <Category />
-                        </template>
                         <template #postFilter>
                             <Preferences />
                         </template>
                     </SearchAdvanced>
 
-                    <AssetTabs class="mt-2"></AssetTabs>
+                    <AssetTabs
+                        class="mt-2"
+                        :assetTypeList="assetTypeMappedList"
+                    ></AssetTabs>
                 </div>
 
-                <!-- <div
-                    v-if="list && list.length <= 0 && !isLoading"
-                    class="flex-grow"
-                >
-                    <EmptyView @event="handleClearFiltersFromList"></EmptyView>
+                <div class="flex-grow" v-if="list.length === 0">
+                    <EmptyView></EmptyView>
                 </div>
-                <AssetList
-                    v-else
-                    ref="assetlist"
-                    v-model:autoSelect="autoSelect"
-                    class="pt-2 bg-white"
-                    :list="list"
-                    :score="searchScoreList"
-                    :projection="projection"
-                    :is-loading="isLoading"
-                    :is-load-more="isLoadMore"
-                    @loadMore="loadMore"
-                /> -->
+                <AssetList v-else ref="assetlist" :list="list" />
             </div>
         </div>
     </div>
@@ -58,7 +44,7 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, watch, Ref } from 'vue'
-    // import EmptyView from '@common/empty/discover.vue'
+    import EmptyView from '@common/empty/discover.vue'
     // import AssetPagination from '@common/pagination/index.vue'
 
     // import { useDebounceFn } from '@vueuse/core'
@@ -67,11 +53,17 @@
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AssetTabs from '@/discovery/assetType/index.vue'
     import Preferences from '@/discovery/preference.vue'
-    // import AssetList from '~/components/discovery/list/assetList.vue'
+    import AssetList from '~/components/discovery/list/assetList.vue'
     import AssetFilters from '@/discovery/filters/index.vue'
-    import Category from '@/discovery/category.vue'
+
     import useIndexSearch from '~/composables/discovery/useIndexSearch'
     import { useAssetListing } from '~/composables/discovery/useAssetListing'
+    import {
+        AssetAttributes,
+        InternalAttributes,
+        InternalAttributes,
+        SQLAttributes,
+    } from '~/constant/projection'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     // import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
 
@@ -101,12 +93,13 @@
     export default defineComponent({
         name: 'AssetDiscovery',
         components: {
-            // AssetList,
+            AssetList,
             AssetTabs,
             AssetFilters,
             SearchAdvanced,
             Preferences,
-            Category,
+            EmptyView,
+
             // AssetPagination,
             // ConnectorDropdown,
             // Preferences,
@@ -143,21 +136,39 @@
             // const state = ref('active')
             const facetMap = ref({})
 
+            const {
+                handleFacetDSL,
+                handlePostFacetDSL,
+                handleAggregationDSL,
+                getAssetTypeList,
+            } = useAssetListing()
+
             const body = ref({
                 dsl: {
                     size: limit.value,
                     from: offset.value,
+                    ...handleFacetDSL(facetMap.value),
+                    ...handleAggregationDSL(facetMap.value),
+                    post_filter: handlePostFacetDSL(facetMap.value)?.query,
                 },
+                attributes: [
+                    ...InternalAttributes,
+                    ...AssetAttributes,
+                    ...SQLAttributes,
+                ],
             })
 
-            const { data } = useIndexSearch(
+            const { data, list, refresh, typenameAggregation } = useIndexSearch(
                 body,
                 ref('DEFAULT_DISCOVERY'),
                 null,
                 true
             )
 
-            const { handleFacetDSL } = useAssetListing()
+            const assetTypeMappedList = computed(() => {
+                return getAssetTypeList(typenameAggregation.value, false)
+            })
+
             // const assetCategoryFilter = ref([])
             // // Initialization via IIFE
             // ;(() => {
@@ -372,9 +383,16 @@
             // }
 
             const handleFilterChange = () => {
-                console.log('change', facetMap.value)
-
-                console.log(handleFacetDSL(facetMap.value).build())
+                body.value = {
+                    dsl: {
+                        size: limit.value,
+                        from: offset.value,
+                        ...handleFacetDSL(facetMap.value),
+                        ...handleAggregationDSL(facetMap.value),
+                        post_filter: handlePostFacetDSL(facetMap.value)?.query,
+                    },
+                }
+                refresh()
             }
 
             // function handleFilterChange(filterMapData: Record<string, any>) {
@@ -455,7 +473,11 @@
                 handleFacetDSL,
                 assetFilterRef,
                 queryText,
+                refresh,
                 facetMap,
+                list,
+                getAssetTypeList,
+                assetTypeMappedList,
             }
         },
         // data() {

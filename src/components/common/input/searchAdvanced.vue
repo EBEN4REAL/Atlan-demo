@@ -9,26 +9,8 @@
         @keyup.esc="$event.target.blur()"
     >
         <template #prefix>
-            <a-popover
-                v-if="$slots.preFilter"
-                trigger="click"
-                placement="bottomLeft"
-                class="pr-2 mr-2 border-r"
-            >
-                <template #content>
-                    <slot name="preFilter" />
-                </template>
-
-                <div
-                    class="flex items-center gap-1 hover:text-bold text-primary"
-                >
-                    <a-badge count="5"
-                        ><AtlanIcon icon="Globe" class="w-6 h-6"
-                    /></a-badge>
-
-                    <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
-                </div> </a-popover
-        ></template>
+            <AtlanIcon icon="Search" class="flex-none text-gray-500" />
+        </template>
 
         <template #suffix>
             <a-popover

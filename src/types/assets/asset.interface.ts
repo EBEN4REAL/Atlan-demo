@@ -18,6 +18,7 @@ export interface assetInterface {
         databaseName: string
         databaseQualifiedName: string
         description: string
+        connectorName: string
         integrationName: string
         meanings: { displayText: string }[]
         name: string

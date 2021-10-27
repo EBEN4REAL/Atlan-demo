@@ -101,6 +101,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
     Column: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],
     },
+    AtlasGlossaryTerm: {
+        panels: [assetDetails, properties],
+    },
+    AtlasGlossaryCategory: {
+        panels: [assetDetails, properties],
+    },
     Query: {
         panels: [assetDetails, linkedAsset],
     },

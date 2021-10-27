@@ -34,6 +34,7 @@ export default function useAssetDetailsTabList(
             exclude: [
                 'Query',
                 'QueryFolder',
+                'AtlasGlossaryCategory'
             ],
             icon: 'Metadata',
             tooltip: 'Custom metadata',
@@ -61,7 +62,8 @@ export default function useAssetDetailsTabList(
                 'PowerBIDataset',
                 'PowerBIDatasource',
                 'PowerBIDataflow',
-
+                'AtlasGlossaryCategory',
+                'AtlasGlossaryTerm'
             ],
             visibleOn: ['discovery', 'profile'],
             icon: 'Columns',
@@ -74,6 +76,8 @@ export default function useAssetDetailsTabList(
                 'Connection',
                 'Database',
                 'Schema',
+                'AtlasGlossaryCategory',
+                'AtlasGlossaryTerm'
             ],
             visibleOn: ['discovery'],
             icon: 'Relation',
@@ -109,6 +113,8 @@ export default function useAssetDetailsTabList(
             exclude: [
                 'Query',
                 'QueryFolder',
+                'AtlasGlossaryCategory',
+                'AtlasGlossaryTerm'
             ],
             icon: 'Lineage',
             tooltip: 'Lineage',

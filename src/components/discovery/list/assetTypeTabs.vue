@@ -3,6 +3,7 @@
         <a-tabs
             v-model:activeKey="assetType"
             class="w-full assetbar"
+            :class="sortedAssetTypeList.length < 5 ? 'ml-3' : ''"
             @change="handleChange"
         >
             <a-tab-pane

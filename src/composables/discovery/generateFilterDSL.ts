@@ -12,6 +12,12 @@ export function generateFilterDSL(facet: Record<string, any>) {
                 }
                 break
             }
+            case 'connection': {
+                if (fltrObj) {
+                    query.filter('term', 'connectionQualifiedName', fltrObj)
+                }
+                break
+            }
         }
     })
 

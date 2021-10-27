@@ -3,20 +3,20 @@
         <template #default="{ item }">
             <AssetItem :item="item"></AssetItem>
         </template>
-        <!-- <template #footer>
+        <template #footer>
             <div
                 v-if="isLoadMore || isLoading"
                 class="flex items-center justify-center"
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -44,7 +44,7 @@
                     </svg>
                 </button>
             </div>
-        </template> -->
+        </template>
     </VirtualList>
     <!-- <ListItem
         :v-for="item in list"

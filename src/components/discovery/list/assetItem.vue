@@ -60,7 +60,7 @@
                     <div
                         v-if="
                             ['table', 'view', 'tablepartition'].includes(
-                                item.typeName.toLowerCase()
+                                item.typeName?.toLowerCase()
                             )
                         "
                         class="flex text-sm text-gray-500 gap-x-1"
@@ -69,7 +69,7 @@
                             <span
                                 v-if="
                                     ['table', 'tablepartition'].includes(
-                                        item.typeName.toLowerCase()
+                                        item.typeName?.toLowerCase()
                                     )
                                 "
                                 class="text-gray-500"
@@ -96,9 +96,30 @@
 
                     <div
                         v-if="
-                            ['table', 'view', 'tablepartition'].includes(
-                                item.typeName.toLowerCase()
-                            )
+                            ['database'].includes(item.typeName?.toLowerCase())
+                        "
+                        class="flex text-sm text-gray-500 gap-x-2"
+                    >
+                        <div class="flex items-center text-gray">
+                            <img
+                                :src="getConnectorImage(item)"
+                                class="h-3 mr-1 mb-0.5"
+                            />
+                            <span>{{
+                                `${connectorName(item)}/${connectionName(item)}`
+                            }}</span>
+                        </div>
+                    </div>
+
+                    <div
+                        v-if="
+                            [
+                                'table',
+                                'view',
+                                'tablepartition',
+                                'materialisedview',
+                                'schema',
+                            ].includes(item.typeName?.toLowerCase())
                         "
                         class="flex text-sm text-gray-500 gap-x-2"
                     >
@@ -121,8 +142,8 @@
                         </a-tooltip>
                         <a-tooltip placement="bottomLeft">
                             <div
-                                class="flex items-center text-gray-500"
                                 v-if="schemaName(item)"
+                                class="flex items-center text-gray-500"
                             >
                                 <AtlanIcon icon="Schema" class="mr-1 mb-0.5" />
                                 <div class="tracking-tight text-gray">
@@ -134,24 +155,58 @@
                             </template>
                         </a-tooltip>
                     </div>
-                    <!-- <div
-                        v-if="item.typeName.toLowerCase() === 'column'"
-                        class="flex items-center space-x-2"
+                    <div
+                        v-if="item.typeName?.toLowerCase() === 'column'"
+                        class="flex items-center gap-x-1"
                     >
                         <div class="flex">
-                            <component
+                            <!-- <component
                                 :is="dataTypeImage(item)"
                                 class="w-auto h-4 text-gray-500"
                                 style="margin-top: 1px"
-                            ></component>
-                            <span class="ml-1 text-sm text-gray-500">{{
+                            ></component> -->
+
+                            <component
+                                :is="dataTypeCategoryImage(item)"
+                                class="h-4 text-gray-500"
+                            />
+                            <span class="ml-1 text-sm text-gray-700">{{
                                 dataType(item)
                             }}</span>
                         </div>
-                        <div v-if="item.attributes?.isPrimary" class="flex">
-                            <AtlanIcon icon="PrimaryKey" />
+                        <div
+                            class="flex"
+                            v-if="
+                                isPrimary(item) ||
+                                isDist(item) ||
+                                isPartition(item)
+                            "
+                        >
+                            <AtlanIcon
+                                icon="Key"
+                                class="mr-1 mb-0.5"
+                            ></AtlanIcon>
+
+                            <span
+                                class="ml-1 text-sm text-gray-700"
+                                v-if="isPrimary(item)"
+                                >Primary Key</span
+                            >
+                            <span
+                                class="ml-1 text-sm text-gray-700"
+                                v-if="isDist(item)"
+                                >Dist Key</span
+                            >
+                            <span
+                                class="ml-1 text-sm text-gray-700"
+                                v-if="isPartition(item)"
+                                >Partition Key</span
+                            >
                         </div>
-                    </div> -->
+                        <!-- <div v-if="item.attributes?.isPrimary" class="flex">
+                            <AtlanIcon icon="PrimaryKey" />
+                        </div> -->
+                    </div>
 
                     <!-- Row/Col bar -->
 
@@ -351,11 +406,17 @@
                 assetType,
                 rowCount,
                 sizeBytes,
+                dataType,
                 columnCount,
                 databaseName,
                 schemaName,
                 connectorName,
                 connectionName,
+                dataTypeCategoryLabel,
+                dataTypeCategoryImage,
+                isDist,
+                isPartition,
+                isPrimary,
             } = useAssetInfo()
 
             // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
@@ -426,6 +487,7 @@
                 title,
                 getConnectorImage,
                 assetType,
+                dataType,
                 // isColumnAsset,
                 // getColumnUrl,
                 // getQueryUrl,
@@ -445,6 +507,11 @@
                 schemaName,
                 connectorName,
                 connectionName,
+                dataTypeCategoryLabel,
+                dataTypeCategoryImage,
+                isDist,
+                isPartition,
+                isPrimary,
                 // getTruncatedUsers,
                 // getCombinedUsersAndGroups,
                 // getClassificationDisplayname,

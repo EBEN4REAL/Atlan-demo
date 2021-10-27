@@ -5,7 +5,7 @@ import { assetInterface } from '~/types/assets/asset.interface'
 import { getCountString, getSizeString } from '~/utils/number'
 // import { SourceList } from '~/constant/source'
 // import { AssetTypeList } from '~/constant/assetType'
-// import { dataTypeList } from '~/constant/datatype'
+import { dataTypeCategoryList } from '~/constant/datatype'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -20,7 +20,7 @@ export default function useAssetInfo() {
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-                attributes(asset).connectorName.toLowerCase()
+                attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -46,7 +46,10 @@ export default function useAssetInfo() {
     // }
     // const description = (asset: assetInterface) =>
     //     attributes(asset).userDescription || attributes(asset).description
-    // const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
+    const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
+    const isPartition = (asset: assetInterface) =>
+        attributes(asset)?.isPartition
+    const isDist = (asset: assetInterface) => attributes(asset)?.isDist
 
     // const logo = (asset: assetInterface) => {
     //     let img = ''
@@ -125,6 +128,26 @@ export default function useAssetInfo() {
             ? attributes(asset)?.sizeBytes?.toLocaleString() || 'N/A'
             : getSizeString(attributes(asset).sizeBytes)
 
+    const dataType = (asset: assetInterface) => attributes(asset)?.dataType
+
+    const dataTypeCategory = (asset: assetInterface) => {
+        return dataTypeCategoryList.find((item) =>
+            item.type.some(
+                (i) =>
+                    i.toLowerCase() ===
+                    attributes(asset)?.dataType?.toLowerCase()
+            )
+        )
+    }
+
+    const dataTypeCategoryLabel = (asset: assetInterface) =>
+        dataTypeCategory(asset)?.label
+
+    const dataTypeCategoryImage = (asset: assetInterface) => {
+        console.log(dataTypeCategory(asset))
+        return dataTypeCategory(asset)?.image
+    }
+
     // const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
     //     if (attributes(asset)?.sourceUpdatedAt) {
     //         return raw
@@ -196,8 +219,6 @@ export default function useAssetInfo() {
 
     // const lastCrawled = (asset: assetInterface) =>
     //     useTimeAgo(attributes(asset)?.connectionLastSyncedAt).value
-
-    // const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
     // const dataTypeImage = (asset: assetInterface) => {
     //     const found = dataTypeList.find((d) =>
@@ -518,9 +539,14 @@ export default function useAssetInfo() {
         databaseName,
         schemaName,
         connectorName,
+        dataType,
+        dataTypeCategoryLabel,
+        dataTypeCategoryImage,
         // getConnectorName,
         // getConnectorsNameFromQualifiedName,
-        // isPrimary,
+        isPrimary,
+        isPartition,
+        isDist,
         // dataTypeImageForColumn,
         // popularityScore,
         // createdBy,

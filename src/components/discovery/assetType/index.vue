@@ -1,6 +1,10 @@
 <template>
     <div class="w-full">
-        <a-tabs class="w-full assetbar">
+        <a-tabs
+            class="w-full assetbar"
+            v-model:activeKey="localFacetMap.typeName"
+            @change="handleChange"
+        >
             <a-tab-pane v-for="item in assetTypeList" :key="item.id">
                 <template #tab>
                     <div>
@@ -66,11 +70,20 @@
     } from 'vue'
     import { getCountString } from '~/utils/number'
 
+    import { useVModels } from '@vueuse/core'
+
     import { assetCategoryList } from '~/constant/assetCategory'
 
     export default defineComponent({
         name: 'AssetTypeTabs',
         props: {
+            facetMap: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
             assetTypeList: {
                 type: Array,
                 required: false,
@@ -107,10 +120,15 @@
                 },
             },
         },
-        emits: ['refresh', 'update:modelValue'],
+        emits: ['change', 'update:facetMap'],
         setup(props, { emit }) {
-            const assetCategory: Ref<string[]> = ref([])
+            const { facetMap } = useVModels(props, emit)
+
             const { assetTypeList } = toRefs(props)
+
+            const localFacetMap = ref(facetMap.value)
+
+            const assetCategory: Ref<string[]> = ref([])
 
             const isAssetStatusSelected = (property) =>
                 assetCategory.value.includes(property.id)
@@ -129,6 +147,22 @@
             //     console.log('sadasd')
             //     emit('update:modelValue', assetType.value)
             // }
+
+            const handleChange = () => {
+                const found = assetTypeList.value.find(
+                    (item) =>
+                        item.id.toLowerCase() ===
+                        localFacetMap.value?.typeName?.toLowerCase()
+                )
+
+                if (found) {
+                    localFacetMap.value.count = found.count
+                }
+
+                facetMap.value = localFacetMap.value
+
+                emit('change')
+            }
 
             // watch(
             //     () => props.assetTypeList,
@@ -183,7 +217,9 @@
                 assetCategoryList,
                 isAssetStatusSelected,
                 toggleStatusSelect,
-                // handleChange,
+
+                handleChange,
+                localFacetMap,
 
                 // getCountString,
                 // sortedAssetTypeList,

@@ -40,4 +40,5 @@ export const SQLAttributes = [
     'sizeBytes',
     'schemaName',
     'databaseName',
+    'dataType',
 ]

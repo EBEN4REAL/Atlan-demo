@@ -241,7 +241,6 @@
             //     emit('refresh', dataMap.value)
             // }
             const handleChange = () => {
-                console.log('sdasd', localFacetMap.value)
                 facetMap.value = localFacetMap.value
                 emit('change')
 

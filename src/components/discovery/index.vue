@@ -11,7 +11,7 @@
                     }
                 "
                 v-model:facetMap="facetMap"
-                @change="handleFilterChange"
+                @change="handleAssetTypeFilterChange"
             ></AssetFilters>
         </div>
         <div class="flex flex-col items-stretch flex-1">
@@ -29,14 +29,24 @@
 
                     <AssetTabs
                         class="mt-2"
+                        v-model:facetMap="facetMap"
                         :assetTypeList="assetTypeMappedList"
+                        @change="handleAssetTypeFilterChange"
                     ></AssetTabs>
                 </div>
 
                 <div class="flex-grow" v-if="list.length === 0">
                     <EmptyView></EmptyView>
                 </div>
-                <AssetList v-else ref="assetlist" :list="list" />
+
+                <AssetList
+                    v-else
+                    ref="assetlistRef"
+                    :list="list"
+                    @loadMore="handleLoadMore"
+                    :isLoading="isLoading || isValidating"
+                    :isLoadMore="isLoadMore"
+                />
             </div>
         </div>
     </div>
@@ -60,7 +70,6 @@
     import { useAssetListing } from '~/composables/discovery/useAssetListing'
     import {
         AssetAttributes,
-        InternalAttributes,
         InternalAttributes,
         SQLAttributes,
     } from '~/constant/projection'
@@ -129,6 +138,7 @@
             // // Temporary, not saved in url
             const limit = ref(20)
             const offset = ref(0)
+            const scrollDiv = ref(null)
             // // Permanents
             // const selectedTab = ref('Catalog')
             const queryText = ref('')
@@ -158,12 +168,14 @@
                 ],
             })
 
-            const { data, list, refresh, typenameAggregation } = useIndexSearch(
-                body,
-                ref('DEFAULT_DISCOVERY'),
-                null,
-                true
-            )
+            const {
+                data,
+                list,
+                refresh,
+                typenameAggregation,
+                isLoading,
+                isValidating,
+            } = useIndexSearch(body, ref('DEFAULT_DISCOVERY'), null, true)
 
             const assetTypeMappedList = computed(() => {
                 return getAssetTypeList(typenameAggregation.value, false)
@@ -237,12 +249,7 @@
             //     })
             //     return sum
             // })
-            // const totalCount = computed(() => {
-            //     if (selectedTab.value == 'Catalog') {
-            //         return totalSum.value
-            //     }
-            //     return assetTypeMap.value?.[selectedTab.value]
-            // })
+
             // const placeholderLabel: Ref<Record<string, string>> = ref({})
             // const dynamicSearchPlaceholder = computed(() => {
             //     let placeholder = 'Search assets across Atlan...'
@@ -258,10 +265,12 @@
             //     if (type === 'connector') placeholderLabel.value.asset = ''
             // }
             // // Push all asset type
-            // const assetlist = ref(null)
-            // const isLoadMore = computed(
-            //     () => totalCount.value > list.value.length
-            // )
+            const assetlistRef = ref(null)
+            const isLoadMore = computed(() => {
+                console.log(facetMap.value?.count)
+                console.log(list.value.length)
+                return facetMap.value?.count > list.value.length
+            })
             // const updateBody = () => {
             //     const initialBody = {
             //         relationAttributes: [
@@ -391,8 +400,20 @@
                         ...handleAggregationDSL(facetMap.value),
                         post_filter: handlePostFacetDSL(facetMap.value)?.query,
                     },
+                    attributes: [
+                        ...InternalAttributes,
+                        ...AssetAttributes,
+                        ...SQLAttributes,
+                    ],
                 }
                 refresh()
+            }
+
+            const handleAssetTypeFilterChange = () => {
+                assetlistRef.value.scrollTop = 0
+
+                offset.value = 0
+                handleFilterChange()
             }
 
             // function handleFilterChange(filterMapData: Record<string, any>) {
@@ -406,6 +427,28 @@
             // // function handlePreview = (item) => {
             // //     emit('preview', item)
             // // }
+
+            const handleLoadMore = () => {
+                if (list.value.length < facetMap.value?.count) {
+                    offset.value += limit.value
+                }
+
+                body.value = {
+                    dsl: {
+                        size: limit.value,
+                        from: offset.value,
+                        ...handleFacetDSL(facetMap.value),
+                        ...handleAggregationDSL(facetMap.value),
+                        post_filter: handlePostFacetDSL(facetMap.value)?.query,
+                    },
+                    attributes: [
+                        ...InternalAttributes,
+                        ...AssetAttributes,
+                        ...SQLAttributes,
+                    ],
+                }
+                refresh(true)
+            }
             // function loadMore() {
             //     autoSelect.value = false
             //     offset.value += limit.value
@@ -470,14 +513,20 @@
             return {
                 showFilters,
                 handleFilterChange,
+                handleAssetTypeFilterChange,
                 handleFacetDSL,
                 assetFilterRef,
                 queryText,
                 refresh,
                 facetMap,
                 list,
+                isValidating,
                 getAssetTypeList,
                 assetTypeMappedList,
+                isLoadMore,
+                isLoading,
+                handleLoadMore,
+                assetlistRef,
             }
         },
         // data() {

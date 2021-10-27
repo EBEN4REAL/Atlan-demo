@@ -1,61 +1,14 @@
-// import { CheckboxArray } from '~/types'
-
-export const List = [
+export const assetCategoryList = [
     {
-        id: 'datasets',
-        include: [
-            'View',
-            'Table',
-            'TablePartition',
-            'MaterialisedView',
-            'TableauDatasource',
-            'PowerBIDataset',
-        ],
+        id: 'SQL',
         label: 'Datasets',
-        description: 'Datasets',
-        popoverText: 'Tabular assets (Tables, Views, etc.)',
     },
     {
-        id: 'fields',
-        label: 'Fields',
-        include: ['Column', 'TableauDatasourceField', 'TableauCalculatedField'],
-        popoverText: 'Column assets (Columns)',
-        description: 'Fields',
+        id: 'BI',
+        label: 'Business Intelligence',
     },
     {
-        id: 'visualizations',
-        label: 'Visualizations',
-        include: [
-            'TableauSite',
-            'TableauProject',
-            'TableauWorkbook',
-            'TableauWorksheet',
-            'TableauDashboard',
-            'PowerBIWorkspace',
-            'PowerBIDashboard',
-            'PowerBIReport',
-            'PowerBIDataflow',
-            'PowerBITile',
-            'PowerBIPage',
-            'PowerBIDatasource',
-            'TableauDatasource',
-            'PowerBIDataset',
-        ],
-        popoverText: 'All assets from BI integrations',
-        description: 'Visualizations',
-    },
-    {
-        id: 'businessTerms',
-        include: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-        label: 'Business Terms',
-        description: 'Business Terms',
-        popoverText: 'Business Terms & Categories',
-    },
-    {
-        id: 'queries',
-        include: ['Query', 'QueryFolder'],
-        label: 'Queries',
-        description: 'Queries',
-        popoverText: 'Query and Query Folder',
+        id: 'Insights',
+        label: 'Insights',
     },
 ]

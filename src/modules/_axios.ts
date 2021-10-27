@@ -74,6 +74,5 @@ export const install: UserModule = ({ app }) => {
     axiosClient.interceptors.response.use(responseInterceptor, errorInterceptor)
 
     app.config.globalProperties.$axios = axios
-
     app.use(VueAxios, axiosClient)
 }

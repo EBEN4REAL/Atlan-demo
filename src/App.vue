@@ -1,21 +1,20 @@
 <template>
-    <router-view v-if="isReady" />
+    <router-view v-if="isTypedefReady && isPermissionsReady" />
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, watch, inject, computed } from 'vue'
-    import useTypedefs from './services2/meta/composable/useTypedefs'
+    import useTypedefs from '~/composables/typedefs/useTypedefs'
 
-    import useTenant from './services2/service/composable/useTenant'
-    import useConnectionList from './services2/meta/composable/useConnectionList'
-    import useGlossaryList from './services2/meta/composable/useGlossaryList'
-    import usePermissions from './services2/service/composable/usePermissions'
-    import { useAuthStore } from './store/auth'
-    import { useRoute, useRouter } from 'vue-router'
+    import useTenant from '~/composables/tenant/useTenant'
+    import useConnection from '~/composables/connection/useConnection'
+    import useGlossary from '~/composables/glossary/useGlossary'
+    import usePermissions from '~/composables/auth/usePermissions'
 
     export default defineComponent({
         setup(props, context) {
-            const isReady = ref(false)
+            const isPermissionsReady = ref(false)
+            const isTypedefReady = ref(false)
 
             // permissions
             const { data } = usePermissions()
@@ -24,19 +23,22 @@
             useTenant()
 
             // typedefs
-            useTypedefs()
+            const { data: typedef } = useTypedefs()
 
             // connections
-            useConnectionList()
+            useConnection()
 
             // glossary list
-            useGlossaryList()
+            useGlossary()
 
-            watch(data, () => {
-                isReady.value = true
+            watch([data], () => {
+                isPermissionsReady.value = true
+            })
+            watch([typedef], () => {
+                isTypedefReady.value = true
             })
 
-            return { data, isReady }
+            return { data, isTypedefReady, isPermissionsReady }
         },
     })
 </script>

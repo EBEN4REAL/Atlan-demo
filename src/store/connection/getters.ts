@@ -5,7 +5,6 @@ import { SourceList } from '~/constant/source'
 
 export interface Getters {
     getSourceList(): any[]
-    getDefaultSourceList(): any
 }
 
 export const getters: GettersTree<State> & Getters = {

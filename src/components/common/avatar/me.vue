@@ -4,17 +4,19 @@
             <slot name="dropdownIcon" />
         </div>
 
-        <div v-else class="flex items-center">
-            <avatar
-                :image-url="avatarURL"
-                :allow-upload="false"
-                :avatar-name="username"
-                avatar-size="medium"
-                :avatar-shape="'circle'"
-            />
+        <div v-else class="flex items-center justify-between w-full">
+            <div class="flex">
+                <avatar
+                    :image-url="avatar"
+                    :allow-upload="false"
+                    :avatar-name="username"
+                    avatar-size="small"
+                    :avatar-shape="'circle'"
+                />
 
-            <div class="text-sm text-gray-700 capitalize">
-                {{ name }}
+                <div class="ml-1 text-sm text-gray-700 capitalize">
+                    {{ name }}
+                </div>
             </div>
             <div><AtlanIcon class="h-3 ml-1" icon="ChevronDown" /></div>
         </div>
@@ -23,24 +25,7 @@
     </a>-->
         <template #overlay>
             <a-menu>
-                <a-menu-item v-if="!$slots?.dropdownIcon">
-                    <div class="flex items-center">
-                        <a-avatar
-                            :size="42"
-                            class="border-2 border-gray-300"
-                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                        />
-
-                        <div class="flex flex-col ml-2">
-                            <p class="mb-0 text-base">{{ name }}</p>
-                            <p class="mb-0 text-sm text-gray-500">
-                                {{ username }}
-                            </p>
-                        </div>
-                    </div>
-                </a-menu-item>
-                <a-menu-divider v-if="!$slots?.dropdownIcon" />
-                <a-menu-item>
+                <!-- <a-menu-item>
                     <a @click="() => handleClickUser(username)">View Profile</a>
                 </a-menu-item>
                 <a-menu-item>
@@ -56,9 +41,11 @@
                 <a-menu-item>
                     <a href="javascript:;">Keyboard Shortcuts</a>
                 </a-menu-item>
-                <a-menu-divider />
+                <a-menu-divider /> -->
                 <a-menu-item>
-                    <a href="javascript:;" @click="handleLogout">Logout</a>
+                    <a class="text-red-500" @click.stop="handleLogout"
+                        >Logout</a
+                    >
                 </a-menu-item>
             </a-menu>
         </template>
@@ -67,11 +54,10 @@
 
 <script lang="ts">
     import { defineComponent, inject } from 'vue'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import whoami from '~/composables/user/whoami'
-    import useUserData from '~/services2/service/composable/useUserData'
-
-    import Avatar from '~/components/common/avatar.vue'
+    // import { useUserPreview } from '~/composables/user/showUserPreview'
+    // import whoami from '~/composables/user/whoami'
+    import useUserData from '~/composables/user/useUserData'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
         name: 'UserPersonalAvatar',
@@ -82,19 +68,18 @@
         setup() {
             const keycloak = inject('$keycloak')
             const handleLogout = () => {
-                console.log(
-                    keycloak.logout({
-                        redirectUri: window.location.origin,
-                    })
-                )
+                console.log('sadasd')
+                keycloak.logout({
+                    redirectUri: window.location.origin,
+                })
             }
 
-            const { name, username, avatarURL } = useUserData()
+            const { name, username, avatar } = useUserData()
             // user preview drawer
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
             const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                showUserPreview()
+                // setUserUniqueAttribute(username, 'username')
+                // showUserPreview()
             }
 
             return {
@@ -102,7 +87,7 @@
                 handleClickUser,
                 username,
                 name,
-                avatarURL,
+                avatar,
             }
         },
         data() {

@@ -16,5 +16,7 @@ module.exports = {
         'import/extensions': 'off',
         camelcase: 'off',
         '@typescript-eslint/camelcase': 'off',
+        "vue/no-multiple-template-root": 0,
+        "import/prefer-default-export": "off"
     },
 }

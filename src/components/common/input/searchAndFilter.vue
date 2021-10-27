@@ -1,23 +1,41 @@
 <template>
     <div
-        class="flex items-center transition duration-300 searchbar"
+        class="flex items-center w-full transition duration-300 searchbar h-7"
         :class="size"
     >
-        <slot name="categoryFilter" />
-        <div class="flex items-center justify-between flex-grow py-1">
+        <a-popover
+            v-if="$slots.categoryFilter"
+            trigger="click"
+            placement="bottomLeft"
+            class="pr-2 mx-2 bg-gray-100 border-r"
+        >
+            <template #content>
+                <slot name="categoryFilter" />
+            </template>
+
+            <div class="flex gap-1 hover:text-primary">
+                <AtlanIcon icon="Globe" class="w-4 h-4" />
+                <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
+            </div>
+        </a-popover>
+        <!-- <slot name="categoryFilter" /> -->
+
+        <div class="flex items-center justify-between flex-grow pl-1">
             <AtlanIcon
+                v-if="!$slots.categoryFilter"
                 icon="Search"
-                class="flex-none pl-2 pr-1 text-gray-500"
+                class="flex-none pr-1 text-gray-500"
             />
             <input
                 ref="searchBar"
                 :placeholder="placeholder"
                 v-model="value"
                 type="text"
-                class="flex-1 text-sm bg-transparent focus:outline-none"
+                class="flex-1 w-2/3 text-sm bg-transparent focus:outline-none"
                 @keyup.esc="$event.target.blur()"
             />
-            <div class="flex-none h-7 w-7">
+
+            <div class="flex-none w-7 h-7">
                 <button
                     v-if="value?.length"
                     class="text-gray-500 hover:text-gray"

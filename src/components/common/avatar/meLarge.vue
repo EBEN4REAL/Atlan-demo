@@ -1,39 +1,35 @@
 <template>
     <a-dropdown trigger="click">
-        <div class="flex items-center justify-between w-full">
-            <div class="flex items-center">
+        <div v-if="$slots?.dropdownIcon" class="footer">
+            <slot name="dropdownIcon" />
+        </div>
+
+        <div v-else class="flex items-center justify-between w-full">
+            <div class="flex">
                 <avatar
-                    :image-url="
-                        KeyMaps.auth.avatar.GET_AVATAR({
-                            username: username,
-                        })
-                    "
+                    :image-url="avatar"
                     :allow-upload="false"
                     :avatar-name="username"
                     avatar-size="large"
                     :avatar-shape="'circle'"
                 />
-
                 <div class="flex flex-col ml-2">
                     <div class="text-sm text-gray-700 capitalize">
                         {{ name }}
                     </div>
-                    <div class="text-xs text-gray-500">{{ username }}</div>
+                    <div class="text-sm text-gray-500">
+                        {{ username }}
+                    </div>
                 </div>
             </div>
-            <AtlanIcon class="h-3 ml-2 cursor-pointer" icon="ChevronDown" />
+            <div><AtlanIcon class="h-3 ml-1" icon="ChevronDown" /></div>
         </div>
-        <!-- <div
-            class="flex items-center px-2 py-1 transition-colors duration-300 border border-transparent rounded-full hover:border-gray-300"
-        >
-           
-        </div> -->
         <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
               Hover me <a-icon type="down" />
     </a>-->
         <template #overlay>
             <a-menu>
-                <a-menu-item>
+                <!-- <a-menu-item>
                     <a @click="() => handleClickUser(username)">View Profile</a>
                 </a-menu-item>
                 <a-menu-item>
@@ -49,9 +45,11 @@
                 <a-menu-item>
                     <a href="javascript:;">Keyboard Shortcuts</a>
                 </a-menu-item>
-                <a-menu-divider />
+                <a-menu-divider /> -->
                 <a-menu-item>
-                    <a href="javascript:;" @click="handleLogout">Logout</a>
+                    <a class="text-red-500" @click.stop="handleLogout"
+                        >Logout</a
+                    >
                 </a-menu-item>
             </a-menu>
         </template>
@@ -60,10 +58,10 @@
 
 <script lang="ts">
     import { defineComponent, inject } from 'vue'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import whoami from '~/composables/user/whoami'
-    import { KeyMaps } from '~/api/keyMap'
-    import Avatar from '~/components/common/avatar.vue'
+    // import { useUserPreview } from '~/composables/user/showUserPreview'
+    // import whoami from '~/composables/user/whoami'
+    import useUserData from '~/composables/user/useUserData'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
         name: 'UserPersonalAvatar',
@@ -74,31 +72,26 @@
         setup() {
             const keycloak = inject('$keycloak')
             const handleLogout = () => {
-                console.log(
-                    keycloak.logout({
-                        redirectUri: window.location.origin,
-                    })
-                )
-            }
-            const { username, name } = whoami()
-
-            console.log(
-                KeyMaps.auth.avatar.GET_AVATAR({
-                    username: username.value,
+                console.log('sadasd')
+                keycloak.logout({
+                    redirectUri: window.location.origin,
                 })
-            )
-            // user preview drawer
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                showUserPreview()
             }
+
+            const { name, username, avatar } = useUserData()
+            // user preview drawer
+            // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const handleClickUser = (username: string) => {
+                // setUserUniqueAttribute(username, 'username')
+                // showUserPreview()
+            }
+
             return {
                 handleLogout,
                 handleClickUser,
                 username,
                 name,
-                KeyMaps,
+                avatar,
             }
         },
         data() {

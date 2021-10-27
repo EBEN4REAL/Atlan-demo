@@ -36,7 +36,7 @@ import Category from '~/assets/images/icons/category.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
-import CategoryDraft from '~/assets/images/icons/category-wip.svg'
+import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
 import Edit from '~/assets/images/icons/edit.svg'
 import EmptySavedFilter from '~/assets/images/icons/empty_saved_filters.svg'
@@ -126,7 +126,6 @@ import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
 import Retry from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
-import Running from '~/assets/images/icons/running.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
 import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
 import Hourglass from '~/assets/images/icons/hourglass.svg'
@@ -149,7 +148,6 @@ import TableDraft from '~/assets/images/icons/table_draft.svg'
 import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Policy from '~/assets/images/icons/policy.svg'
 import Key from '~/assets/images/icons/key.svg'
-import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 
 export default {
     IssuesFilled,
@@ -209,7 +207,7 @@ export default {
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
-    CategoryDraft,
+    CategoryWip,
     Shield,
     Edit,
     Approve,
@@ -280,7 +278,6 @@ export default {
     Minus,
     Retry,
     Recenter,
-    Running,
     AssetsInactiveLight,
     AssetsActiveLight,
     Hourglass,
@@ -303,5 +300,4 @@ export default {
     TableVerified,
     Policy,
     Key,
-    NoResultsFound,
 }

@@ -12,14 +12,9 @@ import '~/styles/antd.less'
 import '~/styles/index.less'
 
 import { getBasePath, getEnv } from './modules/__env'
-import usePermissions from './services2/service/composable/usePermissions'
 import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
-
-const devBaseUrl = getBasePath()
-const defaultRealm = getEnv().DEFAULT_REALM
-const clientId = getEnv().DEFAULT_CLIENT_ID
 
 const app = createApp(App)
 const head = createHead()
@@ -31,9 +26,9 @@ const router = createRouter({ history: createWebHistory(), routes })
 const authStore = useAuthStore()
 
 const keycloak = Keycloak({
-    url: `${devBaseUrl}/auth`,
-    realm: defaultRealm,
-    clientId,
+    url: `${getBasePath()}/auth`,
+    realm: getEnv().DEFAULT_REALM,
+    clientId: getEnv().DEFAULT_CLIENT_ID,
 })
 
 keycloak

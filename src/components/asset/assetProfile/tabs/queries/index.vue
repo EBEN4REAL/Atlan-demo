@@ -17,6 +17,7 @@
                 <AssetTypeItems
                     v-if="activePreviewTabKey === 'card'"
                     :projections="checkedList"
+                    page="discovery"
                     asset-type="queries"
                     :asset-id="selectedAsset.guid"
                     :css-classes="cssClasses"

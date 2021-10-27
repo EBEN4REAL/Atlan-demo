@@ -172,6 +172,7 @@
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
+    import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
 
     //types
     import {
@@ -306,36 +307,25 @@
                     props.term
                 ) {
                     isUpdateButtonLoading.value = true
-
-                    const { data, error, isLoading } =
-                        GlossaryApi.UpdateGlossaryTerm(props.termGuid, {
-                            // ...props.term.attributes,
-                            // ...props.term,
-                            // qualifiedName: props.term.attributes.qualifiedName,
-                            name: props.term.attributes.name,
-                            shortDescription:
-                                props.term.attributes.shortDescription,
-                            assetStatus: props.term.attributes.assetStatus,
-                            assetStatusMessage:
-                                props.term.attributes.assetStatusMessage,
-                            assetStatusUpdatedBy:
-                                props.term.attributes.assetStatusUpdatedBy,
-                            assetStatusUpdatedAt:
-                                props.term.attributes.assetStatusUpdatedAt,
-                            ownerUsers: props.term.attributes.ownerUsers,
-                            ownerGroups: props.term.attributes.ownerGroups,
-                            anchor: {
-                                glossaryGuid: props.term.attributes.anchor.guid,
-                            },
-                            typeName: props.term.typeName,
-                            categories: newCategories,
-                        })
-                    watch(data, (newData) => {
-                        if (newData?.guid) {
+                    const { data: updateData, updateEntity } =
+                        useUpdateGtcEntity();
+                        updateEntity(
+                            {
+                                typeName: props.term.typeName,
+                                qualifiedName: props.term.attributes.qualifiedName,
+                                name: props.term.attributes.name,
+                                anchor: props.term.attributes.anchor,
+                                updates: {
+                                    categories: newCategories
+                                }
+                            }
+                        )
+                    watch(updateData, (newData) => {
+                        if (newData) {
                             showAddCategoriesTree.value = false
                             isUpdateButtonLoading.value = false
-                            if (refreshEntity) refreshEntity()
-                            console.log('whaaa', reorderTreeNodes)
+                            // if (refreshEntity) refreshEntity()
+                            term.value.attributes.categories = newCategories
                             if (reorderTreeNodes) {
                                 addedCategories.forEach((category) => {
                                     reorderTreeNodes(

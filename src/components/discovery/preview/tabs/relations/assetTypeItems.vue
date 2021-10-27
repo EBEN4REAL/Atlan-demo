@@ -36,7 +36,7 @@
         >
             <AssetPreview
                 :selected-asset="selectedAssetData"
-                page="biOverview"
+                :page="page"
                 :show-cross-icon="true"
                 @closeSidebar="handleCloseSidebar"
                 @asset-mutation="propagateToAssetList"
@@ -106,13 +106,9 @@
 
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
-                storeDiscovery.setSelectedAsset(item)
-                // ctx.emit('preview', item)
-                // context.emit('preview', item)
-                if (page.value === 'biOverview') {
-                    selectedAssetData.value = item
-                    showAssetSidebar.value = true
-                }
+                // storeDiscovery.setSelectedAsset(item)
+                selectedAssetData.value = item
+                showAssetSidebar.value = true
             }
 
             // gets the list of related assets for the ListItem component

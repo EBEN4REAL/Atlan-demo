@@ -123,7 +123,6 @@
     import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
     // composables
-    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
     import useBulkUpdateStore from '~/store/bulkUpdate'
 
     // static

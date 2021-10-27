@@ -84,7 +84,6 @@
         WritableComputedRef,
         Ref
     } from 'vue'
-    import { useRouter } from 'vue-router'
 
     // components
     import GlossaryProfileOverview from '~/components/glossary/profile/overview/glossaryProfileOverview.vue'
@@ -95,7 +94,6 @@
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
-    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // assets
     import { Term } from '~/types/glossary/glossary.interface'

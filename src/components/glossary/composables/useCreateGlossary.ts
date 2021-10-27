@@ -12,8 +12,6 @@ import {
 } from '~/api/keyMaps/glossary'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-import useUpdateGtcEntity from './useUpdateGtcEntity'
-
 import whoami from '~/composables/user/whoami'
 
 const useCreateGlossary = () => {

@@ -46,9 +46,9 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [DELETE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/entity/guid/${guid}`),
     [DELETE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/entity/guid/${guid}`),
 
-    [UPDATE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/${guid}`),
-    [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}/partial`),
-    [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/term/${guid}/partial`),
+    [UPDATE_GLOSSARY]: () => getAPIPath('meta', `/entity/bulk`),
+    [UPDATE_GLOSSARY_CATEGORY]: () => getAPIPath('meta', `/entity/bulk`),
+    [UPDATE_GLOSSARY_TERM]: () => getAPIPath('meta', `/entity/bulk`),
 
     [UPDATE_GLOSSARY_CATEGORY_FULL]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/category/${guid}`),
     [UPDATE_GLOSSARY_TERM_FULL]: ({ guid }: Record<string, string>) => getAPIPath('meta', `/glossary/term/${guid}`),

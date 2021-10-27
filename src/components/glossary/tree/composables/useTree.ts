@@ -6,7 +6,6 @@ import { message } from 'ant-design-vue'
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
 
-import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 import useGlossaryList from '~/components/glossary/tree/composables/useGlossaryList'
 import useLoadGlossaryTreeData from '~/components/glossary/tree/composables/useLoadGlossaryTreeData'
 
@@ -792,7 +791,7 @@ const useTree = ({
                 }
                 return true
             })
-        } else {
+        } else if(_fromGuid){
             parentStack = recursivelyFindPath(_fromGuid)[0]
             const parent = parentStack?.pop()
 
@@ -834,7 +833,6 @@ const useTree = ({
     }
 
     const dragAndDropNode = async ({ dragNode, node, event }) => {
-        // const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
                 console.log(node.dataRef.children, dragNode.dataRef.guid)

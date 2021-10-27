@@ -351,11 +351,11 @@
         <a-modal
             v-model:visible="isModalVisible"
             :closable="false"
-            @ok="handleOk"
+            @ok="handleDelete"
         >
             <template #footer>
                 <a-button key="back" @click="handleCancel">Cancel</a-button>
-                <a-button key="submit" danger @click="handleOk"
+                <a-button key="submit" danger @click="handleDelete"
                     >Delete</a-button
                 >
             </template>
@@ -530,7 +530,7 @@
                 isModalVisible.value = true
                 isVisible.value = false
             }
-            const handleOk = () => {
+            const handleDelete = () => {
                 const { data } = serviceMap[props.entity?.typeName](
                     props.entity?.guid,
                     !props.showLinks || currentProfile?.value?.guid === props.entity?.guid,
@@ -540,7 +540,6 @@
                 watch(data, () => {
                     if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
                     setTimeout(() => {
-
                         if (refetchGlossaryTree) {
                             if (
                                 props.entity?.typeName === 'AtlasGlossaryCategory'
@@ -651,7 +650,7 @@
                 isVisible,
                 isModalVisible,
                 updateTree,
-                handleOk,
+                handleDelete,
                 handleCancel,
                 showModal,
                 closeMenu,
@@ -660,6 +659,7 @@
                 categoryId,
                 categoryQf,
                 showCategories,
+                entity
             }
         },
     })

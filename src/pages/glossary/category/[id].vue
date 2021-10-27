@@ -91,7 +91,6 @@
         WritableComputedRef,
         Ref
     } from 'vue'
-    import { useRouter } from 'vue-router'
 
     // components
     import LoadingView from '@common/loaders/page.vue'
@@ -103,7 +102,6 @@
     import NoAccessPage from '~/components/glossary/common/noAccessPage.vue'
 
     // composables
-    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'

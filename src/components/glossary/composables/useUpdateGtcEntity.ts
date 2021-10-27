@@ -1,4 +1,4 @@
-import { ref, watch, inject } from 'vue'
+import { ref, watch } from 'vue'
 
 import { useAPI } from '~/services/api/useAPI'
 import {
@@ -8,11 +8,23 @@ import {
 } from '~/api/keyMaps/glossary'
 import { Components } from '~/api/atlas/client'
 
+interface params {
+    typeName: 'AtlasGlossary' | 'AtlasGlossaryTerm' | 'AtlasGlossaryCategory'
+    qualifiedName: string
+    name: string
+    anchor?: {
+        guid: string;
+        typeName: string;
+        uniqueAttributes: Record<string, any>
+    }
+    updates: Record<string, any>
+}
+
 const useUpdateGtcEntity = () => {
     const keyMap = {
-        glossary: UPDATE_GLOSSARY,
-        category: UPDATE_GLOSSARY_CATEGORY,
-        term: UPDATE_GLOSSARY_TERM,
+        AtlasGlossary: UPDATE_GLOSSARY,
+        AtlasGlossaryTerm: UPDATE_GLOSSARY_CATEGORY,
+        AtlasGlossaryCategory: UPDATE_GLOSSARY_TERM,
     }
 
     const data = ref<
@@ -23,45 +35,38 @@ const useUpdateGtcEntity = () => {
     const error = ref<any>()
     const isUpdating = ref<boolean>()
 
-    const updateTreeNode = inject<any>('updateTreeNode')
-
-    const updateEntity = (
-        entityType: 'glossary' | 'category' | 'term',
-        guid: string,
-        body: any,
-        updateTree?: boolean
-    ) => {
+    const updateEntity = ({
+        typeName,
+        qualifiedName,
+        name,
+        anchor,
+        updates
+    }: params) => {
         const {
-            data: updateData,
+            data:updateData,
             error: updateError,
             isLoading,
-        } = useAPI<
-            | Components.Schemas.AtlasGlossary
-            | Components.Schemas.AtlasGlossaryCategory
-            | Components.Schemas.AtlasGlossaryTerm
-        >(keyMap[entityType], 'PUT', {
+        } = useAPI(keyMap[typeName], 'POST', {
             cache: false,
-            pathVariables: {
-                guid,
+            body: {
+                entities: [
+                    {
+                        typeName,
+                        attributes: {
+                            name,
+                            ...updates,
+                            anchor,
+                            qualifiedName
+                        }        
+                    }
+                ]
             },
-            body,
             options: {
                 revalidateOnFocus: false,
             },
         })
-
         watch(updateData, (newData) => {
             data.value = newData
-            if (newData) {
-                if (updateTreeNode && (updateTree ?? true)) {
-                    updateTreeNode({
-                        guid: newData.guid,
-                        name: newData.name,
-                        certificateStatus:
-                            newData.certificateStatus ?? 'is_null',
-                    })
-                }
-            }
         })
         watch(updateError, (newError) => {
             error.value = newError

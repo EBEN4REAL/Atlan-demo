@@ -12,8 +12,6 @@ import {
 } from '~/api/keyMaps/glossary'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-import useUpdateGtcEntity from './useUpdateGtcEntity'
-
 import whoami from '~/composables/user/whoami'
 
 const useCreateGlossary = () => {
@@ -24,7 +22,7 @@ const useCreateGlossary = () => {
     const { username } = whoami()
 
     const refetchGlossaryTree = inject<
-        (guid: string | 'root', refetchEntityType?: 'category' | 'term') => void
+        (guid: string | 'root', categoryQualifiedName?: string, refetchEntityType?: 'category' | 'term') => void
     >('refetchGlossaryTree')
 
     const redirectToProfile = (
@@ -108,6 +106,7 @@ const useCreateGlossary = () => {
     const createCategory = (
         parentGlossaryGuid: string,
         parentCategoryGuid?: string,
+        parentCategoryQf?: string,
         title?: string,
         description?: string,
         status?: string,
@@ -158,12 +157,15 @@ const useCreateGlossary = () => {
                     duration: 2,
                 })
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(
-                        parentCategoryGuid || parentCategoryGuid !== ''
-                            ? parentCategoryGuid
-                            : 'root',
-                        'category'
-                    )
+                    setTimeout(() => {
+                        refetchGlossaryTree(
+                            parentCategoryGuid || parentCategoryGuid !== ''
+                                ? parentCategoryGuid
+                                : 'root',
+                            parentCategoryQf,
+                            'category'
+                        )
+                    }, 500)
                 }
             }
         })
@@ -187,6 +189,7 @@ const useCreateGlossary = () => {
     const createTerm = (
         parentGlossaryGuid: string,
         parentCategoryGuid?: string,
+        parentCategoryQf?: string,
         title?: string,
         description?: string,
         status?: string,
@@ -240,12 +243,15 @@ const useCreateGlossary = () => {
                     duration: 2,
                 })
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(
-                        parentCategoryGuid || parentCategoryGuid !== ''
-                            ? parentCategoryGuid
-                            : 'root',
-                        'term'
-                    )
+                    setTimeout(() => {
+                        refetchGlossaryTree(
+                            parentCategoryGuid || parentCategoryGuid !== ''
+                                ? parentCategoryGuid
+                                : 'root',
+                                parentCategoryQf,
+                            'term'
+                        )
+                    }, 500)
                 }
             }
         })
@@ -253,7 +259,7 @@ const useCreateGlossary = () => {
             error.value = newError?.value
             const errMsg = createError.value?.response?.data?.errorMessage
             message.error({
-                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                content: `${errMsg?.slice(0, 1)?.toUpperCase()}${errMsg?.slice(
                     1
                 )}`,
                 key: `${title}`,

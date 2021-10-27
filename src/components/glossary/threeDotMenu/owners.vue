@@ -1,167 +1,122 @@
 <template>
-    <div class="flex flex-col items-center w-full bg-white rounded">
-        <a-input
-            v-input-focus
-            :placeholder="
-                activeOwnerTabKey === '1'
-                    ? `Search ${listUsers?.length} users`
-                    : `Search ${listGroups?.length} groups`
-            "
-            @change="handleOwnerSearch"
-        >
-            <template #prefix>
-                <fa icon="fal search" />
-            </template>
-        </a-input>
-        <div class="relative w-full">
-            <a-tabs
-                v-model:activeKey="activeOwnerTabKey"
-                :class="$style.previewtab"
+    <div class="p-2.5 bg-white flex items-center flex-col w-56 rounded">
+        <div class="flex items-center justify-between w-full mb-3">
+            <SearchAndFilter
+                v-model:value="searchText"
+                :autofocus="true"
+                placeholder="Search "
+                size="minimal"
+                @change="handleOwnerSearch"
             >
-                <a-tab-pane key="1">
-                    <template #tab>
-                        <span
-                            class="text-sm"
-                            :class="activeOwnerTabKey == '1' ? 'font-bold' : ''"
-                            >Users</span
-                        >
-                        <span class="ml-2 chip" v-if="listUsers?.length > 0">{{
-                            listUsers?.length
-                        }}</span>
-                    </template>
-                    <div class="h-48 overflow-y-auto">
-                        <div v-if="STATES.SUCCESS === userOwnerState">
-                            <template
-                                v-for="user in listUsers"
-                                :key="user.username"
+            </SearchAndFilter>
+            <a-button-group>
+                <a-button
+                    :class="activeOwnerTabKey === 'users' ? 'text-primary' : ''"
+                    @click="setActiveTab('users')"
+                >
+                    <template #icon
+                        ><AtlanIcon icon="User" class="mx-auto"
+                    /></template>
+                </a-button>
+                <a-button
+                    :class="
+                        activeOwnerTabKey === 'groups' ? 'text-primary' : ''
+                    "
+                    @click="setActiveTab('groups')"
+                    ><template #icon
+                        ><AtlanIcon
+                            icon="GroupStatic"
+                            class="mx-auto" /></template
+                ></a-button>
+            </a-button-group>
+        </div>
+
+        <div class="relative w-full">
+            <template v-if="activeOwnerTabKey === 'users'">
+                <div class="h-48 overflow-y-auto">
+                    <div
+                        v-if="STATES.SUCCESS === userOwnerState"
+                        class="flex flex-col w-full"
+                    >
+                        <template v-for="item in userList" :key="item.username">
+                            <a-checkbox
+                                v-if="item.username"
+                                :value="item.username"
+                                class="w-full mb-3"
+                                :checked="selectedUsers.includes(item.username)"
+                                @change="onSelectUser"
                             >
                                 <div
-                                    v-if="user.username"
-                                    :class="
-                                        isOwner(user.username, selectedUsers)
-                                            ? 'bg-primary-light'
-                                            : ''
-                                    "
-                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover:bg-primary-light"
-                                    @click="() => onSelectUser(user)"
+                                    v-if="item.username === myUsername"
+                                    class="inline-flex capitalize"
                                 >
-                                    <div class="flex items-center flex-1">
-                                        <img
-                                            src="https://picsum.photos/id/237/50/50"
-                                            alt="view"
-                                            class="w-4 h-4 mr-2 rounded-full"
-                                        /><span
-                                            class="
-                                                text-gray text-sm
-                                                capitalize
-                                                truncate
-                                                ...
-                                            "
-                                            >{{ user.username }}</span
-                                        >
-                                    </div>
-                                    <div
-                                        v-if="
-                                            isOwner(
-                                                user.username,
-                                                selectedUsers
-                                            )
-                                        "
-                                        class="flex items-center mr-4"
-                                    >
-                                        <span class="flex items-center"
-                                            ><fa
-                                                class="text-primary"
-                                                icon="fas check-circle"
-                                        /></span>
-                                    </div>
+                                    {{ item.username }}
+
+                                    <span class="font-bold">
+                                        {{ '&nbsp;(me)' }}
+                                    </span>
                                 </div>
-                            </template>
-                        </div>
-                        <div v-else class="flex items-center justify-center">
-                            <a-spin
-                                size="small"
-                                class="mr-2 leading-none"
-                            ></a-spin
-                            ><span>Fetching users</span>
+                                <span v-else class="capitalize">
+                                    {{ item.username }}
+                                </span>
+                            </a-checkbox>
+                        </template>
+                    </div>
+                    <div v-else class="flex items-center justify-center mt-3">
+                        <a-spin size="small" class="mr-2 leading-none"></a-spin
+                        ><span>Fetching users</span>
+                    </div>
+                </div>
+            </template>
+            <template v-if="activeOwnerTabKey === 'groups'">
+                <div class="h-48 overflow-y-auto">
+                    <div
+                        v-if="
+                            STATES.SUCCESS === groupOwnerState &&
+                            groupList.length < 1
+                        "
+                        class="flex flex-col items-center justify-center h-full"
+                    >
+                        <div class="flex flex-col items-center">
+                            <img
+                                :src="emptyScreen"
+                                alt="No logs"
+                                class="w-2/5 m-auto mb-4"
+                            />
+                            <span class="text-gray-500">No Groups Found</span>
                         </div>
                     </div>
-                </a-tab-pane>
-                <a-tab-pane key="2">
-                    <template #tab>
-                        <span
-                            class="text-sm"
-                            :class="activeOwnerTabKey == '1' ? 'font-bold' : ''"
-                            >Groups</span
-                        >
-                        <span class="ml-2 chip" v-if="listGroups?.length > 0">{{
-                            listGroups?.length
-                        }}</span>
-                    </template>
-                    <div class="h-48 overflow-y-auto">
-                        <div v-if="STATES.SUCCESS === groupOwnerState">
-                            <template
-                                v-for="group in listGroups"
-                                :key="group.name"
+                    <div v-if="STATES.SUCCESS === groupOwnerState">
+                        <div class="flex flex-col w-full">
+                            <a-checkbox
+                                v-for="item in groupList"
+                                :key="item.name"
+                                :value="item.name"
+                                class="mb-3 capitalize"
+                                :checked="selectedGroups.includes(item.name)"
+                                @change="onSelectGroup"
                             >
-                                <div
-                                    v-if="group.name"
-                                    :class="
-                                        isOwner(group.name, selectedGroups)
-                                            ? 'bg-primary-light'
-                                            : ''
-                                    "
-                                    @click="() => onSelectGroup(group)"
-                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover:bg-primary-light"
-                                >
-                                    <div class="flex items-center flex-1">
-                                        <img
-                                            src="https://picsum.photos/id/237/50/50"
-                                            alt="view"
-                                            class="w-4 h-4 mr-4 rounded-full"
-                                        /><span
-                                            class="
-                                                text-gray text-sm
-                                                truncate
-                                                capitalize
-                                                ...
-                                            "
-                                            >{{ group.name }}</span
-                                        >
-                                    </div>
-                                    <div
-                                        v-if="
-                                            isOwner(group.name, selectedGroups)
-                                        "
-                                        class="flex items-center mr-2"
-                                    >
-                                        <span class="flex items-center"
-                                            ><fa
-                                                class="text-primary"
-                                                icon="fas check-circle"
-                                        /></span>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                        <div v-else class="flex items-center justify-center">
-                            <a-spin
-                                size="small"
-                                class="mr-2 leading-none"
-                            ></a-spin
-                            ><span>Fetching groups</span>
+                                {{ item.name }}
+                            </a-checkbox>
                         </div>
                     </div>
-                </a-tab-pane>
-            </a-tabs>
+                    <div v-else class="flex items-center justify-center">
+                        <a-spin size="small" class="mr-2 leading-none"></a-spin
+                        ><span>Fetching groups</span>
+                    </div>
+                </div>
+            </template>
         </div>
         <div class="w-full mt-2">
             <div class="flex justify-end text-xs">
                 <span v-if="selectedUsers.length > 0">{{
-                    `${selectedUsers.length} users`
+                    `${selectedUsers.length} user(s)`
+                }}</span>
+                <span v-if="selectedUsers.length && selectedGroups.length">{{
+                    `&nbsp;&`
                 }}</span>
                 <span v-if="selectedGroups.length > 0">{{
-                    `&nbsp;&&nbsp;${selectedGroups.length} groups`
+                    ` &nbsp;${selectedGroups.length} group(s)`
                 }}</span>
                 <span
                     v-if="selectedGroups.length > 0 || selectedUsers.length > 0"
@@ -187,85 +142,198 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref, watch, toRefs } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import { userInterface } from '~/types/users/user.interface'
-    import { groupInterface } from '~/types/groups/group.interface'
-    import fetchUserList from '~/composables/user/fetchUserList'
-    import fetchGroupList from '~/composables/group/fetchGroupList'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        Ref,
+        toRefs,
+        watch,
+    } from 'vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import updateOwners from '~/composables/asset/updateOwners'
-    import OwnerInfoCard from '@/discovery/preview/hovercards/ownerInfo.vue'
+    import fetchGroupList from '~/composables/group/fetchGroupList'
+    import fetchUserList from '~/composables/user/fetchUserList'
+    import PillGroup from '~/components/UI/pill/pillGroup.vue'
+
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import { groupInterface } from '~/types/groups/group.interface'
+    import { userInterface } from '~/types/users/user.interface'
+    import emptyScreen from '~/assets/images/empty_search.png'
+    import whoami from '~/composables/user/whoami'
+    import Avatar from '~/components/common/avatar.vue'
+    import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
-        components: { OwnerInfoCard },
+        components: { OwnerInfoCard, SearchAndFilter, PillGroup, Avatar },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
-            const now = ref(true)
-            const ownerType = ref('user')
             const { selectedAsset } = toRefs(props)
+            const { username: myUsername, name: myName } = whoami()
             const showOwnersDropdown: Ref<boolean> = ref(false)
-            const activeOwnerTabKey = ref('1')
-            const selectedUsers: Ref<string[]> = ref(selectedAsset.value?.attributes?.ownerUsers?.split(',') ?? [])
+            const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
+            const selectedUsers: Ref<string[]> = ref([])
             const selectedGroups: Ref<string[]> = ref([])
+            const searchText: Ref<string> = ref('')
             const showAll = ref(false)
+            const userList: Ref<userInterface[]> = ref([])
+            const groupList: Ref<groupInterface[]> = ref([])
+            const ownersFilterOptionsData = ref('asc')
 
             const {
                 list: listUsers,
-                total: totalUsersCount,
                 state: userOwnerState,
                 STATES,
+                mutate: mutateUsers,
                 handleSearch: handleUserSearch,
             } = fetchUserList(true)
 
             const {
                 list: listGroups,
                 handleSearch: handleGroupSearch,
-                total: totalGroupCount,
                 state: groupOwnerState,
+                mutate: mutateGroups,
             } = fetchGroupList(true)
 
-            const onSelectUser = (user: userInterface) => {
-                // unselect if already selected
-                if (selectedUsers.value.includes(user.username)) {
-                    const index = selectedUsers.value.indexOf(user.username)
+            function sortClassificationsByOrder(
+                sortingOrder: string,
+                data: Ref<userInterface[] | groupInterface[]>,
+                key: string
+            ) {
+                switch (sortingOrder) {
+                    case 'asc': {
+                        let modifiedData: userInterface[] = []
+                        if (data?.value) {
+                            modifiedData = data.value.sort((dataA, dataB) => {
+                                const a = dataA[key].toLowerCase()
+                                const b = dataB[key].toLowerCase()
+                                if (a < b) {
+                                    return -1
+                                }
+                                if (a > b) {
+                                    return 1
+                                }
+                                return 0
+                            })
+                        }
+                        return modifiedData
+                    }
+                    case 'dsc': {
+                        let modifiedData: groupInterface[] = []
+                        if (data?.value) {
+                            modifiedData = data.value.sort((dataA, dataB) => {
+                                const a = dataA[key].toLowerCase()
+                                const b = dataB[key].toLowerCase()
+                                if (a < b) {
+                                    return 1
+                                }
+                                if (a > b) {
+                                    return -1
+                                }
+                                return 0
+                            })
+                        }
+
+                        return modifiedData
+                    }
+                }
+            }
+
+            watch(
+                [listUsers, listGroups],
+                () => {
+                    userList.value = sortClassificationsByOrder(
+                        ownersFilterOptionsData.value,
+                        listUsers,
+                        'username'
+                    )
+                    // removing own username from list
+                    let ownUserObj: userInterface = {}
+                    userList.value = userList.value.filter((user) => {
+                        if (user.username === myUsername.value) {
+                            ownUserObj = user
+                        }
+                        return user.username !== myUsername.value
+                    })
+                    if (Object.keys(ownUserObj).length > 0) {
+                        userList.value = [ownUserObj, ...userList.value]
+                    } else {
+                        userList.value = [...userList.value]
+                    }
+                    groupList.value = sortClassificationsByOrder(
+                        ownersFilterOptionsData.value,
+                        listGroups,
+                        'name'
+                    )
+                },
+                {
+                    immediate: true,
+                }
+            )
+
+            const onSelectUser = (event) => {
+                if (
+                    event.target.checked &&
+                    !selectedUsers.value.includes(event.target.value)
+                ) {
+                    selectedUsers.value.push(event.target.value)
+                } else if (!event.target.checked) {
+                    const index = selectedUsers.value.indexOf(
+                        event.target.value
+                    )
                     if (index > -1) {
                         selectedUsers.value.splice(index, 1)
                     }
-                } else {
-                    selectedUsers.value.push(user.username)
                 }
             }
-            const onSelectGroup = (group: groupInterface) => {
-                // unselect if already selected
-                if (selectedGroups.value.includes(group.name)) {
-                    const index = selectedGroups.value.indexOf(group.name)
+            const onSelectGroup = (event) => {
+                if (
+                    event.target.checked &&
+                    !selectedGroups.value.includes(event.target.value)
+                ) {
+                    selectedGroups.value.push(event.target.value)
+                } else if (!event.target.checked) {
+                    const index = selectedGroups.value.indexOf(
+                        event.target.value
+                    )
                     if (index > -1) {
                         selectedGroups.value.splice(index, 1)
                     }
-                } else {
-                    selectedGroups.value.push(group.name)
                 }
             }
 
             // user preview drawer
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                showUserPreview({ allowed: ['about'] })
+            const { showGroupPreview, setGroupUniqueAttribute } =
+                useGroupPreview()
+            const handleClickUser = (item) => {
+                if (item.type === 'user') {
+                    setUserUniqueAttribute(item.username, 'username')
+                    showUserPreview({ allowed: ['about'] })
+                }
+                if (item.type === 'group') {
+                    setGroupUniqueAttribute(item.name, 'groupAlias')
+                    showGroupPreview({ allowed: ['about'] })
+                }
             }
 
             const {
-                handleCancel,
                 update,
-                isReady,
-                state,
                 ownerUsers,
                 isLoading: isOwnersLoading,
                 ownerGroups,
@@ -297,35 +365,37 @@
             }
             function mappedSplittedOwners(ownerUsers, ownerGroups) {
                 let splittedOwners = []
-                let temp = ownerUsers.value.map((username: string) => {
-                    return {
-                        type: 'user',
-                        username,
-                    }
-                })
+                let temp = ownerUsers.value.map((username: string) => ({
+                    type: 'user',
+                    username,
+                }))
                 splittedOwners = temp
-                temp = ownerGroups.value.map((name: string) => {
-                    return {
-                        type: 'group',
-                        username: name,
-                    }
-                })
+                temp = ownerGroups.value.map((name: string) => ({
+                    type: 'group',
+                    username: name,
+                }))
                 splittedOwners = [...splittedOwners, ...temp]
-                console.log(splittedOwners, 'spilltedOwners')
                 return splittedOwners
             }
 
             const splittedOwners = ref(
                 splitArray(5, mappedSplittedOwners(ownerUsers, ownerGroups))
             )
+
+            const ownerList = computed(() =>
+                showAll.value
+                    ? [...splittedOwners.value.a, ...splittedOwners.value.b]
+                    : splittedOwners.value.a
+            )
+
             const closePopover = () => {
                 showOwnersDropdown.value = false
             }
 
             const clearSelectedOwners = () => {
-                if (activeOwnerTabKey.value === '1') {
+                if (activeOwnerTabKey.value === 'users') {
                     selectedUsers.value = []
-                } else if (activeOwnerTabKey.value === '2') {
+                } else if (activeOwnerTabKey.value === 'groups') {
                     // for groups
                     selectedGroups.value = []
                 }
@@ -340,29 +410,33 @@
                         5,
                         mappedSplittedOwners(ownerUsers, ownerGroups)
                     )
+
+                    emit('update:selectedAsset', selectedAsset.value)
                 },
                 {
                     immediate: true,
                 }
             )
-            watch(selectedAsset, (newSelectedAsset) => {
-                selectedUsers.value = newSelectedAsset?.attributes?.ownerUsers?.split(',')
-            })
 
             const handleOwnerSearch = (e: Event) => {
-                const queryText = (<HTMLInputElement>e.target).value
-                if (activeOwnerTabKey.value === '1') {
-                    handleUserSearch(queryText)
-                } else if (activeOwnerTabKey.value === '2') {
-                    // for groups
-                    handleGroupSearch(queryText)
+                if (activeOwnerTabKey.value === 'users') {
+                    handleUserSearch(searchText.value)
+                } else if (activeOwnerTabKey.value === 'groups') {
+                    handleGroupSearch(searchText.value)
                 }
             }
             const toggleOwnerPopover = () => {
                 showOwnersDropdown.value = !showOwnersDropdown.value
+                if (
+                    !searchText.value &&
+                    (!listUsers?.value?.length || !listGroups?.value?.length)
+                ) {
+                    mutateUsers()
+                    mutateGroups()
+                }
             }
-            const toggleAllOwners = (state: boolean) => {
-                showAll.value = state
+            const toggleAllOwners = () => {
+                showAll.value = !showAll.value
             }
 
             const handleRemoveOwner = (owner: {
@@ -370,15 +444,12 @@
                 type: string
             }) => {
                 if (owner.type === 'user') {
-                    let filteredOwnerUsers = ownerUsers.value.filter(
-                        (username) => {
-                            return username !== owner.username
-                        }
+                    const filteredOwnerUsers = ownerUsers.value.filter(
+                        (username) => username !== owner.username
                     )
                     selectedUsers.value = filteredOwnerUsers
-                    console.log(ownerUsers.value, 'delete', filteredOwnerUsers)
                 } else {
-                    let filteredOwnerGroups = ownerGroups.value.filter(
+                    const filteredOwnerGroups = ownerGroups.value.filter(
                         (name) => name !== owner.username
                     )
                     selectedGroups.value = filteredOwnerGroups
@@ -389,16 +460,17 @@
             watch(isOwnersLoading, () => {
                 if (!isOwnersLoading.value) showOwnersDropdown.value = false
             })
-            watch(isReady, (newIsReady) => {
-                if (newIsReady) {
-                    emit('update:selectedAsset', selectedAsset.value)
-                }
-            })
+
+            function setActiveTab(tabName: 'users' | 'groups') {
+                activeOwnerTabKey.value = tabName
+            }
 
             return {
+                myUsername,
                 showAll,
                 toggleAllOwners,
                 userOwnerState,
+                searchText,
                 STATES,
                 groupOwnerState,
                 handleOwnerSearch,
@@ -418,16 +490,28 @@
                 onSelectUser,
                 listUsers,
                 listGroups,
+                userList,
+                groupList,
                 showOwnersDropdown,
                 toggleOwnerPopover,
                 selectedAsset,
                 handleRemoveOwner,
                 handleCancelUpdateOwnerPopover,
+                ownerList,
+                KeyMaps,
+                setActiveTab,
+                emptyScreen,
             }
         },
     })
 </script>
 <style lang="less" scoped>
+    .bg-primary-light {
+        background: rgba(34, 81, 204, 0.05);
+    }
+    .hoverbg-primary-light:hover {
+        background: rgba(34, 81, 204, 0.05);
+    }
     .owners-cross-btn {
         right: 6px;
         height: 100%;
@@ -454,7 +538,6 @@
         @apply rounded;
         @apply tracking-wide;
         @apply text-xs;
-        @apply font-bold;
         @apply text-primary;
         @apply bg-primary-light;
     }

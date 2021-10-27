@@ -2,7 +2,7 @@
 <template>
     <div class="flex flex-col mx-3">
         <div
-            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border rounded  hover:shadow-lg hover:border-none list-item-shadow"
+            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border rounded  hover:shadow-lg hover:border-none"
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
@@ -406,10 +406,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .list-item-shadow :hover {
-        position: relative;
-        z-index: 60;
-    }
-</style>

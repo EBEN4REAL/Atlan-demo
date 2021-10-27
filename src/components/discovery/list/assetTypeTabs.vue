@@ -159,13 +159,11 @@
             border: 1px solid #e6e6eb !important;
 
             padding: 3px 8px !important;
-            box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05) !important;
+            /*  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05) !important; */
 
             transition: all 0.8s ease-out;
         }
-        .ant-tabs-tab:first-child {
-            @apply ml-3 !important;
-        }
+
         .ant-tabs-tab-active {
             @apply bg-primary-light !important;
             @apply text-primary !important;

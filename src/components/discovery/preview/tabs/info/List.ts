@@ -101,6 +101,12 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
     Column: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],
     },
+    AtlasGlossaryTerm: {
+        panels: [assetDetails, properties],
+    },
+    AtlasGlossaryCategory: {
+        panels: [assetDetails, properties],
+    },
     Query: {
         panels: [assetDetails, linkedAsset],
     },
@@ -512,7 +518,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
 
 export const InfoTabInNonBiOverview: { [key: string]: AssetTab } = {
     Column: {
-        panels: [assetDetails, linkedAsset, usage, columnProfile, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
 }
 

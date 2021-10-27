@@ -17,10 +17,10 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="bg-white">
+                <div class="">
                     <SearchAndFilter
                         v-model:value="queryText"
-                        class="mx-3 mt-2"
+                        class="m-5"
                         :placeholder="dynamicSearchPlaceholder"
                         :autofocus="true"
                         @change="handleSearchChange"
@@ -39,33 +39,17 @@
                                 @state="handleState"
                             />
                         </template>
-                        <!-- <template #buttonAggregation>
-                        <span>({{ projection.length }})</span>
-                    </template> -->
                     </SearchAndFilter>
 
                     <AssetTabs
                         v-model="selectedTab"
-                        class="mt-1 mb-3"
+                        class="mb-3"
                         :asset-type-list="assetTypeList"
                         :asset-type-map="assetTypeMap"
                         :total="totalSum"
                         @update:model-value="handleTabChange"
                     ></AssetTabs>
                 </div>
-                <!-- <div
-                    class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
-                >
-                    <AssetPagination
-                        v-if="!isLoading && !isValidating"
-                        :label="assetTypeLabel"
-                        :list-count="list.length"
-                        :total-count="totalCount"
-                    ></AssetPagination>
-                    <span v-else class="text-xs text-gray-500"
-                        >Searching...</span
-                    >
-                </div> -->
                 <div
                     v-if="list && list.length <= 0 && !isLoading"
                     class="flex-grow"

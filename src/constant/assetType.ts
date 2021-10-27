@@ -115,6 +115,16 @@ export const AssetTypeList: {
             count: 0,
         },
         {
+            id: 'AtlasGlossaryTerm',
+            label: 'Terms',
+            isDiscoverable: true,
+        },
+        {
+            id: 'AtlasGlossaryCategory',
+            label: 'Categories',
+            isDiscoverable: true,
+        },
+        {
             id: 'TableauSite',
             label: 'Tableau Site',
             nameAttribute: 'siteName',

@@ -208,7 +208,8 @@
 
         :global(.ant-collapse-header) {
             @apply px-5 !important;
-            @apply py-4 !important;
+            @apply mb-3 !important;
+            @apply pb-0 !important;
         }
 
         :global(.ant-collapse-arrow) {
@@ -221,7 +222,7 @@
             padding-left: 0px;
             padding-top: 0px !important;
             @apply pb-0 !important;
-            @apply mb-1 !important;
+            @apply mb-4 !important;
         }
     }
 </style>

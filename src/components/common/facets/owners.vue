@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-6 mt-1">
+    <div class="pb-2 mt-1">
         <div class="flex items-center justify-between mb-3">
             <SearchAndFilter
                 v-model:value="queryText"
@@ -169,7 +169,7 @@
             <div>
                 <a-checkbox
                     v-model:checked="data.noOwnerAssigned"
-                    class="w-full py-3 border-t"
+                    class="w-full pt-3 border-t"
                     @change="noOwnersToggle"
                 >
                     No Owners assigned

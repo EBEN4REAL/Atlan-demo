@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-6 mt-1">
+    <div class="pb-2 mt-1">
         <SearchAndFilter
             v-model:value="classificationSearchText"
             :placeholder="`Search ${classificationsList.length} classifications`"

@@ -41,12 +41,12 @@
                 <span class="flex">
                     <AtlanIcon icon="Category" class="my-auto mr-2" />
                     {{
-                        existingCategories.length > 0
-                            ? existingCategories.length
+                        selectedCategories.length > 0
+                            ? selectedCategories.length
                             : ''
                     }}
                     {{
-                        existingCategories.length === 1
+                        selectedCategories.length === 1
                             ? 'Category'
                             : 'Categories'
                     }}
@@ -161,17 +161,18 @@
         defineComponent,
         computed,
         ref,
+        toRef,
         watch,
         PropType,
-        toRef,
+        toRefs,
         inject,
     } from 'vue'
 
     //components
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
-    import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
     import { Glossary as GlossaryApi } from '~/services/atlas/glossary/glossary_api'
+    import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
 
     //types
     import {
@@ -226,17 +227,18 @@
         },
         emits: ['updateCategories'],
         setup(props, { emit }) {
-            const existingCategories = ref(props.categories)
+            const { categories: existingCategories} = toRefs(props)
             const term = toRef(props, 'term')
             const selectedCategories = ref<{ value: string; label?: string }[]>(
                 existingCategories.value.map((category) => ({
                     value: category.guid,
                     label: category?.attributes?.name,
+                    ...category
                 }))
             )
             const pillCategories = computed(() =>
                 existingCategories.value.map((category) => ({
-                    label: category?.attributes?.name,
+                    label: category?.attributes?.name ?? category.label,
                 }))
             )
             const showAddCategoriesTree = ref(false)
@@ -275,6 +277,7 @@
                     (category) => ({
                         value: category.guid,
                         label: category.guid,
+                        ...category
                     })
                 )
                 showAddCategoriesTree.value = false
@@ -282,60 +285,47 @@
             const handleUpdate = () => {
                 const newCategories = selectedCategories.value.map(
                     (category) => ({
-                        categoryGuid: category.value,
+                        guid: category.value,
+                        ...category
                     })
                 )
                 const addedCategories = newCategories.filter(
                     (category) =>
                         !existingCategories.value.find(
                             (existing) =>
-                                existing.guid === category.categoryGuid
+                                existing.guid === category.guid
                         )
                 )
                 const removedCategories = existingCategories.value.filter(
                     (category) =>
                         !newCategories.find(
-                            (newCat) => newCat.categoryGuid === category.guid
+                            (newCat) => newCat.guid === category.guid
                         )
                 )
-
                 if (
                     (props.mode === 'edit' || props.mode === 'threeDotMenu') &&
                     props.term
                 ) {
-                    const { data: updateData, updateEntity } =
-                        useUpdateGtcEntity()
                     isUpdateButtonLoading.value = true
-
-                    const { data, error, isLoading } =
-                        GlossaryApi.UpdateGlossaryTerm(props.termGuid, {
-                            // ...props.term.attributes,
-                            // ...props.term,
-                            // qualifiedName: props.term.attributes.qualifiedName,
-                            name: props.term.attributes.name,
-                            shortDescription:
-                                props.term.attributes.shortDescription,
-                            assetStatus: props.term.attributes.assetStatus,
-                            assetStatusMessage:
-                                props.term.attributes.assetStatusMessage,
-                            assetStatusUpdatedBy:
-                                props.term.attributes.assetStatusUpdatedBy,
-                            assetStatusUpdatedAt:
-                                props.term.attributes.assetStatusUpdatedAt,
-                            ownerUsers: props.term.attributes.ownerUsers,
-                            ownerGroups: props.term.attributes.ownerGroups,
-                            anchor: {
-                                glossaryGuid: props.term.attributes.anchor.guid,
-                            },
-                            typeName: props.term.typeName,
-                            categories: newCategories,
-                        })
-                    watch(data, (newData) => {
-                        if (newData?.guid) {
+                    const { data: updateData, updateEntity } =
+                        useUpdateGtcEntity();
+                        updateEntity(
+                            {
+                                typeName: props.term.typeName,
+                                qualifiedName: props.term.attributes.qualifiedName,
+                                name: props.term.attributes.name,
+                                anchor: props.term.attributes.anchor,
+                                updates: {
+                                    categories: newCategories
+                                }
+                            }
+                        )
+                    watch(updateData, (newData) => {
+                        if (newData) {
                             showAddCategoriesTree.value = false
                             isUpdateButtonLoading.value = false
-                            if (refreshEntity) refreshEntity()
-                            console.log('whaaa', reorderTreeNodes)
+                            // if (refreshEntity) refreshEntity()
+                            term.value.attributes.categories = newCategories
                             if (reorderTreeNodes) {
                                 addedCategories.forEach((category) => {
                                     reorderTreeNodes(
@@ -371,6 +361,7 @@
                             uniqueAttributes: {
                                 qualifiedName: category.value,
                             },
+                            ...category
                         })
                     )
                 }
@@ -427,6 +418,7 @@
                     (category) => ({
                         value: category.guid,
                         label: category.guid,
+                        ...category
                     })
                 )
             })

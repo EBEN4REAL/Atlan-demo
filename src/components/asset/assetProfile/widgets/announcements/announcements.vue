@@ -37,7 +37,7 @@
                 </template>
 
                 <div
-                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer max-w-min"
+                    class="flex items-center px-2 py-1 ml-2 align-middle rounded cursor-pointer  max-w-min"
                     :class="
                         type === 'information'
                             ? 'information-bg'
@@ -90,10 +90,21 @@
             </div>
         </div>
         <div v-else>
-            <div v-if="!title || title === ''" class="flex justify-between">
+            <div
+                v-if="!title || title === ''"
+                class="hover:shadow-sm"
+                :class="editPermission ? 'cursor-pointer' : ''"
+                @click="
+                    () => {
+                        if (editPermission) {
+                            startEdit()
+                        }
+                    }
+                "
+            >
                 <div>
                     <div
-                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer max-w-min"
+                        class="flex items-center px-2 py-1 align-middle rounded cursor-pointer  max-w-min"
                         :class="
                             type === 'information'
                                 ? 'information-bg'
@@ -125,7 +136,7 @@
                         Add description...
                     </div>
                 </div>
-                <div>
+                <!-- <div>
                     <a-dropdown trigger="click" placement="bottomRight">
                         <div v-if="editPermission">
                             <a-button
@@ -153,7 +164,7 @@
                             </a-menu>
                         </template>
                     </a-dropdown>
-                </div>
+                </div> -->
             </div>
             <div
                 v-else
@@ -235,7 +246,7 @@
                         <div v-if="editPermission">
                             <a-button
                                 v-show="showKebabMenu"
-                                class="px-2 ml-2 bg-transparent border-transparent shadow-none hover:border-current"
+                                class="px-2 ml-2 bg-transparent border-transparent shadow-none  hover:border-current"
                             >
                                 <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                             </a-button>
@@ -389,8 +400,8 @@
         background-color: rgba(255, 239, 208, 1);
     }
     .information-border {
-        background-color: #F5FAFF;
-        border-color: #5277D7;
+        background-color: #f5faff;
+        border-color: #5277d7;
         // @apply border-primary;
     }
     .issue-border {

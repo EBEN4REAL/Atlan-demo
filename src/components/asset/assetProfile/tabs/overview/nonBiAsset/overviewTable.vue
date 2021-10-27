@@ -32,8 +32,8 @@
             <tbody>
                 <tr v-for="(row, index) in results" :key="index">
                     <td
-                        v-for="(rowData, index) in row"
-                        :key="index"
+                        v-for="(rowData, key) in row"
+                        :key="key"
                         class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
                     >
                         <div v-if="key == 'hash_index'">{{ rowData }}</div>

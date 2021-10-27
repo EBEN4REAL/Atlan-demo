@@ -76,6 +76,7 @@
                     :asset-type="item.displayText"
                     :asset-id="assetId"
                     :css-classes="cssClasses"
+                    page="discovery"
                 />
             </a-collapse-panel>
         </a-collapse>

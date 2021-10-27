@@ -114,6 +114,14 @@
                 >
             </a-dropdown>
             <ThreeDotMenu :entity="entity" :showLinks="false" />
+            <!-- <BulkModal :entity="entity">
+                <template #trigger>
+                    <div class="flex items-center">
+                        <AtlanIcon icon="Term" class="m-0 mr-2 text-primary" />
+                        <p class="p-0 m-0 capitalize">Bulk upload terms</p>
+                    </div>
+                </template>
+            </BulkModal> -->
         </div>
     </div>
 
@@ -125,15 +133,9 @@
             <div class="flex flex-col justify-center w-full">
                 <div class="flex">
                     <span
-                        v-if="!isNewEntity"
                         class="mr-2 text-xl leading-6 truncate"
                         >{{ title }}</span
                     >
-                    <span
-                        v-if="isNewEntity"
-                        class="mr-2 text-xl italic leading-6 text-gray-500"
-                        >Untitled {{ assetTypeLabel[entity?.typeName] }}
-                    </span>
                     <a-popover
                         v-if="statusMessage"
                         trigger="hover"
@@ -186,7 +188,6 @@
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import redirect from '@/glossary/utils/redirectToProfile'
-
     export default defineComponent({
         components: {
             ThreeDotMenu,
@@ -207,12 +208,6 @@
                 required: true,
                 default: '',
             },
-            isNewEntity: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-
             statusObject: {
                 type: Object,
                 required: true,

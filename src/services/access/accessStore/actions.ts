@@ -7,7 +7,7 @@ export interface Actions extends StateTree {
 
 export const actions: Actions = {
     setPermissions(permissions) {
-        this.permissions = permissions;
+        this.permissions = permissions
     },
     setRoles(roles){
         this.roles = roles

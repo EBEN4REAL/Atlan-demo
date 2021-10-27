@@ -2,7 +2,7 @@
     <div>
         <div v-if="showCrossIcon">
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l -left-5"
                 @click="$emit('closeSidebar')"
             >
                 <AtlanIcon
@@ -28,7 +28,32 @@
                     <AssetLogo :asset="selectedAsset" variant="md" />
 
                     <div class="flex space-x-2">
-                        <a-button-group>
+                        <a-button-group v-if="isQueryAsset(selectedAsset)">
+                            <a-tooltip
+                                placement="left"
+                                :mouse-enter-delay="0.5"
+                                title="Copy insights query link"
+                            >
+                                <a-button
+                                    class="w-8 h-8"
+                                    size="small"
+                                    @click="handleCopyInsightsLink"
+                                    ><AtlanIcon icon="Share" /></a-button
+                            ></a-tooltip>
+                            <a-tooltip
+                                placement="bottom"
+                                :mouse-enter-delay="0.5"
+                                title="Run query in insights"
+                            >
+                                <a-button
+                                    class="w-8 h-8"
+                                    size="small"
+                                    @click="handleOpenInsights"
+                                >
+                                    <AtlanIcon icon="Play" /> </a-button
+                            ></a-tooltip>
+                        </a-button-group>
+                        <a-button-group v-else>
                             <a-tooltip
                                 placement="left"
                                 :mouse-enter-delay="0.5"
@@ -40,21 +65,8 @@
                                     @click="handleCopyProfileLink"
                                     ><AtlanIcon icon="Share" /></a-button
                             ></a-tooltip>
+
                             <a-tooltip
-                                v-if="isQueryAsset(selectedAsset)"
-                                placement="bottom"
-                                :mouse-enter-delay="0.5"
-                                title="Run query in insights"
-                            >
-                                <a-button
-                                    class="w-8 h-8"
-                                    size="small"
-                                    @click="handleOpenProfile"
-                                >
-                                    <AtlanIcon icon="Play" /> </a-button
-                            ></a-tooltip>
-                            <a-tooltip
-                                v-else
                                 placement="bottom"
                                 :mouse-enter-delay="0.5"
                                 title="Open profile"
@@ -66,14 +78,11 @@
                                 >
                                     <AtlanIcon icon="External" /> </a-button
                             ></a-tooltip>
-                            <!-- <a-button class="w-8 h-8" size="small">
-                            <AtlanIcon icon="Bookmark" />
-                        </a-button> -->
                         </a-button-group>
                     </div>
                 </div>
 
-                <div class="flex items-center w-full mt-1">
+                <div class="flex items-center w-full mt-2">
                     <a-tooltip
                         placement="left"
                         :mouse-enter-delay="0.5"
@@ -94,7 +103,7 @@
                         ></component
                     ></a-tooltip>
                     <div
-                        class="text-base font-bold cursor-pointer  truncated text-primary hover:underline"
+                        class="text-base font-bold cursor-pointer truncated text-primary hover:underline"
                         v-if="mutateTooltip"
                     >
                         {{ selectedAsset.attributes?.name }}
@@ -146,7 +155,7 @@
                     >
                         <div
                             v-if="tab.tooltip !== 'Activity'"
-                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700  text-md"
+                            class="flex items-center justify-between px-5 py-3 font-semibold text-gray-700 text-md"
                         >
                             {{ tab.tooltip }}
                         </div>
@@ -324,11 +333,17 @@
             const handleOpenProfile = () => {
                 if (isColumnAsset(selectedAsset.value)) {
                     router.push(`/${getColumnUrl(selectedAsset.value)}`)
-                } else if (isQueryAsset(selectedAsset.value)) {
-                    router.push(`/${getQueryUrl(selectedAsset.value)}`)
                 } else {
                     router.push(`/assets/${selectedAsset.value.guid}/overview`)
                 }
+            }
+            const handleOpenInsights = () => {
+                router.push(`${getQueryUrl(selectedAsset.value)}`)
+            }
+            const handleCopyInsightsLink = () => {
+                const baseUrl = window.location.origin
+                const text = `${baseUrl}${getQueryUrl(selectedAsset.value)}`
+                copyToClipboard(text)
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -381,6 +396,8 @@
                 isQueryFolderAsset,
                 handleCopyProfileLink,
                 handleOpenProfile,
+                handleCopyInsightsLink,
+                handleOpenInsights,
             }
         },
     })

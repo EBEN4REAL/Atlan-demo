@@ -25,7 +25,6 @@
                 <ProfileHeader
                     :title="title"
                     :entity="glossary"
-                    :isNewEntity="isNewGlossary"
                     :statusMessage="statusMessage"
                     :statusObject="statusObject"
                     :shortDescription="shortDescription"
@@ -40,26 +39,6 @@
                     >
                         <a-tab-pane key="1" tab="Overview">
                             <div class="px-5 mt-4">
-                                <div v-if="isNewGlossary" class="mb-4">
-                                    <p
-                                        class="p-0 mb-1 text-sm leading-5 text-gray-700 "
-                                    >
-                                        Name
-                                    </p>
-                                    <div class="flex">
-                                        <a-input
-                                            v-model:value="newName"
-                                            style="width: 200px"
-                                        />
-                                        <a-button
-                                            v-if="newName"
-                                            class="ml-4"
-                                            type="primary"
-                                            @click="updateTitle"
-                                            >Submit</a-button
-                                        >
-                                    </div>
-                                </div>
                                 <GlossaryProfileOverview
                                     :entity="glossary"
                                     :header-reached-top="headerReachedTop"
@@ -111,15 +90,6 @@
                 :glossaryQualifiedName="glossary?.attributes?.qualifiedName"
                 :visible="addTermModalOpen"
             >
-                <!-- <template #header>
-                    <ModalHeader :entity="glossary" entity-to-add="term" />
-                </template>
-                <template #trigger>
-                    <div class="flex items-center">
-                        <AtlanIcon icon="Term" class="m-0 mr-2" />
-                        <p class="p-0 m-0">Create New Term</p>
-                    </div>
-                </template> -->
             </AddGtcModal>
         </div>
     </div>
@@ -135,7 +105,8 @@
         computed,
         inject,
         ComputedRef,
-        Ref
+        Ref,
+        provide,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -152,10 +123,6 @@
     import ModalHeader from '@/glossary/gtcCrud/modalHeader.vue'
 
     // composables
-    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-    // import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
-    // import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
-    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
     import useBulkUpdateStore from '~/store/bulkUpdate'
 
     // static
@@ -200,37 +167,37 @@
             )
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
-            const newName = ref('')
             const scrollDiv = ref(null)
             const headerReachedTop = ref(false)
             const temp = ref(false) // flag for sticky header
             const landByRedirect = false
             const accessStore = useAccessStore()
+            const startUpload = ref()
+            const workflow = ref()
 
             const glossary = inject<Ref<Glossary>>('currentEntity')
-            const title = inject<WritableComputedRef<string | undefined>>('currentTitle')
-            const shortDescription = inject<ComputedRef<string>>('currentShortDescription')
-            const qualifiedName = inject<ComputedRef<string>>('currentQualifiedName')
+            const title =
+                inject<WritableComputedRef<string | undefined>>('currentTitle')
+            const shortDescription = inject<ComputedRef<string>>(
+                'currentShortDescription'
+            )
+            const qualifiedName = inject<ComputedRef<string>>(
+                'currentQualifiedName'
+            )
             const statusObject = inject<ComputedRef>('statusObject')
             const error = inject<Ref>('profileError')
-            const isLoading = inject<Ref<boolean> | undefined>('profileIsLoading')
+            const isLoading = inject<Ref<boolean> | undefined>(
+                'profileIsLoading'
+            )
             const refetch = inject<() => void>('refreshEntity', () => {})
             const statusMessage = inject<ComputedRef<string>>('statusMessage')
 
-            const isNewGlossary = computed(
-                () => title.value === 'Untitled Glossary'
-            )
+
             const userHasAccess = computed(() =>
                 accessStore.checkPermission('READ_GLOSSARY')
             )
 
-            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
-
-            // computed
-
             // methods
-            const reInitTree = inject('reInitTree', () => {})
-
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
                 showPreviewPanel.value = true
@@ -238,16 +205,6 @@
             const handlClosePreviewPanel = () => {
                 previewEntity.value = undefined
                 showPreviewPanel.value = false
-            }
-            const updateTitle = () => {
-                updateEntity('glossary', glossary?.value?.guid ?? '', {
-                    name: newName.value,
-                })
-                if (reInitTree) {
-                    setTimeout(() => {
-                        reInitTree()
-                    }, 2000)
-                }
             }
 
             const handleScroll = () => {
@@ -264,16 +221,28 @@
                 temp.value = true
             }
 
-            watch(updatedEntity, () => {
-                refetch()
-                newName.value = ''
-            })
             // upate bulk list for sidebar
             const store = useBulkUpdateStore()
             const handleCloseBulk = () => {
                 store.setBulkSelectedAssets([])
                 store.setBulkMode(false)
             }
+
+            const handleStartUpload = (workflowName) => {
+                console.log('starting upload', workflowName)
+                workflow.value = workflowName
+                startUpload.value = true
+            }
+            const handleStopUpload = () => {
+                startUpload.value = false
+            }
+
+            provide('bulkUploadTriggers', {
+                startUpload,
+                workflowName: workflow,
+            })
+            provide('handleStartUpload', handleStartUpload)
+            provide('handleStopUpload', handleStopUpload)
 
             return {
                 glossary,
@@ -288,14 +257,11 @@
                 previewEntity,
                 showPreviewPanel,
                 statusObject,
-                isNewGlossary,
-                newName,
                 scrollDiv,
                 headerReachedTop,
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
-                updateTitle,
                 handleScroll,
                 handleFirstCardReachedTop,
                 handleCloseBulk,

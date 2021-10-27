@@ -202,7 +202,6 @@ const useLoadQueryData = ({
             operator: 'eq',
             attributeValue: folderGuid,
         })
-
         body.value.offset = offset ?? 0
         body.value.limit = limit ?? defaultLimit
 

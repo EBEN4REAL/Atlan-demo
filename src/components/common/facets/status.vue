@@ -1,7 +1,7 @@
 <template>
     <a-checkbox-group
         v-model:value="data.checked"
-        class="w-full py-1 pb-6"
+        class="w-full py-1 pb-2"
         @change="handleChange"
     >
         <div class="flex flex-col w-full">

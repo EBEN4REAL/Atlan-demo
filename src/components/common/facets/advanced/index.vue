@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-6">
+    <div class="pb-2">
         <div class="overflow-y-auto" style="max-height: 25rem">
             <div
                 v-for="(a, x) in finalAttributesList"

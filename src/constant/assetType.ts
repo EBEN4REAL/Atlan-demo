@@ -118,23 +118,11 @@ export const AssetTypeList: {
             id: 'AtlasGlossaryTerm',
             label: 'Terms',
             isDiscoverable: true,
-            count: 0,
         },
         {
             id: 'AtlasGlossaryCategory',
             label: 'Categories',
             isDiscoverable: true,
-            count: 0,
-        },
-        {
-            id: 'QueryFolder',
-            label: 'QueryFolder',
-            qualifiedNameAttribute: 'parentFolderQualifiedName',
-            parents: ['Connection', 'Database', 'Schema'],
-            children: ['Query'],
-            isDiscoverable: true,
-            orderWeight: 60,
-            count: 0,
         },
         {
             id: 'TableauSite',

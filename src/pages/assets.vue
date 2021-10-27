@@ -15,7 +15,10 @@
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
-            <AssetPreview></AssetPreview>
+            <AssetPreview
+                class="w-64"
+                :selected-asset="selectedAsset"
+            ></AssetPreview>
         </div>
         <!-- <BulkNotification class="fixed bottom-0 right-0" /> -->
     </div>
@@ -29,6 +32,7 @@
     // import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import AssetDiscovery from '@/discovery/index.vue'
     import AssetPreview from '@/discovery/preview/index.vue'
+    import { useAssetListing } from '~/composables/discovery/useAssetListing'
     // import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -60,6 +64,8 @@
             // const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
+
+            const { selectedAsset } = useAssetListing()
             // const updateProfile = ref<boolean>(false)
             // // const lastUpdatedItem = ref(false)
             // const assetDiscovery: Ref<Element | null> = ref(null)
@@ -124,6 +130,7 @@
 
             return {
                 isItem,
+                selectedAsset,
             }
         },
     })

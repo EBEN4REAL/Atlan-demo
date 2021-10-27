@@ -2,20 +2,21 @@ import { generateFilterDSL } from './generateFilterDSL'
 import { generatePostFilterDSL } from './generatePostFilterDSL'
 import { generateAggregationDSL } from './generateAggregationDSL'
 
+import { computed } from 'vue'
+
 import { assetTypeList } from '~/constant/assetType'
+import useDiscoveryStore from '~/store/discovery'
 
 export function useAssetListing() {
-    const handleFacetDSL = (facetMap: Record<string, any>) => {
-        return generateFilterDSL(facetMap)
-    }
+    const discoveryStore = useDiscoveryStore()
 
-    const handlePostFacetDSL = (facetMap: Record<string, any>) => {
-        return generatePostFilterDSL(facetMap)
-    }
+    const handleFacetDSL = (facetMap: Record<string, any>) =>
+        generateFilterDSL(facetMap)
 
-    const handleAggregationDSL = (facetMap: Record<string, any>) => {
-        return generateAggregationDSL(facetMap)
-    }
+    const handlePostFacetDSL = (facetMap: Record<string, any>) =>
+        generatePostFilterDSL(facetMap)
+
+    const handleAggregationDSL = () => generateAggregationDSL()
 
     const getAssetTypeList = (
         typenameAggregation: any,
@@ -43,10 +44,18 @@ export function useAssetListing() {
         return temp
     }
 
+    const selectedAsset = computed(() => discoveryStore.selectedAsset)
+
+    const handleSelectedAsset = (item) => {
+        discoveryStore.setSelectedAsset(item)
+    }
+
     return {
+        selectedAsset,
         handleFacetDSL,
         handlePostFacetDSL,
         handleAggregationDSL,
         getAssetTypeList,
+        handleSelectedAsset,
     }
 }

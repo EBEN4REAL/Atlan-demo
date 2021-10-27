@@ -14,7 +14,7 @@
                 @change="handleAssetTypeFilterChange"
             ></AssetFilters>
         </div>
-        <div class="flex flex-col items-stretch flex-1">
+        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
                 <div class="p-4">
                     <SearchAdvanced
@@ -26,13 +26,14 @@
                             <Preferences />
                         </template>
                     </SearchAdvanced>
-
-                    <AssetTabs
-                        class="mt-2"
-                        v-model:facetMap="facetMap"
-                        :assetTypeList="assetTypeMappedList"
-                        @change="handleAssetTypeFilterChange"
-                    ></AssetTabs>
+                    <div class="w-full">
+                        <AssetTabs
+                            class="mt-2"
+                            v-model:facetMap="facetMap"
+                            :assetTypeList="assetTypeMappedList"
+                            @change="handleAssetTypeFilterChange"
+                        ></AssetTabs>
+                    </div>
                 </div>
 
                 <div class="flex-grow" v-if="list.length === 0">
@@ -46,6 +47,7 @@
                     @loadMore="handleLoadMore"
                     :isLoading="isLoading || isValidating"
                     :isLoadMore="isLoadMore"
+                    @preview="handlePreview"
                 />
             </div>
         </div>
@@ -151,6 +153,7 @@
                 handlePostFacetDSL,
                 handleAggregationDSL,
                 getAssetTypeList,
+                handleSelectedAsset,
             } = useAssetListing()
 
             const body = ref({
@@ -180,6 +183,10 @@
             const assetTypeMappedList = computed(() => {
                 return getAssetTypeList(typenameAggregation.value, false)
             })
+
+            const handlePreview = (item) => {
+                handleSelectedAsset(item)
+            }
 
             // const assetCategoryFilter = ref([])
             // // Initialization via IIFE
@@ -527,6 +534,7 @@
                 isLoading,
                 handleLoadMore,
                 assetlistRef,
+                handlePreview,
             }
         },
         // data() {

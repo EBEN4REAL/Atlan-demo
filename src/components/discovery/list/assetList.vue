@@ -1,7 +1,7 @@
 <template>
     <VirtualList :data="list" data-key="guid" variable-height>
         <template #default="{ item }">
-            <AssetItem :item="item"></AssetItem>
+            <AssetItem :item="item" @click="handlePreview(item)"></AssetItem>
         </template>
         <template #footer>
             <div
@@ -110,17 +110,24 @@
                 default: () => false,
             },
         },
-        emits: [
-            // 'preview',
-            'loadMore',
-            'update:autoSelect',
-        ],
+        emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
             const { list, autoSelect } = toRefs(props)
             // const storeDiscovery = useDiscoveryStore()
             // const { selectedAsset } = storeToRefs(storeDiscovery)
-            // const selectedAssetId = ref('')
+            const selectedAssetId = ref('')
             // const shouldReSelect = false
+
+            const handlePreview = (item: any) => {
+                if (item.guid === '-1') {
+                    selectedAssetId.value = item.displayText
+                    emit('preview', item)
+                } else {
+                    selectedAssetId.value = item.guid
+                    emit('preview', item)
+                }
+            }
+
             // function handlePreview(item: any) {
             //     if (item.guid === '-1') {
             //         selectedAssetId.value = item.displayText
@@ -193,6 +200,7 @@
                 // handlePreview,
                 // selectedAssetId,
                 list,
+                handlePreview,
                 // bulkSelectedAssets,
                 // updateBulkSelectedAssets,
                 // handleCardClicked,

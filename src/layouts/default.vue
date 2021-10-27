@@ -7,7 +7,6 @@
                     :is-sidebar-active="showNavbar"
                     @toggleNavbar="handleToggleNavbar"
                     @openNavbar="showNavbar = true"
-                    @openCmndK="isCmndKVisible = true"
                 />
             </div>
         </a-layout-header>
@@ -24,128 +23,70 @@
                     :visible="showNavbar"
                     :get-container="false"
                     :closable="false"
+                    :maskClosable="true"
                     :wrap-style="{ position: 'absolute' }"
-                    :mask="false"
+                    :mask="true"
+                    :maskStyle="{
+                        background: 'rgba(244, 246, 253, 0.9)',
+                    }"
                     :class="$style.drawerStyles"
+                    @close="handleClick"
                 >
-                    <SidePanel :page="activeKey" @closeNavbar="closeNavbar" />
-                </a-drawer>
-                <div v-else style="min-width: 264px">
-                    <SidePanel :page="activeKey" />
-                </div>
-                <div
-                    class="w-full"
-                    @click="handleClick"
-                    @mouseover="showNavbar = false"
-                >
-                    <CmndK
-                        :isCmndKVisible="isCmndKVisible"
-                        @closeModal="isCmndKVisible = false"
+                    <SidePanel
+                        :page="activeKey"
+                        class="border-r border-gray-200"
                     />
+                </a-drawer>
+                <div style="min-width: 264px" v-else>
+                    <SidePanel
+                        :page="activeKey"
+                        class="border-r border-gray-200"
+                    />
+                </div>
+                <div class="w-full">
                     <router-view />
                 </div>
             </a-layout-content>
         </a-layout>
     </a-layout>
-    <PreviewDrawer />
+    <!-- <PreviewDrawer /> -->
     <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onMounted, watch, computed } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useMagicKeys, whenever } from '@vueuse/core'
 
-    import PreviewDrawer from '~/components/common/previewDrawer.vue'
-    import NavMenu from '~/components/common/navMenu.vue'
-    import SidePanel from '~/components/home/sidePanel.vue'
-    import CmndK from '~/components/common/commandK/cmndK.vue'
+    import NavMenu from '@/common/layout/navMenu.vue'
+    import SidePanel from '@/common/layout/sidePanel.vue'
 
     export default defineComponent({
         name: 'Default Layout',
         components: {
-            PreviewDrawer,
             NavMenu,
             SidePanel,
-            CmndK,
         },
-
         setup() {
             const router = useRouter()
             const showNavbar = ref(false)
             const { currentRoute } = router
 
-            const keys = useMagicKeys()
-            const esc = keys.Escape
-            const activeKey = ref('/')
-            const pages = [
-                '/',
-                '/assets',
-                '/glossary',
-                '/insights',
-                '/connections',
-                '/workflows',
-                '/reporting',
-                '/admin',
-                '/platform',
-            ]
-            const curPath = computed(() => currentRoute.value.path)
-            // shortcut keys for command k
-            const { control, meta, meta_K } = keys
-            const keyK = keys.K
-            const isCmndKVisible = ref<boolean>(false)
-            const showModal = () => {
-                isCmndKVisible.value = true
-            }
-
-            // watch for shortcut keys for command k
-            whenever(keyK, () => {
-                if (
-                    (keyK.value && control.value) ||
-                    (keyK.value && meta.value)
-                ) {
-                    showModal()
-                    keyK.value = false
-                }
-            })
+            const activeKey = ref('')
 
             const handleToggleNavbar = () => {
                 showNavbar.value = !showNavbar.value
             }
-            const closeNavbar = () => {
-                showNavbar.value = false
-            }
-
-            const updatePaths = () => {
-                const page = `/${currentRoute.value.path.split('/')[1]}`
-                if (pages.includes(page)) activeKey.value = page
-                // else router.push('/')
-            }
-
-            watch(esc, (v) => {
-                if (v) {
-                    closeNavbar()
-                }
-            })
 
             const handleClick = () => {
-                if (showNavbar.value) showNavbar.value = false
+                if (showNavbar.value) handleToggleNavbar()
             }
-
-            watch(curPath, () => {
-                updatePaths()
-            })
-
-            updatePaths()
 
             return {
                 activeKey,
                 handleToggleNavbar,
                 showNavbar,
-                currentRoute,
-                closeNavbar,
                 handleClick,
-                isCmndKVisible,
+                currentRoute,
             }
         },
     })

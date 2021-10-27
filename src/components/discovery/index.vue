@@ -36,7 +36,19 @@
                     </div>
                 </div>
 
-                <div class="flex-grow" v-if="list.length === 0">
+                <div
+                    class="flex items-center justify-center flex-grow"
+                    v-if="isLoading || (list.length == 0 && isValidating)"
+                >
+                    <AtlanIcon
+                        icon="Loader"
+                        class="w-auto h-10 animate-spin"
+                    ></AtlanIcon>
+                </div>
+                <div
+                    class="flex-grow"
+                    v-else-if="list.length === 0 && !isLoading"
+                >
                     <EmptyView></EmptyView>
                 </div>
 

@@ -149,6 +149,7 @@ import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Policy from '~/assets/images/icons/policy.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
+import Loader from '~/assets/images/icons/loader.svg'
 
 export default {
     IssuesFilled,
@@ -302,4 +303,5 @@ export default {
     Policy,
     Key,
     EmptyDiscover,
+    Loader,
 }

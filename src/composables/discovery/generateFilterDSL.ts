@@ -4,17 +4,28 @@ import bodybuilder from 'bodybuilder'
 export function generateFilterDSL(facet: Record<string, any>) {
     const query = bodybuilder()
     Object.keys(facet ?? {}).forEach((mkey) => {
-        const fltrObj = facet[mkey]
+        const filterObject = facet[mkey]
         switch (mkey) {
             case 'connector': {
-                if (fltrObj) {
-                    query.filter('term', 'connectorName', fltrObj)
+                if (filterObject) {
+                    query.filter('term', 'connectorName', filterObject)
                 }
                 break
             }
             case 'connection': {
-                if (fltrObj) {
-                    query.filter('term', 'connectionQualifiedName', fltrObj)
+                if (filterObject) {
+                    query.filter(
+                        'term',
+                        'connectionQualifiedName',
+                        filterObject
+                    )
+                }
+                break
+            }
+            case 'certificate': {
+                if (filterObject) {
+                    if (filterObject.length > 0)
+                        query.filter('terms', 'certificateStatus', filterObject)
                 }
                 break
             }
@@ -26,6 +37,6 @@ export function generateFilterDSL(facet: Record<string, any>) {
 
     // query.filter('term', '__superTypes.keyword', 'Catalog')
 
-    query.queryMinimumShouldMatch(1)
+    query.filterMinimumShouldMatch(1)
     return query.build()
 }

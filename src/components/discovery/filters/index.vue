@@ -80,7 +80,7 @@
                     <component
                         v-else
                         :is="item.component"
-                        v-model="localFacetMap[item.id]"
+                        v-model:facetMap="localFacetMap[item.id]"
                         @change="handleChange"
                     ></component>
                 </a-collapse-panel>
@@ -241,6 +241,7 @@
             //     emit('refresh', dataMap.value)
             // }
             const handleChange = () => {
+                console.log(localFacetMap.value)
                 facetMap.value = localFacetMap.value
                 emit('change')
 

@@ -34,7 +34,7 @@
                                         :key="item.id"
                                     >
                                         <div
-                                            class="px-2 py-1 mb-1 mr-1 border rounded cursor-pointer "
+                                            class="px-2 py-1 mr-1 border rounded cursor-pointer "
                                             :class="
                                                 isAssetStatusSelected(item)
                                                     ? 'bg-primary-light border-white hover:bg-primary-light text-gray'
@@ -53,7 +53,7 @@
                     </template>
 
                     <div
-                        class="flex items-center mt-1 hover:text-primary"
+                        class="flex items-center hover:text-primary"
                         :class="$style.tab"
                     >
                         <AtlanIcon icon="Globe" class="w-auto h-5" />
@@ -95,34 +95,6 @@
                 required: false,
                 default() {
                     return []
-                },
-            },
-            assetTypeMap: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-            total: {
-                type: Number,
-                required: false,
-                default() {
-                    return 0
-                },
-            },
-            modelValue: {
-                type: String,
-                required: false,
-                default() {
-                    return ''
-                },
-            },
-            connectors: {
-                type: Array,
-                required: false,
-                default() {
-                    return ['snowflake']
                 },
             },
         },
@@ -260,12 +232,15 @@
             border: 1px solid #e6e6eb !important;
 
             padding: 3px 8px !important;
-            box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.05) !important;
 
             transition: all 0.8s ease-out;
         }
+        :global(.ant-tabs-nav) {
+            @apply mb-2;
+        }
+
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-3 !important;
         }
         :global(.ant-tabs-tab-active) {
             @apply bg-primary-light !important;
@@ -282,7 +257,7 @@
         }
 
         :global(.ant-tabs-nav-wrap) {
-            margin-top: 4px !important;
+            margin-top: 0px !important;
             min-height: 30px !important;
         }
 

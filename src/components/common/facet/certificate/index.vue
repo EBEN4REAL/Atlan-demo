@@ -2,7 +2,7 @@
     <a-checkbox-group
         class="w-full px-4"
         @change="handleChange"
-        v-model:value="checked"
+        v-model:value="localFacetMap"
     >
         <div class="flex flex-col w-full">
             <template v-for="item in certificateList" :key="item.id">
@@ -46,35 +46,42 @@
     import noStatus from '~/assets/images/status/nostatus.svg'
 
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { useVModel, toRef } from '@vueuse/core'
+    import { useVModels, toRef } from '@vueuse/core'
 
     export default defineComponent({
         props: {
-            item: {
-                type: Object,
+            facetMap: {
                 required: false,
-            },
-            modelValue: {
-                required: false,
+                default() {
+                    return []
+                },
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:facetMap'],
         setup(props, { emit }) {
-            const modelValue = useVModel(props, 'modelValue', emit)
-            const checked = ref(modelValue.value)
+            const { facetMap } = useVModels(props, emit)
+
+            let initialValue = []
+            if (facetMap?.value) {
+                initialValue = facetMap?.value
+            }
+
+            console.log(initialValue)
+
+            const localFacetMap = ref(initialValue)
 
             const handleChange = () => {
-                modelValue.value = checked.value
+                facetMap.value = localFacetMap.value
                 emit('change')
                 useAddEvent('discovery', 'facet', 'changed', {
                     filter_type: 'certificate',
-                    count: checked.value?.length,
+                    count: localFacetMap.value?.length,
                 })
             }
 
             return {
                 certificateList,
-                checked,
+                localFacetMap,
                 handleChange,
                 noStatus,
             }

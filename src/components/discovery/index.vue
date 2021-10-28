@@ -11,12 +11,12 @@
                     }
                 "
                 v-model:facetMap="facetMap"
-                @change="handleAssetTypeFilterChange"
+                @change="handleFilterChange"
             ></AssetFilters>
         </div>
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="p-4">
+                <div class="px-4 py-3 border-b border-gray-200">
                     <SearchAdvanced
                         v-model:value="queryText"
                         :autofocus="true"
@@ -28,7 +28,7 @@
                     </SearchAdvanced>
                     <div class="w-full">
                         <AssetTabs
-                            class="mt-2"
+                            class="mt-3"
                             v-model:facetMap="facetMap"
                             :assetTypeList="assetTypeMappedList"
                             @change="handleAssetTypeFilterChange"

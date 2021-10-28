@@ -282,9 +282,9 @@ export default function useAssetInfo() {
     // const ownerUsers = (asset: assetInterface) =>
     //     attributes(asset)?.ownerUsers?.split(',') || []
 
-    // const certificateStatus = (asset: assetInterface) => {
-    //     return attributes(asset)?.certificateStatus
-    // }
+    const certificateStatus = (asset: assetInterface) => {
+        return attributes(asset)?.certificateStatus
+    }
 
     // const getHierarchy = (asset: assetInterface) => {
     //     const assetType = AssetTypeList.find((a) => a.id == asset?.typeName)
@@ -610,6 +610,7 @@ export default function useAssetInfo() {
         sourceCreatedAt,
         sourceCreatedBy,
         sourceUpdatedBy,
+        certificateStatus,
         // lastCrawled,
         // assetState,
         // tableInfo,

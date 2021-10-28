@@ -2,7 +2,7 @@
 <template>
     <div class="flex flex-col mx-3">
         <div
-            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border rounded  hover:shadow-lg hover:border-none"
+            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border-b border-gray-200 "
         >
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
@@ -31,10 +31,6 @@
                 </div> -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <a-tooltip placement="top">
-                        <img
-                            :src="getConnectorImage(item)"
-                            class="h-4 mr-1 mb-0.5"
-                        />
                         <template #title>
                             <span>{{
                                 `${connectorName(item)}/${connectionName(item)}`
@@ -44,7 +40,7 @@
 
                     <router-link
                         to="/"
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -53,8 +49,16 @@
 
                 <!-- Info bar -->
                 <div class="flex items-center gap-x-3">
-                    <div class="text-sm tracking-tight uppercase text-gray">
-                        {{ item.typeName }}
+                    <div class="flex items-center">
+                        <img
+                            :src="getConnectorImage(item)"
+                            class="h-4 mr-1 mb-0.5"
+                        />
+                        <div
+                            class="text-sm tracking-tight text-gray-500 uppercase "
+                        >
+                            {{ item.typeName }}
+                        </div>
                     </div>
 
                     <div
@@ -73,13 +77,16 @@
                                     )
                                 "
                                 class="text-gray-500"
-                                ><span class="tracking-tight text-gray"
+                                ><span
+                                    class="font-semibold tracking-tight text-gray-500 "
                                     >{{ rowCount(item, false) }}
                                 </span>
                                 Rows</span
                             >
                             <template #title>
-                                <span v-if="sizeBytes(item, false)" class=""
+                                <span
+                                    v-if="sizeBytes(item, false)"
+                                    class="font-semibold"
                                     >{{ rowCount(item, true) }} rows ({{
                                         sizeBytes(item, false)
                                     }})</span
@@ -87,9 +94,10 @@
                             </template>
                         </a-tooltip>
                         <span class="text-gray-500">
-                            <span class="tracking-tight text-gray">{{
-                                columnCount(item, false)
-                            }}</span>
+                            <span
+                                class="font-semibold tracking-tight text-gray-500 "
+                                >{{ columnCount(item, false) }}</span
+                            >
                             Cols</span
                         >
                     </div>
@@ -132,7 +140,7 @@
                                     icon="Database"
                                     class="mr-1 mb-0.5"
                                 />
-                                <div class="tracking-tight text-gray">
+                                <div class="tracking-tight text-gray-500">
                                     {{ databaseName(item) }}
                                 </div>
                             </div>
@@ -146,7 +154,7 @@
                                 class="flex items-center text-gray-500"
                             >
                                 <AtlanIcon icon="Schema" class="mr-1 mb-0.5" />
-                                <div class="tracking-tight text-gray">
+                                <div class="tracking-tight text-gray-500">
                                     {{ schemaName(item) }}
                                 </div>
                             </div>

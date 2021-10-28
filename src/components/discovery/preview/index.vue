@@ -1,12 +1,8 @@
 <template>
     <div v-if="selectedAsset.guid">
-        <div class="flex flex-col p-4 border-b border-gray-200">
-            <div class="flex items-center mb-1">
+        <div class="flex flex-col px-4 py-3 border-b border-gray-200">
+            <div class="flex items-center mb-1" style="padding-bottom: 1px">
                 <a-tooltip placement="left">
-                    <img
-                        :src="getConnectorImage(selectedAsset)"
-                        class="h-4 mr-1 mb-0.5"
-                    />
                     <template #title>
                         <span>{{
                             `${connectorName(selectedAsset)}/${connectionName(
@@ -18,14 +14,21 @@
 
                 <router-link
                     to="/"
-                    class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
             </div>
-            <div class="text-sm tracking-tight uppercase text-gray">
-                {{ selectedAsset.typeName }}
+            <div class="flex items-center">
+                <img
+                    :src="getConnectorImage(selectedAsset)"
+                    class="h-4 mr-1 mb-0.5"
+                />
+                <div class="text-sm tracking-tight uppercase text-gray">
+                    {{ selectedAsset.typeName }}
+                </div>
             </div>
+
             <a-button-group class="mt-2">
                 <a-button class="flex items-center justify-center"
                     ><AtlanIcon

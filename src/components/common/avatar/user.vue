@@ -4,7 +4,7 @@
             :shape="avatarShape"
             :size="avatarSize"
             :class="styleClass"
-            class="border text-primary border-primary"
+            class="text-sm border text-primary border-primary"
             :src="url"
             >{{ getNameInitials(username) }}</a-avatar
         >
@@ -20,10 +20,6 @@
         name: 'Avatar',
         props: {
             styleClass: {
-                type: String,
-                default: '',
-            },
-            name: {
                 type: String,
                 default: '',
             },

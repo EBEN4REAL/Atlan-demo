@@ -2,29 +2,29 @@
     <div v-if="selectedAsset.guid">
         <div class="flex flex-col px-4 py-3 border-b border-gray-200">
             <div class="flex items-center mb-1" style="padding-bottom: 1px">
-                <a-tooltip placement="left">
-                    <template #title>
-                        <span>{{
-                            `${connectorName(selectedAsset)}/${connectionName(
-                                selectedAsset
-                            )}`
-                        }}</span>
-                    </template>
-                </a-tooltip>
-
                 <router-link
                     to="/"
-                    class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                 >
-                    {{ title(selectedAsset) }}
-                </router-link>
+                    {{ title(selectedAsset) }} </router-link
+                ><CertificateBadge
+                    :status="certificateStatus(selectedAsset)"
+                    :username="certificateUpdatedBy(selectedAsset)"
+                    :timestamp="certificateUpdatedAt(selectedAsset)"
+                    placement="bottomRight"
+                ></CertificateBadge>
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <img
-                        :src="getConnectorImage(selectedAsset)"
-                        class="h-4 mr-1 mb-0.5"
-                    />
+                    <a-tooltip placement="left">
+                        <template #title>
+                            <img
+                                :src="getConnectorImage(selectedAsset)"
+                                class="h-4 mr-1 mb-0.5"
+                            />
+                        </template>
+                    </a-tooltip>
+
                     <div class="text-sm tracking-tight uppercase text-gray">
                         {{ selectedAsset.typeName }}
                     </div>
@@ -264,6 +264,7 @@
     } from 'vue'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
 
     // import Tooltip from '@common/ellipsis/index.vue'
     // import StatusBadge from '@common/badge/status/index.vue'
@@ -283,6 +284,7 @@
         name: 'AssetPreview',
         components: {
             PreviewTabsIcon,
+            CertificateBadge,
             // Tooltip,
             // AssetLogo,
             // StatusBadge,
@@ -351,7 +353,12 @@
                 isPartition,
                 isPrimary,
                 previewTabs,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
             } = useAssetInfo()
+
             // const { selectedAsset, page, mutateTooltip } = toRefs(props)
             // const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             // const { assetTypeLabel, title, certificateStatus, assetType } =
@@ -495,6 +502,10 @@
                 activeKey,
                 previewTabs,
                 tabHeights,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
             }
         },
     })

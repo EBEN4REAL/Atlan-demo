@@ -5,12 +5,22 @@
     >
         <template #title>
             <div class="p-2">
-                <div class="flex items-center justify-between">
-                    <UserAvatar
-                        :name="messageBy"
-                        style-class="bg-white"
-                    ></UserAvatar>
-                    {{ messageBy }}
+                <div class="flex items-center mb-0 text-base text-gray-500">
+                    <component
+                        :is="icon"
+                        class="inline-flex self-center w-auto h-5 mr-1"
+                    />
+                    {{ status }}
+                </div>
+                <div class="flex items-center justify-between text-gray-500">
+                    <div class="flex text-sm">
+                        <!-- <UserAvatar
+                            :username="username"
+                            style-class="bg-white"
+                        ></UserAvatar> -->
+                        <div class="ml-1">by {{ username }}</div>
+                    </div>
+                    {{ timestamp }}
                 </div>
             </div>
         </template>
@@ -37,12 +47,12 @@
                 type: String,
                 required: false,
             },
-            messageBy: {
+            username: {
                 type: String,
                 required: false,
                 default: () => '',
             },
-            messageAt: {
+            timestamp: {
                 type: String,
                 required: false,
                 default: () => '',
@@ -54,7 +64,7 @@
             },
         },
         setup(props) {
-            const { status, placement, messageBy } = toRefs(props)
+            const { status, placement, username } = toRefs(props)
 
             const found = certificateList.find(
                 (item) => item.id.toLowerCase() === status.value.toLowerCase()
@@ -65,7 +75,7 @@
                 icon.value = found.icon
             }
 
-            return { icon, status, placement, messageBy }
+            return { icon, status, placement, username }
         },
     })
 </script>

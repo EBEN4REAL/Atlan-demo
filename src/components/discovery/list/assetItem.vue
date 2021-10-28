@@ -32,13 +32,15 @@
                 <div class="flex items-center mb-0 overflow-hidden">
                     <router-link
                         to="/"
-                        class="flex-shrink mb-0 mr-2 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
+
                     <CertificateBadge
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
+                        :timestamp="certificateUpdatedAt(item)"
                     ></CertificateBadge>
                     <!-- <CertificatePopover :data="item" /> -->
                 </div>

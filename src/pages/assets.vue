@@ -15,10 +15,7 @@
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
-            <AssetPreview
-                class="w-64"
-                :selected-asset="selectedAsset"
-            ></AssetPreview>
+            <AssetPreview :selected-asset="selectedAsset"></AssetPreview>
         </div>
         <!-- <BulkNotification class="fixed bottom-0 right-0" /> -->
     </div>

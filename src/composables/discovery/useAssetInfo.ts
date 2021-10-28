@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 // import { Ref } from 'vue'
 // import { useTimeAgo } from '@vueuse/core'
 import { useConnectionStore } from '~/store/connection'
@@ -6,6 +7,7 @@ import { getCountString, getSizeString } from '~/utils/number'
 // import { SourceList } from '~/constant/source'
 // import { AssetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/datatype'
+import { previewList } from '~/constant/previewTabs'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -50,6 +52,35 @@ export default function useAssetInfo() {
     const isPartition = (asset: assetInterface) =>
         attributes(asset)?.isPartition
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
+
+    const getPreviewTabs = (typeName: string) => {
+        return previewList.filter((i) => {
+            let flag = true
+            if (i.includes) {
+                if (
+                    !i.includes.some(
+                        (t) => t.toLowerCase() === typeName?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            if (i.excludes) {
+                if (
+                    i.excludes.some(
+                        (t) => t.toLowerCase() === typeName?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            return flag
+        })
+    }
+
+    const previewTabs = (asset: assetInterface, context: string) => {
+        return getPreviewTabs(assetType(asset))
+    }
 
     // const logo = (asset: assetInterface) => {
     //     let img = ''
@@ -568,6 +599,7 @@ export default function useAssetInfo() {
         rowCount,
         columnCount,
         sizeBytes,
+        previewTabs,
         // sizeBytes,
         // createdAt,
         // updatedAt,

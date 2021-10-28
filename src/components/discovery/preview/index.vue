@@ -1,17 +1,84 @@
 <template>
-    <div>
-        <div v-if="showCrossIcon">
-            <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
-                @click="$emit('closeSidebar')"
-            >
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="h-4 ml-1 transition-transform transform -rotate-90"
-                />
-            </a-button>
+    <div v-if="selectedAsset.guid">
+        <div class="flex flex-col p-4 border-b border-gray-200">
+            <div class="flex items-center mb-1">
+                <a-tooltip placement="left">
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
+                        class="h-4 mr-1 mb-0.5"
+                    />
+                    <template #title>
+                        <span>{{
+                            `${connectorName(selectedAsset)}/${connectionName(
+                                selectedAsset
+                            )}`
+                        }}</span>
+                    </template>
+                </a-tooltip>
+
+                <router-link
+                    to="/"
+                    class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                >
+                    {{ title(selectedAsset) }}
+                </router-link>
+            </div>
+            <div class="text-sm tracking-tight uppercase text-gray">
+                {{ selectedAsset.typeName }}
+            </div>
+            <a-button-group class="mt-2">
+                <a-button class="flex items-center justify-center"
+                    ><AtlanIcon
+                        icon="OpenTermProfile"
+                        class="mr-1 mb-0.5"
+                    />View</a-button
+                >
+                <a-button block class="flex items-center justify-center"
+                    ><AtlanIcon
+                        icon="Query"
+                        class="mr-1 mb-0.5"
+                    />Query</a-button
+                >
+                <a-button block class="flex items-center justify-center"
+                    ><AtlanIcon
+                        icon="Share"
+                        class="mr-1 mb-0.5"
+                    />Share</a-button
+                >
+
+                <a-button><AtlanIcon icon="External" /></a-button>
+            </a-button-group>
         </div>
-        {{ selectedAsset }}
+        <div>
+            <a-tabs
+                v-model:activeKey="activeKey"
+                :class="$style.previewtab"
+                tab-position="left"
+            >
+                <a-tab-pane
+                    v-for="(tab, index) in previewTabs(asset)"
+                    :key="index"
+                    class="overflow-y-auto"
+                >
+                    <template #tab>
+                        <PreviewTabsIcon
+                            :title="tab.tooltip"
+                            :icon="tab.icon"
+                            :activeIcon="tab.activeIcon"
+                            :isActive="activeKey === index"
+                        />
+                    </template>
+
+                    <div
+                        class="flex flex-col"
+                        :style="{ height: tabHeights[page] }"
+                    >
+                        <component :is="tab.component"></component>
+                    </div>
+                </a-tab-pane>
+            </a-tabs>
+        </div>
+
         <!-- <div v-if="page !== 'profile'" class="p-5 border-b">
             <div v-if="selectedAsset.guid === '-1'" class="mb-0 text-sm">
                 <AssetLogo :asset="selectedAsset" variant="md" />
@@ -198,6 +265,7 @@
         provide,
     } from 'vue'
     import { useRouter } from 'vue-router'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // import Tooltip from '@common/ellipsis/index.vue'
     // import StatusBadge from '@common/badge/status/index.vue'
@@ -207,7 +275,7 @@
     // import useAssetInfo from '~/composables/asset/useAssetInfo'
     // import { assetInterface } from '~/types/assets/asset.interface'
     // import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
-    // import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
+    import PreviewTabsIcon from '~/components/common/tabs/previewTabsIcon.vue'
     // import { images, dataTypeList } from '~/constant/datatype'
     // import { copyToClipboard } from '~/utils/clipboard'
     // import useCheckAccess from '~/services/access/useCheckAccess'
@@ -216,16 +284,16 @@
     export default defineComponent({
         name: 'AssetPreview',
         components: {
+            PreviewTabsIcon,
             // Tooltip,
             // AssetLogo,
             // StatusBadge,
             // SidePanelTabHeaders,
             // NoAccessPage,
             // AtlanButton,
-            // info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
-            // columns: defineAsyncComponent(
-            //     () => import('./tabs/columns/columnTab.vue')
-            // ),
+            info: defineAsyncComponent(() => import('./info/index.vue')),
+            columns: defineAsyncComponent(() => import('./columns/index.vue')),
+            actions: defineAsyncComponent(() => import('./actions/index.vue')),
             // activity: defineAsyncComponent(
             //     () => import('./tabs/activity/activityTab.vue')
             // ),
@@ -267,11 +335,30 @@
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
+            const {
+                title,
+                getConnectorImage,
+                assetType,
+                rowCount,
+                sizeBytes,
+                dataType,
+                columnCount,
+                databaseName,
+                schemaName,
+                connectorName,
+                connectionName,
+                dataTypeCategoryLabel,
+                dataTypeCategoryImage,
+                isDist,
+                isPartition,
+                isPrimary,
+                previewTabs,
+            } = useAssetInfo()
             // const { selectedAsset, page, mutateTooltip } = toRefs(props)
             // const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             // const { assetTypeLabel, title, certificateStatus, assetType } =
             //     useAssetInfo()
-            // const activeKey = ref(0)
+            const activeKey = ref(0)
             // const isLoaded: Ref<boolean> = ref(true)
             // const router = useRouter()
             // const userHasEditPermission = ref<boolean>(true)
@@ -284,12 +371,12 @@
             // const handleChange = () => {}
             // const infoTabData: Ref<any> = ref({})
             // // const {} =useMagicKeys();
-            // const tabHeights = {
-            //     discovery: 'calc(100vh - 9.2rem)',
-            //     profile: 'calc(100vh - 3rem)',
-            //     biOverview: 'calc(100vh - 9.2rem)',
-            //     nonBiOverview: 'calc(100vh - 9.2rem)',
-            // }
+            const tabHeights = {
+                discovery: 'calc(100vh - 9.2rem)',
+                profile: 'calc(100vh - 3rem)',
+                biOverview: 'calc(100vh - 9.2rem)',
+                nonBiOverview: 'calc(100vh - 9.2rem)',
+            }
             // // function getAssetEntitity(data: Ref): any {
             // //     if (data.value?.entities.length > 0)
             // //         return data.value?.entities[0]
@@ -389,20 +476,32 @@
             //     handleCopyInsightsLink,
             //     handleOpenInsights,
             // }
+
+            return {
+                title,
+                getConnectorImage,
+                assetType,
+                dataType,
+                rowCount,
+                columnCount,
+                sizeBytes,
+                databaseName,
+                schemaName,
+                connectorName,
+                connectionName,
+                dataTypeCategoryLabel,
+                dataTypeCategoryImage,
+                isDist,
+                isPartition,
+                isPrimary,
+                activeKey,
+                previewTabs,
+                tabHeights,
+            }
         },
     })
 </script>
-<style lang="less" scoped>
-    .icon-btn {
-        @apply flex;
-        @apply py-2 ml-2 px-3;
-        @apply rounded;
-        @apply text-gray;
-        @apply border border-gray-300;
-        @apply cursor-pointer;
-        @apply hover:bg-gray-100;
-    }
-</style>
+
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
@@ -421,6 +520,7 @@
             height: 48px !important;
             width: 48px !important;
             @apply p-0 !important;
+            @apply mb-1 !important;
         }
 
         :global(.ant-tabs-content) {

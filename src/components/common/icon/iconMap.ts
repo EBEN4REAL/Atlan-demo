@@ -50,6 +50,8 @@ import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
+import OverviewActive from '~/assets/images/icons/overview_active.svg'
+
 import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
@@ -150,6 +152,9 @@ import Policy from '~/assets/images/icons/policy.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
 import Loader from '~/assets/images/icons/loader.svg'
+import Property from '~/assets/images/icons/property.svg'
+import PropertyActive from '~/assets/images/icons/property_active.svg'
+import Query from '~/assets/images/icons/query.svg'
 
 export default {
     IssuesFilled,
@@ -304,4 +309,8 @@ export default {
     Key,
     EmptyDiscover,
     Loader,
+    Property,
+    PropertyActive,
+    OverviewActive,
+    Query,
 }

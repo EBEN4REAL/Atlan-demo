@@ -19,38 +19,30 @@
                     {{ title(selectedAsset) }}
                 </router-link>
             </div>
-            <div class="flex items-center">
-                <img
-                    :src="getConnectorImage(selectedAsset)"
-                    class="h-4 mr-1 mb-0.5"
-                />
-                <div class="text-sm tracking-tight uppercase text-gray">
-                    {{ selectedAsset.typeName }}
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
+                        class="h-4 mr-1 mb-0.5"
+                    />
+                    <div class="text-sm tracking-tight uppercase text-gray">
+                        {{ selectedAsset.typeName }}
+                    </div>
                 </div>
+                <a-button-group>
+                    <a-button class="flex items-center justify-center"
+                        ><AtlanIcon icon="OpenTermProfile" class="mr-1 mb-0.5"
+                    /></a-button>
+                    <a-button block class="flex items-center justify-center"
+                        ><AtlanIcon icon="Query" class="mr-1 mb-0.5"
+                    /></a-button>
+                    <a-button block class="flex items-center justify-center"
+                        ><AtlanIcon icon="Share" class="mr-1 mb-0.5"
+                    /></a-button>
+
+                    <a-button><AtlanIcon icon="External" /></a-button>
+                </a-button-group>
             </div>
-
-            <a-button-group class="mt-2">
-                <a-button class="flex items-center justify-center"
-                    ><AtlanIcon
-                        icon="OpenTermProfile"
-                        class="mr-1 mb-0.5"
-                    />View</a-button
-                >
-                <a-button block class="flex items-center justify-center"
-                    ><AtlanIcon
-                        icon="Query"
-                        class="mr-1 mb-0.5"
-                    />Query</a-button
-                >
-                <a-button block class="flex items-center justify-center"
-                    ><AtlanIcon
-                        icon="Share"
-                        class="mr-1 mb-0.5"
-                    />Share</a-button
-                >
-
-                <a-button><AtlanIcon icon="External" /></a-button>
-            </a-button-group>
         </div>
         <div>
             <a-tabs

@@ -30,30 +30,36 @@
                     <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
                 </div> -->
                 <div class="flex items-center mb-0 overflow-hidden">
-                    <a-tooltip placement="top">
-                        <template #title>
-                            <span>{{
-                                `${connectorName(item)}/${connectionName(item)}`
-                            }}</span>
-                        </template>
-                    </a-tooltip>
-
                     <router-link
                         to="/"
-                        class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-2 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
+                    <CertificateBadge
+                        :status="certificateStatus(item)"
+                        :username="certificateUpdatedBy(item)"
+                    ></CertificateBadge>
                     <!-- <CertificatePopover :data="item" /> -->
                 </div>
 
                 <!-- Info bar -->
                 <div class="flex items-center gap-x-3">
                     <div class="flex items-center">
-                        <img
-                            :src="getConnectorImage(item)"
-                            class="h-4 mr-1 mb-0.5"
-                        />
+                        <a-tooltip placement="left">
+                            <template #title>
+                                <span>{{
+                                    `${connectorName(item)}/${connectionName(
+                                        item
+                                    )}`
+                                }}</span>
+                            </template>
+                            <img
+                                :src="getConnectorImage(item)"
+                                class="h-4 mr-1 mb-0.5"
+                            />
+                        </a-tooltip>
+
                         <div
                             class="text-sm tracking-tight text-gray-500 uppercase "
                         >
@@ -324,6 +330,7 @@
     // import StatusBadge from '@common/badge/status/index.vue'
     import { defineComponent, PropType } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
     // import Pill from '@/UI/pill/pill.vue'
     // import CertificatePopover from '~/components/common/certificatePopover.vue'
     // import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
@@ -338,6 +345,7 @@
     export default defineComponent({
         name: 'AssetListItem',
         components: {
+            CertificateBadge,
             // StatusBadge,
             // HierarchyBar,
             // AssetLogo,
@@ -425,6 +433,10 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
             } = useAssetInfo()
 
             // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
@@ -509,6 +521,10 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
             }
         },
     })

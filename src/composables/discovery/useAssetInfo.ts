@@ -285,6 +285,25 @@ export default function useAssetInfo() {
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
     }
+    const certificateStatusMessage = (asset: assetInterface) => {
+        return attributes(asset)?.certificateStatusMessage
+    }
+    const certificateUpdatedBy = (asset: assetInterface) => {
+        return attributes(asset)?.certificateUpdatedBy
+    }
+
+    const certificateUpdatedAt = (
+        asset: assetInterface,
+        raw: boolean = false
+    ) => {
+        if (attributes(asset)?.sourceUpdatedAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
+                      'N/A'
+                : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
+        }
+        return ''
+    }
 
     // const getHierarchy = (asset: assetInterface) => {
     //     const assetType = AssetTypeList.find((a) => a.id == asset?.typeName)
@@ -611,6 +630,9 @@ export default function useAssetInfo() {
         sourceCreatedBy,
         sourceUpdatedBy,
         certificateStatus,
+        certificateUpdatedAt,
+        certificateStatusMessage,
+        certificateUpdatedBy,
         // lastCrawled,
         // assetState,
         // tableInfo,

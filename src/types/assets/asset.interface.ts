@@ -3,8 +3,8 @@ import { classificationInterface } from '~/types/classifications/classification.
 export interface assetInterface {
     attributes: {
         certificateStatus?: string
-        assetStatusMessage: string
         certificateUpdatedBy: string
+        certificateStatusMessage: string
         ownerUsers: string
         ownerGroups: string
         certificateUpdatedAt: number

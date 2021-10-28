@@ -309,7 +309,17 @@
             // // Push all asset type
             const assetlistRef = ref(null)
             const isLoadMore = computed(() => {
-                return offset.value < list.value.length
+                const found = assetTypeMappedList.value.find(
+                    (i) => i.id === facetMap.value.typeName
+                )
+
+                if (found) {
+                    if (list.value.length < found.count) {
+                        return true
+                    }
+                }
+
+                return false
             })
             // const updateBody = () => {
             //     const initialBody = {

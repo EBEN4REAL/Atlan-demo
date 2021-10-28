@@ -3,6 +3,7 @@ import { State } from './state'
 export interface Actions extends State {
     setToken(value: any): void
     setPermissions(value: any): void
+    setEvaluations(value: any): void
     setFailed(value: any): void
     setPending(value: any): void
     setIsAuthenticated(value: any): void
@@ -33,5 +34,8 @@ export const actions: Actions = {
     },
     setIsAuthenticated(value) {
         this.isAuthenticated = value
+    },
+    setEvaluations(value) {
+        this.evaluations = value
     },
 }

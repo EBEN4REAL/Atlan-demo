@@ -32,6 +32,10 @@ export const AssetAttributes = [
     'announcementUpdatedBy',
     'connectorName',
     'connectionName',
+    'sourceCreatedBy',
+    'sourceCreatedAt',
+    'sourceUpdatedAt',
+    'sourceUpdatedBy',
 ]
 
 export const SQLAttributes = [
@@ -41,4 +45,5 @@ export const SQLAttributes = [
     'schemaName',
     'databaseName',
     'dataType',
+    'definition',
 ]

@@ -5,11 +5,13 @@ export function generatePostFilterDSL(facet: Record<string, any>) {
     const query = bodybuilder()
     // dsl.filter('terms', '__typeName.keyword', ['Catalog'])
     Object.keys(facet ?? {}).forEach((mkey) => {
-        const fltrObj = facet[mkey]
+        const filterObj = facet[mkey]
         switch (mkey) {
             case 'typeName': {
-                if (fltrObj) {
-                    query.filter('term', '__typeName.keyword', fltrObj)
+                if (filterObj) {
+                    if (filterObj !== '__all') {
+                        query.filter('term', '__typeName.keyword', filterObj)
+                    }
                 }
                 break
             }

@@ -13,6 +13,7 @@ export interface State {
     lastName: string
     id: string
     permissions: string[]
+    evaluations: any
 }
 
 export const state: State = {
@@ -30,4 +31,5 @@ export const state: State = {
     createdAt: new Date(),
     roles: [] as string[],
     permissions: [] as string[],
+    evaluations: [],
 }

@@ -30,9 +30,12 @@ export interface assetInterface {
         userDescription: string
         rowCount: number
         schemaName: string
-        sourceUpdatedAt: string
+        sourceUpdatedBy: string
+        sourceCreatedBy: string
+        sourceCreatedAt: any
+        sourceUpdatedAt: any
         tenantId: string
-        viewDefinition: string
+        definition: string
         announcementMessage: string
         announcementTitle: string
         announcementType: string

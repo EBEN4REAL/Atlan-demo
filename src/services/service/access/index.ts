@@ -15,16 +15,8 @@ interface WhoAmIResponse {
 const WhoAmI = (options?: useOptions) =>
     useAPI<WhoAmIResponse>(map.WHO_AM_I, 'GET', {}, options || {})
 
-export interface EvaluatesBody {
-    entities: {
-        action: string
-        entityGuid: string
-        typeName: string
-    }[]
-}
-
-const Evaluate = (body: EvaluatesBody, options?: useOptions) =>
-    useAPI<WhoAmIResponse>(map.EVALUATE, 'POST', { body }, options || {})
+const Evaluate = (body, options?: useOptions) =>
+    useAPI(map.EVALUATE, 'POST', { body }, options || {})
 
 export const Access = {
     WhoAmI,

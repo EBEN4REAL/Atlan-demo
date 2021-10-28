@@ -1,13 +1,15 @@
 /* eslint-disable arrow-body-style */
 // import { Ref } from 'vue'
-// import { useTimeAgo } from '@vueuse/core'
+import { useTimeAgo } from '@vueuse/core'
 import { useConnectionStore } from '~/store/connection'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { getCountString, getSizeString } from '~/utils/number'
+
 // import { SourceList } from '~/constant/source'
 // import { AssetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/datatype'
 import { previewList } from '~/constant/previewTabs'
+import { formatDateTime } from '~/utils/date'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -179,31 +181,31 @@ export default function useAssetInfo() {
         return dataTypeCategory(asset)?.image
     }
 
-    // const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
-    //     if (attributes(asset)?.sourceUpdatedAt) {
-    //         return raw
-    //             ? formatDateTime(attributes(asset)?.sourceUpdatedAt) || 'N/A'
-    //             : useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
-    //     }
-    //     return ''
-    // }
-    // const sourceCreatedAt = (asset: assetInterface, raw: boolean = false) => {
-    //     if (attributes(asset)?.sourceCreatedAt) {
-    //         return raw
-    //             ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
-    //             : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
-    //     }
-    //     return ''
-    // }
+    const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.sourceUpdatedAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.sourceUpdatedAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
+        }
+        return ''
+    }
+    const sourceCreatedAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.sourceCreatedAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
+        }
+        return ''
+    }
 
-    // const sourceUpdatedBy = (asset: assetInterface) =>
-    //     attributes(asset)?.sourceUpdatedBy || ''
+    const sourceUpdatedBy = (asset: assetInterface) =>
+        attributes(asset)?.sourceUpdatedBy || ''
 
-    // const sourceCreatedBy = (asset: assetInterface) =>
-    //     attributes(asset)?.sourceCreatedBy || ''
+    const sourceCreatedBy = (asset: assetInterface) =>
+        attributes(asset)?.sourceCreatedBy || ''
 
-    // const viewDefinition = (asset: assetInterface) =>
-    //     attributes(asset)?.viewDefinition || ''
+    const definition = (asset: assetInterface) =>
+        attributes(asset)?.definition || ''
 
     // const qualifiedName = (asset: assetInterface) =>
     //     attributes(asset)?.qualifiedName
@@ -578,6 +580,7 @@ export default function useAssetInfo() {
         isPrimary,
         isPartition,
         isDist,
+        definition,
         // dataTypeImageForColumn,
         // popularityScore,
         // createdBy,
@@ -603,10 +606,10 @@ export default function useAssetInfo() {
         // sizeBytes,
         // createdAt,
         // updatedAt,
-        // sourceUpdatedAt,
-        // sourceCreatedAt,
-        // sourceCreatedBy,
-        // sourceUpdatedBy,
+        sourceUpdatedAt,
+        sourceCreatedAt,
+        sourceCreatedBy,
+        sourceUpdatedBy,
         // lastCrawled,
         // assetState,
         // tableInfo,

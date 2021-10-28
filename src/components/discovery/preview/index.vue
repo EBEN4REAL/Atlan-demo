@@ -73,7 +73,10 @@
                         class="flex flex-col"
                         :style="{ height: tabHeights[page] }"
                     >
-                        <component :is="tab.component"></component>
+                        <component
+                            :is="tab.component"
+                            :selectedAsset="selectedAsset"
+                        ></component>
                     </div>
                 </a-tab-pane>
             </a-tabs>

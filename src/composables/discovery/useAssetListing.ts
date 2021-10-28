@@ -20,6 +20,7 @@ export function useAssetListing() {
 
     const getAssetTypeList = (
         typenameAggregation: any,
+        includeAll: Boolean,
         ignoreCustom: Boolean
     ) => {
         const listMap = typenameAggregation.map((i) => i.key)
@@ -41,6 +42,32 @@ export function useAssetListing() {
                 temp.push(found)
             }
         })
+
+        temp.sort((a, b) => {
+            if (a.count > b.count) {
+                return -1
+            }
+            if (a.count < b.count) {
+                return 1
+            }
+
+            return 0
+        })
+
+        if (includeAll) {
+            const initialValue = 0
+            const sum = temp.reduce(
+                (accumulator, currentValue) => accumulator + currentValue.count,
+                initialValue
+            )
+
+            temp.unshift({
+                id: '__all',
+                label: 'All',
+                count: sum,
+            })
+        }
+
         return temp
     }
 

@@ -7,5 +7,5 @@ export const EVALUATE = 'EVALUATE'
 
 export const map = {
     [WHO_AM_I]: () => getAPIPath(BASE_PATH, '/whoami'),
-    [EVALUATE]: () => getAPIPath(BASE_PATH, '/evaluate'),
+    [EVALUATE]: () => getAPIPath(BASE_PATH, '/evaluates'),
 }

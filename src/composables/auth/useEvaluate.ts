@@ -1,12 +1,12 @@
-import { Ref, ref, computed, watch } from 'vue'
-
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
-// import { Search } from '~/api2/search'
-import { Discovery } from '~/services/meta/discovery'
-import { useOptions } from '~/services/api/common'
+import { watch, Ref, ref } from 'vue'
+import { Access } from '~/services/service/access'
 
-export default function useIndexSearch(
+import { useOptions } from '~/services/api/common'
+import { useAuthStore } from '~/store/auth'
+
+export default function useEvaluate(
     body: Record<string, any> | Ref<Record<string, any>>,
     dependentKey?: Ref<any>,
     token?: any,
@@ -44,48 +44,33 @@ export default function useIndexSearch(
         options.cacheKey = dependentKey
     }
 
-    const { data, mutate, error, isLoading, isValidating } =
-        Discovery.IndexSearch(body, options)
+    const { data, mutate, error, isLoading } = Access.Evaluate(body, options)
 
-    const list = ref([])
-
+    const authStore = useAuthStore()
     watch(data, () => {
-        console.log('watch data', isValidating.value)
-        if (!isValidating.value) {
-            if (body?.value?.dsl.from > 0) {
-                list.value = list.value.concat(data?.value?.entities)
-            } else if (data.value?.entities) {
-                list.value = data.value?.entities
-            } else {
-                list.value = []
-            }
-        }
+        authStore.setEvaluations(data.value)
     })
-
-    const aggregationMap = (key) => {
-        if (data?.value.aggregations[key]) {
-            return data?.value.aggregations[key].buckets
-        }
-        return {}
-    }
-
-    const typenameAggregation = computed(() => {
-        return aggregationMap('typename')
-    })
-
-    const refresh = () => {
-        mutate()
-    }
 
     return {
         data,
-        list,
-        aggregationMap,
         mutate,
-        refresh,
         error,
         isLoading,
-        isValidating,
-        typenameAggregation,
     }
+
+    // const { data, isReady } = Access.Evaluate({
+    //     cacheKey: 'DEFAULT_PERMISSIONS',
+    //     cache: {
+    //         shouldRetryOnError: false,
+    //         revalidateOnFocus: false,
+    //         cache: new LocalStorageCache(),
+    //         dedupingInterval: 1,
+    //     },
+    // })
+    // const authStore = useAuthStore()
+
+    // return {
+    //     data,
+    //     isReady,
+    // }
 }

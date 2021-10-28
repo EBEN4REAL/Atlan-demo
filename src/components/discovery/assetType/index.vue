@@ -1,15 +1,18 @@
 <template>
     <div class="w-full">
         <a-tabs
-            class="w-full assetbar"
+            class="w-full"
+            :class="$style.assetbar"
             v-model:activeKey="localFacetMap.typeName"
             @change="handleChange"
         >
             <a-tab-pane v-for="item in assetTypeList" :key="item.id">
                 <template #tab>
-                    <div>
+                    <div
+                        :class="{ active: item.id === localFacetMap.typeName }"
+                    >
                         <span>{{ item.label }}</span>
-                        <span class="chip">{{
+                        <span :class="$style.chip">{{
                             getCountString(item.count)
                         }}</span>
                     </div>
@@ -49,9 +52,12 @@
                         </div>
                     </template>
 
-                    <div class="flex items-center mt-1 hover:text-primary">
-                        <AtlanIcon icon="Globe" class="w-7 h-7" />
-                        <AtlanIcon icon="ChevronDown" class="w-4 h-4" />
+                    <div
+                        class="flex items-center mt-1 hover:text-primary"
+                        :class="$style.tab"
+                    >
+                        <AtlanIcon icon="Globe" class="w-auto h-5" />
+                        <AtlanIcon icon="ChevronDown" class="w-3 h-3" />
                     </div>
                 </a-popover>
             </template>
@@ -228,12 +234,26 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" module>
     .assetbar {
-        .ant-tabs-bar {
+        .chip {
+            @apply ml-1;
+            @apply tracking-wide;
+            @apply text-xs;
+            @apply font-bold;
+            @apply text-gray-400;
+        }
+
+        .active {
+            .chip {
+                @apply text-primary;
+            }
+        }
+
+        :global(.ant-tabs-bar) {
             @apply mb-0 border-0 !important;
         }
-        .ant-tabs-tab {
+        :global(.ant-tabs-tab) {
             @apply bg-white text-sm mr-1 !important;
             border: 1px solid #e6e6eb;
             border-radius: 24px !important;
@@ -244,44 +264,42 @@
 
             transition: all 0.8s ease-out;
         }
-        .ant-tabs-tab:first-child {
+        :global(.ant-tabs-tab:first-child) {
             @apply ml-3 !important;
         }
-        .ant-tabs-tab-active {
+        :global(.ant-tabs-tab-active) {
             @apply bg-primary-light !important;
             @apply text-primary !important;
             @apply border-primary !important;
+
+            .chip {
+                @apply text-primary !important;
+            }
         }
 
-        .ant-tabs-ink-bar {
+        :global(.ant-tabs-ink-bar) {
             @apply hidden !important;
         }
 
-        .ant-tabs-nav-wrap {
+        :global(.ant-tabs-nav-wrap) {
             margin-top: 4px !important;
             min-height: 30px !important;
         }
 
-        .ant-tabs-extra-content {
+        :global(.ant-tabs-extra-content) {
             float: left !important;
         }
     }
-</style>
 
-<style scoped>
-    .chip {
-        @apply py-0.5 ml-2;
-        @apply rounded;
-        @apply tracking-wide;
-        @apply text-xs;
-        @apply font-bold;
-        @apply text-gray-400;
-    }
-    .active {
-        @apply text-primary;
-    }
-    .active .chip {
-        @apply text-primary;
-        @apply bg-primary-light;
+    .tab {
+        @apply bg-white text-sm mr-1 !important;
+        border: 1px solid #e6e6eb;
+        border-radius: 24px !important;
+        border: 1px solid #e6e6eb !important;
+
+        padding: 3px 8px !important;
+        box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05) !important;
+
+        transition: all 0.8s ease-out;
     }
 </style>

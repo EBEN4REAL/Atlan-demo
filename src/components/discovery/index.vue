@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
             <AssetFilters
                 :ref="
@@ -87,6 +87,7 @@
         InternalAttributes,
         SQLAttributes,
     } from '~/constant/projection'
+    import useEvaluate from '~/composables/auth/useEvaluate'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     // import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
 
@@ -160,6 +161,10 @@
             // const state = ref('active')
             const facetMap = ref({})
 
+            if (!facetMap.value.typeName) {
+                facetMap.value.typeName = '__all'
+            }
+
             const {
                 handleFacetDSL,
                 handlePostFacetDSL,
@@ -192,13 +197,31 @@
                 isValidating,
             } = useIndexSearch(body, ref('DEFAULT_DISCOVERY'), null, true)
 
-            const assetTypeMappedList = computed(() => {
-                return getAssetTypeList(typenameAggregation.value, false)
-            })
+            const assetTypeMappedList = computed(() =>
+                getAssetTypeList(typenameAggregation.value, true)
+            )
 
             const handlePreview = (item) => {
                 handleSelectedAsset(item)
             }
+
+            watch(data, () => {
+                if (!isValidating.value) {
+                    const entities = list.value.map((i) => ({
+                        typeName: i.typeName,
+                        entityGuid: i.guid,
+                        action: 'ENTITY_UPDATE',
+                    }))
+                    useEvaluate(
+                        {
+                            entities,
+                        },
+                        ref('DEFAULT_EVALUATE'),
+                        null,
+                        false
+                    )
+                }
+            })
 
             // const assetCategoryFilter = ref([])
             // // Initialization via IIFE
@@ -286,9 +309,7 @@
             // // Push all asset type
             const assetlistRef = ref(null)
             const isLoadMore = computed(() => {
-                console.log(facetMap.value?.count)
-                console.log(list.value.length)
-                return facetMap.value?.count > list.value.length
+                return offset.value < list.value.length
             })
             // const updateBody = () => {
             //     const initialBody = {
@@ -429,7 +450,7 @@
             }
 
             const handleAssetTypeFilterChange = () => {
-                assetlistRef.value.scrollTop = 0
+                // assetlistRef.value.scrollTop = 0
 
                 offset.value = 0
                 handleFilterChange()
@@ -448,25 +469,32 @@
             // // }
 
             const handleLoadMore = () => {
-                if (list.value.length < facetMap.value?.count) {
-                    offset.value += limit.value
-                }
+                const found = assetTypeMappedList.value.find(
+                    (i) => i.id === facetMap.value.typeName
+                )
 
-                body.value = {
-                    dsl: {
-                        size: limit.value,
-                        from: offset.value,
-                        ...handleFacetDSL(facetMap.value),
-                        ...handleAggregationDSL(facetMap.value),
-                        post_filter: handlePostFacetDSL(facetMap.value)?.query,
-                    },
-                    attributes: [
-                        ...InternalAttributes,
-                        ...AssetAttributes,
-                        ...SQLAttributes,
-                    ],
+                if (found) {
+                    if (list.value.length < found.count) {
+                        offset.value += limit.value
+                    }
+
+                    body.value = {
+                        dsl: {
+                            size: limit.value,
+                            from: offset.value,
+                            ...handleFacetDSL(facetMap.value),
+                            ...handleAggregationDSL(facetMap.value),
+                            post_filter: handlePostFacetDSL(facetMap.value)
+                                ?.query,
+                        },
+                        attributes: [
+                            ...InternalAttributes,
+                            ...AssetAttributes,
+                            ...SQLAttributes,
+                        ],
+                    }
+                    refresh(true)
                 }
-                refresh(true)
             }
             // function loadMore() {
             //     autoSelect.value = false
@@ -544,6 +572,7 @@
                 assetTypeMappedList,
                 isLoadMore,
                 isLoading,
+
                 handleLoadMore,
                 assetlistRef,
                 handlePreview,

@@ -25,7 +25,7 @@
                 </div>
             </div>
         </template>
-        <component :is="icon" class="inline-flex self-center w-auto h-4 mb-1" />
+        <component :is="icon" class="inline-flex self-center w-auto h-4" />
     </a-tooltip>
 </template>
 

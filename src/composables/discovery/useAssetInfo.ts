@@ -54,6 +54,9 @@ export default function useAssetInfo() {
 
     const schemaName = (asset: assetInterface) =>
         attributes(asset)?.schemaName ?? ''
+
+    const tableName = (asset: assetInterface) =>
+        attributes(asset)?.tableName ?? ''
     // const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
     // const assetTypeLabel = (asset: assetInterface) => {
     //     const found = AssetTypeList.find((d) => d.id === assetType(asset))
@@ -608,6 +611,7 @@ export default function useAssetInfo() {
         assetType,
         databaseName,
         schemaName,
+        tableName,
         connectorName,
         dataType,
         dataTypeCategoryLabel,

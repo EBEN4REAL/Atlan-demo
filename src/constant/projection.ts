@@ -47,6 +47,8 @@ export const SQLAttributes = [
     'columnCount',
     'sizeBytes',
     'schemaName',
+    'tableName',
+    'viewName',
     'databaseName',
     'dataType',
     'definition',

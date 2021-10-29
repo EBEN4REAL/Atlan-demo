@@ -2,9 +2,28 @@
     <div v-if="selectedAsset.guid">
         <div class="flex flex-col px-4 py-3 border-b border-gray-200">
             <div class="flex items-center mb-1" style="padding-bottom: 1px">
+                <div
+                    class="flex mr-1"
+                    v-if="
+                        ['column'].includes(
+                            selectedAsset.typeName?.toLowerCase()
+                        )
+                    "
+                >
+                    <!-- <component
+                                :is="dataTypeImage(item)"
+                                class="w-auto h-4 text-gray-500"
+                                style="margin-top: 1px"
+                            ></component> -->
+
+                    <component
+                        :is="dataTypeCategoryImage(selectedAsset)"
+                        class="h-5 text-gray-500 mb-0.5"
+                    />
+                </div>
                 <router-link
                     to="/"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }} </router-link
                 ><CertificateBadge
@@ -12,6 +31,7 @@
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
+                    class="mb-0.5"
                 ></CertificateBadge>
             </div>
             <div class="flex items-center justify-between">

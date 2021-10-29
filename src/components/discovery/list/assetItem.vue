@@ -30,6 +30,21 @@
                     <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
                 </div> -->
                 <div class="flex items-center mb-0 overflow-hidden">
+                    <div
+                        class="flex mr-1"
+                        v-if="['column'].includes(item.typeName?.toLowerCase())"
+                    >
+                        <!-- <component
+                                :is="dataTypeImage(item)"
+                                class="w-auto h-4 text-gray-500"
+                                style="margin-top: 1px"
+                            ></component> -->
+
+                        <component
+                            :is="dataTypeCategoryImage(item)"
+                            class="h-4 text-gray-500 mb-0.5"
+                        />
+                    </div>
                     <router-link
                         to="/"
                         class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
@@ -41,6 +56,7 @@
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
+                        class="mb-0.5"
                     ></CertificateBadge>
                     <!-- <CertificatePopover :data="item" /> -->
                 </div>
@@ -58,7 +74,7 @@
                             </template>
                             <img
                                 :src="getConnectorImage(item)"
-                                class="h-4 mr-1 mb-0.5"
+                                class="h-3 mr-1 mb-0.5"
                             />
                         </a-tooltip>
 
@@ -128,12 +144,63 @@
                     </div>
 
                     <div
+                        v-if="item.typeName?.toLowerCase() === 'column'"
+                        class="flex items-center gap-x-1"
+                    >
+                        <div class="flex">
+                            <!-- <component
+                                :is="dataTypeImage(item)"
+                                class="w-auto h-4 text-gray-500"
+                                style="margin-top: 1px"
+                            ></component> -->
+
+                            <component
+                                :is="dataTypeCategoryImage(item)"
+                                class="h-4 text-gray-500"
+                            />
+                            <span class="ml-1 text-sm text-gray-500">{{
+                                dataType(item)
+                            }}</span>
+                        </div>
+                        <div
+                            class="flex"
+                            v-if="
+                                isPrimary(item) ||
+                                isDist(item) ||
+                                isPartition(item)
+                            "
+                        >
+                            <AtlanIcon
+                                icon="Key"
+                                class="mr-1 mb-0.5"
+                            ></AtlanIcon>
+
+                            <span
+                                class="ml-1 text-sm text-gray-700"
+                                v-if="isPrimary(item)"
+                                >Primary Key</span
+                            >
+                            <span
+                                class="ml-1 text-sm text-gray-700"
+                                v-if="isDist(item)"
+                                >Dist Key</span
+                            >
+                            <span
+                                class="ml-1 text-sm text-gray-700"
+                                v-if="isPartition(item)"
+                                >Partition Key</span
+                            >
+                        </div>
+                    </div>
+
+                    <div
                         v-if="
                             [
                                 'table',
                                 'view',
                                 'tablepartition',
                                 'materialisedview',
+                                'column',
                                 'schema',
                             ].includes(item.typeName?.toLowerCase())
                         "
@@ -170,147 +237,42 @@
                                 <span>Schema - {{ schemaName(item) }}</span>
                             </template>
                         </a-tooltip>
-                    </div>
-                    <div
-                        v-if="item.typeName?.toLowerCase() === 'column'"
-                        class="flex items-center gap-x-1"
-                    >
-                        <div class="flex">
-                            <!-- <component
-                                :is="dataTypeImage(item)"
-                                class="w-auto h-4 text-gray-500"
-                                style="margin-top: 1px"
-                            ></component> -->
-
-                            <component
-                                :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500"
-                            />
-                            <span class="ml-1 text-sm text-gray-700">{{
-                                dataType(item)
-                            }}</span>
-                        </div>
-                        <div
-                            class="flex"
-                            v-if="
-                                isPrimary(item) ||
-                                isDist(item) ||
-                                isPartition(item)
-                            "
+                        <!-- <a-tooltip
+                            placement="bottomLeft"
+                            v-if="tableName(item)"
                         >
-                            <AtlanIcon
-                                icon="Key"
-                                class="mr-1 mb-0.5"
-                            ></AtlanIcon>
-
-                            <span
-                                class="ml-1 text-sm text-gray-700"
-                                v-if="isPrimary(item)"
-                                >Primary Key</span
+                            <div
+                                v-if="tableName(item)"
+                                class="flex items-center text-gray-500"
                             >
-                            <span
-                                class="ml-1 text-sm text-gray-700"
-                                v-if="isDist(item)"
-                                >Dist Key</span
+                                <AtlanIcon icon="Schema" class="mr-1 mb-0.5" />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ tableName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>Table - {{ tableName(item) }}</span>
+                            </template>
+                        </a-tooltip> -->
+                        <a-tooltip
+                            placement="bottomLeft"
+                            v-if="tableName(item)"
+                        >
+                            <div
+                                v-if="tableName(item)"
+                                class="flex items-center text-gray-500"
                             >
-                            <span
-                                class="ml-1 text-sm text-gray-700"
-                                v-if="isPartition(item)"
-                                >Partition Key</span
-                            >
-                        </div>
-                        <!-- <div v-if="item.attributes?.isPrimary" class="flex">
-                            <AtlanIcon icon="PrimaryKey" />
-                        </div> -->
+                                <AtlanIcon icon="Table" class="mr-1 mb-0.5" />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ tableName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>Table - {{ tableName(item) }}</span>
+                            </template>
+                        </a-tooltip>
                     </div>
-
-                    <!-- Row/Col bar -->
-
-                    <!-- <div
-                        v-if="
-                            getCombinedUsersAndGroups(item).length &&
-                            ['table', 'view', 'tablepartition'].includes(
-                                item.typeName.toLowerCase()
-                            )
-                        "
-                        style="color: #c4c4c4"
-                    >
-                        •
-                    </div> -->
-                    <!-- Owner bar -->
-                    <!-- <div
-                        v-if="getCombinedUsersAndGroups(item).length"
-                        class="flex items-center text-sm text-gray-500 gap-x-1"
-                    >
-                        <AtlanIcon icon="User" />
-                        <span
-                            v-html="
-                                getTruncatedUsers(
-                                    getCombinedUsersAndGroups(item),
-                                    20
-                                )
-                            "
-                        />
-                    </div> -->
                 </div>
-                <!-- Description -->
-                <!-- <div
-                    v-if="
-                        projection?.includes('description') &&
-                        description(item)?.length
-                    "
-                    class="mt-2 mb-1 text-sm text-gray-500 truncate-overflow"
-                    style="max-width: 80%"
-                >
-                    {{ description(item) }}
-                </div> -->
-                <!-- Classification and terms -->
-                <!-- <template
-                    v-if="
-                        (projection?.includes('classifications') ||
-                            projection?.includes('terms')) &&
-                        (item.classificationNames?.length ||
-                            item.meanings?.length)
-                    "
-                >
-                    <ScrollStrip>
-                        <Pill
-                            v-for="clsf in item.classificationNames"
-                            v-if="projection?.includes('classifications')"
-                            class="flex-none"
-                            :label="getClassificationDisplayname(clsf)"
-                            :has-action="false"
-                            :class="isSelected ? 'bg-white' : ''"
-                        >
-                            <template #prefix>
-                                <AtlanIcon
-                                    icon="Shield"
-                                    class="
-                                        text-pink-400
-                                        group-hover:text-white
-                                        h-3.5
-                                        w-auto
-                                    "
-                                />
-                            </template>
-                        </Pill>
-                        <Pill
-                            v-for="clsf in item.meanings"
-                            v-if="projection?.includes('terms')"
-                            class="flex-none"
-                            :label="clsf.displayText"
-                            :has-action="false"
-                            :class="isSelected ? 'bg-white' : ''"
-                        >
-                            <template #prefix>
-                                <AtlanIcon
-                                    icon="Term"
-                                    class="text-gray h-3.5 w-auto"
-                                />
-                            </template>
-                        </Pill>
-                    </ScrollStrip>
-                </template> -->
             </div>
             <!-- <ThreeDotMenu
                 v-if="showThreeDotMenu"
@@ -428,6 +390,7 @@
                 columnCount,
                 databaseName,
                 schemaName,
+                tableName,
                 connectorName,
                 connectionName,
                 dataTypeCategoryLabel,
@@ -527,6 +490,7 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                tableName,
             }
         },
     })

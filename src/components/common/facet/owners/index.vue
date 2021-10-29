@@ -5,6 +5,7 @@
                 :placeholder="placeholder"
                 :autofocus="true"
                 v-model:value="queryText"
+                class="mb-2 -mt-1.5"
                 size="minimal"
             >
                 <template #tabSelector>
@@ -43,16 +44,16 @@
                 :query-text="queryText"
             ></Groups>
         </div>
-        <div class="px-4 pt-1 border-t border-gray-200">
+        <div class="px-4 pt-1">
             <a-checkbox
                 :value="null"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
             >
                 <component
                     :is="noStatus"
-                    class="inline-flex self-center w-auto h-5 mb-1"
+                    class="inline-flex self-center w-auto h-4 mb-1"
                 />
-                <span class="mb-0 ml-1 text-gray-500"> No Owners </span>
+                <span class="mb-0 text-gray-500"> No Owners </span>
             </a-checkbox>
         </div>
     </div>

@@ -6,14 +6,14 @@
     >
         <div class="flex flex-col w-full">
             <template v-for="item in certificateList" :key="item.id">
-                <div class="mb-3 status">
+                <div class="status">
                     <a-checkbox
                         :value="item.id"
-                        class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+                        class="inline-flex flex-row-reverse items-center w-full mb-1  atlan-reverse"
                     >
                         <component
                             :is="item.icon"
-                            class="inline-flex self-center w-auto h-5 mb-1"
+                            class="inline-flex self-center w-auto h-4 mb-0.5"
                         />
                         <span class="mb-0 ml-1 text-gray">
                             {{ item.label }}
@@ -22,14 +22,14 @@
                 </div>
             </template>
 
-            <div class="pt-1 border-t border-gray-200">
+            <div class="mt-1">
                 <a-checkbox
                     :value="null"
                     class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
                 >
                     <component
                         :is="noStatus"
-                        class="inline-flex self-center w-auto h-5 mb-1"
+                        class="inline-flex self-center w-auto h-4 mb-0.5"
                     />
                     <span class="mb-0 ml-1 text-gray-500">
                         No Certificate

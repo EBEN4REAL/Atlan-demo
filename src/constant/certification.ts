@@ -1,5 +1,4 @@
 import deprecated from '~/assets/images/status/deprecated.svg'
-import noStatus from '~/assets/images/status/nostatus.svg'
 import verified from '~/assets/images/status/verified.svg'
 import wip from '~/assets/images/status/work_in_progress.svg'
 

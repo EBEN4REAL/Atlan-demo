@@ -1,15 +1,15 @@
 <template>
     <div class="text-xs text-gray-500">
-        <p class="mb-2 text-sm">
-            Description<span class="ml-2">
-                <a-spin size="small" class="leading-none"></a-spin>
-            </span>
-        </p>
-        <div class="flex">
+        <div class="flex items-center justify-between mb-1 text-sm">
+            <span> Description</span>
+            <span class="text-primary">edit</span>
+        </div>
+        <p class="text-sm text-gray-700">{{ description(selectedAsset) }}</p>
+        <!-- <div class="flex">
             <a-textarea
                 id="description-sidebar"
                 v-model:value="descriptionInput"
-                class="inline-block w-full text-sm cursor-pointer  text-gray focus:bg-gray-100"
+                class="inline-block w-full text-sm cursor-pointer text-gray focus:bg-gray-100"
                 autofocus
                 placeholder="Add an asset description"
                 show-count
@@ -17,13 +17,12 @@
                 :rows="4"
             >
             </a-textarea>
-            <!-- <span v-if="isLoading && !usingInInfo" class="ml-2">
+            <span v-if="isLoading && !usingInInfo" class="ml-2">
                 <a-spin size="small" class="leading-none"></a-spin>
             </span> -->
-        </div>
+        <!--     </div> -->
         <!-- <span
             v-if="
-                description &&
                 description !== '' &&
                 !showEditableDescription &&
                 !isLoading
@@ -64,11 +63,11 @@
         watch,
         nextTick,
     } from 'vue'
-    import { message } from 'ant-design-vue'
-    import updateAsset from '~/composables/discovery/updateAsset'
+    // import { message } from 'ant-design-vue'
+    // import updateAsset from '~/composables/discovery/updateAsset'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     // import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
@@ -89,9 +88,9 @@
         },
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
-            // const { selectedAsset } = toRefs(props)
+            const { selectedAsset } = toRefs(props)
 
-            // const { description } = useAssetInfo()
+            const { description } = useAssetInfo()
 
             // const descriptionLocal = ref(description(selectedAsset.value))
 
@@ -169,6 +168,8 @@
             // })
 
             return {
+                description,
+                selectedAsset,
                 // description,
                 // handleDescriptionEdit,
                 // endEditDescription,

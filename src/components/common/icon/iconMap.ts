@@ -38,6 +38,7 @@ import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
+import ShieldFilled from '~/assets/images/icons/shield-filled.svg'
 import Edit from '~/assets/images/icons/edit.svg'
 import EmptySavedFilter from '~/assets/images/icons/empty_saved_filters.svg'
 import Decline from '~/assets/images/icons/decline.svg'
@@ -313,4 +314,5 @@ export default {
     PropertyActive,
     OverviewActive,
     Query,
+    ShieldFilled,
 }

@@ -55,6 +55,9 @@ module.exports = {
                     DEFAULT: '#AC52D7',
                     light: '#F9F4FD',
                 },
+                purple: {
+                    DEFAULT: '#6D6DDA'
+                }
             },
         },
     },

@@ -31,6 +31,11 @@ export default function useAssetInfo() {
     const connectionName = (asset: assetInterface) =>
         attributes(asset)?.connectionName ?? ''
 
+    const classifications = (asset: assetInterface) =>
+        asset.classifications ?? []
+
+    const meanings = (asset: assetInterface) => asset.meanings ?? []
+
     const connectorName = (asset: assetInterface) =>
         attributes(asset)?.connectorName ?? ''
 
@@ -48,8 +53,9 @@ export default function useAssetInfo() {
     //     const found = AssetTypeList.find((d) => d.id === assetType(asset))
     //     return found?.label
     // }
-    // const description = (asset: assetInterface) =>
-    //     attributes(asset).userDescription || attributes(asset).description
+    const description = (asset: assetInterface) =>
+        attributes(asset).userDescription || attributes(asset).description
+
     const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
     const isPartition = (asset: assetInterface) =>
         attributes(asset)?.isPartition
@@ -276,11 +282,11 @@ export default function useAssetInfo() {
     // const popularityScore = (asset: assetInterface) =>
     //     attributes(asset)?.popularityScore
 
-    // const ownerGroups = (asset: assetInterface) =>
-    //     attributes(asset)?.ownerGroups?.split(',') || []
+    const ownerGroups = (asset: assetInterface) =>
+        attributes(asset)?.ownerGroups?.split(',') || []
 
-    // const ownerUsers = (asset: assetInterface) =>
-    //     attributes(asset)?.ownerUsers?.split(',') || []
+    const ownerUsers = (asset: assetInterface) =>
+        attributes(asset)?.ownerUsers?.split(',') || []
 
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
@@ -600,6 +606,9 @@ export default function useAssetInfo() {
         isPartition,
         isDist,
         definition,
+        description,
+        classifications,
+        meanings,
         // dataTypeImageForColumn,
         // popularityScore,
         // createdBy,
@@ -636,9 +645,9 @@ export default function useAssetInfo() {
         // lastCrawled,
         // assetState,
         // tableInfo,
-        // ownerGroups,
-        // ownerUsers,
-        // certificateStatus,
+        ownerGroups,
+        ownerUsers,
+
         // getHierarchy,
         // getTableauProperties,
         // getTableauHierarchy,

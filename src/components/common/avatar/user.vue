@@ -4,9 +4,11 @@
             :shape="avatarShape"
             :size="avatarSize"
             :class="styleClass"
-            class="text-sm border text-primary border-primary"
+            class="text-sm align-middle border text-primary"
             :src="url"
-            >{{ getNameInitials(username) }}</a-avatar
+            ><span style="line-height: 16px">{{
+                getNameInitials(username)
+            }}</span></a-avatar
         >
     </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full px-5 gap-y-4">
+    <div class="flex flex-col w-full px-5 pt-4 gap-y-4">
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16"
@@ -46,10 +46,21 @@
                 }}</span>
             </div>
         </div>
-        <Description
-            :selected-asset="selectedAsset"
-            :edit-permission="userHasEditPermission"
-        />
+
+        <!-- <div
+            v-if="
+                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                sourceUpdatedAt(selectedAsset)
+            "
+        >
+            <div class="flex flex-col text-sm cursor-pointer">
+                <span class="mb-2 text-sm text-gray-500">Freshnes</span>
+                <span class="text-primary">{{
+                    sourceUpdatedAt(selectedAsset)
+                }}</span>
+            </div>
+        </div> -->
+        <Description :selected-asset="selectedAsset" />
 
         <Query
             v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'"
@@ -64,10 +75,9 @@
                 selectedAsset.typeName !== 'QueryFolder'
             "
             :selected-asset="selectedAsset"
-            :edit-permission="userHasEditPermission"
-            @update:selected-asset="mutateSelectedAsset"
         />
-        <Owners
+
+        <!-- <Owners
             v-if="
                 selectedAsset.guid &&
                 (selectedAsset.typeName === 'Query' ||
@@ -76,15 +86,13 @@
             :selected-asset="selectedAsset"
             :edit-permission="false"
             @update:selected-asset="mutateSelectedAsset"
-        />
+        /> -->
 
-        <Status
-            v-if="selectedAsset.guid"
-            :selected-asset="selectedAsset"
-            :edit-permission="userHasEditPermission"
-            @update:selected-asset="mutateSelectedAsset"
-        />
-        -->
+        <Certificate :selected-asset="selectedAsset" />
+
+        <Classification :selected-asset="selectedAsset"> </Classification>
+
+        <Terms :selected-asset="selectedAsset"></Terms>
     </div>
 </template>
 
@@ -93,12 +101,16 @@
     import SQL from '@/discovery/preview/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/discovery/preview/popover/rowInfo.vue'
-    import Description from '@/common/sidebar/description/index.vue'
+    import Description from '@/common/input/description/index.vue'
+    import Owners from '@/common/input/owner/index.vue'
+    import Certificate from '@/common/input/certificate/index.vue'
+    import Classification from '@/common/input/classification/index.vue'
+    import Terms from '@/common/input/terms/index.vue'
 
     // import useAssetInfo from '~/composables/asset/useAssetInfo'
     // import { assetInterface } from '~/types/assets/asset.interface'
     // import Description from '@common/sidebar/description.vue'
-    // import Owners from '@common/sidebar/owners.vue'
+
     // import Experts from '@common/sidebar/experts.vue'
     // import Status from '@common/sidebar/status.vue'
     // import Query from '@common/sidebar/query.vue'
@@ -110,10 +122,13 @@
             // Experts,
             Description,
             // Status,
-            // Owners,
+            Owners,
+            Classification,
             // Query,
+            Certificate,
             RowInfoHoverCard,
             SQL,
+            Terms,
         },
         props: {
             selectedAsset: {

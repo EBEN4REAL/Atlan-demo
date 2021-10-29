@@ -5,19 +5,20 @@
     >
         <template #title>
             <div class="p-2">
-                <div class="flex items-center mb-0 text-base text-gray-500">
+                <div
+                    class="flex items-center mb-0 text-base"
+                    :class="status?.toLowerCase()"
+                >
                     <component
                         :is="icon"
-                        class="inline-flex self-center w-auto h-5 mr-1"
+                        class="inline-flex self-center w-auto h-5 mr-1 mb-0.5"
                     />
-                    {{ status }}
+                    <span class="font-semibold tracking-wide">{{
+                        status
+                    }}</span>
                 </div>
                 <div class="flex items-center justify-between text-gray-500">
                     <div class="flex text-sm">
-                        <!-- <UserAvatar
-                            :username="username"
-                            style-class="bg-white"
-                        ></UserAvatar> -->
                         <div class="ml-1">by {{ username }}</div>
                     </div>
                     {{ timestamp }}
@@ -29,7 +30,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import { certificateList } from '~/constant/certification'
     import UserAvatar from '@/common/avatar/user.vue'
 
@@ -66,14 +67,17 @@
         setup(props) {
             const { status, placement, username } = toRefs(props)
 
-            const found = certificateList.find(
-                (item) => item.id.toLowerCase() === status.value.toLowerCase()
-            )
+            const icon = computed(() => {
+                const found = certificateList.find(
+                    (item) =>
+                        item.id.toLowerCase() === status.value.toLowerCase()
+                )
+                if (found) {
+                    return found.icon
+                }
 
-            const icon = ref()
-            if (found) {
-                icon.value = found.icon
-            }
+                return ''
+            })
 
             return { icon, status, placement, username }
         },
@@ -107,6 +111,7 @@
             }
             .ant-tooltip-inner {
                 background-color: #eeffef !important;
+                color: rgb(4, 165, 128) !important;
             }
         }
         &.draft {
@@ -115,6 +120,7 @@
             }
             .ant-tooltip-inner {
                 background-color: #ffeec6 !important;
+                color: rgb(243, 180, 68) !important;
             }
         }
         &.deprecated {
@@ -123,6 +129,7 @@
             }
             .ant-tooltip-inner {
                 background-color: #ffd2b8 !important;
+                color: rgb(254, 148, 88) !important;
             }
         }
     }

@@ -36,6 +36,8 @@ export const AssetAttributes = [
     'sourceCreatedAt',
     'sourceUpdatedAt',
     'sourceUpdatedBy',
+    'ownerUsers',
+    'ownerGroups',
 ]
 
 export const SQLAttributes = [

@@ -33,10 +33,10 @@
                                 >
                                     {{ fullName(item) }}
                                     <span
-                                        class="font-bold"
+                                        class="text-sm text-gray-500"
                                         v-if="item.username === username"
                                     >
-                                        {{ '&nbsp;(me)' }}
+                                        (me)
                                     </span>
                                 </div>
                                 <!-- <div class="text-xs leading-none text-gray-500">
@@ -112,18 +112,27 @@
                 if (props.queryText !== '') {
                     return [...list.value]
                 }
+
+                const tempList = list.value.filter(
+                    (obj) => obj.username !== username
+                )
+
                 return [
                     {
                         username,
                         first_name: firstName,
                         last_name: lastName,
                     },
-                    ...list.value,
+                    ...tempList,
                 ]
             })
 
             const fullName = (item) => {
-                return `${item.first_name} ${item.last_name}`
+                if (item.first_name) {
+                    return `${item.first_name} ${item.last_name || ''}`
+                }
+
+                return `${item.username}`
             }
 
             const avatarUrl = (item) => {

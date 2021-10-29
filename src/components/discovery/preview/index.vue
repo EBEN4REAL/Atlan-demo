@@ -18,11 +18,16 @@
                 <div class="flex items-center">
                     <a-tooltip placement="left">
                         <template #title>
-                            <img
-                                :src="getConnectorImage(selectedAsset)"
-                                class="h-4 mr-1 mb-0.5"
-                            />
+                            <span>{{
+                                `${connectorName(
+                                    selectedAsset
+                                )}/${connectionName(selectedAsset)}`
+                            }}</span>
                         </template>
+                        <img
+                            :src="getConnectorImage(selectedAsset)"
+                            class="h-4 mr-1 mb-0.5"
+                        />
                     </a-tooltip>
 
                     <div class="text-sm tracking-tight uppercase text-gray">

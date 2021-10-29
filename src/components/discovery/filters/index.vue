@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            class="flex items-center justify-between px-4 py-3 mb-3 text-sm bg-gray-100 "
+            class="flex items-center justify-between px-4 py-3 mb-2 text-sm bg-gray-100 border-b border-gray-200 "
         >
             <div class="font-medium text-gray-500">
                 {{ totalAppliedFiltersCount }}
@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="h-full overflow-y-auto">
-            <div class="px-3 mb-3">
+            <div class="px-3 pb-2 border-b">
                 <Connector
                     v-model:connector="localFacetMap['connector']"
                     v-model:connection="localFacetMap['connection']"
@@ -33,9 +33,11 @@
                     <template #header>
                         <div :key="dirtyTimestamp" class="select-none">
                             <div class="flex flex-col flex-1">
-                                <div class="flex items-center">
+                                <div
+                                    class="flex items-center justify-between  hover:text-primary"
+                                >
                                     <span
-                                        class="text-xs uppercase text-gray"
+                                        class="text-xs uppercase  text-gray hover:text-primary title"
                                         style="letter-spacing: 0.07em"
                                     >
                                         <img
@@ -47,7 +49,7 @@
                                     >
                                     <AtlanIcon
                                         icon="ChevronDown"
-                                        class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                                        class="ml-3 text-gray-500 transition-transform duration-300 transform  hover:text-primary title"
                                         :class="
                                             activeKey.includes(item.id)
                                                 ? '-rotate-180'
@@ -460,13 +462,25 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-none !important;
+            @apply border-b border-gray-200 !important;
+        }
+
+        :global(.ant-collapse-item-active) {
+            @apply bg-white;
+
+            :global(.title) {
+                @apply text-primary !important;
+            }
         }
 
         :global(.ant-collapse-header) {
             @apply px-4 !important;
             @apply py-3 !important;
-            @apply border-none;
+
+            &:hover {
+                @apply bg-white;
+                /* some rules */
+            }
         }
 
         :global(.ant-collapse-item:last-child) {
@@ -474,10 +488,10 @@
         }
 
         :global(.ant-collapse-content-box) {
+            @apply pb-3;
             padding-right: 0px;
             padding-left: 0px;
             padding-top: 0px !important;
-            padding-bottom: 0px;
         }
     }
 </style>

@@ -104,7 +104,8 @@
         },
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
-            const { selectedAsset, includeCreator } = toRefs(props)
+            const { selectedAsset, includeCreator, includeLabel } =
+                toRefs(props)
 
             console.log(selectedAsset.value)
 

@@ -1,6 +1,47 @@
 <template>
     <div class="flex flex-col w-full px-5 pt-4 gap-y-4">
-        <p class="text-sm font-semibold text-gray-500">Atlan</p>
+        <div class="flex items-center">
+            <img :src="getConnectorImage(selectedAsset)" class="h-4 mr-1" />
+            <span
+                >{{ capitalizeFirstLetter(connectorName(selectedAsset)) }}
+            </span>
+        </div>
+
+        <div class="flex flex-col text-sm">
+            <span class="mb-2 text-gray-500">Updated</span>
+            <div class="flex flex-col">
+                <div class="flex mb-2">
+                    <UserPill
+                        :username="sourceUpdatedBy(selectedAsset)"
+                    ></UserPill>
+                </div>
+
+                <span class="text-xs text-gray-700"
+                    >{{ sourceUpdatedAt(selectedAsset, true) }} ({{
+                        sourceUpdatedAt(selectedAsset, false)
+                    }})</span
+                >
+            </div>
+        </div>
+
+        <div class="flex flex-col text-sm">
+            <span class="mb-2 text-gray-500">Created</span>
+            <div class="flex flex-col">
+                <div class="flex mb-2">
+                    <UserPill
+                        :username="sourceCreatedBy(selectedAsset)"
+                    ></UserPill>
+                </div>
+
+                <span class="text-xs text-gray-700"
+                    >{{ sourceCreatedAt(selectedAsset, true) }} ({{
+                        sourceCreatedAt(selectedAsset, false)
+                    }})</span
+                >
+            </div>
+        </div>
+
+        <div class="mt-3">Atlan</div>
 
         <div class="flex flex-col text-sm">
             <span class="mb-2 text-gray-500">Connection</span>
@@ -80,6 +121,8 @@
     import useConnectionData from '~/composables/connection/useConnectionData'
     import UserPill from '@/common/avatar/userPill.vue'
 
+    import { capitalizeFirstLetter } from '~/utils/string'
+
     export default defineComponent({
         components: {
             UserPill,
@@ -105,6 +148,8 @@
                 connectionName,
                 sourceUpdatedAt,
                 sourceCreatedAt,
+                sourceUpdatedBy,
+                sourceCreatedBy,
                 qualifiedName,
                 createdAt,
                 createdBy,
@@ -132,6 +177,9 @@
                 getConnection,
                 connectionQualifiedName,
                 ownerUsers,
+                capitalizeFirstLetter,
+                sourceUpdatedBy,
+                sourceCreatedBy,
             }
         },
     })

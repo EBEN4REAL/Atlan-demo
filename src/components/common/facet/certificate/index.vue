@@ -31,9 +31,7 @@
                         :is="noStatus"
                         class="inline-flex self-center w-auto h-4 mb-0.5"
                     />
-                    <span class="mb-0 ml-1 text-gray-500">
-                        No Certificate
-                    </span>
+                    <span class="mb-0 ml-1 text-gray-500">No Certificate</span>
                 </a-checkbox>
             </div>
         </div>

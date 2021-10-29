@@ -17,7 +17,6 @@
 <script lang="ts">
     import { ref, watch, PropType, toRefs, computed } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
-    import uploadAvatar from '~/composables/avatar/uploadAvatar'
 
     export default {
         name: 'Avatar',
@@ -47,7 +46,7 @@
 
             const url = computed(
                 () =>
-                    `${window.location.origin}/api/services/avatar/${username}`
+                    `${window.location.origin}/api/services/avatar/${username.value}`
             )
 
             return {

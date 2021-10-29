@@ -1,6 +1,6 @@
 import deprecated from '~/assets/images/status/deprecated.svg'
 import verified from '~/assets/images/status/verified.svg'
-import wip from '~/assets/images/status/work_in_progress.svg'
+import draft from '~/assets/images/status/draft.svg'
 
 export const certificateList = [
     {
@@ -13,7 +13,7 @@ export const certificateList = [
         id: 'DRAFT',
         label: 'Draft',
         description: 'Draft',
-        icon: wip,
+        icon: draft,
     },
     {
         id: 'DEPRECATED',

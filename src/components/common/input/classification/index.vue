@@ -89,14 +89,14 @@
 
             const { classificationList } = useTypedefData()
 
-            const { matchingIdsResult } = mergeArray(
-                classificationList,
-                classifications(selectedAsset.value),
-                'name',
-                'typeName'
-            )
-
             const list = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    classificationList,
+                    classifications(selectedAsset.value),
+                    'name',
+                    'typeName'
+                )
+
                 return matchingIdsResult
             })
 

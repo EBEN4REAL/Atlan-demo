@@ -89,6 +89,7 @@
         /> -->
 
         <Certificate :selected-asset="selectedAsset" />
+
         <Terms :selected-asset="selectedAsset"></Terms>
 
         <Classification :selected-asset="selectedAsset"> </Classification>

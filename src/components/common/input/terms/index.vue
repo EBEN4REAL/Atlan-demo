@@ -81,14 +81,16 @@
 
             const { meanings, meaningRelationships } = useAssetInfo()
 
-            const { matchingIdsResult } = mergeArray(
-                meanings(selectedAsset.value),
-                meaningRelationships(selectedAsset.value),
-                'guid',
-                'termGuid'
-            )
+            const list = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    meanings(selectedAsset.value),
+                    meaningRelationships(selectedAsset.value),
+                    'guid',
+                    'termGuid'
+                )
 
-            const list = computed(() => matchingIdsResult)
+                return matchingIdsResult
+            })
             // const { classificationList } = useTypedefData()
 
             // const { matchingIdsResult } = mergeArray(

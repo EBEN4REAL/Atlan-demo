@@ -314,7 +314,7 @@ export default function useAssetInfo() {
         asset: assetInterface,
         raw: boolean = false
     ) => {
-        if (attributes(asset)?.sourceUpdatedAt) {
+        if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
                       'N/A'

@@ -8,7 +8,7 @@
         >
             <template v-for="term in list" :key="term.termGuid">
                 <div
-                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-purple hover:border-purple group hover:shadow"
+                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                 >
                     <!-- <AtlanIcon
                         icon="ShieldFilled"

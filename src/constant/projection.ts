@@ -32,6 +32,7 @@ export const AssetAttributes = [
     'announcementUpdatedBy',
     'connectorName',
     'connectionName',
+    'connectionQualifiedName',
     'sourceCreatedBy',
     'sourceCreatedAt',
     'sourceUpdatedAt',
@@ -52,3 +53,5 @@ export const SQLAttributes = [
 ]
 
 export const AssetRelationAttributes = ['certificateStatus']
+
+export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

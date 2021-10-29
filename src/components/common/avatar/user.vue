@@ -10,6 +10,7 @@
                 getNameInitials(username)
             }}</span></a-avatar
         >
+        <div v-if="showUsername">{{ username }}</div>
     </div>
 </template>
 
@@ -36,6 +37,9 @@
             avatarSize: {
                 type: String as PropType<Number | String>,
                 default: 20,
+            },
+            showUsername: {
+                type: Boolean,
             },
         },
         setup(props, context) {

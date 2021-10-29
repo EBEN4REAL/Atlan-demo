@@ -63,8 +63,8 @@ export default function useIndexSearch(
     })
 
     const aggregationMap = (key) => {
-        if (data?.value.aggregations[key]) {
-            return data?.value.aggregations[key].buckets
+        if (data?.value?.aggregations[key]) {
+            return data?.value?.aggregations[key].buckets
         }
         return {}
     }

@@ -24,7 +24,23 @@ export const CONNECTION_ATTRIBUTES = [
 
 export default function useConnectionData() {
     const connectionStore = useConnectionStore()
+
+    const getConnection = (qfName) => {
+        console.log(qfName)
+
+        const found = connectionStore.list.find((i) => {
+            if (i.attributes?.qualifiedName === qfName) {
+                return true
+            }
+
+            return false
+        })
+        console.log(found)
+        return found
+    }
+
     return {
+        getConnection,
         list: connectionStore.list,
         sourceList: connectionStore.getSourceList,
     }

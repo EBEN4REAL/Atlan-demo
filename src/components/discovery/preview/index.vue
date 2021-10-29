@@ -299,6 +299,9 @@
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
+            property: defineAsyncComponent(
+                () => import('./property/index.vue')
+            ),
             // activity: defineAsyncComponent(
             //     () => import('./tabs/activity/activityTab.vue')
             // ),

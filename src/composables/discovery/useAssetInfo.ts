@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable arrow-body-style */
 // import { Ref } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
@@ -30,6 +31,9 @@ export default function useAssetInfo() {
     }
     const connectionName = (asset: assetInterface) =>
         attributes(asset)?.connectionName ?? ''
+
+    const connectionQualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.connectionQualifiedName ?? ''
 
     const classifications = (asset: assetInterface) =>
         asset.classifications ?? []
@@ -215,39 +219,45 @@ export default function useAssetInfo() {
     const definition = (asset: assetInterface) =>
         attributes(asset)?.definition || ''
 
-    // const qualifiedName = (asset: assetInterface) =>
-    //     attributes(asset)?.qualifiedName
+    const qualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.qualifiedName
     // const schemaName = (asset: assetInterface) => attributes(asset)?.schemaName
     // const databaseName = (asset: assetInterface) =>
     //     attributes(asset)?.databaseName
-    // const createdAt = (asset: assetInterface, raw: boolean = false) => {
-    //     if (attributes(asset)?.__timestamp)
-    //         if (raw)
-    //             return formatDateTime(attributes(asset)?.__timestamp) || 'N/A'
-    //         else
-    //             return useTimeAgo(attributes(asset)?.__timestamp).value || 'N/A'
-    //     return 'N/A'
-    // }
 
-    // const createdBy = (asset: assetInterface) => attributes(asset)?.__createdBy
+    const createdAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.__timestamp)
+            if (raw)
+                return formatDateTime(attributes(asset)?.__timestamp) || 'N/A'
+            else
+                return useTimeAgo(attributes(asset)?.__timestamp).value || 'N/A'
+        return 'N/A'
+    }
+
+    const modifiedAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.__modificationTimestamp)
+            if (raw)
+                return (
+                    formatDateTime(
+                        attributes(asset)?.__modificationTimestamp
+                    ) || 'N/A'
+                )
+            else
+                return (
+                    useTimeAgo(attributes(asset)?.__modificationTimestamp)
+                        .value || 'N/A'
+                )
+        return 'N/A'
+    }
+
+    const createdBy = (asset: assetInterface) => attributes(asset)?.__createdBy
+
+    const modifiedBy = (asset: assetInterface) =>
+        attributes(asset)?.__modifiedBy
 
     // const modifiedBy = (asset: assetInterface) =>
     //     attributes(asset)?.__modifiedBy
-    // const updatedAt = (asset: assetInterface, raw: boolean = false) => {
-    //     if (attributes(asset)?.__modificationTimestamp)
-    //         if (raw)
-    //             return (
-    //                 formatDateTime(
-    //                     attributes(asset)?.__modificationTimestamp
-    //                 ) || 'N/A'
-    //             )
-    //         else
-    //             return (
-    //                 useTimeAgo(attributes(asset)?.__modificationTimestamp)
-    //                     .value || 'N/A'
-    //             )
-    //     return 'N/A'
-    // }
+
     // const previewURL = (asset: assetInterface) => {
     //     if (attributes(asset)?.__customAttributes) {
     //         const customAttributes = JSON.parse(
@@ -614,7 +624,7 @@ export default function useAssetInfo() {
         meaningRelationships,
         // dataTypeImageForColumn,
         // popularityScore,
-        // createdBy,
+        createdBy,
         // modifiedBy,
         // databaseLogo,
         // schemaLogo,
@@ -650,12 +660,16 @@ export default function useAssetInfo() {
         // tableInfo,
         ownerGroups,
         ownerUsers,
+        modifiedAt,
+        modifiedBy,
+        createdAt,
 
         // getHierarchy,
         // getTableauProperties,
         // getTableauHierarchy,
         // previewURL,
         // viewDefinition,
-        // qualifiedName,
+        qualifiedName,
+        connectionQualifiedName,
     }
 }

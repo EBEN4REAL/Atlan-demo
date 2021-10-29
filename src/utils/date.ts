@@ -16,7 +16,7 @@ export const formatDate = (date: string | number | Date) => {
 }
 
 export const formatDateTime = (
-    date: Date,
+    date: any,
     config = {
         dateStyle: 'medium',
         timeStyle: 'medium',

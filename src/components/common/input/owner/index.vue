@@ -1,7 +1,10 @@
 <template>
     <div class="flex flex-col justify-between text-xs text-gray-500">
-        <p class="mb-1 text-sm">Owners</p>
+        <p class="mb-1 text-sm" v-if="includeLabel">Owners</p>
 
+        <div v-if="includeCreator" class="flex">
+            <UserPill :username="createdBy(selectedAsset)"></UserPill>
+        </div>
         <div
             v-if="
                 ownerUsers(selectedAsset).length > 0 ||
@@ -13,15 +16,7 @@
                 v-for="username in ownerUsers(selectedAsset)"
                 :key="username"
             >
-                <div
-                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-primary group hover:border-primary"
-                >
-                    <UserAvatar
-                        :username="username"
-                        style-class="mr-1 border-none bg-primary-light "
-                    ></UserAvatar>
-                    <div class="group-hover:text-white">{{ username }}</div>
-                </div>
+                <UserPill :username="username"></UserPill>
             </template>
 
             <template v-for="name in ownerGroups(selectedAsset)" :key="name">
@@ -35,61 +30,6 @@
                     <div class="group-hover:text-white">{{ name }}</div>
                 </div>
             </template>
-
-            <!-- <PillGroup
-                :data="ownerList"
-                label-key="username"
-                popover-trigger="hover"
-                :readOnly="!editPermission"
-                @add="toggleOwnerPopover"
-                @delete="handleRemoveOwner"
-                @select="(item, index) => handleClickUser(item)"
-            >
-                <template #pillPrefix="{ item }">
-                    <avatar
-                        v-if="item && item.type === 'user'"
-                        class="-ml-2.5"
-                        :image-url="
-                            KeyMaps.auth.avatar.GET_AVATAR({
-                                username: item.username,
-                            })
-                        "
-                        :allow-upload="false"
-                        :avatar-name="item.username"
-                        avatar-size="small"
-                        :avatar-shape="'circle'"
-                    />
-                    <AtlanIcon
-                        v-else-if="item && item.type === 'group'"
-                        icon="Group"
-                        class="h-4 -ml-0.5 text-primary group-hover:text-white"
-                    />
-                </template>
-                <template #popover="{ item }"
-                    ><OwnerInfoCard :user="item"
-                /></template>
-                <template #suffix>
-                    <span
-                        v-if="splittedOwners.b.length > 0"
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            rounded
-                            text-primary
-                            mr-3
-                            cursor-pointer
-                        "
-                        @click="() => toggleAllOwners()"
-                    >
-                        {{
-                            showAll
-                                ? 'Show less'
-                                : `and ${splittedOwners.b.length} more`
-                        }}
-                    </span>
-                </template>
-            </PillGroup> -->
         </div>
         <div v-if="ownerUsers.length < 1 && ownerGroups.length < 1">
             <div v-if="editPermission" @click.stop="toggleOwnerPopover">
@@ -120,6 +60,7 @@
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import UserAvatar from '@/common/avatar/user.vue'
+    import UserPill from '@/common/avatar/userPill.vue'
 
     // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
@@ -139,7 +80,7 @@
     // import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
-        components: { UserAvatar },
+        components: { UserAvatar, UserPill },
         props: {
             selectedAsset: {
                 type: Object,
@@ -150,12 +91,26 @@
                 required: false,
                 default: true,
             },
+            includeCreator: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            includeLabel: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, includeCreator } = toRefs(props)
 
-            const { ownerUsers, ownerGroups } = useAssetInfo()
+            console.log(selectedAsset.value)
+
+            const { ownerUsers, ownerGroups, createdBy } = useAssetInfo()
+
+            // console.log(createdBy(selectedAsset))
             // const { username: myUsername, name: myName } = whoami()
             // const showOwnersDropdown: Ref<boolean> = ref(false)
             // const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
@@ -427,6 +382,7 @@
             return {
                 ownerUsers,
                 ownerGroups,
+                createdBy,
             }
             // return {
             //     myUsername,

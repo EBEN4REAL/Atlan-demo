@@ -2,27 +2,16 @@ import { ref, watch } from 'vue'
 import { useConnectionStore } from '~/store/connection'
 
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
+import { ConnectionAttriibutes } from '~/constant/projection'
 
 export const MAX_CONNECTIONS = 100
 export const CONNECTION_ASSET_TYPE = 'Connection'
 export const CONNECTION_ATTRIBUTES = [
-    'connectorName',
     'allowQuery',
     'allowQueryPreview',
     'queryPreviewConfig',
     'queryConfig',
     'defaultCredentialGuid',
-    'displayName',
-    'certificateStatus',
-    'certificateStatusMessage',
-    'certificateUpdatedBy',
-    'certificateUpdatedAt',
-    'ownerUsers',
-    'ownerGroups',
-    'name',
-    'displayName',
-    'description',
-    'userDescription',
 ]
 
 export default function useConnection() {
@@ -50,7 +39,7 @@ export default function useConnection() {
                     },
                 },
             },
-            attributes: [...CONNECTION_ATTRIBUTES],
+            attributes: [...CONNECTION_ATTRIBUTES, ...ConnectionAttriibutes],
         },
         ref('DEFAULT_CONNECTIONS'),
         null,

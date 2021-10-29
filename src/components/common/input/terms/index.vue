@@ -16,8 +16,8 @@
                         v-if="classification.entityGuid !== selectedAsset.guid"
                     ></AtlanIcon>-->
                     <AtlanIcon
-                        icon="Term"
-                        class="group-hover:text-white"
+                        :icon="icon(term)"
+                        class="group-hover:text-white text-purple"
                     ></AtlanIcon>
 
                     <div class="ml-1 group-hover:text-white">
@@ -79,8 +79,16 @@
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
 
-            const { meanings } = useAssetInfo()
+            const { meanings, meaningRelationships } = useAssetInfo()
 
+            const { matchingIdsResult } = mergeArray(
+                meanings(selectedAsset.value),
+                meaningRelationships(selectedAsset.value),
+                'guid',
+                'termGuid'
+            )
+
+            const list = computed(() => matchingIdsResult)
             // const { classificationList } = useTypedefData()
 
             // const { matchingIdsResult } = mergeArray(
@@ -90,9 +98,31 @@
             //     'typeName'
             // )
 
-            const list = computed(() => {
-                return meanings(selectedAsset.value)
-            })
+            const relationshipList = computed(() =>
+                meaningRelationships(selectedAsset.value)
+            )
+
+            const icon = (term) => {
+                if (
+                    term?.attributes?.certificateStatus.toLowerCase() ===
+                    'verified'
+                ) {
+                    return 'TermVerified'
+                }
+                if (
+                    term?.attributes?.certificateStatus.toLowerCase() ===
+                    'draft'
+                ) {
+                    return 'TermDraft'
+                }
+                if (
+                    term?.attributes?.certificateStatus.toLowerCase() ===
+                    'deprecated'
+                ) {
+                    return 'TermDeprecated'
+                }
+                return 'Term'
+            }
 
             // const { username: myUsername, name: myName } = whoami()
             // const showOwnersDropdown: Ref<boolean> = ref(false)
@@ -365,6 +395,7 @@
             return {
                 meanings,
                 list,
+                icon,
             }
             // return {
             //     myUsername,

@@ -237,11 +237,17 @@
             transition: all 0.8s ease-out;
         }
         :global(.ant-tabs-nav) {
-            @apply mb-2;
+            @apply mb-1;
         }
 
         :global(.ant-tabs-tab:first-child) {
         }
+
+        :global(.ant-tabs-nav-container-scrolling) {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
         :global(.ant-tabs-tab-active) {
             @apply bg-primary-light !important;
             @apply text-primary !important;
@@ -263,6 +269,11 @@
 
         :global(.ant-tabs-extra-content) {
             float: left !important;
+        }
+
+        :global(.ant-tabs-tab-arrow-show) {
+            margin-top: -3px;
+            width: 24px !important;
         }
     }
 

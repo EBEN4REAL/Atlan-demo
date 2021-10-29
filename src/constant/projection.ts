@@ -38,6 +38,7 @@ export const AssetAttributes = [
     'sourceUpdatedBy',
     'ownerUsers',
     'ownerGroups',
+    'meanings',
 ]
 
 export const SQLAttributes = [
@@ -49,3 +50,5 @@ export const SQLAttributes = [
     'dataType',
     'definition',
 ]
+
+export const AssetRelationAttributes = ['certificateStatus']

@@ -11,7 +11,7 @@
                     class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-pink-400 hover:border-pink-400 group hover:shadow"
                     :class="
                         classification.entityGuid !== selectedAsset.guid
-                            ? 'border-dashed'
+                            ? 'border-dotted'
                             : 'border-solid'
                     "
                 >

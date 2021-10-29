@@ -34,7 +34,9 @@ export default function useAssetInfo() {
     const classifications = (asset: assetInterface) =>
         asset.classifications ?? []
 
-    const meanings = (asset: assetInterface) => asset.meanings ?? []
+    const meanings = (asset: assetInterface) =>
+        attributes(asset)?.meanings ?? []
+    const meaningRelationships = (asset: assetInterface) => asset.meanings ?? []
 
     const connectorName = (asset: assetInterface) =>
         attributes(asset)?.connectorName ?? ''
@@ -609,6 +611,7 @@ export default function useAssetInfo() {
         description,
         classifications,
         meanings,
+        meaningRelationships,
         // dataTypeImageForColumn,
         // popularityScore,
         // createdBy,

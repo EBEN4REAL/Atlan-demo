@@ -5,7 +5,8 @@
         v-model="value"
         type="text"
         :size="size"
-        class="flex-1 w-full text-sm bg-transparent shadow-md  focus:outline-none"
+        :class="$style.transparent"
+        class="flex-1 w-full text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
         @keyup.esc="$event.target.blur()"
     >
         <template #prefix>
@@ -92,4 +93,10 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .transparent {
+        &:global(.ant-input-affix-wrapper-focused) {
+            @apply border-0 shadow-none  !important;
+        }
+    }
+</style>

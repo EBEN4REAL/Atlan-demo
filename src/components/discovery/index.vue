@@ -16,7 +16,7 @@
         </div>
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="px-4 py-3 border-b border-gray-200">
+                <div class="px-3 py-1 border-b border-gray-200">
                     <SearchAdvanced
                         v-model:value="queryText"
                         :autofocus="true"
@@ -26,14 +26,15 @@
                             <Preferences />
                         </template>
                     </SearchAdvanced>
-                    <div class="w-full">
-                        <AssetTabs
-                            class="mt-3"
-                            v-model:facetMap="facetMap"
-                            :assetTypeList="assetTypeMappedList"
-                            @change="handleAssetTypeFilterChange"
-                        ></AssetTabs>
-                    </div>
+                </div>
+
+                <div class="w-full px-4">
+                    <AssetTabs
+                        class="mt-3"
+                        v-model:facetMap="facetMap"
+                        :assetTypeList="assetTypeMappedList"
+                        @change="handleAssetTypeFilterChange"
+                    ></AssetTabs>
                 </div>
 
                 <div
@@ -84,6 +85,7 @@
     import { useAssetListing } from '~/composables/discovery/useAssetListing'
     import {
         AssetAttributes,
+        AssetRelationAttributes,
         InternalAttributes,
         SQLAttributes,
     } from '~/constant/projection'
@@ -186,6 +188,7 @@
                     ...AssetAttributes,
                     ...SQLAttributes,
                 ],
+                relationAttributes: [...AssetRelationAttributes],
             })
 
             const {
@@ -455,6 +458,7 @@
                         ...AssetAttributes,
                         ...SQLAttributes,
                     ],
+                    relationAttributes: [...AssetRelationAttributes],
                 }
                 refresh()
             }
@@ -502,6 +506,7 @@
                             ...AssetAttributes,
                             ...SQLAttributes,
                         ],
+                        relationAttributes: [...AssetRelationAttributes],
                     }
                     refresh(true)
                 }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            class="flex items-center justify-between px-4 py-3 mb-2 text-sm bg-gray-100 border-b border-gray-200 "
+            class="flex items-center justify-between px-4 py-3 text-sm  bg-gray-10"
         >
             <div class="font-medium text-gray-500">
                 {{ totalAppliedFiltersCount }}
@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="h-full overflow-y-auto">
-            <div class="px-3 pb-2 border-b">
+            <div class="px-3 pb-3 border-b">
                 <Connector
                     v-model:connector="localFacetMap['connector']"
                     v-model:connection="localFacetMap['connection']"

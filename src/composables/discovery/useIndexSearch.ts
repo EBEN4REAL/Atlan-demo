@@ -36,7 +36,7 @@ export default function useIndexSearch(
             dedupingInterval: 0,
             shouldRetryOnError: false,
             revalidateOnFocus: false,
-            ttl: 0,
+            ttl: 1,
             revalidateDebounce: 0,
             cache: new LocalStorageCache(),
         })

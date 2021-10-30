@@ -1,3 +1,5 @@
+import { useStorage } from '@vueuse/core'
+
 export interface State {
     isAuthenticated: boolean
     hasFailed: boolean
@@ -22,14 +24,14 @@ export const state: State = {
     isPending: false,
     token: '',
     decodedToken: {},
-    name: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    id: '',
-    username: '',
+    name: useStorage('name', ''),
+    firstName: useStorage('firstName', ''),
+    lastName: useStorage('lastName', ''),
+    email: useStorage('email', ''),
+    id: useStorage('id', ''),
+    username: useStorage('username', ''),
     createdAt: new Date(),
-    roles: [] as string[],
-    permissions: [] as string[],
-    evaluations: [],
+    roles: useStorage('roles', []),
+    permissions: useStorage('permissions', []),
+    evaluations: useStorage('evaluations', []),
 }

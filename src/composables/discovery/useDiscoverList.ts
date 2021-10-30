@@ -44,13 +44,15 @@ export function useDiscoverList(
 
     const list = ref([])
     watch(data, () => {
-        if (defaultBody.value.from > 0) {
+        if (offset?.value > 0) {
             if (data.value?.entities) {
                 list.value.push(...data.value?.entities)
             }
         } else {
-            list.value = data?.value?.entities
+            list.value = [...data?.value?.entities]
         }
+
+        console.log('list', list)
     })
 
     const getAggregationList = (
@@ -130,7 +132,7 @@ export function useDiscoverList(
     })
 
     const isLoadMore = computed(() => {
-        if (totalCount.value > list.value.length) {
+        if (totalCount.value > list?.value?.length) {
             return true
         }
         return false

@@ -51,7 +51,4 @@ export default function useConnection() {
         connectionStore.setList(data?.value.entities || [])
         connectionStore.setAssetCount(aggregationMap(GROUP_AGGREATION) || [])
     })
-    return {
-        list,
-    }
 }

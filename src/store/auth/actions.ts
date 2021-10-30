@@ -7,21 +7,21 @@ export interface Actions extends State {
     setFailed(value: any): void
     setPending(value: any): void
     setIsAuthenticated(value: any): void
+    setUserDetails(): void
 }
 
 export const actions: Actions = {
     setToken(value) {
         this.token = value?.token
         this.decodedToken = value?.decodedToken
-
+    },
+    setUserDetails() {
         this.name = this.decodedToken.name
         this.firstName = this.decodedToken.given_name
         this.lastName = this.decodedToken.family_name
         this.email = this.decodedToken.email
         this.id = this.decodedToken.userId
         this.username = this.decodedToken.username
-        // createdAt
-        // this.createdAt =
     },
     setPermissions(value) {
         this.permissions = value

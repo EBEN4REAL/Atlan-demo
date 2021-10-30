@@ -1,43 +1,47 @@
 <template>
-    <router-view v-if="isTypedefReady && isPermissionsReady" />
+    <router-view />
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, inject, computed } from 'vue'
-    import useTypedefs from '~/composables/typedefs/useTypedefs'
+import { defineComponent, ref, watch, inject, computed } from 'vue'
+import useTypedefs from '~/composables/typedefs/useTypedefs'
 
-    import useTenant from '~/composables/tenant/useTenant'
-    import useConnection from '~/composables/connection/useConnection'
-    import usePermissions from '~/composables/auth/usePermissions'
+import useTenant from '~/composables/tenant/useTenant'
+import useConnection from '~/composables/connection/useConnection'
+import usePermissions from '~/composables/auth/usePermissions'
+import { useAuthStore } from './store/auth'
 
-    export default defineComponent({
-        setup(props, context) {
-            const isPermissionsReady = ref(false)
-            const isTypedefReady = ref(false)
+export default defineComponent({
+    setup(props, context) {
+        // const isPermissionsReady = ref(false)
+        // const isTypedefReady = ref(false)
 
-            // permissions
-            const { data } = usePermissions()
+        const authStore = useAuthStore()
+        authStore.setUserDetails()
 
-            // tenant
-            useTenant()
+        // permissions
+        const { data: permissions } = usePermissions()
 
-            // typedefs
-            const { data: typedef } = useTypedefs()
+        // tenant
+        useTenant()
 
-            // connections
-            useConnection()
+        // typedefs
+        const { data: typedef } = useTypedefs()
 
-            // // glossary list
-            // useGlossary()
+        // // connections
+        // useConnection()
 
-            watch([data], () => {
-                isPermissionsReady.value = true
-            })
-            watch([typedef], () => {
-                isTypedefReady.value = true
-            })
+        // // glossary list
+        // useGlossary()
 
-            return { data, isTypedefReady, isPermissionsReady }
-        },
-    })
+        // watch([data], () => {
+        //     isPermissionsReady.value = true
+        // })
+        // watch([typedef], () => {
+        //     isTypedefReady.value = true
+        // })
+
+        return {}
+    },
+})
 </script>

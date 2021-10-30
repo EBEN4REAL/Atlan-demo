@@ -1,3 +1,5 @@
+import { useStorage } from '@vueuse/core'
+
 export interface State {
     displayName: string
     displayNameHtml: string
@@ -7,8 +9,8 @@ export interface State {
 }
 
 export const state: State = {
-    displayName: '',
-    displayNameHtml: '',
+    displayName: useStorage('tenant_displayName', ''),
+    displayNameHtml: useStorage('tenant_displayNameHtml', ''),
     smtpServer: {},
     identityProviders: [],
     identityProviderMappers: [],

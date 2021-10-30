@@ -10,13 +10,29 @@ export interface Getters {
 
 export const getters: GettersTree<State> & Getters = {
     getSourceList() {
-        const tempSourceList = [
-            ...new Set(this.list?.map((i) => i.attributes.connectorName)),
-        ]
+        const duplicateList = this.list?.map((i) =>
+            i.attributes.connectorName.toLowerCase()
+        )
 
-        return SourceList.filter((item) =>
-            tempSourceList.includes(item.id)
-        ).sort((a, b) => (a.label > b.label ? 1 : b.label > a.label ? -1 : 0))
+        let countMap = duplicateList.reduce((prev, cur) => {
+            prev[cur] = (prev[cur] || 0) + 1
+            return prev
+        }, {})
+
+        console.log(countMap)
+
+        const sourceList = SourceList.map((i) => ({
+            ...i,
+            count: countMap[i.id],
+        }))
+
+        console.log(sourceList)
+
+        return sourceList
+            .filter((item) => item.count > 0)
+            .sort((a, b) =>
+                a.count < b.count ? 1 : b.count < a.count ? -1 : 0
+            )
     },
     getConnectorImageMapping() {
         const map = {}

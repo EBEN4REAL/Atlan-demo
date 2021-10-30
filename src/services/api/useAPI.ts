@@ -1,4 +1,4 @@
-import { Method } from 'axios'
+import axios, { Method } from 'axios'
 
 import { Ref, computed, ref, isRef } from 'vue'
 
@@ -30,6 +30,7 @@ export const useAPI = <T>(
 ) => {
     if (cacheOptions) {
         const url = computed(() => resolveUrl(path, pathVariables))
+
         const { data, error, mutate, isValidating } = useSWRV<T>(
             isRef(cacheKey) ? cacheKey.value : cacheKey,
             () =>

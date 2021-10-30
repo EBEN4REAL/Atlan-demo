@@ -12,6 +12,7 @@ export const SourceList = [
         label: 'Snowflake',
         image: snowflake,
         filterMaxLevel: 2,
+        connectionCount: 0,
         hierarchy: [
             {
                 typeName: 'Database',
@@ -77,12 +78,14 @@ export const SourceList = [
         label: 'Redshift',
         image: redshift,
         hierarchy: [],
+        connectionCount: 0,
     },
     {
         id: 'postgres',
         label: 'Postgres',
         image: postgres,
         hierarchy: [],
+        connectionCount: 0,
         types: [
             'Database',
             'Schema',
@@ -100,6 +103,7 @@ export const SourceList = [
         label: 'Athena',
         image: athena,
         hierarchy: [],
+        connectionCount: 0,
         types: [
             'Database',
             'Schema',
@@ -116,6 +120,7 @@ export const SourceList = [
         id: 'powerBI',
         label: 'PowerBI',
         image: tableau,
+        connectionCount: 0,
         hierarchy: [],
         types: [
             'PowerBIWorkspace',

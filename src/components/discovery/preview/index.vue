@@ -25,14 +25,16 @@
                     to="/"
                     class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
-                    {{ title(selectedAsset) }} </router-link
-                ><CertificateBadge
+                    {{ title(selectedAsset) }}
+                </router-link>
+
+                <!-- <CertificateBadge
                     :status="certificateStatus(selectedAsset)"
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
                     class="mb-0.5"
-                ></CertificateBadge>
+                ></CertificateBadge> -->
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -76,7 +78,7 @@
                 tab-position="left"
             >
                 <a-tab-pane
-                    v-for="(tab, index) in previewTabs(asset)"
+                    v-for="(tab, index) in previewTabs(selectedAsset)"
                     :key="index"
                     class="overflow-y-auto"
                 >
@@ -299,7 +301,7 @@
     // import useAssetInfo from '~/composables/asset/useAssetInfo'
     // import { assetInterface } from '~/types/assets/asset.interface'
     // import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
-    import PreviewTabsIcon from '~/components/common/tabs/previewTabsIcon.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     // import { images, dataTypeList } from '~/constant/datatype'
     // import { copyToClipboard } from '~/utils/clipboard'
     // import useCheckAccess from '~/services/access/useCheckAccess'

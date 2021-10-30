@@ -14,8 +14,10 @@ export const CONNECTION_ATTRIBUTES = [
     'defaultCredentialGuid',
 ]
 
+const GROUP_AGGREATION = 'group_by_connection'
+
 export default function useConnection() {
-    const { data } = useIndexSearch(
+    const { data, aggregationMap } = useIndexSearch(
         {
             dsl: {
                 size: MAX_CONNECTIONS,
@@ -31,7 +33,7 @@ export default function useConnection() {
                     },
                 },
                 aggs: {
-                    group_by_connection: {
+                    [GROUP_AGGREATION]: {
                         terms: {
                             field: 'connectionName',
                             size: MAX_CONNECTIONS,
@@ -42,18 +44,14 @@ export default function useConnection() {
             attributes: [...CONNECTION_ATTRIBUTES, ...ConnectionAttriibutes],
         },
         ref('DEFAULT_CONNECTIONS'),
-        null,
-        true
+        false
     )
-
     const connectionStore = useConnectionStore()
     watch(data, () => {
-        connectionStore.setList(data.value?.entities || [])
-        connectionStore.setAssetCount(
-            data.value?.aggregations?.group_by_connection?.buckets
-        )
+        connectionStore.setList(data?.value.entities || [])
+        connectionStore.setAssetCount(aggregationMap(GROUP_AGGREATION) || [])
     })
     return {
-        data,
+        list,
     }
 }

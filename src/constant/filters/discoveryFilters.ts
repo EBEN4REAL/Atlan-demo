@@ -1,5 +1,14 @@
 export const discoveryFilters = [
     {
+        id: 'connection',
+        label: 'Connection',
+        component: 'connection',
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
         id: 'certificate',
         label: 'Certificate',
         component: 'certificate',

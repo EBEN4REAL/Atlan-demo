@@ -5,23 +5,14 @@
             class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
             <AssetFilters
-                :ref="
-                    (el) => {
-                        assetFilterRef = el
-                    }
-                "
-                v-model:facetMap="facetMap"
+                v-model:facetMap="facets"
                 @change="handleFilterChange"
             ></AssetFilters>
         </div>
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
                 <div class="px-3 py-1 border-b border-gray-200">
-                    <SearchAdvanced
-                        v-model:value="queryText"
-                        :autofocus="true"
-                        size="large"
-                    >
+                    <SearchAdvanced v-model:value="queryText" :autofocus="true">
                         <template #postFilter>
                             <Preferences />
                         </template>
@@ -29,17 +20,35 @@
                 </div>
 
                 <div class="w-full px-4">
-                    <AssetTabs
+                    <AggregationTabs
                         class="mt-3"
-                        v-model:facetMap="facetMap"
-                        :assetTypeList="assetTypeMappedList"
-                        @change="handleAssetTypeFilterChange"
-                    ></AssetTabs>
+                        :list="assetTypeAggregationList"
+                    >
+                        <!--      <a-popover
+                            trigger="click"
+                            placement="bottomLeft"
+                            class=""
+                        >
+                           <template #content>
+                                <div
+                                    class="flex flex-col py-1 rounded gap-y-3 preference-container"
+                                ></div>
+                            </template> 
+
+                            <div
+                                class="flex items-center hover:text-primary"
+                                :class="$style.tab"
+                            >
+                                <AtlanIcon icon="Globe" class="w-auto h-5" />
+                                <AtlanIcon icon="ChevronDown" class="w-3 h-3" />
+                            </div>
+                        </a-popover>-->
+                    </AggregationTabs>
                 </div>
 
                 <div
                     class="flex items-center justify-center flex-grow"
-                    v-if="isLoading || (list.length == 0 && isValidating)"
+                    v-if="isLoading && list.length == 0"
                 >
                     <AtlanIcon
                         icon="Loader"
@@ -58,8 +67,8 @@
                     ref="assetlistRef"
                     :list="list"
                     @loadMore="handleLoadMore"
-                    :isLoading="isLoading || isValidating"
                     :isLoadMore="isLoadMore"
+                    :isLoading="isLoading"
                     @preview="handlePreview"
                 />
             </div>
@@ -76,7 +85,7 @@
 
     // import { useRouter } from 'vue-router'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import AssetTabs from '@/discovery/assetType/index.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import Preferences from '@/discovery/preference.vue'
     import AssetList from '~/components/discovery/list/assetList.vue'
     import AssetFilters from '@/discovery/filters/index.vue'
@@ -90,6 +99,7 @@
         SQLAttributes,
     } from '~/constant/projection'
     import useEvaluate from '~/composables/auth/useEvaluate'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     // import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
 
@@ -116,11 +126,13 @@
     //     generateAssetPostQueryDSL,
     // } from './useDiscoveryDSL'
 
+    import { assetTypeList } from '~/constant/assetType'
+
     export default defineComponent({
         name: 'AssetDiscovery',
         components: {
             AssetList,
-            AssetTabs,
+            AggregationTabs,
             AssetFilters,
             SearchAdvanced,
             Preferences,
@@ -143,88 +155,83 @@
         },
         setup(props, { emit }) {
             const showFilters = ref(props.showFilters)
-
-            // initializing the discovery store
-            // const router = useRouter()
-            // // Asset filter component ref
-            const assetFilterRef = ref()
-            // const autoSelect = ref(true)
-            // // const tracking = useTracking()
-            // // const events = tracking.getEventsName()
-            // const isAggregate = ref(true)
-            // // Temporary, not saved in url
             const limit = ref(20)
             const offset = ref(0)
-            const scrollDiv = ref(null)
-            // // Permanents
-            // const selectedTab = ref('Catalog')
             const queryText = ref('')
-            // const sortOrder = ref('default')
-            // const state = ref('active')
-            const facetMap = ref({})
+            const facets = ref({})
+            const aggregations = ref({})
+            const postFacets = ref({})
+            const dependentKey = ref('DISCOVERY')
+            const defaultAttributes = ref([
+                ...InternalAttributes,
+                ...AssetAttributes,
+                ...SQLAttributes,
+            ])
+            const relationAttributes = ref([...AssetRelationAttributes])
 
-            if (!facetMap.value.typeName) {
-                facetMap.value.typeName = '__all'
+            if (!facets.value.typeName) {
+                facets.value.typeName = '__all'
             }
 
-            const {
-                handleFacetDSL,
-                handlePostFacetDSL,
-                handleAggregationDSL,
-                getAssetTypeList,
-                handleSelectedAsset,
-            } = useAssetListing()
+            // const {
+            //     handleFacetDSL,
+            //     handlePostFacetDSL,
+            //     handleAggregationDSL,
+            //     getAssetTypeList,
+            //     handleSelectedAsset,
+            // } = useAssetListing()
 
-            const body = ref({
-                dsl: {
-                    size: limit.value,
-                    from: offset.value,
-                    ...handleFacetDSL(facetMap.value),
-                    ...handleAggregationDSL(facetMap.value),
-                    post_filter: handlePostFacetDSL(facetMap.value)?.query,
-                },
-                attributes: [
-                    ...InternalAttributes,
-                    ...AssetAttributes,
-                    ...SQLAttributes,
-                ],
-                relationAttributes: [...AssetRelationAttributes],
-            })
+            // const body = ref({
+            //     dsl: {
+            //         size: limit.value,
+            //         from: offset.value,
+            //         ...handleFacetDSL(facetMap.value),
+            //         ...handleAggregationDSL(facetMap.value),
+            //         post_filter: handlePostFacetDSL(facetMap.value)?.query,
+            //     },
+            //     attributes: [
+            //         ...InternalAttributes,
+            //         ...AssetAttributes,
+            //         ...SQLAttributes,
+            //     ],
+            //     relationAttributes: [...AssetRelationAttributes],
+            // })
 
-            const {
-                data,
-                list,
-                refresh,
-                typenameAggregation,
-                isLoading,
-                isValidating,
-            } = useIndexSearch(body, ref('DEFAULT_DISCOVERY'), null, true)
-
-            const assetTypeMappedList = computed(() =>
-                getAssetTypeList(typenameAggregation.value, true)
-            )
+            const { list, isLoading, assetTypeAggregationList, isLoadMore } =
+                useDiscoverList(
+                    false,
+                    dependentKey,
+                    queryText,
+                    facets,
+                    aggregations,
+                    postFacets,
+                    limit,
+                    offset,
+                    defaultAttributes,
+                    relationAttributes
+                )
 
             const handlePreview = (item) => {
                 handleSelectedAsset(item)
             }
 
-            watch(data, () => {
-                if (!isValidating.value) {
-                    const entities = list.value.map((i) => ({
-                        typeName: i.typeName,
-                        entityGuid: i.guid,
-                        action: 'ENTITY_UPDATE',
-                    }))
-                    useEvaluate(
-                        {
-                            entities,
-                        },
-                        ref('DEFAULT_EVALUATE'),
-                        null,
-                        false
-                    )
-                }
-            })
+            // watch(data, () => {
+            //     // if (!isLoading.value.value) {
+            //     //     const entities = list.value.map((i) => ({
+            //     //         typeName: i.typeName,
+            //     //         entityGuid: i.guid,
+            //     //         action: 'ENTITY_UPDATE',
+            //     //     }))
+            //     //     useEvaluate(
+            //     //         {
+            //     //             entities,
+            //     //         },
+            //     //         ref('DEFAULT_EVALUATE'),
+            //     //         null,
+            //     //         false
+            //     //     )
+            //     // }
+            // })
 
             // const assetCategoryFilter = ref([])
             // // Initialization via IIFE
@@ -310,20 +317,7 @@
             //     if (type === 'connector') placeholderLabel.value.asset = ''
             // }
             // // Push all asset type
-            const assetlistRef = ref(null)
-            const isLoadMore = computed(() => {
-                const found = assetTypeMappedList.value.find(
-                    (i) => i.id === facetMap.value.typeName
-                )
 
-                if (found) {
-                    if (list.value.length < found.count) {
-                        return true
-                    }
-                }
-
-                return false
-            })
             // const updateBody = () => {
             //     const initialBody = {
             //         relationAttributes: [
@@ -445,29 +439,28 @@
             // }
 
             const handleFilterChange = () => {
-                body.value = {
-                    dsl: {
-                        size: limit.value,
-                        from: offset.value,
-                        ...handleFacetDSL(facetMap.value),
-                        ...handleAggregationDSL(facetMap.value),
-                        post_filter: handlePostFacetDSL(facetMap.value)?.query,
-                    },
-                    attributes: [
-                        ...InternalAttributes,
-                        ...AssetAttributes,
-                        ...SQLAttributes,
-                    ],
-                    relationAttributes: [...AssetRelationAttributes],
-                }
-                refresh()
+                // body.value = {
+                //     dsl: {
+                //         size: limit.value,
+                //         from: offset.value,
+                //         ...handleFacetDSL(facetMap.value),
+                //         ...handleAggregationDSL(facetMap.value),
+                //         post_filter: handlePostFacetDSL(facetMap.value)?.query,
+                //     },
+                //     attributes: [
+                //         ...InternalAttributes,
+                //         ...AssetAttributes,
+                //         ...SQLAttributes,
+                //     ],
+                //     relationAttributes: [...AssetRelationAttributes],
+                // }
+                // refresh()
             }
 
             const handleAssetTypeFilterChange = () => {
                 // assetlistRef.value.scrollTop = 0
-
-                offset.value = 0
-                handleFilterChange()
+                // offset.value = 0
+                // handleFilterChange()
             }
 
             // function handleFilterChange(filterMapData: Record<string, any>) {
@@ -483,33 +476,31 @@
             // // }
 
             const handleLoadMore = () => {
-                const found = assetTypeMappedList.value.find(
-                    (i) => i.id === facetMap.value.typeName
-                )
-
-                if (found) {
-                    if (list.value.length < found.count) {
-                        offset.value += limit.value
-                    }
-
-                    body.value = {
-                        dsl: {
-                            size: limit.value,
-                            from: offset.value,
-                            ...handleFacetDSL(facetMap.value),
-                            ...handleAggregationDSL(facetMap.value),
-                            post_filter: handlePostFacetDSL(facetMap.value)
-                                ?.query,
-                        },
-                        attributes: [
-                            ...InternalAttributes,
-                            ...AssetAttributes,
-                            ...SQLAttributes,
-                        ],
-                        relationAttributes: [...AssetRelationAttributes],
-                    }
-                    refresh(true)
-                }
+                // const found = assetTypeMappedList.value.find(
+                //     (i) => i.id === facetMap.value.typeName
+                // )
+                // if (found) {
+                //     if (list.value.length < found.count) {
+                //         offset.value += limit.value
+                //     }
+                //     body.value = {
+                //         dsl: {
+                //             size: limit.value,
+                //             from: offset.value,
+                //             ...handleFacetDSL(facetMap.value),
+                //             ...handleAggregationDSL(facetMap.value),
+                //             post_filter: handlePostFacetDSL(facetMap.value)
+                //                 ?.query,
+                //         },
+                //         attributes: [
+                //             ...InternalAttributes,
+                //             ...AssetAttributes,
+                //             ...SQLAttributes,
+                //         ],
+                //         relationAttributes: [...AssetRelationAttributes],
+                //     }
+                //     refresh(true)
+                // }
             }
             // function loadMore() {
             //     autoSelect.value = false
@@ -573,23 +564,17 @@
             // }
 
             return {
-                showFilters,
                 handleFilterChange,
                 handleAssetTypeFilterChange,
-                handleFacetDSL,
-                assetFilterRef,
-                queryText,
-                refresh,
-                facetMap,
-                list,
-                isValidating,
-                getAssetTypeList,
-                assetTypeMappedList,
-                isLoadMore,
                 isLoading,
+                queryText,
+                assetTypeAggregationList,
+                list,
+
+                isLoadMore,
 
                 handleLoadMore,
-                assetlistRef,
+
                 handlePreview,
             }
         },
@@ -606,5 +591,19 @@
     .facets {
         max-width: 264px;
         width: 25%;
+    }
+</style>
+
+<style lang="less" module>
+    .tab {
+        @apply bg-white text-sm mr-1 !important;
+        border: 1px solid #e6e6eb;
+        border-radius: 24px !important;
+        border: 1px solid #e6e6eb !important;
+
+        padding: 3px 8px !important;
+        box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05) !important;
+
+        transition: all 0.8s ease-out;
     }
 </style>

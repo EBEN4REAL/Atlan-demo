@@ -1,8 +1,5 @@
 <template>
-    <a-tooltip
-        :placement="placement"
-        :overlayClassName="`tooltips-badge ${status?.toLowerCase()}`"
-    >
+    <a-tooltip :placement="placement">
         <template #title>
             <div class="p-2">
                 <div

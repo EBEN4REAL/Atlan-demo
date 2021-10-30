@@ -119,12 +119,6 @@
                     assetCategory.value.push(property.id)
                 }
             }
-            // const assetType = ref<String>(props.modelValue)
-
-            // const handleChange = () => {
-            //     console.log('sadasd')
-            //     emit('update:modelValue', assetType.value)
-            // }
 
             const handleChange = () => {
                 const found = assetTypeList.value.find(
@@ -142,65 +136,14 @@
                 emit('change')
             }
 
-            // watch(
-            //     () => props.assetTypeList,
-            //     () => {
-            //         // check if the current assetType exists in assetTypeList
-            //         const found = props.assetTypeList.find(
-            //             (item) => item.id === assetType.value
-            //         )
-            //         if (!found) {
-            //             assetType.value = 'Catalog'
-            //             handleChange()
-            //         }
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
-            // const sortedAssetTypeList = computed(() => {
-            //     // remove catalog object so that the rest of list can be used for filtering
-            //     const assetTypeListWithoutCatalog = props.assetTypeList.filter(
-            //         (type) => type.id !== 'Catalog'
-            //     )
-            //     // get catalog object - to reconstruct the sorted list- this would always be the first tab
-            //     const catalogObject = props.assetTypeList.filter(
-            //         (type) => type.id === 'Catalog'
-            //     )
-            //     // filter out types with 0 results
-            //     const typesWithNoResults = assetTypeListWithoutCatalog.filter(
-            //         (type) => !props.assetTypeMap[type.id]
-            //     )
-            //     // filter out types with results
-            //     const typesWithResults = assetTypeListWithoutCatalog.filter(
-            //         (type) =>
-            //             props.assetTypeMap[type.id] &&
-            //             props.assetTypeMap[type.id] > 0
-            //     )
-            //     return [
-            //         ...catalogObject,
-            //         ...typesWithResults,
-            //         ...typesWithNoResults,
-            //     ]
-            // })
-            // watch(assetTypeMap, () => {
-            //     const prev = assetType.value
-            //     assetType.value = ''
-            //     nextTick(() => (assetType.value = prev))
-            // })
-
             return {
                 assetTypeList,
                 getCountString,
                 assetCategoryList,
                 isAssetStatusSelected,
                 toggleStatusSelect,
-
                 handleChange,
                 localFacetMap,
-
-                // getCountString,
-                // sortedAssetTypeList,
             }
         },
     })

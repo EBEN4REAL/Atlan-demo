@@ -8,7 +8,6 @@
 
     import useTenant from '~/composables/tenant/useTenant'
     import useConnection from '~/composables/connection/useConnection'
-    import useGlossary from '~/composables/glossary/useGlossary'
     import usePermissions from '~/composables/auth/usePermissions'
 
     export default defineComponent({
@@ -28,8 +27,8 @@
             // connections
             useConnection()
 
-            // glossary list
-            useGlossary()
+            // // glossary list
+            // useGlossary()
 
             watch([data], () => {
                 isPermissionsReady.value = true

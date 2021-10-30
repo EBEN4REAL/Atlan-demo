@@ -52,12 +52,12 @@
                         {{ title(item) }}
                     </router-link>
 
-                    <CertificateBadge
+                    <!-- <CertificateBadge
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
-                    ></CertificateBadge>
+                    ></CertificateBadge> -->
                     <!-- <CertificatePopover :data="item" /> -->
                 </div>
 
@@ -237,23 +237,20 @@
                                 <span>Schema - {{ schemaName(item) }}</span>
                             </template>
                         </a-tooltip>
-                        <!-- <a-tooltip
-                            placement="bottomLeft"
-                            v-if="tableName(item)"
-                        >
+                        <a-tooltip placement="bottomLeft" v-if="viewName(item)">
                             <div
-                                v-if="tableName(item)"
+                                v-if="viewName(item)"
                                 class="flex items-center text-gray-500"
                             >
-                                <AtlanIcon icon="Schema" class="mr-1 mb-0.5" />
+                                <AtlanIcon icon="View" class="mr-1 mb-0.5" />
                                 <div class="tracking-tight text-gray-500">
-                                    {{ tableName(item) }}
+                                    {{ viewName(item) }}
                                 </div>
                             </div>
                             <template #title>
-                                <span>Table - {{ tableName(item) }}</span>
+                                <span>View - {{ viewName(item) }}</span>
                             </template>
-                        </a-tooltip> -->
+                        </a-tooltip>
                         <a-tooltip
                             placement="bottomLeft"
                             v-if="tableName(item)"
@@ -391,6 +388,7 @@
                 databaseName,
                 schemaName,
                 tableName,
+                viewName,
                 connectorName,
                 connectionName,
                 dataTypeCategoryLabel,
@@ -491,6 +489,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 tableName,
+                viewName,
             }
         },
     })

@@ -32,10 +32,9 @@ export function generateFilterDSL(facet: Record<string, any>) {
         }
     })
 
+    // Global TypeName Filters
     query.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
     query.orFilter('terms', '__typeName.keyword', ['Query'])
-
-    // query.filter('term', '__superTypes.keyword', 'Catalog')
 
     query.filterMinimumShouldMatch(1)
     return query.build()

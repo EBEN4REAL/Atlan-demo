@@ -1,24 +1,23 @@
-import { Ref, ref, computed, watch } from 'vue'
+import { Ref, ref, computed } from 'vue'
 
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
-// import { Search } from '~/api2/search'
+import axios from 'axios'
+
 import { Discovery } from '~/services/meta/discovery'
 import { useOptions } from '~/services/api/common'
 
 export default function useIndexSearch(
     body: Record<string, any> | Ref<Record<string, any>>,
     dependentKey?: Ref<any>,
-    token?: any,
     isCache?: boolean
 ) {
     const options: useOptions = {}
 
-    if (token) {
-        options.options = ref({
-            cancelToken: token.value,
-        })
-    }
+    let cancel = axios.CancelToken.source()
+    options.options = ref({
+        cancelToken: cancel.token,
+    })
 
     if (!isCache) {
         if (dependentKey) {
@@ -47,45 +46,45 @@ export default function useIndexSearch(
     const { data, mutate, error, isLoading, isValidating } =
         Discovery.IndexSearch(body, options)
 
-    const list = ref([])
-
-    watch(data, () => {
-        console.log('watch data', isValidating.value)
-        if (!isValidating.value) {
-            if (body?.value?.dsl.from > 0) {
-                list.value = list.value.concat(data?.value?.entities)
-            } else if (data.value?.entities) {
-                list.value = data.value?.entities
-            } else {
-                list.value = []
-            }
+    const approximateCount = computed(() => {
+        if (data?.value.approximateCount) {
+            return data.value?.approximateCount
         }
+        return 0
     })
 
     const aggregationMap = (key) => {
-        if (data?.value?.aggregations[key]) {
-            return data?.value?.aggregations[key].buckets
+        if (data?.value?.aggregations) {
+            if (data?.value?.aggregations[key]) {
+                return data?.value?.aggregations[key].buckets
+            }
         }
-        return {}
+        return []
     }
 
-    const typenameAggregation = computed(() => {
-        return aggregationMap('typename')
-    })
-
     const refresh = () => {
+        // TODO - Cancellation doesnt work with useSWRV
+        if (!isCache) {
+            if (cancel) {
+                cancel.cancel('operation cancelled')
+            }
+            cancel = axios.CancelToken.source()
+            options.options.value = {
+                cancelToken: cancel.token,
+            }
+        }
         mutate()
     }
 
     return {
         data,
-        list,
+        approximateCount,
         aggregationMap,
         mutate,
         refresh,
         error,
         isLoading,
         isValidating,
-        typenameAggregation,
+        cancel,
     }
 }

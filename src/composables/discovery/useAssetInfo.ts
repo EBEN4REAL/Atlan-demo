@@ -20,7 +20,8 @@ export default function useAssetInfo() {
     const connectionStore = useConnectionStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
-    const title = (asset: assetInterface) => attributes(asset)?.name ?? ''
+    const title = (asset: assetInterface) =>
+        (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
@@ -57,6 +58,9 @@ export default function useAssetInfo() {
 
     const tableName = (asset: assetInterface) =>
         attributes(asset)?.tableName ?? ''
+
+    const viewName = (asset: assetInterface) =>
+        attributes(asset)?.viewName ?? ''
     // const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
     // const assetTypeLabel = (asset: assetInterface) => {
     //     const found = AssetTypeList.find((d) => d.id === assetType(asset))
@@ -192,7 +196,6 @@ export default function useAssetInfo() {
         dataTypeCategory(asset)?.label
 
     const dataTypeCategoryImage = (asset: assetInterface) => {
-        console.log(dataTypeCategory(asset))
         return dataTypeCategory(asset)?.image
     }
 
@@ -612,6 +615,7 @@ export default function useAssetInfo() {
         databaseName,
         schemaName,
         tableName,
+        viewName,
         connectorName,
         dataType,
         dataTypeCategoryLabel,

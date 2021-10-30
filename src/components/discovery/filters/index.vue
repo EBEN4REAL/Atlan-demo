@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            class="flex items-center justify-between px-4 py-3 text-sm  bg-gray-10"
+            class="flex items-center justify-between px-4 py-3 text-sm border-b  bg-gray-10"
         >
             <div class="font-medium text-gray-500">
                 {{ totalAppliedFiltersCount }}
@@ -9,13 +9,13 @@
             </div>
         </div>
         <div class="h-full overflow-y-auto">
-            <div class="px-3 pb-3 border-b">
+            <!-- <div class="px-3 pb-3 border-b">
                 <Connector
                     v-model:connector="localFacetMap['connector']"
                     v-model:connection="localFacetMap['connection']"
                     @change="handleChange"
                 ></Connector>
-            </div>
+            </div> -->
 
             <a-collapse
                 v-model:activeKey="activeKey"
@@ -125,9 +125,9 @@
             Owners: defineAsyncComponent(
                 () => import('@common/facet/owners/index.vue')
             ),
-            // Owners: defineAsyncComponent(
-            //     () => import('@common/facets/owners.vue')
-            // ),
+            Connection: defineAsyncComponent(
+                () => import('@/common/facet/connection/index.vue')
+            ),
             // Classifications: defineAsyncComponent(
             //     () => import('@common/facets/classifications.vue')
             // ),

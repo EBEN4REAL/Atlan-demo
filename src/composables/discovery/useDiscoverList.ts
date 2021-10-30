@@ -6,6 +6,7 @@ import { generateAggregationDSL } from './generateAggregationDSL'
 
 import useIndexSearch from './useIndexSearch'
 import { assetTypeList } from '~/constant/assetType'
+import useDiscoveryStore from '~/store/discovery'
 
 const assetTypeAggregationName = 'group_by_typeName'
 
@@ -21,18 +22,25 @@ export function useDiscoverList(
     attributes?: Ref<string[]>,
     relationAttributes?: Ref<string[]>
 ) {
-    const defaultBody = ref({
-        dsl: {
-            size: limit?.value || 20,
-            from: offset?.value || 0,
-            ...generateFilterDSL(facets?.value),
-            ...generateAggregationDSL(),
-            ...generatePostFilterDSL(postFacets?.value),
-        },
-        attributes,
-        relationAttributes,
-    })
+    const defaultBody = ref({})
 
+    const generateBody = () => {
+        defaultBody.value = {
+            dsl: {
+                size: limit?.value || 20,
+                from: offset?.value || 0,
+                ...generateFilterDSL(facets?.value),
+                ...generateAggregationDSL(),
+                ...generatePostFilterDSL(postFacets?.value),
+            },
+            attributes: attributes?.value,
+            relationAttributes: relationAttributes?.value,
+        }
+    }
+
+    const localKey = ref(dependentKey?.value)
+
+    generateBody()
     const {
         data,
         refresh,
@@ -40,7 +48,8 @@ export function useDiscoverList(
         isValidating,
         aggregationMap,
         approximateCount,
-    } = useIndexSearch(defaultBody, dependentKey, isCache)
+        cancelRequest,
+    } = useIndexSearch(defaultBody, localKey, isCache, false, 1)
 
     const list = ref([])
     watch(data, () => {
@@ -51,8 +60,6 @@ export function useDiscoverList(
         } else {
             list.value = [...data?.value?.entities]
         }
-
-        console.log('list', list)
     })
 
     const getAggregationList = (
@@ -102,7 +109,6 @@ export function useDiscoverList(
             }
             return 0
         })
-
         const initialValue = 0
         const sum = temp.reduce(
             (accumulator, currentValue) => accumulator + currentValue.count,
@@ -138,8 +144,20 @@ export function useDiscoverList(
         return false
     })
 
+    const quickChange = () => {
+        generateBody()
+        cancelRequest()
+        localKey.value = `dirty_${Date.now().toString()}`
+    }
+
     const fetch = () => {
+        generateBody()
         refresh()
+    }
+    const discoveryStore = useDiscoveryStore()
+
+    const handleSelectedAsset = (item) => {
+        discoveryStore.setSelectedAsset(item)
     }
 
     return {
@@ -155,6 +173,9 @@ export function useDiscoverList(
         list,
         data,
         fetch,
+        quickChange,
+        cancelRequest,
         isLoadMore,
+        handleSelectedAsset,
     }
 }

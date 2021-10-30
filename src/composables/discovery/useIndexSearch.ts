@@ -10,7 +10,9 @@ import { useOptions } from '~/services/api/common'
 export default function useIndexSearch(
     body: Record<string, any> | Ref<Record<string, any>>,
     dependentKey?: Ref<any>,
-    isCache?: boolean
+    isCache?: boolean,
+    isLocal?: boolean | true,
+    ttl?: Number | 0
 ) {
     const options: useOptions = {}
 
@@ -36,10 +38,12 @@ export default function useIndexSearch(
             dedupingInterval: 0,
             shouldRetryOnError: false,
             revalidateOnFocus: false,
-            ttl: 1,
+            ttl,
             revalidateDebounce: 0,
-            cache: new LocalStorageCache(),
         })
+        if (isLocal) {
+            options.cacheOptions.cache = new LocalStorageCache()
+        }
         options.cacheKey = dependentKey
     }
 
@@ -62,22 +66,25 @@ export default function useIndexSearch(
         return []
     }
 
-    const refresh = () => {
-        // TODO - Cancellation doesnt work with useSWRV
-        if (!isCache) {
-            if (cancel) {
-                cancel.cancel('operation cancelled')
-            }
-            cancel = axios.CancelToken.source()
-            options.options.value = {
-                cancelToken: cancel.token,
-            }
+    const cancelRequest = () => {
+        if (cancel) {
+            cancel.cancel('operation cancelled')
         }
+        cancel = axios.CancelToken.source()
+        options.options.value = {
+            cancelToken: cancel.token,
+        }
+    }
+
+    const refresh = () => {
+        cancelRequest()
         mutate()
     }
 
     return {
         data,
+        options,
+        cancel,
         approximateCount,
         aggregationMap,
         mutate,
@@ -85,6 +92,6 @@ export default function useIndexSearch(
         error,
         isLoading,
         isValidating,
-        cancel,
+        cancelRequest,
     }
 }

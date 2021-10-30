@@ -11,7 +11,7 @@
         <div class="h-full overflow-y-auto">
             <!-- <div class="px-3 pb-3 border-b">
                 <Connector
-                    v-model:connector="localFacetMap['connector']"
+                    v-model:connector="localfacets['connector']"
                     v-model:connection="localFacetMap['connection']"
                     @change="handleChange"
                 ></Connector>
@@ -73,16 +73,15 @@
                             </div>
                         </div>
                     </template>
-
+                    <!-- 
                     <component
                         v-if="item.component === 'businessMetadata'"
                         :is="item.component"
-                    ></component>
+                    ></component> -->
 
                     <component
-                        v-else
                         :is="item.component"
-                        v-model:facetMap="localFacetMap[item.id]"
+                        v-model="localFacetMap[item.id]"
                         @change="handleChange"
                     ></component>
                 </a-collapse-panel>
@@ -155,7 +154,7 @@
                     return {}
                 },
             },
-            facetMap: {
+            modelValue: {
                 type: Object,
                 required: false,
                 default() {
@@ -163,11 +162,11 @@
                 },
             },
         },
-        emits: ['change', 'update:facetMap'],
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { facetMap } = useVModels(props, emit)
+            const { modelValue } = useVModels(props, emit)
 
-            const localFacetMap = ref(facetMap.value)
+            const localFacetMap = ref(modelValue.value)
 
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
@@ -243,8 +242,8 @@
             //     emit('refresh', dataMap.value)
             // }
             const handleChange = () => {
-                console.log(localFacetMap.value)
-                facetMap.value = localFacetMap.value
+                console.log(localFacetMap)
+                modelValue.value = localFacetMap.value
                 emit('change')
 
                 // dirtyTimestamp.value = `dirty_${Date.now().toString()}`
@@ -451,7 +450,6 @@
                 activeKey,
                 dirtyTimestamp,
                 dynamicList,
-                facetMap,
                 localFacetMap,
                 handleChange,
             }

@@ -32,7 +32,7 @@ export const useAPI = <T>(
         const url = computed(() => resolveUrl(path, pathVariables))
 
         const { data, error, mutate, isValidating } = useSWRV<T>(
-            isRef(cacheKey) ? cacheKey.value : cacheKey,
+            () => (isRef(cacheKey) ? cacheKey.value : cacheKey),
             () =>
                 useAPIPromise(url.value, method, {
                     params,

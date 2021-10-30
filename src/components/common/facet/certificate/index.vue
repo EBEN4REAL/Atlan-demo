@@ -48,28 +48,24 @@
 
     export default defineComponent({
         props: {
-            facetMap: {
+            modelValue: {
                 required: false,
                 default() {
                     return []
                 },
             },
         },
-        emits: ['change', 'update:facetMap'],
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { facetMap } = useVModels(props, emit)
-
+            const { modelValue } = useVModels(props, emit)
             let initialValue = []
-            if (facetMap?.value) {
-                initialValue = facetMap?.value
+            if (modelValue?.value) {
+                initialValue = modelValue?.value
             }
-
-            console.log(initialValue)
-
             const localFacetMap = ref(initialValue)
 
             const handleChange = () => {
-                facetMap.value = localFacetMap.value
+                modelValue.value = localFacetMap.value
                 emit('change')
                 useAddEvent('discovery', 'facet', 'changed', {
                     filter_type: 'certificate',

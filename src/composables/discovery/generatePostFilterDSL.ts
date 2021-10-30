@@ -17,5 +17,5 @@ export function generatePostFilterDSL(facet: Record<string, any>) {
             }
         }
     })
-    return query.build()
+    return { post_filter: query.build().query }
 }

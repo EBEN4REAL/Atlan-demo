@@ -71,7 +71,7 @@
                 </a-button-group>
             </div>
         </div>
-        <div>
+        <div class="">
             <a-tabs
                 v-model:activeKey="activeKey"
                 :class="$style.previewtab"
@@ -80,7 +80,7 @@
                 <a-tab-pane
                     v-for="(tab, index) in previewTabs(selectedAsset)"
                     :key="index"
-                    class="overflow-y-auto"
+                    :style="{ height: 'calc(100vh - 130px)' }"
                 >
                     <template #tab>
                         <PreviewTabsIcon
@@ -91,15 +91,10 @@
                         />
                     </template>
 
-                    <div
-                        class="flex flex-col"
-                        :style="{ height: tabHeights[page] }"
-                    >
-                        <component
-                            :is="tab.component"
-                            :selectedAsset="selectedAsset"
-                        ></component>
-                    </div>
+                    <component
+                        :is="tab.component"
+                        :selectedAsset="selectedAsset"
+                    ></component>
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -351,7 +346,7 @@
             },
             page: {
                 type: String,
-                required: true,
+                required: false,
             },
             showCrossIcon: {
                 type: Boolean,
@@ -543,35 +538,30 @@
 
 <style lang="less" module>
     .previewtab {
-        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
-            @apply ml-0 !important;
-            @apply mt-4 !important;
-        }
+        &:global(.ant-tabs-left) {
+            :global(.ant-tabs-bar) {
+                margin-bottom: 0px !important;
+            }
+            :global(.ant-tabs-nav-container) {
+                width: 48px !important;
+                @apply ml-0 !important;
+            }
+            :global(.ant-tabs-tab) {
+                padding: 3px 8px !important;
+                @apply justify-center;
+            }
 
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0px !important;
-        }
-        :global(.ant-tabs-nav-container) {
-            width: 48px !important;
-            @apply ml-0 !important;
-        }
-        :global(.ant-tabs-tab) {
-            height: 48px !important;
-            width: 48px !important;
-            @apply p-0 !important;
-            @apply mb-1 !important;
-        }
-
-        :global(.ant-tabs-content) {
-            @apply px-0 !important;
-        }
-        :global(.ant-tabs-ink-bar) {
-            @apply rounded-t-sm;
-            margin-bottom: 1px;
-        }
-        :global(.ant-tabs-tabpane) {
-            @apply px-0 !important;
-            @apply pb-0 !important;
+            :global(.ant-tabs-content) {
+                @apply px-0 !important;
+            }
+            :global(.ant-tabs-ink-bar) {
+                @apply rounded-t-sm;
+                margin-bottom: 1px;
+            }
+            :global(.ant-tabs-tabpane) {
+                @apply px-0 !important;
+                @apply pb-0 !important;
+            }
         }
     }
 </style>

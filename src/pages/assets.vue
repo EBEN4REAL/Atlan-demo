@@ -135,7 +135,6 @@
 <style scoped>
     .asset-preview-container {
         width: 420px !important;
-        min-width: 420px !important;
         max-width: 420px !important;
     }
 </style>

@@ -51,7 +51,7 @@ export default function useIndexSearch(
         Discovery.IndexSearch(body, options)
 
     const approximateCount = computed(() => {
-        if (data?.value.approximateCount) {
+        if (data?.value?.approximateCount) {
             return data.value?.approximateCount
         }
         return 0

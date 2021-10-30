@@ -6,7 +6,7 @@
         type="text"
         :size="size"
         :class="$style.transparent"
-        class="flex-1 w-full text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
+        class="text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
         @keyup.esc="$event.target.blur()"
     >
         <template #prefix>
@@ -34,6 +34,7 @@
                 </button>
             </a-popover>
         </template>
+        -->
     </a-input>
 </template>
 
@@ -95,6 +96,11 @@
 </script>
 <style lang="less" module>
     .transparent {
+        &:global(.ant-input:focus) {
+            @apply border-0 shadow-none  !important;
+            outline: 0 !important;
+        }
+
         &:global(.ant-input-affix-wrapper-focused) {
             @apply border-0 shadow-none  !important;
         }

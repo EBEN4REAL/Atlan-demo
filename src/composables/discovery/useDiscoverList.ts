@@ -30,7 +30,7 @@ export function useDiscoverList(
                 size: limit?.value || 20,
                 from: offset?.value || 0,
                 ...generateFilterDSL(facets?.value),
-                ...generateAggregationDSL(),
+                ...generateAggregationDSL(aggregations?.value),
                 ...generatePostFilterDSL(postFacets?.value),
             },
             attributes: attributes?.value,
@@ -128,13 +128,14 @@ export function useDiscoverList(
     )
 
     const totalCount = computed(() => {
+        console.log(assetTypeAggregationList)
         if (assetTypeAggregationList.value.length > 0) {
             const all = assetTypeAggregationList.value.find(
                 (i) => i.id === '__all'
             )
-            return all.count
+            return all.count || approximateCount.value
         }
-        return approximateCount
+        return approximateCount.value
     })
 
     const isLoadMore = computed(() => {

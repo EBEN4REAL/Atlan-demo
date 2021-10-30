@@ -11,7 +11,7 @@
         </div>
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="px-3 py-1 border-b border-gray-200">
+                <div class="flex px-3 py-1 border-b border-gray-200">
                     <SearchAdvanced v-model:value="queryText" :autofocus="true">
                         <template #postFilter>
                             <Preferences />
@@ -160,9 +160,9 @@
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
-            const aggregations = ref({})
+            const aggregations = ref(['typeName'])
             const postFacets = ref({})
-            const dependentKey = ref('dd')
+            const dependentKey = ref('DEFAULT_TABLE')
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
@@ -454,97 +454,10 @@
                 quickChange()
             }
 
-            const handleLoadMore = () => {
-                // const found = assetTypeMappedList.value.find(
-                //     (i) => i.id === facetMap.value.typeName
-                // )
-                // if (found) {
-                //     if (list.value.length < found.count) {
-                //         offset.value += limit.value
-                //     }
-                //     body.value = {
-                //         dsl: {
-                //             size: limit.value,
-                //             from: offset.value,
-                //             ...handleFacetDSL(facetMap.value),
-                //             ...handleAggregationDSL(facetMap.value),
-                //             post_filter: handlePostFacetDSL(facetMap.value)
-                //                 ?.query,
-                //         },
-                //         attributes: [
-                //             ...InternalAttributes,
-                //             ...AssetAttributes,
-                //             ...SQLAttributes,
-                //         ],
-                //         relationAttributes: [...AssetRelationAttributes],
-                //     }
-                //     refresh(true)
-                // }
-            }
-            // function loadMore() {
-            //     autoSelect.value = false
-            //     offset.value += limit.value
-            //     isAggregate.value = false
-            //     updateBody()
-            // }
-            // function handleClearFiltersFromList() {
-            //     queryText.value = ''
-            //     assetFilterRef.value?.resetAllFilters()
-            // }
-            // watch(
-            //     BMListLoaded,
-            //     (val) => {
-            //         if (val) {
-            //             isAggregate.value = true
-            //             try {
-            //                 updateBody()
-            //             } catch (error) {
-            //                 console.error(error)
-            //             }
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
-            // console.log(list)
-            // return {
-            //     autoSelect,
-            //     handleClearFiltersFromList,
-            //     handleCategoryChange,
-            //     assetFilterRef,
-            //     applicableTabs,
-            //     searchScoreList,
-            //     list,
-            //     selectedTab,
-            //     assetCategoryFilter,
-            //     assetTypeLabel,
-            //     assetTypeList,
-            //     assetTypeMap,
-            //     isAggregate,
-            //     handleSearchChange,
-            //     projection,
-            //     handleChangePreferences,
-            //     handleChangeSort,
-            //     isLoading,
-            //     handleFilterChange,
-            //     // handlePreview,
-            //     queryText,
-            //     facets,
-            //     totalCount,
-            //     assetlist,
-            //     isLoadMore,
-            //     loadMore,
-            //     totalSum,
-            //     handleState,
-            //     mutateAssetInList,
-            //     handleTabChange,
-            //     dynamicSearchPlaceholder,
-            //     setPlaceholder,
-            //     placeholderLabel,
-            // }
+            const handleLoadMore = () => {}
 
             return {
                 handleFilterChange,
-
                 isLoading,
                 queryText,
                 assetTypeAggregationList,

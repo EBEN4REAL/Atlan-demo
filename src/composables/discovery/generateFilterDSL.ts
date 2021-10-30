@@ -29,6 +29,26 @@ export function generateFilterDSL(facet: Record<string, any>) {
                 }
                 break
             }
+            case 'typeName': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        query.filter('term', '__typeName.keyword', filterObject)
+                    }
+                }
+                break
+            }
+            case 'tableQualifiedName': {
+                if (filterObject) {
+                    query.filter('term', 'tableQualifiedName', filterObject)
+                }
+                break
+            }
+            case 'viewQualifiedName': {
+                if (filterObject) {
+                    query.filter('term', 'viewQualifiedName', filterObject)
+                }
+                break
+            }
         }
     })
 

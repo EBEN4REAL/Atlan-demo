@@ -4,8 +4,11 @@
         :v-model:value="selectedValue"
         :allowClear="true"
         :showSearch="true"
+        :alwaysOpen="true"
         @search="handleSearch"
         @change="handleChange"
+        size="large"
+        :class="isTransparent ? $style.transparent : ''"
         :get-popup-container="(target) => target.parentNode"
         notFoundContent="No glossary found"
     >
@@ -37,7 +40,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, ref, computed } from 'vue'
+    import { defineComponent, ref, computed, toRefs } from 'vue'
 
     import useGlossaryData from '~/composables/glossary/useGlossaryData'
     import AtlanIcon from '../icon/atlanIcon.vue'
@@ -58,10 +61,20 @@
                     return true
                 },
             },
+            isTransparent: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+
+            const { isTransparent } = toRefs(props)
+
             const { list } = useGlossaryData()
             const queryText = ref('')
             const selectedValue = ref(modelValue.value)
@@ -102,6 +115,7 @@
                 filteredList,
                 selectedValue,
                 handleChange,
+                isTransparent,
                 handleSearch,
             }
         },
@@ -109,4 +123,21 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .transparent {
+        &:global(.ant-select:not(.ant-select-disabled)) {
+            :hover {
+                @apply border-0  rounded-none  !important;
+            }
+        }
+        &:global(.ant-select-focused) {
+            @apply border-0  rounded-none  !important;
+            :global(.ant-select-selector) {
+                @apply border-0  border-r-0 rounded-none shadow-none  !important;
+            }
+        }
+        :global(.ant-select-selector) {
+            @apply border-0   border-r-0 rounded-none shadow-none border-transparent  !important;
+        }
+    }
+</style>

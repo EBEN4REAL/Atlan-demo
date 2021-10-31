@@ -3,12 +3,36 @@
         <div
             class="flex flex-col h-full bg-gray-100 border-r border-gray-300  facets"
         >
-            <div class="w-full px-3 pt-3">
-                <GlossaryDropdown
-                    class="w-full"
-                    v-model="glossaryQualifiedName"
-                    @change="handleGlossaryChange"
-                ></GlossaryDropdown>
+            <div class="flex items-center w-full border-b border-gray-200">
+                <div class="flex-1">
+                    <GlossaryDropdown
+                        v-model="glossaryQualifiedName"
+                        @change="handleGlossaryChange"
+                        :isTransparent="true"
+                    ></GlossaryDropdown>
+                </div>
+                <div class="flex self-center h-full px-3 bg-primary">
+                    <a-dropdown>
+                        <a
+                            class="mt-3 text-white ant-dropdown-link"
+                            @click="(e) => e.preventDefault()"
+                            ><AtlanIcon icon="Add"></AtlanIcon>
+                        </a>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item>
+                                    <a href="javascript:;">1st menu item</a>
+                                </a-menu-item>
+                                <a-menu-item>
+                                    <a href="javascript:;">2nd menu item</a>
+                                </a-menu-item>
+                                <a-menu-item>
+                                    <a href="javascript:;">3rd menu item</a>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
             </div>
             <GlossaryDiscover
                 :glossary-qualified-name="glossaryQualifiedName"
@@ -22,6 +46,7 @@
 
     import GlossaryDropdown from '@common/select/glossary.vue'
     import GlossaryDiscover from '@/glossary/discoverlist/index.vue'
+    import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     // import { useDebounceFn } from '@vueuse/core'
 
@@ -51,6 +76,7 @@
         components: {
             GlossaryDropdown,
             GlossaryDiscover,
+            AtlanIcon,
         },
         props: {
             showFilters: {

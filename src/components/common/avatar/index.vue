@@ -33,7 +33,6 @@
                         getNameInitials(getNameInTitleCase(avatarName))
                     }}</a-avatar
                 >
-                {{ updatedImageUrl }}
             </a-upload>
         </div>
         <div v-else>

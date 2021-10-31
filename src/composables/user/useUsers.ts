@@ -1,0 +1,136 @@
+import { computed } from 'vue'
+import { useTimeAgo } from '@vueuse/core'
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+
+import { pluralizeString } from '~/utils/string'
+import swrvState from '~/utils/swrvState'
+import { roleMap } from '~/constant/role'
+
+import { Users } from '~/services/service/users'
+
+export const getUserName = (user: any) => {
+    const { first_name } = user
+    const { last_name } = user
+    if (first_name) {
+        return `${first_name} ${last_name || ''}`
+    }
+    return user.email
+}
+const getUserRole = (user: any) => {
+    const { roles } = user
+    if (roles && roles.length > 0) {
+        if (roles.length > 0) {
+            const atlanRoles = roles.filter((role: string) =>
+                role.startsWith('$')
+            )
+            let atlanRole = ''
+            // owner
+            if (atlanRoles.indexOf('$owner') >= 0) atlanRole = '$owner'
+            // member
+            else if (atlanRoles.indexOf('$member') >= 0) atlanRole = '$member'
+            // guest
+            else if (atlanRoles.indexOf('$guest') >= 0) atlanRole = '$guest'
+            return {
+                name: roleMap[atlanRole] ? roleMap[atlanRole] : '',
+                code: roleMap[atlanRole] ? atlanRole : '',
+            }
+        }
+    }
+    return {
+        name: '',
+        code: '',
+    }
+}
+const getUserStatus = (user: any) => {
+    if (!user.enabled) {
+        return {
+            color: 'text-error',
+            icon: 'fal times-circle',
+            status: 'Disabled',
+        }
+    }
+    if (user.isLocked) {
+        return {
+            color: 'text-error',
+            icon: 'fa lock',
+            status: 'Locked',
+        }
+    }
+    if (!user.email_verified) {
+        return {
+            color: 'text-error',
+            icon: 'fa lock',
+            status: 'Invited',
+        }
+    }
+    return {
+        color: 'text-success',
+        icon: 'fas check-circle',
+        status: 'Active',
+    }
+}
+export const getFormattedUser = (user: any) => {
+    const localUser = {
+        ...user,
+        name: getUserName(user),
+        group_count_string: pluralizeString('group', user.group_count || 0),
+        status_object: getUserStatus(user),
+        role_object: getUserRole(user),
+        created_at_time_ago: user.created_timestamp
+            ? useTimeAgo(user.created_timestamp).value
+            : '',
+    }
+    return localUser
+}
+export const useUsers = (userListAPIParams: {
+    limit: number
+    offset: number
+    filter: any
+    sort: string
+}) => {
+    const {
+        data,
+        mutate: getUserList,
+        isLoading,
+        isValidating,
+        error,
+    } = Users.List(userListAPIParams, {
+        cacheOptions: {
+            shouldRetryOnError: false,
+            revalidateOnFocus: false,
+            cache: new LocalStorageCache(),
+            dedupingInterval: 1,
+        },
+        cacheKey: 'LIST_USERS',
+    })
+
+    const userList = computed(() => {
+        if (data.value && data?.value?.records)
+            return data?.value.records.map((user: any) =>
+                getFormattedUser(user)
+            )
+        return []
+    })
+
+    const { state, STATES } = swrvState(data, error, isValidating)
+
+    const totalUserCount = computed(() => data?.value?.total_record ?? 0)
+    const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
+    return {
+        userList,
+        totalUserCount,
+        filteredUserCount,
+        getUserList,
+        isLoading,
+        state,
+        STATES,
+        isValidating,
+        error,
+    }
+}
+interface params {
+    limit: number
+    offset: number
+    filter: any
+    sort: string
+}

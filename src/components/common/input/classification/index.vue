@@ -51,23 +51,6 @@
     import { mergeArray } from '~/utils/array'
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
-    // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
-    // import updateOwners from '~/composables/asset/updateOwners'
-    // import fetchGroupList from '~/composables/group/fetchGroupList'
-    // import fetchUserList from '~/composables/user/fetchUserList'
-    // import PillGroup from '~/components/UI/pill/pillGroup.vue'
-
-    // import { useUserPreview } from '~/composables/user/showUserPreview'
-    // import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
-    // import { assetInterface } from '~/types/assets/asset.interface'
-    // import { groupInterface } from '~/types/groups/group.interface'
-    // import { userInterface } from '~/types/users/user.interface'
-    // import emptyScreen from '~/assets/images/empty_search.png'
-    // import whoami from '~/composables/user/whoami'
-    // import Avatar from '~/components/common/avatar.vue'
-    // import { KeyMaps } from '~/api/keyMap'
-
     export default defineComponent({
         components: {},
         props: {
@@ -110,19 +93,7 @@
             // const userList: Ref<userInterface[]> = ref([])
             // const groupList: Ref<groupInterface[]> = ref([])
             // const ownersFilterOptionsData = ref('asc')
-            // const {
-            //     list: listUsers,
-            //     state: userOwnerState,
-            //     STATES,
-            //     mutate: mutateUsers,
-            //     handleSearch: handleUserSearch,
-            // } = fetchUserList(false)
-            // const {
-            //     list: listGroups,
-            //     handleSearch: handleGroupSearch,
-            //     state: groupOwnerState,
-            //     mutate: mutateGroups,
-            // } = fetchGroupList(false)
+
             // function sortClassificationsByOrder(
             //     sortingOrder: string,
             //     data: Ref<userInterface[] | groupInterface[]>,

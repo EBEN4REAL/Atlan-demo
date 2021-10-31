@@ -1,25 +1,27 @@
 import { computed, ref, ComputedRef } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
-import { Groups } from '~/services/service/groups'
 
-export default function useGroup() {
+import { userInterface } from '~/types/users/user.interface'
+import { Users } from '~/services/service/users'
+
+export default function useFacetUsers() {
     const params = ref(new URLSearchParams())
     params.value.append('limit', '20')
-    params.value.append('sort', 'name')
-    // params.value.append('columns', 'first_name')
-    // params.value.append('columns', 'last_name')
-    // params.value.append('columns', 'username')
-    // params.value.append('columns', 'id')
-    // params.value.append('filter', '{"$and":[{"email_verified":true}]}')
+    params.value.append('sort', 'first_name')
+    params.value.append('columns', 'first_name')
+    params.value.append('columns', 'last_name')
+    params.value.append('columns', 'username')
+    params.value.append('columns', 'id')
+    params.value.append('filter', '{"$and":[{"email_verified":true}]}')
 
-    const { data, mutate } = Groups.List(params, {
+    const { data, mutate } = Users.List(params, {
         cacheOptions: {
             shouldRetryOnError: false,
             revalidateOnFocus: false,
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
         },
-        cacheKey: 'DEFAULT_GROUPS',
+        cacheKey: 'DEFAULT_USERS',
     })
 
     const list: ComputedRef<userInterface[]> = computed(
@@ -49,10 +51,12 @@ export default function useGroup() {
                 'filter',
                 JSON.stringify({
                     $and: [
+                        { email_verified: true },
                         {
                             $or: [
-                                { name: { $ilike: `%${value}%` } },
-                                { alias: { $ilike: `%${value}%` } },
+                                { first_name: { $ilike: `%${value}%` } },
+                                { last_name: { $ilike: `%${value}%` } },
+                                { username: { $ilike: `%${value}%` } },
                             ],
                         },
                     ],

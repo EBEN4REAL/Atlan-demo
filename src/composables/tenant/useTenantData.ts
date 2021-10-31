@@ -17,6 +17,7 @@ export default function useTenantData() {
         identityProviders: tenantStore.identityProviders,
         identityMappers: tenantStore.identityMappers,
         smtpServer: tenantStore.smtpServer,
+        loginWithEmailAllowed: tenantStore.loginWithEmailAllowed,
         updateSMTPConfig,
     }
 }

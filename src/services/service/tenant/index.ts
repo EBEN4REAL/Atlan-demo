@@ -13,7 +13,11 @@ const UpdateTenant = (
     options?: useOptions
 ) => useAPI(map.POST_TENANT, 'POST', { body }, options || {})
 
+const UploadLogo = (body?: Ref<any>, options?: useOptions) =>
+    useAPI(map.UPLOAD_LOGO, 'POST', { body }, options || {})
+
 export const Tenant = {
     GetTenant,
     UpdateTenant,
+    UploadLogo,
 }

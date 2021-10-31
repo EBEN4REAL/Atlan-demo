@@ -6,6 +6,7 @@
             <div class="flex items-center w-full border-b border-gray-200">
                 <div class="flex-1">
                     <GlossaryDropdown
+                        class="w-full"
                         v-model="glossaryQualifiedName"
                         @change="handleGlossaryChange"
                         :isTransparent="true"

@@ -48,8 +48,7 @@
     // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     // import updateOwners from '~/composables/asset/updateOwners'
-    // import fetchGroupList from '~/composables/group/fetchGroupList'
-    // import fetchUserList from '~/composables/user/fetchUserList'
+
     // import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
     // import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -136,19 +135,7 @@
             // const userList: Ref<userInterface[]> = ref([])
             // const groupList: Ref<groupInterface[]> = ref([])
             // const ownersFilterOptionsData = ref('asc')
-            // const {
-            //     list: listUsers,
-            //     state: userOwnerState,
-            //     STATES,
-            //     mutate: mutateUsers,
-            //     handleSearch: handleUserSearch,
-            // } = fetchUserList(false)
-            // const {
-            //     list: listGroups,
-            //     handleSearch: handleGroupSearch,
-            //     state: groupOwnerState,
-            //     mutate: mutateGroups,
-            // } = fetchGroupList(false)
+
             // function sortClassificationsByOrder(
             //     sortingOrder: string,
             //     data: Ref<userInterface[] | groupInterface[]>,

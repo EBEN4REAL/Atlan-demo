@@ -70,7 +70,7 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, watch, computed } from 'vue'
-    import useUser from '~/composables/user/useUser'
+    import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '@common/avatar/index.vue'
     import useUserData from '~/composables/user/useUserData'
 
@@ -78,8 +78,7 @@
     // import Users from '@common/selector/users/index.vue'
 
     // import { Collapse } from '~/types'
-    // import fetchUserList from '~/composables/user/fetchUserList'
-    // import fetchGroupList from '~/composables/group/fetchGroupList'
+
     // import { userInterface } from '~/types/users/user.interface'
     // import { groupInterface } from '~/types/groups/group.interface'
     // import useUserData from '~/services2/service/composable/useUserData'
@@ -98,7 +97,7 @@
             },
         },
         setup(props, { emit }) {
-            const { list, handleSearch } = useUser()
+            const { list, handleSearch } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
 
             watch(
@@ -179,24 +178,7 @@
             //     activeOwnerTabKey.value = tabName
             //     if (queryText.value !== '') handleOwnerSearch()
             // }
-            // const {
-            //     list: listUsers,
-            //     total: totalUsersCount,
-            //     state: userOwnerState,
-            //     STATES,
-            //     mutate: mutateUsers,
-            //     setLimit,
-            //     handleSearch: handleUserSearch,
-            // } = fetchUserList()
-            // const {
-            //     list: listGroups,
-            //     handleSearch: handleGroupSearch,
-            //     total: totalGroupCount,
-            //     STATES: GROUPSTATES,
-            //     state: groupOwnerState,
-            //     mutate: mutateGroups,
-            //     setLimit: setGroupLimit,
-            // } = fetchGroupList()
+
             // const onSelectUser = (user: userInterface) => {
             //     // unselect if already selected
             //     if (data.value.userValue.includes(user.username)) {

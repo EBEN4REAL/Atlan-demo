@@ -17,7 +17,7 @@
             v-for="item in filteredList"
             :key="item.guid"
         >
-            <div class="flex items-center w-full">
+            <div class="flex items-center">
                 <div class="flex flex-col">
                     <div class="flex items-center">
                         <AtlanIcon icon="Glossary" class="pr-1"></AtlanIcon>

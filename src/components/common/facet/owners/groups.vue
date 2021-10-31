@@ -91,7 +91,7 @@
             },
         },
         setup(props, { emit }) {
-            const { list, handleSearch } = useGroup()
+            const { list, handleSearch } = useFacetGroup()
 
             watch(
                 () => props.queryText,
@@ -148,24 +148,7 @@
             //     activeOwnerTabKey.value = tabName
             //     if (queryText.value !== '') handleOwnerSearch()
             // }
-            // const {
-            //     list: listUsers,
-            //     total: totalUsersCount,
-            //     state: userOwnerState,
-            //     STATES,
-            //     mutate: mutateUsers,
-            //     setLimit,
-            //     handleSearch: handleUserSearch,
-            // } = fetchUserList()
-            // const {
-            //     list: listGroups,
-            //     handleSearch: handleGroupSearch,
-            //     total: totalGroupCount,
-            //     STATES: GROUPSTATES,
-            //     state: groupOwnerState,
-            //     mutate: mutateGroups,
-            //     setLimit: setGroupLimit,
-            // } = fetchGroupList()
+
             // const onSelectUser = (user: userInterface) => {
             //     // unselect if already selected
             //     if (data.value.userValue.includes(user.username)) {

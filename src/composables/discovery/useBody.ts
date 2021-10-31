@@ -60,6 +60,12 @@ export function useBody(
                 }
                 break
             }
+            case 'typeNames': {
+                if (filterObject) {
+                    base.filter('terms', '__typeName.keyword', filterObject)
+                }
+                break
+            }
             case 'tableQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'tableQualifiedName', filterObject)
@@ -69,6 +75,12 @@ export function useBody(
             case 'viewQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'viewQualifiedName', filterObject)
+                }
+                break
+            }
+            case 'glossary': {
+                if (filterObject) {
+                    base.filter('term', '__glossary', filterObject)
                 }
                 break
             }
@@ -128,9 +140,15 @@ export function useBody(
         })
     }
 
-    // Global TypeName Filters
-    base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
-    base.orFilter('terms', '__typeName.keyword', ['Query'])
+    if (
+        !facets?.typeNames?.includes('AtlasGlossary') &&
+        !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
+        !facets?.typeNames?.includes('AtlasGlossaryCategory')
+    ) {
+        // Global TypeName Filters
+        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
+        base.orFilter('terms', '__typeName.keyword', ['Query'])
+    }
 
     base.filterMinimumShouldMatch(1)
 

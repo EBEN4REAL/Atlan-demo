@@ -3,45 +3,46 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, inject, computed } from 'vue'
-import useTypedefs from '~/composables/typedefs/useTypedefs'
+    import { defineComponent, ref, watch, inject, computed } from 'vue'
+    import useTypedefs from '~/composables/typedefs/useTypedefs'
 
-import useTenant from '~/composables/tenant/useTenant'
-import useConnection from '~/composables/connection/useConnection'
-import usePermissions from '~/composables/auth/usePermissions'
-import { useAuthStore } from './store/auth'
+    import useTenant from '~/composables/tenant/useTenant'
+    import useConnection from '~/composables/connection/useConnection'
+    import usePermissions from '~/composables/auth/usePermissions'
+    import { useAuthStore } from './store/auth'
+    import useGlossary from './composables/glossary/useGlossary'
 
-export default defineComponent({
-    setup(props, context) {
-        // const isPermissionsReady = ref(false)
-        // const isTypedefReady = ref(false)
+    export default defineComponent({
+        setup(props, context) {
+            // const isPermissionsReady = ref(false)
+            // const isTypedefReady = ref(false)
 
-        const authStore = useAuthStore()
-        authStore.setUserDetails()
+            const authStore = useAuthStore()
+            authStore.setUserDetails()
 
-        // permissions
-        const { data: permissions } = usePermissions()
+            // permissions
+            const { data: permissions } = usePermissions()
 
-        // tenant
-        useTenant()
+            // tenant
+            useTenant()
 
-        // typedefs
-        const { data: typedef } = useTypedefs()
+            // typedefs
+            const { data: typedef } = useTypedefs()
 
-        // // connections
-        // useConnection()
+            // // connections
+            useConnection()
 
-        // // glossary list
-        // useGlossary()
+            // // glossary list
+            useGlossary()
 
-        // watch([data], () => {
-        //     isPermissionsReady.value = true
-        // })
-        // watch([typedef], () => {
-        //     isTypedefReady.value = true
-        // })
+            // watch([data], () => {
+            //     isPermissionsReady.value = true
+            // })
+            // watch([typedef], () => {
+            //     isTypedefReady.value = true
+            // })
 
-        return {}
-    },
-})
+            return {}
+        },
+    })
 </script>

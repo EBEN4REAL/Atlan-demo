@@ -104,6 +104,9 @@ export default function useAssetInfo() {
         return getPreviewTabs(assetType(asset))
     }
 
+    const getAnchorName = (asset: assetInterface) =>
+        attributes(asset)?.anchor?.attributes.name
+
     // const logo = (asset: assetInterface) => {
     //     let img = ''
 
@@ -686,6 +689,7 @@ export default function useAssetInfo() {
         // previewURL,
         // viewDefinition,
         qualifiedName,
+        getAnchorName,
         connectionQualifiedName,
     }
 }

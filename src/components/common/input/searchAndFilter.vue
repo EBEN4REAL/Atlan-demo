@@ -11,18 +11,18 @@
                 icon="Search"
                 class="flex-none pr-1 text-gray-500"
             />
-            <input
+            <a-input
                 ref="searchBar"
                 :placeholder="placeholder"
-                v-model="value"
+                @change="handleChange"
+                v-model:value="localValue"
                 type="text"
                 class="flex-1 w-2/3 text-sm bg-transparent focus:outline-none"
-                @keyup.esc="$event.target.blur()"
             />
 
             <div class="flex-none w-7 h-7">
                 <button
-                    v-if="value?.length"
+                    v-if="localValue?.length"
                     class="text-gray-500 hover:text-gray"
                 >
                     <AtlanIcon
@@ -69,7 +69,7 @@
         toRefs,
         PropType,
     } from 'vue'
-
+    import { useVModels } from '@vueuse/core'
     export default defineComponent({
         name: 'SearchAndFilter',
         props: {
@@ -80,24 +80,16 @@
                 type: String as PropType<'default' | 'minimal'>,
                 default: () => 'default',
             },
-            value: { type: String },
+            modelValue: { type: String, default: () => '' },
         },
         emits: ['update:value', 'change'],
         setup(props, { emit }) {
-            const { autofocus, value: val } = toRefs(props)
-            const searchBar: Ref<null | HTMLInputElement> = ref(null)
-            const value = computed({
-                get: () => val.value,
-                set: (newVal) => {
-                    emit('update:value', newVal)
-                    emit('change', newVal)
-                },
-            })
+            const { autofocus } = toRefs(props)
 
-            function clearInput() {
-                emit('update:value', '')
-                emit('change', '')
-            }
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+
+            const searchBar: Ref<null | HTMLInputElement> = ref(null)
 
             onMounted(async () => {
                 if (autofocus.value) {
@@ -106,10 +98,21 @@
                 }
             })
 
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
+            }
+
+            function clearInput() {
+                localValue.value = ''
+                handleChange()
+            }
+
             return {
-                value,
+                localValue,
                 searchBar,
                 clearInput,
+                handleChange,
             }
         },
     })

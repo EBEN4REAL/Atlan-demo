@@ -13,6 +13,7 @@ export const InternalAttributes = [
     '__propagatedClassificationNames',
     '__customAttributes',
     '__labels',
+    'anchor',
 ]
 
 export const AssetAttributes = [
@@ -53,6 +54,8 @@ export const SQLAttributes = [
     'dataType',
     'definition',
 ]
+
+export const GlossaryRelationAttributes = ['name']
 
 export const AssetRelationAttributes = ['certificateStatus']
 

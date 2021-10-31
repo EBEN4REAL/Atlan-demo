@@ -8,7 +8,6 @@
         :class="$style.transparent"
         @change="handleChange"
         class="text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
-        @keyup.esc="$event.target.blur()"
     >
         <template #prefix>
             <AtlanIcon icon="Search" class="flex-none text-gray-500" />
@@ -83,11 +82,6 @@
             //     },
             // })
 
-            function clearInput() {
-                modelValue.value = ''
-                emit('change', '')
-            }
-
             onMounted(async () => {
                 if (autofocus.value) {
                     await nextTick()
@@ -99,6 +93,11 @@
                 console.log('change', localValue.value)
                 modelValue.value = localValue.value
                 emit('change')
+            }
+
+            function clearInput() {
+                localValue.value = ''
+                handleChange()
             }
 
             return {
@@ -119,6 +118,10 @@
 
         &:global(.ant-input-affix-wrapper-focused) {
             @apply border-0 shadow-none  !important;
+        }
+
+        :global(.ant-input) {
+            @apply bg-transparent;
         }
     }
 </style>

@@ -21,12 +21,6 @@ export const previewList = [
     //     tooltip: 'Custom metadata',
     // },
     {
-        name: 'Relations',
-        component: 'relations',
-        icon: 'Relation',
-        tooltip: 'Relationships',
-    },
-    {
         name: 'Lineage',
         component: 'lineage',
         excludes: ['Query', 'QueryFolder'],

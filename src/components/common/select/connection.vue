@@ -29,7 +29,6 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import { defineComponent, ref, toRefs, computed } from 'vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import useConnectionData from '~/composables/connection/useConnectionData'
 

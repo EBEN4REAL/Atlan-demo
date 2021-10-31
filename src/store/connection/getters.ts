@@ -6,6 +6,7 @@ import { SourceList } from '~/constant/source'
 export interface Getters {
     getSourceList(): any[]
     getConnectorImageMapping(): any
+    getImage(): (id: string) => any
 }
 
 export const getters: GettersTree<State> & Getters = {
@@ -40,5 +41,8 @@ export const getters: GettersTree<State> & Getters = {
             map[item.id.toLowerCase()] = item.image
         })
         return map
+    },
+    getImage() {
+        return (id) => this.getSourceList?.find((item) => item.id === id)?.image
     },
 }

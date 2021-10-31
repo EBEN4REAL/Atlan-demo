@@ -19,7 +19,9 @@ import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
+import DatabaseGray from '~/assets/images/icons/database-gray.svg'
 import Schema from '~/assets/images/icons/schema.svg'
+import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
 import View from '~/assets/images/icons/view.svg'
 import Connection from '~/assets/images/icons/connection.svg'
@@ -316,4 +318,6 @@ export default {
     OverviewActive,
     Query,
     ShieldFilled,
+    DatabaseGray,
+    SchemaGray,
 }

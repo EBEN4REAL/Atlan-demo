@@ -212,7 +212,7 @@
                                 v-if="databaseName(item)"
                             >
                                 <AtlanIcon
-                                    icon="Database"
+                                    icon="DatabaseGray"
                                     class="mr-1 mb-0.5"
                                 />
                                 <div class="tracking-tight text-gray-500">
@@ -228,7 +228,10 @@
                                 v-if="schemaName(item)"
                                 class="flex items-center text-gray-500"
                             >
-                                <AtlanIcon icon="Schema" class="mr-1 mb-0.5" />
+                                <AtlanIcon
+                                    icon="SchemaGray"
+                                    class="mr-1 mb-0.5"
+                                />
                                 <div class="tracking-tight text-gray-500">
                                     {{ schemaName(item) }}
                                 </div>

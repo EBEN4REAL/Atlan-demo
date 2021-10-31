@@ -36,7 +36,7 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs } from 'vue'
-    import { useConnectionsStore } from '~/store/connections'
+    import { useConnectionStore } from '~/store/connection'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
@@ -74,7 +74,7 @@
                 )
             }
 
-            const connStore = useConnectionsStore()
+            const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)
 
             return { regexes, addExpr, removeExpr, getImage, updateAssets }

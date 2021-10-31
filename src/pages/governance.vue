@@ -15,25 +15,16 @@
                         <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
                             >Personas</a-menu-item
                         >
-                        <!-- <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
-                        >API Keys</a-menu-item
-                    > -->
+                        <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
+                            >API Keys</a-menu-item
+                        >
                     </a-menu-item-group>
-                    <!-- <a-menu
-                    mode="inline"
-                    :class="$style.sidebar"
-                    @click="handleClick"
-                    v-model:selectedKeys="current"
-                    :inlineIndent="0"
-                >
+
                     <a-menu-item-group title="Governance">
                         <a-menu-item
                             v-auth="[map.LIST_CLASSIFICATION]"
                             key="classifications"
                             >Classifications</a-menu-item
-                        >
-                        <a-menu-item v-auth="[map.LIST_REQUEST]" key="requests"
-                            >Requests</a-menu-item
                         >
                         <a-menu-item
                             key="custom-metadata"
@@ -44,7 +35,7 @@
                         <a-menu-item key="enums" v-auth="[map.LIST_ENUM]">
                             Enums
                         </a-menu-item>
-                    </a-menu-item-group>-->
+                    </a-menu-item-group>
                 </a-menu>
             </div>
         </div>

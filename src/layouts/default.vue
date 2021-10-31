@@ -24,7 +24,7 @@
                     :get-container="false"
                     :closable="false"
                     :maskClosable="true"
-                    :wrap-style="{ position: 'absolute' }"
+                    :style="{ position: 'absolute' }"
                     :mask="true"
                     :maskStyle="{
                         background: 'rgba(244, 246, 253, 0.9)',

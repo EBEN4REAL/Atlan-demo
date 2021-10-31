@@ -29,7 +29,8 @@
     // import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import AssetDiscovery from '@/discovery/index.vue'
     import AssetPreview from '@/discovery/preview/index.vue'
-    import { useAssetListing } from '~/composables/discovery/useAssetListing'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
     // import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -62,7 +63,7 @@
             const route = useRoute()
             const isItem = computed(() => route.params.id)
 
-            const { selectedAsset } = useAssetListing()
+            const { selectedAsset } = useAssetInfo()
             // const updateProfile = ref<boolean>(false)
             // // const lastUpdatedItem = ref(false)
             // const assetDiscovery: Ref<Element | null> = ref(null)

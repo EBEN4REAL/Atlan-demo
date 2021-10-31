@@ -1,12 +1,12 @@
 import { ref, Ref, watch, computed } from 'vue'
 
-import { generateFilterDSL } from './generateFilterDSL'
-import { generatePostFilterDSL } from './generatePostFilterDSL'
-import { generateAggregationDSL } from './generateAggregationDSL'
+// import { generatePostFilterDSL } from './generatePostFilterDSL'
+// import { generateAggregationDSL } from './generateAggregationDSL'
 
 import useIndexSearch from './useIndexSearch'
 import { assetTypeList } from '~/constant/assetType'
 import useDiscoveryStore from '~/store/discovery'
+import { useBody } from './useBody'
 
 const assetTypeAggregationName = 'group_by_typeName'
 
@@ -15,8 +15,8 @@ export function useDiscoverList(
     dependentKey?: Ref<any>,
     queryText?: Ref<any>,
     facets?: Ref<any>,
-    aggregations?: Ref<any>,
     postFacets?: Ref<any>,
+    aggregations?: Ref<string[]>,
     limit?: Ref<Number>,
     offset?: Ref<Number>,
     attributes?: Ref<string[]>,
@@ -24,15 +24,20 @@ export function useDiscoverList(
 ) {
     const defaultBody = ref({})
 
+    console.log(aggregations)
+
     const generateBody = () => {
+        const dsl = useBody(
+            queryText?.value,
+            offset?.value,
+            limit?.value,
+            facets?.value,
+            postFacets?.value,
+            aggregations?.value
+        )
+
         defaultBody.value = {
-            dsl: {
-                size: limit?.value || 20,
-                from: offset?.value || 0,
-                ...generateFilterDSL(facets?.value),
-                ...generateAggregationDSL(aggregations?.value),
-                ...generatePostFilterDSL(postFacets?.value),
-            },
+            dsl,
             attributes: attributes?.value,
             relationAttributes: relationAttributes?.value,
         }
@@ -58,7 +63,11 @@ export function useDiscoverList(
                 list.value.push(...data.value?.entities)
             }
         } else {
-            list.value = [...data?.value?.entities]
+            if (data.value?.entities) {
+                list.value = [...data?.value?.entities]
+            } else {
+                list.value = []
+            }
         }
     })
 

@@ -12,7 +12,11 @@
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
                 <div class="flex px-3 py-1 border-b border-gray-200">
-                    <SearchAdvanced v-model:value="queryText" :autofocus="true">
+                    <SearchAdvanced
+                        v-model="queryText"
+                        :autofocus="true"
+                        @change="handleSearchChange"
+                    >
                         <template #postFilter>
                             <Preferences />
                         </template>
@@ -128,6 +132,7 @@
     // } from './useDiscoveryDSL'
 
     import { assetTypeList } from '~/constant/assetType'
+    import { useDebounceFn } from '@vueuse/core'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -211,8 +216,8 @@
                 dependentKey,
                 queryText,
                 facets,
-                aggregations,
                 postFacets,
+                aggregations,
                 limit,
                 offset,
                 defaultAttributes,
@@ -417,15 +422,15 @@
             //     setRouterOptions()
             // }
             // const { projection } = useDiscoveryPreferences()
-            // const handleSearchChange = useDebounceFn(() => {
-            //     offset.value = 0
-            //     isAggregate.value = true
-            //     updateBody()
-            //     setRouterOptions()
-            //     // tracking.send(events.EVENT_ASSET_SEARCH, {
-            //     //     trigger: 'discover',
-            //     // })
-            // }, 150)
+
+            const handleSearchChange = useDebounceFn(() => {
+                console.log('change', queryText.value)
+                quickChange()
+                // tracking.send(events.EVENT_ASSET_SEARCH, {
+                //     trigger: 'discover',
+                // })
+            }, 150)
+
             // const handleChangePreferences = (payload: any) => {
             //     projection.value = payload
             // }
@@ -469,6 +474,7 @@
                 handleAssetTypeChange,
                 handlePreview,
                 fetch,
+                handleSearchChange,
             }
         },
         // data() {

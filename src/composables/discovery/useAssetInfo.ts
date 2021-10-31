@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable arrow-body-style */
-// import { Ref } from 'vue'
+import { computed } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import { useConnectionStore } from '~/store/connection'
 import { assetInterface } from '~/types/assets/asset.interface'
@@ -11,6 +11,7 @@ import { getCountString, getSizeString } from '~/utils/number'
 import { dataTypeCategoryList } from '~/constant/datatype'
 import { previewList } from '~/constant/previewTabs'
 import { formatDateTime } from '~/utils/date'
+import useDiscoveryStore from '~/store/discovery'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -328,6 +329,12 @@ export default function useAssetInfo() {
         }
         return ''
     }
+
+    const discoveryStore = useDiscoveryStore()
+
+    const selectedAsset = computed(() => {
+        return discoveryStore.selectedAsset
+    })
 
     // const getHierarchy = (asset: assetInterface) => {
     //     const assetType = AssetTypeList.find((a) => a.id == asset?.typeName)
@@ -652,6 +659,7 @@ export default function useAssetInfo() {
         columnCount,
         sizeBytes,
         previewTabs,
+        selectedAsset,
         // sizeBytes,
         // createdAt,
         // updatedAt,

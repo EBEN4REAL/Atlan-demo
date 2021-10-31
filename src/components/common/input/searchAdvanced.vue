@@ -2,10 +2,11 @@
     <a-input
         ref="searchBar"
         :placeholder="placeholder"
-        v-model="value"
+        v-model:value="localValue"
         type="text"
         :size="size"
         :class="$style.transparent"
+        @change="handleChange"
         class="text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
         @keyup.esc="$event.target.blur()"
     >
@@ -39,6 +40,7 @@
 </template>
 
 <script lang="ts">
+    import { useVModels } from '@vueuse/core'
     import {
         computed,
         defineComponent,
@@ -60,22 +62,29 @@
                 type: String as PropType<'default' | 'minimal'>,
                 default: () => 'default',
             },
-            value: { type: String },
+            modelValue: { type: String, default: () => '' },
         },
-        emits: ['update:value', 'change'],
+        emits: ['change', 'update:modelValue'],
+
         setup(props, { emit }) {
-            const { autofocus, value: val } = toRefs(props)
+            const { autofocus } = toRefs(props)
+
+            const { modelValue } = useVModels(props, emit)
+
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
-            const value = computed({
-                get: () => val.value,
-                set: (newVal) => {
-                    emit('update:value', newVal)
-                    emit('change', newVal)
-                },
-            })
+            const localValue = ref(modelValue.value)
+
+            // computed({
+            //     get: () => modelValue.value,
+            //     set: (newVal) => {
+            //         console.log('dsd')
+            //         modelValue.value = newVal
+            //         emit('change')
+            //     },
+            // })
 
             function clearInput() {
-                emit('update:value', '')
+                modelValue.value = ''
                 emit('change', '')
             }
 
@@ -86,10 +95,17 @@
                 }
             })
 
+            const handleChange = () => {
+                console.log('change', localValue.value)
+                modelValue.value = localValue.value
+                emit('change')
+            }
+
             return {
-                value,
+                localValue,
                 searchBar,
                 clearInput,
+                handleChange,
             }
         },
     })

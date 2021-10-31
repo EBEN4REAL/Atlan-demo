@@ -24,8 +24,6 @@ export function useDiscoverList(
 ) {
     const defaultBody = ref({})
 
-    console.log(aggregations)
-
     const generateBody = () => {
         const dsl = useBody(
             queryText?.value,
@@ -137,7 +135,6 @@ export function useDiscoverList(
     )
 
     const totalCount = computed(() => {
-        console.log(assetTypeAggregationList)
         if (assetTypeAggregationList.value.length > 0) {
             const all = assetTypeAggregationList.value.find(
                 (i) => i.id === '__all'

@@ -179,30 +179,6 @@
                 facets.value.typeName = '__all'
             }
 
-            // const {
-            //     handleFacetDSL,
-            //     handlePostFacetDSL,
-            //     handleAggregationDSL,
-            //     getAssetTypeList,
-            //     handleSelectedAsset,
-            // } = useAssetListing()
-
-            // const body = ref({
-            //     dsl: {
-            //         size: limit.value,
-            //         from: offset.value,
-            //         ...handleFacetDSL(facetMap.value),
-            //         ...handleAggregationDSL(facetMap.value),
-            //         post_filter: handlePostFacetDSL(facetMap.value)?.query,
-            //     },
-            //     attributes: [
-            //         ...InternalAttributes,
-            //         ...AssetAttributes,
-            //         ...SQLAttributes,
-            //     ],
-            //     relationAttributes: [...AssetRelationAttributes],
-            // })
-
             const {
                 list,
                 isLoading,
@@ -228,70 +204,6 @@
                 handleSelectedAsset(item)
             }
 
-            // watch(data, () => {
-            //     // if (!isLoading.value.value) {
-            //     //     const entities = list.value.map((i) => ({
-            //     //         typeName: i.typeName,
-            //     //         entityGuid: i.guid,
-            //     //         action: 'ENTITY_UPDATE',
-            //     //     }))
-            //     //     useEvaluate(
-            //     //         {
-            //     //             entities,
-            //     //         },
-            //     //         ref('DEFAULT_EVALUATE'),
-            //     //         null,
-            //     //         false
-            //     //     )
-            //     // }
-            // })
-
-            // const assetCategoryFilter = ref([])
-            // // Initialization via IIFE
-            // ;(() => {
-            //     const qry = decodeQuery(
-            //         Object.keys(router.currentRoute.value?.query)[0]
-            //     )
-            //     if (qry.selectedTab) selectedTab.value = qry.selectedTab
-            //     if (qry.queryText) queryText.value = qry.queryText
-            //     if (qry.sortOrder) sortOrder.value = qry.sortOrder
-            //     if (qry.state) state.value = qry.state
-            //     if (qry.facets) facets.value = qry.facets
-            //     if (qry.category) assetCategoryFilter.value = qry.category
-            // })()
-            // // Get All Disoverable Asset Types
-            // const applicableTabs: Ref<string[]> = computed(() =>
-            //     useFilteredTabs({
-            //         connector: facets.value?.connector,
-            //         category: assetCategoryFilter.value,
-            //     })
-            // )
-            // const assetTypeList = computed(() => {
-            //     const filteredTabs = AssetTypeList.filter(
-            //         (item) =>
-            //             item.isDiscoverable == true &&
-            //             applicableTabs.value.includes(item.id)
-            //     )
-            //     return [
-            //         {
-            //             id: 'Catalog',
-            //             label: 'All',
-            //         },
-            //         ...filteredTabs,
-            //     ]
-            // })
-            // const {
-            //     list,
-            //     replaceBody,
-            //     assetTypeMap,
-            //     isLoading,
-            //     searchScoreList,
-            //     mutateAssetInList,
-            // } = useAssetListing('', false)
-            // // const { assetTypeMap, refreshAggregation } = useAssetAggregation(
-            // //     '',
-            // //     false
-            // // )
             // const store = useBusinessMetadataStore()
             // const BMListLoaded = computed(
             //     () => store.getBusinessMetadataListLoaded
@@ -299,21 +211,6 @@
             // const BMAttributeProjection = computed(
             //     () => store.getBusinessMetadataListProjections
             // )
-            // const assetTypeLabel = computed(() => {
-            //     const found = AssetTypeList.find(
-            //         (item) => item.id == selectedTab.value
-            //     )
-            //     return found?.label
-            // })
-            // const totalSum = computed(() => {
-            //     let sum = 0
-            //     assetTypeList.value?.forEach((element) => {
-            //         if (assetTypeMap.value?.[element.id]) {
-            //             sum += assetTypeMap.value?.[element.id]
-            //         }
-            //     })
-            //     return sum
-            // })
 
             // const placeholderLabel: Ref<Record<string, string>> = ref({})
             // const dynamicSearchPlaceholder = computed(() => {
@@ -331,100 +228,8 @@
             // }
             // // Push all asset type
 
-            // const updateBody = () => {
-            //     const initialBody = {
-            //         relationAttributes: [
-            //             'readme',
-            //             'displayText',
-            //             'name',
-            //             'description',
-            //             'shortDescription',
-            //         ],
-            //         dsl: {
-            //             size: limit.value,
-            //             from: offset.value,
-            //             post_filter: generateAssetPostQueryDSL(
-            //                 facets.value,
-            //                 queryText.value,
-            //                 selectedTab.value,
-            //                 applicableTabs.value
-            //             ).query,
-            //             ...generateAggregationDSL(),
-            //             ...generateAssetQueryDSL(
-            //                 facets.value,
-            //                 queryText.value,
-            //                 selectedTab.value,
-            //                 applicableTabs.value
-            //             ),
-            //         },
-            //         attributes: [
-            //             ...BaseAttributes,
-            //             ...BasicSearchAttributes,
-            //             ...tableauAttributes,
-            //             ...SavedQueryAttributes,
-            //             ...BMAttributeProjection.value,
-            //         ],
-            //     }
-            //     if (state.value) {
-            //         // if (state.value === 'all') {
-            //         //     initialBody.excludeDeletedEntities = false
-            //         // } else if (state.value === 'archived') {
-            //         //     initialBody.excludeDeletedEntities = false
-            //         //     initialBody.entityFilters.criterion.push({
-            //         //         attributeName: '__state',
-            //         //         attributeValue: 'DELETED',
-            //         //         operator: 'eq',
-            //         //     })
-            //         // } else {
-            //         //     initialBody.excludeDeletedEntities = true
-            //         // }
-            //     }
-            //     if (sortOrder.value !== 'default') {
-            //         // const split = sortOrder.value.split('|')
-            //         // if (split.length > 1) {
-            //         //     initialBody.sortBy = split[0]
-            //         //     initialBody.sortOrder = split[1].toUpperCase()
-            //         // }
-            //     } else {
-            //         // delete initialBody.sortBy
-            //         // delete initialBody.sortOrder
-            //     }
-            //     replaceBody(initialBody)
-            //     // if (isAggregate.value)
-            //     //     refreshAggregation({
-            //     //         dsl: generateAggregationDSL(
-            //     //             facets.value,
-            //     //             queryText.value
-            //     //         ),
-            //     //     })
-            // }
-            // const { generateFacetConfigForRouter } = useFilterUtils(facets)
-            // const setRouterOptions = () => {
-            //     const routerOptions: Record<string, any> = {}
-            //     const urlFacets = generateFacetConfigForRouter()
-            //     if (Object.keys(urlFacets).length)
-            //         routerOptions.facets = urlFacets
-            //     if (queryText.value) routerOptions.queryText = queryText.value
-            //     if (selectedTab.value !== 'Catalog')
-            //         routerOptions.selectedTab = selectedTab.value
-            //     if (sortOrder.value !== 'default')
-            //         routerOptions.sortOrder = sortOrder.value
-            //     if (state.value !== 'active') routerOptions.state = state.value
-            //     if (assetCategoryFilter.value.length)
-            //         routerOptions.category = assetCategoryFilter.value
-            //     const routerQuery = serializeQuery(routerOptions)
-            //     router.push(`/assets?${routerQuery}`)
-            // }
-            // function handleTabChange() {
-            //     isAggregate.value = false
-            //     offset.value = 0
-            //     updateBody()
-            //     setRouterOptions()
-            // }
-            // const { projection } = useDiscoveryPreferences()
-
             const handleSearchChange = useDebounceFn(() => {
-                console.log('change', queryText.value)
+                offset.value = 0
                 quickChange()
                 // tracking.send(events.EVENT_ASSET_SEARCH, {
                 //     trigger: 'discover',
@@ -452,14 +257,21 @@
             // }
 
             const handleFilterChange = () => {
+                offset.value = 0
                 quickChange()
             }
 
             const handleAssetTypeChange = () => {
+                offset.value = 0
                 quickChange()
             }
 
-            const handleLoadMore = () => {}
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                }
+                quickChange()
+            }
 
             return {
                 handleFilterChange,

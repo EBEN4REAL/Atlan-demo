@@ -97,7 +97,7 @@
             },
         },
         setup(props, { emit }) {
-            const { list, handleSearch } = useFacetUsers()
+            const { list, handleSearch, total } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
 
             watch(
@@ -294,7 +294,14 @@
             //     setActiveTab,
             // } -->
 
-            return { userList, fullName, avatarUrl, username, handleSearch }
+            return {
+                userList,
+                fullName,
+                avatarUrl,
+                username,
+                handleSearch,
+                total,
+            }
         },
     })
 </script>

@@ -52,12 +52,13 @@
                         {{ title(item) }}
                     </router-link>
 
-                    <!-- <CertificateBadge
+                    <CertificateBadge
+                        v-if="certificateStatus(item)"
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
-                    ></CertificateBadge> -->
+                    ></CertificateBadge>
                     <!-- <CertificatePopover :data="item" /> -->
                 </div>
 

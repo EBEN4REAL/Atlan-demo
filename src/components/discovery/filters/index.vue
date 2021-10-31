@@ -221,6 +221,10 @@
             const handleChange = (id) => {
                 modelValue.value = localFacetMap.value
                 emit('change')
+
+                totalAppliedFiltersCount.value = Object.keys(
+                    localFacetMap.value
+                ).length
                 dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
             }
 

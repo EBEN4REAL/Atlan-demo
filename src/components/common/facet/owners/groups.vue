@@ -76,7 +76,7 @@
 
     import Avatar from '@common/avatar/index.vue'
 
-    import useGroup from '~/composables/group/useGroup'
+    import useFacetGroups from '~/composables/group/useFacetGroups'
 
     export default defineComponent({
         name: 'OwnersFilter',
@@ -91,7 +91,7 @@
             },
         },
         setup(props, { emit }) {
-            const { list, handleSearch } = useFacetGroup()
+            const { list, handleSearch } = useFacetGroups()
 
             watch(
                 () => props.queryText,

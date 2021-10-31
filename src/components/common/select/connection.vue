@@ -1,7 +1,7 @@
 <template>
     <a-select
         placeholder="Select a connection"
-        :v-model="selectedValue"
+        :v-model:value="selectedValue"
         :allowClear="true"
         :showSearch="true"
         @search="handleSearch"
@@ -67,8 +67,8 @@
             const queryText = ref('')
 
             const selectedValue = ref(modelValue.value)
-            const handleChange = () => {
-                modelValue.value = selectedValue.value
+            const handleChange = (value) => {
+                modelValue.value = value
                 emit('change')
             }
 

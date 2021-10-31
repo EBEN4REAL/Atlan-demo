@@ -1,14 +1,14 @@
 <template>
     <div class="">
         <div class="flex items-center justify-between px-4 mb-2">
-            <SearchAndFilter
+            <SearchAdvanced
                 :placeholder="placeholder"
                 :autofocus="true"
                 v-model:value="queryText"
-                class="mb-2 -mt-1.5"
+                class="-mt-1.5"
                 size="minimal"
             >
-                <template #tabSelector>
+                <template #tab>
                     <div class="flex gap-1">
                         <AtlanIcon
                             :class="
@@ -32,7 +32,7 @@
                         />
                     </div>
                 </template>
-            </SearchAndFilter>
+            </SearchAdvanced>
         </div>
         <div class="">
             <Users
@@ -219,7 +219,7 @@
     } from 'vue'
     // import Groups from '@common/selector/groups/index.vue'
     // import Users from '@common/selector/users/index.vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
@@ -235,7 +235,7 @@
         components: {
             Groups,
             Users,
-            SearchAndFilter,
+            SearchAdvanced,
         },
         props: {
             item: {

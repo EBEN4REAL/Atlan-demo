@@ -29,9 +29,10 @@
                     :key="item.id"
                     class="relative group"
                     :show-arrow="false"
+                    :class="isFiltered(item.id) ? 'bg-white text-primary' : ''"
                 >
                     <template #header>
-                        <div :key="dirtyTimestamp" class="select-none">
+                        <div :key="dirtyTimestamp[item.id]" class="select-none">
                             <div class="flex flex-col flex-1">
                                 <div
                                     class="flex items-center justify-between  hover:text-primary"
@@ -45,8 +46,18 @@
                                             :src="item.image"
                                             class="float-left w-auto h-4 mr-2"
                                         />
+
                                         {{ item.label }}</span
                                     >
+                                    <span
+                                        v-if="isFiltered(item.id)"
+                                        class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                        @click.stop.prevent="
+                                            handleClear(item.id)
+                                        "
+                                    >
+                                        Clear
+                                    </span>
                                     <AtlanIcon
                                         icon="ChevronDown"
                                         class="ml-3 text-gray-500 transition-transform duration-300 transform  hover:text-primary title"
@@ -56,13 +67,6 @@
                                                 : 'rotate-0'
                                         "
                                     />
-                                    <!-- <span
-                                    v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
-                                    @click.stop.prevent="handleClear(item.id)"
-                                >
-                                    Clear
-                                </span> -->
                                 </div>
                                 <!-- <div
                                 v-if="!activeKey.includes(item.id)"
@@ -70,6 +74,14 @@
                             >
                                 {{ getFiltersAppliedString(item.id) }}
                             </div> -->
+                            </div>
+                            <div
+                                v-if="
+                                    isFiltered(item.id) &&
+                                    !activeKey.includes(item.id)
+                                "
+                            >
+                                {{ getFilterValue(item.id) }}
                             </div>
                         </div>
                     </template>
@@ -80,9 +92,10 @@
                     ></component> -->
 
                     <component
+                        :key="dirtyTimestampFacet[item.id]"
                         :is="item.component"
                         v-model="localFacetMap[item.id]"
-                        @change="handleChange"
+                        @change="handleChange(item.id)"
                     ></component>
                 </a-collapse-panel>
             </a-collapse>
@@ -98,6 +111,7 @@
         defineComponent,
         ref,
         Ref,
+        toRefs,
         watch,
     } from 'vue'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
@@ -165,12 +179,12 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-
             const localFacetMap = ref(modelValue.value)
 
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
-            const dirtyTimestamp = ref('dirty_')
+            const dirtyTimestamp = ref({})
+            const dirtyTimestampFacet = ref({})
 
             const { list: cmList } = useCustomMetadataFacet()
 
@@ -184,266 +198,49 @@
                 return [...discoveryFilters, ...cmList.value]
             })
 
-            const dataMap = ref({})
+            const isFiltered = (id) => {
+                if (localFacetMap?.value) {
+                    if (localFacetMap?.value[id]) {
+                        if (localFacetMap?.value[id].constructor === Object) {
+                            if (
+                                Object.keys(localFacetMap?.value[id]).length ===
+                                0
+                            ) {
+                                return false
+                            }
+                        }
+                    }
+                }
 
-            // // Mapping of Data to child components
-            // const dataMap: Ref<{ [key: string]: any }> = ref({
-            //     connector: props.facets?.connector || {},
-            //     saved: props.facets?.saved || {
-            //         checked: undefined,
-            //     },
-            //     status: props.facets?.status || {
-            //         checked: undefined,
-            //     },
-            //     classifications: {
-            //         noClassificationsAssigned: false,
-            //         checked: props.facets?.classifications?.checked || [],
-            //         operator: props.facets?.classifications?.condition || 'OR',
-            //         addedBy: props.facets?.classifications?.addedBy || 'all',
-            //     },
-            //     owners: {
-            //         userValue: props.facets?.owners?.userValue || [],
-            //         groupValue: props.facets?.owners?.groupValue || [],
-            //         noOwnerAssigned:
-            //             props.facets?.owners?.noOwnerAssigned || false,
-            //     },
-            //     advanced: {
-            //         applied: props.facets?.advanced?.applied,
-            //     },
-            //     terms: {
-            //         checked: props.facets?.terms?.checked || [],
-            //         operator: props.facets?.terms?.operator || 'OR',
-            //     },
-            // })
-            // const { payload: filterMap } = useFilterPayload(dataMap)
-            // const { isFilterApplied, totalAppliedFiltersCount } =
-            //     useFilterUtils(dataMap)
-            // // ? watching for bmDataList to be computed
-            // watch(
-            //     bmDataList,
-            //     () => {
-            //         // ? add initial applied filters to dataMap
-            //         Object.keys(bmDataList.value).forEach((b) => {
-            //             dataMap.value[b] = {
-            //                 applied: {
-            //                     ...dataMap.value[b]?.applied,
-            //                     ...props.facets?.[b]?.applied,
-            //                 },
-            //             }
-            //         })
-            //     },
-            //     {
-            //         deep: true,
-            //         immediate: true,
-            //     }
-            // )
-            // const refresh = () => {
-            //     console.log(dataMap.value)
-            //     emit('refresh', dataMap.value)
-            // }
-            const handleChange = () => {
-                console.log(localFacetMap)
+                if (localFacetMap.value[id]) {
+                    return true
+                }
+                return false
+            }
+
+            const handleChange = (id) => {
                 modelValue.value = localFacetMap.value
                 emit('change')
-
-                // dirtyTimestamp.value = `dirty_${Date.now().toString()}`
-                // console.log(dirtyTimestamp.value)
-                // refresh()
+                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
             }
-            // const handleSavedFilterChange = (payload) => {
-            //     dataMap.value['saved'].checked = payload
-            //     dirtyTimestamp.value = `dirty_${Date.now().toString()}`
-            //     refresh()
-            // }
-            // const setConnector = (payload: any) => {
-            //     dataMap.value.connector = payload
-            // }
-            // const handleSavedFilterAdded = () => {
-            //     updateSavedFilters.value = true
-            // }
-            // const handleClear = (filterId: string) => {
-            //     switch (filterId) {
-            //         case 'connector': {
-            //             dataMap.value[filterId] = {
-            //                 attributeName: undefined,
-            //                 attributeValue: undefined,
-            //             }
-            //             break
-            //         }
-            //         case 'saved': {
-            //             dataMap.value[filterId].checked = []
-            //             break
-            //         }
-            //         case 'status': {
-            //             dataMap.value[filterId].checked = []
-            //             break
-            //         }
-            //         case 'classifications': {
-            //             dataMap.value[filterId].checked = []
-            //             dataMap.value[filterId].noClassificationsAssigned =
-            //                 false
-            //             dataMap.value[filterId].operator = 'OR'
-            //             dataMap.value[filterId].addedBy = 'all'
-            //             break
-            //         }
-            //         case 'term': {
-            //             dataMap.value[filterId].applied = {}
-            //             break
-            //         }
-            //         case 'owners': {
-            //             dataMap.value[filterId].userValue = []
-            //             dataMap.value[filterId].groupValue = []
-            //             dataMap.value[filterId].noOwnerAssigned = false
-            //             break
-            //         }
-            //         case 'advanced': {
-            //             dataMap.value[filterId].applied = {}
-            //             break
-            //         }
-            //         default: {
-            //             dataMap.value[filterId].applied = {}
-            //         }
-            //     }
-            //     refresh()
-            // }
-            // function getFiltersAppliedString(filterId: string) {
-            //     switch (filterId) {
-            //         case 'saved': {
-            //             let facetFiltersData =
-            //                 dataMap.value[filterId]?.checked || []
-            //             facetFiltersData = facetFiltersData?.name
-            //             return facetFiltersData
-            //         }
-            //         case 'status': {
-            //             let facetFiltersData =
-            //                 dataMap.value[filterId]?.checked || []
-            //             facetFiltersData = facetFiltersData.map(
-            //                 (statusId: string) =>
-            //                     StatusList?.find(
-            //                         (status: any) => status.id === statusId
-            //                     ).label
-            //             )
-            //             if (facetFiltersData.length > 3) {
-            //                 return `${facetFiltersData
-            //                     .slice(0, 3)
-            //                     .join(', ')} +${
-            //                     facetFiltersData.length - 3
-            //                 } others`
-            //             }
-            //             return facetFiltersData.slice(0, 3).join(', ')
-            //         }
-            //         case 'classifications': {
-            //             const facetFiltersData =
-            //                 dataMap.value[filterId]?.checked?.map(
-            //                     (clsf: string) =>
-            //                         useClassificationStore().getClasificationByName(
-            //                             clsf
-            //                         )?.displayName
-            //                 ) ?? []
-            //             if (facetFiltersData.length || 0 > 3) {
-            //                 return `${facetFiltersData
-            //                     .slice(0, 3)
-            //                     .join(', ')} +${
-            //                     facetFiltersData.length - 3
-            //                 } others`
-            //             }
-            //             let noClassificationsAssigned = dataMap.value[filterId]
-            //                 .noClassificationsAssigned
-            //                 ? 'No Classifications'
-            //                 : ''
-            //             return (
-            //                 noClassificationsAssigned +
-            //                 facetFiltersData.slice(0, 3).join(', ')
-            //             )
-            //         }
-            //         case 'owners': {
-            //             const users = dataMap.value[filterId]?.userValue || []
-            //             const groups = dataMap.value[filterId]?.groupValue || []
-            //             const noOwnerAssigned =
-            //                 dataMap.value[filterId]?.noOwnerAssigned || false
-            //             let appliedOwnersString = ''
-            //             if (users && users?.length > 0) {
-            //                 if (users?.length === 1)
-            //                     appliedOwnersString += `${users.length} user`
-            //                 else appliedOwnersString += `${users.length} users`
-            //             }
-            //             if (groups && groups?.length > 0) {
-            //                 if (appliedOwnersString.length > 0) {
-            //                     if (groups.length === 1)
-            //                         appliedOwnersString += ` & ${groups.length} group`
-            //                     else
-            //                         appliedOwnersString += ` & ${groups.length} groups`
-            //                 } else if (groups.length === 1)
-            //                     appliedOwnersString += `${groups.length} group`
-            //                 else
-            //                     appliedOwnersString += `${groups.length} groups`
-            //             }
-            //             if (noOwnerAssigned) appliedOwnersString += 'No Owners'
-            //             return appliedOwnersString
-            //         }
-            //         case 'advanced': {
-            //             // ? default fall back to bm filter
-            //             const totalCount = Object.values(
-            //                 dataMap.value[filterId]?.applied || {}
-            //             ).length
-            //             return totalCount
-            //                 ? `${totalCount} condition(s) applied`
-            //                 : ''
-            //         }
-            //         default: {
-            //             // ? default fall back to bm filter
-            //             const totalCount = Object.values(
-            //                 dataMap.value[filterId]?.applied || {}
-            //             ).length
-            //             return totalCount
-            //                 ? `${totalCount} condition(s) applied`
-            //                 : ''
-            //         }
-            //     }
-            // }
-            // function resetAllFilters() {
-            //     dataMap.value.connector = {
-            //         attributeName: undefined,
-            //         attributeValue: undefined,
-            //     }
-            //     dataMap.value.saved.checked = []
-            //     dataMap.value.status.checked = []
-            //     dataMap.value.classifications.checked = []
-            //     dataMap.value.classifications.noClassificationsAssigned = false
-            //     dataMap.value.owners.userValue = []
-            //     dataMap.value.owners.groupValue = []
-            //     dataMap.value.owners.noOwnerAssigned = false
-            //     dataMap.value.advanced.applied = {}
-            //     // ? remove bm applied data
-            //     bmFiltersList.value
-            //         .map((b) => b.id)
-            //         .forEach((n) => {
-            //             dataMap.value[n].applied = {}
-            //         })
-            //     refresh()
-            // }
-            // return {
-            //     resetAllFilters,
-            //     totalAppliedFiltersCount,
-            //     getFiltersAppliedString,
-            //     filterMap,
-            //     activeKey,
-            //     dataMap,
-            //     handleChange,
-            //     isFilterApplied,
-            //     dirtyTimestamp,
-            //     handleClear,
-            //     dynamicList,
-            //     bmFiltersList,
-            //     bmDataList,
-            //     activeTab,
-            //     setActiveTab,
-            //     setConnector,
-            //     handleSavedFilterChange,
-            //     handleSavedFilterAdded,
-            //     updateSavedFilters,
-            //     tabConfig,
-            // }
+
+            const handleClear = (id: string) => {
+                // localFacetMap.value[id] = undefined
+                // localFacetMap[id] = []
+                dirtyTimestampFacet.value[id] = `dirty_${Date.now().toString()}`
+                delete localFacetMap.value[id]
+                handleChange()
+            }
+
+            const getFilterValue = (id: string) => {
+                console.log(id)
+                if (id === 'hierarchy') {
+                    if (localFacetMap.value[id].connectorName) {
+                        return localFacetMap.value[id].connectorName
+                    }
+                }
+                return 'asdasd'
+            }
 
             return {
                 totalAppliedFiltersCount,
@@ -452,6 +249,10 @@
                 dynamicList,
                 localFacetMap,
                 handleChange,
+                handleClear,
+                isFiltered,
+                dirtyTimestampFacet,
+                getFilterValue,
             }
         },
     })

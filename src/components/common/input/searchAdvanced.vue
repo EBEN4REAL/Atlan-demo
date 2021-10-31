@@ -7,13 +7,14 @@
         :size="size"
         :class="$style.transparent"
         @change="handleChange"
-        class="text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
+        class="px-0 text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
     >
         <template #prefix>
             <AtlanIcon icon="Search" class="flex-none text-gray-500" />
         </template>
 
         <template #suffix>
+            <slot name="tab" />
             <a-popover
                 v-if="$slots.postFilter"
                 trigger="click"

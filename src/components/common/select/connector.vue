@@ -1,7 +1,7 @@
 <template>
     <a-select
         placeholder="Select a connector"
-        :v-model="selectedValue"
+        v-model:value="selected"
         :allowClear="true"
         :showSearch="true"
         notFoundContent="No connector found"
@@ -19,7 +19,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, watch, ref, toRef, toRefs } from 'vue'
 
     import useConnectionData from '~/composables/connection/useConnectionData'
 
@@ -37,16 +37,16 @@
         setup(props, { emit }) {
             const { sourceList } = useConnectionData()
             const { modelValue } = useVModels(props, emit)
-            const selectedValue = ref(modelValue.value)
-            const handleChange = () => {
-                modelValue.value = selectedValue.value
+            const selected = ref(modelValue.value)
+
+            watch(selected, () => {
+                modelValue.value = selected.value
                 emit('change')
-            }
+            })
 
             return {
                 sourceList,
-                selectedValue,
-                handleChange,
+                selected,
             }
         },
     })

@@ -33,6 +33,23 @@ export function useBody(
     Object.keys(facets ?? {}).forEach((mkey) => {
         const filterObject = facets[mkey]
         switch (mkey) {
+            case 'hierarchy': {
+                if (filterObject.connectorName) {
+                    base.filter(
+                        'term',
+                        'connectorName',
+                        filterObject.connectorName
+                    )
+                }
+                if (filterObject.connectionQualifiedName) {
+                    base.filter(
+                        'term',
+                        'connectionQualifiedName',
+                        filterObject.connectionQualifiedName
+                    )
+                }
+                break
+            }
             case 'connector': {
                 if (filterObject) {
                     base.filter('term', 'connectorName', filterObject)

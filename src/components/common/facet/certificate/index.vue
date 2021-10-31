@@ -1,8 +1,8 @@
 <template>
     <a-checkbox-group
         class="w-full px-4"
+        v-model:value="localValue"
         @change="handleChange"
-        v-model:value="localFacetMap"
     >
         <div class="flex flex-col w-full">
             <template v-for="item in certificateList" :key="item.id">
@@ -39,45 +39,34 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRef, toRefs } from 'vue'
+    import { defineComponent, ref, toRef, toRefs, watch } from 'vue'
     import { certificateList } from '~/constant/certification'
     import noStatus from '~/assets/images/status/nostatus.svg'
 
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { useVModels, toRef } from '@vueuse/core'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         props: {
             modelValue: {
                 required: false,
-                default() {
-                    return []
-                },
             },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            let initialValue = []
-            if (modelValue?.value) {
-                initialValue = modelValue?.value
-            }
-            const localFacetMap = ref(initialValue)
+            const localValue = ref(modelValue.value)
 
             const handleChange = () => {
-                modelValue.value = localFacetMap.value
+                modelValue.value = localValue.value
                 emit('change')
-                useAddEvent('discovery', 'facet', 'changed', {
-                    filter_type: 'certificate',
-                    count: localFacetMap.value?.length,
-                })
             }
 
             return {
                 certificateList,
-                localFacetMap,
-                handleChange,
+                localValue,
                 noStatus,
+                handleChange,
             }
         },
     })

@@ -1,6 +1,6 @@
 export const discoveryFilters = [
     {
-        id: 'connection',
+        id: 'hierarchy',
         label: 'Connection',
         component: 'connection',
         overallCondition: 'OR',

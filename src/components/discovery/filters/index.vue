@@ -20,6 +20,7 @@
             <a-collapse
                 v-model:activeKey="activeKey"
                 expand-icon-position="right"
+                @change="handleActivePanelChange"
                 :bordered="false"
                 class="relative bg-transparent"
                 :class="$style.filter"
@@ -117,6 +118,7 @@
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
+    import useDiscoveryStore from '~/store/discovery'
     // import RaisedTabSmall from '@/UI/raisedTabSmall.vue'
     // import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     // import { List as StatusList } from '~/constant/status'
@@ -178,13 +180,30 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const discoveryStore = useDiscoveryStore()
+
             const { modelValue } = useVModels(props, emit)
+
             const localFacetMap = ref(modelValue.value)
+
+            if (localFacetMap.value) {
+                if (discoveryStore.activeFacet) {
+                    localFacetMap.value = discoveryStore.activeFacet
+                    modelValue.value = localFacetMap.value
+                    emit('change')
+                }
+            }
 
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref({})
             const dirtyTimestampFacet = ref({})
+
+            if (discoveryStore.activeFacetTab?.length > 0) {
+                activeKey.value = discoveryStore.activeFacetTab
+            } else {
+                activeKey.value = ['hierarchy']
+            }
 
             const { list: cmList } = useCustomMetadataFacet()
 
@@ -221,11 +240,11 @@
             const handleChange = (id) => {
                 modelValue.value = localFacetMap.value
                 emit('change')
-
                 totalAppliedFiltersCount.value = Object.keys(
                     localFacetMap.value
                 ).length
                 dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
+                discoveryStore.setActiveFacet(localFacetMap.value)
             }
 
             const handleClear = (id: string) => {
@@ -233,7 +252,7 @@
                 // localFacetMap[id] = []
                 dirtyTimestampFacet.value[id] = `dirty_${Date.now().toString()}`
                 delete localFacetMap.value[id]
-                handleChange()
+                handleChange(id)
             }
 
             const getFilterValue = (id: string) => {
@@ -244,6 +263,10 @@
                     }
                 }
                 return 'asdasd'
+            }
+
+            const handleActivePanelChange = () => {
+                discoveryStore.setActivePanel(activeKey.value)
             }
 
             return {
@@ -257,6 +280,7 @@
                 isFiltered,
                 dirtyTimestampFacet,
                 getFilterValue,
+                handleActivePanelChange,
             }
         },
     })

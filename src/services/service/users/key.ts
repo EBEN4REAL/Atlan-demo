@@ -12,6 +12,7 @@ export const ADD_USER_TO_GROUPS = 'ADD_USER_TO_GROUPS'
 export const RESEND_INVITATION_EMAIL = 'RESEND_INVITATION_EMAIL'
 export const REVOKE_INVITATION = 'REVOKE_INVITATION'
 export const INVITE_USERS = 'INVITE_USERS'
+export const LIST_BULK = 'LIST_BULK'
 
 export const map = {
     [LIST_USERS]: () => getAPIPath(BASE_PATH, '/users'),
@@ -33,4 +34,5 @@ export const map = {
         getAPIPath('service', `/users/${id}/delete`),
     [INVITE_USERS]: () => getAPIPath('service', `/users`),
     [UPDATE_USER]: ({ id }) => getAPIPath('service', `/users/${id}`),
+    [LIST_BULK]: () => getAPIPath('service', '/users/bulk'),
 }

@@ -101,6 +101,18 @@ const RevokeInvitation = (id: string, options?: any) =>
 const InviteUsers = (id: string, options?: any) =>
     useAPI(map.INVITE_USERS, 'POST', { pathVariables: { id } }, options || {})
 
+const ListBulk = (
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: any
+) => useAPI(map.LIST_BULK, 'POST', { body }, options || {})
+
+export interface IUser {
+    email: string
+    firstName: string
+    lastName: string
+    username: string
+}
+
 export const Users = {
     List,
     GetUserSessions,
@@ -113,4 +125,5 @@ export const Users = {
     UpdateUser,
     GetUserAccessLogs,
     SignOutSessionById,
+    ListBulk,
 }

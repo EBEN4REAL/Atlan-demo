@@ -4,15 +4,22 @@
             class="flex flex-col w-1/5 h-full overflow-hidden bg-white border-r"
         >
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
-                <a-menu-item-group title="Access Control">
-                    <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
-                        >Personas</a-menu-item
-                    >
-                    <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
-                        >API Keys</a-menu-item
-                    >
-                </a-menu-item-group>
                 <a-menu
+                    mode="inline"
+                    :class="$style.sidebar"
+                    @click="handleClick"
+                    v-model:selectedKeys="current"
+                    :inlineIndent="0"
+                >
+                    <a-menu-item-group title="Access Control">
+                        <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
+                            >Personas</a-menu-item
+                        >
+                        <!-- <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
+                        >API Keys</a-menu-item
+                    > -->
+                    </a-menu-item-group>
+                    <!-- <a-menu
                     mode="inline"
                     :class="$style.sidebar"
                     @click="handleClick"
@@ -37,7 +44,7 @@
                         <a-menu-item key="enums" v-auth="[map.LIST_ENUM]">
                             Enums
                         </a-menu-item>
-                    </a-menu-item-group>
+                    </a-menu-item-group>-->
                 </a-menu>
             </div>
         </div>
@@ -59,12 +66,12 @@
             const route = useRoute()
 
             const handleClick = ({ key }) => {
-                router.push(`/admin/${key}`)
+                router.push(`/governance/${key}`)
             }
 
             const initialRoute = route.path.split('/').slice(-1)
             const current = ref(
-                initialRoute[0] === 'admin' ? ['members'] : initialRoute
+                initialRoute[0] === 'governance' ? ['persona'] : initialRoute
             )
 
             return {

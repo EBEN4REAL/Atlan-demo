@@ -7,7 +7,7 @@
     import { useHead } from '@vueuse/head'
 
     import PersonaView from '@/admin/personas/personaView.vue'
-    import useAuth from '~/services2/service/composable/useAuth'
+    import useAuth from '~/composables/auth/useAuth'
     export default defineComponent({
         components: { PersonaView },
         setup() {

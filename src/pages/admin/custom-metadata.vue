@@ -67,8 +67,8 @@
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
 
     import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
-    import NoAcces from '@/admin/common/noAccessPage.vue'
-    import useAuth from '~/services2/service/composable/useAuth'
+    import NoAcces from '@/common/secured/access.vue'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         name: 'BusinessMetadata',

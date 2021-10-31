@@ -5,7 +5,7 @@
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
     import ListAPIKeys from '~/components/admin/apikeys/listApiKeys.vue'
-    import useAuth from '~/services2/service/composable/useAuth'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         components: { ListAPIKeys },

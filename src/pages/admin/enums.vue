@@ -47,8 +47,8 @@
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { useAccessStore } from '~/services/access/accessStore'
-    import NoAcces from '@/admin/common/noAccessPage.vue'
-    import useAuth from '~/services2/service/composable/useAuth'
+    import NoAcces from '@/common/secured/access.vue'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         components: {

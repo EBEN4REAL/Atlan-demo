@@ -10,7 +10,7 @@
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { Classification } from '~/api/atlas/classification'
-    import useAuth from '~/services2/service/composable/useAuth'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         components: { RequestList },

@@ -1,15 +1,15 @@
-import { defineComponent, getCurrentInstance, computed, inject } from 'vue';
-import { useTenantStore } from '~/services/keycloak/tenant/store';
+import { defineComponent, getCurrentInstance, computed, inject } from 'vue'
+import { useTenantStore } from '~/store/tenant'
 
 export default defineComponent({
     setup() {
-        const tenantStore = useTenantStore();
-        const keycloak = inject('$keycloak');
+        const tenantStore = useTenantStore()
+        const keycloak = inject('$keycloak')
 
-        const isReady = () => (keycloak.ready ? keycloak.ready : false);
-        const name = () => (keycloak.name ? keycloak.name : '');
+        const isReady = () => (keycloak.ready ? keycloak.ready : false)
+        const name = () => (keycloak.name ? keycloak.name : '')
         const username = () =>
-            keycloak.tokenParsed ? keycloak.tokenParsed.username : '';
+            keycloak.tokenParsed ? keycloak.tokenParsed.username : ''
 
         return {
             isReady,
@@ -20,7 +20,7 @@ export default defineComponent({
                 () => tenantStore?.tenant?.getDisplayNameHTML
             ),
             realm: computed(() => tenantStore?.tenant?.getRealmName),
-        };
+        }
     },
     computed: {
         // isReady() {
@@ -59,4 +59,4 @@ export default defineComponent({
         // },
     },
     methods: {},
-});
+})

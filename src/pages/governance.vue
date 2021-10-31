@@ -4,6 +4,14 @@
             class="flex flex-col w-1/5 h-full overflow-hidden bg-white border-r"
         >
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
+                <a-menu-item-group title="Access Control">
+                    <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
+                        >Personas</a-menu-item
+                    >
+                    <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
+                        >API Keys</a-menu-item
+                    >
+                </a-menu-item-group>
                 <a-menu
                     mode="inline"
                     :class="$style.sidebar"

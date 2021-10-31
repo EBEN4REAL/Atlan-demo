@@ -16,47 +16,48 @@
             <EmptySSOScreen />
         </div> -->
     </div>
-    <NoAccess v-else />
 </template>
 <script lang="ts">
-    import { defineComponent, computed, watch } from 'vue'
+    import { defineComponent, computed } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRouter } from 'vue-router'
     import EmptySSOScreen from '@/admin/sso/configure/emptySSOScreen.vue'
     import DisplaySSO from '@/admin/sso/update/displaySSO.vue'
-    import { useTenantStore } from '~/services/keycloak/tenant/store'
+    import { useTenantStore } from '~/store/tenant'
+    import NoAccess from '@/common/secured/access.vue'
 
-export default defineComponent({
-    name: 'SSO',
-    components: {
-        EmptySSOScreen,
-        DisplaySSO,
-    },
-    setup() {
-        useHead({
-            title: 'SSO',
-        })
-        const router = useRouter()
-        const tenantStore = useTenantStore()
-        const identityProviders = computed(
-            () => tenantStore.getIdentityProviders
-        )
-        const alias = computed(
-            () => identityProviders?.value?.find((idp) => idp.alias)?.alias
-        )
+    export default defineComponent({
+        name: 'SSO',
+        components: {
+            EmptySSOScreen,
+            DisplaySSO,
+            NoAccess,
+        },
+        setup() {
+            useHead({
+                title: 'SSO',
+            })
+            const router = useRouter()
+            const tenantStore = useTenantStore()
+            const identityProviders = computed(
+                () => tenantStore.identityProviders
+            )
+            const alias = computed(
+                () => identityProviders?.value?.find((idp) => idp.alias)?.alias
+            )
 
-        if (
-            alias.value &&
-            identityProviders.value &&
-            identityProviders.value.length
-        )
-            router.push(`/admin/sso/${alias.value}`)
-        return {
-            identityProviders,
-            alias,
-        }
-    },
-})
+            if (
+                alias.value &&
+                identityProviders.value &&
+                identityProviders.value.length
+            )
+                router.push(`/admin/sso/${alias.value}`)
+            return {
+                identityProviders,
+                alias,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
     .ssoPage {

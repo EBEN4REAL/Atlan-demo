@@ -23,26 +23,12 @@
                         <a-menu-item v-auth="[map.LIST_GROUPS]" key="groups"
                             >Groups</a-menu-item
                         >
-                        <!--      <a-menu-item key="sso" v-auth="[map.UPDATE_SSO]"
+                        <a-menu-item key="sso" v-auth="[map.UPDATE_SSO]"
                             >SSO</a-menu-item
                         >
                         <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]"
                             >SMTP</a-menu-item
                         >
-                        <a-menu-item
-                            v-auth="[map.UPDATE_INTEGRATIONS]"
-                            key="integrations"
-                            >Integrations</a-menu-item
-                        >
-                    </a-menu-item-group>
-
-                    <a-menu-item-group title="Access Control">
-                        <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
-                            >Personas</a-menu-item
-                        >
-                        <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
-                            >API Keys</a-menu-item
-                        > -->
                     </a-menu-item-group>
                 </a-menu>
             </div>

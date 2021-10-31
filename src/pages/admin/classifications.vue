@@ -120,10 +120,10 @@
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
-    import NoAcces from '@/admin/common/noAccessPage.vue'
+    import NoAcces from '@/common/secured/access.vue'
 
     import { useAccessStore } from '~/services/access/accessStore'
-    import useAuth from '~/services2/service/composable/useAuth'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         name: 'ClassificationProfile',

@@ -109,114 +109,113 @@
     </DefaultLayout>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
-import UpdateSSOConfig from '~/components/admin/sso/update/updateSSOConfig.vue'
-import { useTenantStore } from '~/services/keycloak/tenant/store'
-import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
-import MinimalTab from '@/UI/minimalTab.vue'
-import emptySSOImage from '~/assets/images/emptyCreds.png'
-import DisplaySSO from '@/admin/sso/update/displaySSO.vue'
-import DefaultLayout from '@/admin/defaultLayout.vue'
-import { IdentityProvider } from '~/api/auth/identityProvider'
-import AtlanBtn from '@/UI/button.vue'
-import { Tenant } from '~/api/auth/tenant'
+    import { computed, defineComponent, ref } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
+    import { message } from 'ant-design-vue'
+    import UpdateSSOConfig from '~/components/admin/sso/update/updateSSOConfig.vue'
+    import { useTenantStore } from '~/store/tenant'
+    import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
+    import MinimalTab from '@/UI/minimalTab.vue'
+    import emptySSOImage from '~/assets/images/emptyCreds.png'
+    import DisplaySSO from '@/admin/sso/update/displaySSO.vue'
+    import DefaultLayout from '@/admin/layout.vue'
+    import { Identity } from '~/services/service/identity'
+    import AtlanBtn from '@/UI/button.vue'
+    import { Tenant } from '~/services/service/tenant'
 
-export default defineComponent({
-    components: {
-        UpdateSSOConfig,
-        MinimalTab,
-        DisplaySSO,
-        DefaultLayout,
-        AtlanBtn,
-    },
-    setup() {
-        const route = useRoute()
-        const router = useRouter()
-        const alias = computed(() => route?.params?.alias || '')
-        const tenantStore = useTenantStore()
-        const tenantData: any = computed(() => tenantStore.getTenant)
-        const identityProviders: Array<any> =
-            tenantData?.value?.identityProviders || []
-        const ssoProvider: any = computed(
-            () =>
-                identityProviders.find((idp) => idp?.alias === alias.value) ||
-                {}
-        )
-        const samlProvider = topSAMLProviders.find(
-            (data) => data.alias === alias.value
-        )
-        const provider: any = samlProvider || customSamlProvider
-        const tabConfig = computed(() => [
-            {
-                label: 'Overview',
-                key: 'overview',
-            },
-            {
-                label: 'Configure',
-                key: 'configure',
-            },
-        ])
-        const activeTabKey = ref('overview')
-        const updateTenant = async () => {
-            const tenantResponse: any = await Tenant.Get()
-            tenantStore.setData(tenantResponse)
-        }
-        const showDeleteModal = ref(false)
-        const isDeleting = ref(false)
-        const defaultSSO = ref(false)
-        const showDeleteSSOModal = () => {
-            showDeleteModal.value = !showDeleteModal.value
-        }
-        const deleteSSO = async () => {
-            try {
-                isDeleting.value = true
-                await IdentityProvider.deleteIDP(alias.value as string)
-                if (defaultSSO.value)
-                    await IdentityProvider.deleteDefaultIDP(
-                        alias.value as string
-                    )
-                message.success({
-                    content: 'Provider removed.',
-                })
-                await updateTenant()
-                showDeleteSSOModal()
-                isDeleting.value = false
-                router.push(`/admin/sso`)
-            } catch (error) {
-                message.error({
-                    content: 'Failed to remove.',
-                })
+    export default defineComponent({
+        components: {
+            UpdateSSOConfig,
+            MinimalTab,
+            DisplaySSO,
+            DefaultLayout,
+            AtlanBtn,
+        },
+        setup() {
+            const route = useRoute()
+            const router = useRouter()
+            const alias = computed(() => route?.params?.alias || '')
+            const tenantStore = useTenantStore()
+
+            const identityProviders: Array<any> =
+                tenantStore.identityProviders || []
+            const ssoProvider: any = computed(
+                () =>
+                    identityProviders.find(
+                        (idp) => idp?.alias === alias.value
+                    ) || {}
+            )
+            const samlProvider = topSAMLProviders.find(
+                (data) => data.alias === alias.value
+            )
+            const provider: any = samlProvider || customSamlProvider
+            const tabConfig = computed(() => [
+                {
+                    label: 'Overview',
+                    key: 'overview',
+                },
+                {
+                    label: 'Configure',
+                    key: 'configure',
+                },
+            ])
+            const activeTabKey = ref('overview')
+            const updateTenant = async () => {
+                const tenantResponse: any = await Tenant.GetTenant()
+                tenantStore.setTenant(tenantResponse)
             }
-        }
+            const showDeleteModal = ref(false)
+            const isDeleting = ref(false)
+            const defaultSSO = ref(false)
+            const showDeleteSSOModal = () => {
+                showDeleteModal.value = !showDeleteModal.value
+            }
+            const deleteSSO = async () => {
+                try {
+                    isDeleting.value = true
+                    await Identity.deleteIDP(alias.value as string)
+                    if (defaultSSO.value)
+                        await Identity.deleteDefaultIDP(alias.value as string)
+                    message.success({
+                        content: 'Provider removed.',
+                    })
+                    await updateTenant()
+                    showDeleteSSOModal()
+                    isDeleting.value = false
+                    router.push(`/admin/sso`)
+                } catch (error) {
+                    message.error({
+                        content: 'Failed to remove.',
+                    })
+                }
+            }
 
-        return {
-            alias,
-            ssoProvider,
-            provider,
-            tabConfig,
-            activeTabKey,
-            emptySSOImage,
-            identityProviders,
-            showDeleteSSOModal,
-            deleteSSO,
-            showDeleteModal,
-            samlProvider,
-            isDeleting,
-        }
-    },
-})
+            return {
+                alias,
+                ssoProvider,
+                provider,
+                tabConfig,
+                activeTabKey,
+                emptySSOImage,
+                identityProviders,
+                showDeleteSSOModal,
+                deleteSSO,
+                showDeleteModal,
+                samlProvider,
+                isDeleting,
+            }
+        },
+    })
 </script>
 <style lang="less">
-.sso-tabs {
-    .ant-tabs-tab:first-child {
-        margin-left: 0 !important;
+    .sso-tabs {
+        .ant-tabs-tab:first-child {
+            margin-left: 0 !important;
+        }
     }
-}
 </style>
-  <route lang="yaml">
-  meta:
-  layout: default
-  requiresAuth: true
-  </route>
+<route lang="yaml">
+meta:
+layout: default
+requiresAuth: true
+</route>

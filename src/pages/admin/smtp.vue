@@ -5,10 +5,11 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import SmtpForm from '@/admin/smtp/smtpForm.vue'
+    import SmtpForm from '@/admin/smtp/index.vue'
     import { useHead } from '@vueuse/head'
-    import useAuth from '~/services2/service/composable/useAuth'
-    import NoAccess from '@/admin/common/noAccessPage.vue'
+
+    import useAuth from '~/composables/auth/useAuth'
+    import NoAccess from '@/common/secured/access.vue'
 
     export default defineComponent({
         components: {

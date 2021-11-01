@@ -14,7 +14,6 @@
         props: {},
         setup() {
             const { name } = useUserData()
-
             useHead({
                 title: `Welcome - ${getNameInTitleCase(name)} `,
             })

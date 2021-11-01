@@ -71,6 +71,7 @@
     // import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
+        name: 'DescriptionWidget',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

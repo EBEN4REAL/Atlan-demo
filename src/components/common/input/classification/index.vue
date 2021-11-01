@@ -52,6 +52,7 @@
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
+        name: 'ClassificationWidget',
         components: {},
         props: {
             selectedAsset: {

@@ -8,7 +8,7 @@ import { getCountString, getSizeString } from '~/utils/number'
 
 // import { SourceList } from '~/constant/source'
 // import { AssetTypeList } from '~/constant/assetType'
-import { dataTypeCategoryList } from '~/constant/datatype'
+import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewList } from '~/constant/previewTabs'
 import { formatDateTime } from '~/utils/date'
 import useDiscoveryStore from '~/store/discovery'
@@ -27,7 +27,7 @@ export default function useAssetInfo() {
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-                attributes(asset)?.connectorName?.toLowerCase()
+            attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -332,7 +332,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
-                      'N/A'
+                'N/A'
                 : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
         }
         return ''

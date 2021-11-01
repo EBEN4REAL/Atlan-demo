@@ -14,7 +14,7 @@
                                 :is="dataTypeImage(item)"
                                 class="w-auto h-4 text-gray-500"
                                 style="margin-top: 1px"
-                            ></component> -->
+                    ></component> -->
 
                     <component
                         :is="dataTypeCategoryImage(selectedAsset)"

@@ -62,6 +62,7 @@
     // import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
+        name: 'TermsWidget',
         components: {},
         props: {
             selectedAsset: {

@@ -79,6 +79,7 @@
     // import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
+        name: 'OwnersWidget',
         components: { UserAvatar, UserPill },
         props: {
             selectedAsset: {

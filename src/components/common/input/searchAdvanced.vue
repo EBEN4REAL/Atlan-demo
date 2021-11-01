@@ -4,7 +4,6 @@
         :placeholder="placeholder"
         v-model:value="localValue"
         type="text"
-        :size="size"
         :class="$style.transparent"
         @change="handleChange"
         class="px-0 text-sm text-gray-500 bg-transparent border-none  focus:outline-none"

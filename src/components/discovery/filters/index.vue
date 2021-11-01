@@ -296,7 +296,39 @@
                         return `${localFacetMap.value[id]?.length} applied`
                     }
                 }
-                return 'asdasd'
+                if (id === 'owners') {
+                    let usersLength = 0
+                    let groupsLength = 0
+
+                    // console.log('owners', localFacetMap.value[id]?.ownerUsers)
+                    // console.log('owners', localFacetMap.value[id]?.ownerGroups)
+
+                    if (localFacetMap.value[id]?.ownerUsers) {
+                        usersLength = localFacetMap.value[id]?.ownerUsers.length
+                    }
+                    if (localFacetMap.value[id]?.ownerGroups) {
+                        groupsLength =
+                            localFacetMap.value[id]?.ownerGroups.length
+                    }
+
+                    if (usersLength === 0 && groupsLength < 3) {
+                        return localFacetMap.value[id]?.ownerGroups.join(',')
+                    }
+                    if (usersLength < 3 && groupsLength === 0) {
+                        return localFacetMap.value[id]?.ownerUsers.join(',')
+                    }
+
+                    if (usersLength === 1 && groupsLength === 1) {
+                        return localFacetMap.value[id]?.ownerUsers
+                            .concat(localFacetMap.value[id]?.ownerGroups)
+                            .join(',')
+                    }
+
+                    let sum = usersLength + groupsLength
+
+                    return `${sum.toString()} applied`
+                }
+                return ''
             }
 
             const handleActivePanelChange = () => {

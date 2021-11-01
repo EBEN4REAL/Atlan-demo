@@ -14,6 +14,7 @@
 
         <template #suffix>
             <slot name="tab" />
+            <slot name="filter" />
             <a-popover
                 v-if="$slots.postFilter"
                 trigger="click"

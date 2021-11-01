@@ -12,6 +12,7 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewList } from '~/constant/previewTabs'
 import { formatDateTime } from '~/utils/date'
 import useDiscoveryStore from '~/store/discovery'
+import { Category, Term } from '~/types/glossary/glossary.interface'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -21,6 +22,7 @@ export default function useAssetInfo() {
     const connectionStore = useConnectionStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
+    const anchorAttributes = (asset: Term | Category) => asset?.attributes?.anchor?.attributes
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
@@ -697,5 +699,6 @@ export default function useAssetInfo() {
         getAnchorName,
         connectionQualifiedName,
         getConnectorImageMap,
+        anchorAttributes,
     }
 }

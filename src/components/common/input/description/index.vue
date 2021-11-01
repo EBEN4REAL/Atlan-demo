@@ -2,7 +2,7 @@
     <div class="text-xs text-gray-500">
         <div class="flex items-center justify-between mb-1 text-sm">
             <span> Description</span>
-            <span class="text-primary">edit</span>
+            <span class="cursor-pointer text-primary">edit</span>
         </div>
         <p class="text-sm text-gray-700">{{ description(selectedAsset) }}</p>
         <!-- <div class="flex">
@@ -71,6 +71,7 @@
     // import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
+        name: 'DescriptionWidget',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

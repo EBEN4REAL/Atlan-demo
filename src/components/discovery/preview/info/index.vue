@@ -5,11 +5,11 @@
             class="flex items-center w-full gap-16"
         >
             <SQL
-                :sql="definition(selectedAsset)"
                 v-if="
                     selectedAsset.typeName == 'View' ||
                     selectedAsset.typeName == 'MaterialisedView'
                 "
+                :sql="definition(selectedAsset)"
             >
                 <div class="flex flex-col text-sm cursor-pointer">
                     <span class="mb-2 text-sm text-gray-500">Definition</span>

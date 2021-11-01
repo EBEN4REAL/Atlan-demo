@@ -124,6 +124,7 @@
     import { capitalizeFirstLetter } from '~/utils/string'
 
     export default defineComponent({
+        name: 'PropertiesWidget',
         components: {
             UserPill,
             Owners,

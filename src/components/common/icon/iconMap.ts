@@ -23,7 +23,9 @@ import DatabaseGray from '~/assets/images/icons/database-gray.svg'
 import Schema from '~/assets/images/icons/schema.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
+import TableGray from '~/assets/images/icons/table-gray.svg'
 import View from '~/assets/images/icons/view.svg'
+import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
@@ -200,6 +202,9 @@ export default {
     Database,
     Schema,
     Table,
+    TableGray,
+    View,
+    ViewGray,
     Notification,
     NotificationDot,
     ArrowDown,

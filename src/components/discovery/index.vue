@@ -185,8 +185,8 @@
                 fetch,
                 quickChange,
                 handleSelectedAsset,
-            } = useDiscoverList(
-                true,
+            } = useDiscoverList({
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -194,9 +194,9 @@
                 aggregations,
                 limit,
                 offset,
-                defaultAttributes,
+                attributes: defaultAttributes,
                 relationAttributes
-            )
+            })
 
             const handlePreview = (item) => {
                 handleSelectedAsset(item)

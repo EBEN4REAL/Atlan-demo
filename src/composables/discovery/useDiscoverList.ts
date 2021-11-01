@@ -10,7 +10,7 @@ import { useBody } from './useBody'
 
 const assetTypeAggregationName = 'group_by_typeName'
 
-export function useDiscoverList(
+interface DiscoverListParams {
     isCache?: boolean | false,
     dependentKey?: Ref<any>,
     queryText?: Ref<any>,
@@ -21,7 +21,20 @@ export function useDiscoverList(
     offset?: Ref<Number>,
     attributes?: Ref<string[]>,
     relationAttributes?: Ref<string[]>
-) {
+}
+
+export function useDiscoverList({
+    isCache,
+    dependentKey,
+    queryText,
+    facets,
+    postFacets,
+    aggregations,
+    limit,
+    offset,
+    attributes,
+    relationAttributes,
+}: DiscoverListParams) {
     const defaultBody = ref({})
 
     const generateBody = () => {

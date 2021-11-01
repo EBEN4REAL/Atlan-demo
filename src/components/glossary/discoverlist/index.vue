@@ -67,8 +67,8 @@
                 isLoadMore,
                 fetch,
                 quickChange,
-            } = useDiscoverList(
-                true,
+            } = useDiscoverList({
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -76,9 +76,9 @@
                 aggregations,
                 limit,
                 offset,
-                defaultAttributes,
+                attributes: defaultAttributes,
                 relationAttributes
-            )
+            })
 
             console.log('fetching')
 

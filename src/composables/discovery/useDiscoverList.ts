@@ -12,15 +12,15 @@ import { useBody } from './useBody'
 const assetTypeAggregationName = 'group_by_typeName'
 
 interface DiscoverListParams {
-    isCache?: boolean | false,
-    dependentKey?: Ref<any>,
-    queryText?: Ref<any>,
-    facets?: Ref<any>,
-    postFacets?: Ref<any>,
-    aggregations?: Ref<string[]>,
-    limit?: Ref<Number>,
-    offset?: Ref<Number>,
-    attributes?: Ref<string[]>,
+    isCache?: boolean | false
+    dependentKey?: Ref<any>
+    queryText?: Ref<any>
+    facets?: Ref<any>
+    postFacets?: Ref<any>
+    aggregations?: Ref<string[]>
+    limit?: Ref<Number>
+    offset?: Ref<Number>
+    attributes?: Ref<string[]>
     relationAttributes?: Ref<string[]>
 }
 
@@ -150,10 +150,11 @@ export function useDiscoverList({
 
     const totalCount = computed(() => {
         if (assetTypeAggregationList.value.length > 0) {
-            const all = assetTypeAggregationList.value.find(
-                (i) => i.id === '__all'
+            const type = postFacets?.value.typeName || '__all'
+            const typeName = assetTypeAggregationList.value.find(
+                (i) => i.id === type
             )
-            return all.count || approximateCount.value
+            return typeName.count || approximateCount.value
         }
         return approximateCount.value
     })
@@ -185,6 +186,7 @@ export function useDiscoverList({
         queryText,
         limit,
         offset,
+        postFacets,
         totalCount,
         aggregationMap,
         getAggregationList,

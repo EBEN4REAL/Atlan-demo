@@ -9,6 +9,6 @@ const GetTypedefs = (
     options?: useOptions
 ) => useAPI(map.GET_TYPEDEFS, 'GET', { params }, options || {})
 
-export const Typedefs = {
+export const Types = {
     GetTypedefs,
 }

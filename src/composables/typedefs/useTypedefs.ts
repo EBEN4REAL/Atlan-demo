@@ -3,10 +3,10 @@ import { watch } from 'vue'
 
 import { useTypedefStore } from '~/store/typedef'
 
-import { Typedefs } from '~/services/meta/typedefs'
+import { Types } from '~/services/meta/types'
 
 export default function useTypedefs() {
-    const { data } = Typedefs.GetTypedefs(
+    const { data } = Types.GetTypedefs(
         {},
         {
             cacheKey: 'DEFAULT_TYPEDEFS',

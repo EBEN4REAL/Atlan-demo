@@ -7,7 +7,7 @@ import axios from 'axios'
 import { Discovery } from '~/services/meta/discovery'
 import { useOptions } from '~/services/api/common'
 
-export default function useIndexSearch(
+export default function useIndexSearch<T>(
     body: Record<string, any> | Ref<Record<string, any>>,
     dependentKey?: Ref<any>,
     isCache?: boolean,
@@ -48,7 +48,7 @@ export default function useIndexSearch(
     }
 
     const { data, mutate, error, isLoading, isValidating } =
-        Discovery.IndexSearch(body, options)
+        Discovery.IndexSearch<T>(body, options)
 
     const approximateCount = computed(() => {
         if (data?.value?.approximateCount) {

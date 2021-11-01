@@ -33,7 +33,6 @@
                         <a-popover
                             trigger="click"
                             placement="bottomLeft"
-                            class=""
                         >
                             <template #content>
                                 <div
@@ -68,10 +67,10 @@
                 <AssetList
                     ref="assetlistRef"
                     :list="list"
-                    @loadMore="handleLoadMore"
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
                     @preview="handlePreview"
+                    @loadMore="handleLoadMore"
                 />
             </div>
         </div>

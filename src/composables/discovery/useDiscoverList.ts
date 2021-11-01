@@ -2,6 +2,7 @@ import { ref, Ref, watch, computed } from 'vue'
 
 // import { generatePostFilterDSL } from './generatePostFilterDSL'
 // import { generateAggregationDSL } from './generateAggregationDSL'
+import { assetInterface } from '~/types/assets/asset.interface'
 
 import useIndexSearch from './useIndexSearch'
 import { assetTypeList } from '~/constant/assetType'
@@ -31,7 +32,7 @@ export function useDiscoverList({
     postFacets,
     aggregations,
     limit,
-    offset,
+    offset = ref(0),
     attributes,
     relationAttributes,
 }: DiscoverListParams) {
@@ -65,9 +66,9 @@ export function useDiscoverList({
         aggregationMap,
         approximateCount,
         cancelRequest,
-    } = useIndexSearch(defaultBody, localKey, isCache, false, 1)
+    } = useIndexSearch<assetInterface>(defaultBody, localKey, isCache, false, 1)
 
-    const list = ref([])
+    const list = ref<assetInterface[]>([])
     watch(data, () => {
         if (offset?.value > 0) {
             if (data.value?.entities) {

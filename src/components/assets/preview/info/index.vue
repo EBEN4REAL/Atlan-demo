@@ -87,7 +87,7 @@
             :edit-permission="false"
             @update:selected-asset="mutateSelectedAsset"
         /> -->
-        <CertificationPopover :selected-asset="selectedAsset">
+        <CertificationPopover :selected-asset="selectedAsset" placement="left">
             <Certificate :selected-asset="selectedAsset" />
         </CertificationPopover>
         <Terms :selected-asset="selectedAsset"></Terms>

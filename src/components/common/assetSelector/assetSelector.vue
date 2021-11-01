@@ -17,8 +17,25 @@
         <template v-if="fetching" #notFoundContent>
             <a-spin size="small" />
         </template>
+
         <template #option="{ data }">
-            <span>{{ data.displayText }}</span>
+            <!-- <div class="">
+                <div
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary overflow-ellipsis whitespace-nowrap"
+                >
+                    {{ title(data) }}
+                </div>
+                <div class="flex items-center">
+                    <img
+                        :src="getConnectorImage(data)"
+                        class="h-3 mr-1 mb-0.5"
+                    />
+                    <div class="text-sm tracking-tight text-gray-500 uppercase">
+                        {{ data.typeName }}
+                    </div>
+                </div>
+            </div> -->
+            <AssetCard :item="data" />
         </template>
     </a-select>
 </template>
@@ -26,10 +43,13 @@
 <script lang="ts">
     import { defineComponent, toRefs } from 'vue'
     import useAssetSelector from './useAssetSelector'
+    import AssetItem from '@/discovery/list/assetItem.vue'
+    import AssetCard from './assetCard.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'AssetSelector',
-        components: {},
+        components: { AssetItem, AssetCard },
         props: {
             multiple: { type: Boolean, default: () => false },
             typeName: { type: String, required: false, default: () => '__all' },
@@ -49,7 +69,12 @@
                 },
                 emit
             )
+
+            const { title, getConnectorImage } = useAssetInfo()
+
             return {
+                title,
+                getConnectorImage,
                 value,
                 fetching,
                 handleSearch,

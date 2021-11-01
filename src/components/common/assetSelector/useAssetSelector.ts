@@ -3,6 +3,17 @@ import { ref, watch } from "vue"
 import { useBody } from "~/composables/discovery/useBody"
 import { assetInterface } from "~/types/assets/asset.interface"
 import useIndexSearch from "~/composables/discovery/useIndexSearch"
+import {
+    AssetAttributes,
+    InternalAttributes,
+    SQLAttributes,
+} from '~/constant/projection'
+
+const defaultAttributes = ref([
+    ...InternalAttributes,
+    ...AssetAttributes,
+    ...SQLAttributes,
+])
 
 const useAssetSelector = ({ dependentKey, typeName }, emit) => {
 
@@ -27,7 +38,9 @@ const useAssetSelector = ({ dependentKey, typeName }, emit) => {
         )
 
         defaultBody.value = {
-            dsl
+            dsl,
+            attributes: defaultAttributes?.value,
+
         }
 
         console.log({ dsl }, typeName)
@@ -48,7 +61,7 @@ const useAssetSelector = ({ dependentKey, typeName }, emit) => {
     } = useIndexSearch<assetInterface>(defaultBody, localKey, false, false, 1)
 
 
-    const list = ref<assetInterface[]>([])
+    const list: any = ref([])
 
     watch(data, () => {
         if (offset?.value > 0) {

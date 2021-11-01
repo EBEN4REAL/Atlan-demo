@@ -43,13 +43,12 @@
 <script lang="ts">
     import { defineComponent, toRefs } from 'vue'
     import useAssetSelector from './useAssetSelector'
-    import AssetItem from '@/discovery/list/assetItem.vue'
     import AssetCard from './assetCard.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'AssetSelector',
-        components: { AssetItem, AssetCard },
+        components: { AssetCard },
         props: {
             multiple: { type: Boolean, default: () => false },
             typeName: { type: String, required: false, default: () => '__all' },

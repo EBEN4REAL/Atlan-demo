@@ -28,7 +28,6 @@
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
                     ></CertificateBadge>
-                    <!-- <CertificatePopover :data="item" /> -->
                 </div>
 
                 <!-- Info bar -->
@@ -49,7 +48,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-tight text-gray-500 uppercase "
+                            class="mr-1 text-sm tracking-tight text-gray-500 uppercase "
                         >
                             {{ item.typeName }}
                         </div>

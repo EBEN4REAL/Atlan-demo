@@ -299,7 +299,6 @@
     export default defineComponent({
         name: 'AssetPreview',
         components: {
-            AssetSelector,
             PreviewTabsIcon,
             CertificateBadge,
             // Tooltip,

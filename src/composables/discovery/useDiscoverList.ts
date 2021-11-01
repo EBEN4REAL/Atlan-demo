@@ -108,7 +108,6 @@ export function useDiscoverList({
                 temp.push(found)
             }
         })
-
         if (includeWithoutLabel) {
             diff.forEach((item) => {
                 temp.push({
@@ -120,7 +119,6 @@ export function useDiscoverList({
                 })
             })
         }
-
         temp.sort((a, b) => {
             if (a.count > b.count) {
                 return -1
@@ -130,17 +128,6 @@ export function useDiscoverList({
             }
             return 0
         })
-        const initialValue = 0
-        const sum = temp.reduce(
-            (accumulator, currentValue) => accumulator + currentValue.count,
-            initialValue
-        )
-        temp.unshift({
-            id: '__all',
-            label: 'All',
-            count: sum,
-        })
-
         return temp
     }
 
@@ -154,7 +141,7 @@ export function useDiscoverList({
             const typeName = assetTypeAggregationList.value.find(
                 (i) => i.id === type
             )
-            return typeName.count || approximateCount.value
+            return typeName?.count || approximateCount.value
         }
         return approximateCount.value
     })

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col justify-between text-xs text-gray-500">
-        <p class="mb-1 text-sm" v-if="includeLabel">Owners</p>
+        <p v-if="includeLabel" class="mb-1 text-sm">Owners</p>
 
         <div v-if="includeCreator" class="flex">
             <UserPill :username="createdBy(selectedAsset)"></UserPill>
@@ -70,7 +70,7 @@
 
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     // import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
-    // import { assetInterface } from '~/types/assets/asset.interface'
+    import { assetInterface } from '~/types/assets/asset.interface'
     // import { groupInterface } from '~/types/groups/group.interface'
     // import { userInterface } from '~/types/users/user.interface'
     // import emptyScreen from '~/assets/images/empty_search.png'
@@ -79,10 +79,11 @@
     // import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
+        name: 'OwnersWidget',
         components: { UserAvatar, UserPill },
         props: {
             selectedAsset: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
             editPermission: {

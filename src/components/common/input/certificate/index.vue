@@ -98,6 +98,7 @@
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
+        name: 'CertificateWidget',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

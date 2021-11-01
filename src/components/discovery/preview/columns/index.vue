@@ -49,6 +49,7 @@
     import { debouncedWatch } from '@vueuse/core'
 
     export default defineComponent({
+        name: 'ColumnWidget',
         components: {
             SearchAdvanced,
             Preferences,

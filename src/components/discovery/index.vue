@@ -25,8 +25,8 @@
 
                 <div class="w-full px-4">
                     <AggregationTabs
-                        class="mt-3"
                         v-model="postFacets.typeName"
+                        class="mt-3"
                         :list="assetTypeAggregationList"
                         @change="handleAssetTypeChange"
                     >
@@ -52,15 +52,15 @@
                 </div>
 
                 <div
-                    class="flex items-center justify-center flex-grow"
                     v-if="isLoading"
+                    class="flex items-center justify-center flex-grow"
                 >
                     <AtlanIcon
                         icon="Loader"
                         class="w-auto h-10 animate-spin"
                     ></AtlanIcon>
                 </div>
-                <div class="flex-grow" v-if="list.length === 0 && !isLoading">
+                <div v-if="list.length === 0 && !isLoading" class="flex-grow">
                     <EmptyView></EmptyView>
                 </div>
 
@@ -85,6 +85,7 @@
     // import { useDebounceFn } from '@vueuse/core'
 
     // import { useRouter } from 'vue-router'
+    import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import Preferences from '@/discovery/preference.vue'
@@ -128,7 +129,6 @@
     // } from './useDiscoveryDSL'
 
     import { assetTypeList } from '~/constant/assetType'
-    import { useDebounceFn } from '@vueuse/core'
 
     export default defineComponent({
         name: 'AssetDiscovery',

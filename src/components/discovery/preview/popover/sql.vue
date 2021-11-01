@@ -17,7 +17,7 @@
     import { format } from 'sql-formatter'
 
     export default defineComponent({
-        name: "SqlInfo"
+        name: 'SqlInfo',
         props: {
             sql: {
                 type: String,

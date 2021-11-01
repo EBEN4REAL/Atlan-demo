@@ -14,8 +14,9 @@
         @search="handleSearch"
         @change="handleChange"
     >
-        <template v-if="fetching" #notFoundContent>
-            <a-spin size="small" />
+        <template #notFoundContent>
+            <a-spin v-if="fetching" size="small" />
+            <span v-else>No asset found</span>
         </template>
 
         <template #option="{ data }">
@@ -53,6 +54,7 @@
             multiple: { type: Boolean, default: () => false },
             typeName: { type: String, required: false, default: () => '__all' },
         },
+        emit: ['select'],
         setup(props, { emit }) {
             const { typeName } = toRefs(props)
             const {

@@ -1,10 +1,5 @@
 <template>
-    <a-popover
-        :trigger="trigger"
-        class="user-popover"
-        :placement="placement"
-        :get-popup-container="(t) => t.parentNode"
-    >
+    <a-popover :trigger="trigger" class="user-popover" :placement="placement">
         <template #content>
             <div
                 class="flex flex-col w-10 rounded gap-y-2"

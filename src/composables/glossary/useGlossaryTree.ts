@@ -12,7 +12,7 @@ import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 import store from '~/utils/storage'
 
 // composables
-import useGTCEntity from '~/composables/glossary/useGTCEntity'
+import useGtcEntity from '~/composables/glossary/useGTCEntity'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 interface UseTreeParams {
@@ -64,7 +64,7 @@ const useGlossaryTree = ({
         error,
         isLoading,
         refetch,
-    } = useGTCEntity<Glossary | Term | Category>(
+    } = useGtcEntity<Glossary | Term | Category>(
         'glossary',
         parentGlossaryGuid,
         false,

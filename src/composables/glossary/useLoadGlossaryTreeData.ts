@@ -5,7 +5,7 @@ import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map } from '~/services/meta/discovery/key'
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 
 const attributes = [
     'database',
@@ -23,8 +23,8 @@ const attributes = [
     'ownerGroups',
     'readme',
     'assignedEntities',
-    ...BaseAttributes,
-    ...BasicSearchAttributes,
+    ...InternalAttributes,
+    ...AssetAttributes,
 ];
 
 interface AdditionalParams {

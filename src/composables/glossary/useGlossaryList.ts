@@ -3,7 +3,7 @@ import { watch, ref, Ref, computed } from 'vue'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 import { Glossary } from '~/types/glossary/glossary.interface'
 
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 
 const useGlossaryList = (isHome?: Ref<boolean>) => {
     const body = ref({})
@@ -25,8 +25,8 @@ const useGlossaryList = (isHome?: Ref<boolean>) => {
             'categories',
             'terms',
             'tenantId',
-            ...BaseAttributes,
-            ...BasicSearchAttributes,
+            ...InternalAttributes,
+            ...AssetAttributes,
         ],
     })
 
@@ -36,7 +36,7 @@ const useGlossaryList = (isHome?: Ref<boolean>) => {
         error,
         isValidating: isLoading,
         mutate,
-    } =  useIndexSearch<Glossary>(body, isHome, true)
+    } =  useIndexSearch<Glossary>(body, ref(true), true)
     
     const glossaryList = computed(() =>
         data.value?.entities ? (data.value?.entities ) : undefined

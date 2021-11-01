@@ -6,7 +6,7 @@ import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/types/atlas/client'
 
 // import { projection } from '~/api/atlas/utils'
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 // import { List as StatusList } from '~/constant/status'
 // import useBusinessMetadataStore from '~/store/businessMetadata'
 
@@ -76,8 +76,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
             'bannerUpdatedBy',
             // ...bmProjection.value,
             ...relatedTerms,
-            ...BaseAttributes,
-            ...BasicSearchAttributes,
+            ...InternalAttributes,
+            ...AssetAttributes,
         ],
         relationAttributes: [
             'readme',

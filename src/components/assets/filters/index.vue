@@ -1,11 +1,24 @@
 <template>
     <div>
-        <div
-            class="flex items-center justify-between px-4 py-3 text-sm border-b  bg-gray-10"
-        >
-            <div class="font-medium text-gray-500">
-                {{ totalAppliedFiltersCount }}
-                {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
+        <div class="px-4 py-2.5 text-sm border-b bg-gray-10">
+            <div
+                class="flex items-center justify-between"
+                v-if="totalFilteredCount > 0"
+            >
+                <span>
+                    {{ totalFilteredCount }}
+                    {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
+                >
+                <div class="flex font-medium text-gray-500">
+                    <span class="text-gray-500" @click="handleResetAll">
+                        <span class="text-sm cursor-pointer hover:text-primary"
+                            >Clear All</span
+                        >
+                    </span>
+                </div>
+            </div>
+            <div class="flex items-center justify-between" v-else>
+                <span> Filters</span>
             </div>
         </div>
         <div class="h-full overflow-y-auto">
@@ -115,7 +128,7 @@
                     ></component> -->
 
                     <component
-                        :key="dirtyTimestampFacet[item.id]"
+                        :key="dirtyTimestamp[item.id]"
                         :is="item.component"
                         v-model="localFacetMap[item.id]"
                         @change="handleChange(item.id)"
@@ -144,6 +157,7 @@
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useDiscoveryStore from '~/store/discovery'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     // import RaisedTabSmall from '@/UI/raisedTabSmall.vue'
     // import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     // import { List as StatusList } from '~/constant/status'
@@ -171,21 +185,7 @@
             Classifications: defineAsyncComponent(
                 () => import('@/common/facet/classification/index.vue')
             ),
-            // Governance: defineAsyncComponent(
-            //     () => import('@common/facets/governance.vue')
-            // ),
-            // Advanced: defineAsyncComponent(
-            //     () => import('@common/facets/advanced/index.vue')
-            // ),
-            // businessMetadata: defineAsyncComponent(
-            //     () => import('@common/facets/businessMetadata/index.vue')
-            // ),
-            // SavedFilter: defineAsyncComponent(
-            //     () => import('./savedFilters/viewSavedFilters.vue')
-            // ),
-            // SaveFilterModal: defineAsyncComponent(
-            //     () => import('./savedFilters/modal/saveFilterModal.vue')
-            // ),
+            AtlanIcon,
         },
         props: {
             filtersList: {
@@ -234,8 +234,8 @@
 
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
+
             const dirtyTimestamp = ref({})
-            const dirtyTimestampFacet = ref({})
 
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -273,30 +273,43 @@
                         }
                     }
                 }
-
-                // if (localFacetMap.value[id]) {
-                //     return true
-                // }
-                // return false
                 return localFacetMap.value[id]
             }
+
+            const totalFilteredCount = computed(
+                () => discoveryFilters.filter((i) => isFiltered(i.id)).length
+            )
 
             const handleChange = (id) => {
                 modelValue.value = localFacetMap.value
                 emit('change')
+                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
                 totalAppliedFiltersCount.value = Object.keys(
                     localFacetMap.value
                 ).length
-                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
                 discoveryStore.setActiveFacet(localFacetMap.value)
             }
 
             const handleClear = (id: string) => {
-                // localFacetMap.value[id] = undefined
-                // localFacetMap[id] = []
-                dirtyTimestampFacet.value[id] = `dirty_${Date.now().toString()}`
                 delete localFacetMap.value[id]
                 handleChange(id)
+            }
+
+            const handleResetAll = () => {
+                localFacetMap.value = {}
+                modelValue.value = localFacetMap.value
+
+                discoveryFilters.forEach((i) => {
+                    dirtyTimestamp.value[
+                        i.id
+                    ] = `dirty_${Date.now().toString()}`
+                })
+                activeKey.value = []
+                emit('change')
+                totalAppliedFiltersCount.value = Object.keys(
+                    localFacetMap.value
+                ).length
+                discoveryStore.setActiveFacet(localFacetMap.value)
             }
 
             // Function to build filter applied string for owner facet
@@ -380,7 +393,6 @@
             }
 
             return {
-                totalAppliedFiltersCount,
                 activeKey,
                 dirtyTimestamp,
                 dynamicList,
@@ -388,10 +400,12 @@
                 handleChange,
                 handleClear,
                 isFiltered,
-                dirtyTimestampFacet,
+
                 getFilterValue,
                 handleActivePanelChange,
                 getConnectorImageMap,
+                totalFilteredCount,
+                handleResetAll,
             }
         },
     })

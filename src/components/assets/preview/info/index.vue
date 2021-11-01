@@ -87,7 +87,7 @@
             :edit-permission="false"
             @update:selected-asset="mutateSelectedAsset"
         /> -->
-        <CertificationPopover :selected-asset="selectedAsset">
+        <CertificationPopover :selected-asset="selectedAsset" placement="left">
             <Certificate :selected-asset="selectedAsset" />
         </CertificationPopover>
         <Terms :selected-asset="selectedAsset"></Terms>
@@ -98,15 +98,15 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
-    import SQL from '@/discovery/preview/popover/sql.vue'
+    import SQL from '@/assets/preview/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import RowInfoHoverCard from '@/discovery/preview/popover/rowInfo.vue'
+    import RowInfoHoverCard from '@/assets/preview/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
-    import CertificationPopover from '@/discovery/preview/popover/certification.vue'
+    import CertificationPopover from '@/assets/preview/popover/certification.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     // import useAssetInfo from '~/composables/asset/useAssetInfo'

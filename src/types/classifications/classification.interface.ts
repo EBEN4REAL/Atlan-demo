@@ -18,4 +18,5 @@ export interface classificationInterface {
     updateTime: number
     updatedBy: string
     version: number
+    propagatedBy: string
 }

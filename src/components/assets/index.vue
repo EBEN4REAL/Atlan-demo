@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-gray-100
+                border-r border-gray-300
+                facets
+            "
         >
             <AssetFilters
                 v-model="facets"
@@ -30,13 +37,16 @@
                         :list="assetTypeAggregationList"
                         @change="handleAssetTypeChange"
                     >
-                        <a-popover
-                            trigger="click"
-                            placement="bottomLeft"
-                        >
+                        <a-popover trigger="click" placement="bottomLeft">
                             <template #content>
                                 <div
-                                    class="flex flex-col py-1 rounded  gap-y-3 preference-container"
+                                    class="
+                                        flex flex-col
+                                        py-1
+                                        rounded
+                                        gap-y-3
+                                        preference-container
+                                    "
                                 ></div>
                             </template>
 
@@ -88,9 +98,9 @@
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import Preferences from '@/discovery/preference.vue'
-    import AssetList from '~/components/discovery/list/assetList.vue'
-    import AssetFilters from '@/discovery/filters/index.vue'
+    import Preferences from '@/assets/preference.vue'
+    import AssetList from '@/assets/list/assetList.vue'
+    import AssetFilters from '@/assets/filters/index.vue'
 
     import useIndexSearch from '~/composables/discovery/useIndexSearch'
     import { useAssetListing } from '~/composables/discovery/useAssetListing'
@@ -194,7 +204,7 @@
                 limit,
                 offset,
                 attributes: defaultAttributes,
-                relationAttributes
+                relationAttributes,
             })
 
             const handlePreview = (item) => {

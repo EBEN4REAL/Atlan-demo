@@ -1,5 +1,4 @@
-import { computed, ref, WritableComputedRef, watch, Ref } from 'vue'
-import { assetInterface } from '~/types/assets/asset.interface'
+import { computed, ref, watch } from 'vue'
 import updateAsset from '~/composables/utils/updateAsset'
 
 export default function useUpdateReadme(selectedAsset, readmeContent) {

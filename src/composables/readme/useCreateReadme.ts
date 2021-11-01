@@ -1,6 +1,6 @@
-import { computed, ref, WritableComputedRef, watch, Ref } from 'vue'
-import { useAPIAsyncState, useAPIPromise } from '~/services/api/useAPI'
-import { KeyMaps } from '~/services/atlas/atlas_keyMaps'
+import { ref, watch } from 'vue'
+import { useAPI } from '~/services/api/useAPI'
+import { map } from '~/services/meta/entity/key'
 import { generateUUID } from '~/utils/helper/generator'
 import { message } from 'ant-design-vue'
 
@@ -22,12 +22,12 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
         },
     })
     const createReadme = () => {
-        const { data, error, isLoading } = useAPIAsyncState(
-            KeyMaps.readme.CREATE_README,
+        const { data, error, isLoading } = useAPI(
+            map.CREATE_README,
             'POST',
             {
                 body,
-            }
+            }, {}
         )
         watch(data, () => {
             selectedAsset.value.attributes.readme = {

@@ -93,7 +93,6 @@
 
             const onUpdate = (content: string, json: Record<string, any>) => {
                 editorContent.value = content
-                console.log(content, editorContent.value)
             }
 
             const onCancel = () => {
@@ -115,7 +114,7 @@
                     readmeDescription.value?.length ||
                     readmeDescription.value === ''
                 ) {
-                    const { isCompleted, isLoading, update } = useUpdateReadme(
+                    /* const { isCompleted, isLoading, update } = useUpdateReadme(
                         entity?.attributes?.readme,
                         editorContent.value
                     )
@@ -126,7 +125,7 @@
                                 editorContent.value
                             message.success('Readme saved!')
                         }
-                    })
+                    }) */
                 } else {
                     const { createReadme } = useCreateReadme(
                         entity,

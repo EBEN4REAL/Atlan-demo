@@ -167,9 +167,9 @@
             Connection: defineAsyncComponent(
                 () => import('@/common/facet/connection/index.vue')
             ),
-            // Classifications: defineAsyncComponent(
-            //     () => import('@common/facets/classifications.vue')
-            // ),
+            Classifications: defineAsyncComponent(
+                () => import('@/common/facet/classification/index.vue')
+            ),
             // Governance: defineAsyncComponent(
             //     () => import('@common/facets/governance.vue')
             // ),
@@ -262,6 +262,11 @@
                                 Object.keys(localFacetMap?.value[id]).length ===
                                 0
                             ) {
+                                return false
+                            }
+                        }
+                        if (localFacetMap?.value[id].constructor === Array) {
+                            if (localFacetMap?.value[id].length === 0) {
                                 return false
                             }
                         }

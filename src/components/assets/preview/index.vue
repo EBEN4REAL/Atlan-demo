@@ -1,5 +1,4 @@
 <template>
-    <AssetSelector />
     <div v-if="selectedAsset?.guid">
         <div class="flex flex-col px-4 py-3 border-b border-gray-200">
             <div class="flex items-center mb-1" style="padding-bottom: 1px">

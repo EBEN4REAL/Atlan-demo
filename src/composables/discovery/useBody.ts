@@ -13,6 +13,8 @@ export function useBody(
 ) {
     const base = bodybuilder()
 
+    console.log("xxx", facets, postFacets)
+
     if (queryText) {
         base.orQuery('match', 'name', { query: queryText })
         base.orQuery('match', 'name', {

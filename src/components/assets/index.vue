@@ -2,11 +2,12 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
+            class="flex flex-col hidden h-full overflow-y-auto bg-gray-100 border-r border-gray-300  md:block facets"
         >
             <AssetFilters
                 v-model="facets"
                 @change="handleFilterChange"
+                v-if="showFilters"
             ></AssetFilters>
         </div>
 
@@ -20,7 +21,7 @@
                     >
                         <template #filter>
                             <a-popover
-                                v-if="!showFilters"
+                                class="sm:block md:hidden"
                                 placement="bottom"
                                 :trigger="['click']"
                                 :overlay-class-name="$style.filterPopover"

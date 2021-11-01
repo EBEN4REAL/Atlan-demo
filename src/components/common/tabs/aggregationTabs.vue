@@ -125,7 +125,7 @@
         }
 
         :global(.ant-tabs-extra-content) {
-            @apply pb-1 pr-2 mr-2 !important border-r border-gray-200;
+            @apply pb-1 pr-2   !important;
         }
 
         :global(.ant-tabs-tab-arrow-show) {

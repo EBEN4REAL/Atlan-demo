@@ -87,9 +87,9 @@
             :edit-permission="false"
             @update:selected-asset="mutateSelectedAsset"
         /> -->
-
-        <Certificate :selected-asset="selectedAsset" />
-
+        <CertificationPopover :selected-asset="selectedAsset">
+            <Certificate :selected-asset="selectedAsset" />
+        </CertificationPopover>
         <Terms :selected-asset="selectedAsset"></Terms>
 
         <Classification :selected-asset="selectedAsset"> </Classification>
@@ -106,6 +106,8 @@
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
+    import CertificationPopover from '@/discovery/preview/popover/certification.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     // import useAssetInfo from '~/composables/asset/useAssetInfo'
     // import { assetInterface } from '~/types/assets/asset.interface'
@@ -129,6 +131,7 @@
             RowInfoHoverCard,
             SQL,
             Terms,
+            CertificationPopover,
         },
         props: {
             selectedAsset: {

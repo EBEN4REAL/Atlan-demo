@@ -210,12 +210,17 @@
 
             const localFacetMap = ref(modelValue.value)
 
-            if (localFacetMap.value) {
-                if (discoveryStore.activeFacet) {
-                    localFacetMap.value = discoveryStore.activeFacet
-                    modelValue.value = localFacetMap.value
-                    emit('change')
-                }
+            // if (localFacetMap.value) {
+            //     if (discoveryStore.activeFacet) {
+            //         localFacetMap.value = discoveryStore.activeFacet
+            //         modelValue.value = localFacetMap.value
+            //         emit('change')
+            //     }
+            // }
+            if (localFacetMap.value && discoveryStore.activeFacet) {
+                localFacetMap.value = discoveryStore.activeFacet
+                modelValue.value = localFacetMap.value
+                emit('change')
             }
 
             const totalAppliedFiltersCount = ref(0)
@@ -255,10 +260,11 @@
                     }
                 }
 
-                if (localFacetMap.value[id]) {
-                    return true
-                }
-                return false
+                // if (localFacetMap.value[id]) {
+                //     return true
+                // }
+                // return false
+                return localFacetMap.value[id]
             }
 
             const handleChange = (id) => {
@@ -279,8 +285,24 @@
                 handleChange(id)
             }
 
+            // Function to build filter applied string for owner facet
+            const getOwnerFilterAppliedString = (
+                usersLength,
+                groupsLength
+            ): String => {
+                let str = ''
+                if (usersLength)
+                    str += `${usersLength} ${
+                        usersLength > 1 ? 'users' : 'user'
+                    }`
+                if (usersLength && groupsLength) str += ' & '
+                if (groupsLength)
+                    str += `${groupsLength} ${
+                        groupsLength > 1 ? 'groups' : 'group'
+                    }`
+                return str
+            }
             const getFilterValue = (id: string) => {
-                console.log(id)
                 if (id === 'hierarchy') {
                     if (localFacetMap.value[id].connectorName) {
                         return capitalizeFirstLetter(
@@ -288,20 +310,23 @@
                         )
                     }
                 }
-                if (id === 'certificateStatus') {
-                    if (localFacetMap.value[id]) {
-                        if (localFacetMap.value[id]?.length < 3) {
-                            return localFacetMap.value[id].join(',')
-                        }
-                        return `${localFacetMap.value[id]?.length} applied`
-                    }
+                // if (id === 'certificateStatus') {
+                //     if (localFacetMap.value[id]) {
+                //         if (localFacetMap.value[id]?.length < 3) {
+                //             return localFacetMap.value[id].join(',')
+                //         }
+                //         return `${localFacetMap.value[id]?.length} applied`
+                //     }
+                // }
+                if (id === 'certificateStatus' && localFacetMap.value[id]) {
+                    return localFacetMap.value[id]?.length < 3
+                        ? localFacetMap.value[id].join(',')
+                        : `${localFacetMap.value[id]?.length} applied`
                 }
+
                 if (id === 'owners') {
                     let usersLength = 0
                     let groupsLength = 0
-
-                    // console.log('owners', localFacetMap.value[id]?.ownerUsers)
-                    // console.log('owners', localFacetMap.value[id]?.ownerGroups)
 
                     if (localFacetMap.value[id]?.ownerUsers) {
                         usersLength = localFacetMap.value[id]?.ownerUsers.length
@@ -312,21 +337,25 @@
                     }
 
                     if (usersLength === 0 && groupsLength < 3) {
-                        return localFacetMap.value[id]?.ownerGroups.join(',')
+                        return localFacetMap.value[id]?.ownerGroups.join(', ')
                     }
                     if (usersLength < 3 && groupsLength === 0) {
-                        return localFacetMap.value[id]?.ownerUsers.join(',')
+                        return localFacetMap.value[id]?.ownerUsers.join(', ')
                     }
 
                     if (usersLength === 1 && groupsLength === 1) {
                         return localFacetMap.value[id]?.ownerUsers
                             .concat(localFacetMap.value[id]?.ownerGroups)
-                            .join(',')
+                            .join(', ')
                     }
 
-                    let sum = usersLength + groupsLength
+                    // let sum = usersLength + groupsLength
 
-                    return `${sum.toString()} applied`
+                    // return `${sum.toString()} applied`
+                    return `${getOwnerFilterAppliedString(
+                        usersLength,
+                        groupsLength
+                    )}`
                 }
                 return ''
             }

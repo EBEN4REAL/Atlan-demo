@@ -33,7 +33,6 @@
                         <a-popover
                             trigger="click"
                             placement="bottomLeft"
-                            class=""
                         >
                             <template #content>
                                 <div
@@ -68,10 +67,10 @@
                 <AssetList
                     ref="assetlistRef"
                     :list="list"
-                    :is-load-more="isLoadMore"
-                    :is-loading="isValidating"
-                    @loadMore="handleLoadMore"
+                    :isLoadMore="isLoadMore"
+                    :isLoading="isValidating"
                     @preview="handlePreview"
+                    @loadMore="handleLoadMore"
                 />
             </div>
         </div>
@@ -185,8 +184,8 @@
                 fetch,
                 quickChange,
                 handleSelectedAsset,
-            } = useDiscoverList(
-                true,
+            } = useDiscoverList({
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -194,9 +193,9 @@
                 aggregations,
                 limit,
                 offset,
-                defaultAttributes,
+                attributes: defaultAttributes,
                 relationAttributes
-            )
+            })
 
             const handlePreview = (item) => {
                 handleSelectedAsset(item)

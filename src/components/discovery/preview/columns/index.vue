@@ -104,8 +104,8 @@
                 quickChange,
                 totalCount,
                 getAggregationList,
-            } = useDiscoverList(
-                true,
+            } = useDiscoverList({
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -113,9 +113,9 @@
                 aggregations,
                 limit,
                 offset,
-                defaultAttributes,
+                attributes: defaultAttributes,
                 relationAttributes
-            )
+            })
 
             const columnDataTypeAggregationList = computed(() =>
                 getAggregationList(

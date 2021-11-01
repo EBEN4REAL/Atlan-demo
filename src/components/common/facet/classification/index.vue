@@ -1,11 +1,22 @@
 <template>
+    <div class="flex items-center justify-between px-4 mb-2">
+        <SearchAdvanced
+            placeholder="Search classifications"
+            :autofocus="true"
+            v-model:value="queryText"
+            class="-mt-1.5"
+            size="minimal"
+            @change="handleSearchChange"
+        >
+        </SearchAdvanced>
+    </div>
     <a-checkbox-group
         class="w-full px-4"
         v-model:value="localValue"
         @change="handleChange"
     >
         <div class="flex flex-col w-full">
-            <template v-for="item in classificationList" :key="item.id">
+            <template v-for="item in filteredList" :key="item.id">
                 <div class="status">
                     <a-checkbox
                         :value="item.name"
@@ -43,16 +54,20 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRef, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRef, toRefs, watch } from 'vue'
     import { certificateList } from '~/constant/certification'
     import noStatus from '~/assets/images/status/nostatus.svg'
 
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { useVModels } from '@vueuse/core'
+    import { useDebounceFn, useVModels } from '@vueuse/core'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useTypedefStore } from '~/store/typedef'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     export default defineComponent({
+        components: {
+            SearchAdvanced,
+        },
         props: {
             modelValue: {
                 required: false,
@@ -60,10 +75,19 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const queryText = ref('')
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
             const { classificationList } = useTypedefData()
+
+            const filteredList = computed(() =>
+                classificationList.value.filter((i) =>
+                    i.displayName
+                        .toLowerCase()
+                        .includes(queryText.value.toLowerCase())
+                )
+            )
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -71,10 +95,12 @@
             }
 
             return {
-                classificationList,
+                filteredList,
                 localValue,
                 noStatus,
                 handleChange,
+
+                queryText,
             }
         },
     })

@@ -139,6 +139,7 @@
     } from 'vue'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useDiscoveryStore from '~/store/discovery'
@@ -323,14 +324,18 @@
                         )
                     }
                 }
-                // if (id === 'certificateStatus') {
-                //     if (localFacetMap.value[id]) {
-                //         if (localFacetMap.value[id]?.length < 3) {
-                //             return localFacetMap.value[id].join(',')
-                //         }
-                //         return `${localFacetMap.value[id]?.length} applied`
-                //     }
-                // }
+                if (id === '__traitNames' && localFacetMap.value[id]) {
+                    const { classificationList } = useTypedefData()
+
+                    const list = classificationList.value
+                        .filter((i) => localFacetMap.value[id].includes(i.name))
+                        .map((i) => i.displayName)
+
+                    return list.length < 3
+                        ? list.join(',')
+                        : `${list?.length} applied`
+                }
+
                 if (id === 'certificateStatus' && localFacetMap.value[id]) {
                     return localFacetMap.value[id]?.length < 3
                         ? localFacetMap.value[id].join(',')
@@ -362,9 +367,6 @@
                             .join(', ')
                     }
 
-                    // let sum = usersLength + groupsLength
-
-                    // return `${sum.toString()} applied`
                     return `${getOwnerFilterAppliedString(
                         usersLength,
                         groupsLength

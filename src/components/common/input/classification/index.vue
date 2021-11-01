@@ -47,6 +47,7 @@
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     import { mergeArray } from '~/utils/array'
     import AtlanIcon from '../../icon/atlanIcon.vue'
@@ -56,7 +57,7 @@
         components: {},
         props: {
             selectedAsset: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
             editPermission: {

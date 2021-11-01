@@ -5,14 +5,14 @@ import { message } from 'ant-design-vue'
 
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
-import useGlossaryList from '~/components/glossary/tree/composables/useGlossaryList'
-import useLoadGlossaryTreeData from '~/components/glossary/tree/composables/useLoadGlossaryTreeData'
+import useGlossaryList from '~/composables/glossary/useGlossaryList'
+import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
 
-import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
+import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 import store from '~/utils/storage'
 
 // composables
-import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+import useGTCEntity from '~/composables/glossary/useGTCEntity'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 interface UseTreeParams {

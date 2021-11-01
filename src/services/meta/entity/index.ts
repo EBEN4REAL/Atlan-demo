@@ -6,10 +6,10 @@ import { useAPI } from '~/services/api/useAPI'
 
 import { useOptions } from '~/services/api/common'
 
-const BulkUpdate = (
+const BulkUpdate = <T>(
     body: Ref<Record<string, any>> | Record<string, any>,
     options?: useOptions
-) => useAPI(map.ENTITY_BULK_UPDATE, 'POST', { body }, options || {})
+) => useAPI<T>(map.ENTITY_BULK_UPDATE, 'POST', { body }, options || {})
 
 export const Entity = {
     BulkUpdate,

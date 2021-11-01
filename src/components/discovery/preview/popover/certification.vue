@@ -1,5 +1,5 @@
 <template>
-    <a-popover placement="left">
+    <a-popover>
         <template #content
             ><div classs="popover-container">
                 <div class="flex flex-col">
@@ -16,23 +16,29 @@
                                 mb-0.5
                             "
                         />
+
                         <span
                             class="text-sm font-bold tracking-wide capitalize  text-gray"
-                            >Verified</span
+                            >{{
+                                certificateStatus(selectedAsset)?.toLowerCase()
+                            }}</span
                         >
                     </div>
                     <div class="text-xs">
-                        This is a new certification message
+                        {{ certificateStatusMessage(selectedAsset) }}
                     </div>
                 </div>
                 <div class="mt-3">
                     <div class="flex items-center mb-1 text-sm text-gray-500">
                         Updated
                     </div>
-                    <div class="leading-none">
-                        <span class="mb-1 text-sm font-bold"> 6 days ago</span>
+
+                    <div class="mb-1 text-sm font-bold">
+                        {{ certificateUpdatedAt(selectedAsset) }}
                     </div>
-                    <span class="text-xs">by Nitya</span>
+                    <div class="text-xs">
+                        by {{ certificateUpdatedBy(selectedAsset) }}
+                    </div>
                 </div>
             </div>
         </template>
@@ -62,24 +68,14 @@
                 certificateUpdatedBy,
                 certificateUpdatedAt,
                 certificateStatus,
+                certificateStatusMessage,
             } = useAssetInfo()
-
-            const status = computed(() =>
-                certificateStatus(selectedAsset.value)
-            )
-
-            const username = computed(() =>
-                certificateUpdatedBy(selectedAsset.value)
-            )
-
-            const timestamp = computed(() =>
-                certificateUpdatedAt(selectedAsset.value)
-            )
 
             const icon = computed(() => {
                 const found = certificateList.find(
                     (item) =>
-                        item.id.toLowerCase() === status?.value?.toLowerCase()
+                        item.id.toLowerCase() ===
+                        certificateStatus(selectedAsset.value)?.toLowerCase()
                 )
                 if (found) {
                     return found.icon
@@ -89,10 +85,10 @@
             })
 
             return {
-                selectedAsset,
-                status,
-                username,
-                timestamp,
+                certificateStatus,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
+                certificateStatusMessage,
                 icon,
             }
         },

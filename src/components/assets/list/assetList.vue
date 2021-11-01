@@ -107,11 +107,10 @@
             const handlePreview = (item: any) => {
                 if (item.guid === '-1') {
                     selectedAssetId.value = item.displayText
-                    emit('preview', item)
                 } else {
                     selectedAssetId.value = item.guid
-                    emit('preview', item)
                 }
+                    emit('preview', item)
             }
 
             // function handlePreview(item: any) {

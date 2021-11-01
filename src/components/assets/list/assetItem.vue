@@ -241,20 +241,7 @@
                                 <span>Schema - {{ schemaName(item) }}</span>
                             </template>
                         </a-tooltip>
-                        <a-tooltip placement="bottomLeft" v-if="viewName(item)">
-                            <div
-                                v-if="viewName(item)"
-                                class="flex items-center text-gray-500"
-                            >
-                                <AtlanIcon icon="View" class="mr-1 mb-0.5" />
-                                <div class="tracking-tight text-gray-500">
-                                    {{ viewName(item) }}
-                                </div>
-                            </div>
-                            <template #title>
-                                <span>View - {{ viewName(item) }}</span>
-                            </template>
-                        </a-tooltip>
+
                         <a-tooltip
                             placement="bottomLeft"
                             v-if="tableName(item)"
@@ -263,13 +250,33 @@
                                 v-if="tableName(item)"
                                 class="flex items-center text-gray-500"
                             >
-                                <AtlanIcon icon="Table" class="mr-1 mb-0.5" />
+                                <AtlanIcon
+                                    icon="TableGray"
+                                    class="mr-1 mb-0.5"
+                                />
                                 <div class="tracking-tight text-gray-500">
                                     {{ tableName(item) }}
                                 </div>
                             </div>
                             <template #title>
                                 <span>Table - {{ tableName(item) }}</span>
+                            </template>
+                        </a-tooltip>
+                        <a-tooltip placement="bottomLeft" v-if="viewName(item)">
+                            <div
+                                v-if="viewName(item)"
+                                class="flex items-center text-gray-500"
+                            >
+                                <AtlanIcon
+                                    icon="ViewGray"
+                                    class="mr-1 mb-0.5"
+                                />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ viewName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>View - {{ viewName(item) }}</span>
                             </template>
                         </a-tooltip>
                     </div>
@@ -291,210 +298,210 @@
 </template>
 
 <script lang="ts">
-    // import HierarchyBar from '@common/badge/hierarchy.vue'
-    // import StatusBadge from '@common/badge/status/index.vue'
-    import { defineComponent, PropType } from 'vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import CertificateBadge from '@/common/badge/certificate/index.vue'
-    // import Pill from '@/UI/pill/pill.vue'
-    // import CertificatePopover from '~/components/common/certificatePopover.vue'
-    // import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
+// import HierarchyBar from '@common/badge/hierarchy.vue'
+// import StatusBadge from '@common/badge/status/index.vue'
+import { defineComponent, PropType } from 'vue'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
+import CertificateBadge from '@/common/badge/certificate/index.vue'
+// import Pill from '@/UI/pill/pill.vue'
+// import CertificatePopover from '~/components/common/certificatePopover.vue'
+// import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
 
-    // import AssetLogo from '@/common/icon/assetIcon.vue'
-    // import { Components } from '~/api/atlas/client'
-    // import useAssetInfo from '~/composables/asset/useAssetInfo'
-    // import { assetInterface } from '~/types/assets/asset.interface'
-    // import ScrollStrip from '@/UI/scrollStrip.vue'
-    // import { useClassificationStore } from '~/components/admin/classifications/_store'
+// import AssetLogo from '@/common/icon/assetIcon.vue'
+// import { Components } from '~/api/atlas/client'
+// import useAssetInfo from '~/composables/asset/useAssetInfo'
+// import { assetInterface } from '~/types/assets/asset.interface'
+// import ScrollStrip from '@/UI/scrollStrip.vue'
+// import { useClassificationStore } from '~/components/admin/classifications/_store'
 
-    export default defineComponent({
-        name: 'AssetListItem',
-        components: {
-            CertificateBadge,
-            // StatusBadge,
-            // HierarchyBar,
-            // AssetLogo,
-            // Pill,
-            // ThreeDotMenu,
-            // ScrollStrip,
-            // CertificatePopover,
-        },
-        props: {
-            item: {
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-            score: {
-                type: Number,
-                required: false,
-                default() {
-                    return 0
-                },
-            },
-            projection: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
-            },
-            isSelected: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            isChecked: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            cssClasses: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            showAssetTypeIcon: {
-                type: Boolean,
-                required: false,
-                default: () => true,
-            },
-            // If the list items are selectable or not
-            showCheckBox: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
-            bulkSelectMode: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            // for unlinking asset in glossary
-            showThreeDotMenu: {
-                type: Boolean,
-                required: false,
-                default: false,
+export default defineComponent({
+    name: 'AssetListItem',
+    components: {
+        CertificateBadge,
+        // StatusBadge,
+        // HierarchyBar,
+        // AssetLogo,
+        // Pill,
+        // ThreeDotMenu,
+        // ScrollStrip,
+        // CertificatePopover,
+    },
+    props: {
+        item: {
+            required: false,
+            default() {
+                return {}
             },
         },
-        emits: ['listItem:check', 'unlinkAsset'],
-        setup() {
-            const {
-                title,
-                getConnectorImage,
-                assetType,
-                rowCount,
-                sizeBytes,
-                dataType,
-                columnCount,
-                databaseName,
-                schemaName,
-                tableName,
-                viewName,
-                connectorName,
-                connectionName,
-                dataTypeCategoryLabel,
-                dataTypeCategoryImage,
-                isDist,
-                isPartition,
-                isPrimary,
-                certificateStatus,
-                certificateUpdatedAt,
-                certificateUpdatedBy,
-                certificateStatusMessage,
-            } = useAssetInfo()
-
-            // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
-            //     const strSize: number[] = [0]
-            //     let idx = 0
-            //     arr.forEach((name) => {
-            //         strSize.push(strSize[strSize.length - 1] + name.length)
-            //     })
-
-            //     // Check upto how long it is possible to display
-            //     while (strSize[idx] < wordCount && idx < strSize.length) {
-            //         idx += 1
-            //     }
-            //     // // Compenstion for the initial 0 in strSize
-            //     idx -= 1
-
-            //     /** The elements that would be displayed */
-            //     const displayArray = arr.slice(0, idx)
-            //     /** The elements that would be truncated as x other(s) */
-            //     const truncated = arr.slice(idx)
-
-            //     // Check if something needs to be truncated
-            //     if (truncated.length) {
-            //         // If there is only 1 element to be truncated then compare the
-            //         // length of name and 'x others(s)'
-            //         const lastElm =
-            //             truncated.length === 1 &&
-            //             truncated[0].length <
-            //                 `${truncated.length} other(s)`.length
-            //                 ? `${truncated[0]}`
-            //                 : `${truncated.length} other(s)`
-
-            //         return `${displayArray.join(', ')} and ${lastElm}`
-            //     }
-            //     // Check if everything can be directly displayed
-            //     // If so then take the last element from array, append it with 'and'
-            //     const lastElm = displayArray.pop()
-            //     return displayArray.length
-            //         ? `${displayArray.join(', ')} and ${lastElm}`
-            //         : `${lastElm}`
-            // }
-
-            // function getCombinedUsersAndGroups(item: assetInterface) {
-            //     return [...ownerUsers(item), ...ownerGroups(item)].filter(
-            //         (name) => name.length
-            //     )
-            // }
-
-            // const isColumnAsset = (asset) => assetType(asset) === 'Column'
-            // const isQueryAsset = (asset) => assetType(asset) === 'Query'
-            // const isQueryFolderAsset = (asset) =>
-            //     assetType(asset) === 'QueryFolder'
-
-            // const getColumnUrl = (asset) => {
-            //     const tableGuid = asset?.attributes?.table?.guid
-            //     return `/assets/${tableGuid}/overview?column=${asset.guid}`
-            // }
-            // const getQueryUrl = (asset) => {
-            //     return `/insights?id=${asset.guid}`
-            // }
-
-            // function getClassificationDisplayname(name: string) {
-            //     return useClassificationStore().getClasificationByName(name)
-            //         ?.displayName
-            // }
-
-            return {
-                title,
-                getConnectorImage,
-                assetType,
-                dataType,
-
-                rowCount,
-                columnCount,
-                sizeBytes,
-                databaseName,
-                schemaName,
-                connectorName,
-                connectionName,
-                dataTypeCategoryLabel,
-                dataTypeCategoryImage,
-                isDist,
-                isPartition,
-                isPrimary,
-                certificateStatus,
-                certificateUpdatedAt,
-                certificateUpdatedBy,
-                certificateStatusMessage,
-                tableName,
-                viewName,
-            }
+        score: {
+            type: Number,
+            required: false,
+            default() {
+                return 0
+            },
         },
-    })
+        projection: {
+            type: Array,
+            required: false,
+            default() {
+                return []
+            },
+        },
+        isSelected: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+        isChecked: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+        cssClasses: {
+            type: String,
+            required: false,
+            default: () => '',
+        },
+        showAssetTypeIcon: {
+            type: Boolean,
+            required: false,
+            default: () => true,
+        },
+        // If the list items are selectable or not
+        showCheckBox: {
+            type: Boolean,
+            required: false,
+            default: () => false,
+        },
+        // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
+        bulkSelectMode: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        // for unlinking asset in glossary
+        showThreeDotMenu: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+    },
+    emits: ['listItem:check', 'unlinkAsset'],
+    setup() {
+        const {
+            title,
+            getConnectorImage,
+            assetType,
+            rowCount,
+            sizeBytes,
+            dataType,
+            columnCount,
+            databaseName,
+            schemaName,
+            tableName,
+            viewName,
+            connectorName,
+            connectionName,
+            dataTypeCategoryLabel,
+            dataTypeCategoryImage,
+            isDist,
+            isPartition,
+            isPrimary,
+            certificateStatus,
+            certificateUpdatedAt,
+            certificateUpdatedBy,
+            certificateStatusMessage,
+        } = useAssetInfo()
+
+        // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
+        //     const strSize: number[] = [0]
+        //     let idx = 0
+        //     arr.forEach((name) => {
+        //         strSize.push(strSize[strSize.length - 1] + name.length)
+        //     })
+
+        //     // Check upto how long it is possible to display
+        //     while (strSize[idx] < wordCount && idx < strSize.length) {
+        //         idx += 1
+        //     }
+        //     // // Compenstion for the initial 0 in strSize
+        //     idx -= 1
+
+        //     /** The elements that would be displayed */
+        //     const displayArray = arr.slice(0, idx)
+        //     /** The elements that would be truncated as x other(s) */
+        //     const truncated = arr.slice(idx)
+
+        //     // Check if something needs to be truncated
+        //     if (truncated.length) {
+        //         // If there is only 1 element to be truncated then compare the
+        //         // length of name and 'x others(s)'
+        //         const lastElm =
+        //             truncated.length === 1 &&
+        //             truncated[0].length <
+        //                 `${truncated.length} other(s)`.length
+        //                 ? `${truncated[0]}`
+        //                 : `${truncated.length} other(s)`
+
+        //         return `${displayArray.join(', ')} and ${lastElm}`
+        //     }
+        //     // Check if everything can be directly displayed
+        //     // If so then take the last element from array, append it with 'and'
+        //     const lastElm = displayArray.pop()
+        //     return displayArray.length
+        //         ? `${displayArray.join(', ')} and ${lastElm}`
+        //         : `${lastElm}`
+        // }
+
+        // function getCombinedUsersAndGroups(item: assetInterface) {
+        //     return [...ownerUsers(item), ...ownerGroups(item)].filter(
+        //         (name) => name.length
+        //     )
+        // }
+
+        // const isColumnAsset = (asset) => assetType(asset) === 'Column'
+        // const isQueryAsset = (asset) => assetType(asset) === 'Query'
+        // const isQueryFolderAsset = (asset) =>
+        //     assetType(asset) === 'QueryFolder'
+
+        // const getColumnUrl = (asset) => {
+        //     const tableGuid = asset?.attributes?.table?.guid
+        //     return `/assets/${tableGuid}/overview?column=${asset.guid}`
+        // }
+        // const getQueryUrl = (asset) => {
+        //     return `/insights?id=${asset.guid}`
+        // }
+
+        // function getClassificationDisplayname(name: string) {
+        //     return useClassificationStore().getClasificationByName(name)
+        //         ?.displayName
+        // }
+
+        return {
+            title,
+            getConnectorImage,
+            assetType,
+            dataType,
+
+            rowCount,
+            columnCount,
+            sizeBytes,
+            databaseName,
+            schemaName,
+            connectorName,
+            connectionName,
+            dataTypeCategoryLabel,
+            dataTypeCategoryImage,
+            isDist,
+            isPartition,
+            isPrimary,
+            certificateStatus,
+            certificateUpdatedAt,
+            certificateUpdatedBy,
+            certificateStatusMessage,
+            tableName,
+            viewName,
+        }
+    },
+})
 </script>

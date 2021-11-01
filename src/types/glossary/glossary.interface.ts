@@ -13,6 +13,9 @@ export interface RelatedEntity {
     typeName: string
     uniqueAttributes: {
         qualifiedName: string
+    },
+    attributes?: {
+        name
     }
 }
 

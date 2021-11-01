@@ -33,10 +33,10 @@
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Preferences from '@/discovery/preference.vue'
+    import Preferences from '@/assets/preference.vue'
     import { useColumnListing } from '~/composables/discovery/useColumnListing'
-    import AssetList from '@/discovery/preview/columns/assetList.vue'
-    import AssetFilters from '@/discovery/filters/index.vue'
+    import AssetList from '@/assets/preview/columns/assetList.vue'
+    import AssetFilters from '@/assets/filters/index.vue'
 
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import {
@@ -104,8 +104,8 @@
                 quickChange,
                 totalCount,
                 getAggregationList,
-            } = useDiscoverList(
-                true,
+            } = useDiscoverList({
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -113,9 +113,9 @@
                 aggregations,
                 limit,
                 offset,
-                defaultAttributes,
-                relationAttributes
-            )
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
 
             const columnDataTypeAggregationList = computed(() =>
                 getAggregationList(

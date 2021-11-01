@@ -28,7 +28,7 @@
     // import { useRoute, useRouter } from 'vue-router'
     // import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import GlossaryDiscovery from '@/glossary/index.vue'
-    import AssetPreview from '@/discovery/preview/index.vue'
+    import AssetPreview from '@/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // import BulkSidebar from '@/common/bulk/bulkSidebar.vue'

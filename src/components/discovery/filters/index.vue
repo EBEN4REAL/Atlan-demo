@@ -81,8 +81,29 @@
                                     isFiltered(item.id) &&
                                     !activeKey.includes(item.id)
                                 "
+                                class="flex items-center"
                             >
-                                {{ getFilterValue(item.id) }}
+                                {{
+                                    getConnectorImageMap[
+                                        getConnectorImageMap[
+                                            getFilterValue(item.id)
+                                        ]
+                                    ]
+                                }}
+                                <img
+                                    :src="
+                                        getConnectorImageMap[
+                                            getFilterValue(
+                                                item.id
+                                            ).toLocaleLowerCase()
+                                        ]
+                                    "
+                                    v-if="item.id === 'hierarchy'"
+                                    class="w-auto h-4 mr-1"
+                                />
+                                <span class="text-primary">
+                                    {{ getFilterValue(item.id) }}</span
+                                >
                             </div>
                         </div>
                     </template>
@@ -116,9 +137,11 @@
         watch,
     } from 'vue'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useDiscoveryStore from '~/store/discovery'
+    import { capitalizeFirstLetter } from '~/utils/string'
     // import RaisedTabSmall from '@/UI/raisedTabSmall.vue'
     // import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     // import { List as StatusList } from '~/constant/status'
@@ -181,6 +204,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const discoveryStore = useDiscoveryStore()
+            const { getConnectorImageMap } = useAssetInfo()
 
             const { modelValue } = useVModels(props, emit)
 
@@ -259,7 +283,17 @@
                 console.log(id)
                 if (id === 'hierarchy') {
                     if (localFacetMap.value[id].connectorName) {
-                        return localFacetMap.value[id].connectorName
+                        return capitalizeFirstLetter(
+                            localFacetMap.value[id].connectorName
+                        )
+                    }
+                }
+                if (id === 'certificateStatus') {
+                    if (localFacetMap.value[id]) {
+                        if (localFacetMap.value[id]?.length < 3) {
+                            return localFacetMap.value[id].join(',')
+                        }
+                        return `${localFacetMap.value[id]?.length} applied`
                     }
                 }
                 return 'asdasd'
@@ -281,6 +315,7 @@
                 dirtyTimestampFacet,
                 getFilterValue,
                 handleActivePanelChange,
+                getConnectorImageMap,
             }
         },
     })

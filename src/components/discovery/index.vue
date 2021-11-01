@@ -52,7 +52,7 @@
                     </AggregationTabs>
                 </div>
 
-                <!-- <div
+                <div
                     class="flex items-center justify-center flex-grow"
                     v-if="isLoading"
                 >
@@ -60,20 +60,17 @@
                         icon="Loader"
                         class="w-auto h-10 animate-spin"
                     ></AtlanIcon>
-                </div> -->
-                <!--       <div
-                    class="flex-grow"
-                    v-else-if="list.length === 0 && !isLoading"
-                >
+                </div>
+                <div class="flex-grow" v-if="list.length === 0 && !isLoading">
                     <EmptyView></EmptyView>
-                </div> -->
+                </div>
 
                 <AssetList
                     ref="assetlistRef"
                     :list="list"
                     @loadMore="handleLoadMore"
                     :isLoadMore="isLoadMore"
-                    :isLoading="isLoading"
+                    :isLoading="isValidating"
                     @preview="handlePreview"
                 />
             </div>
@@ -184,6 +181,7 @@
                 isLoading,
                 assetTypeAggregationList,
                 isLoadMore,
+                isValidating,
                 fetch,
                 quickChange,
                 handleSelectedAsset,
@@ -287,6 +285,7 @@
                 handlePreview,
                 fetch,
                 handleSearchChange,
+                isValidating,
             }
         },
         // data() {

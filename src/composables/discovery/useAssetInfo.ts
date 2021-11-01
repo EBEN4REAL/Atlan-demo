@@ -31,6 +31,11 @@ export default function useAssetInfo() {
             ]
         return found
     }
+
+    const getConnectorImageMap = computed(() => {
+        return connectionStore.getConnectorImageMapping
+    })
+
     const connectionName = (asset: assetInterface) =>
         attributes(asset)?.connectionName ?? ''
 
@@ -691,5 +696,6 @@ export default function useAssetInfo() {
         qualifiedName,
         getAnchorName,
         connectionQualifiedName,
+        getConnectorImageMap,
     }
 }

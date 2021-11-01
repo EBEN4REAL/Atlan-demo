@@ -62,10 +62,29 @@ export function useBody(
                 }
                 break
             }
-            case 'certificate': {
+            case 'certificateStatus': {
                 if (filterObject) {
                     if (filterObject.length > 0)
                         base.filter('terms', 'certificateStatus', filterObject)
+                }
+                break
+            }
+            case 'owners': {
+                if (filterObject.ownerUsers) {
+                    if (filterObject.ownerUsers.length > 0)
+                        base.filter(
+                            'terms',
+                            'ownerUsers',
+                            filterObject.ownerUsers
+                        )
+                }
+                if (filterObject.ownerGroups) {
+                    if (filterObject.ownerGroups.length > 0)
+                        base.filter(
+                            'terms',
+                            'ownerGroups',
+                            filterObject.ownerGroups
+                        )
                 }
                 break
             }

@@ -37,10 +37,12 @@
         <div class="">
             <Users
                 v-if="componentType == 'users'"
+                v-model="localValue.ownerUsers"
                 :query-text="queryText"
             ></Users>
             <Groups
                 v-if="componentType == 'groups'"
+                v-model="localValue.ownerGroups"
                 :query-text="queryText"
             ></Groups>
         </div>
@@ -75,6 +77,8 @@
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
+    import { useVModels, toRef } from '@vueuse/core'
+
     // import { Collapse } from '~/types'
 
     // import { userInterface } from '~/types/users/user.interface'
@@ -90,22 +94,21 @@
             SearchAdvanced,
         },
         props: {
-            item: {
-                type: Object as PropType<Collapse>,
+            modelValue: {
                 required: false,
-                default: () => {},
-            },
-            data: {
-                type: Object,
-                required: false,
+                default() {
+                    return {}
+                },
             },
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+
             const componentType = ref('users')
 
             const queryText = ref('')
-
             const handleGroupClick = () => {
                 componentType.value = 'groups'
                 queryText.value = ''
@@ -123,6 +126,17 @@
                 return 'Search users'
             })
 
+            watch(localValue.value, (prev, cur) => {
+                if (!localValue.value.ownerUsers) {
+                    delete localValue.value.ownerUsers
+                }
+                if (!localValue.value.ownerGroups) {
+                    delete localValue.value.ownerGroups
+                }
+                modelValue.value = localValue.value
+                emit('change')
+            })
+
             return {
                 handleGroupClick,
                 componentType,
@@ -130,6 +144,7 @@
                 noStatus,
                 placeholder,
                 queryText,
+                localValue,
             }
         },
     })

@@ -9,7 +9,7 @@ export const discoveryFilters = [
         exclude: false,
     },
     {
-        id: 'certificate',
+        id: 'certificateStatus',
         label: 'Certificate',
         component: 'certificate',
         overallCondition: 'OR',

@@ -14,7 +14,11 @@
             </div>
         </div>
         <div class="flex flex-col w-full">
-            <a-checkbox-group class="w-full px-4">
+            <a-checkbox-group
+                class="w-full px-4"
+                v-model:value="localValue"
+                @change="handleChange"
+            >
                 <template v-for="item in list" :key="item.name">
                     <a-checkbox
                         :value="item.name"
@@ -72,11 +76,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, watch } from 'vue'
+    import { defineComponent, PropType, ref, watch } from 'vue'
 
     import Avatar from '@common/avatar/index.vue'
 
     import useFacetGroups from '~/composables/group/useFacetGroups'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'OwnersFilter',
@@ -85,12 +90,17 @@
             queryText: {
                 type: String,
                 required: false,
-                default: () => {
-                    return ''
-                },
+                default: () => '',
+            },
+            modelValue: {
+                required: false,
             },
         },
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+
             const { list, handleSearch } = useFacetGroups()
 
             watch(
@@ -100,171 +110,12 @@
                 }
             )
 
-            // const fullName = (item) => {
-            //     return `${item.first_name} ${item.last_name}`
-            // }
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
+            }
 
-            // const avatarUrl = (item) => {
-            //     return `${window.location.origin}/api/services/avatar/${item.username}`
-            // }
-
-            // const { data } = toRefs(props)
-            // const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
-            // const showMoreUsers = ref(true)
-            // const showMoreGroups = ref(true)
-            // const queryText = ref('')
-            // // own info
-            // const { username: myUsername } = useUserData()
-            // console.log(
-            //     'propsValue',
-            //     data.value.userValue,
-            //     data.value.groupValue
-            // )
-            // const handleUsersChange = () => {
-            //     handleChange()
-            // }
-            // const handleGroupsChange = () => {
-            //     handleChange()
-            // }
-            // const handleChange = () => {
-            //     // make no owners unchecked
-            //     data.value.noOwnerAssigned = false
-            //     emit('change')
-            // }
-            // const noOwnersToggle = () => {
-            //     data.value.userValue = []
-            //     data.value.groupValue = []
-            //     emit('change')
-            // }
-            // const handleOwnerSearch = () => {
-            //     if (activeOwnerTabKey.value === 'users') {
-            //         handleUserSearch(queryText.value)
-            //     } else if (activeOwnerTabKey.value === 'groups') {
-            //         // for groups
-            //         handleGroupSearch(queryText.value)
-            //     }
-            // }
-            // function setActiveTab(tabName: 'users' | 'groups') {
-            //     activeOwnerTabKey.value = tabName
-            //     if (queryText.value !== '') handleOwnerSearch()
-            // }
-
-            // const onSelectUser = (user: userInterface) => {
-            //     // unselect if already selected
-            //     if (data.value.userValue.includes(user.username)) {
-            //         const index = data.value.userValue.indexOf(user.username)
-            //         if (index > -1) {
-            //             data.value.userValue.splice(index, 1)
-            //         }
-            //     } else {
-            //         data.value.userValue.push(user.username)
-            //     }
-            // }
-            // const onSelectGroup = (group: groupInterface) => {
-            //     // unselect if already selected
-            //     if (data.value.groupValue.includes(group.name)) {
-            //         const index = data.value.groupValue.indexOf(group.name)
-            //         if (index > -1) {
-            //             data.value.groupValue.splice(index, 1)
-            //         }
-            //     } else {
-            //         data.value.groupValue.push(group.name)
-            //     }
-            // }
-            // function isOwner(username: string, owners: string[]) {
-            //     return owners.includes(username)
-            // }
-            // const userList: Ref<userInterface[]> = ref([])
-            // const groupList: Ref<groupInterface[]> = ref([])
-            // watch(
-            //     [listUsers, listGroups],
-            //     () => {
-            //         userList.value = sortClassificationsByOrder(
-            //             listUsers,
-            //             'username'
-            //         )
-            //         // removing own username from list
-            //         let ownUserObj: userInterface = {}
-            //         userList.value = userList.value.filter((user) => {
-            //             if (user.username === myUsername.value) {
-            //                 ownUserObj = user
-            //             }
-            //             return user.username !== myUsername.value
-            //         })
-            //         if (Object.keys(ownUserObj).length > 0) {
-            //             userList.value = [ownUserObj, ...userList.value]
-            //         } else {
-            //             userList.value = [...userList.value]
-            //         }
-            //         groupList.value = sortClassificationsByOrder(
-            //             listGroups,
-            //             'name'
-            //         )
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
-            // function sortClassificationsByOrder(
-            //     data: Ref<userInterface[] | groupInterface[]>,
-            //     key: string
-            // ) {
-            //     let modifiedData: userInterface[] = []
-            //     if (data?.value) {
-            //         modifiedData = data.value.sort((dataA, dataB) => {
-            //             const a = dataA[key].toLowerCase()
-            //             const b = dataB[key].toLowerCase()
-            //             if (a < b) {
-            //                 return -1
-            //             }
-            //             if (a > b) {
-            //                 return 1
-            //             }
-            //             return 0
-            //         })
-            //     }
-            //     return modifiedData
-            // }
-            // function toggleShowMore() {
-            //     showMoreUsers.value = !showMoreUsers.value
-            //     setLimit(totalUsersCount.value)
-            //     mutateUsers()
-            // }
-            // function toggleShowMoreGroups() {
-            //     showMoreGroups.value = !showMoreGroups.value
-            //     setGroupLimit(totalGroupCount.value)
-            //     mutateGroups()
-            // }
-            // return {
-            //     data,
-            //     emptyScreen,
-            //     queryText,
-            //     noOwnersToggle,
-            //     totalUsersCount,
-            //     totalGroupCount,
-            //     userOwnerState,
-            //     groupOwnerState,
-            //     STATES,
-            //     GROUPSTATES,
-            //     myUsername,
-            //     showMoreGroups,
-            //     onSelectGroup,
-            //     isOwner,
-            //     onSelectUser,
-            //     userList,
-            //     groupList,
-            //     handleOwnerSearch,
-            //     activeOwnerTabKey,
-            //     toggleShowMoreGroups,
-            //     toggleShowMore,
-            //     handleChange,
-            //     handleUsersChange,
-            //     handleGroupsChange,
-            //     showMoreUsers,
-            //     setActiveTab,
-            // } -->
-
-            return { list }
+            return { list, handleChange, localValue }
         },
     })
 </script>

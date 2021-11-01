@@ -3,12 +3,12 @@
         <div class="flex flex-col px-4 py-3 border-b border-gray-200">
             <div class="flex items-center mb-1" style="padding-bottom: 1px">
                 <div
-                    class="flex mr-1"
                     v-if="
                         ['column'].includes(
                             selectedAsset.typeName?.toLowerCase()
                         )
                     "
+                    class="flex mr-1"
                 >
                     <!-- <component
                                 :is="dataTypeImage(item)"
@@ -80,20 +80,23 @@
                 <a-tab-pane
                     v-for="(tab, index) in previewTabs(selectedAsset)"
                     :key="index"
-                    :style="{ height: 'calc(100vh - 130px)' }"
+                    :style="{
+                        height:
+                            activeKey === index ? 'calc(100vh - 10rem)' : '',
+                    }"
                 >
                     <template #tab>
                         <PreviewTabsIcon
                             :title="tab.tooltip"
                             :icon="tab.icon"
-                            :activeIcon="tab.activeIcon"
-                            :isActive="activeKey === index"
+                            :active-icon="tab.activeIcon"
+                            :is-active="activeKey === index"
                         />
                     </template>
 
                     <component
                         :is="tab.component"
-                        :selectedAsset="selectedAsset"
+                        :selected-asset="selectedAsset"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -272,7 +275,7 @@
 </template>
 
 <script lang="ts">
-    import { defineAsyncComponent, defineComponent, ref } from 'vue'
+    import { defineAsyncComponent, defineComponent, ref, PropType } from 'vue'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -286,6 +289,7 @@
     // import { assetInterface } from '~/types/assets/asset.interface'
     // import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
     // import { images, dataTypeList } from '~/constant/datatype'
     // import { copyToClipboard } from '~/utils/clipboard'
     // import useCheckAccess from '~/services/access/useCheckAccess'
@@ -330,12 +334,13 @@
         },
         props: {
             selectedAsset: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
             page: {
                 type: String,
                 required: false,
+                default: '',
             },
             showCrossIcon: {
                 type: Boolean,

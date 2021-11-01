@@ -1,56 +1,25 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div class="flex flex-col mx-3">
-        <div
-            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border-b border-gray-200 "
-        >
+        <div class="flex items-start flex-1 py-1 transition-all duration-300">
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
-                <!-- Asset type + Hierarchy bar -->
-                <div class="flex items-center text-gray-500 gap-x-2">
-                    <!-- <AssetLogo
-                        v-if="showAssetTypeIcon"
-                        :asset="item"
-                        :selected="isSelected"
-                    />
-
-                    <HierarchyBar
-                        v-if="projection?.includes('hierarchy')"
-                        :selected-asset="item"
-                    /> -->
-                </div>
-
-                <!-- Title bar -->
-                <!-- <div
-                    v-if="item.guid === '-1'"
-                    class="flex flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate overflow-ellipsis whitespace-nowrap"
-                >
-                    <div>{{ item.displayText }}</div>
-                    <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
-                </div> -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <div
-                        class="flex mr-1"
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
+                        class="flex mr-1"
                     >
-                        <!-- <component
-                                :is="dataTypeImage(item)"
-                                class="w-auto h-4 text-gray-500"
-                                style="margin-top: 1px"
-                            ></component> -->
-
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 text-gray-500 mb-0.5"
                         />
                     </div>
-                    <router-link
-                        to="/"
-                        class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    <div
+                        class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
-                    </router-link>
+                    </div>
 
                     <CertificateBadge
                         v-if="certificateStatus(item)"
@@ -59,7 +28,6 @@
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
                     ></CertificateBadge>
-                    <!-- <CertificatePopover :data="item" /> -->
                 </div>
 
                 <!-- Info bar -->
@@ -80,7 +48,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-tight text-gray-500 uppercase "
+                            class="mr-1 text-sm tracking-tight text-gray-500 uppercase "
                         >
                             {{ item.typeName }}
                         </div>
@@ -164,12 +132,12 @@
                             }}</span>
                         </div>
                         <div
-                            class="flex"
                             v-if="
                                 isPrimary(item) ||
                                 isDist(item) ||
                                 isPartition(item)
                             "
+                            class="flex"
                         >
                             <AtlanIcon
                                 icon="Key"
@@ -177,18 +145,18 @@
                             ></AtlanIcon>
 
                             <span
-                                class="ml-1 text-sm text-gray-700"
                                 v-if="isPrimary(item)"
+                                class="ml-1 text-sm text-gray-700"
                                 >Primary Key</span
                             >
                             <span
-                                class="ml-1 text-sm text-gray-700"
                                 v-if="isDist(item)"
+                                class="ml-1 text-sm text-gray-700"
                                 >Dist Key</span
                             >
                             <span
-                                class="ml-1 text-sm text-gray-700"
                                 v-if="isPartition(item)"
+                                class="ml-1 text-sm text-gray-700"
                                 >Partition Key</span
                             >
                         </div>
@@ -209,8 +177,8 @@
                     >
                         <a-tooltip placement="bottomLeft">
                             <div
-                                class="flex items-center text-gray-500"
                                 v-if="databaseName(item)"
+                                class="flex items-center text-gray-500"
                             >
                                 <AtlanIcon
                                     icon="DatabaseGray"
@@ -243,8 +211,8 @@
                         </a-tooltip>
 
                         <a-tooltip
-                            placement="bottomLeft"
                             v-if="tableName(item)"
+                            placement="bottomLeft"
                         >
                             <div
                                 v-if="tableName(item)"
@@ -262,7 +230,7 @@
                                 <span>Table - {{ tableName(item) }}</span>
                             </template>
                         </a-tooltip>
-                        <a-tooltip placement="bottomLeft" v-if="viewName(item)">
+                        <a-tooltip v-if="viewName(item)" placement="bottomLeft">
                             <div
                                 v-if="viewName(item)"
                                 class="flex items-center text-gray-500"
@@ -298,33 +266,14 @@
 </template>
 
 <script lang="ts">
-    // import HierarchyBar from '@common/badge/hierarchy.vue'
-    // import StatusBadge from '@common/badge/status/index.vue'
     import { defineComponent, PropType } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
-    // import Pill from '@/UI/pill/pill.vue'
-    // import CertificatePopover from '~/components/common/certificatePopover.vue'
-    // import ThreeDotMenu from '@/glossary/threeDotMenu/threeDotMenu.vue'
-
-    // import AssetLogo from '@/common/icon/assetIcon.vue'
-    // import { Components } from '~/api/atlas/client'
-    // import useAssetInfo from '~/composables/asset/useAssetInfo'
-    // import { assetInterface } from '~/types/assets/asset.interface'
-    // import ScrollStrip from '@/UI/scrollStrip.vue'
-    // import { useClassificationStore } from '~/components/admin/classifications/_store'
 
     export default defineComponent({
-        name: 'AssetListItem',
+        name: 'AssetCard',
         components: {
             CertificateBadge,
-            // StatusBadge,
-            // HierarchyBar,
-            // AssetLogo,
-            // Pill,
-            // ThreeDotMenu,
-            // ScrollStrip,
-            // CertificatePopover,
         },
         props: {
             item: {
@@ -386,7 +335,6 @@
                 default: false,
             },
         },
-        emits: ['listItem:check', 'unlinkAsset'],
         setup() {
             const {
                 title,
@@ -412,70 +360,6 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
             } = useAssetInfo()
-
-            // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
-            //     const strSize: number[] = [0]
-            //     let idx = 0
-            //     arr.forEach((name) => {
-            //         strSize.push(strSize[strSize.length - 1] + name.length)
-            //     })
-
-            //     // Check upto how long it is possible to display
-            //     while (strSize[idx] < wordCount && idx < strSize.length) {
-            //         idx += 1
-            //     }
-            //     // // Compenstion for the initial 0 in strSize
-            //     idx -= 1
-
-            //     /** The elements that would be displayed */
-            //     const displayArray = arr.slice(0, idx)
-            //     /** The elements that would be truncated as x other(s) */
-            //     const truncated = arr.slice(idx)
-
-            //     // Check if something needs to be truncated
-            //     if (truncated.length) {
-            //         // If there is only 1 element to be truncated then compare the
-            //         // length of name and 'x others(s)'
-            //         const lastElm =
-            //             truncated.length === 1 &&
-            //             truncated[0].length <
-            //                 `${truncated.length} other(s)`.length
-            //                 ? `${truncated[0]}`
-            //                 : `${truncated.length} other(s)`
-
-            //         return `${displayArray.join(', ')} and ${lastElm}`
-            //     }
-            //     // Check if everything can be directly displayed
-            //     // If so then take the last element from array, append it with 'and'
-            //     const lastElm = displayArray.pop()
-            //     return displayArray.length
-            //         ? `${displayArray.join(', ')} and ${lastElm}`
-            //         : `${lastElm}`
-            // }
-
-            // function getCombinedUsersAndGroups(item: assetInterface) {
-            //     return [...ownerUsers(item), ...ownerGroups(item)].filter(
-            //         (name) => name.length
-            //     )
-            // }
-
-            // const isColumnAsset = (asset) => assetType(asset) === 'Column'
-            // const isQueryAsset = (asset) => assetType(asset) === 'Query'
-            // const isQueryFolderAsset = (asset) =>
-            //     assetType(asset) === 'QueryFolder'
-
-            // const getColumnUrl = (asset) => {
-            //     const tableGuid = asset?.attributes?.table?.guid
-            //     return `/assets/${tableGuid}/overview?column=${asset.guid}`
-            // }
-            // const getQueryUrl = (asset) => {
-            //     return `/insights?id=${asset.guid}`
-            // }
-
-            // function getClassificationDisplayname(name: string) {
-            //     return useClassificationStore().getClasificationByName(name)
-            //         ?.displayName
-            // }
 
             return {
                 title,

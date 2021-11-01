@@ -2,20 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-gray-100
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
             <AssetFilters
                 v-model="facets"
                 @change="handleFilterChange"
             ></AssetFilters>
         </div>
+
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
                 <div class="flex px-3 py-1 border-b border-gray-200">
@@ -24,6 +18,26 @@
                         :autofocus="true"
                         @change="handleSearchChange"
                     >
+                        <template #filter>
+                            <a-popover
+                                v-if="!showFilters"
+                                placement="bottom"
+                                :trigger="['click']"
+                                :overlay-class-name="$style.filterPopover"
+                            >
+                                <template #content
+                                    ><AssetFilters
+                                        v-model="facets"
+                                        :isAccordion="true"
+                                        @change="handleFilterChange"
+                                    ></AssetFilters
+                                ></template>
+                                <AtlanIcon
+                                    icon="FilterFunnel"
+                                    class="mr-1"
+                                ></AtlanIcon>
+                            </a-popover>
+                        </template>
                         <template #postFilter>
                             <Preferences />
                         </template>
@@ -40,13 +54,7 @@
                         <a-popover trigger="click" placement="bottomLeft">
                             <template #content>
                                 <div
-                                    class="
-                                        flex flex-col
-                                        py-1
-                                        rounded
-                                        gap-y-3
-                                        preference-container
-                                    "
+                                    class="flex flex-col py-1 rounded  gap-y-3 preference-container"
                                 ></div>
                             </template>
 
@@ -70,11 +78,15 @@
                         class="w-auto h-10 animate-spin"
                     ></AtlanIcon>
                 </div>
-                <div v-if="list.length === 0 && !isLoading" class="flex-grow">
+                <div
+                    v-else-if="list.length === 0 && !isLoading"
+                    class="flex-grow"
+                >
                     <EmptyView></EmptyView>
                 </div>
 
                 <AssetList
+                    v-else
                     ref="assetlistRef"
                     :list="list"
                     :isLoadMore="isLoadMore"
@@ -98,7 +110,7 @@
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import Preferences from '@/assets/preference.vue'
+    import Preferences from '@/assets/preference/index.vue'
     import AssetList from '@/assets/list/assetList.vue'
     import AssetFilters from '@/assets/filters/index.vue'
 
@@ -139,6 +151,7 @@
     // } from './useDiscoveryDSL'
 
     import { assetTypeList } from '~/constant/assetType'
+    import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -149,14 +162,7 @@
             SearchAdvanced,
             Preferences,
             EmptyView,
-
-            // AssetPagination,
-            // ConnectorDropdown,
-            // Preferences,
-            // EmptyView,
-            // AssetDropdown,
-            // SearchAndFilter,
-            // AssetCategoryFilter,
+            AtlanIcon,
         },
         props: {
             showFilters: {
@@ -314,6 +320,18 @@
 </style>
 
 <style lang="less" module>
+    .filterPopover {
+        max-width: 200px;
+        min-width: 200px;
+        :global(.ant-popover-content) {
+            @apply shadow-sm;
+        }
+
+        :global(.ant-popover-inner-content) {
+            @apply p-0;
+        }
+    }
+
     .tab {
         @apply bg-white text-sm !important;
         border: 1px solid #e6e6eb;

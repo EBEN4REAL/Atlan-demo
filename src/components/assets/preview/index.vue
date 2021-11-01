@@ -23,20 +23,7 @@
                 </div>
                 <router-link
                     to="/"
-                    class="
-                        flex-shrink
-                        mb-0
-                        mr-1
-                        overflow-hidden
-                        font-bold
-                        truncate
-                        cursor-pointer
-                        text-md text-primary
-                        hover:underline
-                        overflow-ellipsis
-                        whitespace-nowrap
-                        leadiing-none
-                    "
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -306,7 +293,8 @@
     // import { images, dataTypeList } from '~/constant/datatype'
     // import { copyToClipboard } from '~/utils/clipboard'
     // import useCheckAccess from '~/services/access/useCheckAccess'
-    // import NoAccessPage from '@/assets/noAccess.vue'
+    // import NoAccessPage from '@/discovery/noAccess.vue'
+    import AssetSelector from '@/common/assetSelector/assetSelector.vue'
 
     export default defineComponent({
         name: 'AssetPreview',

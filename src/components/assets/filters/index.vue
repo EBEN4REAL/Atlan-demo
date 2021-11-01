@@ -24,6 +24,7 @@
                 :bordered="false"
                 class="relative bg-transparent"
                 :class="$style.filter"
+                :accordion="isAccordion"
             >
                 <a-collapse-panel
                     v-for="item in dynamicList"
@@ -198,6 +199,13 @@
                 required: false,
                 default() {
                     return {}
+                },
+            },
+            isAccordion: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
                 },
             },
         },

@@ -306,7 +306,7 @@
             // SidePanelTabHeaders,
             // NoAccessPage,
             // AtlanButton,
-            info: defineAsyncComponent(() => import('./info/index.vue')),
+            info: defineAsyncComponent(() => import('./info/edit.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
             property: defineAsyncComponent(

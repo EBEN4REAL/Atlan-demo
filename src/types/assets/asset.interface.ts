@@ -5,8 +5,8 @@ export interface assetInterface {
         certificateStatus?: string
         certificateUpdatedBy: string
         certificateStatusMessage: string
-        ownerUsers: string
-        ownerGroups: string
+        ownerUsers: string[]
+        ownerGroups: string[]
         certificateUpdatedAt: number
         order: number
         columnCount: number

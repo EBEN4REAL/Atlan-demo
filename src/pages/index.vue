@@ -1,6 +1,7 @@
 <template>
     <div class="grid h-full max-w-5xl grid-cols-6 mx-auto">
         <section class="flex items-center h-24 col-span-6 gap-4">
+             <AtlanIcon class="h-8" icon="MorningIcon"/>
             <span class="text-lg">Good morning, {{getNameInTitleCase(name)}}!</span>
         </section>
         <main class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-14">
@@ -65,8 +66,7 @@
     import { defineComponent } from 'vue'
     import useUserData from '~/composables/user/useUserData'
     import { getNameInTitleCase } from '~/utils/string'
-
- import SearchAndStats from '@/home/main/searchAndStats.vue'
+    import SearchAndStats from '@/home/main/searchAndStats.vue'
     import Announcements from '@/home/main/annoucement.vue';
     import Relevant from '@/home/main/relevant.vue';
     import YourOrgs from '@/home/main/YourOrgs.vue';

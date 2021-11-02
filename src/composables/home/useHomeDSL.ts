@@ -1,15 +1,66 @@
 import { computed, Ref, ref, watch, onMounted } from 'vue'
 import bodybuilder from 'bodybuilder'
 import dayjs from "dayjs"
-import useIndexSearch from '~/services/atlas/discovery/useIndexSearch'
+import { Search } from '~/services/meta/search'
 import { assetInterface } from '~/types/assets/asset.interface'
 import {
   BaseAttributes,
   BasicSearchAttributes,
 } from '~/constant/projection'
 
-// import { getRecentTimestamp } from '~/utils/date'
+function generateQueryDSL(typeNames, username) {
+  const query = bodybuilder()
+  query.filter('terms', '__typeName.keyword', typeNames)
+  if (username !== '') {
+    query.filter('term', 'ownerUsers', username)
+  }
+  return query.build()
+}
 
+export function useAssetListing<T>(
+  typeNames?: string[],
+  username?: string,
+) {
+
+  const payload = computed(() => ({
+    relationAttributes: [
+      'readme',
+      'displayText',
+      'name',
+      'description',
+      'shortDescription',
+    ],
+    dsl: {
+      size: 10,
+      from: 0,
+      ...generateQueryDSL(typeNames, username),
+    },
+    attributes: [
+      ...BaseAttributes,
+      ...BasicSearchAttributes,
+    ],
+  }))
+
+  const list: Ref<assetInterface[]> = ref([])
+  const { data, mutate, error, isLoading } = Search.IndexSearch<assetInterface>(
+    payload.value, {}
+  )
+
+  watch(data, () => {
+    if (data.value?.entities) {
+      list.value = [...data?.value?.entities]
+    } else {
+      list.value = []
+    }
+  })
+
+  return {
+    list,
+    isLoading,
+  }
+}
+
+/*
 export function useRecentTerms() {
   const lastSevenDaysTimestamp = dayjs().subtract(7, "day").valueOf()
   const currentTimestamp = dayjs().valueOf()
@@ -61,73 +112,5 @@ export function useRecentAssets() {
   }
 }
 
-function generateQueryDSL(typeNames, username) {
-
-  const query = bodybuilder()
-  query.filter('terms', '__typeName.keyword', typeNames)
-  if (username !== '') {
-    query.filter('term', 'ownerUsers', username)
-  }
-  return query.build()
-
-}
-
-export function useAssetListing(
-  typeNames?: string[],
-  username?: string,
-  immediate: boolean = true,
-  cacheSuffx?: string | ''
-) {
-
-  const payload = computed(() => ({
-    relationAttributes: [
-      'readme',
-      'displayText',
-      'name',
-      'description',
-      'shortDescription',
-    ],
-    dsl: {
-      size: 10,
-      from: 0,
-      ...generateQueryDSL(typeNames, username),
-    },
-    attributes: [
-      ...BaseAttributes,
-      ...BasicSearchAttributes,
-    ],
-  }))
-
-  const list: Ref<assetInterface[]> = ref([])
-  const { replaceBody, body, isReady, error, data } = useIndexSearch(
-    {},
-    '',
-    immediate
-  )
-
-  const isLoading = computed(() => !isReady.value && !error.value)
-
-  function reFetch() {
-    replaceBody({ ...payload.value })
-  }
-
-  onMounted(() => {
-    replaceBody({ ...payload.value })
-  })
-
-  watch(data, () => {
-    if (data.value?.entities) {
-      list.value = data.value?.entities
-    } else {
-      list.value = []
-    }
-  })
-
-  return {
-    list,
-    isLoading,
-    reFetch,
-    body,
-  }
-}
+ */
 

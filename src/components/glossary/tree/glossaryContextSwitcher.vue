@@ -8,6 +8,7 @@
         :open="glossaryContextOpen"
         :options="glossaryContextDropdown"
         :dropdownMatchSelectWidth="true"
+        show-search
         dropdownClassName="pr-0.5 w-60"
         class="pr-0.5 w-60"
         @click="glossaryContextOpen = !glossaryContextOpen"
@@ -123,6 +124,7 @@
 
             const { currentGlossaryGuid } = useVModels(props, emit)
             const guid = ref(currentGlossaryGuid.value)
+            
             const glossaryContextOpen = ref(
                 router.currentRoute.value.query.cta === 'glossaryContext'
             )
@@ -145,7 +147,7 @@
                 // if(newGuid && newGuid !== currentGlossaryGuid.value) {
                     if (newGuid === 'all') router.push(`/glossary`)
                     else { 
-                        // redirectToProfile('AtlasGlossary', newGuid)
+                        redirectToProfile('AtlasGlossary', newGuid)
                         currentGlossaryGuid.value = newGuid
                     }
                 // }

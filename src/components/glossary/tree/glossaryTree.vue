@@ -1,6 +1,9 @@
 <template>
     <div class="border-r glossaryTree" :class="$style.glossaryTree">
         <div :class="$style.parentGroup">
+            
+
+            <glossaryContextSwitcher v-model:currentGlossaryGuid="parentGlossaryGuid" />
 
             <div class="flex flex-col h-screen">
 
@@ -9,8 +12,6 @@
                     <SearchAdvanced
                         v-model:modelValue="searchQuery"
                         :placeholder="
-                            currentGuid &&
-                            currentGuid === parentGlossary?.guid &&
                             parentGlossary?.displayText
                                 ? `Search in ${parentGlossary?.displayText}`
                                 : 'Search'
@@ -50,7 +51,7 @@
                             @select="selectNode"
                             @expand="expandNode"
                             @drop="dragAndDrop"
-                            class="h-full"
+                            class="h-full bg-gray-100"
                         >
                             <template #switcherIcon>
                                 <AtlanIcon icon="CaretRight" class="my-auto" />
@@ -184,11 +185,13 @@
         PropType,
         ref,
         toRef,
+        toRefs,
         watch,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
     import { useDebounceFn } from '@vueuse/core'
+    import { useVModels } from '@vueuse/core'
 
     // components
     // import LoadingView from '@common/loaders/section.vue'
@@ -198,7 +201,7 @@
     // import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import GlossaryTreeItem from '@/glossary/tree/glossaryTreeItem.vue'
-    import { Glossary } from '~/types/glossary/glossary.interface'
+    import glossaryContextSwitcher from '@/glossary/tree/glossaryContextSwitcher.vue'
 
     // composables
     import useGtcSearch from '~/composables/glossary/useGtcSearch'
@@ -209,6 +212,8 @@
     import AtlanBtn from '~/components/UI/button.vue'
 
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+
+    import { Glossary } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         components: {
@@ -221,9 +226,8 @@
             // AddGtcModal,
             SearchAdvanced,
             GlossaryTreeItem,
-            VNodes: (_, { attrs }) => {
-                return attrs.vnodes
-            },
+            glossaryContextSwitcher,
+  
         },
         props: {
             isHome: {
@@ -286,16 +290,17 @@
                 required: true,
                 default: () => [],
             },
-            currentGuid: {
+            parentGlossaryGuid: {
                 type: String,
-                required: true,
+                required: false,
                 default: '',
-            },
+            }
         },
         setup(props, { emit }) {
             // data
             const searchQuery = ref<string>('')
             const home = toRef(props, 'isHome')
+            const{ parentGlossaryGuid }= useVModels(props, emit)
             const router = useRouter()
 
             const parentGlossaryQualifiedName = computed(() =>
@@ -353,6 +358,7 @@
                 searchLoading,
                 searchAssetsPaginated,
                 onSearch,
+                parentGlossaryGuid,
             }
         },
     })

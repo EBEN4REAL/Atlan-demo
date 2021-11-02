@@ -3,7 +3,6 @@ import { watch, ref, Ref, computed, WritableComputedRef } from 'vue'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
-import { Components } from '~/types/atlas/client'
 
 // import { projection } from '~/api/atlas/utils'
 import { InternalAttributes, AssetAttributes } from '~/constant/projection'
@@ -30,7 +29,7 @@ type,
 entityGuid,
 cache,
 watchForGuidChange,
-}) => {
+}: parameters) => {
     const body = ref({})
 
     const relatedTerms = [
@@ -105,13 +104,6 @@ watchForGuidChange,
 
     const entity = ref<Glossary | Term | Category>()
 
-    const referredEntities = computed(
-        () =>
-            data.value?.referredEntities as Record<
-                string,
-                Components.Schemas.AtlasEntityHeader
-            >
-    )
     const title: WritableComputedRef<string | undefined> = computed({
         get: () => entity.value?.attributes?.name ?? '',
         set: (val: string) => {
@@ -159,7 +151,6 @@ watchForGuidChange,
 
     return {
         entity,
-        referredEntities,
         title,
         shortDescription,
         qualifiedName,

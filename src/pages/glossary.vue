@@ -8,7 +8,7 @@
             class="relative z-20 bg-white"
             id="filterPane"
         >
-            <glossaryTree
+            <GlossaryTree
                 :glossaryList="[]"
                 :is-home="false"
                 :tree-data="treeData"
@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, Ref, watch, nextTick } from 'vue'
+    import { computed, defineComponent, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
     // import { useRoute, useRouter } from 'vue-router'
@@ -60,8 +60,7 @@
     import GlossaryDiscovery from '@/glossary/index.vue'
     import GlossaryPreview from '@/glossary/preview/glossaryPreview.vue'
     import AssetPreview from '@/assets/preview/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import glossaryTree from '@/glossary/tree/glossaryTree.vue'
+    import GlossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
@@ -71,6 +70,7 @@
     // import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
     // import useDiscoveryStore from '~/store/discovery'
     // import { storeToRefs } from 'pinia'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryTree from '~/composables/glossary/useGlossaryTree'
 
     // export interface initialFiltersType {
@@ -84,7 +84,7 @@
             GlossaryDiscovery,
             GlossaryPreview,
             AssetPreview,
-            glossaryTree
+            GlossaryTree
             // BulkSidebar,
             // BulkNotification,
         },

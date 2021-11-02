@@ -3,18 +3,18 @@ import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 
-import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
-
-import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
-
-import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
-import store from '~/utils/storage'
-
 // composables
+import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
 import useGtcEntity from '~/composables/glossary/useGtcEntity'
+
+// types
+import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
+// store
 import { useGlossaryStore } from '~/store/glossary';
+import store from '~/utils/storage'
 
 interface UseTreeParams {
     emit: any;
@@ -28,7 +28,7 @@ interface UseTreeParams {
 
 const useGlossaryTree = ({
     emit,
-    optimisticUpdate,
+    optimisticUpdate = true,
     filterMode,
     cacheKey,
     isAccordion,
@@ -36,8 +36,8 @@ const useGlossaryTree = ({
     nodesKey = 'guid'
 }: UseTreeParams) => {
     const route = useRoute()
-    const router = useRouter()
     const defaultLimit = 20
+
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     // categories will map to strings since categories can only have one parent ( they only belong to 1 category )
     // terms will map to string[] as a term can be inside multiple categories ( they can belong to multiple categories )
@@ -63,15 +63,12 @@ const useGlossaryTree = ({
 
     const {
         entity: fetchedEntity,
-        error,
-        isLoading,
         refetch,
     } = useGtcEntity<Glossary | Term | Category>({
         type: 'glossary',
         entityGuid: parentGlossaryGuid,
         cache: false,
         watchForGuidChange: false
-    
     })
 
     // const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
@@ -411,7 +408,7 @@ const useGlossaryTree = ({
         shortDescription?: string
     }) => {
         const currentParents = nodeToParentKeyMap[guid]
-        updateGlossaryStatusInList(guid, certificateStatus ?? entity?.attributes?.certificateStatus)
+        // updateGlossaryStatusInList(guid, certificateStatus ?? entity?.attributes?.certificateStatus)
         if (
             currentParents === 'root' ||
             (typeof currentParents !== 'string' &&
@@ -869,7 +866,13 @@ const useGlossaryTree = ({
                                 toGuid,
                                 newCategories
                             )
-                            
+                            console.log(
+                                dragNode.dataRef.guid,
+                                fromGuid,
+                                toGuid,
+                                newCategories
+                                ,'bruh'
+                            )
                             updateEntity({
                                 typeName: 'AtlasGlossaryTerm',
                                 qualifiedName: dragNode.dataRef.qualifiedName,

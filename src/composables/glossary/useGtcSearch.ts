@@ -265,7 +265,6 @@ export default function useGtcSearch({
         glossaries,
         error,
         isLoading,
-        // referredEntities,
         approximateCount,
         fetchAssets,
         fetchAssetsPaginated,

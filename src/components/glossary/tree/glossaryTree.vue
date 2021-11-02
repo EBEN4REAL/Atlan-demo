@@ -1,6 +1,44 @@
 <template>
     <div class="border-r glossaryTree" :class="$style.glossaryTree">
-   <a-tree
+        <div :class="$style.parentGroup">
+
+            <div class="flex flex-col h-screen">
+
+                <!-- Search bar -->
+                <div class="flex px-4 pt-2 pb-0 pr-3 searchArea w-64">
+                    <SearchAdvanced
+                        v-model:modelValue="searchQuery"
+                        :placeholder="
+                            currentGuid &&
+                            currentGuid === parentGlossary?.guid &&
+                            parentGlossary?.displayText
+                                ? `Search in ${parentGlossary?.displayText}`
+                                : 'Search'
+                        "
+                        size="minimal"
+                        @change="onSearch"
+                        class="w-full"
+                    />
+                </div>
+
+
+                <div v-if="isLoading" class="mt-4">
+                    <!-- <LoadingView /> -->
+                    Loading
+                </div>
+
+                <!-- If no search and tree is not loading -->
+                <div
+                    v-else-if="!isLoading && !searchQuery?.length"
+                    class="h-full mt-2"
+                >
+                    <!-- Tree Start -->
+                    <div 
+                        v-if="treeData.length"
+                        class="py-2 pl-4 pr-2 overflow-x-hidden overflow-y-auto  scrollable-container"
+                        :class="$style.treeStyles"
+                    >
+                        <a-tree
                             :expandedKeys="expandedKeys"
                             :selectedKeys="selectedKeys"
                             :loadedKeys="loadedKeys"
@@ -15,76 +53,127 @@
                             class="h-full"
                         >
                             <template #switcherIcon>
-                                <AtlanIcon icon="CaretRight" />
-                                !
+                                <AtlanIcon icon="CaretRight" class="my-auto" />
                             </template>
 
                             <template #title="entity">
-                                <div
-                                    v-if="entity.title === 'Load more'"
-                                    class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
-                                    @click="entity.click()"
-                                >
-                                    <span v-if="entity.isLoading">
-                                        <!-- <LoadingView
-                                            size="small"
-                                            class="w-1 h-1 mr-4"
-                                        /> -->
-                                    </span>
-                                    <span v-else>{{ entity.title }}</span>
-                                </div>
-                                <a-dropdown v-else :trigger="['contextmenu']">
-                                    <div
-                                        class="min-w-full"
-                                        @click="
-                                            () =>
-                                                redirectToProfile(
-                                                    entity.type,
-                                                    entity.key
-                                                )
-                                        "
-                                    >
-                                        <div
-                                            class="flex justify-between mr-2  group"
-                                        >
-                                            <div class="flex m-0">
-                                                <span
-                                                    v-if="
-                                                        entity.type ===
-                                                        'glossary'
-                                                    "
-                                                    class="p-0 my-auto mr-2"
-                                                >
-                                                    <AtlanIcon
-                                                        icon="Glossary"
-                                                        class="h-5"
-                                                    />
-                                                </span>
-                                                <span
-                                                    v-else
-                                                    class="p-0 my-auto mr-1.5"
-                                                >
-                                                    <!-- <AtlanIcon
-                                                        :icon="
-                                                            getEntityStatusIcon(
-                                                                entity.type,
-                                                                entity.certificateStatus
-                                                            )
-                                                        "
-                                                    /> -->
-                                                </span>
-                                                <span
-                                                    class="my-auto text-sm leading-5 text-gray-700 "
-                                                    >{{ entity.title }}</span
-                                                >
-                                            </div>
-
-                                           
-                                        </div>
-                                    </div>
-                                </a-dropdown>
+                                <GlossaryTreeItem :entity="entity" />
                             </template>
                         </a-tree>
+                    </div>
+                    <!-- Tree End -->
+
+                    <!-- Empty Tree -->
+                    <div
+                        v-else
+                        class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    >
+                        <AtlanIcon icon="EmptyGlossary" class="h-40" />
+                        <p class="m-0 mt-20">The Glossary is empty,</p>
+                        <p class="m-0">Create a few terms!</p>
+                    </div>
+                </div>
+
+                <!-- If search query exists and there are results -->
+                <div
+                    v-else-if="searchResults?.length && searchQuery?.length"
+                    class="h-full p-4 overflow-y-auto"
+                >
+                    <div v-if="searchTerms?.length">
+                        <div class="mb-0 text-gray-500">Terms</div>
+                        <div
+                            v-for="term in searchTerms"
+                            :key="term.guid"
+                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            @click="redirectToProfile('term', term.guid)"
+                        >
+                            <div
+                                class="flex content-center w-full mb-1 space-x-2 "
+                            >
+                                <span class="my-auto"
+                                    ><AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'term',
+                                                term.attributes
+                                                    .certificateStatus
+                                            )
+                                        "
+                                        class="w-auto h-5"
+                                /></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-md">{{
+                                        term?.displayText
+                                    }}</span>
+                                    <Tooltip
+                                        v-if="term.attributes.shortDescription"
+                                        :tooltip-text="
+                                            term.attributes.shortDescription
+                                        "
+                                        :rows="1"
+                                        classes="w-auto text-gray-500 text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="searchCategories?.length" class="mt-4">
+                        <div class="mb-0 text-gray-500">Categories</div>
+                        <div
+                            v-for="category in searchCategories"
+                            :key="category.guid"
+                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            @click="
+                                redirectToProfile('category', category.guid)
+                            "
+                        >
+                            <div
+                                class="flex content-center w-full mb-1 space-x-2 "
+                            >
+                                <span class="my-auto"
+                                    ><AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'category',
+                                                category.attributes
+                                                    .certificateStatus
+                                            )
+                                        "
+                                        class="w-auto h-5"
+                                /></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-md">{{
+                                        category?.displayText
+                                    }}</span>
+                                    <Tooltip
+                                        v-if="
+                                            category.attributes.shortDescription
+                                        "
+                                        :tooltip-text="
+                                            category.attributes.shortDescription
+                                        "
+                                        :rows="1"
+                                        classes="w-auto text-gray-500 text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No results -->
+                <div
+                    v-else-if="
+                        searchQuery?.length &&
+                        !searchResults?.length &&
+                        !searchLoading
+                    "
+                    class="p-4 font-bold text-gray-500"
+                >
+                    No results
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -108,19 +197,19 @@
     // import AddCta from '~/components/glossary/tree/addCta.vue'
     // import Tooltip from '@/common/ellipsis/index.vue'
     // import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
-    // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import GlossaryTreeItem from '@/glossary/tree/glossaryTreeItem.vue'
     import { Glossary } from '~/types/glossary/glossary.interface'
 
     // composables
-    // import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+    import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
     // constant
     // import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
 
-    // import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
 
     export default defineComponent({
         components: {
@@ -131,7 +220,8 @@
             AtlanBtn,
             // Tooltip,
             // AddGtcModal,
-            // SearchAndFilter,
+            SearchAdvanced,
+            GlossaryTreeItem,
             VNodes: (_, { attrs }) => {
                 return attrs.vnodes
             },
@@ -202,10 +292,15 @@
                 required: true,
                 default: () => [],
             },
+            currentGuid: {
+                type: String,
+                required: true,
+                default: '',
+            },
         },
         setup(props, { emit }) {
             // data
-            const searchQuery = ref<string>()
+            const searchQuery = ref<string>('')
             const home = toRef(props, 'isHome')
             const parentGlossary = toRef(props, 'parentGlossary')
             const glossaryList = toRef(props, 'glossaryList')
@@ -241,14 +336,14 @@
                     : props?.parentGlossary?.attributes?.qualifiedName ?? ''
             )
 
-            // const {
-            //     entities: searchResults,
-            //     terms: searchTerms,
-            //     categories: searchCategories,
-            //     glossaries: searchGlossaries,
-            //     isLoading: searchLoading,
-            //     fetchAssetsPaginated: searchAssetsPaginated,
-            // } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
+            const {
+                entities: searchResults,
+                terms: searchTerms,
+                categories: searchCategories,
+                glossaries: searchGlossaries,
+                isLoading: searchLoading,
+                fetchAssetsPaginated: searchAssetsPaginated,
+            } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
 
             // methods
             const redirectToProfile = (type: string, guid: string) => {
@@ -257,16 +352,16 @@
             }
             const backToHome = () => router.push('/glossary')
 
-            // const onSearch = useDebounceFn(() => {
-            //     if (searchQuery.value?.length) {
-            //         searchAssetsPaginated({
-            //             query: `${
-            //                 searchQuery.value ? `${searchQuery.value}` : ''
-            //             }`,
-            //             offset: 0,
-            //         })
-            //     }
-            // }, 300)
+            const onSearch = useDebounceFn(() => {
+                if (searchQuery.value?.length) {
+                    searchAssetsPaginated({
+                        query: `${
+                            searchQuery.value ? `${searchQuery.value}` : ''
+                        }`,
+                        offset: 0,
+                    })
+                }
+            }, 300)
 
             watch(home, () => {
                 searchQuery.value = ''
@@ -287,20 +382,20 @@
                 redirectToProfile,
                 backToHome,
                 // StatusList,
-                // getEntityStatusIcon,
+                getEntityStatusIcon,
                 glossaryContextDropdown,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,
                 // selectNode,
                 searchQuery,
-                // searchResults,
-                // searchTerms,
-                // searchCategories,
-                // searchGlossaries,
-                // searchLoading,
-                // searchAssetsPaginated,
-                // onSearch,
+                searchResults,
+                searchTerms,
+                searchCategories,
+                searchGlossaries,
+                searchLoading,
+                searchAssetsPaginated,
+                onSearch,
                 currentGlossaryGuid,
                 refetchGlossaryList,
                 glossaryContextOpen,
@@ -337,9 +432,12 @@
 
         .treeStyles {
             max-height: calc(100vh - 11rem) !important;
-
+            :global(.ant-tree-switcher_close) {
+                @apply flex;
+            }
             :global(.ant-tree-switcher_open) {
                 transform: rotate(90deg);
+                @apply pt-2;
             }
             :global(.ant-tree-node-selected) {
                 @apply bg-black bg-opacity-5 text-primary font-bold !important;

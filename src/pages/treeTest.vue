@@ -1,23 +1,21 @@
 <template>
-
-            <div class="z-20">
-                <glossaryTree
-                    :glossary-list="glossaryList"
-                    :is-home="true"
-                    :tree-data="treeData"
-                    :on-load-data="onLoadData"
-                    :select-node="selectNode"
-                    :expand-node="expandNode"
-                    :drag-and-drop="dragAndDropNode"
-                    :is-loading="isInitingTree"
-                    :loaded-keys="loadedKeys"
-                    :selected-keys="selectedKeys"
-                    :expanded-keys="expandedKeys"
-                    :collapse-all="collapseAll"
-                />
-            </div>
-
-
+    <div class="z-20">
+        <glossaryTree
+            :glossary-list="glossaryList"
+            :is-home="true"
+            :tree-data="treeData"
+            :on-load-data="onLoadData"
+            :select-node="selectNode"
+            :expand-node="expandNode"
+            :drag-and-drop="dragAndDropNode"
+            :is-loading="isInitingTree"
+            :loaded-keys="loadedKeys"
+            :selected-keys="selectedKeys"
+            :expanded-keys="expandedKeys"
+            :collapse-all="collapseAll"
+            current-guid=""
+        />
+    </div>
 </template>
 
 <script lang="ts">
@@ -69,7 +67,7 @@
             } = useGlossaryTree({
                 emit,
                 filterMode: true,
-                parentGlossaryGuid: ref('7c7b72b3-aa30-4fd9-a89c-7ea58ed126a5'),
+                parentGlossaryGuid: ref(''),
             })
          
 

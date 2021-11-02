@@ -1,7 +1,7 @@
 <template>
     <div class="z-20">
         <glossaryTree
-            :glossary-list="glossaryList"
+            :glossaryList="[]"
             :is-home="true"
             :tree-data="treeData"
             :on-load-data="onLoadData"
@@ -57,7 +57,6 @@
                 selectedKeys,
                 reInitTree,
                 collapseAll,
-                glossaryList
             } = useGlossaryTree({
                 emit,
                 filterMode: true,
@@ -77,7 +76,6 @@
                 collapseAll,
                 dragAndDropNode,
                 selectedKeys,
-                glossaryList
             }
         },
     })

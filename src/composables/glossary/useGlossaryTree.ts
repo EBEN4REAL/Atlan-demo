@@ -15,6 +15,8 @@ import store from '~/utils/storage'
 import useGtcEntity from '~/composables/glossary/useGtcEntity'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
+import { useGlossaryStore } from '~/store/glossary';
+
 interface UseTreeParams {
     emit: any;
     parentGlossaryGuid: Ref<string | undefined>
@@ -58,6 +60,7 @@ const useGlossaryTree = ({
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)
 
+    const glossaryStore = useGlossaryStore()
 
     const {
         entity: fetchedEntity,
@@ -72,7 +75,7 @@ const useGlossaryTree = ({
     
     })
 
-    const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
+    // const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
     const {
         getRootCategories,
         getRootTerms,
@@ -192,14 +195,15 @@ const useGlossaryTree = ({
                     returnTreeDataItemAttributes(term, 'term', guid)
                 )
             })
-            checkAndAddLoadMoreNode(termsResponse, 'root', 'root')
+            if(termsResponse)
+                checkAndAddLoadMoreNode(termsResponse, 'root', 'root')
 
             isInitingTree.value = false
 
         } else {
             treeData.value = []
-            if (glossaryList.value?.length) {
-                glossaryList.value?.forEach((glossary) => {
+            if (glossaryStore.list.length) {
+                glossaryStore.list.forEach((glossary) => {
                     treeData.value.push({
                         ...glossary.attributes,
                         title: glossary.displayText,
@@ -210,22 +214,24 @@ const useGlossaryTree = ({
                     })
                 })
             }
-            watch(glossaryList, (newList) => {
-                if (newList?.length) {
-                    treeData.value = []
-                    newList?.forEach((glossary) => {
-                        treeData.value.push({
-                            ...glossary.attributes,
-                            title: glossary.displayText,
-                            key: glossary.guid,
-                            glossaryID: glossary.guid,
-                            type: 'glossary',
-                            checkable: false,
-                        })
-                    })
-                    isInitingTree.value = false
-                }
-            })
+            isInitingTree.value = false
+
+            // watch(glossaryStore.list, (newList) => {
+            //     if (newList?.length) {
+            //         treeData.value = []
+            //         newList?.forEach((glossary) => {
+            //             treeData.value.push({
+            //                 ...glossary.attributes,
+            //                 title: glossary.displayText,
+            //                 key: glossary.guid,
+            //                 glossaryID: glossary.guid,
+            //                 type: 'glossary',
+            //                 checkable: false,
+            //             })
+            //         })
+            //         isInitingTree.value = false
+            //     }
+            // })
         }
     }
 
@@ -1244,7 +1250,6 @@ const useGlossaryTree = ({
         expandedKeys,
         selectedCache,
         expandedCache,
-        glossaryList,
         reInitTree,
         onLoadData,
         expandNode,
@@ -1252,7 +1257,6 @@ const useGlossaryTree = ({
         dragAndDropNode,
         updateNode,
         refetchNode,
-        refetchGlossaryList,
         collapseAll,
         reOrderNodes,
     }

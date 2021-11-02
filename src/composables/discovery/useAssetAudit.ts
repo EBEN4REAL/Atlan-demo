@@ -3,7 +3,7 @@ import { toRefs } from '@vueuse/core'
 import { useAPI } from '~/services/api/useAPI'
 import { Components } from '~/api/atlas/client'
 // import { GET_ASSET_AUDIT } from '~/api/keyMaps/asset/index'
-import { map } from '~/services/meta/entity/key'
+import { map } from '~/services/meta/lineage/key'
 
 
 const useAssetAudit = (params: any, guid: string) => {

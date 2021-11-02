@@ -5,6 +5,7 @@
             class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  md:block facets"
         >
             <AssetFilters
+                :key="dirtyTimestamp"
                 v-model="facets"
                 @change="handleFilterChange"
                 v-if="showFilters"
@@ -28,6 +29,7 @@
                             >
                                 <template #content
                                     ><AssetFilters
+                                        :key="dirtyTimestamp"
                                         v-model="facets"
                                         :isAccordion="true"
                                         @change="handleFilterChange"
@@ -86,7 +88,7 @@
                     v-else-if="list.length === 0 && !isLoading"
                     class="flex-grow"
                 >
-                    <EmptyView></EmptyView>
+                    <EmptyView @event="handleEvent"></EmptyView>
                 </div>
 
                 <AssetList
@@ -128,6 +130,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
     import AtlanIcon from '../common/icon/atlanIcon.vue'
+    import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -165,6 +168,12 @@
                 ...SQLAttributes,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
+            const discoveryStore = useDiscoveryStore()
+            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+
+            if (discoveryStore.activeFacet) {
+                facets.value = discoveryStore.activeFacet
+            }
 
             if (!facets.value.typeName) {
                 facets.value.typeName = '__all'
@@ -252,6 +261,7 @@
             const handleFilterChange = () => {
                 offset.value = 0
                 quickChange()
+                discoveryStore.setActiveFacet(facets.value)
             }
 
             const handleAssetTypeChange = () => {
@@ -267,6 +277,12 @@
             }
 
             const handleChangePreference = () => {
+                quickChange()
+            }
+
+            const handleEvent = () => {
+                facets.value = {}
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 quickChange()
             }
 
@@ -287,6 +303,8 @@
                 isValidating,
                 preference,
                 handleChangePreference,
+                handleEvent,
+                dirtyTimestamp,
             }
         },
         // data() {

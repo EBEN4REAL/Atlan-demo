@@ -12,7 +12,7 @@ export interface Getters {
 export const getters: GettersTree<State> & Getters = {
     getSourceList() {
         const duplicateList = this.list?.map((i) =>
-            i.attributes.connectorName.toLowerCase()
+            i.attributes?.connectorName?.toLowerCase()
         )
 
         let countMap = duplicateList.reduce((prev, cur) => {

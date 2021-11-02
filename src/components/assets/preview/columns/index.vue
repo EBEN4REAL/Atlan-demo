@@ -77,7 +77,7 @@
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
 
-            const aggregationAttributeName = ''
+            const aggregationAttributeName = 'dataType'
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')

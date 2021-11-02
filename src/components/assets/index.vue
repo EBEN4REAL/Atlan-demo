@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full overflow-y-auto bg-gray-100 border-r border-gray-300  md:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  md:block facets"
         >
             <AssetFilters
                 v-model="facets"

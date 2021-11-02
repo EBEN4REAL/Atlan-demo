@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="flex flex-col h-full">
         <div class="px-4 py-2.5 text-sm border-b bg-gray-10">
             <div
                 class="flex items-center justify-between"
@@ -22,14 +22,6 @@
             </div>
         </div>
         <div class="h-full overflow-y-auto">
-            <!-- <div class="px-3 pb-3 border-b">
-                <Connector
-                    v-model:connector="localfacets['connector']"
-                    v-model:connection="localFacetMap['connection']"
-                    @change="handleChange"
-                ></Connector>
-            </div> -->
-
             <a-collapse
                 v-model:activeKey="activeKey"
                 expand-icon-position="right"
@@ -83,12 +75,6 @@
                                         "
                                     />
                                 </div>
-                                <!-- <div
-                                v-if="!activeKey.includes(item.id)"
-                                class="text-primary"
-                            >
-                                {{ getFiltersAppliedString(item.id) }}
-                            </div> -->
                             </div>
                             <div
                                 v-if="
@@ -121,12 +107,6 @@
                             </div>
                         </div>
                     </template>
-                    <!-- 
-                    <component
-                        v-if="item.component === 'businessMetadata'"
-                        :is="item.component"
-                    ></component> -->
-
                     <component
                         :key="dirtyTimestamp[item.id]"
                         :is="item.component"
@@ -158,13 +138,6 @@
     import useDiscoveryStore from '~/store/discovery'
     import { capitalizeFirstLetter } from '~/utils/string'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    // import RaisedTabSmall from '@/UI/raisedTabSmall.vue'
-    // import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
-    // import { List as StatusList } from '~/constant/status'
-    // import { List } from './filters'
-    // import useFilterUtils from './useFilterUtils'
-    // import { useClassificationStore } from '~/components/admin/classifications/_store'
-    // import useFilterPayload from './useFilterPayload'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -219,13 +192,6 @@
 
             const localFacetMap = ref(modelValue.value)
 
-            // if (localFacetMap.value) {
-            //     if (discoveryStore.activeFacet) {
-            //         localFacetMap.value = discoveryStore.activeFacet
-            //         modelValue.value = localFacetMap.value
-            //         emit('change')
-            //     }
-            // }
             if (localFacetMap.value && discoveryStore.activeFacet) {
                 localFacetMap.value = discoveryStore.activeFacet
                 modelValue.value = localFacetMap.value
@@ -364,14 +330,14 @@
                     }
                     if (localFacetMap.value[id]?.ownerGroups) {
                         groupsLength =
-                            localFacetMap.value[id]?.ownerGroups.length
+                            localFacetMap.value[id]?.ownerGroups?.length
                     }
 
                     if (usersLength === 0 && groupsLength < 3) {
-                        return localFacetMap.value[id]?.ownerGroups.join(', ')
+                        return localFacetMap.value[id]?.ownerGroups?.join(', ')
                     }
                     if (usersLength < 3 && groupsLength === 0) {
-                        return localFacetMap.value[id]?.ownerUsers.join(', ')
+                        return localFacetMap.value[id]?.ownerUsers?.join(', ')
                     }
 
                     if (usersLength === 1 && groupsLength === 1) {

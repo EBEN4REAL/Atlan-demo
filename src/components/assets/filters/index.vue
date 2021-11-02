@@ -195,12 +195,6 @@
 
             const localFacetMap = ref(modelValue.value)
 
-            if (localFacetMap.value && discoveryStore.activeFacet) {
-                localFacetMap.value = discoveryStore.activeFacet
-                modelValue.value = localFacetMap.value
-                emit('change')
-            }
-
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
 
@@ -256,7 +250,6 @@
                 totalAppliedFiltersCount.value = Object.keys(
                     localFacetMap.value
                 ).length
-                discoveryStore.setActiveFacet(localFacetMap.value)
             }
 
             const handleClear = (id: string) => {
@@ -278,7 +271,6 @@
                 totalAppliedFiltersCount.value = Object.keys(
                     localFacetMap.value
                 ).length
-                discoveryStore.setActiveFacet(localFacetMap.value)
             }
 
             // Function to build filter applied string for owner facet

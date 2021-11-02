@@ -343,7 +343,7 @@
                 glossaries: searchGlossaries,
                 isLoading: searchLoading,
                 fetchAssetsPaginated: searchAssetsPaginated,
-            } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
+            } = useGtcSearch({ qualifiedName: parentGlossaryQualifiedName, dependantFetchingKey: searchQuery})
 
             // methods
             const redirectToProfile = (type: string, guid: string) => {

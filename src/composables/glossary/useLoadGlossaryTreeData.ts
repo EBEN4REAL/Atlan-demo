@@ -4,7 +4,7 @@ import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { useAPIPromise } from '~/services/api/useAPIPromise'
-import { map } from '~/services/meta/discovery/key'
+import { map } from '~/services/meta/search/key'
 import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 
 const attributes = [

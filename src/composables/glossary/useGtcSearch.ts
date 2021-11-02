@@ -6,30 +6,26 @@ import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 // import useBusinessMetadataStore from '~/store/businessMetadata'
 
 import { Category, Glossary, Term } from '~/types/glossary/glossary.interface'
-import { Components } from '~/types/atlas/client'
-type Filters = {
-    condition: string
-    criterion: {
-        condition: string
-        critetion: {
-            attributeName: string
-            attributeValue: string
-            operator: string
-        }
-    }[]
-}
-export default function useGtcSearch(
+
+interface parameters {
     qualifiedName?: ComputedRef<string>,
     dependantFetchingKey?: Ref<any>,
     type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm' | string[],
     limit?: number,
     additionalFilters?: Array<Record<string, any>>
-) {
+}
+export default function useGtcSearch({
+    qualifiedName,
+    dependantFetchingKey,
+    type,
+    limit,
+    additionalFilters,
+}: parameters) {
     const requestQuery = ref<string>('')
     const offsetLocal = ref(0)
     const defaultLimit = limit || 20
     const limitLocal = ref<number>(defaultLimit)
-    const localFilters = ref<Filters>()
+    const localFilters = ref()
 
     const body = ref()
 
@@ -79,10 +75,6 @@ export default function useGtcSearch(
                 }
             })
         }
-        if(additionalFilters?.length) {
-            additionalFilters.forEach((fil) => filter.push(fil))
-        }
-
         body.value = {
             dsl: {
                 size: limitLocal.value,
@@ -179,19 +171,7 @@ export default function useGtcSearch(
         isLoading,
         mutate,
     } = useIndexSearch<Category | Glossary | Term>(body, dependantFetchingKey, false)
-    // useAPI<any>(GTC_SEARCH, 'POST', {
-    //     cache: false,
-    //     body,
-    //     options: {
-    //         immediate:
-    //             dependantFetchingKey && dependantFetchingKey.value
-    //                 ? true
-    //                 : qualifiedName?.value
-    //                 ? true
-    //                 : false,
-    //         revalidateOnFocus: false,
-    //     },
-    // })
+   
     const approximateCount = computed(() => assets.value?.approximateCount)
 
     offsetLocal.value += defaultLimit
@@ -248,7 +228,7 @@ export default function useGtcSearch(
         offset?: number
         refreshSamePage?: Boolean
         query?: string
-        filters?: Filters
+        filters?: Record<string, any>
     }) => {
         if (query || query === '') {
             requestQuery.value = query

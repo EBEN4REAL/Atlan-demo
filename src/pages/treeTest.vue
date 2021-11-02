@@ -21,7 +21,6 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed, provide, toRef } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRouter, useRoute } from 'vue-router'
 
     // components
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
@@ -34,11 +33,6 @@
     // import useBusinessMetadataStore from '~/store/businessMetadata/index'
 
     // types
-    import {
-        Glossary,
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         components: {

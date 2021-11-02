@@ -78,7 +78,7 @@
                 tab-position="left"
             >
                 <a-tab-pane
-                    v-for="(tab, index) in previewTabs(selectedAsset)"
+                    v-for="(tab, index) in getPreviewTabs(selectedAsset)"
                     :key="index"
                     :style="{
                         height:
@@ -372,7 +372,7 @@
                 isDist,
                 isPartition,
                 isPrimary,
-                previewTabs,
+                getPreviewTabs,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
@@ -520,7 +520,7 @@
                 isPartition,
                 isPrimary,
                 activeKey,
-                previewTabs,
+                getPreviewTabs,
                 tabHeights,
                 certificateStatus,
                 certificateUpdatedAt,

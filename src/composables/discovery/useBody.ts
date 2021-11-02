@@ -130,6 +130,12 @@ export function useBody(
                 }
                 break
             }
+            case 'guid': {
+                if (filterObject) {
+                    base.filter('term', '__guid', filterObject)
+                }
+                break
+            }
         }
     })
 

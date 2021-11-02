@@ -1,10 +1,10 @@
 <template>
     <div class="flex flex-col">
         <AssetHeader :item="selectedAsset"></AssetHeader>
-        <a-tabs :class="$style.profiletab">
+        <a-tabs :class="$style.profiletab" v-model:activeKey="activeKey">
             <a-tab-pane
                 v-for="tab in getProfileTabs(selectedAsset)"
-                :key="tab.id"
+                :key="tab.name"
                 :tab="tab.name"
             >
                 adasd
@@ -34,6 +34,8 @@
         },
         setup() {
             const { selectedAsset, getProfileTabs } = useAssetInfo()
+
+            const activeKey = ref('')
 
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
@@ -87,6 +89,11 @@
                 }
             })
 
+            const handleChangeTab = (key) => {
+                console.log('ss')
+                activeKey.value = key
+            }
+
             const item = computed(() =>
                 selectedAsset
                     ? selectedAsset
@@ -100,7 +107,14 @@
             // const id = computed(() => route?.params?.id || '')
             // router.replace(`/assets/${id.value}/overview`)
 
-            return { selectedAsset, item, fetchKey, getProfileTabs }
+            return {
+                selectedAsset,
+                item,
+                fetchKey,
+                getProfileTabs,
+                activeKey,
+                handleChangeTab,
+            }
         },
     })
 </script>

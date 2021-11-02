@@ -1,5 +1,5 @@
 <template>
-    <div class="text-xs text-gray-500">
+    <div class="text-xs text-gray-500" v-if="status">
         <div class="flex items-center justify-between mb-1 text-sm">
             <span> Certificate</span>
             <span class="text-primary">edit</span>

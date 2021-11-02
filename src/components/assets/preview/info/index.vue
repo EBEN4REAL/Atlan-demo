@@ -62,10 +62,10 @@
         </div> -->
         <Description :selected-asset="selectedAsset" />
 
-        <Query
+        <!--    <Query
             v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'"
             :selected-asset="selectedAsset"
-        />
+        />-->
 
         <Owners
             v-if="
@@ -140,11 +140,11 @@
             },
             userHasEditPermission: {
                 type: Boolean,
-                required: true,
+                required: false,
             },
             page: {
                 type: String,
-                required: true,
+                required: false,
             },
         },
 

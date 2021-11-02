@@ -13,7 +13,7 @@ export function useBody(
 ) {
     const base = bodybuilder()
 
-    console.log("xxx", facets, postFacets)
+    console.log('xxx', facets, postFacets)
 
     if (queryText) {
         base.orQuery('match', 'name', { query: queryText })
@@ -104,6 +104,14 @@ export function useBody(
                 }
                 break
             }
+            case '__traitNames': {
+                if (filterObject) {
+                    if (filterObject.length > 0)
+                        base.filter('terms', '__traitNames', filterObject)
+                }
+
+                break
+            }
             case 'tableQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'tableQualifiedName', filterObject)
@@ -119,6 +127,12 @@ export function useBody(
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)
+                }
+                break
+            }
+            case 'guid': {
+                if (filterObject) {
+                    base.filter('term', '__guid', filterObject)
                 }
                 break
             }

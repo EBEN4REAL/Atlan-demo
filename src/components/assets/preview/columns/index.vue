@@ -32,11 +32,11 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { debouncedWatch } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Preferences from '@/assets/preference.vue'
-    import { useColumnListing } from '~/composables/discovery/useColumnListing'
+    import Preferences from '@/assets/preference/index.vue'
+
     import AssetList from '@/assets/preview/columns/assetList.vue'
-    import AssetFilters from '@/assets/filters/index.vue'
 
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import {
@@ -46,7 +46,6 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import { debouncedWatch } from '@vueuse/core'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -78,7 +77,7 @@
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
 
-            const aggregationAttributeName = ''
+            const aggregationAttributeName = 'dataType'
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')

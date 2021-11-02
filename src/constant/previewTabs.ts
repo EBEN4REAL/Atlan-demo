@@ -1,4 +1,4 @@
-export const previewList = [
+export const previewTabs = [
     {
         name: 'Overview',
         component: 'info',

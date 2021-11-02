@@ -1,9 +1,9 @@
 <template>
     <div class="flex items-center justify-between w-full h-full">
-        <div @mouseover="$emit('openNavbar')" class="flex items-center">
-            <atlan-icon
-                v-if="!isHome"
+        <div class="flex items-center">
+            <AtlanIcon
                 icon="Dots"
+                v-if="!isHome"
                 class="h-6 mr-2 rounded cursor-pointer select-none  hover:bg-primary-light hover:text-primary"
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
@@ -17,11 +17,6 @@
                 />
                 <p class="font-bold text-md" v-else>{{ logoName }}</p>
             </router-link>
-
-            <atlan-icon v-if="!isHome" icon="ChevronRight" class="h-4 mx-1" />
-            <span class="text-sm font-bold tracking-wider text-gray-500">
-                {{ page.toUpperCase() }}</span
-            >
         </div>
         <div class="flex items-center justify-self-end">
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
@@ -39,12 +34,13 @@
 
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import { useTenantStore } from '~/store/tenant'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'Navigation Menu',
         components: { UserPersonalAvatar },
         props: {
-            page: { type: String, required: true },
+            page: { type: String, required: false },
             isSidebarActive: {
                 type: Boolean,
                 required: true,
@@ -55,9 +51,10 @@
         setup(props, { emit }) {
             const { page } = useVModels(props, emit)
             const tenantStore = useTenantStore()
+            const currentRoute = useRoute()
 
             const isHome = computed(() => {
-                if (page.value === '') {
+                if (currentRoute.name === 'index') {
                     return true
                 }
                 return false
@@ -72,7 +69,7 @@
 
             const logoName = computed(() => tenantStore.displayName)
 
-            return { page, isHome, logoUrl, logoName }
+            return { page, isHome, logoUrl, logoName, currentRoute }
         },
     })
 </script>

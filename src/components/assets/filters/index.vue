@@ -1,22 +1,27 @@
 <template>
-    <div>
-        <div
-            class="flex items-center justify-between px-4 py-3 text-sm border-b  bg-gray-10"
-        >
-            <div class="font-medium text-gray-500">
-                {{ totalAppliedFiltersCount }}
-                {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
+    <div class="flex flex-col h-full">
+        <div class="px-4 py-2.5 text-sm border-b bg-gray-10">
+            <div
+                class="flex items-center justify-between"
+                v-if="totalFilteredCount > 0"
+            >
+                <span>
+                    {{ totalFilteredCount }}
+                    {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
+                >
+                <div class="flex font-medium text-gray-500">
+                    <span class="text-gray-500" @click="handleResetAll">
+                        <span class="text-sm cursor-pointer hover:text-primary"
+                            >Clear All</span
+                        >
+                    </span>
+                </div>
+            </div>
+            <div class="flex items-center justify-between" v-else>
+                <span> Filters</span>
             </div>
         </div>
         <div class="h-full overflow-y-auto">
-            <!-- <div class="px-3 pb-3 border-b">
-                <Connector
-                    v-model:connector="localfacets['connector']"
-                    v-model:connection="localFacetMap['connection']"
-                    @change="handleChange"
-                ></Connector>
-            </div> -->
-
             <a-collapse
                 v-model:activeKey="activeKey"
                 expand-icon-position="right"
@@ -70,12 +75,6 @@
                                         "
                                     />
                                 </div>
-                                <!-- <div
-                                v-if="!activeKey.includes(item.id)"
-                                class="text-primary"
-                            >
-                                {{ getFiltersAppliedString(item.id) }}
-                            </div> -->
                             </div>
                             <div
                                 v-if="
@@ -108,14 +107,8 @@
                             </div>
                         </div>
                     </template>
-                    <!-- 
                     <component
-                        v-if="item.component === 'businessMetadata'"
-                        :is="item.component"
-                    ></component> -->
-
-                    <component
-                        :key="dirtyTimestampFacet[item.id]"
+                        :key="dirtyTimestamp[item.id]"
                         :is="item.component"
                         v-model="localFacetMap[item.id]"
                         @change="handleChange(item.id)"
@@ -139,17 +132,12 @@
     } from 'vue'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useDiscoveryStore from '~/store/discovery'
     import { capitalizeFirstLetter } from '~/utils/string'
-    // import RaisedTabSmall from '@/UI/raisedTabSmall.vue'
-    // import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
-    // import { List as StatusList } from '~/constant/status'
-    // import { List } from './filters'
-    // import useFilterUtils from './useFilterUtils'
-    // import { useClassificationStore } from '~/components/admin/classifications/_store'
-    // import useFilterPayload from './useFilterPayload'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -167,24 +155,10 @@
             Connection: defineAsyncComponent(
                 () => import('@/common/facet/connection/index.vue')
             ),
-            // Classifications: defineAsyncComponent(
-            //     () => import('@common/facets/classifications.vue')
-            // ),
-            // Governance: defineAsyncComponent(
-            //     () => import('@common/facets/governance.vue')
-            // ),
-            // Advanced: defineAsyncComponent(
-            //     () => import('@common/facets/advanced/index.vue')
-            // ),
-            // businessMetadata: defineAsyncComponent(
-            //     () => import('@common/facets/businessMetadata/index.vue')
-            // ),
-            // SavedFilter: defineAsyncComponent(
-            //     () => import('./savedFilters/viewSavedFilters.vue')
-            // ),
-            // SaveFilterModal: defineAsyncComponent(
-            //     () => import('./savedFilters/modal/saveFilterModal.vue')
-            // ),
+            Classifications: defineAsyncComponent(
+                () => import('@/common/facet/classification/index.vue')
+            ),
+            AtlanIcon,
         },
         props: {
             filtersList: {
@@ -218,13 +192,6 @@
 
             const localFacetMap = ref(modelValue.value)
 
-            // if (localFacetMap.value) {
-            //     if (discoveryStore.activeFacet) {
-            //         localFacetMap.value = discoveryStore.activeFacet
-            //         modelValue.value = localFacetMap.value
-            //         emit('change')
-            //     }
-            // }
             if (localFacetMap.value && discoveryStore.activeFacet) {
                 localFacetMap.value = discoveryStore.activeFacet
                 modelValue.value = localFacetMap.value
@@ -233,8 +200,8 @@
 
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
+
             const dirtyTimestamp = ref({})
-            const dirtyTimestampFacet = ref({})
 
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -265,32 +232,50 @@
                                 return false
                             }
                         }
+                        if (localFacetMap?.value[id].constructor === Array) {
+                            if (localFacetMap?.value[id].length === 0) {
+                                return false
+                            }
+                        }
                     }
                 }
-
-                // if (localFacetMap.value[id]) {
-                //     return true
-                // }
-                // return false
                 return localFacetMap.value[id]
             }
+
+            const totalFilteredCount = computed(
+                () => discoveryFilters.filter((i) => isFiltered(i.id)).length
+            )
 
             const handleChange = (id) => {
                 modelValue.value = localFacetMap.value
                 emit('change')
+                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
                 totalAppliedFiltersCount.value = Object.keys(
                     localFacetMap.value
                 ).length
-                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
                 discoveryStore.setActiveFacet(localFacetMap.value)
             }
 
             const handleClear = (id: string) => {
-                // localFacetMap.value[id] = undefined
-                // localFacetMap[id] = []
-                dirtyTimestampFacet.value[id] = `dirty_${Date.now().toString()}`
                 delete localFacetMap.value[id]
                 handleChange(id)
+            }
+
+            const handleResetAll = () => {
+                localFacetMap.value = {}
+                modelValue.value = localFacetMap.value
+
+                discoveryFilters.forEach((i) => {
+                    dirtyTimestamp.value[
+                        i.id
+                    ] = `dirty_${Date.now().toString()}`
+                })
+                activeKey.value = []
+                emit('change')
+                totalAppliedFiltersCount.value = Object.keys(
+                    localFacetMap.value
+                ).length
+                discoveryStore.setActiveFacet(localFacetMap.value)
             }
 
             // Function to build filter applied string for owner facet
@@ -318,14 +303,18 @@
                         )
                     }
                 }
-                // if (id === 'certificateStatus') {
-                //     if (localFacetMap.value[id]) {
-                //         if (localFacetMap.value[id]?.length < 3) {
-                //             return localFacetMap.value[id].join(',')
-                //         }
-                //         return `${localFacetMap.value[id]?.length} applied`
-                //     }
-                // }
+                if (id === '__traitNames' && localFacetMap.value[id]) {
+                    const { classificationList } = useTypedefData()
+
+                    const list = classificationList.value
+                        .filter((i) => localFacetMap.value[id].includes(i.name))
+                        .map((i) => i.displayName)
+
+                    return list.length < 3
+                        ? list.join(',')
+                        : `${list?.length} applied`
+                }
+
                 if (id === 'certificateStatus' && localFacetMap.value[id]) {
                     return localFacetMap.value[id]?.length < 3
                         ? localFacetMap.value[id].join(',')
@@ -341,14 +330,14 @@
                     }
                     if (localFacetMap.value[id]?.ownerGroups) {
                         groupsLength =
-                            localFacetMap.value[id]?.ownerGroups.length
+                            localFacetMap.value[id]?.ownerGroups?.length
                     }
 
                     if (usersLength === 0 && groupsLength < 3) {
-                        return localFacetMap.value[id]?.ownerGroups.join(', ')
+                        return localFacetMap.value[id]?.ownerGroups?.join(', ')
                     }
                     if (usersLength < 3 && groupsLength === 0) {
-                        return localFacetMap.value[id]?.ownerUsers.join(', ')
+                        return localFacetMap.value[id]?.ownerUsers?.join(', ')
                     }
 
                     if (usersLength === 1 && groupsLength === 1) {
@@ -357,9 +346,6 @@
                             .join(', ')
                     }
 
-                    // let sum = usersLength + groupsLength
-
-                    // return `${sum.toString()} applied`
                     return `${getOwnerFilterAppliedString(
                         usersLength,
                         groupsLength
@@ -373,7 +359,6 @@
             }
 
             return {
-                totalAppliedFiltersCount,
                 activeKey,
                 dirtyTimestamp,
                 dynamicList,
@@ -381,10 +366,12 @@
                 handleChange,
                 handleClear,
                 isFiltered,
-                dirtyTimestampFacet,
+
                 getFilterValue,
                 handleActivePanelChange,
                 getConnectorImageMap,
+                totalFilteredCount,
+                handleResetAll,
             }
         },
     })

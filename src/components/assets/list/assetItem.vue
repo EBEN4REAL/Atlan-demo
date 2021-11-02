@@ -46,7 +46,7 @@
                         />
                     </div>
                     <router-link
-                        to="/"
+                        :to="assetURL(item)"
                         class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
@@ -471,6 +471,9 @@
             // const getQueryUrl = (asset) => {
             //     return `/insights?id=${asset.guid}`
             // }
+            const assetURL = (asset) => {
+                return `/assets/${asset.guid}`
+            }
 
             // function getClassificationDisplayname(name: string) {
             //     return useClassificationStore().getClasificationByName(name)
@@ -482,7 +485,7 @@
                 getConnectorImage,
                 assetType,
                 dataType,
-
+                assetURL,
                 rowCount,
                 columnCount,
                 sizeBytes,

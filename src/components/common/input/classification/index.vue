@@ -76,7 +76,7 @@
 
             const list = computed(() => {
                 const { matchingIdsResult } = mergeArray(
-                    classificationList,
+                    classificationList.value,
                     classifications(selectedAsset.value),
                     'name',
                     'typeName'

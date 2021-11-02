@@ -110,7 +110,7 @@
                 } else {
                     selectedAssetId.value = item.guid
                 }
-                    emit('preview', item)
+                emit('preview', item)
             }
 
             // function handlePreview(item: any) {

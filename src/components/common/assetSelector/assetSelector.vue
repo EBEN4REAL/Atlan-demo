@@ -20,22 +20,6 @@
         </template>
 
         <template #option="{ data }">
-            <!-- <div class="">
-                <div
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary overflow-ellipsis whitespace-nowrap"
-                >
-                    {{ title(data) }}
-                </div>
-                <div class="flex items-center">
-                    <img
-                        :src="getConnectorImage(data)"
-                        class="h-3 mr-1 mb-0.5"
-                    />
-                    <div class="text-sm tracking-tight text-gray-500 uppercase">
-                        {{ data.typeName }}
-                    </div>
-                </div>
-            </div> -->
             <AssetCard :item="data" />
         </template>
     </a-select>
@@ -45,7 +29,6 @@
     import { defineComponent, toRefs } from 'vue'
     import useAssetSelector from './useAssetSelector'
     import AssetCard from './assetCard.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -71,11 +54,7 @@
                 emit
             )
 
-            const { title, getConnectorImage } = useAssetInfo()
-
             return {
-                title,
-                getConnectorImage,
                 value,
                 fetching,
                 handleSearch,

@@ -280,32 +280,15 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
 
-    // import Tooltip from '@common/ellipsis/index.vue'
-    // import StatusBadge from '@common/badge/status/index.vue'
-    // import AssetLogo from '@/common/icon/assetIcon.vue'
-    // import AtlanButton from '@/UI/button.vue'
-    // import CertificatePopover from '~/components/common/certificatePopover.vue'
-    // import useAssetInfo from '~/composables/asset/useAssetInfo'
-    // import { assetInterface } from '~/types/assets/asset.interface'
-    // import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    // import { images, dataTypeList } from '~/constant/datatype'
-    // import { copyToClipboard } from '~/utils/clipboard'
-    // import useCheckAccess from '~/services/access/useCheckAccess'
-    // import NoAccessPage from '@/discovery/noAccess.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
         components: {
             PreviewTabsIcon,
             CertificateBadge,
-            // Tooltip,
-            // AssetLogo,
-            // StatusBadge,
-            // SidePanelTabHeaders,
-            // NoAccessPage,
-            // AtlanButton,
+
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
@@ -378,128 +361,14 @@
                 certificateStatusMessage,
             } = useAssetInfo()
 
-            // const { selectedAsset, page, mutateTooltip } = toRefs(props)
-            // const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
-            // const { assetTypeLabel, title, certificateStatus, assetType } =
-            //     useAssetInfo()
             const activeKey = ref(0)
-            // const isLoaded: Ref<boolean> = ref(true)
-            // const router = useRouter()
-            // const userHasEditPermission = ref<boolean>(true)
-            // const { evaluatePermissions } = useCheckAccess()
-            // const { data: userPermission } = evaluatePermissions(
-            //     selectedAsset.value,
-            //     'ENTITY_UPDATE'
-            // )
-            // const dataMap: { [id: string]: any } = ref({})
-            // const handleChange = () => {}
-            // const infoTabData: Ref<any> = ref({})
-            // // const {} =useMagicKeys();
+
             const tabHeights = {
                 discovery: 'calc(100vh - 9.2rem)',
                 profile: 'calc(100vh - 3rem)',
                 biOverview: 'calc(100vh - 9.2rem)',
                 nonBiOverview: 'calc(100vh - 9.2rem)',
             }
-            // // function getAssetEntitity(data: Ref): any {
-            // //     if (data.value?.entities.length > 0)
-            // //         return data.value?.entities[0]
-            // //     return {}
-            // // }
-            // const getDataType = (type: string) => {
-            //     let label = ''
-            //     dataTypeList.forEach((i) => {
-            //         if (i.type.includes(type)) label = i.label
-            //     })
-            //     return label
-            // }
-            // const isColumnAsset = (asset) => assetType(asset) === 'Column'
-            // const isQueryAsset = (asset) => assetType(asset) === 'Query'
-            // const isQueryFolderAsset = (asset) =>
-            //     assetType(asset) === 'QueryFolder'
-            // const getColumnUrl = (asset) => {
-            //     const tableGuid = asset?.attributes?.table?.guid
-            //     return `/assets/${tableGuid}/overview?column=${asset.guid}`
-            // }
-            // const getQueryUrl = (asset) => {
-            //     return `/insights?id=${asset.guid}`
-            // }
-            // const handleCopyProfileLink = () => {
-            //     const baseUrl = window.location.origin
-            //     if (isColumnAsset(selectedAsset.value)) {
-            //         const text = `${baseUrl}/${getColumnUrl(
-            //             selectedAsset.value
-            //         )}`
-            //         copyToClipboard(text)
-            //     } else {
-            //         const text = `${baseUrl}/assets/${selectedAsset.value.guid}/overview`
-            //         copyToClipboard(text)
-            //     }
-            // }
-            // const handleOpenProfile = () => {
-            //     if (isColumnAsset(selectedAsset.value)) {
-            //         router.push(`/${getColumnUrl(selectedAsset.value)}`)
-            //     } else {
-            //         router.push(`/assets/${selectedAsset.value.guid}/overview`)
-            //     }
-            // }
-            // const handleOpenInsights = () => {
-            //     router.push(`${getQueryUrl(selectedAsset.value)}`)
-            // }
-            // const handleCopyInsightsLink = () => {
-            //     const baseUrl = window.location.origin
-            //     const text = `${baseUrl}${getQueryUrl(selectedAsset.value)}`
-            //     copyToClipboard(text)
-            // }
-            // provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
-            //     emit('assetMutation', updatedAsset)
-            // })
-            // provide('switchTab', (tabName: string) => {
-            //     const idx = filteredTabs.value.findIndex(
-            //         (tl) => tl.name === tabName
-            //     )
-            //     if (idx > -1) activeKey.value = idx
-            // })
-            // watch(page, () => {
-            //     if (activeKey.value > filteredTabs.value.length)
-            //         activeKey.value = 0
-            // })
-            // watch(userPermission, () => {
-            //     userHasEditPermission.value = userPermission.value[0]?.allowed
-            // })
-            // function init() {
-            //     isLoaded.value = false
-            //     infoTabData.value = selectedAsset.value
-            // }
-            // watch(() => selectedAsset.value.guid, init)
-            // const name = computed(() => selectedAsset.value.attributes?.name)
-            // onMounted(init)
-            // return {
-            //     mutateTooltip,
-            //     name,
-            //     tabHeights,
-            //     isLoaded,
-            //     infoTabData,
-            //     userHasEditPermission,
-            //     title,
-            //     assetTypeLabel,
-            //     dataMap,
-            //     activeKey,
-            //     filteredTabs,
-            //     certificateStatus,
-            //     handleChange,
-            //     images,
-            //     getDataType,
-            //     isColumnAsset,
-            //     getColumnUrl,
-            //     getQueryUrl,
-            //     isQueryAsset,
-            //     isQueryFolderAsset,
-            //     handleCopyProfileLink,
-            //     handleOpenProfile,
-            //     handleCopyInsightsLink,
-            //     handleOpenInsights,
-            // }
 
             return {
                 title,

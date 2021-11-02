@@ -294,7 +294,6 @@
     // import { copyToClipboard } from '~/utils/clipboard'
     // import useCheckAccess from '~/services/access/useCheckAccess'
     // import NoAccessPage from '@/discovery/noAccess.vue'
-    import AssetSelector from '@/common/assetSelector/assetSelector.vue'
 
     export default defineComponent({
         name: 'AssetPreview',

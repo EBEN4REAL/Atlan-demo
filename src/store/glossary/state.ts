@@ -1,7 +1,8 @@
 import { useStorage } from '@vueuse/core'
+import { Glossary } from '~/types/glossary/glossary.interface'
 
 export interface State {
-    list: any[]
+    list: Glossary[]
 }
 
 export const state: State = {

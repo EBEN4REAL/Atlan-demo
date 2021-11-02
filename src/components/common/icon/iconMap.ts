@@ -43,7 +43,7 @@ import Category from '~/assets/images/icons/category.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
-import CategoryWip from '~/assets/images/icons/category-wip.svg'
+import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
 import ShieldFilled from '~/assets/images/icons/shield-filled.svg'
 import Edit from '~/assets/images/icons/edit.svg'
@@ -226,7 +226,7 @@ export default {
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
-    CategoryWip,
+    CategoryDraft,
     Shield,
     Edit,
     Approve,

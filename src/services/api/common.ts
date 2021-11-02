@@ -3,6 +3,8 @@ import { AsyncStateOptions } from '@vueuse/core'
 import { IConfig } from 'swrv'
 import { AxiosRequestConfig } from 'axios'
 
+export type PathParams = Record<string, string>
+
 export const getAPIPath = (serviceName: string, path = '') =>
     `${serviceName}${path}`
 

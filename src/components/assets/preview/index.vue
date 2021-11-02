@@ -23,7 +23,20 @@
                 </div>
                 <router-link
                     to="/"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
+                    class="
+                        flex-shrink
+                        mb-0
+                        mr-1
+                        overflow-hidden
+                        font-bold
+                        truncate
+                        cursor-pointer
+                        text-md text-primary
+                        hover:underline
+                        overflow-ellipsis
+                        whitespace-nowrap
+                        leadiing-none
+                    "
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -312,9 +325,9 @@
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
-            // activity: defineAsyncComponent(
-            //     () => import('./tabs/activity/activityTab.vue')
-            // ),
+            activity: defineAsyncComponent(
+                () => import('./activity/activityTab.vue')
+            ),
             // chat: defineAsyncComponent(
             //     () => import('./tabs/chat/assetChat.vue')
             // ),
@@ -324,9 +337,9 @@
             // actions: defineAsyncComponent(
             //     () => import('./tabs/actions/actions.vue')
             // ),
-            // lineage: defineAsyncComponent(
-            //     () => import('./tabs/lineage/lineageTab.vue')
-            // ),
+            lineage: defineAsyncComponent(
+                () => import('./lineage/lineageTab.vue')
+            ),
             // businessMetadataTab: defineAsyncComponent(
             //     () => import('./tabs/businessMetadata/businessMetadataTab.vue')
             // ),

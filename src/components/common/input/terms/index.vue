@@ -8,7 +8,21 @@
         >
             <template v-for="term in list" :key="term.termGuid">
                 <div
-                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                    class="
+                        flex
+                        items-center
+                        py-1
+                        pl-1
+                        pr-2
+                        text-gray-700
+                        bg-white
+                        border border-gray-200
+                        rounded-full
+                        cursor-pointer
+                        hover:bg-purple hover:border-purple
+                        group
+                        hover:shadow hover:text-white
+                    "
                 >
                     <!-- <AtlanIcon
                         icon="ShieldFilled"
@@ -46,7 +60,7 @@
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
+    // import OwnerInfoCard from '@/assets/preview/hovercards/ownerInfo.vue'
     // import updateOwners from '~/composables/asset/updateOwners'
 
     // import PillGroup from '~/components/UI/pill/pillGroup.vue'

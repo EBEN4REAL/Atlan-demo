@@ -9,9 +9,12 @@ export function useBody(
     limit?: any,
     facets?: Record<string, any>,
     postFacets?: Record<string, any>,
-    aggregations?: string[]
+    aggregations?: string[],
+    preference?: Record<string, any>
 ) {
     const base = bodybuilder()
+
+    console.log('xxx', facets, postFacets)
 
     if (queryText) {
         base.orQuery('match', 'name', { query: queryText })
@@ -102,6 +105,14 @@ export function useBody(
                 }
                 break
             }
+            case '__traitNames': {
+                if (filterObject) {
+                    if (filterObject.length > 0)
+                        base.filter('terms', '__traitNames', filterObject)
+                }
+
+                break
+            }
             case 'tableQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'tableQualifiedName', filterObject)
@@ -117,6 +128,12 @@ export function useBody(
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)
+                }
+                break
+            }
+            case 'guid': {
+                if (filterObject) {
+                    base.filter('term', '__guid', filterObject)
                 }
                 break
             }
@@ -136,6 +153,14 @@ export function useBody(
                             '__typeName.keyword',
                             filterObject
                         )
+                    }
+                }
+                break
+            }
+            case 'dataType': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', 'dataType', filterObject)
                     }
                 }
                 break
@@ -165,7 +190,7 @@ export function useBody(
                     if (mkey) {
                         base.aggregation(
                             'terms',
-                            'dataType.keyword',
+                            'dataType',
                             { size: 50 },
                             `${agg_prefix}_${mkey}`
                         )
@@ -175,6 +200,22 @@ export function useBody(
             }
         })
     }
+
+    //preferences
+    Object.keys(preference ?? {}).forEach((mkey) => {
+        const filterObject = preference[mkey]
+        switch (mkey) {
+            case 'sort': {
+                if (filterObject !== 'default') {
+                    const split = filterObject.split('-')
+                    if (split.length > 1) {
+                        base.sort(split[0], split[1])
+                    }
+                }
+                break
+            }
+        }
+    })
 
     if (
         !facets?.typeNames?.includes('AtlasGlossary') &&

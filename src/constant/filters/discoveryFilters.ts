@@ -37,7 +37,7 @@ export const discoveryFilters = [
         exclude: false,
     },
     {
-        id: 'classifications',
+        id: '__traitNames',
         label: 'Classifications',
         component: 'classifications',
         overallCondition: 'OR',
@@ -46,9 +46,9 @@ export const discoveryFilters = [
         exclude: false,
     },
     {
-        id: 'advanced',
+        id: 'properties',
         label: 'Properties',
-        component: 'advanced',
+        component: 'properties',
         overallCondition: 'OR',
         isDeleted: false,
         isDisabled: false,

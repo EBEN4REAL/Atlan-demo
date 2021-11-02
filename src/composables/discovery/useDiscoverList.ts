@@ -12,15 +12,16 @@ import { useBody } from './useBody'
 const assetTypeAggregationName = 'group_by_typeName'
 
 interface DiscoverListParams {
-    isCache?: boolean | false,
-    dependentKey?: Ref<any>,
-    queryText?: Ref<any>,
-    facets?: Ref<any>,
-    postFacets?: Ref<any>,
-    aggregations?: Ref<string[]>,
-    limit?: Ref<Number>,
-    offset?: Ref<Number>,
-    attributes?: Ref<string[]>,
+    isCache?: boolean | false
+    dependentKey?: Ref<any>
+    queryText?: Ref<any>
+    facets?: Ref<any>
+    postFacets?: Ref<any>
+    aggregations?: Ref<string[]>
+    limit?: Ref<Number>
+    offset?: Ref<Number>
+    preference?: Ref<any>
+    attributes?: Ref<string[]>
     relationAttributes?: Ref<string[]>
 }
 
@@ -31,6 +32,7 @@ export function useDiscoverList({
     facets,
     postFacets,
     aggregations,
+    preference,
     limit,
     offset = ref(0),
     attributes,
@@ -45,7 +47,8 @@ export function useDiscoverList({
             limit?.value,
             facets?.value,
             postFacets?.value,
-            aggregations?.value
+            aggregations?.value,
+            preference?.value
         )
 
         defaultBody.value = {
@@ -88,15 +91,28 @@ export function useDiscoverList({
         labelList?: any,
         includeWithoutLabel?: Boolean
     ) => {
+        const temp = []
+        if (labelList.length === 0) {
+            aggregationMap(aggregationKey).forEach((element) => {
+                temp.push({
+                    id: element.key,
+                    label: element.key,
+                    count: element.doc_count,
+                })
+            })
+            return temp
+        }
+
         const listMap = aggregationMap(aggregationKey).map((i) =>
             i.key.toLowerCase()
         )
+
         const defaultListMap = labelList.map((i) => i.id.toLowerCase())
 
-        const diff = defaultListMap.filter((d) => !listMap.includes(d))
+        const diff = defaultListMap.filter((d) => listMap.includes(d) === false)
+
         const overlap = defaultListMap.filter((d) => listMap.includes(d))
 
-        const temp = []
         overlap.forEach((item) => {
             const found = labelList.find(
                 (t) => t.id.toLowerCase() === item.toLowerCase()
@@ -108,19 +124,18 @@ export function useDiscoverList({
                 temp.push(found)
             }
         })
-
         if (includeWithoutLabel) {
-            diff.forEach((item) => {
-                temp.push({
-                    id: item,
-                    label: item,
-                    count: aggregationMap(aggregationKey).find(
-                        (i) => i.key.toLowerCase() === item.toLowerCase()
-                    )?.doc_count,
+            if (diff)
+                diff.forEach((item) => {
+                    temp.push({
+                        id: item,
+                        label: item,
+                        count: aggregationMap(aggregationKey).find(
+                            (i) => i.key.toLowerCase() === item.toLowerCase()
+                        )?.doc_count,
+                    })
                 })
-            })
         }
-
         temp.sort((a, b) => {
             if (a.count > b.count) {
                 return -1
@@ -130,17 +145,6 @@ export function useDiscoverList({
             }
             return 0
         })
-        const initialValue = 0
-        const sum = temp.reduce(
-            (accumulator, currentValue) => accumulator + currentValue.count,
-            initialValue
-        )
-        temp.unshift({
-            id: '__all',
-            label: 'All',
-            count: sum,
-        })
-
         return temp
     }
 
@@ -150,10 +154,11 @@ export function useDiscoverList({
 
     const totalCount = computed(() => {
         if (assetTypeAggregationList.value.length > 0) {
-            const all = assetTypeAggregationList.value.find(
-                (i) => i.id === '__all'
+            const type = postFacets?.value.typeName || '__all'
+            const typeName = assetTypeAggregationList.value.find(
+                (i) => i.id === type
             )
-            return all.count || approximateCount.value
+            return typeName?.count || approximateCount.value
         }
         return approximateCount.value
     })
@@ -185,6 +190,7 @@ export function useDiscoverList({
         queryText,
         limit,
         offset,
+        postFacets,
         totalCount,
         aggregationMap,
         getAggregationList,

@@ -7,13 +7,15 @@
             :tabBarGutter="2"
             @change="handleChange"
         >
-            <a-tab-pane v-for="item in list" :key="item.id">
+            <a-tab-pane v-for="item in localList" :key="item.id">
                 <template #tab>
                     <div :class="{ active: item.id === localValue }">
                         <span>{{ item.label }}</span>
-                        <span :class="$style.chip">{{
-                            getCountString(item.count)
-                        }}</span>
+                        <span
+                            :class="$style.chip"
+                            class="ml-1 text-xs font-bold tracking-wide text-gray-400 "
+                            >{{ getCountString(item.count) }}</span
+                        >
                     </div>
                 </template>
             </a-tab-pane>
@@ -25,7 +27,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { getCountString } from '~/utils/number'
 
@@ -50,12 +52,53 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { list } = toRefs(props)
-            const { modelValue: localValue } = useVModels(props, emit)
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+
+            const localList = ref(list.value)
+
+            // const localValue =
+
             const handleChange = () => {
+                modelValue.value = localValue.value
                 emit('change')
             }
+
+            watch(list, (cur, prev) => {
+                console.log('changed', cur, prev)
+
+                const initialValue = 0
+                const sum = list.value.reduce(
+                    (accumulator, currentValue) =>
+                        accumulator + currentValue.count,
+                    initialValue
+                )
+
+                const currentType = localList.value.find(
+                    (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
+                )
+
+                const found = list.value.find(
+                    (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
+                )
+
+                localList.value = list.value
+                if (!found && modelValue.value !== '__all') {
+                    if (currentType) {
+                        currentType.count = 0
+                        localList.value.unshift(currentType)
+                    }
+                }
+
+                localList.value.unshift({
+                    id: '__all',
+                    label: 'All',
+                    count: sum,
+                })
+            })
+
             return {
-                list,
+                localList,
                 localValue,
                 getCountString,
                 handleChange,
@@ -67,11 +110,6 @@
 <style lang="less" module>
     .assetbar {
         .chip {
-            @apply ml-1;
-            @apply tracking-wide;
-            @apply text-xs;
-            @apply font-bold;
-            @apply text-gray-400;
         }
 
         .active {
@@ -125,7 +163,7 @@
         }
 
         :global(.ant-tabs-extra-content) {
-            @apply pb-1 pr-2 mr-2 !important border-r border-gray-200;
+            @apply pb-1 pr-2   !important;
         }
 
         :global(.ant-tabs-tab-arrow-show) {

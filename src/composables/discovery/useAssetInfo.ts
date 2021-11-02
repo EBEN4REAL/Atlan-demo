@@ -9,7 +9,8 @@ import { getCountString, getSizeString } from '~/utils/number'
 // import { SourceList } from '~/constant/source'
 // import { AssetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
-import { previewList } from '~/constant/previewTabs'
+import { previewTabs } from '~/constant/previewTabs'
+import { profileTabs } from '~/constant/profileTabs'
 import { formatDateTime } from '~/utils/date'
 import useDiscoveryStore from '~/store/discovery'
 import { Category, Term } from '~/types/glossary/glossary.interface'
@@ -22,14 +23,15 @@ export default function useAssetInfo() {
     const connectionStore = useConnectionStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
-    const anchorAttributes = (asset: Term | Category) => asset?.attributes?.anchor?.attributes
+    const anchorAttributes = (asset: Term | Category) =>
+        asset?.attributes?.anchor?.attributes
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-            attributes(asset)?.connectorName?.toLowerCase()
+                attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -82,8 +84,8 @@ export default function useAssetInfo() {
         attributes(asset)?.isPartition
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
 
-    const getPreviewTabs = (typeName: string) => {
-        return previewList.filter((i) => {
+    const getTabs = (list, typeName: string) => {
+        return list.filter((i) => {
             let flag = true
             if (i.includes) {
                 if (
@@ -107,8 +109,11 @@ export default function useAssetInfo() {
         })
     }
 
-    const previewTabs = (asset: assetInterface, context: string) => {
-        return getPreviewTabs(assetType(asset))
+    const getPreviewTabs = (asset: assetInterface, context: string) => {
+        return getTabs(previewTabs, assetType(asset))
+    }
+    const getProfileTabs = (asset: assetInterface, context: string) => {
+        return getTabs(profileTabs, assetType(asset))
     }
 
     const getAnchorName = (asset: assetInterface) =>
@@ -194,6 +199,15 @@ export default function useAssetInfo() {
     const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
     const dataTypeCategory = (asset: assetInterface) => {
+        console.log(
+            dataTypeCategoryList.find((item) =>
+                item.type.some(
+                    (i) =>
+                        i.toLowerCase() ===
+                        attributes(asset)?.dataType?.toLowerCase()
+                )
+            )
+        )
         return dataTypeCategoryList.find((item) =>
             item.type.some(
                 (i) =>
@@ -312,10 +326,10 @@ export default function useAssetInfo() {
     //     attributes(asset)?.popularityScore
 
     const ownerGroups = (asset: assetInterface) =>
-        attributes(asset)?.ownerGroups?.split(',') || []
+        attributes(asset)?.ownerGroups || []
 
     const ownerUsers = (asset: assetInterface) =>
-        attributes(asset)?.ownerUsers?.split(',') || []
+        attributes(asset)?.ownerUsers || []
 
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
@@ -334,7 +348,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
-                'N/A'
+                      'N/A'
                 : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
         }
         return ''
@@ -668,7 +682,8 @@ export default function useAssetInfo() {
         rowCount,
         columnCount,
         sizeBytes,
-        previewTabs,
+        getPreviewTabs,
+        getProfileTabs,
         selectedAsset,
         // sizeBytes,
         // createdAt,

@@ -15,7 +15,8 @@
             id="overAssetPreviewSidebar"
             class="relative bg-white asset-preview-container"
         >
-            <AssetPreview :selected-asset="selectedAsset"></AssetPreview>
+            <GlossaryPreview :selected-asset="tempTerm" />
+            <!-- <AssetPreview :selected-asset="selectedAsset"></AssetPreview> -->
         </div>
         <!-- <BulkNotification class="fixed bottom-0 right-0" /> -->
     </div>
@@ -28,7 +29,8 @@
     // import { useRoute, useRouter } from 'vue-router'
     // import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import GlossaryDiscovery from '@/glossary/index.vue'
-    import AssetPreview from '@/discovery/preview/index.vue'
+    import GlossaryPreview from '@/glossary/preview/glossaryPreview.vue'
+    import AssetPreview from '@/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // import BulkSidebar from '@/common/bulk/bulkSidebar.vue'
@@ -49,6 +51,7 @@
         components: {
             // AssetPreview,
             GlossaryDiscovery,
+            GlossaryPreview,
             AssetPreview,
             // BulkSidebar,
             // BulkNotification,
@@ -126,7 +129,49 @@
             //     store,
             // }
 
+            const tempTerm = ref({
+                typeName: 'AtlasGlossaryTerm',
+                attributes: {
+                    sourceCreatedAt: 0,
+                    certificateStatus: 'VERIFIED',
+                    __modifiedBy: 'nitya',
+                    qualifiedName:
+                        'EfIXVR40svdOlYWyvfLjk@ytL2hFWseVCrnw1bODcav',
+                    __state: 'ACTIVE',
+                    meanings: [],
+                    __guid: '68e3d587-995d-4e3d-9dc6-f813d9cc7746',
+                    ownerGroups: '',
+                    certificateUpdatedBy: 'nitya',
+                    sourceUpdatedAt: 0,
+                    __createdBy: 'nitya',
+                    announcementUpdatedAt: 0,
+                    __modificationTimestamp: 1635319049422,
+                    anchor: {
+                        guid: 'a4a86135-040a-4aa9-8f94-d4313cc05356',
+                        typeName: 'AtlasGlossary',
+                        attributes: { name: 'Sales Glossary' },
+                        uniqueAttributes: {
+                            qualifiedName: 'ytL2hFWseVCrnw1bODcav',
+                        },
+                    },
+                    name: 'term 1',
+                    certificateUpdatedAt: 1635318463737,
+                    __timestamp: 1635318400213,
+                    ownerUsers: 'nitya',
+                },
+                guid: '68e3d587-995d-4e3d-9dc6-f813d9cc7746',
+                status: 'ACTIVE',
+                displayText: 'term 1',
+                classificationNames: [],
+                classifications: [],
+                meaningNames: [],
+                meanings: [],
+                isIncomplete: false,
+                labels: [],
+            })
+
             return {
+                tempTerm,
                 isItem,
                 selectedAsset,
             }

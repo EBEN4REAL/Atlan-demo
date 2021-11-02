@@ -1,7 +1,13 @@
 <template>
     <div class="flex w-full">
         <div
-            class="flex flex-col h-full bg-gray-100 border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                bg-gray-100
+                border-r border-gray-300
+                facets
+            "
         >
             <div class="flex items-center w-full border-b border-gray-200">
                 <div class="flex-1">
@@ -54,9 +60,9 @@
     // import { useRouter } from 'vue-router'
     // import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     // import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    // import Preferences from '@/discovery/preference.vue'
-    // import AssetList from '~/components/discovery/list/assetList.vue'
-    // import AssetFilters from '@/discovery/filters/index.vue'
+    // import Preferences from '@/assets/preference.vue'
+    // import AssetList from '@/assets/list/assetList.vue'
+    // import AssetFilters from '@/assets/filters/index.vue'
 
     // import useIndexSearch from '~/composables/discovery/useIndexSearch'
     // import { useAssetListing } from '~/composables/discovery/useAssetListing'

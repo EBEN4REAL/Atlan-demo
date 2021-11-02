@@ -6,15 +6,15 @@
             class="rounded-md"
             :destroyOnClose="true"
             wrapClassName="rounded-md"
-            dialogClass="rounded-md"
             :class="$style.modalStyles"
             :closable="false"
-            @cancel="$emit('closeModal')"
             :mask="false"
+            @cancel="$emit('closeModal')"
         >
             <template #title>
                 <div class="flex items-center px-4">
                     <atlan-icon icon="Search" class="w-auto h-5 mr-1.5" />
+                    <!-- TODO: Uncomment when bringing category filter in  -->
                     <!-- <AssetCategoryFilter
                         v-if="assetCategoryFilter.length"
                         v-model:checked="assetCategoryFilter"
@@ -71,15 +71,17 @@
                     />
                 </div>
             </template>
+            <!-- body starts here -->
             <div v-if="!assetCategoryFilter.length" class="flex flex-col">
                 <span class="px-4 pt-4 pb-2 text-xs text-gray-500"
                     >I’m trying to find...</span
                 >
-                <div class="flex items-center px-4 pb-4 space-x-2">
+                <!-- TODO: Uncomment when bringing category filter in  -->
+                <!-- <div class="flex items-center px-4 pb-4 space-x-2">
                     <template v-for="cat in assetCategoryList" :key="cat.id">
                         <div
                             @click="handleCategoryChipClicked(cat)"
-                            class="flex items-center px-3 py-1 capitalize border rounded cursor-pointer  hover:bg-primary hover:text-white group"
+                            class="flex items-center px-3 py-1 capitalize border rounded cursor-pointer hover:bg-primary hover:text-white group"
                         >
                             <atlan-icon
                                 :icon="cat?.icon"
@@ -88,9 +90,8 @@
                             {{ cat.label }}
                         </div>
                     </template>
-                </div>
+                </div> -->
             </div>
-
             <div class="flex flex-col pt-2 overflow-y-auto max-h-80">
                 <div
                     v-if="!list?.length && queryText.length"
@@ -114,7 +115,7 @@
                     >
                 </div>
                 <div v-for="item in list" v-else :key="item?.guid">
-                    <!-- <div
+                    <div
                         v-if="
                             [
                                 'AtlasGlossary',
@@ -124,11 +125,13 @@
                         "
                         @click="$emit('closeModal')"
                     >
-                        <SearchWidgetCard :item="item" class="px-5" />
-                    </div> -->
+                        <GtcCard :item="item" class="px-5" />
+                    </div>
                     <AssetCard :item="item" @closeModal="$emit('closeModal')" />
                 </div>
             </div>
+            <!-- body ends here  -->
+            <!-- footer starts here -->
             <template #footer>
                 <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
                     <span>
@@ -148,6 +151,7 @@
         watch,
         computed,
         toRefs,
+        Ref,
         nextTick,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
@@ -158,15 +162,14 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    // import { useFilteredTabs } from '@/discovery/useTabMapped.ts'
     import AssetCard from '@/common/commandK/assetCard.vue'
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
-    // import SearchWidgetCard from '@/glossary/home/searchWidgetCard.vue'
+    import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard },
+        components: { AssetCard, GtcCard },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -186,7 +189,6 @@
             const limit = ref(20)
             const offset = ref(0)
             const facets = ref({})
-            const selectedTab = ref('Catalog')
             const inputBox: Ref<null | HTMLInputElement> = ref(null)
             const dependentKey = ref('DEFAULT_TABLE')
             const aggregations = ref(['typeName'])
@@ -202,18 +204,7 @@
             const dynamicSearchPlaceholder = ref(
                 'Search for tables, columns, terms and more...'
             )
-            const assetTypeList = computed(() => {
-                const filteredTabs = AssetTypeList.filter(
-                    (item) => item.isDiscoverable == true
-                )
-                return [
-                    {
-                        id: 'Catalog',
-                        label: 'All',
-                    },
-                    ...filteredTabs,
-                ]
-            })
+
             const assetCategoryFilter = ref([])
             // const applicableTabs: Ref<string[]> = computed(() =>
             //     useFilteredTabs({
@@ -253,16 +244,8 @@
 
             //     replaceBody(initialBody)
             // }
-            const {
-                list,
-                isLoading,
-                assetTypeAggregationList,
-                isLoadMore,
-                isValidating,
-                fetch,
-                quickChange,
-                handleSelectedAsset,
-            } = useDiscoverList(
+            // TODO: switch to named parameter for useDiscoverList composable
+            const { list, quickChange } = useDiscoverList(
                 true,
                 dependentKey,
                 queryText,
@@ -277,26 +260,28 @@
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
-                // tracking.send(events.EVENT_ASSET_SEARCH, {
-                //     trigger: 'discover',
-                // })
+                handleFocusOnInput()
             }, 150)
 
-            function handleCategoryChange() {
-                offset.value = 0
-                quickChange()
+            // TODO: Uncomment when bringing category filters
+            // function handleCategoryChange() {
+            //     offset.value = 0
+            //     quickChange()
+            // }
+            // const getFiltersAppliedString = computed(() =>
+            //     assetCategoryFilter.value.join(', ')
+            // )
+            // const handleCategoryChipClicked = (cat) => {
+            //     assetCategoryFilter.value.push(cat.id)
+            //     handleCategoryChange()
+            // }
+            const handleFocusOnInput = async () => {
+                await nextTick()
+                inputBox.value?.focus()
             }
-            const getFiltersAppliedString = computed(() =>
-                assetCategoryFilter.value.join(', ')
-            )
-            const handleCategoryChipClicked = (cat) => {
-                assetCategoryFilter.value.push(cat.id)
-                handleCategoryChange()
-            }
-            watch(isVisible, async () => {
+            watch(isVisible, () => {
                 if (isVisible.value) {
-                    await nextTick()
-                    inputBox.value?.focus()
+                    handleFocusOnInput()
                 }
             })
             return {
@@ -306,11 +291,9 @@
                 queryText,
                 dynamicSearchPlaceholder,
                 assetCategoryFilter,
-                handleCategoryChange,
-                getFiltersAppliedString,
-                handleCategoryChipClicked,
                 inputBox,
                 assetCategoryList,
+                facets,
             }
         },
     })

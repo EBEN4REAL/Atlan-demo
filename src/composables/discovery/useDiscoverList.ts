@@ -23,7 +23,7 @@ export function useDiscoverList(
     relationAttributes?: Ref<string[]>
 ) {
     const defaultBody = ref({})
-
+    console.log(facets)
     const generateBody = () => {
         const dsl = useBody(
             queryText?.value,
@@ -33,7 +33,7 @@ export function useDiscoverList(
             postFacets?.value,
             aggregations?.value
         )
-
+        console.log(dsl)
         defaultBody.value = {
             dsl,
             attributes: attributes?.value,

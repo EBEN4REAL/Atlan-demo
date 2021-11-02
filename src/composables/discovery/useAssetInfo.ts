@@ -6,7 +6,7 @@ import { useConnectionStore } from '~/store/connection'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { getCountString, getSizeString } from '~/utils/number'
 
-// import { SourceList } from '~/constant/source'
+import { SourceList } from '~/constant/source'
 // import { AssetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/datatype'
 import { previewList } from '~/constant/previewTabs'
@@ -112,22 +112,21 @@ export default function useAssetInfo() {
     const getAnchorName = (asset: assetInterface) =>
         attributes(asset)?.anchor?.attributes.name
 
-    // const logo = (asset: assetInterface) => {
-    //     let img = ''
+    const logo = (asset: assetInterface) => {
+        let img = ''
+        const found = attributes(asset)?.integrationName
+            ? SourceList.find(
+                  (src) => src.id === attributes(asset)?.integrationName
+              )
+            : SourceList.find(
+                  (src) =>
+                      src.id === attributes(asset)?.qualifiedName?.split('/')[1]
+              )
 
-    //     const found = attributes(asset)?.integrationName
-    //         ? SourceList.find(
-    //               (src) => src.id === attributes(asset)?.integrationName
-    //           )
-    //         : SourceList.find(
-    //               (src) =>
-    //                   src.id === attributes(asset)?.qualifiedName?.split('/')[1]
-    //           )
+        if (found) img = found.image
 
-    //     if (found) img = found.image
-
-    //     return img
-    // }
+        return img
+    }
     // const databaseLogo = (asset: assetInterface) => {
     //     let img = ''
     //     const found = SourceList.find(
@@ -660,7 +659,7 @@ export default function useAssetInfo() {
         // dataType,
         // dataTypeImage,
         // description,
-        // logo,
+        logo,
         // integrationName,
         // assetTypeLabel,
         rowCount,

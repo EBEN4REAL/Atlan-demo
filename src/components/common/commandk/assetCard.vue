@@ -4,6 +4,7 @@
             <div
                 class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300  hover:bg-gray-100 hover:border-none"
             >
+                <AssetLogo :asset="item" :textRequired="false" variant="lg" />
                 <div class="flex flex-col flex-1 overflow-hidden lg:pr-16">
                     <!-- Title bar -->
                     <div
@@ -36,6 +37,12 @@
                     <!-- Info bar -->
 
                     <div class="flex items-center text-gray-500 gap-x-2">
+                        <AssetLogo
+                            :asset="item"
+                            :imageRequired="false"
+                            class="text-xs"
+                        />
+
                         <span class="mr-2" style="color: #c4c4c4"> • </span>
                         <div class="flex items-center gap-x-3">
                             <!-- Column dataType -->
@@ -105,6 +112,7 @@
     import { defineComponent, PropType } from 'vue'
     // import HierarchyBar from '@common/badge/hierarchy.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
 
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -114,7 +122,7 @@
         components: {
             // HierarchyBar,
             CertificateBadge,
-            // AssetLogo,
+            AssetLogo,
         },
         props: {
             item: {
@@ -146,6 +154,7 @@
                 const tableGuid = asset?.attributes?.table?.guid
                 return `/assets/${tableGuid}/overview?column=${asset.guid}`
             }
+            console.log(AssetLogo)
             return {
                 isColumnAsset,
                 getColumnUrl,

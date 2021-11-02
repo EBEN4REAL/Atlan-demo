@@ -1,0 +1,25 @@
+<template>
+    <div v-if="data.value === ''" class="mb-3"><b>Description</b> removed</div>
+    <div v-else>
+        <b>Description</b> updated
+        <div class="my-3 text-sm text-gray-500">
+            {{ data.value }}
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { defineComponent, PropType } from 'vue'
+    import { activityInterface } from '~/types/activitylogs/activitylog.interface'
+
+    export default defineComponent({
+        props: {
+            data: {
+                type: Object as PropType<activityInterface>,
+                default() {
+                    return { displayValue: '', value: [] }
+                },
+            },
+        },
+    })
+</script>

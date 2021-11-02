@@ -40,7 +40,10 @@
                             </a-popover>
                         </template>
                         <template #postFilter>
-                            <Preferences />
+                            <PreferenceSelector
+                                v-model="preference"
+                                @change="handleChangePreference"
+                            />
                         </template>
                     </SearchAdvanced>
                 </div>
@@ -111,47 +114,19 @@
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import Preferences from '@/assets/preference/index.vue'
+    import PreferenceSelector from '@/assets/preference/index.vue'
     import AssetList from '@/assets/list/assetList.vue'
     import AssetFilters from '@/assets/filters/index.vue'
 
-    import useIndexSearch from '~/composables/discovery/useIndexSearch'
-    import { useAssetListing } from '~/composables/discovery/useAssetListing'
     import {
         AssetAttributes,
         AssetRelationAttributes,
         InternalAttributes,
         SQLAttributes,
     } from '~/constant/projection'
-    import useEvaluate from '~/composables/auth/useEvaluate'
+
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    // import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
 
-    // import { useAssetListing, useAssetAggregation } from './useAssetListing'
-    // import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
-    // import { AssetTypeList } from '~/constant/assetType'
-    // import {
-    //     BaseAttributes,
-    //     BasicSearchAttributes,
-    //     tableauAttributes,
-    //     SavedQueryAttributes,
-    // } from '~/constant/projection'
-    // // TODO: Uncomment all tracing related code
-    // // import useTracking from '~/modules/tracking'
-
-    // import { decodeQuery, serializeQuery } from '~/utils/helper/routerHelper'
-
-    // import useBusinessMetadataStore from '~/store/businessMetadata'
-    // import { useFilteredTabs } from './useTabMapped'
-    // import useFilterUtils from './filters/useFilterUtils'
-    // import {
-    //     generateAggregationDSL,
-    //     generateAssetQueryDSL,
-    //     generateAssetPostQueryDSL,
-    // } from './useDiscoveryDSL'
-
-    import { assetTypeList } from '~/constant/assetType'
     import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     export default defineComponent({
@@ -161,7 +136,7 @@
             AggregationTabs,
             AssetFilters,
             SearchAdvanced,
-            Preferences,
+            PreferenceSelector,
             EmptyView,
             AtlanIcon,
         },
@@ -178,6 +153,9 @@
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
+            const preference = ref({
+                sort: 'default',
+            })
             const aggregations = ref(['typeName'])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_TABLE')
@@ -208,6 +186,7 @@
                 facets,
                 postFacets,
                 aggregations,
+                preference,
                 limit,
                 offset,
                 attributes: defaultAttributes,
@@ -287,6 +266,10 @@
                 quickChange()
             }
 
+            const handleChangePreference = () => {
+                quickChange()
+            }
+
             return {
                 handleFilterChange,
                 isLoading,
@@ -302,6 +285,8 @@
                 fetch,
                 handleSearchChange,
                 isValidating,
+                preference,
+                handleChangePreference,
             }
         },
         // data() {

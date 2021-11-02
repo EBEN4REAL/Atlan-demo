@@ -4,8 +4,10 @@ import dayjs from "dayjs"
 import { Search } from '~/services/meta/search'
 import { assetInterface } from '~/types/assets/asset.interface'
 import {
-  BaseAttributes,
-  BasicSearchAttributes,
+  AssetAttributes,
+  AssetRelationAttributes,
+  InternalAttributes,
+  SQLAttributes,
 } from '~/constant/projection'
 
 function generateQueryDSL(typeNames, username) {
@@ -24,11 +26,7 @@ export function useAssetListing<T>(
 
   const payload = computed(() => ({
     relationAttributes: [
-      'readme',
-      'displayText',
-      'name',
-      'description',
-      'shortDescription',
+      ...AssetRelationAttributes
     ],
     dsl: {
       size: 10,
@@ -36,8 +34,9 @@ export function useAssetListing<T>(
       ...generateQueryDSL(typeNames, username),
     },
     attributes: [
-      ...BaseAttributes,
-      ...BasicSearchAttributes,
+      ...InternalAttributes,
+      ...AssetAttributes,
+      ...SQLAttributes,
     ],
   }))
 

@@ -25,7 +25,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, defineAsyncComponent } from 'vue'
-    import { allTypeNames } from '~/components/discovery/useTabMapped'
+    //import { allTypeNames } from '~/components/discovery/useTabMapped'
 
     export default defineComponent({
         name: 'YourOrgs',
@@ -44,7 +44,7 @@
                     component: 'AssetList',
                     footer: 'Show all assets',
                     path: '/assets',
-                    typeName: allTypeNames,
+                    typeName: ['Table'],
                     icon: 'NoAssetOrganization',
                     emptyText: 'Your organisation’s assets will appear here.',
                 },

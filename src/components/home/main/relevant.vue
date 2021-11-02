@@ -17,7 +17,7 @@
 <script lang="ts">
     import { defineComponent, ref, defineAsyncComponent } from 'vue'
     import whoami from '~/composables/user/whoami'
-    import { allTypeNames } from '~/components/discovery/useTabMapped'
+    //    import { allTypeNames } from '~/components/discovery/useTabMapped'
 
     export default defineComponent({
         name: 'Relevant',
@@ -44,7 +44,7 @@
                     id: 1,
                     name: 'Your assets',
                     component: 'AssetList',
-                    typeName: allTypeNames,
+                    typeName: ['Table'],
                     icon: 'NoRelevantAsset',
                     emptyText: 'All your assets will appear here.',
                 },

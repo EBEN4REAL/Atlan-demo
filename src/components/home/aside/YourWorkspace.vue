@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed } from 'vue'
+    import { defineComponent, computed } from 'vue'
     import Card from '@/home/shared/card.vue'
-    import { topNavKeys, bottomNavKeys } from '~/constant/navigation'
+    import { topNavKeys, bottomNavKeys } from '~/constant/navigation/workspace'
 
     export default defineComponent({
         name: 'YourWorkspace',
@@ -45,7 +45,7 @@
             }
 
             const worksplaceList = computed(() => {
-                let list: Array<{}> = []
+                let list: Array<any> = []
                 list = topNavKeys.map((i) => ({
                     ...i,
                     ...worksplaceListMeta[i.id],

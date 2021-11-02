@@ -62,11 +62,11 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, PropType } from 'vue'
-    import ListItem from '~/components/discovery/list/listItem.vue'
+    import ListItem from '~/components/assets/list/assetItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAssetListing } from '~/composables/home/useHomeDSL'
-    import redirect from '@/glossary/utils/redirectToProfile'
+    // import redirect from '@/glossary/utils/redirectToProfile'
     import { useRouter } from 'vue-router'
 
     export default defineComponent({
@@ -102,12 +102,11 @@
             const selectedAssetId = ref('')
 
             const router = useRouter()
-            const redirectToProfile = redirect(router)
-
+            /*             const redirectToProfile = redirect(router)
+             */
             const { list, isLoading } = useAssetListing(
                 typeNames.value,
-                username.value,
-                false
+                username.value
             )
 
             function handlePreview(item: any) {
@@ -119,7 +118,8 @@
                         item.typeName === 'AtlasGlossaryTerm' ||
                         item.typeName === 'AtlasGlossaryCategory'
                     ) {
-                        redirectToProfile(item?.typeName, item?.guid)
+                        /*                         redirectToProfile(item?.typeName, item?.guid)
+                         */
                     } else if (item.typeName === 'Query') {
                         router.push(`/insights?id=${item?.guid}`)
                     } else if (item.typeName === 'Column') {

@@ -158,6 +158,9 @@
             Classifications: defineAsyncComponent(
                 () => import('@/common/facet/classification/index.vue')
             ),
+            Properties: defineAsyncComponent(
+                () => import('@/common/facet/properties/index.vue')
+            ),
             AtlanIcon,
         },
         props: {

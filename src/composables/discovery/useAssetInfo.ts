@@ -6,8 +6,8 @@ import { useConnectionStore } from '~/store/connection'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { getCountString, getSizeString } from '~/utils/number'
 
-// import { SourceList } from '~/constant/source'
-// import { AssetTypeList } from '~/constant/assetType'
+import { SourceList } from '~/constant/source'
+import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewTabs } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
@@ -31,7 +31,7 @@ export default function useAssetInfo() {
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-                attributes(asset)?.connectorName?.toLowerCase()
+            attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -56,8 +56,9 @@ export default function useAssetInfo() {
     const connectorName = (asset: assetInterface) =>
         attributes(asset)?.connectorName ?? ''
 
-    // const status = (asset: assetInterface) =>
-    //     attributes(asset)?.certificateStatus
+    const status = (asset: assetInterface) =>
+        attributes(asset)?.certificateStatus
+
     const assetType = (asset: assetInterface) => asset?.typeName
 
     const databaseName = (asset: assetInterface) =>
@@ -73,7 +74,7 @@ export default function useAssetInfo() {
         attributes(asset)?.viewName ?? ''
     // const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
     // const assetTypeLabel = (asset: assetInterface) => {
-    //     const found = AssetTypeList.find((d) => d.id === assetType(asset))
+    //     const found = assetTypeList.find((d) => d.id === assetType(asset))
     //     return found?.label
     // }
     const description = (asset: assetInterface) =>
@@ -119,22 +120,22 @@ export default function useAssetInfo() {
     const getAnchorName = (asset: assetInterface) =>
         attributes(asset)?.anchor?.attributes.name
 
-    // const logo = (asset: assetInterface) => {
-    //     let img = ''
+    const logo = (asset: assetInterface) => {
+        let img = ''
 
-    //     const found = attributes(asset)?.integrationName
-    //         ? SourceList.find(
-    //               (src) => src.id === attributes(asset)?.integrationName
-    //           )
-    //         : SourceList.find(
-    //               (src) =>
-    //                   src.id === attributes(asset)?.qualifiedName?.split('/')[1]
-    //           )
+        const found = attributes(asset)?.integrationName
+            ? SourceList.find(
+                (src) => src.id === attributes(asset)?.integrationName
+            )
+            : SourceList.find(
+                (src) =>
+                    src.id === attributes(asset)?.qualifiedName?.split('/')[1]
+            )
 
-    //     if (found) img = found.image
+        if (found) img = found.image
 
-    //     return img
-    // }
+        return img
+    }
     // const databaseLogo = (asset: assetInterface) => {
     //     let img = ''
     //     const found = SourceList.find(
@@ -348,7 +349,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
-                      'N/A'
+                'N/A'
                 : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
         }
         return ''
@@ -360,253 +361,257 @@ export default function useAssetInfo() {
         return discoveryStore.selectedAsset
     })
 
-    // const getHierarchy = (asset: assetInterface) => {
-    //     const assetType = AssetTypeList.find((a) => a.id == asset?.typeName)
-    //     const relations: any[] = []
+    const getHierarchy = (asset: assetInterface) => {
+        const assetType_ = assetTypeList.find((a) => a.id == asset?.typeName)
+        const relations: any[] = []
 
-    //     if (assetType) {
-    //         const filtered = AssetTypeList.filter((a) =>
-    //             assetType.parents?.includes(a.id)
-    //         )
+        if (assetType_) {
+            const filtered = assetTypeList.filter((a) =>
+                assetType_.parents?.includes(a.id)
+            )
 
-    //         filtered.forEach((f) => {
-    //             relations.push({
-    //                 ...f,
-    //                 guid: asset.guid,
-    //                 qualifiedName: attributes(asset)[f.qualifiedNameAttribute],
-    //                 value: attributes(asset)[f.nameAttribute],
-    //             })
-    //         })
-    //     }
+            filtered.forEach((f) => {
+                relations.push({
+                    ...f,
+                    guid: asset.guid,
+                    qualifiedName: attributes(asset)[f.qualifiedNameAttribute as string],
+                    value: attributes(asset)[f.nameAttribute as string],
+                })
+            })
+        }
 
-    //     return relations
-    // }
-    // const getTableauHierarchy = (asset: assetInterface) => {
-    //     let filteredHierarchy = []
-    //     const hierarchyKeys = [
-    //         {
-    //             id: 'connectionName',
-    //             label: 'Server',
-    //             value: '',
-    //             icon: 'connectionName',
-    //         },
-    //         { id: 'siteName', label: 'Site', value: '', icon: 'SiteName' },
-    //     ]
+        return relations
+    }
 
-    //     /* project */
-    //     const TableauProject: any = []
-    //     // inserting projects if project is nested or not
-    //     const projectHierarchy = attributes(asset)?.projectHierarchy
-    //         ? [...attributes(asset)?.projectHierarchy]
-    //         : []
-    //     projectHierarchy.push({
-    //         id: 'tableauProject',
-    //         label: 'Project',
-    //         value: attributes(asset)?.projectName,
-    //         icon: 'TableauProject',
-    //     })
-    //     const firstProject = projectHierarchy.shift()
-    //     TableauProject.push({
-    //         ...firstProject,
-    //         icon: 'TableauProject',
-    //         label: 'Project',
-    //         subProjects: projectHierarchy,
-    //     })
+    const getTableauHierarchy = (asset: assetInterface) => {
+        let filteredHierarchy = []
+        const hierarchyKeys = [
+            {
+                id: 'connectionName',
+                label: 'Server',
+                value: '',
+                icon: 'connectionName',
+            },
+            { id: 'siteName', label: 'Site', value: '', icon: 'SiteName' },
+        ]
 
-    //     /* -----------------------------*/
+        /* project */
+        const TableauProject: any = []
+        // inserting projects if project is nested or not
+        const projectHierarchy = attributes(asset)?.projectHierarchy
+            ? [...attributes(asset)?.projectHierarchy]
+            : []
+        projectHierarchy.push({
+            id: 'tableauProject',
+            label: 'Project',
+            value: attributes(asset)?.projectName,
+            icon: 'TableauProject',
+        })
+        const firstProject = projectHierarchy.shift()
+        TableauProject.push({
+            ...firstProject,
+            icon: 'TableauProject',
+            label: 'Project',
+            subProjects: projectHierarchy,
+        })
 
-    //     const TableauWorkbook = [
-    //         {
-    //             id: 'tableauWorkbook',
-    //             label: 'Workbook',
-    //             value: attributes(asset).name,
-    //             icon: 'TableauWorkbook',
-    //         },
-    //     ]
-    //     const TableauWorksheet = [
-    //         {
-    //             id: 'tableauWorkbook',
-    //             label: 'Workbook',
-    //             value: attributes(asset).workbookName,
-    //             icon: 'TableauWorkbook',
-    //         },
-    //         {
-    //             id: 'tableauWorksheet',
-    //             label: 'Worksheet',
-    //             value: attributes(asset).name,
-    //             icon: 'TableauWorksheet',
-    //         },
-    //     ]
-    //     const TableauDashboard = [
-    //         {
-    //             id: 'tableauWorkbook',
-    //             label: 'Workbook',
-    //             value: attributes(asset).workbookName,
-    //             icon: 'TableauWorkbook',
-    //         },
-    //         {
-    //             id: 'TableauDashboard',
-    //             label: 'Dashboard',
-    //             value: attributes(asset).name,
-    //             icon: 'TableauDashboard',
-    //         },
-    //     ]
-    //     const TableauEmbeddedDatasource = [
-    //         {
-    //             id: 'tableauWorkbook',
-    //             label: 'Workbook',
-    //             value: attributes(asset).workbookName,
-    //             icon: 'TableauWorkbook',
-    //         },
-    //         {
-    //             id: 'tableauEmbeddedDatasource',
-    //             label: 'Embedded Datasource',
-    //             value: attributes(asset).name,
-    //             icon: 'TableauEmbeddedDatasource',
-    //         },
-    //     ]
-    //     const TableauPublishedDatasource = [
-    //         {
-    //             id: 'tableauWorkbook',
-    //             label: 'Workbook',
-    //             value: attributes(asset).workbookName,
-    //             icon: 'TableauWorkbook',
-    //         },
-    //         {
-    //             id: 'tableauPublishedDatasource',
-    //             label: 'Published Datasource',
-    //             value: attributes(asset).name,
-    //             icon: 'TableauPublishedDatasource',
-    //         },
-    //     ]
-    //     const TableauDatasourceField = [
-    //         {
-    //             id: 'tableauWorkbook',
-    //             label: 'Workbook',
-    //             value: attributes(asset).workbookName,
-    //             icon: 'TableauWorkbook',
-    //         },
-    //         attributes(asset).isPublished
-    //             ? {
-    //                   id: 'tableauPublishedDatasource',
-    //                   label: 'Published Datasource',
-    //                   value: attributes(asset).datasourceName,
-    //                   icon: 'TableauPublishedDatasource',
-    //               }
-    //             : {
-    //                   id: 'tableauEmbeddedDatasource',
-    //                   label: 'Embedded Datasource',
-    //                   value: attributes(asset).datasourceName,
-    //                   icon: 'TableauEmbeddedDatasource',
-    //               },
-    //         {
-    //             id: 'tableauDatasourceField',
-    //             label: 'Tableau DatasourceField',
-    //             value: attributes(asset).name,
-    //             icon: 'TableauDatasourceField',
-    //         },
-    //     ]
+        /* -----------------------------*/
 
-    //     hierarchyKeys.forEach((item) => {
-    //         // console.log(attributes(asset),item.id)
-    //         filteredHierarchy.push({
-    //             id: item.id,
-    //             label: item.label,
-    //             icon: item.icon,
-    //             value: attributes(asset)[item.id] ?? attributes(asset).name,
-    //         })
-    //     })
-    //     switch (asset.typeName) {
-    //         case 'TableauSite': {
-    //             filteredHierarchy = [
-    //                 {
-    //                     id: 'connectionName',
-    //                     label: 'Server',
-    //                     value: attributes(asset).connectionName,
-    //                     icon: 'connectionName',
-    //                 },
-    //                 {
-    //                     id: 'siteName',
-    //                     label: 'Site',
-    //                     value: attributes(asset).name,
-    //                     icon: 'SiteName',
-    //                 },
-    //             ]
-    //             break
-    //         }
-    //         case 'TableauProject': {
-    //             filteredHierarchy = [
-    //                 {
-    //                     id: 'connectionName',
-    //                     label: 'Server',
-    //                     value: attributes(asset).connectionName,
-    //                     icon: 'connectionName',
-    //                 },
-    //                 {
-    //                     id: 'siteName',
-    //                     label: 'Site',
-    //                     value: attributes(asset).siteName,
-    //                     icon: 'SiteName',
-    //                 },
-    //                 {
-    //                     id: 'tableauProject',
-    //                     label: 'Project',
-    //                     value: attributes(asset).name,
-    //                     icon: 'TableauProject',
-    //                 },
-    //             ]
-    //             break
-    //         }
+        const TableauWorkbook = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset).name,
+                icon: 'TableauWorkbook',
+            },
+        ]
+        const TableauWorksheet = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset).workbookName,
+                icon: 'TableauWorkbook',
+            },
+            {
+                id: 'tableauWorksheet',
+                label: 'Worksheet',
+                value: attributes(asset).name,
+                icon: 'TableauWorksheet',
+            },
+        ]
+        const TableauDashboard = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset).workbookName,
+                icon: 'TableauWorkbook',
+            },
+            {
+                id: 'TableauDashboard',
+                label: 'Dashboard',
+                value: attributes(asset).name,
+                icon: 'TableauDashboard',
+            },
+        ]
+        const TableauEmbeddedDatasource = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset).workbookName,
+                icon: 'TableauWorkbook',
+            },
+            {
+                id: 'tableauEmbeddedDatasource',
+                label: 'Embedded Datasource',
+                value: attributes(asset).name,
+                icon: 'TableauEmbeddedDatasource',
+            },
+        ]
+        const TableauPublishedDatasource = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset).workbookName,
+                icon: 'TableauWorkbook',
+            },
+            {
+                id: 'tableauPublishedDatasource',
+                label: 'Published Datasource',
+                value: attributes(asset).name,
+                icon: 'TableauPublishedDatasource',
+            },
+        ]
+        const TableauDatasourceField = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset).workbookName,
+                icon: 'TableauWorkbook',
+            },
+            attributes(asset).isPublished
+                ? {
+                    id: 'tableauPublishedDatasource',
+                    label: 'Published Datasource',
+                    value: attributes(asset).datasourceName,
+                    icon: 'TableauPublishedDatasource',
+                }
+                : {
+                    id: 'tableauEmbeddedDatasource',
+                    label: 'Embedded Datasource',
+                    value: attributes(asset).datasourceName,
+                    icon: 'TableauEmbeddedDatasource',
+                },
+            {
+                id: 'tableauDatasourceField',
+                label: 'Tableau DatasourceField',
+                value: attributes(asset).name,
+                icon: 'TableauDatasourceField',
+            },
+        ]
 
-    //         case 'TableauWorkbook': {
-    //             filteredHierarchy = [...filteredHierarchy, ...TableauProject]
-    //             filteredHierarchy = [...filteredHierarchy, ...TableauWorkbook]
-    //             break
-    //         }
-    //         case 'TableauWorksheet': {
-    //             filteredHierarchy = [...filteredHierarchy, ...TableauProject]
-    //             filteredHierarchy = [...filteredHierarchy, ...TableauWorksheet]
-    //             break
-    //         }
-    //         case 'TableauDashboard': {
-    //             filteredHierarchy = [...filteredHierarchy, ...TableauProject]
-    //             filteredHierarchy = [...filteredHierarchy, ...TableauDashboard]
-    //             break
-    //         }
-    //         case 'TableauDatasourceField': {
-    //             filteredHierarchy = [...filteredHierarchy, ...TableauProject]
-    //             filteredHierarchy = [
-    //                 ...filteredHierarchy,
-    //                 ...TableauDatasourceField,
-    //             ]
-    //             break
-    //         }
-    //         case 'TableauDatasource': {
-    //             // isPublished - true (published datasoruce) or vice versa
-    //             if (attributes(asset).isPublished) {
-    //                 filteredHierarchy = [
-    //                     ...filteredHierarchy,
-    //                     ...TableauProject,
-    //                 ]
-    //                 filteredHierarchy = [
-    //                     ...filteredHierarchy,
-    //                     ...TableauPublishedDatasource,
-    //                 ]
-    //             } else {
-    //                 filteredHierarchy = [
-    //                     ...filteredHierarchy,
-    //                     ...TableauProject,
-    //                 ]
-    //                 filteredHierarchy = [
-    //                     ...filteredHierarchy,
-    //                     ...TableauEmbeddedDatasource,
-    //                 ]
-    //             }
-    //             break
-    //         }
-    //     }
-    //     return filteredHierarchy.filter((item) => item.value !== undefined)
-    // }
+        hierarchyKeys.forEach((item) => {
+            // console.log(attributes(asset),item.id)
+            filteredHierarchy.push({
+                id: item.id,
+                label: item.label,
+                icon: item.icon,
+                value: attributes(asset)[item.id] ?? attributes(asset).name,
+            })
+        })
+        switch (asset.typeName) {
+            case 'TableauSite': {
+                filteredHierarchy = [
+                    {
+                        id: 'connectionName',
+                        label: 'Server',
+                        value: attributes(asset).connectionName,
+                        icon: 'connectionName',
+                    },
+                    {
+                        id: 'siteName',
+                        label: 'Site',
+                        value: attributes(asset).name,
+                        icon: 'SiteName',
+                    },
+                ]
+                break
+            }
+            case 'TableauProject': {
+                filteredHierarchy = [
+                    {
+                        id: 'connectionName',
+                        label: 'Server',
+                        value: attributes(asset).connectionName,
+                        icon: 'connectionName',
+                    },
+                    {
+                        id: 'siteName',
+                        label: 'Site',
+                        value: attributes(asset).siteName,
+                        icon: 'SiteName',
+                    },
+                    {
+                        id: 'tableauProject',
+                        label: 'Project',
+                        value: attributes(asset).name,
+                        icon: 'TableauProject',
+                    },
+                ]
+                break
+            }
+
+            case 'TableauWorkbook': {
+                filteredHierarchy = [...filteredHierarchy, ...TableauProject]
+                filteredHierarchy = [...filteredHierarchy, ...TableauWorkbook]
+                break
+            }
+            case 'TableauWorksheet': {
+                filteredHierarchy = [...filteredHierarchy, ...TableauProject]
+                filteredHierarchy = [...filteredHierarchy, ...TableauWorksheet]
+                break
+            }
+            case 'TableauDashboard': {
+                filteredHierarchy = [...filteredHierarchy, ...TableauProject]
+                filteredHierarchy = [...filteredHierarchy, ...TableauDashboard]
+                break
+            }
+            case 'TableauDatasourceField': {
+                filteredHierarchy = [...filteredHierarchy, ...TableauProject]
+                filteredHierarchy = [
+                    ...filteredHierarchy,
+                    ...TableauDatasourceField,
+                ]
+                break
+            }
+            case 'TableauDatasource': {
+                // isPublished - true (published datasoruce) or vice versa
+                if (attributes(asset).isPublished) {
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauProject,
+                    ]
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauPublishedDatasource,
+                    ]
+                } else {
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauProject,
+                    ]
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauEmbeddedDatasource,
+                    ]
+                }
+                break
+            }
+            default: {
+                break
+            }
+        }
+        return filteredHierarchy.filter((item) => item.value !== undefined)
+    }
 
     // const getTableauProperties = (
     //     asset: Ref<assetInterface> | undefined,
@@ -671,12 +676,12 @@ export default function useAssetInfo() {
         // schemaName,
         // attributes,
         // title,
-        // status,
+        status,
         // assetType,
         // dataType,
         // dataTypeImage,
         // description,
-        // logo,
+        logo,
         // integrationName,
         // assetTypeLabel,
         rowCount,
@@ -705,9 +710,9 @@ export default function useAssetInfo() {
         modifiedBy,
         createdAt,
 
-        // getHierarchy,
+        getHierarchy,
         // getTableauProperties,
-        // getTableauHierarchy,
+        getTableauHierarchy,
         // previewURL,
         // viewDefinition,
         qualifiedName,

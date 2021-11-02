@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue'
 import { useAPI } from '~/services/api/useAPI'
-import { map } from '~/services/meta/entity/key'
+import { map } from '~/services/meta/lineage/key'
 import { generateUUID } from '~/utils/helper/generator'
 import { message } from 'ant-design-vue'
 

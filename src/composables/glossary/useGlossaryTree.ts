@@ -64,12 +64,13 @@ const useGlossaryTree = ({
         error,
         isLoading,
         refetch,
-    } = useGtcEntity<Glossary | Term | Category>(
-        'glossary',
-        parentGlossaryGuid,
-        false,
-        false
-    )
+    } = useGtcEntity<Glossary | Term | Category>({
+        type: 'glossary',
+        entityGuid: parentGlossaryGuid,
+        cache: false,
+        watchForGuidChange: false
+    
+    })
 
     const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
     const {

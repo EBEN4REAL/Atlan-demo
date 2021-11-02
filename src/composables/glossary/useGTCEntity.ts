@@ -10,20 +10,27 @@ import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 // import { List as StatusList } from '~/constant/status'
 // import useBusinessMetadataStore from '~/store/businessMetadata'
 
+interface parameters {
+type:
+    | 'glossary'
+    | 'category'
+    | 'term'
+    | Ref<'glossary' | 'category' | 'term'>,
+entityGuid: Ref<string>,
+cache?: boolean | string,
+watchForGuidChange: boolean
+}
+
 /*
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on
  * the type
  */
-const useGTCEntity = <T extends Glossary | Category | Term>(
-    type:
-        | 'glossary'
-        | 'category'
-        | 'term'
-        | Ref<'glossary' | 'category' | 'term'>,
-    entityGuid: Ref<string>,
-    cache?: boolean | string,
-    watchForGuidChange: boolean = true
-) => {
+const useGTCEntity = <T extends Glossary | Category | Term>({
+type,
+entityGuid,
+cache,
+watchForGuidChange,
+}) => {
     const body = ref({})
 
     const relatedTerms = [

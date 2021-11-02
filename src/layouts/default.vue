@@ -44,6 +44,10 @@
                     />
                 </div>
                 <div class="w-full">
+                    <CmndK
+                        :isCmndKVisible="isCmndKVisible"
+                        @closeModal="isCmndKVisible = false"
+                    />
                     <router-view />
                 </div>
             </a-layout-content>
@@ -56,22 +60,44 @@
 <script lang="ts">
     import { defineComponent, ref } from 'vue'
     import { useRouter } from 'vue-router'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     import NavMenu from '@/common/layout/navMenu.vue'
     import SidePanel from '@/common/layout/sidePanel.vue'
+    import CmndK from '~/components/common/commandk/cmndK.vue'
 
     export default defineComponent({
         name: 'Default Layout',
         components: {
             NavMenu,
             SidePanel,
+            CmndK,
         },
         setup() {
             const router = useRouter()
             const showNavbar = ref(false)
             const { currentRoute } = router
-
             const activeKey = ref('')
+            // shortcuts for comand k
+            const keys = useMagicKeys()
+            const { control, meta, meta_K } = keys
+            const keyK = keys.K
+            const isCmndKVisible = ref<boolean>(false)
+            const showModal = () => {
+                isCmndKVisible.value = true
+            }
+            // watch for shortcut keys for command k
+            whenever(keyK, () => {
+                if (
+                    (keyK.value && control.value) ||
+                    (keyK.value && meta.value)
+                ) {
+                    showModal()
+                    keyK.value = false
+                    meta.value = false
+                    control.value = false
+                }
+            })
 
             const handleToggleNavbar = () => {
                 showNavbar.value = !showNavbar.value
@@ -87,6 +113,7 @@
                 showNavbar,
                 handleClick,
                 currentRoute,
+                isCmndKVisible,
             }
         },
     })

@@ -199,6 +199,15 @@ export default function useAssetInfo() {
     const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
     const dataTypeCategory = (asset: assetInterface) => {
+        console.log(
+            dataTypeCategoryList.find((item) =>
+                item.type.some(
+                    (i) =>
+                        i.toLowerCase() ===
+                        attributes(asset)?.dataType?.toLowerCase()
+                )
+            )
+        )
         return dataTypeCategoryList.find((item) =>
             item.type.some(
                 (i) =>
@@ -317,10 +326,10 @@ export default function useAssetInfo() {
     //     attributes(asset)?.popularityScore
 
     const ownerGroups = (asset: assetInterface) =>
-        attributes(asset)?.ownerGroups?.split(',') || []
+        attributes(asset)?.ownerGroups || []
 
     const ownerUsers = (asset: assetInterface) =>
-        attributes(asset)?.ownerUsers?.split(',') || []
+        attributes(asset)?.ownerUsers || []
 
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus

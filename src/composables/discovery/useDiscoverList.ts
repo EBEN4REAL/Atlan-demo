@@ -88,15 +88,28 @@ export function useDiscoverList({
         labelList?: any,
         includeWithoutLabel?: Boolean
     ) => {
+        const temp = []
+        if (labelList.length === 0) {
+            aggregationMap(aggregationKey).forEach((element) => {
+                temp.push({
+                    id: element.key,
+                    label: element.key,
+                    count: element.doc_count,
+                })
+            })
+            return temp
+        }
+
         const listMap = aggregationMap(aggregationKey).map((i) =>
             i.key.toLowerCase()
         )
+
         const defaultListMap = labelList.map((i) => i.id.toLowerCase())
 
-        const diff = defaultListMap.filter((d) => !listMap.includes(d))
+        const diff = defaultListMap.filter((d) => listMap.includes(d) === false)
+
         const overlap = defaultListMap.filter((d) => listMap.includes(d))
 
-        const temp = []
         overlap.forEach((item) => {
             const found = labelList.find(
                 (t) => t.id.toLowerCase() === item.toLowerCase()
@@ -109,15 +122,16 @@ export function useDiscoverList({
             }
         })
         if (includeWithoutLabel) {
-            diff.forEach((item) => {
-                temp.push({
-                    id: item,
-                    label: item,
-                    count: aggregationMap(aggregationKey).find(
-                        (i) => i.key.toLowerCase() === item.toLowerCase()
-                    )?.doc_count,
+            if (diff)
+                diff.forEach((item) => {
+                    temp.push({
+                        id: item,
+                        label: item,
+                        count: aggregationMap(aggregationKey).find(
+                            (i) => i.key.toLowerCase() === item.toLowerCase()
+                        )?.doc_count,
+                    })
                 })
-            })
         }
         temp.sort((a, b) => {
             if (a.count > b.count) {

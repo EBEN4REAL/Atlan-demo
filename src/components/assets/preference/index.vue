@@ -2,25 +2,7 @@
     <div class="flex flex-col py-1 rounded gap-y-3 preference-container">
         <div class="flex items-center justify-between">
             <p class="mb-1 text-sm text-gray-500">Sort By</p>
-            <a-select
-                v-model:value="sorting"
-                class="text-gray-500"
-                style="width: 135px"
-                @change="handeChangeSorting"
-            >
-                <template #suffixIcon>
-                    <AtlanIcon
-                        icon="ChevronDown"
-                        class="text-gray-500 custom-icon-drop"
-                    />
-                </template>
-
-                <template v-for="item in sortList" :key="item.id">
-                    <a-select-option :value="item.id">{{
-                        item.label
-                    }}</a-select-option>
-                </template>
-            </a-select>
+            <Sorting></Sorting>
         </div>
         <div class="pt-3">
             <p class="mb-2 text-sm text-gray-500">Status</p>
@@ -65,6 +47,8 @@
 <script lang="ts">
     import { defineComponent, Ref, ref } from 'vue'
 
+    import Sorting from '@/common/select/sorting.vue'
+
     import { sortList } from '~/constant/sorting'
 
     import { displayProperties } from '~/constant/displayProperties'
@@ -72,6 +56,9 @@
     import { assetStatusList } from '~/constant/assetStatus'
 
     export default defineComponent({
+        components: {
+            Sorting,
+        },
         props: {
             defaultProjection: {
                 type: Array,

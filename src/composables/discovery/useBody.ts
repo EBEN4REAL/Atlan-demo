@@ -156,6 +156,14 @@ export function useBody(
                 }
                 break
             }
+            case 'dataType': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', 'dataType', filterObject)
+                    }
+                }
+                break
+            }
         }
     })
     base.rawOption('post_filter', postFilter.build().query)
@@ -181,7 +189,7 @@ export function useBody(
                     if (mkey) {
                         base.aggregation(
                             'terms',
-                            'dataType.keyword',
+                            'dataType',
                             { size: 50 },
                             `${agg_prefix}_${mkey}`
                         )

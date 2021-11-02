@@ -57,7 +57,7 @@ export default function useIndexSearch<T>(
         return 0
     })
 
-    const aggregationMap = (key, isNested) => {
+    const aggregationMap = (key, isNested?) => {
         if (data?.value?.aggregations) {
             if (data?.value?.aggregations[key]) {
                 if (isNested) {

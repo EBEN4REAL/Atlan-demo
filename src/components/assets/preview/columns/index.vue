@@ -6,6 +6,7 @@
                 :autofocus="true"
                 :placeholder="`Search ${totalCount} columns`"
                 class=""
+                @change="handleSearchChange"
             >
                 <template #postFilter>
                     <Preferences />
@@ -19,6 +20,7 @@
             class="mt-2"
             v-model="postFacets.dataType"
             :list="columnDataTypeAggregationList"
+            @change="handleDataTypeChange"
         ></AggregationTabs>
 
         <AssetList
@@ -32,7 +34,7 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import { debouncedWatch } from '@vueuse/core'
+    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Preferences from '@/assets/preference/index.vue'
 
@@ -46,6 +48,7 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { dataTypeCategoryList } from '~/constant/dataType'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -94,6 +97,20 @@
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 
+            const updateFacet = () => {
+                facets.value = {}
+                if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
+                    facets.value.tableQualifiedName =
+                        selectedAsset?.value.attributes.qualifiedName
+                }
+                if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
+                    facets.value.viewQualifiedName =
+                        selectedAsset?.value.attributes.qualifiedName
+                }
+            }
+
+            updateFacet()
+
             const {
                 list,
                 isLoading,
@@ -134,29 +151,30 @@
             //         )
             //     }
             // )
+
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
                 (prev, current) => {
                     if (prev) {
-                        if (
-                            selectedAsset?.value.typeName?.toLowerCase() ===
-                            'table'
-                        ) {
-                            facets.value.tableQualifiedName =
-                                selectedAsset?.value.attributes.qualifiedName
-                        }
-                        if (
-                            selectedAsset?.value.typeName?.toLowerCase() ===
-                            'view'
-                        ) {
-                            facets.value.viewQualifiedName =
-                                selectedAsset?.value.attributes.qualifiedName
-                        }
+                        updateFacet()
                         quickChange()
                     }
                 },
                 { debounce: 100 }
             )
+
+            const handleDataTypeChange = () => {
+                offset.value = 0
+                quickChange()
+            }
+
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                quickChange()
+                // tracking.send(events.EVENT_ASSET_SEARCH, {
+                //     trigger: 'discover',
+                // })
+            }, 150)
 
             return {
                 isLoading,
@@ -170,6 +188,9 @@
                 fetch,
                 quickChange,
                 totalCount,
+                updateFacet,
+                handleDataTypeChange,
+                handleSearchChange,
             }
         },
     })

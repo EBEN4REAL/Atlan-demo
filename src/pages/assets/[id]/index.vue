@@ -7,7 +7,7 @@
                 :key="tab.name"
                 :tab="tab.name"
             >
-                adasd
+                <Readme :entity="selectedAsset" />
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -18,6 +18,7 @@
     import { useRoute } from 'vue-router'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import Readme from '@common/readme/index.vue'
 
     import AssetHeader from '@/assets/profile/header/index.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -31,6 +32,7 @@
     export default defineComponent({
         components: {
             AssetHeader,
+            Readme,
         },
         setup() {
             const { selectedAsset, getProfileTabs } = useAssetInfo()

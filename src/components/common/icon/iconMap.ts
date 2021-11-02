@@ -9,6 +9,8 @@ import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
+import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
+import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
@@ -23,7 +25,9 @@ import DatabaseGray from '~/assets/images/icons/database-gray.svg'
 import Schema from '~/assets/images/icons/schema.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
+import TableGray from '~/assets/images/icons/table-gray.svg'
 import View from '~/assets/images/icons/view.svg'
+import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
@@ -39,7 +43,7 @@ import Category from '~/assets/images/icons/category.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
-import CategoryWip from '~/assets/images/icons/category-wip.svg'
+import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
 import ShieldFilled from '~/assets/images/icons/shield-filled.svg'
 import Edit from '~/assets/images/icons/edit.svg'
@@ -55,7 +59,6 @@ import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
-
 import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
@@ -200,11 +203,16 @@ export default {
     Database,
     Schema,
     Table,
+    TableGray,
+    View,
+    ViewGray,
     Notification,
     NotificationDot,
     ArrowDown,
     Connection,
     ChevronRight,
+    NoRelevantAsset,
+    NoAssetOrganization,
     AddUser,
     Link,
     Add,
@@ -218,7 +226,7 @@ export default {
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
-    CategoryWip,
+    CategoryDraft,
     Shield,
     Edit,
     Approve,

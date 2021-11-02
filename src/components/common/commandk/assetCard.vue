@@ -42,6 +42,7 @@
                             :imageRequired="false"
                             class="text-xs"
                         />
+                        <HierarchyBar :selected-asset="item" />
 
                         <span class="mr-2" style="color: #c4c4c4"> • </span>
                         <div class="flex items-center gap-x-3">
@@ -79,26 +80,7 @@
                                 "
                                 class="flex text-xs text-gray-500"
                             >
-                                <span
-                                    v-if="
-                                        ['table', 'tablepartition'].includes(
-                                            item.typeName.toLowerCase()
-                                        )
-                                    "
-                                    class="flex mr-2 space-x-2 text-gray-500"
-                                    ><span
-                                        class="mr-1 tracking-wide text-gray"
-                                        >{{ rowCount(item, false) }}</span
-                                    >
-                                    Rows</span
-                                >
-                                <span class="flex space-x-2 text-gray-500">
-                                    <span
-                                        class="mr-1 tracking-wide text-gray"
-                                        >{{ columnCount(item, false) }}</span
-                                    >
-                                    Cols</span
-                                >
+                                <RowsColumnCount :item="item" />
                             </div>
                         </div>
                     </div>
@@ -110,19 +92,21 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    // import HierarchyBar from '@common/badge/hierarchy.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
 
+    import HierarchyBar from '@common/badge/hierarchy.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import RowsColumnCount from '@/common/info/rowsColumnCount.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
-            // HierarchyBar,
+            HierarchyBar,
             CertificateBadge,
             AssetLogo,
+            RowsColumnCount,
         },
         props: {
             item: {

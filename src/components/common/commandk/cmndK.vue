@@ -206,47 +206,8 @@
             )
 
             const assetCategoryFilter = ref([])
-            // const applicableTabs: Ref<string[]> = computed(() =>
-            //     useFilteredTabs({
-            //         connector: facets.value?.connector,
-            //         category: assetCategoryFilter.value,
-            //     })
-            // )
-
-            // const { list, replaceBody, isLoading } = useAssetListing('', false)
-
-            // const updateBody = () => {
-            //     console.log('updating')
-            //     const initialBody = {
-            //         relationAttributes: [
-            //             'readme',
-            //             'displayText',
-            //             'name',
-            //             'description',
-            //             'shortDescription',
-            //         ],
-            //         dsl: {
-            //             size: limit.value,
-            //             from: offset.value,
-            //             ...generateAssetQueryDSL(
-            //                 facets.value,
-            //                 queryText.value,
-            //                 selectedTab.value,
-            //                 applicableTabs.value
-            //             ),
-            //         },
-            //         attributes: [
-            //             ...BaseAttributes,
-            //             ...BasicSearchAttributes,
-            //             ...tableauAttributes,
-            //         ],
-            //     }
-
-            //     replaceBody(initialBody)
-            // }
-            // TODO: switch to named parameter for useDiscoverList composable
-            const { list, quickChange } = useDiscoverList(
-                true,
+            const { list, quickChange } = useDiscoverList({
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -254,9 +215,10 @@
                 aggregations,
                 limit,
                 offset,
-                defaultAttributes,
-                relationAttributes
-            )
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
+
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()

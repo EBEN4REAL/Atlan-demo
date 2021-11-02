@@ -17,10 +17,12 @@
 </template>
 
 <script lang="ts">
-    type variant = 'lg' | 'sm'
     import { defineComponent, PropType, computed, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
+    type variant = 'lg' | 'sm'
+
     export default defineComponent({
         name: 'AssetIcon',
         props: {
@@ -31,6 +33,7 @@
             variant: {
                 type: String as PropType<variant>,
                 required: false,
+                default: '',
             },
             imageRequired: {
                 type: Boolean,
@@ -54,8 +57,6 @@
             const color = computed(() => (selected.value ? '#fff' : '#fff'))
             const text = computed(() => asset.value?.typeName)
             const logoSrc = computed(() => logo(asset.value))
-            console.log(asset)
-            console.log(logo)
             return { color, logoSrc, text }
         },
     })

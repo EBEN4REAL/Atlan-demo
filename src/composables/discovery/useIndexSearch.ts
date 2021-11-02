@@ -4,10 +4,10 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import axios from 'axios'
 
-import { Discovery } from '~/services/meta/discovery'
+import { Search } from '~/services/meta/search'
 import { useOptions } from '~/services/api/common'
 
-export default function useIndexSearch(
+export default function useIndexSearch<T>(
     body: Record<string, any> | Ref<Record<string, any>>,
     dependentKey?: Ref<any>,
     isCache?: boolean,
@@ -48,7 +48,7 @@ export default function useIndexSearch(
     }
 
     const { data, mutate, error, isLoading, isValidating } =
-        Discovery.IndexSearch(body, options)
+        Search.IndexSearch<T>(body, options)
 
     const approximateCount = computed(() => {
         if (data?.value?.approximateCount) {
@@ -57,7 +57,7 @@ export default function useIndexSearch(
         return 0
     })
 
-    const aggregationMap = (key, isNested) => {
+    const aggregationMap = (key, isNested?) => {
         if (data?.value?.aggregations) {
             if (data?.value?.aggregations[key]) {
                 if (isNested) {

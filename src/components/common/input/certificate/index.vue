@@ -1,5 +1,5 @@
 <template>
-    <div class="text-xs text-gray-500">
+    <div class="text-xs text-gray-500" v-if="status">
         <div class="flex items-center justify-between mb-1 text-sm">
             <span> Certificate</span>
             <span class="text-primary">edit</span>
@@ -98,6 +98,7 @@
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
+        name: 'CertificateWidget',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col justify-between text-xs text-gray-500">
-        <p class="mb-1 text-sm" v-if="includeLabel">Owners</p>
+        <p v-if="includeLabel" class="mb-1 text-sm">Owners</p>
 
         <div v-if="includeCreator" class="flex">
             <UserPill :username="createdBy(selectedAsset)"></UserPill>
@@ -21,7 +21,21 @@
 
             <template v-for="name in ownerGroups(selectedAsset)" :key="name">
                 <div
-                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-primary group hover:border-primary hover:shadow"
+                    class="
+                        flex
+                        items-center
+                        py-1
+                        pl-1
+                        pr-2
+                        text-gray-700
+                        bg-white
+                        border border-gray-200
+                        rounded-full
+                        cursor-pointer
+                        hover:bg-primary
+                        group
+                        hover:border-primary hover:shadow
+                    "
                 >
                     <AtlanIcon
                         icon="Group"
@@ -34,7 +48,13 @@
         <div v-if="ownerUsers.length < 1 && ownerGroups.length < 1">
             <div v-if="editPermission" @click.stop="toggleOwnerPopover">
                 <div
-                    class="flex items-center cursor-pointer  text-primary hover:underline"
+                    class="
+                        flex
+                        items-center
+                        cursor-pointer
+                        text-primary
+                        hover:underline
+                    "
                 >
                     <span class="text-xs">Add owners</span>
                 </div>
@@ -63,14 +83,14 @@
     import UserPill from '@/common/avatar/userPill.vue'
 
     // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
+    // import OwnerInfoCard from '@/assets/preview/hovercards/ownerInfo.vue'
     // import updateOwners from '~/composables/asset/updateOwners'
 
     // import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     // import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
-    // import { assetInterface } from '~/types/assets/asset.interface'
+    import { assetInterface } from '~/types/assets/asset.interface'
     // import { groupInterface } from '~/types/groups/group.interface'
     // import { userInterface } from '~/types/users/user.interface'
     // import emptyScreen from '~/assets/images/empty_search.png'
@@ -79,10 +99,11 @@
     // import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
+        name: 'OwnersWidget',
         components: { UserAvatar, UserPill },
         props: {
             selectedAsset: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
             editPermission: {

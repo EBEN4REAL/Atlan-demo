@@ -43,7 +43,7 @@
                         class="border-r border-gray-200"
                     />
                 </div>
-                <div class="w-full">
+                <div class="w-full overflow-auto">
                     <router-view />
                 </div>
             </a-layout-content>

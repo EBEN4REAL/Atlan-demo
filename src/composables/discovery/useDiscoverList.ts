@@ -20,6 +20,7 @@ interface DiscoverListParams {
     aggregations?: Ref<string[]>
     limit?: Ref<Number>
     offset?: Ref<Number>
+    preference?: Ref<any>
     attributes?: Ref<string[]>
     relationAttributes?: Ref<string[]>
 }
@@ -31,6 +32,7 @@ export function useDiscoverList({
     facets,
     postFacets,
     aggregations,
+    preference,
     limit,
     offset = ref(0),
     attributes,
@@ -45,7 +47,8 @@ export function useDiscoverList({
             limit?.value,
             facets?.value,
             postFacets?.value,
-            aggregations?.value
+            aggregations?.value,
+            preference?.value
         )
 
         defaultBody.value = {

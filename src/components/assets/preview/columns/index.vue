@@ -9,7 +9,11 @@
                 @change="handleSearchChange"
             >
                 <template #postFilter>
-                    <Preferences />
+                    <Preferences
+                        assetType="Column"
+                        v-model="preference"
+                        @change="handleChangePreference"
+                    />
                 </template>
             </SearchAdvanced>
         </div>
@@ -95,6 +99,9 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
             ])
+            const preference = ref({
+                sort: 'order-asc',
+            })
             const relationAttributes = ref([...AssetRelationAttributes])
 
             const updateFacet = () => {
@@ -127,6 +134,7 @@
                 facets,
                 postFacets,
                 aggregations,
+                preference,
                 limit,
                 offset,
                 attributes: defaultAttributes,
@@ -176,6 +184,10 @@
                 // })
             }, 150)
 
+            const handleChangePreference = () => {
+                quickChange()
+            }
+
             return {
                 isLoading,
                 queryText,
@@ -191,6 +203,8 @@
                 updateFacet,
                 handleDataTypeChange,
                 handleSearchChange,
+                preference,
+                handleChangePreference,
             }
         },
     })

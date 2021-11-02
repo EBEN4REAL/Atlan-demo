@@ -9,7 +9,8 @@ export function useBody(
     limit?: any,
     facets?: Record<string, any>,
     postFacets?: Record<string, any>,
-    aggregations?: string[]
+    aggregations?: string[],
+    preference?: Record<string, any>
 ) {
     const base = bodybuilder()
 
@@ -199,6 +200,22 @@ export function useBody(
             }
         })
     }
+
+    //preferences
+    Object.keys(preference ?? {}).forEach((mkey) => {
+        const filterObject = preference[mkey]
+        switch (mkey) {
+            case 'sort': {
+                if (filterObject !== 'default') {
+                    const split = filterObject.split('-')
+                    if (split.length > 1) {
+                        base.sort(split[0], split[1])
+                    }
+                }
+                break
+            }
+        }
+    })
 
     if (
         !facets?.typeNames?.includes('AtlasGlossary') &&

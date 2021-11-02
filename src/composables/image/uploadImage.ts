@@ -29,7 +29,7 @@ export default function useUploadImage() {
 
     const { data, isLoading, error, mutate } = useAPI<uploadImageData>(map.UPLOAD_IMAGE, "POST", {
         body: formData,
-    }, {})
+    }, { asyncOptions: { immediate: false } })
 
     const upload = (image: File, name?: string) => {
         const formDataObject = new FormData();

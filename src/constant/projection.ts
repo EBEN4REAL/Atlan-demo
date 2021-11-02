@@ -41,6 +41,7 @@ export const AssetAttributes = [
     'ownerUsers',
     'ownerGroups',
     'meanings',
+    'readme',
 ]
 
 export const SQLAttributes = [
@@ -57,6 +58,10 @@ export const SQLAttributes = [
 
 export const GlossaryRelationAttributes = ['name']
 
-export const AssetRelationAttributes = ['certificateStatus']
+export const AssetRelationAttributes = ['certificateStatus', 'readme',
+    'displayText',
+    'name',
+    'description',
+    'shortDescription',]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

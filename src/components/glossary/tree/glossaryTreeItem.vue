@@ -18,7 +18,7 @@
         @click="
             () =>
                 redirectToProfile(
-                    entity.type,
+                    entity.typeName,
                     entity.key
                 )
         "
@@ -68,10 +68,12 @@
         PropType,
         toRefs
     } from 'vue'
+    import { useRouter } from 'vue-router'
 
     import { Glossary, Term, Category } from '~/types/glossary/glossary.interface'
 
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
         props: {
@@ -84,11 +86,14 @@
         setup(props, { emit }) {
             // data
             const { entity } = toRefs(props)
+            const router = useRouter()
+            const redirectToProfile = redirect(router)
 
 
             return {
                 entity,
-                getEntityStatusIcon
+                getEntityStatusIcon,
+                redirectToProfile
             }
         },
     })

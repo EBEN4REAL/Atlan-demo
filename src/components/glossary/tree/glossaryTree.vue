@@ -185,7 +185,6 @@
         ref,
         toRef,
         watch,
-        inject,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
@@ -227,11 +226,6 @@
             },
         },
         props: {
-            glossaryList: {
-                type: Object as PropType<Glossary[]>,
-                required: true,
-                default: () => [],
-            },
             isHome: {
                 type: Boolean,
                 required: true,
@@ -302,33 +296,7 @@
             // data
             const searchQuery = ref<string>('')
             const home = toRef(props, 'isHome')
-            const parentGlossary = toRef(props, 'parentGlossary')
-            const glossaryList = toRef(props, 'glossaryList')
-            const currentGlossaryGuid = ref<string>(
-                parentGlossary.value?.guid ?? 'all'
-            )
-            const glossaryContextDropdown = computed(() => {
-                const list = glossaryList.value.map((glossary) => ({
-                    value: glossary.guid,
-                    label: glossary.attributes.name,
-                    status: glossary.attributes.certificateStatus,
-                }))
-                list.unshift({ label: 'Home', value: 'all', status: undefined })
-                list.push({
-                    label: 'Create New Glossary',
-                    value: 'createNewGlossary',
-                    status: undefined
-                })
-                return list
-            })
-
-            const refetchGlossaryList = inject('refetchGlossaryList', () => {})
-
             const router = useRouter()
-
-            const glossaryContextOpen = ref(
-                router.currentRoute.value.query.cta === 'glossaryContext'
-            )
 
             const parentGlossaryQualifiedName = computed(() =>
                 home.value
@@ -366,24 +334,13 @@
             watch(home, () => {
                 searchQuery.value = ''
             })
-            watch(currentGlossaryGuid, (newGuid) => {
-                if (newGuid && newGuid !== parentGlossary.value?.guid) {
-                    if (newGuid === 'all') router.push(`/glossary`)
-                    else redirectToProfile('glossary', newGuid)
-                }
-            })
-
-            watch(parentGlossary, (newParentGlossary) => {
-                if(newParentGlossary?.guid)
-                    currentGlossaryGuid.value = newParentGlossary.guid
-            })
+ 
 
             return {
                 redirectToProfile,
                 backToHome,
                 // StatusList,
                 getEntityStatusIcon,
-                glossaryContextDropdown,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,
@@ -396,9 +353,6 @@
                 searchLoading,
                 searchAssetsPaginated,
                 onSearch,
-                currentGlossaryGuid,
-                refetchGlossaryList,
-                glossaryContextOpen,
             }
         },
     })

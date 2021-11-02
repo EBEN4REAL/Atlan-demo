@@ -5,7 +5,6 @@ import { message } from 'ant-design-vue'
 
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
-import useGlossaryList from '~/composables/glossary/useGlossaryList'
 import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
 
 import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'

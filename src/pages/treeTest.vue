@@ -1,5 +1,6 @@
 <template>
     <div class="z-20">
+        <glossaryContextSwitcher v-model:currentGlossaryGuid="parentGlossaryGuid" />
         <glossaryTree
             :glossaryList="[]"
             :is-home="true"
@@ -24,6 +25,7 @@
 
     // components
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
+    import glossaryContextSwitcher from '@/glossary/tree/glossaryContextSwitcher.vue'
 
     // composables
     import useGlossaryTree from '~/composables/glossary/useGlossaryTree'
@@ -37,13 +39,14 @@
     export default defineComponent({
         components: {
             glossaryTree,
+            glossaryContextSwitcher
         },
         props: ['id', 'class'],
         setup(props, { emit }) {
             useHead({
                 title: 'Glossary',
             })
-
+            const parentGlossaryGuid = ref('69e06f30-fb85-44b6-b16e-874814deba79')
 
             const {
                 treeData,
@@ -60,7 +63,7 @@
             } = useGlossaryTree({
                 emit,
                 filterMode: true,
-                parentGlossaryGuid: ref(''),
+                parentGlossaryGuid,
             })
          
 
@@ -76,6 +79,7 @@
                 collapseAll,
                 dragAndDropNode,
                 selectedKeys,
+                parentGlossaryGuid
             }
         },
     })

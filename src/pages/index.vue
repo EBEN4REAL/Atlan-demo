@@ -1,5 +1,5 @@
 <template>
-    <div class="grid h-full max-w-5xl grid-cols-6 mx-auto">
+    <div class="grid h-full max-w-5xl grid-cols-6 mx-auto overflow-y-auto">
         <section class="flex items-center h-24 col-span-6 gap-4">
             <span class="text-lg">Good morning, {{getNameInTitleCase(name)}}!</span>
         </section>

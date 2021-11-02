@@ -13,7 +13,7 @@
 
         <div
             id="overAssetPreviewSidebar"
-            class="relative bg-white asset-preview-container"
+            class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:hidden lg:block"
         >
             <AssetPreview :selected-asset="selectedAsset"></AssetPreview>
         </div>

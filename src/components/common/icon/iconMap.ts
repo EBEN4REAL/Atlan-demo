@@ -9,6 +9,8 @@ import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
+import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
+import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
@@ -57,7 +59,6 @@ import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
-
 import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
@@ -210,6 +211,8 @@ export default {
     ArrowDown,
     Connection,
     ChevronRight,
+    NoRelevantAsset,
+    NoAssetOrganization,
     AddUser,
     Link,
     Add,

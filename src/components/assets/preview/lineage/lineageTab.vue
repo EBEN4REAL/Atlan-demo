@@ -40,7 +40,14 @@
             >
                 <template #header>
                     <div
-                        class="flex items-center text-sm font-bold select-none  header"
+                        class="
+                            flex
+                            items-center
+                            text-sm
+                            font-bold
+                            select-none
+                            header
+                        "
                     >
                         {{ stream.name }}
 
@@ -105,8 +112,8 @@
     import emptyScreen from '~/assets/images/empty_search.png'
 
     // Services
-    import useLineageService from '~/services/atlas/lineage/lineage_service'
-    
+    import useLineageService from '~/services/meta/lineage/lineage_service'
+
     export default defineComponent({
         name: 'LineagePreviewTab',
         components: { AssetList, Preferences, SearchAndFilter },

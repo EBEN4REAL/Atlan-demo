@@ -52,9 +52,9 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
+    import { computed, defineComponent, ref, watch } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     // import { useRoute, useRouter } from 'vue-router'
     // import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import GlossaryDiscovery from '@/glossary/index.vue'
@@ -70,8 +70,13 @@
     // import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
     // import useDiscoveryStore from '~/store/discovery'
     // import { storeToRefs } from 'pinia'
+    
+    // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryTree from '~/composables/glossary/useGlossaryTree'
+    import useGTCEntity from '~/composables/glossary/useGTCEntity'
+
+    import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
     // export interface initialFiltersType {
     //     facetsFilters: any
@@ -90,14 +95,34 @@
         },
         setup(props, { emit }) {
             useHead({
-                title: 'Assets',
+                title: 'Glossary',
             })
             // const storeDiscovery = useDiscoveryStore()
             // const { selectedAsset } = storeToRefs(storeDiscovery)
-            // const router = useRouter()
+            const router = useRouter()
             const route = useRoute()
+    
             const isItem = computed(() => route.params.id)
-            const parentGlossaryGuid = ref('69e06f30-fb85-44b6-b16e-874814deba79')
+            
+            const currentGuid = ref(route.params.id)
+
+            const {
+                entity,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                statusMessage,
+                isLoading,
+                refetch,
+                parentGlossaryGuid,
+            } = useGTCEntity<Glossary | Term | Category>({
+                entityGuid: currentGuid,
+                cache: false,
+                watchForGuidChange: true
+            })
+
 
             const {
                 treeData,
@@ -114,8 +139,12 @@
                 parentGlossary
             } = useGlossaryTree({
                 emit,
-                filterMode: true,
+                filterMode: false,
                 parentGlossaryGuid,
+            })
+
+            watch(router.currentRoute, (newRoute) => {
+                currentGuid.value = newRoute.params.id as string
             })
 
             const { selectedAsset } = useAssetInfo()
@@ -239,7 +268,8 @@
                 dragAndDropNode,
                 selectedKeys,
                 parentGlossaryGuid,
-                parentGlossary
+                parentGlossary,
+                title
             }
         },
     })

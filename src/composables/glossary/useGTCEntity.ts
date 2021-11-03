@@ -16,7 +16,7 @@ type:
     | 'term'
     | Ref<'glossary' | 'category' | 'term'>,
 entityGuid: Ref<string>,
-cache?: boolean | string,
+cache?: boolean,
 watchForGuidChange: boolean
 }
 
@@ -100,7 +100,7 @@ watchForGuidChange,
         error,
         isValidating: isLoading,
         mutate,
-    } = useIndexSearch<Glossary | Term | Category>(body)
+    } = useIndexSearch<Glossary | Term | Category>(body, entityGuid, cache)
 
     const entity = ref<Glossary | Term | Category>()
 

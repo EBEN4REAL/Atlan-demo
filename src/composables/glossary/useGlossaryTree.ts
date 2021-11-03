@@ -29,7 +29,7 @@ interface UseTreeParams {
 const useGlossaryTree = ({
     emit,
     optimisticUpdate = true,
-    filterMode,
+    filterMode = false,
     cacheKey,
     isAccordion,
     parentGlossaryGuid,
@@ -1217,6 +1217,7 @@ const useGlossaryTree = ({
                 parentGlossary.value = newEntity
                 treeData.value = []
                 initTreeData(parentGlossary.value?.guid, parentGlossary.value?.attributes?.qualifiedName)
+                selectedKeys.value = [route.params.id as string]
             }
         }
     })

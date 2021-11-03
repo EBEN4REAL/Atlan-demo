@@ -67,13 +67,7 @@
     import { defineComponent, ref, watch, computed } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
-    import {
-        useEditor,
-        EditorContent,
-        BubbleMenu,
-        Editor,
-        VueRenderer,
-    } from '@tiptap/vue-3'
+    import { useEditor, EditorContent, BubbleMenu, Editor } from '@tiptap/vue-3'
     import StarterKit from '@tiptap/starter-kit'
     import Underline from '@tiptap/extension-underline'
     import Link from '@tiptap/extension-link'
@@ -177,7 +171,7 @@
                     }
                 }
             }
-            // <p style="text-align: center">https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg</p><img src='https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg' imagewidth='30'/>
+
             const editor = useEditor({
                 content: props.content,
                 editable: false,
@@ -235,31 +229,7 @@
             watch(editable, (newEditable) => {
                 editor.value?.setEditable(newEditable)
             })
-            // watch(customWidth, (width) => {
-            //   if (editor.value) {
-            //     let transaction = editor.value.state.tr;
-            //     const { node } = transaction.selection;
-            //     if (node && node.type.name === "image") {
-            //       const currentCursorPosition = transaction.selection.from;
-            //       // node.attrs.style = `width: ${
-            //       //   widthOption.value === 1 ? 100 : customWidth.value
-            //       // }% !important; height: auto !important;`;
-            //       node.attrs.imageWidth = widthOption.value === 1 ? 100 : width;
 
-            //       transaction = transaction?.setNodeMarkup(
-            //         currentCursorPosition,
-            //         undefined,
-            //         {
-            //           ...node.attrs,
-            //         }
-            //       );
-            //       console.log(transaction);
-            //       editor.value.view.dispatch(transaction);
-            //       editor.value.state.apply(transaction);
-
-            //     }
-            //   }
-            // });
             return {
                 editor,
                 showImageBubble,

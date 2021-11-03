@@ -1,6 +1,6 @@
 <template>
     <iframe
-        src="https://staging.atlan.com/api/observe/d/TFHNXCk7k/atlan-service-overview?orgId=1&refresh=1m&kiosk"
+        src="https://beta.atlan.com/api/observe/d/TFHNXCk7k/atlan-service-overview?orgId=1&refresh=1m&kiosk"
     ></iframe>
     <Health />
 </template>

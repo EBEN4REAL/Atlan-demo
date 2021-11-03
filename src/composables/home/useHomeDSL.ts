@@ -59,6 +59,37 @@ export function useAssetListing<T>(
   }
 }
 
+export function getAggregations<T>(
+  typeNames?: string[]
+) {
+
+  const query = bodybuilder().filter('terms', '__typeName.keyword', typeNames).size(0)
+    .aggregation(
+      'terms',
+      '__typeName.keyword',
+      { size: 50 },
+      'group_by_typeName'
+    ).build()
+
+  const list: Ref<any[]> = ref([])
+  const { data, isLoading } = Search.IndexSearch<assetInterface>(
+    { dsl: query }, {}
+  )
+
+  watch(data, () => {
+    if (data.value?.aggregations?.group_by_typeName?.buckets) {
+      list.value = [...data.value?.aggregations?.group_by_typeName?.buckets]
+    } else {
+      list.value = []
+    }
+  })
+
+  return {
+    list,
+    isLoading,
+  }
+}
+
 /*
 export function useRecentTerms() {
   const lastSevenDaysTimestamp = dayjs().subtract(7, "day").valueOf()

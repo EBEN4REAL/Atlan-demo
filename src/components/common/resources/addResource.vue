@@ -44,9 +44,10 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAddResource from '~/composables/resources/useAddResource'
 
     export default defineComponent({
         components: {},
@@ -56,9 +57,12 @@
                 required: true,
             },
         },
-        setup() {
+        setup(props) {
             const popoverVisible = ref(false)
+            const { asset } = toRefs(props)
+
             const { title } = useAssetInfo()
+
             const link = ref('')
             // FIXME: Add a link meta parser for title and favicon
             const favicon = 'https://vuejs.org/images/logo.svg'
@@ -71,6 +75,12 @@
             }
 
             function handleAdd() {
+                const { newResource } = useAddResource(
+                    asset.value,
+                    linkText.value
+                )
+
+                newResource()
                 popoverVisible.value = false
                 link.value = ''
                 linkText.value = ''

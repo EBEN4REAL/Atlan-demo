@@ -1,10 +1,8 @@
 import { reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
-import { useAPI } from '~/services/api/useAPI'
-import { Components } from '~/api/atlas/client'
-import { map } from '~/services/meta/entity/key'
 import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 import { eventMap } from '~/constant/events'
+import { Entity } from '~/services/meta/entity'
 
 
 const useAssetAudit = (params: any, guid: string) => {
@@ -17,13 +15,7 @@ const useAssetAudit = (params: any, guid: string) => {
     })
 
     const fetchAudits = (p: any, g: string) => {
-        const { data, error, isLoading } = useAPI<
-            Components.Schemas.EntityAuditEventV2[]
-        >(map.GET_ASSET_AUDIT, 'GET', {
-            params: p,
-            pathVariables: { guid: g },
-
-        }, {})
+        const { data, error, isLoading } = Entity.fetchAudits(p, g)
         response.audits = data
         response.error = error
         response.isLoading = isLoading
@@ -32,12 +24,7 @@ const useAssetAudit = (params: any, guid: string) => {
     }
 
     const fetchMoreAudits = (fetchmoreParams: any) => {
-        const { data, isLoading, error } = useAPI<
-            Components.Schemas.EntityAuditEventV2[]
-        >(map.GET_ASSET_AUDIT, 'GET', {
-            params: fetchmoreParams,
-            pathVariables: { guid },
-        }, {})
+        const { data, isLoading, error } = Entity.fetchMoreAudits(fetchmoreParams, guid)
 
         response.isFetchingMore = isLoading
 

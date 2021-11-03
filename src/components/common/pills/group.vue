@@ -26,9 +26,4 @@
     }
 </script>
 
-<style>
-    .test {
-        height: 100%;
-        width: 100%;
-    }
-</style>
+<style></style>

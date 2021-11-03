@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
         <div class="px-2 py-1 border-b border-gray-200">
             <SearchAdvanced
                 v-model:value="queryText"
@@ -29,6 +29,7 @@
 
         <AssetList
             ref="assetlistRef"
+            class="overflow-y-auto"
             :list="list"
             :isLoadMore="isLoadMore"
             :isLoading="isLoading"

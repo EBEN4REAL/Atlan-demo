@@ -1,9 +1,21 @@
 <template>
-    <div class="flex flex-col w-full px-5 pt-4 gap-y-4">
+    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-4">
         <div class="flex items-center justify-between mb-1 text-sm">
             <span> Owners</span>
         </div>
-        <OwnersInline v-model="owners"></OwnersInline>
+        <OwnersInline
+            v-model="owners"
+            :guid="selectedAsset.guid"
+        ></OwnersInline>
+
+        <div class="flex items-center justify-between mb-1 text-sm">
+            <span> Classifications</span>
+        </div>
+
+        <ClassificationInline
+            v-model="classificationValue"
+            :guid="selectedAsset.guid"
+        ></ClassificationInline>
     </div>
 </template>
 
@@ -23,7 +35,7 @@
     import Description from '@/common/input/description/index.vue'
     import OwnersInline from '@/common/input/owner/inline.vue'
     import Certificate from '@/common/input/certificate/index.vue'
-    import Classification from '@/common/input/classification/index.vue'
+    import ClassificationInline from '@/common/input/classification/inline.vue'
     import Terms from '@/common/input/terms/index.vue'
     import CertificationPopover from '@/assets/preview/popover/certification.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -44,7 +56,7 @@
             Description,
             // Status,
             OwnersInline,
-            Classification,
+            ClassificationInline,
             // Query,
             Certificate,
             RowInfoHoverCard,
@@ -93,12 +105,17 @@
                 sourceUpdatedAt,
                 sourceCreatedAt,
                 definition,
+                classifications,
             } = useAssetInfo()
 
             const owners = ref({
                 ownerUsers: ownerUsers(selectedAsset.value),
                 ownerGroups: ownerGroups(selectedAsset.value),
             })
+
+            const classificationValue = computed(() =>
+                classifications(selectedAsset.value)
+            )
 
             watch(selectedAsset, () => {
                 owners.value = {
@@ -174,6 +191,7 @@
             }
 
             return {
+                selectedAsset,
                 // rows,
                 // cols,
                 // sourceUpdated,
@@ -184,11 +202,13 @@
                 // format,
                 // selectedAsset,
                 // displaySQL,
+                classificationValue,
                 isSelectedAssetHaveRowsAndColumns,
                 title,
                 getConnectorImage,
                 assetType,
                 rowCount,
+                classifications,
                 sizeBytes,
                 dataType,
                 columnCount,

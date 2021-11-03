@@ -58,6 +58,8 @@
         setup() {
             const { selectedAsset, getProfileTabs } = useAssetInfo()
 
+            const refs: { [key: string]: any } = ref({})
+
             const userHasEditPermission = ref<boolean>(true)
 
             const activeKey = ref('')
@@ -137,6 +139,7 @@
             }
 
             return {
+                refs,
                 userHasEditPermission,
                 handlePreview,
                 selectedAsset,

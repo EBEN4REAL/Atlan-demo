@@ -30,7 +30,6 @@
                                 <template #content
                                     ><AssetFilters
                                         :key="dirtyTimestamp"
-                                        v-model="facets"
                                         :isAccordion="true"
                                         @change="handleFilterChange"
                                     ></AssetFilters
@@ -161,7 +160,7 @@
             })
             const aggregations = ref(['typeName'])
             const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_TABLE')
+            const dependentKey = ref('DEFAULT_ASSET_LIST')
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
@@ -178,6 +177,8 @@
             if (!facets.value.typeName) {
                 facets.value.typeName = '__all'
             }
+
+            console.log('facets assets list', facets.value)
 
             const {
                 list,
@@ -233,9 +234,9 @@
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
-                // tracking.send(events.EVENT_ASSET_SEARCH, {
-                //     trigger: 'discover',
-                // })
+                tracking.send(events.EVENT_ASSET_SEARCH, {
+                    trigger: 'discover',
+                })
             }, 150)
 
             // const handleChangePreferences = (payload: any) => {

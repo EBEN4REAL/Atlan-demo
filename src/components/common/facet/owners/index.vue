@@ -46,7 +46,7 @@
                 :query-text="queryText"
             ></Groups>
         </div>
-        <div class="px-4 pt-1">
+        <div class="px-4 pt-1" v-if="showNoOwners">
             <a-checkbox
                 :value="null"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
@@ -100,11 +100,19 @@
                     return {}
                 },
             },
+            showNoOwners: {
+                type: Boolean,
+                default() {
+                    return true
+                },
+            },
         },
         emits: ['change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+
+            const { showNoOwners } = toRefs(props)
 
             const componentType = ref('users')
 
@@ -145,6 +153,7 @@
                 placeholder,
                 queryText,
                 localValue,
+                showNoOwners,
             }
         },
     })

@@ -2,17 +2,17 @@
     <div class="flex flex-wrap gap-1 text-sm">
         <a-popover placement="leftBottom" class="owner-popover">
             <template #content>
-                <OwnerFacets></OwnerFacets>
+                <OwnerFacets v-model="localValue"></OwnerFacets>
             </template>
             <a-button shape="circle" class="text-center">
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-for="username in localValue?.users" :key="username">
+        <template v-for="username in localValue?.ownerUsers" :key="username">
             <UserPill :username="username" :allowDelete="true"></UserPill>
         </template>
 
-        <template v-for="name in localValue?.groups" :key="name">
+        <template v-for="name in localValue?.ownerGroups" :key="name">
             <GroupPill :name="name"></GroupPill>
         </template>
     </div>
@@ -46,12 +46,14 @@
                 required: false,
             },
         },
-        // emits: ['update:modelValue', 'change'],
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-
-            console.log(modelValue.value)
             const localValue = ref(modelValue.value)
+
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             return {
                 localValue,

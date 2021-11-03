@@ -8,7 +8,7 @@ import { InternalAttributes, AssetAttributes } from '~/constant/projection'
 import { Category, Glossary, Term } from '~/types/glossary/glossary.interface'
 
 interface parameters {
-    qualifiedName?: ComputedRef<string>,
+    qualifiedName?: Ref<string>,
     dependantFetchingKey?: Ref<any>,
     type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm' | string[],
     limit?: number,

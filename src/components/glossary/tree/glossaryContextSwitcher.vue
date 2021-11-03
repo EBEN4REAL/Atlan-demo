@@ -142,13 +142,13 @@
                 return list
             });
 
-            watch(currentGlossaryGuid, (newGuid) => {
-                // if(newGuid && newGuid !== currentGlossaryGuid.value) {
+            watch(currentGlossaryGuid, (newGuid, prevGuid) => {
+                if(newGuid && newGuid !== prevGuid && prevGuid) {
                     if (newGuid === 'all') router.push(`/glossary`)
                     else { 
                         redirectToProfile('AtlasGlossary', newGuid)
                     }
-                // }
+                }
             });
 
             return {

@@ -13,8 +13,8 @@
                     <SearchAdvanced
                         v-model:modelValue="searchQuery"
                         :placeholder="
-                            parentGlossary?.displayText
-                                ? `Search in ${parentGlossary?.displayText}`
+                            parentGlossaryTitle
+                                ? `Search in ${parentGlossaryTitle}`
                                 : 'Search'
                         "
                         size="minimal"
@@ -34,7 +34,7 @@
                     v-else-if="!isLoading && !searchQuery?.length"
                     class="h-full mt-2"
                 >
-                                    <div
+                    <div
                         class="flex justify-between px-4  hover:bg-black hover:bg-opacity-5"
                     >
 
@@ -46,7 +46,7 @@
                                 @click="
                                     redirectToProfile(
                                         'glossary',
-                                        parentGlossary.guid
+                                        parentGlossaryGuid
                                     )
                                 "
                             >
@@ -55,12 +55,11 @@
                                     :class="{
                                         'text-primary':
                                             currentGuid ===
-                                            parentGlossary?.guid,
+                                            parentGlossaryGuid,
                                     }"
                                 >
                                     {{
-                                        parentGlossary?.displayText ??
-                                        parentGlossary?.attributes?.name
+                                        parentGlossaryTitle
                                     }}
                                 </span>
                             </div>
@@ -347,11 +346,11 @@
                 required: false,
                 default: () => {},
             },
-            parentGlossary: {
-                type: Object as PropType<Glossary>,
-                required: false,
-                default: () => {},
-            },
+            // parentGlossary: {
+            //     type: Object as PropType<Glossary>,
+            //     required: false,
+            //     default: () => {},
+            // },
             isLoading: {
                 type: Boolean,
                 required: false,
@@ -374,6 +373,21 @@
             },
             parentGlossaryGuid: {
                 type: String,
+                required: true,
+                default: '',
+            },
+            parentGlossaryQualifiedName: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            parentGlossaryTitle: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            currentGuid: {
+                type: String,
                 required: false,
                 default: '',
             }
@@ -385,11 +399,7 @@
             const{ parentGlossaryGuid }= useVModels(props, emit)
             const router = useRouter()
 
-            const parentGlossaryQualifiedName = computed(() =>
-                home.value
-                    ? ''
-                    : props?.parentGlossary?.attributes?.qualifiedName ?? ''
-            )
+            const { parentGlossaryQualifiedName, parentGlossaryTitle } = toRefs(props)
 
             const {
                 entities: searchResults,
@@ -441,6 +451,7 @@
                 searchAssetsPaginated,
                 onSearch,
                 parentGlossaryGuid,
+                parentGlossaryTitle
             }
         },
     })

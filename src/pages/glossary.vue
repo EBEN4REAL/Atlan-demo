@@ -21,8 +21,10 @@
                 :selected-keys="selectedKeys"
                 :expanded-keys="expandedKeys"
                 :collapse-all="collapseAll"
-                :parent-glossary="parentGlossary"
                 v-model:parentGlossaryGuid="parentGlossaryGuid"
+                :parentGlossaryQualifiedName="parentGlossaryQualifiedName"
+                :parentGlossaryTitle="parentGlossaryTitle"
+                :currentGuid="currentGuid"
             />        
         </pane>
 
@@ -117,6 +119,8 @@
                 isLoading,
                 refetch,
                 parentGlossaryGuid,
+                parentGlossaryQualifiedName,
+                parentGlossaryTitle
             } = useGTCEntity<Glossary | Term | Category>({
                 entityGuid: currentGuid,
                 cache: false,
@@ -136,11 +140,11 @@
                 selectedKeys,
                 reInitTree,
                 collapseAll,
-                parentGlossary
             } = useGlossaryTree({
                 emit,
                 filterMode: false,
                 parentGlossaryGuid,
+                parentGlossaryQualifiedName,
             })
 
             watch(router.currentRoute, (newRoute) => {
@@ -268,8 +272,10 @@
                 dragAndDropNode,
                 selectedKeys,
                 parentGlossaryGuid,
-                parentGlossary,
-                title
+                parentGlossaryQualifiedName,
+                parentGlossaryTitle,
+                title,
+                currentGuid
             }
         },
     })

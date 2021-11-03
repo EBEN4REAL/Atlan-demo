@@ -4,7 +4,7 @@
 >
     <!-- Glossary context switcher -->
     <a-select
-        v-model:value="guid"
+        v-model:value="currentGlossaryGuid"
         :open="glossaryContextOpen"
         :options="glossaryContextDropdown"
         :dropdownMatchSelectWidth="true"
@@ -123,7 +123,6 @@
             const glossaryStore = useGlossaryStore();
 
             const { currentGlossaryGuid } = useVModels(props, emit)
-            const guid = ref(currentGlossaryGuid.value)
             
             const glossaryContextOpen = ref(
                 router.currentRoute.value.query.cta === 'glossaryContext'
@@ -143,12 +142,11 @@
                 return list
             });
 
-            watch(guid, (newGuid) => {
+            watch(currentGlossaryGuid, (newGuid) => {
                 // if(newGuid && newGuid !== currentGlossaryGuid.value) {
                     if (newGuid === 'all') router.push(`/glossary`)
                     else { 
                         redirectToProfile('AtlasGlossary', newGuid)
-                        currentGlossaryGuid.value = newGuid
                     }
                 // }
             });
@@ -159,7 +157,6 @@
                 currentGlossaryGuid,
                 glossaryContextOpen,
                 glossaryContextDropdown,
-                guid
             }
         },
     })

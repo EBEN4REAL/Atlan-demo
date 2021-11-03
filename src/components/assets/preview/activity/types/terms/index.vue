@@ -1,8 +1,5 @@
 <template>
-    <div>
-        <b>Term </b
-        >{{ data.displayValue === 'termAdded' ? 'added' : 'removed' }}
-    </div>
+    <div><b>Term </b>{{ data.displayValue }}</div>
     <div class="my-3">
         <Pill :label="data.value"
             ><template #prefix>
@@ -19,6 +16,8 @@
     import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({
+        name: 'TermsActivity',
+
         components: { Pill },
 
         props: {

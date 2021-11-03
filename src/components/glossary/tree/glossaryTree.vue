@@ -2,9 +2,10 @@
     <div class="border-r glossaryTree" :class="$style.glossaryTree">
         <div :class="$style.parentGroup">
             
+            <GlossaryContextSwitcher v-model:currentGlossaryGuid="parentGlossaryGuid" />
 
-            <glossaryContextSwitcher v-model:currentGlossaryGuid="parentGlossaryGuid" />
-
+            <hr />
+            
             <div class="flex flex-col h-screen">
 
                 <!-- Search bar -->
@@ -33,6 +34,81 @@
                     v-else-if="!isLoading && !searchQuery?.length"
                     class="h-full mt-2"
                 >
+                                    <div
+                        class="flex justify-between px-4  hover:bg-black hover:bg-opacity-5"
+                    >
+
+                        <!-- Glossary level CTAs -->
+                        <div class="flex items-center ml-5 pl-0.5">
+                            <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+                            <div
+                                class="flex justify-start w-full cursor-pointer"
+                                @click="
+                                    redirectToProfile(
+                                        'glossary',
+                                        parentGlossary.guid
+                                    )
+                                "
+                            >
+                                <span
+                                    class="flex py-2 my-auto text-sm font-bold leading-3 truncate "
+                                    :class="{
+                                        'text-primary':
+                                            currentGuid ===
+                                            parentGlossary?.guid,
+                                    }"
+                                >
+                                    {{
+                                        parentGlossary?.displayText ??
+                                        parentGlossary?.attributes?.name
+                                    }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex content-center my-auto  tree-glossary-actioans parent-group-hover"
+                        >
+                            <div
+                                v-if="expandedKeys.length"
+                                class="flex w-6 h-6 bg-opacity-0 cursor-pointer  py-auto"
+                                @click="collapseAll"
+                            >
+                                <AtlanIcon
+                                    class="m-auto"
+                                    icon="TreeCollapseAll"
+                                />
+                            </div>
+                            <div
+                                class="flex flex-col justify-center bg-opacity-0 "
+                            >
+                                <!-- <AddCta
+                                    class="w-6 h-6 ml-0.5"
+                                    :entity="parentGlossary"
+                                /> -->
+                                <AtlanIcon
+                                    class="m-auto ml-0.5"
+                                    icon="Add"
+                                />
+
+                            </div>
+                            <div
+                                class="flex flex-col justify-center bg-opacity-0 "
+                            >
+                                <!-- <ThreeDotMenu
+                                    class="w-6 h-6 ml-0.5"
+                                    :entity="parentGlossary"
+                                    :showLinks="false"
+                                    :treeMode="true"
+                                /> -->
+                                <AtlanIcon
+                                    class="m-auto ml-0.5"
+                                    icon="KebabMenu"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Tree Start -->
                     <div 
                         v-if="treeData.length"
@@ -106,14 +182,17 @@
                                     <span class="text-md">{{
                                         term?.displayText
                                     }}</span>
-                                    <Tooltip
+                                    <!-- <Tooltip
                                         v-if="term.attributes.shortDescription"
                                         :tooltip-text="
                                             term.attributes.shortDescription
                                         "
                                         :rows="1"
                                         classes="w-auto text-gray-500 text-xs"
-                                    />
+                                    /> -->
+                                    <span v-if="term.attributes.shortDescription">
+                                        {{ term.attributes.shortDescription }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +225,7 @@
                                     <span class="text-md">{{
                                         category?.displayText
                                     }}</span>
-                                    <Tooltip
+                                    <!-- <Tooltip
                                         v-if="
                                             category.attributes.shortDescription
                                         "
@@ -155,7 +234,10 @@
                                         "
                                         :rows="1"
                                         classes="w-auto text-gray-500 text-xs"
-                                    />
+                                    /> -->
+                                    <span v-if="category.attributes.shortDescription">
+                                        {{ category.attributes.shortDescription }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -201,7 +283,7 @@
     // import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import GlossaryTreeItem from '@/glossary/tree/glossaryTreeItem.vue'
-    import glossaryContextSwitcher from '@/glossary/tree/glossaryContextSwitcher.vue'
+    import GlossaryContextSwitcher from '@/glossary/tree/glossaryContextSwitcher.vue'
 
     // composables
     import useGtcSearch from '~/composables/glossary/useGtcSearch'
@@ -226,7 +308,7 @@
             // AddGtcModal,
             SearchAdvanced,
             GlossaryTreeItem,
-            glossaryContextSwitcher,
+            GlossaryContextSwitcher,
   
         },
         props: {

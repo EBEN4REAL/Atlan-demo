@@ -1,8 +1,5 @@
 <template>
-    <div>
-        <b>Classification </b
-        >{{ data.displayValue === 'classificationAdded' ? 'added' : 'removed' }}
-    </div>
+    <div><b>Classification </b>{{ data.displayValue }}</div>
     <div class="my-3">
         <Pill :label="data.value"
             ><template #prefix>
@@ -19,6 +16,8 @@
     import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({
+        name: 'ClassificationActivity',
+
         components: { Pill },
         props: {
             data: {

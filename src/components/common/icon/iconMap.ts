@@ -176,6 +176,7 @@ import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
+import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 
 export default {
     IssuesFilled,
@@ -356,4 +357,5 @@ export default {
     ShieldFilled,
     DatabaseGray,
     SchemaGray,
+    NoResultsFound,
 }

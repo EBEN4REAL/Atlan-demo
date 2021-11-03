@@ -1,14 +1,7 @@
 <template>
     <div>
         <div
-            class="
-                flex
-                justify-between
-                px-4
-                py-2
-                mb-6
-                border-b border-gray-light
-            "
+            class="flex justify-between px-4 py-2 mb-6 border-b  border-gray-light"
         >
             <span class="font-semibold text-gray-700 text-md">Activity</span>
 
@@ -22,8 +15,11 @@
             v-if="isLoading"
             class="flex items-center justify-center text-sm leading-none"
         >
-            <a-spin size="small" class="mr-2 leading-none"></a-spin
-            ><span>Getting activity logs</span>
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-5 animate-spin"
+            ></AtlanIcon>
+            <span class="ml-1">Getting activity logs</span>
         </div>
         <div v-else-if="audits.length && !isLoading">
             <a-timeline class="mx-4">
@@ -34,14 +30,16 @@
                         ></div>
                     </template>
                     <div>
-                        <div v-if="getDetailsForEntityAuditEvent(log)">
-                            <activity-type
+                        <template
+                            v-if="getDetailsForEntityAuditEvent(log)?.component"
+                        >
+                            <ActivityType
                                 :data="getDetailsForEntityAuditEvent(log)"
                             />
-                        </div>
-                        <div v-else>
-                            {{ getEventByAction(log).label || 'Event' }}
-                        </div>
+                        </template>
+                        <template v-else>
+                            {{ getEventByAction(log)?.label || 'Event' }}
+                        </template>
                     </div>
                     <div class="flex items-center leading-5 text-gray-500">
                         <div class="capitalize">
@@ -53,69 +51,37 @@
                 </a-timeline-item>
             </a-timeline>
             <div
-                v-if="!checkAuditsCount && !isAllLogsFetched"
+                v-if="(!checkAuditsCount && !isAllLogsFetched) || true"
                 class="flex justify-center mb-8 text-center"
             >
                 <a-button
                     :disabled="isFetchingMore"
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        py-2
-                        transition-all
-                        duration-300
-                        border-none
-                        rounded-full
-                        bg-primary-light
-                        text-primary
-                    "
-                    @click="fetchMore"
+                    class="flex items-center justify-between py-2 transition-all duration-300 border-none rounded-full  bg-primary-light text-primary"
                     :class="isFetchingMore ? 'px-2 w-9' : 'px-5 w-32'"
+                    @click="fetchMore"
                 >
                     <template v-if="!isFetchingMore"
                         ><p
-                            class="
-                                m-0
-                                mr-1
-                                overflow-hidden
-                                text-sm
-                                transition-all
-                                duration-300
-                                overflow-ellipsis
-                                whitespace-nowrap
-                            "
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
                         <AtlanIcon icon="ArrowDown"
                     /></template>
-                    <svg
+                    <AtlanIcon
                         v-else
-                        class="w-5 h-5 text-primary animate-spin"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                        ></circle>
-                        <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
+                        icon="Loader"
+                        class="w-5 w-auto h-5 animate-spin"
+                    ></AtlanIcon>
                 </a-button>
             </div>
         </div>
         <div v-else class="flex flex-col items-center">
-            <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
-            <span class="text-gray-500">No logs found</span>
+            <EmptyScreen
+                emptyScreen="EmptyDiscover"
+                desc="No logs found"
+                imageClass="h-32"
+            />
         </div>
     </div>
 </template>
@@ -132,12 +98,14 @@
 
     import { useTimeAgo } from '@vueuse/core'
     import useAssetAudit from '~/composables/discovery/useAssetAudit'
+    import EmptyScreen from '@/common/empty/index.vue'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
     import ActivityType from './activityType.vue'
 
     export default defineComponent({
-        components: { ActivityType },
+        name: 'ActivityTab',
+        components: { ActivityType, EmptyScreen },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -173,6 +141,7 @@
             }
 
             const fetchMore = () => {
+                debugger
                 fetchMoreAuditParams.startKey = audits?.value[
                     audits.value?.length - 1
                 ].eventKey as string

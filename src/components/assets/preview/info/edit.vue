@@ -3,7 +3,6 @@
         <div class="flex items-center justify-between mb-1 text-sm">
             <span> Owners</span>
         </div>
-
         <OwnersInline v-model="owners"></OwnersInline>
     </div>
 </template>
@@ -15,6 +14,7 @@
         PropType,
         toRefs,
         inject,
+        watch,
         ref,
     } from 'vue'
     import SQL from '@/assets/preview/popover/sql.vue'
@@ -69,6 +69,7 @@
 
         setup(props) {
             const { selectedAsset } = toRefs(props)
+
             const {
                 title,
                 getConnectorImage,
@@ -95,8 +96,15 @@
             } = useAssetInfo()
 
             const owners = ref({
-                users: ownerUsers(selectedAsset.value),
-                groups: ownerGroups(selectedAsset.value),
+                ownerUsers: ownerUsers(selectedAsset.value),
+                ownerGroups: ownerGroups(selectedAsset.value),
+            })
+
+            watch(selectedAsset, () => {
+                owners.value = {
+                    ownerUsers: ownerUsers(selectedAsset.value),
+                    ownerGroups: ownerGroups(selectedAsset.value),
+                }
             })
 
             // const mutateSelectedAsset: (updatedAsset: assetInterface) => void =

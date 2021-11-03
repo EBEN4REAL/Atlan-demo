@@ -25,7 +25,7 @@ export const CONNECTION_ATTRIBUTES = [
 export default function useGlossaryData() {
     const glossaryStore = useGlossaryStore()
 
-    const getGlossary = (qfName) => {
+    const getGlossary = (qfName: string) => {
         const found = glossaryStore.list.find((i) => {
             if (i.attributes?.qualifiedName === qfName) {
                 return true

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col h-full">
         <AssetHeader :item="selectedAsset"></AssetHeader>
         <a-tabs :class="$style.profiletab" v-model:activeKey="activeKey">
             <a-tab-pane
@@ -7,14 +7,31 @@
                 :key="tab.name"
                 :tab="tab.name"
             >
-                sdfsdf
+                <component
+                    :is="tab.component"
+                    :key="activeKey || id"
+                    :ref="
+                        (el) => {
+                            refs[tab.id] = el
+                        }
+                    "
+                    :user-has-edit-permission="userHasEditPermission"
+                    class="bg-transparent"
+                    @preview="handlePreview"
+                ></component>
             </a-tab-pane>
         </a-tabs>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        watch,
+        defineAsyncComponent,
+    } from 'vue'
     import { useRoute } from 'vue-router'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -29,11 +46,19 @@
     } from '~/constant/projection'
 
     export default defineComponent({
+        name: 'AssetProfile',
         components: {
             AssetHeader,
+            lineage: defineAsyncComponent(
+                () => import('@/assets/profile/tabs/lineage/index.vue')
+            ),
         },
         setup() {
             const { selectedAsset, getProfileTabs } = useAssetInfo()
+
+            const refs: { [key: string]: any } = ref({})
+
+            const userHasEditPermission = ref<boolean>(true)
 
             const activeKey = ref('')
 
@@ -107,7 +132,14 @@
             // const id = computed(() => route?.params?.id || '')
             // router.replace(`/assets/${id.value}/overview`)
 
+            const handlePreview = (v) => {
+                console.log('handlePreview', v)
+            }
+
             return {
+                refs,
+                userHasEditPermission,
+                handlePreview,
                 selectedAsset,
                 item,
                 fetchKey,

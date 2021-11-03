@@ -13,6 +13,8 @@
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 
     export default defineComponent({
+        name: 'DescriptionActivity',
+
         props: {
             data: {
                 type: Object as PropType<activityInterface>,

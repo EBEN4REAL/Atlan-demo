@@ -1,4 +1,4 @@
-import { computed, ref, ComputedRef } from 'vue'
+import { computed, ref, ComputedRef, watch } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import { userInterface } from '~/types/users/user.interface'
@@ -24,9 +24,14 @@ export default function useFacetUsers() {
         cacheKey: 'DEFAULT_USERS',
     })
 
-    const list: ComputedRef<userInterface[]> = computed(
-        () => data.value?.records ?? []
-    )
+    const list = ref([])
+    watch(data, () => {
+        if (data.value?.records) {
+            list.value = [...data?.value?.records]
+        } else {
+            list.value = []
+        }
+    })
 
     // const total: ComputedRef<number> = computed(() => data.value?.total_record)
     const total: ComputedRef<userInterface[]> = computed(

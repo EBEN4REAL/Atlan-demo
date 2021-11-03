@@ -472,7 +472,9 @@
             //     return `/insights?id=${asset.guid}`
             // }
             const assetURL = (asset) => {
-                return `/assets/${asset.guid}`
+                return {
+                    path: `/assets/${asset.guid}`,
+                }
             }
 
             // function getClassificationDisplayname(name: string) {

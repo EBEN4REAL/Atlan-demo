@@ -190,7 +190,7 @@
             const offset = ref(0)
             const facets = ref({})
             const inputBox: Ref<null | HTMLInputElement> = ref(null)
-            const dependentKey = ref('DEFAULT_TABLE')
+            const dependentKey = ref('DEFAULT_CMD_KEY')
             const aggregations = ref(['typeName'])
             const postFacets = ref({})
 

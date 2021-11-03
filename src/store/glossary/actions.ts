@@ -11,8 +11,6 @@ export const actions: Actions = {
         this.list = value
     },
     setTermsCount(buckets) {
-        console.log(buckets)
-        console.log(this.list)
         this.list.forEach((element, index) => {
             const aggr = buckets.find(
                 (item) => item.key === element.attributes?.qualifiedName

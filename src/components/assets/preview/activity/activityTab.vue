@@ -1,14 +1,7 @@
 <template>
     <div>
         <div
-            class="
-                flex
-                justify-between
-                px-4
-                py-2
-                mb-6
-                border-b border-gray-light
-            "
+            class="flex justify-between px-4 py-2 mb-6 border-b  border-gray-light"
         >
             <span class="font-semibold text-gray-700 text-md">Activity</span>
 
@@ -63,33 +56,13 @@
             >
                 <a-button
                     :disabled="isFetchingMore"
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        py-2
-                        transition-all
-                        duration-300
-                        border-none
-                        rounded-full
-                        bg-primary-light
-                        text-primary
-                    "
+                    class="flex items-center justify-between py-2 transition-all duration-300 border-none rounded-full  bg-primary-light text-primary"
                     :class="isFetchingMore ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="fetchMore"
                 >
                     <template v-if="!isFetchingMore"
                         ><p
-                            class="
-                                m-0
-                                mr-1
-                                overflow-hidden
-                                text-sm
-                                transition-all
-                                duration-300
-                                overflow-ellipsis
-                                whitespace-nowrap
-                            "
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -104,8 +77,11 @@
             </div>
         </div>
         <div v-else class="flex flex-col items-center">
-            <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
-            <span class="text-gray-500">No logs found</span>
+            <EmptyScreen
+                emptyScreen="EmptyDiscover"
+                desc="No logs found"
+                imageClass="h-32"
+            />
         </div>
     </div>
 </template>
@@ -122,13 +98,14 @@
 
     import { useTimeAgo } from '@vueuse/core'
     import useAssetAudit from '~/composables/discovery/useAssetAudit'
+    import EmptyScreen from '@/common/empty/index.vue'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
     import ActivityType from './activityType.vue'
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType },
+        components: { ActivityType, EmptyScreen },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

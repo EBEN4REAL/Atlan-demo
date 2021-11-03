@@ -11,7 +11,7 @@
                 <button
                     :disabled="isLoading"
                     class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
-                    :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
+                    :class="isLoading ? 'px-2 w-9' : ''"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">

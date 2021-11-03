@@ -28,6 +28,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { metadata } from './metadata'
    // import CmndK from '~/components/common/commandK/cmndK.vue'
+import {getAggregations} from  '~/composables/home/useHomeDSL'
 
     export default defineComponent({
         name: "SearchAndStats",
@@ -43,6 +44,10 @@
             const logoUrl = computed(
                     () => `${window.location.origin}/api/service/avatars/_logo_`
                 )
+
+                const { list } = getAggregations(
+                ['Connection','Table','View','AtlasGlossaryTerm','AtlasGlossaryCategory']
+            )
 
             return {logoUrl, metadata ,showModal ,isCmndKVisible}
         }

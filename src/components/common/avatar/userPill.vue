@@ -9,6 +9,13 @@
         <div class="group-hover:text-white">
             {{ username }}
         </div>
+        <div
+            class="flex group-hover:text-white"
+            @click="handleRemove"
+            v-if="allowDelete"
+        >
+            <AtlanIcon icon="Cross" class="h-3 ml-1"></AtlanIcon>
+        </div>
     </div>
 </template>
 
@@ -16,6 +23,7 @@
     import { toRefs } from 'vue'
 
     import UserAvatar from '@/common/avatar/user.vue'
+    import AtlanIcon from '../icon/atlanIcon.vue'
 
     export default {
         name: 'Avatar',
@@ -24,13 +32,26 @@
                 type: String,
                 default: '',
             },
+            allowDelete: {
+                type: Boolean,
+                default() {
+                    return false
+                },
+            },
         },
         components: {
             UserAvatar,
+            AtlanIcon,
         },
-        setup(props, context) {
+        emits: ['delete'],
+        setup(props, { emit }) {
             const { username } = toRefs(props)
-            return { username }
+
+            const handleRemove = () => {
+                emit('delete')
+            }
+
+            return { username, handleRemove }
         },
     }
 </script>

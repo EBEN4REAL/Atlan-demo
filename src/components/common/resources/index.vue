@@ -10,13 +10,22 @@
             </AddResources>
         </div>
         <div class="flex flex-col gap-y-2">
-            <div
+            <a
                 class="flex cursor-pointer gap-x-2 hover:underline"
-                v-for="item in resources"
+                v-for="item in links(asset)"
+                :href="`//${item?.attributes?.link}`"
+                target="_blank"
+                rel="noreferrer"
             >
-                <img :src="item.img" alt="" class="w-4 h-4" />
-                <span class="text-sm text-gray-500">{{ item.text }}</span>
-            </div>
+                <img
+                    :src="`https://www.google.com/s2/favicons?domain=${item?.attributes?.link}`"
+                    :alt="item?.attributes?.name"
+                    class="w-4 h-4"
+                />
+                <span class="text-sm text-gray-500">{{
+                    item?.attributes?.name
+                }}</span>
+            </a>
         </div>
     </div>
 </template>
@@ -26,6 +35,7 @@
     import { defineComponent, PropType } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AddResources from './addResource.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: { AddResources },
@@ -36,21 +46,9 @@
             },
         },
         setup() {
-            const resources = [
-                {
-                    img: 'https://vuejs.org/images/logo.svg',
-                    text: 'Vue - The Progressive JavaScript Framework',
-                },
-                {
-                    img: 'https://static.figma.com/app/icon/1/favicon.ico',
-                    text: 'Figma - The Collaborative Design Workspace',
-                },
-                {
-                    img: 'https://github.com/favicon.ico',
-                    text: 'Github - Where the world builds software',
-                },
-            ]
-            return { resources }
+            const { links } = useAssetInfo()
+
+            return { links }
         },
     })
 </script>

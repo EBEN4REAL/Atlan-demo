@@ -93,6 +93,7 @@
                     (keyK.value && meta.value)
                 ) {
                     showModal()
+                    console.log('open cmnd k')
                     keyK.value = false
                     meta.value = false
                     control.value = false

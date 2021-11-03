@@ -42,21 +42,19 @@
                             :imageRequired="false"
                             class="text-xs"
                         />
-                        <HierarchyBar :selected-asset="item" />
-
-                        <span class="mr-2" style="color: #c4c4c4"> • </span>
+                        <HierarchyBar :selected-asset="item" class="text-xs" />
+                        <span style="color: #c4c4c4"> • </span>
                         <div class="flex items-center gap-x-3">
                             <!-- Column dataType -->
                             <div
                                 v-if="item.typeName.toLowerCase() === 'column'"
                                 class="flex items-center space-x-2"
                             >
-                                <div class="flex">
-                                    <!-- <component
-                                        :is="dataTypeImage(item)"
-                                        class="w-auto h-4 text-gray-500"
-                                        style="margin-top: 1px"
-                                    ></component> -->
+                                <div class="flex items-center">
+                                    <component
+                                        :is="dataTypeCategoryImage(item)"
+                                        class="w-auto h-4 text-gray-500 mb-0.5"
+                                    ></component>
                                     <span class="ml-1 text-xs text-gray-500">{{
                                         dataType(item)
                                     }}</span>
@@ -122,6 +120,7 @@
             const {
                 description,
                 dataType,
+                dataTypeCategoryImage,
                 assetType,
                 title,
                 rowCount,
@@ -134,14 +133,14 @@
 
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
 
-            const getColumnUrl = (asset) => {
-                const tableGuid = asset?.attributes?.table?.guid
-                return `/assets/${tableGuid}/overview?column=${asset.guid}`
-            }
-            console.log(AssetLogo)
+            // TODO: uncomment when bringing redirection
+            // const getColumnUrl = (asset) => {
+            //     const tableGuid = asset?.attributes?.table?.guid
+            //     return `/assets/${tableGuid}/overview?column=${asset.guid}`
+            // }
             return {
                 isColumnAsset,
-                getColumnUrl,
+                // getColumnUrl,
                 description,
                 dataType,
                 assetType,
@@ -152,6 +151,7 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                dataTypeCategoryImage,
             }
         },
     })

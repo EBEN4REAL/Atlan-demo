@@ -43,6 +43,7 @@ export const AssetAttributes = [
     'meanings',
     'readme',
     'links',
+    'link',
 ]
 
 export const SQLAttributes = [

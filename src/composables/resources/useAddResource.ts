@@ -30,9 +30,15 @@ export default function useAddResource(selectedAsset, link, linkTitle) {
             }, {}
         )
         watch(data, () => {
-            selectedAsset.attributes.links.push({ ...data.value.mutatedEntities.CREATE[0] })
-            message.success('Resource added!')
-        })
+            if (data.value && !isLoading.value && !error.value) {
+                selectedAsset.attributes.links.push({ ...data.value.mutatedEntities.CREATE[0] })
+                message.success('Resource added!')
+            }
+            else if (error.value && !isLoading.value) {
+                message.error('Not able to add resource right now. Try again later!')
+            }
+        }
+        )
         return { data, error, isLoading }
     }
     return {

@@ -4,14 +4,14 @@ import { map } from '~/services/meta/entity/key'
 import { generateUUID } from '~/utils/helper/generator'
 import { message } from 'ant-design-vue'
 
-export default function useAddResource(selectedAsset, readmeContent) {
+export default function useAddResource(selectedAsset, link, linkTitle) {
     const body = ref({
         entity: {
             typeName: 'Link',
             attributes: {
                 qualifiedName: generateUUID(),
-                name: `${selectedAsset?.displayText} Link`,
-                description: readmeContent,
+                name: linkTitle,
+                link: link,
             },
             relationshipAttributes: {
                 asset: {
@@ -30,9 +30,7 @@ export default function useAddResource(selectedAsset, readmeContent) {
             }, {}
         )
         watch(data, () => {
-            selectedAsset.attributes.readme = {
-                ...data.value.mutatedEntities.CREATE[0],
-            }
+            selectedAsset.attributes.links.push({ ...data.value.mutatedEntities.CREATE[0] })
             message.success('Resource added!')
         })
         return { data, error, isLoading }

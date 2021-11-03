@@ -24,7 +24,7 @@
                 <div v-if="link" class="flex items-center gap-x-2">
                     <img :src="favicon" alt="" class="w-4 h-4" />
                     <a-input
-                        v-model:value="linkText"
+                        v-model:value="linkTitle"
                         placeholder="Resource title"
                         allow-clear
                     />
@@ -44,7 +44,7 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAddResource from '~/composables/resources/useAddResource'
@@ -64,29 +64,34 @@
             const { title } = useAssetInfo()
 
             const link = ref('')
-            // FIXME: Add a link meta parser for title and favicon
-            const favicon = 'https://vuejs.org/images/logo.svg'
-            const linkText = ref('')
+
+            const favicon = computed(
+                () => `https://www.google.com/s2/favicons?domain=${link.value}`
+            )
+
+            // FIXME: Add a link meta parser for title
+            const linkTitle = ref('')
 
             function handleCancel() {
                 popoverVisible.value = false
                 link.value = ''
-                linkText.value = ''
+                linkTitle.value = ''
             }
 
             function handleAdd() {
                 const { newResource } = useAddResource(
                     asset.value,
-                    linkText.value
+                    link.value,
+                    linkTitle.value
                 )
 
                 newResource()
                 popoverVisible.value = false
                 link.value = ''
-                linkText.value = ''
+                linkTitle.value = ''
             }
             return {
-                linkText,
+                linkTitle,
                 link,
                 favicon,
                 title,

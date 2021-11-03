@@ -7,7 +7,7 @@
                 :key="tab.name"
                 :tab="tab.name"
             >
-                <Resources :asset="selectedAsset" />
+                sdfsdf
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -18,7 +18,6 @@
     import { useRoute } from 'vue-router'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import Resources from '@common/resources/index.vue'
 
     import AssetHeader from '@/assets/profile/header/index.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -32,7 +31,6 @@
     export default defineComponent({
         components: {
             AssetHeader,
-            Resources,
         },
         setup() {
             const { selectedAsset, getProfileTabs } = useAssetInfo()

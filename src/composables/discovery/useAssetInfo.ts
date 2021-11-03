@@ -85,6 +85,8 @@ export default function useAssetInfo() {
         attributes(asset)?.isPartition
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
 
+    const links = (asset: assetInterface) => attributes(asset)?.links
+
     const getTabs = (list, typeName: string) => {
         return list.filter((i) => {
             let flag = true
@@ -677,6 +679,7 @@ export default function useAssetInfo() {
         // integrationName,
         // assetTypeLabel,
         rowCount,
+        links,
         columnCount,
         sizeBytes,
         getPreviewTabs,

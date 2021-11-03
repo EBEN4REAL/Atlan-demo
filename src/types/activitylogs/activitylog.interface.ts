@@ -1,4 +1,5 @@
 export interface activityInterface {
     displayValue: string
-    value: any
+    value: any,
+    component?: string,
 }

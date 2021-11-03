@@ -1,6 +1,5 @@
 import { ref, watch } from 'vue'
-import { useAPI } from '~/services/api/useAPI'
-import { map } from '~/services/meta/lineage/key'
+import { Entity } from '~/services/meta/entity/index'
 import { generateUUID } from '~/utils/helper/generator'
 import { message } from 'ant-design-vue'
 
@@ -22,13 +21,7 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
         },
     })
     const createReadme = () => {
-        const { data, error, isLoading } = useAPI(
-            map.CREATE_README,
-            'POST',
-            {
-                body,
-            }, {}
-        )
+        const { data, error, isLoading } = Entity.EntityUpdate(body, {})
         watch(data, () => {
             selectedAsset.value.attributes.readme = {
                 ...data.value.mutatedEntities.CREATE[0],

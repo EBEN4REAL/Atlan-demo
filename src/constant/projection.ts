@@ -43,6 +43,7 @@ export const AssetAttributes = [
     'meanings',
     'readme',
     'links',
+    'link',
 ]
 
 export const SQLAttributes = [
@@ -66,7 +67,7 @@ export const AssetRelationAttributes = [
     'name',
     'description',
     'shortDescription',
-    'links'
+    'link'
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

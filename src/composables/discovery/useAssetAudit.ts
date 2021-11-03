@@ -1,8 +1,8 @@
 import { reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
-import { useAPI } from '~/services/api/useAPI'
-import { Components } from '~/api/atlas/client'
-import { map } from '~/services/meta/entity/key'
+import { activityInterface } from '~/types/activitylogs/activitylog.interface'
+import { eventMap } from '~/constant/events'
+import { Entity } from '~/services/meta/entity'
 
 
 const useAssetAudit = (params: any, guid: string) => {
@@ -15,13 +15,7 @@ const useAssetAudit = (params: any, guid: string) => {
     })
 
     const fetchAudits = (p: any, g: string) => {
-        const { data, error, isLoading } = useAPI<
-            Components.Schemas.EntityAuditEventV2[]
-        >(map.GET_ASSET_AUDIT, 'GET', {
-            params: p,
-            pathVariables: { guid: g },
-
-        }, {})
+        const { data, error, isLoading } = Entity.fetchAudits(p, g)
         response.audits = data
         response.error = error
         response.isLoading = isLoading
@@ -30,12 +24,7 @@ const useAssetAudit = (params: any, guid: string) => {
     }
 
     const fetchMoreAudits = (fetchmoreParams: any) => {
-        const { data, isLoading, error } = useAPI<
-            Components.Schemas.EntityAuditEventV2[]
-        >(map.GET_ASSET_AUDIT, 'GET', {
-            params: fetchmoreParams,
-            pathVariables: { guid },
-        }, {})
+        const { data, isLoading, error } = Entity.fetchMoreAudits(fetchmoreParams, guid)
 
         response.isFetchingMore = isLoading
 
@@ -47,79 +36,19 @@ const useAssetAudit = (params: any, guid: string) => {
             }
         })
     }
-    const eventMap: any = [
-        {
-            id: 'ENTITY_CREATE',
-            color: 'success',
-            label: 'Asset created',
-        },
-        {
-            id: 'ENTITY_UPDATE',
-            color: 'blueGray',
-            label: 'Asset updated',
-        },
-        {
-            id: 'ENTITY_DELETE',
-            color: 'warning',
-            label: 'Asset deleted',
-        },
-        {
-            id: 'TERM_ADD',
-            color: 'success',
-            label: 'Term linked',
-        },
-        {
-            id: 'TERM_DELETE',
-            color: 'warning',
-            label: 'Term unlinked',
-        },
-        {
-            id: 'CLASSIFICATION_UPDATE',
-            color: 'blueGray',
-            label: 'Classification updated',
-        },
-        {
-            id: 'CLASSIFICATION_DELETE',
-            color: 'warning',
-            label: 'Classification unlinked',
-        },
-        {
-            id: 'CLASSIFICATION_ADD',
-            color: 'success',
-            label: 'Classification linked',
-        },
-        {
-            id: 'PROPAGATED_CLASSIFICATION_UPDATE',
-            color: 'blueGray',
-            label: 'Propagated Classification updated',
-        },
-        {
-            id: 'PROPAGATED_CLASSIFICATION_DELETE',
-            color: 'warning',
-            label: 'Propagated Classification unlinked',
-        },
-        {
-            id: 'PROPAGATED_CLASSIFICATION_ADD',
-            color: 'success',
-            label: 'Propagated Classification linked',
-        },
-        {
-            id: 'BUSINESS_ATTRIBUTE_UPDATE',
-            color: 'blueGray',
-            label: 'Business metadata updated',
-        },
-    ]
 
     const getEventByAction = (asset: any) =>
         eventMap.find((event: any) => event.id === asset.action)
 
-    const filterClassificationTypeNameDisplayName = (parsedDetails: any) =>
-        // eslint-disable-next-line no-nested-ternary
-        typeof parsedDetails === 'object'
-            ? parsedDetails?.typeName ?? ''
-            : typeof parsedDetails === 'string'
-                ? parsedDetails
-                : ''
+    const filterClassificationTypeNameDisplayName = (parsedDetails: any) => {
+        if (typeof parsedDetails === 'object')
+            return parsedDetails?.typeName ?? ''
+        else if (typeof parsedDetails === 'string')
+            return parsedDetails
+        return ''
+    }
+
+
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
@@ -190,11 +119,11 @@ const useAssetAudit = (params: any, guid: string) => {
         return data
     }
 
-    const getDetailsForEntityAuditEvent = (auditEvent: any) => {
+    const getDetailsForEntityAuditEvent = (auditEvent: any): activityInterface | null => {
         if (auditEvent.details) {
             const eventDetail = auditEvent.details.split(/:(.+)/)
             let parsedDetails: any = {}
-            const data = {
+            const data: activityInterface = {
                 displayValue: '',
                 value: [],
             }
@@ -218,15 +147,16 @@ const useAssetAudit = (params: any, guid: string) => {
                                     filterClassificationTypeNameDisplayName(
                                         parsedDetails
                                     )
-                                data.displayValue = 'classificationAdded'
+                                data.displayValue = 'added'
+                                data.component = 'Classifications'
 
                                 return data
                             }
                             return null
                         } catch (error) {
                             data.value = eventDetail[1].trim()
-                            data.displayValue = 'classificationAdded'
-
+                            data.displayValue = 'added'
+                            data.component = 'Classifications'
                             return data
                         }
                     case 'CLASSIFICATION_DELETE':
@@ -235,7 +165,8 @@ const useAssetAudit = (params: any, guid: string) => {
                             filterClassificationTypeNameDisplayName(
                                 parsedDetails
                             )
-                        data.displayValue = 'classificationRemoved'
+                        data.displayValue = 'removed'
+                        data.component = 'Classifications'
 
                         return data
                     case 'PROPAGATED_CLASSIFICATION_ADD':
@@ -264,8 +195,8 @@ const useAssetAudit = (params: any, guid: string) => {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value =
                                 filterTermTypeNameDisplayName(parsedDetails)
-                            data.displayValue = 'termAdded'
-
+                            data.displayValue = 'added'
+                            data.component = 'Terms'
                             return data
                         } catch (error) {
                             return null
@@ -275,8 +206,8 @@ const useAssetAudit = (params: any, guid: string) => {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value =
                                 filterTermTypeNameDisplayName(parsedDetails)
-                            data.displayValue = 'termRemoved'
-
+                            data.displayValue = 'removed'
+                            data.component = 'Terms'
                             return data
                         } catch (error) {
                             return null
@@ -285,7 +216,7 @@ const useAssetAudit = (params: any, guid: string) => {
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value = parsedDetails
-                            data.displayValue = 'bmUpdated'
+                            data.component = 'BusinessMetadata'
 
                             return data
                         } catch (error) {

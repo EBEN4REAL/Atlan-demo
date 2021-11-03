@@ -63,6 +63,9 @@
 </script>
 <style lang="less" scoped>
     .owner-popover {
+        :global(.ant-popover-content) {
+            width: 250px !important;
+        }
         :global(.ant-popover-inner-content) {
             @apply px-0 mx-0 !important;
             --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),

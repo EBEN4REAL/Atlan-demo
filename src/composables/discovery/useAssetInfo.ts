@@ -31,7 +31,7 @@ export default function useAssetInfo() {
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-            attributes(asset)?.connectorName?.toLowerCase()
+                attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -125,12 +125,12 @@ export default function useAssetInfo() {
 
         const found = attributes(asset)?.integrationName
             ? SourceList.find(
-                (src) => src.id === attributes(asset)?.integrationName
-            )
+                  (src) => src.id === attributes(asset)?.integrationName
+              )
             : SourceList.find(
-                (src) =>
-                    src.id === attributes(asset)?.qualifiedName?.split('/')[1]
-            )
+                  (src) =>
+                      src.id === attributes(asset)?.qualifiedName?.split('/')[1]
+              )
 
         if (found) img = found.image
 
@@ -200,15 +200,6 @@ export default function useAssetInfo() {
     const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
     const dataTypeCategory = (asset: assetInterface) => {
-        console.log(
-            dataTypeCategoryList.find((item) =>
-                item.type.some(
-                    (i) =>
-                        i.toLowerCase() ===
-                        attributes(asset)?.dataType?.toLowerCase()
-                )
-            )
-        )
         return dataTypeCategoryList.find((item) =>
             item.type.some(
                 (i) =>
@@ -349,7 +340,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
-                'N/A'
+                      'N/A'
                 : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
         }
         return ''
@@ -374,7 +365,8 @@ export default function useAssetInfo() {
                 relations.push({
                     ...f,
                     guid: asset.guid,
-                    qualifiedName: attributes(asset)[f.qualifiedNameAttribute as string],
+                    qualifiedName:
+                        attributes(asset)[f.qualifiedNameAttribute as string],
                     value: attributes(asset)[f.nameAttribute as string],
                 })
             })
@@ -490,17 +482,17 @@ export default function useAssetInfo() {
             },
             attributes(asset).isPublished
                 ? {
-                    id: 'tableauPublishedDatasource',
-                    label: 'Published Datasource',
-                    value: attributes(asset).datasourceName,
-                    icon: 'TableauPublishedDatasource',
-                }
+                      id: 'tableauPublishedDatasource',
+                      label: 'Published Datasource',
+                      value: attributes(asset).datasourceName,
+                      icon: 'TableauPublishedDatasource',
+                  }
                 : {
-                    id: 'tableauEmbeddedDatasource',
-                    label: 'Embedded Datasource',
-                    value: attributes(asset).datasourceName,
-                    icon: 'TableauEmbeddedDatasource',
-                },
+                      id: 'tableauEmbeddedDatasource',
+                      label: 'Embedded Datasource',
+                      value: attributes(asset).datasourceName,
+                      icon: 'TableauEmbeddedDatasource',
+                  },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',

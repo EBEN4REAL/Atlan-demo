@@ -22,9 +22,9 @@
                     allow-clear
                 />
                 <div v-if="link" class="flex items-center gap-x-2">
-                    <img :src="favicon" alt="" class="w-4 h-4" />
+                    <img :src="faviconLink" alt="" class="w-4 h-4" />
                     <a-input
-                        v-model:value="linkText"
+                        v-model:value="linkTitle"
                         placeholder="Resource title"
                         allow-clear
                     />
@@ -44,10 +44,18 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        computed,
+        watch,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAddResource from '~/composables/resources/useAddResource'
+    import { useDebounceFn } from '@vueuse/core'
 
     export default defineComponent({
         components: {},
@@ -64,31 +72,41 @@
             const { title } = useAssetInfo()
 
             const link = ref('')
-            // FIXME: Add a link meta parser for title and favicon
-            const favicon = 'https://vuejs.org/images/logo.svg'
-            const linkText = ref('')
+            const faviconLink = ref('')
+
+            // FIXME: Add a link meta parser for title
+            const linkTitle = ref('')
 
             function handleCancel() {
                 popoverVisible.value = false
                 link.value = ''
-                linkText.value = ''
+                linkTitle.value = ''
             }
 
             function handleAdd() {
                 const { newResource } = useAddResource(
                     asset.value,
-                    linkText.value
+                    link.value,
+                    linkTitle.value
                 )
 
                 newResource()
                 popoverVisible.value = false
                 link.value = ''
-                linkText.value = ''
+                linkTitle.value = ''
             }
-            return {
-                linkText,
+
+            watch(
                 link,
-                favicon,
+                useDebounceFn(() => {
+                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${link.value}`
+                }, 500)
+            )
+
+            return {
+                linkTitle,
+                link,
+                faviconLink,
                 title,
                 popoverVisible,
                 handleCancel,

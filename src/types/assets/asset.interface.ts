@@ -27,6 +27,8 @@ export interface assetInterface {
         displayName: string
         popularityScore: number
         isPrimary: boolean
+        isPartition: boolean
+        isDist: boolean
         compiledQuery: string
         qualifiedName: string
         userDescription: string
@@ -50,7 +52,19 @@ export interface assetInterface {
             uniqueAttributes: {
                 qualifiedName: string
             }
+
         }
+        links?: {
+            guid: string
+            typeName: string
+            uniqueAttributes: {
+                qualifiedName: string
+            }
+            attributes: {
+                name: string
+                link: string
+            }
+        }[]
         __createdBy: string
         __customAttributes: string
         __guid: string

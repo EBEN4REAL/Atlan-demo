@@ -71,7 +71,7 @@ export function getAggregations<T>(
       'group_by_typeName'
     ).build()
 
-  const list: Ref<assetInterface[]> = ref([])
+  const list: Ref<any[]> = ref([])
   const { data, isLoading } = Search.IndexSearch<assetInterface>(
     { dsl: query }, {}
   )
@@ -79,7 +79,6 @@ export function getAggregations<T>(
   watch(data, () => {
     if (data.value?.aggregations?.group_by_typeName?.buckets) {
       list.value = [...data.value?.aggregations?.group_by_typeName?.buckets]
-      console.log(list.value)
     } else {
       list.value = []
     }

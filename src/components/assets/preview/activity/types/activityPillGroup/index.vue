@@ -40,6 +40,7 @@
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 
     export default defineComponent({
+        name: 'ActivityPillGroup',
         props: {
             data: {
                 type: Object as PropType<activityInterface>,

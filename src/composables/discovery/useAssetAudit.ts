@@ -3,6 +3,8 @@ import { toRefs } from '@vueuse/core'
 import { useAPI } from '~/services/api/useAPI'
 import { Components } from '~/api/atlas/client'
 import { map } from '~/services/meta/entity/key'
+import { activityInterface } from '~/types/activitylogs/activitylog.interface'
+import { eventMap } from '~/constant/events'
 
 
 const useAssetAudit = (params: any, guid: string) => {
@@ -47,68 +49,6 @@ const useAssetAudit = (params: any, guid: string) => {
             }
         })
     }
-    const eventMap: any = [
-        {
-            id: 'ENTITY_CREATE',
-            color: 'success',
-            label: 'Asset created',
-        },
-        {
-            id: 'ENTITY_UPDATE',
-            color: 'blueGray',
-            label: 'Asset updated',
-        },
-        {
-            id: 'ENTITY_DELETE',
-            color: 'warning',
-            label: 'Asset deleted',
-        },
-        {
-            id: 'TERM_ADD',
-            color: 'success',
-            label: 'Term linked',
-        },
-        {
-            id: 'TERM_DELETE',
-            color: 'warning',
-            label: 'Term unlinked',
-        },
-        {
-            id: 'CLASSIFICATION_UPDATE',
-            color: 'blueGray',
-            label: 'Classification updated',
-        },
-        {
-            id: 'CLASSIFICATION_DELETE',
-            color: 'warning',
-            label: 'Classification unlinked',
-        },
-        {
-            id: 'CLASSIFICATION_ADD',
-            color: 'success',
-            label: 'Classification linked',
-        },
-        {
-            id: 'PROPAGATED_CLASSIFICATION_UPDATE',
-            color: 'blueGray',
-            label: 'Propagated Classification updated',
-        },
-        {
-            id: 'PROPAGATED_CLASSIFICATION_DELETE',
-            color: 'warning',
-            label: 'Propagated Classification unlinked',
-        },
-        {
-            id: 'PROPAGATED_CLASSIFICATION_ADD',
-            color: 'success',
-            label: 'Propagated Classification linked',
-        },
-        {
-            id: 'BUSINESS_ATTRIBUTE_UPDATE',
-            color: 'blueGray',
-            label: 'Business metadata updated',
-        },
-    ]
 
     const getEventByAction = (asset: any) =>
         eventMap.find((event: any) => event.id === asset.action)
@@ -190,11 +130,11 @@ const useAssetAudit = (params: any, guid: string) => {
         return data
     }
 
-    const getDetailsForEntityAuditEvent = (auditEvent: any) => {
+    const getDetailsForEntityAuditEvent = (auditEvent: any): activityInterface | null => {
         if (auditEvent.details) {
             const eventDetail = auditEvent.details.split(/:(.+)/)
             let parsedDetails: any = {}
-            const data = {
+            const data: activityInterface = {
                 displayValue: '',
                 value: [],
             }
@@ -218,15 +158,16 @@ const useAssetAudit = (params: any, guid: string) => {
                                     filterClassificationTypeNameDisplayName(
                                         parsedDetails
                                     )
-                                data.displayValue = 'classificationAdded'
+                                data.displayValue = 'added'
+                                data.component = 'Classifications'
 
                                 return data
                             }
                             return null
                         } catch (error) {
                             data.value = eventDetail[1].trim()
-                            data.displayValue = 'classificationAdded'
-
+                            data.displayValue = 'added'
+                            data.component = 'Classifications'
                             return data
                         }
                     case 'CLASSIFICATION_DELETE':
@@ -235,7 +176,8 @@ const useAssetAudit = (params: any, guid: string) => {
                             filterClassificationTypeNameDisplayName(
                                 parsedDetails
                             )
-                        data.displayValue = 'classificationRemoved'
+                        data.displayValue = 'removed'
+                        data.component = 'Classifications'
 
                         return data
                     case 'PROPAGATED_CLASSIFICATION_ADD':
@@ -264,8 +206,8 @@ const useAssetAudit = (params: any, guid: string) => {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value =
                                 filterTermTypeNameDisplayName(parsedDetails)
-                            data.displayValue = 'termAdded'
-
+                            data.displayValue = 'added'
+                            data.component = 'Terms'
                             return data
                         } catch (error) {
                             return null
@@ -275,8 +217,8 @@ const useAssetAudit = (params: any, guid: string) => {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value =
                                 filterTermTypeNameDisplayName(parsedDetails)
-                            data.displayValue = 'termRemoved'
-
+                            data.displayValue = 'removed'
+                            data.component = 'Terms'
                             return data
                         } catch (error) {
                             return null
@@ -285,7 +227,7 @@ const useAssetAudit = (params: any, guid: string) => {
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value = parsedDetails
-                            data.displayValue = 'bmUpdated'
+                            data.component = 'BusinessMetadata'
 
                             return data
                         } catch (error) {

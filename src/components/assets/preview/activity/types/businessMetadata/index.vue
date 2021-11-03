@@ -19,6 +19,7 @@
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 
     export default defineComponent({
+        name: 'BusinessMetadataActivity',
         props: {
             data: {
                 type: Object as PropType<activityInterface>,

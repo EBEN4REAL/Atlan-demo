@@ -35,6 +35,7 @@
     import { List as statusList } from '~/constant/status'
 
     export default defineComponent({
+        name: 'StatusActivity',
         props: {
             data: {
                 type: Object as PropType<activityInterface>,

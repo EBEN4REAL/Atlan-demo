@@ -102,7 +102,7 @@
 
             const depth = inject('depth')
             const direction = inject('direction')
-            const control = inject('control')
+            const control: Function = inject('control')
 
             watch(showProcess, (val) => {
                 emit('showProcess', val)

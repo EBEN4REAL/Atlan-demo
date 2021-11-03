@@ -22,7 +22,7 @@
                     allow-clear
                 />
                 <div v-if="link" class="flex items-center gap-x-2">
-                    <img :src="favicon" alt="" class="w-4 h-4" />
+                    <img :src="faviconLink" alt="" class="w-4 h-4" />
                     <a-input
                         v-model:value="linkTitle"
                         placeholder="Resource title"
@@ -44,10 +44,18 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType, ref, toRefs, computed } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        computed,
+        watch,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAddResource from '~/composables/resources/useAddResource'
+    import { useDebounceFn } from '@vueuse/core'
 
     export default defineComponent({
         components: {},
@@ -64,10 +72,7 @@
             const { title } = useAssetInfo()
 
             const link = ref('')
-
-            const favicon = computed(
-                () => `https://www.google.com/s2/favicons?domain=${link.value}`
-            )
+            const faviconLink = ref('')
 
             // FIXME: Add a link meta parser for title
             const linkTitle = ref('')
@@ -90,10 +95,18 @@
                 link.value = ''
                 linkTitle.value = ''
             }
+
+            watch(
+                link,
+                useDebounceFn(() => {
+                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${link.value}`
+                }, 500)
+            )
+
             return {
                 linkTitle,
                 link,
-                favicon,
+                faviconLink,
                 title,
                 popoverVisible,
                 handleCancel,

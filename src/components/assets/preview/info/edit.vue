@@ -3,8 +3,9 @@
         <div class="flex items-center justify-between mb-1 text-sm">
             <span> Owners</span>
         </div>
+        {{ owners }}
 
-        <OwnersInline v-model="owners"></OwnersInline>
+        {{ selectedAsset.attributes }}
     </div>
 </template>
 

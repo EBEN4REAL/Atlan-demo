@@ -3,10 +3,15 @@
         :class="class"
         class="flex flex-col items-center justify-center h-full gap-y-3"
     >
-        <AtlanIcon v-if="emptyScreen" :icon="emptyScreen" alt="" class="w-48" />
+        <AtlanIcon
+            v-if="emptyScreen"
+            :icon="emptyScreen"
+            alt=""
+            :class="imageClass"
+        />
         <span v-if="headline" class="text-3xl font">{{ headline }}</span>
         <p
-            v-if="desc || empty"
+            v-if="desc"
             style="max-width: 29rem"
             :class="descClass || 'text-lg text-center'"
         >
@@ -32,18 +37,25 @@
 
     export default defineComponent({
         props: {
-            empty: {
+            headline: {
                 type: String,
                 required: false,
                 default() {
                     return ''
                 },
             },
-            headline: {
+            class: {
                 type: String,
                 required: false,
                 default() {
                     return ''
+                },
+            },
+            imageClass: {
+                type: String,
+                required: false,
+                default() {
+                    return 'h-32'
                 },
             },
             class: {

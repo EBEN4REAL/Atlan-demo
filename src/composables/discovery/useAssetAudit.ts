@@ -40,13 +40,15 @@ const useAssetAudit = (params: any, guid: string) => {
     const getEventByAction = (asset: any) =>
         eventMap.find((event: any) => event.id === asset.action)
 
-    const filterClassificationTypeNameDisplayName = (parsedDetails: any) =>
-        // eslint-disable-next-line no-nested-ternary
-        typeof parsedDetails === 'object'
-            ? parsedDetails?.typeName ?? ''
-            : typeof parsedDetails === 'string'
-                ? parsedDetails
-                : ''
+    const filterClassificationTypeNameDisplayName = (parsedDetails: any) => {
+        if (typeof parsedDetails === 'object')
+            return parsedDetails?.typeName ?? ''
+        else if (typeof parsedDetails === 'string')
+            return parsedDetails
+        return ''
+    }
+
+
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''

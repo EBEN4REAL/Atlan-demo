@@ -58,6 +58,11 @@ export const SQLAttributes = [
     'definition',
     'isPrimary',
     'order',
+    'isPartition',
+    'isSort',
+    'isIndexed',
+    'isForeign',
+    'isDist',
 ]
 
 export const GlossaryRelationAttributes = ['name']

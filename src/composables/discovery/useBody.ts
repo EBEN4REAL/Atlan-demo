@@ -14,8 +14,6 @@ export function useBody(
 ) {
     const base = bodybuilder()
 
-    console.log('xxx', facets, postFacets)
-
     if (queryText) {
         base.orQuery('match', 'name', { query: queryText })
         base.orQuery('match', 'name', {
@@ -137,6 +135,22 @@ export function useBody(
                 }
                 break
             }
+            case 'properties': {
+                if (filterObject) {
+                    filterObject.forEach((element) => {
+                        if (element.operator === 'equals') {
+                            if (element.value !== '') {
+                                base.filter(
+                                    'term',
+                                    element.operand,
+                                    element.value
+                                )
+                            }
+                        }
+                    })
+                }
+                break
+            }
         }
     })
 
@@ -172,7 +186,6 @@ export function useBody(
     //aggregations
 
     if (aggregations) {
-        console.log(aggregations)
         aggregations?.forEach((mkey) => {
             switch (mkey) {
                 case 'typeName': {

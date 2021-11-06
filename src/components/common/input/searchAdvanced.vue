@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-    import { useVModels } from '@vueuse/core'
+    import { useTimeoutFn, useVModels } from '@vueuse/core'
     import {
         computed,
         defineComponent,
@@ -62,10 +62,13 @@
                 type: String as PropType<'default' | 'minimal'>,
                 default: () => 'default',
             },
-            modelValue: { type: String, default: () => '' },
+            modelValue: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
         },
         emits: ['change', 'update:modelValue'],
-
         setup(props, { emit }) {
             const { autofocus } = toRefs(props)
 
@@ -73,6 +76,14 @@
 
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
             const localValue = ref(modelValue.value)
+
+            const { start } = useTimeoutFn(() => {
+                searchBar.value?.focus()
+            }, 100)
+
+            const forceFocus = () => {
+                start()
+            }
 
             // computed({
             //     get: () => modelValue.value,
@@ -91,7 +102,6 @@
             })
 
             const handleChange = () => {
-                console.log('change', localValue.value)
                 modelValue.value = localValue.value
                 emit('change')
             }
@@ -106,6 +116,7 @@
                 searchBar,
                 clearInput,
                 handleChange,
+                forceFocus,
             }
         },
     })

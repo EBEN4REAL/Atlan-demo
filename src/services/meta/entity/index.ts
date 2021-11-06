@@ -12,27 +12,42 @@ const BulkUpdate = <T>(
     options?: useOptions
 ) => useAPI<T>(map.ENTITY_BULK_UPDATE, 'POST', { body }, options || {})
 
-
 const EntityUpdate = <T>(
     body: Ref<Record<string, any>> | Record<string, any>,
     options?: useOptions
 ) => useAPI<T>(map.ENTITY_UPDATE, 'POST', { body }, options || {})
 
-const fetchMoreAudits = <T>(fetchmoreParams: any, guid: string) => useAPI<T>(map.GET_ASSET_AUDIT, 'GET', {
-    params: fetchmoreParams,
-    pathVariables: { guid },
-}, {})
+const fetchMoreAudits = <T>(fetchmoreParams: any, guid: string) =>
+    useAPI<T>(
+        map.GET_ASSET_AUDIT,
+        'GET',
+        {
+            params: fetchmoreParams,
+            pathVariables: { guid },
+        },
+        {}
+    )
 
-const fetchAudits = (params: any, guid: string) => useAPI<
-    Components.Schemas.EntityAuditEventV2[]>(map.GET_ASSET_AUDIT, 'GET', {
-        params,
-        pathVariables: { guid },
+const fetchAudits = (params: any, guid: string) =>
+    useAPI<Components.Schemas.EntityAuditEventV2[]>(
+        map.GET_ASSET_AUDIT,
+        'GET',
+        {
+            params,
+            pathVariables: { guid },
+        },
+        {}
+    )
 
-    }, {})
+const SetClassifications = <T>(
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) => useAPI<T>(map.ENTITY_SET_CLASSIFICATIONS, 'POST', { body }, options || {})
 
 export const Entity = {
     fetchAudits,
     BulkUpdate,
     EntityUpdate,
-    fetchMoreAudits
+    fetchMoreAudits,
+    SetClassifications,
 }

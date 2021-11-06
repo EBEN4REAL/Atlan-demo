@@ -1,5 +1,5 @@
 <template>
-    <AssetDiscovery></AssetDiscovery>
+    <AssetDiscovery :selected-asset="selectedAsset"></AssetDiscovery>
 </template>
 
 <script lang="ts">
@@ -12,6 +12,12 @@
     export default defineComponent({
         components: {
             AssetDiscovery,
+        },
+        props: {
+            selectedAsset: {
+                type: Object,
+                required: true,
+            },
         },
         setup() {
             useHead({

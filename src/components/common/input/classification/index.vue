@@ -1,87 +1,152 @@
 <template>
-    <div class="flex flex-col justify-between text-xs text-gray-500">
-        <p class="mb-1 text-sm">Classifications</p>
-
-        <div
-            v-if="list.length > 0 || list.length"
-            class="flex flex-wrap gap-1 text-sm"
+    <div class="flex flex-wrap items-center gap-1 text-sm">
+        <a-popover
+            placement="leftBottom"
+            class="classification-popover"
+            @visibleChange="handleVisibleChange"
+            :trigger="['click']"
+            v-model:visible="isEdit"
         >
-            <template v-for="classification in list" :key="classification.guid">
-                <div
-                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-pink-400 hover:border-pink-400 group hover:shadow"
-                    :class="
-                        classification.entityGuid !== selectedAsset.guid
-                            ? 'border-dotted'
-                            : 'border-solid'
-                    "
-                >
-                    <AtlanIcon
-                        icon="ShieldFilled"
-                        class="text-pink-400 group-hover:text-white"
-                        v-if="classification.entityGuid !== selectedAsset.guid"
-                    ></AtlanIcon>
-                    <AtlanIcon
-                        icon="Shield"
-                        class="text-pink-400 group-hover:text-white"
-                        v-else
-                    ></AtlanIcon>
-
-                    <div class="ml-1 group-hover:text-white">
-                        {{ classification.displayName || classification.name }}
-                    </div>
-                </div>
+            <template #content>
+                <ClassificationFacet
+                    :key="guid"
+                    v-model="selectedValue"
+                    ref="classificationFacetRef"
+                    @change="handleSelectedChange"
+                ></ClassificationFacet>
             </template>
-        </div>
+            <a-button
+                shape="circle"
+                size="small"
+                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+            >
+                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+            ></a-button>
+        </a-popover>
+
+        <template v-for="classification in list" :key="classification.guid">
+            <ClassificationPill
+                :name="classification.name"
+                :displayName="classification?.displayName"
+                :isPropagated="isPropagated(classification)"
+                :allowDelete="true"
+            ></ClassificationPill>
+        </template>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, toRefs } from 'vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import { assetInterface } from '~/types/assets/asset.interface'
-
+    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
+    import { useVModels } from '@vueuse/core'
+    import ClassificationFacet from '@/common/facet/classification/index.vue'
     import { mergeArray } from '~/utils/array'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import ClassificationPill from '@/common/pills/classification.vue'
 
     export default defineComponent({
-        name: 'ClassificationWidget',
-        components: {},
+        components: {
+            ClassificationFacet,
+            ClassificationPill,
+        },
         props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-            editPermission: {
-                type: Boolean,
+            guid: {
+                type: String,
                 required: false,
-                default: true,
+            },
+            modelValue: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
             },
         },
-        emits: ['update:selectedAsset'],
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { selectedAsset } = toRefs(props)
+            const { modelValue } = useVModels(props, emit)
+            const { guid } = toRefs(props)
+            const localValue = ref(modelValue.value)
+            const selectedValue = ref(modelValue.value.map((i) => i.typeName))
 
-            const { classifications } = useAssetInfo()
+            const isEdit = ref(false)
+            const classificationFacetRef: Ref<null | HTMLInputElement> =
+                ref(null)
 
             const { classificationList } = useTypedefData()
+
+            const isPropagated = (classification) => {
+                if (!guid?.value) {
+                    return false
+                }
+                if (guid.value === classification.entityGuid) {
+                    return false
+                }
+                return true
+            }
 
             const list = computed(() => {
                 const { matchingIdsResult } = mergeArray(
                     classificationList.value,
-                    classifications(selectedAsset.value),
+                    localValue.value,
                     'name',
                     'typeName'
                 )
-
                 return matchingIdsResult
             })
 
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
+            }
+
+            const handleSelectedChange = () => {
+                localValue.value = []
+                selectedValue.value.forEach((i) => {
+                    if (
+                        !localValue.value.find(
+                            (l) => l.typeName === i && !l.propagate
+                        )
+                    ) {
+                        localValue.value.push({
+                            entityGuid: guid.value,
+                            propagate: false,
+                            removePropagationsOnEntityDelete: false,
+                            typeName: i,
+                        })
+                    }
+                })
+                handleChange()
+            }
+
+            const handleVisibleChange = () => {
+                console.log(isEdit.value)
+                if (isEdit.value) {
+                    if (classificationFacetRef.value?.forceFocus) {
+                        classificationFacetRef.value?.forceFocus()
+                    }
+                }
+                handleChange()
+            }
+
             return {
-                classifications,
-                classificationList,
+                localValue,
+                isPropagated,
                 list,
+                selectedValue,
+                handleChange,
+                handleVisibleChange,
+                guid,
+                handleSelectedChange,
+                classificationFacetRef,
+                isEdit,
             }
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .classification-popover {
+        :global(.ant-popover-content) {
+            width: 250px !important;
+        }
+    }
+</style>

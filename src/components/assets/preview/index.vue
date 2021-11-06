@@ -10,12 +10,6 @@
                     "
                     class="flex mr-1"
                 >
-                    <!-- <component
-                                :is="dataTypeImage(item)"
-                                class="w-auto h-4 text-gray-500"
-                                style="margin-top: 1px"
-                    ></component> -->
-
                     <component
                         :is="dataTypeCategoryImage(selectedAsset)"
                         class="h-5 text-gray-500 mb-0.5"
@@ -28,13 +22,14 @@
                     {{ title(selectedAsset) }}
                 </router-link>
 
-                <!-- <CertificateBadge
+                <CertificateBadge
+                    v-if="certificateStatus(selectedAsset)"
                     :status="certificateStatus(selectedAsset)"
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
                     class="mb-0.5"
-                ></CertificateBadge> -->
+                ></CertificateBadge>
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -92,6 +87,7 @@
                 </template>
 
                 <component
+                    :key="selectedAsset.guid"
                     :is="tab.component"
                     :selected-asset="selectedAsset"
                 ></component>
@@ -120,7 +116,7 @@
             // SidePanelTabHeaders,
             // NoAccessPage,
             // AtlanButton,
-            info: defineAsyncComponent(() => import('./info/edit.vue')),
+            info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
             property: defineAsyncComponent(
@@ -243,6 +239,10 @@
             :global(.ant-tabs-tab) {
                 padding: 3px 8px !important;
                 @apply justify-center;
+            }
+
+            :global(.ant-tabs-nav-wrap) {
+                @apply pt-3;
             }
 
             :global(.ant-tabs-content) {

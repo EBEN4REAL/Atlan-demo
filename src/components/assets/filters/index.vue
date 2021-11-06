@@ -107,9 +107,11 @@
                             </div>
                         </div>
                     </template>
+
                     <component
                         :key="dirtyFacetTimestamp[item.id]"
                         :is="item.component"
+                        :attributes="item.attributes"
                         v-model="localFacetMap[item.id]"
                         @change="handleChange(item.id)"
                     ></component>
@@ -210,6 +212,7 @@
             const { list: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
+                console.log('custom dynamic list', cmList)
                 if (props.filtersList?.length > 0) {
                     const arr = discoveryFilters.filter((el) =>
                         props.filtersList?.includes(el.id)
@@ -245,6 +248,7 @@
             )
 
             const handleChange = (id) => {
+                console.log(localFacetMap.value)
                 modelValue.value = localFacetMap.value
                 emit('change')
                 dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`

@@ -94,6 +94,7 @@
                     v-else
                     ref="assetlistRef"
                     :list="list"
+                    :selected-asset="selectedAsset"
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
                     @preview="handlePreview"
@@ -105,7 +106,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, watch, Ref } from 'vue'
+    import { computed, defineComponent, ref, watch, Ref, PropType } from 'vue'
     import EmptyView from '@common/empty/discover.vue'
     // import AssetPagination from '@common/pagination/index.vue'
 
@@ -130,6 +131,7 @@
 
     import AtlanIcon from '../common/icon/atlanIcon.vue'
     import useDiscoveryStore from '~/store/discovery'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -147,6 +149,10 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
             },
         },
         setup(props, { emit }) {
@@ -177,8 +183,6 @@
             if (!facets.value.typeName) {
                 facets.value.typeName = '__all'
             }
-
-            console.log('facets assets list', facets.value)
 
             const {
                 list,
@@ -330,10 +334,6 @@
         min-width: 200px;
         :global(.ant-popover-content) {
             @apply shadow-sm;
-        }
-
-        :global(.ant-popover-inner-content) {
-            @apply p-0;
         }
     }
 

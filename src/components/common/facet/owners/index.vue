@@ -2,9 +2,9 @@
     <div class="">
         <div class="flex items-center justify-between px-4 mb-2">
             <SearchAdvanced
+                ref="ownerSearchRef"
+                v-model="queryText"
                 :placeholder="placeholder"
-                :autofocus="true"
-                v-model:value="queryText"
                 class="-mt-1.5"
                 size="minimal"
             >
@@ -48,7 +48,7 @@
         </div>
         <div class="px-4 pt-1" v-if="showNoOwners">
             <a-checkbox
-                :value="null"
+                :checked="null"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
             >
                 <component
@@ -77,7 +77,7 @@
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
-    import { useVModels, toRef } from '@vueuse/core'
+    import { useVModels, toRef, useTimeoutFn } from '@vueuse/core'
 
     // import { Collapse } from '~/types'
 
@@ -95,6 +95,7 @@
         },
         props: {
             modelValue: {
+                type: Object,
                 required: false,
                 default() {
                     return {}
@@ -107,16 +108,15 @@
                 },
             },
         },
-        emits: ['change'],
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-
             const { showNoOwners } = toRefs(props)
-
             const componentType = ref('users')
 
             const queryText = ref('')
+
             const handleGroupClick = () => {
                 componentType.value = 'groups'
                 queryText.value = ''
@@ -145,6 +145,17 @@
                 emit('change')
             })
 
+            const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
+            const { start } = useTimeoutFn(() => {
+                if (ownerSearchRef.value?.forceFocus) {
+                    ownerSearchRef.value?.forceFocus()
+                }
+            }, 100)
+
+            const forceFocus = () => {
+                start()
+            }
+
             return {
                 handleGroupClick,
                 componentType,
@@ -154,6 +165,8 @@
                 queryText,
                 localValue,
                 showNoOwners,
+                ownerSearchRef,
+                forceFocus,
             }
         },
     })

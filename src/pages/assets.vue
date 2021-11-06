@@ -7,6 +7,7 @@
                         <keep-alive>
                             <component
                                 :is="Component"
+                                :selected-asset="selectedAsset"
                                 :key="isItem ? 'profile' : 'discover'"
                             />
                         </keep-alive>

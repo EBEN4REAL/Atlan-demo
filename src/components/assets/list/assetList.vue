@@ -1,7 +1,19 @@
 <template>
     <VirtualList :data="list" data-key="guid" variable-height>
         <template #default="{ item }">
-            <AssetItem :item="item" @click="handlePreview(item)"></AssetItem>
+            <div
+                class="mx-3 my-1 transition-all duration-300  hover:bg-primary-light"
+                :class="
+                    item.guid === selectedAssetId
+                        ? 'outline-primary bg-primary-light shadow-sm'
+                        : ''
+                "
+            >
+                <AssetItem
+                    :item="item"
+                    @click="handlePreview(item)"
+                ></AssetItem>
+            </div>
         </template>
         <template #footer>
             <div
@@ -95,13 +107,18 @@
                 required: false,
                 default: () => false,
             },
+            selectedGuid: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
         },
         emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
-            const { list, autoSelect } = toRefs(props)
+            const { list, autoSelect, selectedGuid } = toRefs(props)
             // const storeDiscovery = useDiscoveryStore()
             // const { selectedAsset } = storeToRefs(storeDiscovery)
-            const selectedAssetId = ref('')
+            const selectedAssetId = ref(selectedGuid.value)
             // const shouldReSelect = false
 
             const handlePreview = (item: any) => {
@@ -183,7 +200,7 @@
 
             return {
                 // handlePreview,
-                // selectedAssetId,
+                selectedAssetId,
                 list,
                 handlePreview,
                 // bulkSelectedAssets,
@@ -194,3 +211,5 @@
         },
     })
 </script>
+
+<style lang="less" scoped></style>

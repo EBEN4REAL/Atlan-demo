@@ -57,6 +57,7 @@ export const SQLAttributes = [
     'dataType',
     'definition',
     'isPrimary',
+    'order',
     'isPartition',
     'isSort',
     'isIndexed',

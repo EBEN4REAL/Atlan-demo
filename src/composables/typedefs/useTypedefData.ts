@@ -6,9 +6,11 @@ export default function useTypedefData() {
 
     const classificationList = computed(() => typedefStore.classificationList)
 
+    const customMetadataList = computed(() => typedefStore.customMetadataList)
+
     return {
         classificationList,
-        customMetadataList: typedefStore.customMetadataList,
+        customMetadataList,
         enumList: typedefStore.enumList,
     }
 }

@@ -107,6 +107,7 @@
                             </div>
                         </div>
                     </template>
+
                     <component
                         :key="dirtyFacetTimestamp[item.id]"
                         :is="item.component"
@@ -210,6 +211,7 @@
             const { list: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
+                console.log('custom dynamic list', cmList)
                 if (props.filtersList?.length > 0) {
                     const arr = discoveryFilters.filter((el) =>
                         props.filtersList?.includes(el.id)

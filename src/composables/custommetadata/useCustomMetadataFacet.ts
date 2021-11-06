@@ -13,15 +13,15 @@ export default function useCustomMetadataFacet() {
      * */
     const list = computed(() => {
         console.log(customMetadataList)
-        if (customMetadataList?.length > 0) {
-            return customMetadataList
+        if (customMetadataList.value?.length > 0) {
+            return customMetadataList.value
                 .filter((bm) =>
                     bm.attributeDefs.some((a) => a.options?.isFacet === 'true')
                 )
                 .map((bm) => ({
                     id: bm.name,
                     label: bm.displayName,
-                    component: 'businessMetadata',
+                    component: 'properties',
                     image: bm.options?.image || '',
                     overallCondition: 'OR',
                     isDeleted: false,
@@ -35,5 +35,6 @@ export default function useCustomMetadataFacet() {
     return {
         list,
         propertyAttributeList,
+        customMetadataList,
     }
 }

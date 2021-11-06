@@ -39,6 +39,8 @@
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
+        name: 'ExpertActivity',
+
         components: {
             PillGroup,
             Pill,

@@ -80,7 +80,7 @@
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import UserAvatar from '@/common/avatar/user.vue'
-    import UserPill from '@/common/avatar/userPill.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     // import OwnerInfoCard from '@/assets/preview/hovercards/ownerInfo.vue'

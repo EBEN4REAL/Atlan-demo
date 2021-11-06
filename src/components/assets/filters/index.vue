@@ -108,7 +108,7 @@
                         </div>
                     </template>
                     <component
-                        :key="dirtyTimestamp[item.id]"
+                        :key="dirtyFacetTimestamp[item.id]"
                         :is="item.component"
                         v-model="localFacetMap[item.id]"
                         @change="handleChange(item.id)"
@@ -199,6 +199,7 @@
             const activeKey: Ref<string[]> = ref([])
 
             const dirtyTimestamp = ref({})
+            const dirtyFacetTimestamp = ref({})
 
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -254,6 +255,8 @@
 
             const handleClear = (id: string) => {
                 delete localFacetMap.value[id]
+                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
+                dirtyFacetTimestamp.value[id] = `dirty_${Date.now().toString()}`
                 handleChange(id)
             }
 
@@ -262,6 +265,9 @@
                 modelValue.value = localFacetMap.value
 
                 discoveryFilters.forEach((i) => {
+                    dirtyFacetTimestamp.value[
+                        i.id
+                    ] = `dirty_${Date.now().toString()}`
                     dirtyTimestamp.value[
                         i.id
                     ] = `dirty_${Date.now().toString()}`
@@ -367,6 +373,7 @@
                 getConnectorImageMap,
                 totalFilteredCount,
                 handleResetAll,
+                dirtyFacetTimestamp,
             }
         },
     })

@@ -35,7 +35,6 @@
     import { useRoute } from 'vue-router'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import Resources from '@common/resources/index.vue'
 
     import AssetHeader from '@/assets/profile/header/index.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -50,7 +49,6 @@
         name: 'AssetProfile',
         components: {
             AssetHeader,
-            Resources,
             lineage: defineAsyncComponent(
                 () => import('@/assets/profile/tabs/lineage/index.vue')
             ),

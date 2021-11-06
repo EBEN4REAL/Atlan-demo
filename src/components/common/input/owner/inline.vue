@@ -1,66 +1,84 @@
 <template>
     <div class="flex flex-wrap gap-1 text-sm">
+        <template v-for="username in localValue?.ownerUsers" :key="username">
+            <UserPill
+                :username="username"
+                :allowDelete="true"
+                @delete="handleDeleteUser"
+            ></UserPill>
+        </template>
+
+        <template v-for="name in localValue?.ownerGroups" :key="name">
+            <GroupPill :name="name" :allowDelete="true"></GroupPill>
+        </template>
         <a-popover placement="leftBottom" class="owner-popover">
             <template #content>
-                <OwnerFacets></OwnerFacets>
+                <OwnerFacets
+                    :key="guid"
+                    v-model="localValue"
+                    @change="handleChange"
+                ></OwnerFacets>
             </template>
             <a-button shape="circle" class="text-center">
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-for="username in localValue?.users" :key="username">
-            <UserPill :username="username" :allowDelete="true"></UserPill>
-        </template>
-
-        <template v-for="name in localValue?.groups" :key="name">
-            <GroupPill :name="name"></GroupPill>
-        </template>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
 
-    import UserAvatar from '@/common/avatar/user.vue'
-    import UserPill from '@/common/avatar/userPill.vue'
-    import GroupPill from '@/common/avatar/groupPill.vue'
-
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
-
-    import { useVModels } from '@vueuse/core'
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'OwnersWidget',
         components: { UserPill, GroupPill, AtlanIcon, OwnerFacets },
         props: {
+            guid: {
+                type: String,
+                required: false,
+            },
             modelValue: {
+                type: Array,
                 required: false,
             },
         },
-        // emits: ['update:modelValue', 'change'],
+        emits: ['change'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
-
-            console.log(modelValue.value)
+            const { modelValue, guid } = toRefs(props)
             const localValue = ref(modelValue.value)
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
+            const handleChange = () => {
+                emit('change', localValue.value)
+            }
+
+            const handleDeleteUser = (username) => {
+                localValue.value.ownerUsers =
+                    localValue.value?.ownerUsers.filter(
+                        (item) => item !== username
+                    )
+            }
 
             return {
                 localValue,
+                handleChange,
+                handleDeleteUser,
+                guid,
             }
         },
     })
 </script>
 <style lang="less" scoped>
     .owner-popover {
+        :global(.ant-popover-content) {
+            width: 250px !important;
+        }
         :global(.ant-popover-inner-content) {
             @apply px-0 mx-0 !important;
             --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),

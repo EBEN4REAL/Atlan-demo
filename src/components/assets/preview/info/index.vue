@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full px-5 pt-4 gap-y-4">
+    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-4">
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16"

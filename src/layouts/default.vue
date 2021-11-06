@@ -14,7 +14,7 @@
         <a-layout class="w-full h-full">
             <a-layout-content
                 class="relative flex w-full overflow-hidden"
-                style="height: calc(100vh - 48px) !important"
+                style="height: calc(100vh - 40px) !important"
             >
                 <a-drawer
                     v-if="currentRoute.path !== '/'"
@@ -43,6 +43,7 @@
                         class="border-r border-gray-200"
                     />
                 </div>
+
                 <div class="w-full">
                     <CmndK
                         :isCmndKVisible="isCmndKVisible"

@@ -1,17 +1,16 @@
 import { ref, watch } from 'vue'
-import { useAPI } from '~/services/api/useAPI'
-import { map } from '~/services/meta/entity/key'
+import { Entity } from '~/services/meta/entity/index'
 import { generateUUID } from '~/utils/helper/generator'
 import { message } from 'ant-design-vue'
 
-export default function useAddResource(selectedAsset, readmeContent) {
+export default function useAddResource(selectedAsset, link, linkTitle) {
     const body = ref({
         entity: {
             typeName: 'Link',
             attributes: {
                 qualifiedName: generateUUID(),
-                name: `${selectedAsset?.displayText} Link`,
-                description: readmeContent,
+                name: linkTitle,
+                link: link,
             },
             relationshipAttributes: {
                 asset: {
@@ -22,19 +21,18 @@ export default function useAddResource(selectedAsset, readmeContent) {
         },
     })
     const newResource = () => {
-        const { data, error, isLoading } = useAPI(
-            map.ADD_RESOURCE,
-            'POST',
-            {
-                body,
-            }, {}
-        )
+        const { data, error, isLoading } = Entity.EntityUpdate(body, {})
+
         watch(data, () => {
-            selectedAsset.attributes.readme = {
-                ...data.value.mutatedEntities.CREATE[0],
+            if (data.value && !isLoading.value && !error.value) {
+                selectedAsset.attributes.links.push({ ...data.value.mutatedEntities.CREATE[0] })
+                message.success('Resource added!')
             }
-            message.success('Resource added!')
-        })
+            else if (error.value && !isLoading.value) {
+                message.error('Not able to add resource right now. Try again later!')
+            }
+        }
+        )
         return { data, error, isLoading }
     }
     return {

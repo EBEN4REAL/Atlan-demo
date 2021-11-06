@@ -135,6 +135,8 @@ export function useBody(
                 }
                 break
             }
+            case 'column':
+            case 'table':
             case 'properties': {
                 if (filterObject) {
                     filterObject.forEach((element) => {
@@ -146,6 +148,71 @@ export function useBody(
                                     element.value
                                 )
                             }
+                        }
+                        if (element.operator === 'notEquals') {
+                            if (element.value !== '') {
+                                base.notFilter(
+                                    'term',
+                                    element.operand,
+                                    element.value
+                                )
+                            }
+                        }
+                        if (element.operator === 'startsWith') {
+                            if (element.value !== '') {
+                                base.filter(
+                                    'prefix',
+                                    element.operand,
+                                    element.value
+                                )
+                            }
+                        }
+                        if (element.operator === 'endsWith') {
+                            if (element.value !== '') {
+                                base.filter(
+                                    'wildcard',
+                                    element.operand,
+                                    `*${element.value}`
+                                )
+                            }
+                        }
+                        if (element.operator === 'pattern') {
+                            if (element.value !== '') {
+                                base.filter(
+                                    'regexp',
+                                    element.operand,
+                                    element.value
+                                )
+                            }
+                        }
+                        if (element.operator === 'isNull') {
+                            base.notFilter('exists', element.operand)
+                        }
+                        if (element.operator === 'isNotNull') {
+                            base.filter('exists', element.operand)
+                        }
+                        if (element.operator === 'greaterThan') {
+                            base.filter('range', element.operand, {
+                                gt: element.value,
+                            })
+                        }
+                        if (element.operator === 'greaterThanEqual') {
+                            base.filter('range', element.operand, {
+                                gte: element.value,
+                            })
+                        }
+                        if (element.operator === 'lessThan') {
+                            base.filter('range', element.operand, {
+                                gt: element.value,
+                            })
+                        }
+                        if (element.operator === 'lessThanEqual') {
+                            base.filter('range', element.operand, {
+                                gte: element.value,
+                            })
+                        }
+                        if (element.operator === 'boolean') {
+                            base.filter('term', element.operand, element.value)
                         }
                     })
                 }

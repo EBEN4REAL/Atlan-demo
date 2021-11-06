@@ -60,6 +60,113 @@ export const discoveryFilters = [
                 displayName: 'Unique Indentifier',
                 typeName: 'string',
             },
+            {
+                name: 'qualifiedName',
+                displayName: 'Qualified Name',
+                typeName: 'string',
+            },
+            {
+                name: 'name.keyword',
+                displayName: 'Name',
+                typeName: 'string',
+            },
+            {
+                name: '__modifiedBy',
+                displayName: 'Last Updated By',
+                typeName: '__user',
+            },
+            {
+                name: '__createdBy',
+                displayName: 'Created By',
+                typeName: '__user',
+            },
+        ],
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: 'table',
+        label: 'Table/View',
+        component: 'properties',
+        attributes: [
+            {
+                name: 'rowCount',
+                displayName: 'Row Count',
+                typeName: 'long',
+            },
+            {
+                name: 'columnCount',
+                displayName: 'Column Count',
+                typeName: 'long',
+            },
+            {
+                name: 'sizeBytes',
+                displayName: 'Size(Bytes)',
+                typeName: 'long',
+            },
+            {
+                name: 'schemaName',
+                displayName: 'Schema Name',
+                typeName: 'string',
+            },
+            {
+                name: 'databaseName',
+                displayName: 'Database Name',
+                typeName: 'string',
+            },
+        ],
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: 'column',
+        label: 'Column',
+        component: 'properties',
+        attributes: [
+            {
+                name: 'dataType',
+                displayName: 'Data Type',
+                typeName: 'string',
+            },
+            {
+                name: 'tableName',
+                displayName: 'Table Name',
+                typeName: 'string',
+            },
+            {
+                name: 'viewName',
+                displayName: 'View Name',
+                typeName: 'string',
+            },
+            {
+                name: 'schemaName',
+                displayName: 'Schema Name',
+                typeName: 'string',
+            },
+            {
+                name: 'databaseName',
+                displayName: 'Database Name',
+                typeName: 'string',
+            },
+            {
+                name: 'isPrimary',
+                displayName: 'Primary Key',
+                typeName: 'boolean',
+            },
+            {
+                name: 'isPartition',
+                displayName: 'Partition Key',
+                typeName: 'boolean',
+            },
+            {
+                name: 'isSort',
+                displayName: 'Sort Key',
+                typeName: 'boolean',
+            },
         ],
         overallCondition: 'OR',
         isDeleted: false,

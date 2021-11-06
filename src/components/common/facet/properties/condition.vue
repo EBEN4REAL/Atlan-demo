@@ -1,6 +1,9 @@
 <template>
     <div class="flex flex-col gap-y-1" :key="index">
-        <div class="flex items-center gap-x-1">
+        <div
+            class="flex items-center gap-x-1"
+            v-if="property.typeName !== 'boolean'"
+        >
             <a-select
                 class="flex-1"
                 v-model:value="localCondition.operator"
@@ -23,11 +26,13 @@
             ></a-button>
         </div>
 
-        <DynamicInput
-            :dataType="property.typeName"
-            v-model="localCondition.value"
-            @change="handleValueChange"
-        ></DynamicInput>
+        <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
+            <DynamicInput
+                :dataType="property.typeName"
+                v-model="localCondition.value"
+                @change="handleValueChange"
+            ></DynamicInput>
+        </div>
     </div>
 </template>
 
@@ -82,14 +87,16 @@
             }
 
             const handleOperatorChange = () => {
-                console.log('handle', localCondition.value.operator)
                 condition.value.operand = property.value.name
                 condition.value.operator = localCondition.value.operator
                 emit('change')
             }
 
             const handleValueChange = () => {
-                console.log('handle', localCondition.value.value)
+                if (property.value.typeName === 'boolean') {
+                    condition.value.operator = 'boolean'
+                }
+
                 condition.value.operand = property.value.name
                 condition.value.value = localCondition.value.value
                 emit('change')

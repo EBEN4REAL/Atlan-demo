@@ -5,7 +5,7 @@ export const operators = {
             label: 'Equals(=)',
         },
         {
-            id: 'not equals',
+            id: 'notEquals',
             label: 'Not Equals(!=)',
         },
         {
@@ -21,8 +21,12 @@ export const operators = {
             label: 'Pattern',
         },
         {
-            id: 'isEmpty',
-            label: 'Is Empty',
+            id: 'isNull',
+            label: 'Is Null',
+        },
+        {
+            id: 'isNotNull',
+            label: 'Is Not Null',
         },
     ],
     int: [
@@ -31,24 +35,60 @@ export const operators = {
             label: 'Equals(=)',
         },
         {
-            id: 'not equals',
+            id: 'notEquals',
             label: 'Not Equals(!=)',
         },
         {
-            id: 'greater than',
+            id: 'greaterThan',
             label: 'Greater Than(>)',
         },
         {
-            id: 'greater than',
+            id: 'greaterThanEqual',
             label: 'Greater Than Equal(>=)',
         },
         {
-            id: 'less than',
+            id: 'lessThan',
             label: 'Less Than(<)',
         },
         {
-            id: 'less than',
+            id: 'lessThanEqual',
             label: 'Less Than Equal(<=)',
+        },
+    ],
+    long: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+        {
+            id: 'greaterThan',
+            label: 'Greater Than(>)',
+        },
+        {
+            id: 'greaterThanEqual',
+            label: 'Greater Than Equal(>=)',
+        },
+        {
+            id: 'lessThan',
+            label: 'Less Than(<)',
+        },
+        {
+            id: 'lessThanEqual',
+            label: 'Less Than Equal(<=)',
+        },
+    ],
+    __user: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'not equals',
+            label: 'Not Equals(!=)',
         },
         {
             id: 'isNull',

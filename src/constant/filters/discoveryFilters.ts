@@ -90,6 +90,7 @@ export const discoveryFilters = [
         id: 'table',
         label: 'Table/View',
         component: 'properties',
+        includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         attributes: [
             {
                 name: 'rowCount',
@@ -126,6 +127,7 @@ export const discoveryFilters = [
         id: 'column',
         label: 'Column',
         component: 'properties',
+        includes: ['Column'],
         attributes: [
             {
                 name: 'dataType',

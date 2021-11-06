@@ -8,6 +8,7 @@
                 :key="dirtyTimestamp"
                 v-model="facets"
                 @change="handleFilterChange"
+                :typeName="postFacets.typeName"
                 v-if="showFilters"
             ></AssetFilters>
         </div>

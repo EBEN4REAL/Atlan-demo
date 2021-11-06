@@ -54,6 +54,9 @@
             lineage: defineAsyncComponent(
                 () => import('@/assets/profile/tabs/lineage/index.vue')
             ),
+            columns: defineAsyncComponent(
+                () => import('@/assets/profile/tabs/columns/index.vue')
+            ),
         },
         setup() {
             const { selectedAsset, getProfileTabs } = useAssetInfo()

@@ -14,8 +14,6 @@ export function useBody(
 ) {
     const base = bodybuilder()
 
-    console.log('xxx', facets, postFacets)
-
     if (queryText) {
         base.orQuery('match', 'name', { query: queryText })
         base.orQuery('match', 'name', {
@@ -172,7 +170,6 @@ export function useBody(
     //aggregations
 
     if (aggregations) {
-        console.log(aggregations)
         aggregations?.forEach((mkey) => {
             switch (mkey) {
                 case 'typeName': {

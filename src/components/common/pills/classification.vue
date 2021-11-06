@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center py-1 pl-1 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-primary group hover:border-primary"
+        class="flex items-center py-1 pl-1 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-pink-400 group hover:border-pink-400"
     >
         <AtlanIcon
             icon="ShieldFilled"

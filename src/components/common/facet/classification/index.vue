@@ -1,12 +1,11 @@
 <template>
     <div class="flex items-center justify-between px-4 mb-2">
         <SearchAdvanced
+            ref="classificationSearchRef"
             placeholder="Search classifications"
             :autofocus="true"
-            v-model:value="queryText"
+            v-model="queryText"
             class="-mt-1.5"
-            size="minimal"
-            @change="handleSearchChange"
         >
         </SearchAdvanced>
     </div>
@@ -20,7 +19,8 @@
                 <div class="status">
                     <a-checkbox
                         :value="item.name"
-                        class="inline-flex flex-row-reverse items-center w-full mb-1  atlan-reverse"
+                        :class="$style.atlanReverse"
+                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                     >
                         <div class="flex items-center">
                             <AtlanIcon
@@ -54,12 +54,20 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRef, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRef,
+        toRefs,
+        watch,
+    } from 'vue'
     import { certificateList } from '~/constant/certification'
     import noStatus from '~/assets/images/status/nostatus.svg'
 
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { useDebounceFn, useVModels } from '@vueuse/core'
+    import { useDebounceFn, useTimeoutFn, useVModels } from '@vueuse/core'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useTypedefStore } from '~/store/typedef'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -94,20 +102,38 @@
                 emit('change')
             }
 
+            const classificationSearchRef: Ref<null | HTMLInputElement> =
+                ref(null)
+            const { start } = useTimeoutFn(() => {
+                if (classificationSearchRef.value?.forceFocus) {
+                    classificationSearchRef.value?.forceFocus()
+                }
+            }, 100)
+
+            const forceFocus = () => {
+                start()
+            }
+
             return {
                 filteredList,
                 localValue,
                 noStatus,
                 handleChange,
-
+                forceFocus,
                 queryText,
             }
         },
     })
 </script>
 
-<style lang="less" scoped>
-    :global(.atlan-reverse > span:nth-child(2)) {
-        @apply w-full pl-0;
+<style lang="less" module>
+    .atlanReverse {
+        > span:nth-child(2) {
+            @apply w-full pl-0;
+        }
+
+        :global(.ant-checkbox) {
+            top: 0px !important;
+        }
     }
 </style>

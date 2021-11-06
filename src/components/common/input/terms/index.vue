@@ -1,34 +1,10 @@
 <template>
     <div class="flex flex-col justify-between text-xs text-gray-500">
-        <p class="mb-1 text-sm">Terms</p>
-
-        <div
-            v-if="list.length > 0 || list.length"
-            class="flex flex-wrap gap-1 text-sm"
-        >
+        <div v-if="list.length > 0" class="flex flex-wrap gap-1 text-sm">
             <template v-for="term in list" :key="term.termGuid">
                 <div
-                    class="
-                        flex
-                        items-center
-                        py-1
-                        pl-1
-                        pr-2
-                        text-gray-700
-                        bg-white
-                        border border-gray-200
-                        rounded-full
-                        cursor-pointer
-                        hover:bg-purple hover:border-purple
-                        group
-                        hover:shadow hover:text-white
-                    "
+                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                 >
-                    <!-- <AtlanIcon
-                        icon="ShieldFilled"
-                        class="text-pink-400 group-hover:text-white"
-                        v-if="classification.entityGuid !== selectedAsset.guid"
-                    ></AtlanIcon>-->
                     <AtlanIcon
                         :icon="icon(term)"
                         class="group-hover:text-white text-purple"
@@ -40,6 +16,12 @@
                 </div>
             </template>
         </div>
+        <p
+            class="text-xs text-gray-500 cursor-pointer  text-primary hover:underline"
+            v-else
+        >
+            Link terms
+        </p>
     </div>
 </template>
 

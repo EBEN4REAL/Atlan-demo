@@ -1,34 +1,10 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div class="flex flex-col mx-3">
-        <div
-            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 border-b border-gray-200 "
-        >
+    <div class="flex flex-col">
+        <div class="flex items-start flex-1 px-3 py-3">
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
-                <!-- Asset type + Hierarchy bar -->
-                <div class="flex items-center text-gray-500 gap-x-2">
-                    <!-- <AssetLogo
-                        v-if="showAssetTypeIcon"
-                        :asset="item"
-                        :selected="isSelected"
-                    />
-
-                    <HierarchyBar
-                        v-if="projection?.includes('hierarchy')"
-                        :selected-asset="item"
-                    /> -->
-                </div>
-
-                <!-- Title bar -->
-                <!-- <div
-                    v-if="item.guid === '-1'"
-                    class="flex flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate overflow-ellipsis whitespace-nowrap"
-                >
-                    <div>{{ item.displayText }}</div>
-                    <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
-                </div> -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <div
                         class="flex mr-1"
@@ -172,24 +148,24 @@
                             "
                         >
                             <AtlanIcon
-                                icon="Key"
-                                class="mr-1 mb-0.5"
+                                icon="PrimaryKey"
+                                class="mb-0.5 text-yellow-500"
                             ></AtlanIcon>
 
                             <span
                                 class="ml-1 text-sm text-gray-700"
                                 v-if="isPrimary(item)"
-                                >Primary Key</span
+                                >Primary</span
                             >
                             <span
                                 class="ml-1 text-sm text-gray-700"
                                 v-if="isDist(item)"
-                                >Dist Key</span
+                                >Dist</span
                             >
                             <span
                                 class="ml-1 text-sm text-gray-700"
                                 v-if="isPartition(item)"
-                                >Partition Key</span
+                                >Partition</span
                             >
                         </div>
                     </div>

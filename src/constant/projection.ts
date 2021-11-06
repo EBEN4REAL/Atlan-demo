@@ -56,6 +56,12 @@ export const SQLAttributes = [
     'databaseName',
     'dataType',
     'definition',
+    'isPrimary',
+    'isPartition',
+    'isSort',
+    'isIndexed',
+    'isForeign',
+    'isDist',
 ]
 
 export const GlossaryRelationAttributes = ['name']
@@ -67,7 +73,7 @@ export const AssetRelationAttributes = [
     'name',
     'description',
     'shortDescription',
-    'link'
+    'link',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

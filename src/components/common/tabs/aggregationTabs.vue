@@ -131,6 +131,15 @@
             box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.05) !important;
 
             transition: all 0.8s ease-out;
+
+            &:hover {
+                @apply bg-primary-light !important;
+                @apply text-primary !important;
+                @apply border-primary-light !important;
+                .chip {
+                    @apply text-primary !important;
+                }
+            }
         }
         :global(.ant-tabs-nav) {
             @apply mb-0;
@@ -177,6 +186,12 @@
 
         :global(.ant-tabs-nav::before) {
             @apply border-0 !important;
+        }
+
+        :global(.ant-tabs-tab-btn:focus) {
+            @apply bg-primary-light !important;
+            @apply text-primary !important;
+            @apply border-primary !important;
         }
     }
 </style>

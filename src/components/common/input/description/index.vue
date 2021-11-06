@@ -1,85 +1,49 @@
 <template>
-    <div class="text-xs text-gray-500">
-        <div class="flex items-center justify-between mb-1 text-sm">
-            <span> Description</span>
-            <span class="cursor-pointer text-primary">edit</span>
-        </div>
-        <p class="text-sm text-gray-700">{{ description(selectedAsset) }}</p>
-        <!-- <div class="flex">
+    <div
+        class="flex flex-col px-1 rounded hover:bg-primary-light"
+        :class="isEdit ? 'bg-primary-light' : ''"
+    >
+        <div class="text-sm text-gray-700 editable" @click="handleEdit">
+            <span v-if="!isEdit && localValue">{{ localValue }}</span>
+            <span v-else-if="!isEdit && localValue === ''"
+                >No description available</span
+            >
             <a-textarea
-                id="description-sidebar"
-                v-model:value="descriptionInput"
-                class="inline-block w-full text-sm cursor-pointer text-gray focus:bg-gray-100"
-                autofocus
-                placeholder="Add an asset description"
-                show-count
-                :maxlength="140"
+                ref="descriptionRef"
+                tabindex="0"
+                v-model:value="localValue"
+                v-else
+                @blur="handleBlur"
                 :rows="4"
-            >
-            </a-textarea>
-            <span v-if="isLoading && !usingInInfo" class="ml-2">
-                <a-spin size="small" class="leading-none"></a-spin>
-            </span> -->
-        <!--     </div> -->
-        <!-- <span
-            v-if="
-                description !== '' &&
-                !showEditableDescription &&
-                !isLoading
-            "
-            class="inline-block w-full px-2 py-1 text-sm rounded-sm cursor-pointer text-gray hover:bg-gray-100"
-            style="margin-bottom: -4px; margin-top: -4px; margin-left: -8px"
-            @click="handleAddDescriptionClick"
-        >
-            {{ description }}
-        </span> -->
-        <!-- <div
-            v-if="
-                (!description || description === '') &&
-                !showEditableDescription &&
-                !isLoading
-            "
-        >
-            <span
-                v-if="editPermission"
-                class="text-xs cursor-pointer text-primary hover:underline"
-                @click="handleAddDescriptionClick"
-            >
-                Add description</span
-            >
-            <span v-else class="text-xs text-gray-500 cursor-pointer">
-                No description</span
-            >
-        </div> -->
+            ></a-textarea>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import {
         defineComponent,
-        PropType,
-        toRefs,
-        ref,
-        watch,
         nextTick,
+        onMounted,
+        PropType,
+        Ref,
+        ref,
+        toRefs,
+        watch,
     } from 'vue'
-    // import { message } from 'ant-design-vue'
-    // import updateAsset from '~/composables/discovery/updateAsset'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    // import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import {
+        useMagicKeys,
+        useTimeoutFn,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
 
     export default defineComponent({
         name: 'DescriptionWidget',
         props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
+            modelValue: {
+                type: String,
                 required: true,
-            },
-            usingInInfo: {
-                type: Boolean,
-                default: () => true,
             },
             editPermission: {
                 type: Boolean,
@@ -87,98 +51,62 @@
                 default: true,
             },
         },
-        emits: ['update:selectedAsset'],
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { selectedAsset } = toRefs(props)
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+            const isEdit = ref(false)
+            const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
 
-            const { description } = useAssetInfo()
-
-            // const descriptionLocal = ref(description(selectedAsset.value))
-
-            // const { data, mutate, error, isLoading } = updateAsset({})
-
-            // // const showEditableDescription = ref<boolean>(false)
-            // // const isError = ref<boolean>(false)
-
-            // const descriptionInput = ref()
-            // const handleDescriptionEdit = (e: any) => {
-            //     if (
-            //         descriptionLocal.value === e.target.value ||
-            //         descriptionLocal.value === undefined
-            //     ) {
-            //         showEditableDescription.value = false
-            //     } else {
-            //         descriptionLocal.value = e.target.value
-            //         mutate()
-            //         // watch(error, () => {
-            //         //     if (error && error.value) {
-            //         //         isError.value = true
-            //         //     }
-            //         // })
-            //         // watch(isLoading, () => {
-            //         //     if (isLoading.value === false) {
-            //         //         showEditableDescription.value = false
-            //         //     }
-            //         // })
-
-            //         // watch(isError, () => {
-            //         //     if (isError.value) {
-            //         //         handleCancel()
-            //         //         message.error(
-            //         //             'Unable to update description. Please try again later.'
-            //         //         )
-            //         //         isError.value = false
-            //         //     }
-            //         // })
-            //     }
-            // }
-
-            const endEditDescription = () => {
-                document.getElementById('description-sidebar').blur()
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
             }
 
-            // const handleAddDescriptionClick = () => {
-            //     if (props.editPermission) {
-            //         showEditableDescription.value = true
-            //         nextTick(() => {
-            //             descriptionInput.value = description.value
-            //             document.getElementById('description-sidebar').focus()
-            //         })
-            //     }
-            // }
+            const { start } = useTimeoutFn(() => {
+                descriptionRef.value?.focus()
+            }, 100)
 
-            // watch(description, () => {
-            //     // event sent on update description
-            //     if (
-            //         selectedAsset.value?.typeName === 'AtlasGlossary' ||
-            //         selectedAsset.value?.typeName === 'AtlasGlossaryTerm' ||
-            //         selectedAsset.value?.typeName === 'AtlasGlossaryCategory'
-            //     )
-            //         useAddEvent('gtc', 'metadata', 'description_updated', {
-            //             gtc_type: assetTypeLabel[selectedAsset.value?.typeName],
-            //         })
-            //     else
-            //         useAddEvent(
-            //             'discovery',
-            //             'metadata',
-            //             'description_updated',
-            //             undefined
-            //         )
+            const handleBlur = () => {
+                isEdit.value = false
+                handleChange()
+            }
+            const handleEdit = () => {
+                isEdit.value = true
+                start()
+            }
 
-            //     emit('update:selectedAsset', selectedAsset.value)
-            // })
+            const { d /* keys you want to monitor */ } = useMagicKeys()
+
+            watch(d, (v) => {
+                if (v) {
+                    console.log('Description')
+                    if (!isEdit.value) {
+                        handleEdit()
+                    }
+                }
+            })
 
             return {
-                description,
-                selectedAsset,
-                // description,
-                // handleDescriptionEdit,
-                // endEditDescription,
-                // // showEditableDescription,
-                // handleAddDescriptionClick,
-                // descriptionInput,
-                // isLoading,
+                localValue,
+                handleEdit,
+                handleChange,
+                descriptionRef,
+                isEdit,
+                start,
+                handleBlur,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .editable {
+        :global(.ant-input) {
+            @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none  !important;
+        }
+        :global(.ant-input:focus) {
+            @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none !important;
+        }
+    }
+</style>

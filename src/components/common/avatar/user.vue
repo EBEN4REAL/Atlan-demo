@@ -31,10 +31,10 @@
             },
             avatarShape: {
                 type: String,
-                default: 'round',
+                default: 'circle',
             },
             avatarSize: {
-                type: String as PropType<Number | String>,
+                type: Number as PropType<Number | String>,
                 default: 20,
             },
             showUsername: {

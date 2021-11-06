@@ -375,7 +375,7 @@
                         !uniqueColumns[col.guid] &&
                         (uniqueColumns[col.guid] = true)
                 )
-
+                console.log(filteredColumnsList)
                 const filteredListData = filteredColumnsList.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
@@ -392,6 +392,7 @@
                     filteredList: filteredListData,
                 }
 
+                console.log(filteredListData)
                 if (column.value !== '') {
                     columnsList.value?.forEach((singleRow) => {
                         if (singleRow.guid === column.value) {
@@ -445,7 +446,6 @@
             //         })
             //     }
             // })
-
             return {
                 rowClassName,
                 customRow,
@@ -458,6 +458,7 @@
                 // isLoading,
                 // loadMore,
                 // handleFilterChange,
+                dataTypeCategoryList,
                 handleCloseColumnSidebar,
                 propagateToColumnList,
                 clearAllFilters,

@@ -23,6 +23,7 @@ export default function useCustomMetadataFacet() {
                     label: bm.displayName,
                     component: 'properties',
                     image: bm.options?.image || '',
+                    attributes: bm.attributeDefs,
                     overallCondition: 'OR',
                     isDeleted: false,
                     isDisabled: false,

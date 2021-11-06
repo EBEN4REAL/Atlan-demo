@@ -2,6 +2,7 @@
     <a-input
         v-if="dataType === 'string'"
         v-model:value="localValue"
+        @change="handleInputChange"
         :maxlength="max || 50"
     ></a-input>
     <a-input-number
@@ -38,12 +39,18 @@
             dataType: { default: 'string' },
             max: { type: Number },
         },
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
             const localValue = ref(modelValue.value)
 
-            return { localValue }
+            const handleInputChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
+            }
+
+            return { localValue, handleInputChange }
         },
     })
 </script>

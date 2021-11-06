@@ -135,6 +135,22 @@ export function useBody(
                 }
                 break
             }
+            case 'properties': {
+                if (filterObject) {
+                    filterObject.forEach((element) => {
+                        if (element.operator === 'equals') {
+                            if (element.value !== '') {
+                                base.filter(
+                                    'term',
+                                    element.operand,
+                                    element.value
+                                )
+                            }
+                        }
+                    })
+                }
+                break
+            }
         }
     })
 

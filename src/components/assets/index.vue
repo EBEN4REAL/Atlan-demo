@@ -335,10 +335,6 @@
         :global(.ant-popover-content) {
             @apply shadow-sm;
         }
-
-        :global(.ant-popover-inner-content) {
-            @apply p-0;
-        }
     }
 
     .tab {

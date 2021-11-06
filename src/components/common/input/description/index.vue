@@ -3,7 +3,11 @@
         class="flex flex-col px-1 rounded hover:bg-primary-light"
         :class="isEdit ? 'bg-primary-light' : ''"
     >
-        <div class="text-sm text-gray-700 editable" @click="handleEdit">
+        <div
+            class="text-sm text-gray-700"
+            @click="handleEdit"
+            :class="$style.editable"
+        >
             <span v-if="!isEdit && localValue">{{ localValue }}</span>
             <span v-else-if="!isEdit && localValue === ''"
                 >No description available</span
@@ -100,7 +104,7 @@
     })
 </script>
 
-<style lang="less" scoped>
+<style lang="less" module>
     .editable {
         :global(.ant-input) {
             @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none  !important;

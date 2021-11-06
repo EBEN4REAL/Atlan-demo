@@ -5,7 +5,16 @@
     >
         <template #title>
             <div class="flex items-center justify-between gap-x-4">
-                <span> {{ property.displayName }}</span>
+                <div class="flex items-center">
+                    <span class="mr-1"> {{ property.displayName }}</span>
+                    <a-tooltip placement="top">
+                        <template #content>
+                            {{ property.description }}
+                        </template>
+                        <AtlanIcon icon="Info"></AtlanIcon>
+                    </a-tooltip>
+                </div>
+
                 <span class="text-xs cursor-pointer" @click="handleClearAll">
                     Clear All</span
                 >
@@ -22,6 +31,7 @@
                         :index="index"
                         :property="property"
                         :condition="condition"
+                        @change="handleChangeCondition"
                         @clear="handleRemove(index)"
                     ></Condition>
                     <a-divider class="my-1">
@@ -72,6 +82,7 @@
                 },
             },
         },
+        emits: ['update:Condition', 'change'],
         setup(props, { emit }) {
             const { property } = toRefs(props)
 
@@ -104,11 +115,17 @@
                 handleAdd()
             }
 
+            const handleChangeCondition = () => {
+                conditions.value = localConditions.value
+                emit('change')
+            }
+
             return {
                 property,
                 localConditions,
                 handleAdd,
                 handleClearAll,
+                handleChangeCondition,
                 handleRemove,
             }
         },
@@ -122,6 +139,7 @@
         }
         .ant-popover-inner-content {
             max-height: 200px;
+            width: 250px;
             overflow-y: auto;
         }
     }

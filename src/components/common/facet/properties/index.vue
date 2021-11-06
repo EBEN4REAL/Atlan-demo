@@ -18,6 +18,8 @@
             <Popover
                 :trigger="['click']"
                 :property="item"
+                v-model:conditions="localValue"
+                @change="handleChange"
                 placement="rightBottom"
                 @click="handleClick(item.name)"
             >
@@ -66,7 +68,7 @@
             modelValue: {
                 required: false,
             },
-            list: {
+            attributes: {
                 required: false,
                 default() {
                     return []
@@ -82,24 +84,26 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
+            const { attributes } = toRefs(props)
+
             const { propertyAttributeList } = useCustomMetadataFacet()
 
             const filteredList = computed(() =>
-                propertyAttributeList.value.filter((i) =>
+                attributes.value.filter((i) =>
                     i.displayName
                         .toLowerCase()
                         .includes(queryText.value.toLowerCase())
                 )
             )
 
-            const handleChange = () => {
-                modelValue.value = localValue.value
-                emit('change')
-            }
-
             const handleClick = (id) => {
                 console.log('click', id)
                 activeProperty.value = id
+            }
+
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
             }
 
             return {
@@ -111,6 +115,8 @@
                 queryText,
                 handleClick,
                 activeProperty,
+                attributes,
+                handleChange,
             }
         },
     })

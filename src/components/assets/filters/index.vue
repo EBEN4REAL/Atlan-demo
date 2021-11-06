@@ -111,6 +111,7 @@
                     <component
                         :key="dirtyFacetTimestamp[item.id]"
                         :is="item.component"
+                        :attributes="item.attributes"
                         v-model="localFacetMap[item.id]"
                         @change="handleChange(item.id)"
                     ></component>
@@ -247,6 +248,7 @@
             )
 
             const handleChange = (id) => {
+                console.log(localFacetMap.value)
                 modelValue.value = localFacetMap.value
                 emit('change')
                 dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`

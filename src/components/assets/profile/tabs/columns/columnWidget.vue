@@ -57,7 +57,6 @@
                             <a-tooltip placement="left">
                                 {{ text }}
                             </a-tooltip>
-
                             <div v-if="record.is_primary" class="mb-1 ml-2">
                                 <AtlanIcon icon="Pin" />
                             </div>
@@ -70,6 +69,9 @@
                 <!-- description col -->
                 <template #description="{ text }">
                     <!-- <Tooltip :tooltip-text="text" /> -->
+                    <a-tooltip placement="left">
+                        {{ text }}
+                    </a-tooltip>
                 </template>
                 <!-- popularity col -->
                 <template #popularity="{ text }">
@@ -152,7 +154,7 @@
     // import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     // Composables
-    // import { images, dataTypeList } from '~/constant/datatype'
+    import { images, dataTypeCategoryList } from '~/constant/datatype'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     // import {
     //     useColumnsList,
@@ -351,7 +353,7 @@
 
             const getDataType = (type: string) => {
                 let label = ''
-                dataTypeList.forEach((i) => {
+                dataTypeCategoryList.forEach((i) => {
                     if (i.type.includes(type?.toUpperCase())) label = i.label
                 })
                 return label
@@ -364,6 +366,7 @@
                     ...list.value,
                     // ...columnFromUrl.value,
                 ]
+                console.log(columnsList.value)
 
                 // In case column is selected from discovery and after clicking load more duplication of the same column happens
                 const uniqueColumns = {}
@@ -426,9 +429,9 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            // watch([list, pinnedList, columnFromUrl], () => {
-            //     filterColumnsList()
-            // })
+            watch([list], () => {
+                filterColumnsList()
+            })
 
             // onMounted(() => {
             //     // If redirected from asset column discovery
@@ -465,6 +468,7 @@
                 colCount,
                 showColumnPreview,
                 selectedRowData,
+                images,
                 columns: [
                     {
                         width: 40,

@@ -65,8 +65,6 @@
             }
 
             watch(list, (cur, prev) => {
-                console.log('changed', cur, prev)
-
                 const initialValue = 0
                 const sum = list.value.reduce(
                     (accumulator, currentValue) =>
@@ -83,18 +81,17 @@
                 )
 
                 localList.value = list.value
-                if (!found && modelValue.value !== '__all') {
-                    if (currentType) {
-                        currentType.count = 0
-                        localList.value.unshift(currentType)
-                    }
-                }
 
                 localList.value.unshift({
                     id: '__all',
                     label: 'All',
                     count: sum,
                 })
+
+                if (!found && modelValue.value !== '__all') {
+                    localValue.value = '__all'
+                    handleChange()
+                }
             })
 
             return {

@@ -96,8 +96,8 @@
                         :parentGlossaryQualifiedName="parentGlossaryQualifiedName"
                         :categories="
                             mode === 'create'
-                                ? categoryId
-                                    ? [{ guid: categoryId }]
+                                ? parentCategoryGuid
+                                    ? [{ guid: parentCategoryGuid }]
                                     : []
                                 : entity.attributes.categories
                         "
@@ -154,6 +154,7 @@
         PropType,
         toRefs,
     } from 'vue'
+    import { useVModels } from '@vueuse/core'
 
     import StatusBadge from '@common/badge/status/index.vue'
     // import AddGtcModalOwners from './addGtcModalOwners.vue'
@@ -181,7 +182,6 @@
             entityType: {
                 type: String as PropType<'glossary' | 'category' | 'term'>,
                 required: true,
-                default: '',
             },
             parentGlossaryGuid: {
                 type: String,
@@ -192,7 +192,7 @@
                 type: String,
                 required: false,
             },
-            categoryId: {
+            parentCategoryGuid: {
                 type: String,
                 required: false,
             },
@@ -216,11 +216,12 @@
                 default: false,
             },
         },
-        emits: ['onAddGlossary'],
+        emits: ['onAddGlossary', 'update:visible'],
         setup(props, { emit }) {
             const { username: myUsername } = whoami()
 
-            const { entity, visible } = toRefs(props)
+            const { entity } = toRefs(props)
+            const visible = ref(props.visible)
 
             const title = ref<string>('')
             const description = ref<string | undefined>('')
@@ -405,8 +406,8 @@
                     if (props.entityType === 'term')
                         createTerm({
                             parentGlossaryGuid: props.parentGlossaryGuid,
-                            parentCategoryGuid: props.categoryId,
-                            parentCategoryQf: props.categoryQualifiedName ?? entity.value?.attributes?.qualifiedName,
+                            parentCategoryGuid: props.parentCategoryGuid,
+                            parentCategoryQf: props.categoryQualifiedName,
                             title: title.value,
                             description: description.value,
                             status: currentStatus.value,
@@ -417,7 +418,7 @@
                     else if (props.entityType === 'category')
                         createCategory({
                             parentGlossaryGuid: props.parentGlossaryGuid,
-                            parentCategoryGuid: props.categoryId ?? props.entity?.attributes?.qualifiedName,
+                            parentCategoryGuid: props.parentCategoryGuid,
                             parentCategoryQf: props.categoryQualifiedName,
                             title: title.value,
                             description: description.value,

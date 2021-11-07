@@ -34,11 +34,10 @@
                     v-else-if="!isLoading && !searchQuery?.length"
                     class="h-full mt-2"
                 >
+                    <!-- Glossary level CTAs -->
                     <div
                         class="flex justify-between px-4  hover:bg-black hover:bg-opacity-5"
                     >
-
-                        <!-- Glossary level CTAs -->
                         <div class="flex items-center ml-5 pl-0.5">
                             <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                             <div
@@ -85,6 +84,25 @@
                                     class="w-6 h-6 ml-0.5"
                                     :entity="parentGlossary"
                                 /> -->
+                                <!-- <AddGtcModal
+                                    entityType="glossary"
+                                >
+                                    <template #header>
+                                        <ModalHeader
+                                            parentEntityType="AtlasGlossary"
+                                            :parentEntityTitle="parentGlossaryTitle"
+                                            entity-to-add="glossary"
+                                        />
+                                    </template>
+                                    <template #trigger>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                class="m-auto ml-0.5"
+                                                icon="Add"
+                                            />                                
+                                        </div>
+                                    </template>
+                                </AddGtcModal> -->
                                 <AtlanIcon
                                     class="m-auto ml-0.5"
                                     icon="Add"
@@ -107,6 +125,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Tree Start -->
                     <div 
@@ -262,7 +281,6 @@
     // library
     import {
         defineComponent,
-        computed,
         PropType,
         ref,
         toRef,
@@ -279,7 +297,8 @@
     // import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     // import AddCta from '~/components/glossary/tree/addCta.vue'
     // import Tooltip from '@/common/ellipsis/index.vue'
-    // import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
+    import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
+    import ModalHeader from '@/glossary/modal/modalHeader.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import GlossaryTreeItem from '@/glossary/tree/glossaryTreeItem.vue'
     import GlossaryContextSwitcher from '@/glossary/tree/glossaryContextSwitcher.vue'
@@ -289,7 +308,6 @@
 
     // constant
     // import { List as StatusList } from '~/constant/status'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
 
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
@@ -302,10 +320,10 @@
             // AddCta,
             // LoadingView,
             // ThreeDotMenu,
-            AtlanIcon,
             AtlanBtn,
             // Tooltip,
-            // AddGtcModal,
+            AddGtcModal,
+            ModalHeader,
             SearchAdvanced,
             GlossaryTreeItem,
             GlossaryContextSwitcher,
@@ -508,14 +526,7 @@
                     @apply bg-black bg-opacity-5 !important;
                 }
             }
-            // :global(.ant-tree-treenode-switcher-close) {
-            //     max-height: 28px !important;
-            // }
-            // :global(.ant-tree-treenode-switcher-open) {
-            //     li {
-            //         max-height: 28px !important;
-            //     }
-            // }
+
             :global(.ant-tree-node-content-wrapper) {
                 @apply mb-2 border-0;
             }

@@ -2,8 +2,8 @@ import { watch, ref, Ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
-import { Components } from '~/types/atlas/client'
 
+import redirect from '@/glossary/utils/redirectToProfile'
 
 // import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { Glossary } from '~/services/meta/glossary/index';
@@ -42,6 +42,7 @@ const useCreateGlossary = () => {
     const error = ref<any>()
     const isLoading = ref<boolean | null>()
     const router = useRouter()
+    const redirectToProfile = redirect(router);
 
     const { username } = whoami()
 
@@ -85,7 +86,7 @@ const useCreateGlossary = () => {
         } = Glossary.CreateGlossary(body.value)
 
         watch(data, (newData) => {
-            if (newData?.guid) {
+            if (newData && newData.guid) {
                 // useAddEvent('gtc', 'glossary', 'created', undefined)
 
                 message.success({
@@ -94,7 +95,7 @@ const useCreateGlossary = () => {
                     duration: 2,
                 })
                 setTimeout(() => {
-                    // redirectToProfile('glossary', newData.guid)
+                    redirectToProfile('AtlasGlossary', newData.guid)
                 }, 500)
             }
         })

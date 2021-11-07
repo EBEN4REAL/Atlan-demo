@@ -76,6 +76,7 @@
     import redirect from '@/glossary/utils/redirectToProfile'
 
     export default defineComponent({
+        name: 'GlossaryTreeItem',
         props: {
             entity: {
                 type: Object as PropType<Glossary | Term | Category>,

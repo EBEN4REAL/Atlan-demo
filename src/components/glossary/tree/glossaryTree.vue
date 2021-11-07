@@ -297,6 +297,7 @@
     import { Glossary } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
+        name: 'GlossaryTree',
         components: {
             // AddCta,
             // LoadingView,

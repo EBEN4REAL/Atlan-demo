@@ -110,6 +110,7 @@
     import { useGlossaryStore } from '~/store/glossary';
 
     export default defineComponent({
+        name: 'GlossaryContextSwitcher',
         props: {
             currentGlossaryGuid: {
                 type: String,

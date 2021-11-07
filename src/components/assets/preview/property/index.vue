@@ -119,7 +119,7 @@
 
     import Owners from '@/common/input/owner/index.vue'
     import useConnectionData from '~/composables/connection/useConnectionData'
-    import UserPill from '@/common/avatar/userPill.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     import { capitalizeFirstLetter } from '~/utils/string'
 

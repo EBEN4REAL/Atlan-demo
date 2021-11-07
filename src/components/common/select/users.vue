@@ -1,39 +1,24 @@
 <template>
-    <div class="w-full overflow-y-auto h-44">
-        <div
-            v-if="userList.length < 1"
-            class="flex flex-col items-center justify-center h-full"
-        >
-            <div class="flex flex-col items-center">
-                <span class="text-gray-500">No Users Found</span>
-            </div>
-        </div>
-        <div class="flex flex-col w-full">
-            <a-checkbox-group
-                v-model:value="localValue"
-                class="w-full px-3"
-                @change="handleChange"
-            >
-                <template v-for="item in userList" :key="item.username">
-                    <a-checkbox
-                        :value="item.username"
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
-                        :class="$style.atlanReverse"
-                    >
-                        <div class="text-sm leading-none capitalize text-gray">
-                            {{ fullName(item) }}
-                            <span
-                                class="text-sm text-gray-500"
-                                v-if="item.username === username"
-                            >
-                                (me)
-                            </span>
-                        </div>
-                    </a-checkbox>
-                </template>
-            </a-checkbox-group>
-        </div>
-    </div>
+    <a-select
+        placeholder="Users"
+        v-model:value="localValue"
+        class="w-full"
+        @change="handleChange"
+    >
+        <a-select-option :value="item.username" v-for="item in userList">
+            {{ fullName(item) }}
+
+            <!-- <div class="text-sm leading-none capitalize text-gray">
+                {{ item }}
+                <span
+                    class="text-sm text-gray-500"
+                    v-if="item.username === username"
+                >
+                    (me)
+                </span>
+            </div> -->
+        </a-select-option>
+    </a-select>
 </template>
 
 <script lang="ts">

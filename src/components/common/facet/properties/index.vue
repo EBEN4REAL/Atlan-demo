@@ -14,30 +14,32 @@
     </div>
 
     <div class="flex flex-col w-full px-2 gap-y-1">
-        <template v-for="item in filteredList" :key="item.name">
-            <Popover
-                :trigger="['click']"
-                :property="item"
-                placement="rightBottom"
-                @click="handleClick(item.name)"
+        <Popover
+            v-for="item in filteredList"
+            :key="item.name"
+            :trigger="['click']"
+            :property="item"
+            v-model:conditions="localValue"
+            @change="handleChange"
+            placement="rightBottom"
+            @click="handleClick(item.name)"
+        >
+            <div
+                class="flex items-center justify-between px-2 py-1 rounded  hover:border-primary hover:bg-primary-light"
+                :class="
+                    activeProperty === item.name
+                        ? 'border border-primary bg-primary-light'
+                        : ''
+                "
             >
-                <div
-                    class="flex items-center justify-between px-2 py-1 rounded  hover:border-primary hover:bg-primary-light"
-                    :class="
-                        activeProperty === item.name
-                            ? 'border border-primary bg-primary-light'
-                            : ''
-                    "
-                >
-                    <div class="text-gray-700">
-                        {{ item.displayName }}
-                    </div>
-                    <div class="text-gray-500">
-                        <AtlanIcon icon="CaretRight" class="h-3"></AtlanIcon>
-                    </div>
+                <div class="text-gray-700">
+                    {{ item.displayName }}
                 </div>
-            </Popover>
-        </template>
+                <div class="text-gray-500">
+                    <AtlanIcon icon="CaretRight" class="h-3"></AtlanIcon>
+                </div>
+            </div>
+        </Popover>
     </div>
 </template>
 
@@ -66,7 +68,7 @@
             modelValue: {
                 required: false,
             },
-            list: {
+            attributes: {
                 required: false,
                 default() {
                     return []
@@ -82,24 +84,26 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
+            const { attributes } = toRefs(props)
+
             const { propertyAttributeList } = useCustomMetadataFacet()
 
             const filteredList = computed(() =>
-                propertyAttributeList.value.filter((i) =>
+                attributes.value.filter((i) =>
                     i.displayName
                         .toLowerCase()
                         .includes(queryText.value.toLowerCase())
                 )
             )
 
-            const handleChange = () => {
-                modelValue.value = localValue.value
-                emit('change')
-            }
-
             const handleClick = (id) => {
                 console.log('click', id)
                 activeProperty.value = id
+            }
+
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
             }
 
             return {
@@ -111,6 +115,8 @@
                 queryText,
                 handleClick,
                 activeProperty,
+                attributes,
+                handleChange,
             }
         },
     })

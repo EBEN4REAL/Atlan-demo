@@ -107,9 +107,11 @@
                             </div>
                         </div>
                     </template>
+
                     <component
                         :key="dirtyFacetTimestamp[item.id]"
                         :is="item.component"
+                        :attributes="item.attributes"
                         v-model="localFacetMap[item.id]"
                         @change="handleChange(item.id)"
                     ></component>
@@ -185,6 +187,13 @@
                     return false
                 },
             },
+            typeName: {
+                type: String,
+                required: false,
+                default() {
+                    return '_all'
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -192,6 +201,8 @@
             const { getConnectorImageMap } = useAssetInfo()
 
             const { modelValue } = useVModels(props, emit)
+
+            const { typeName } = toRefs(props)
 
             const localFacetMap = ref(modelValue.value)
 
@@ -214,9 +225,33 @@
                     const arr = discoveryFilters.filter((el) =>
                         props.filtersList?.includes(el.id)
                     )
-                    return [...arr]
+                    return [...arr, ...cmList.value]
                 }
-                return [...discoveryFilters, ...cmList.value]
+
+                const arr = discoveryFilters.filter((el) => {
+                    if (el.includes) {
+                        if (el.includes.includes(typeName.value)) {
+                            return true
+                        }
+
+                        if (
+                            el.id === 'column' &&
+                            modelValue.value.column?.length > 0
+                        ) {
+                            return true
+                        }
+                        if (
+                            el.id === 'table' &&
+                            modelValue.value.table?.length > 0
+                        ) {
+                            return true
+                        }
+
+                        return false
+                    }
+                    return true
+                })
+                return [...arr, ...cmList.value]
             })
 
             const isFiltered = (id) => {
@@ -245,6 +280,7 @@
             )
 
             const handleChange = (id) => {
+                console.log(localFacetMap.value)
                 modelValue.value = localFacetMap.value
                 emit('change')
                 dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`

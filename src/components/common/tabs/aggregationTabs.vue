@@ -65,8 +65,6 @@
             }
 
             watch(list, (cur, prev) => {
-                console.log('changed', cur, prev)
-
                 const initialValue = 0
                 const sum = list.value.reduce(
                     (accumulator, currentValue) =>
@@ -83,18 +81,17 @@
                 )
 
                 localList.value = list.value
-                if (!found && modelValue.value !== '__all') {
-                    if (currentType) {
-                        currentType.count = 0
-                        localList.value.unshift(currentType)
-                    }
-                }
 
                 localList.value.unshift({
                     id: '__all',
                     label: 'All',
                     count: sum,
                 })
+
+                if (!found && modelValue.value !== '__all') {
+                    localValue.value = '__all'
+                    handleChange()
+                }
             })
 
             return {
@@ -131,6 +128,15 @@
             box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.05) !important;
 
             transition: all 0.8s ease-out;
+
+            &:hover {
+                @apply bg-primary-light !important;
+                @apply text-primary !important;
+                @apply border-primary-light !important;
+                .chip {
+                    @apply text-primary !important;
+                }
+            }
         }
         :global(.ant-tabs-nav) {
             @apply mb-0;
@@ -177,6 +183,12 @@
 
         :global(.ant-tabs-nav::before) {
             @apply border-0 !important;
+        }
+
+        :global(.ant-tabs-tab-btn:focus) {
+            @apply bg-primary-light !important;
+            @apply text-primary !important;
+            @apply border-primary !important;
         }
     }
 </style>

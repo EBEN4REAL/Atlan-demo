@@ -59,6 +59,9 @@ module.exports = {
                     DEFAULT: '#6D6DDA'
                 }
             },
+            outline: {
+                primary: ['1px solid #5277D7', '0px']
+            }
         },
     },
     variants: {

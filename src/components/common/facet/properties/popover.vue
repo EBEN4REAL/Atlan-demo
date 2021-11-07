@@ -5,7 +5,16 @@
     >
         <template #title>
             <div class="flex items-center justify-between gap-x-4">
-                <span> {{ property.displayName }}</span>
+                <div class="flex items-center">
+                    <span class="mr-1"> {{ property.displayName }}</span>
+                    <a-tooltip placement="top">
+                        <template #content>
+                            {{ property.description }}
+                        </template>
+                        <AtlanIcon icon="Info"></AtlanIcon>
+                    </a-tooltip>
+                </div>
+
                 <span class="text-xs cursor-pointer" @click="handleClearAll">
                     Clear All</span
                 >
@@ -13,34 +22,22 @@
         </template>
         <template #content>
             <div class=""></div>
-            <div class="flex flex-col gap-y-1">
-                <template
+            <div class="flex flex-col gap-y-2">
+                <Condition
                     v-for="(condition, index) in localConditions"
-                    :key="index"
-                >
-                    <Condition
-                        :index="index"
-                        :property="property"
-                        :condition="condition"
-                        @clear="handleRemove(index)"
-                    ></Condition>
-                    <a-divider class="my-1">
-                        <a-button
-                            size="small"
-                            @click="handleAdd"
-                            v-if="
-                                index === localConditions.length - 1 ||
-                                localConditions.length === 0
-                            "
-                        >
-                            <AtlanIcon
-                                icon="Add"
-                                class="h-3 text-gray-500"
-                            ></AtlanIcon
-                        ></a-button>
-                    </a-divider>
-                </template>
+                    :key="`index${dirtyTimestamp}`"
+                    :index="index"
+                    :property="property"
+                    :condition="condition"
+                    @change="handleChangeCondition"
+                    @clear="handleRemove(index)"
+                ></Condition>
             </div>
+            <a-divider v-if="property.typeName !== 'boolean'" class="my-1">
+                <a-button size="small" @click="handleAdd">
+                    <AtlanIcon icon="Add" class="h-3 text-gray-500"></AtlanIcon
+                ></a-button>
+            </a-divider>
         </template>
 
         <slot></slot>
@@ -72,6 +69,7 @@
                 },
             },
         },
+        emits: ['update:Condition', 'change'],
         setup(props, { emit }) {
             const { property } = toRefs(props)
 
@@ -79,16 +77,13 @@
 
             const localConditions = ref(conditions.value)
 
+            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+
             const handleAdd = () => {
                 localConditions.value.push({
                     operator: '',
                     value: '',
                 })
-            }
-
-            const handleClearAll = () => {
-                localConditions.value = []
-                handleAdd()
             }
 
             const handleRemove = (index) => {
@@ -104,12 +99,30 @@
                 handleAdd()
             }
 
+            const handleChangeCondition = () => {
+                conditions.value = localConditions.value
+                emit('change')
+            }
+
+            const handleClearAll = () => {
+                localConditions.value = []
+                localConditions.value.push({
+                    operator: '',
+                })
+
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+
+                handleChangeCondition()
+            }
+
             return {
                 property,
                 localConditions,
                 handleAdd,
                 handleClearAll,
+                handleChangeCondition,
                 handleRemove,
+                dirtyTimestamp,
             }
         },
     })
@@ -122,6 +135,7 @@
         }
         .ant-popover-inner-content {
             max-height: 200px;
+            width: 250px;
             overflow-y: auto;
         }
     }

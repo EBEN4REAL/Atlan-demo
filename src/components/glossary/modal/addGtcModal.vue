@@ -205,7 +205,7 @@
                 required: false,
                 default: 'create',
             },
-            entity: {
+            entity: { // needed only if mode == 'edit'
                 type: Object as PropType<Glossary | Category | Term>,
                 required: false,
                 default: () => {},
@@ -307,10 +307,9 @@
             const handleOk = () => {
                 title.value = title.value.length ? title.value : `Untitled ${props.entityType}`
                 if (props.mode === 'edit') {
-                    const { data: updateData, updateEntity } =
-                        useUpdateGtcEntity()
                     // if (!selectedCategories.value.length) {
-                        updateEntity(
+                    const { data } =
+                        useUpdateGtcEntity(
                             {
                                 typeName: entity.value.typeName,
                                 qualifiedName: entity.value.attributes.qualifiedName,
@@ -322,13 +321,13 @@
                                     certificateStatus:
                                         currentStatus.value ?? 'DRAFT',
                                     shortDescription: description.value ?? '',
-                                    ownerUsers: ownerUsers?.value?.join(),
-                                    ownerGroups: ownerGroups?.value?.join(),  
+                                    ownerUsers: ownerUsers?.value,
+                                    ownerGroups: ownerGroups?.value,  
                                     categories: selectedCategories.value
                                 }
                             }
                         )
-                        watch(updateData, () => {
+                        watch(data, () => {
                             // if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
                             if (updateTreeNode) {
                                 updateTreeNode({

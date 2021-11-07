@@ -69,7 +69,7 @@
                         >
                             <div
                                 v-if="expandedKeys.length"
-                                class="flex w-6 h-6 bg-opacity-0 cursor-pointer  py-auto"
+                                class="flex bg-opacity-0 cursor-pointer  py-auto"
                                 @click="collapseAll"
                             >
                                 <AtlanIcon
@@ -78,36 +78,9 @@
                                 />
                             </div>
                             <div
-                                class="flex flex-col justify-center bg-opacity-0 "
+                                class="flex flex-col justify-center bg-opacity-0 mr-2"
                             >
-                                <!-- <AddCta
-                                    class="w-6 h-6 ml-0.5"
-                                    :entity="parentGlossary"
-                                /> -->
-                                <!-- <AddGtcModal
-                                    entityType="glossary"
-                                >
-                                    <template #header>
-                                        <ModalHeader
-                                            parentEntityType="AtlasGlossary"
-                                            :parentEntityTitle="parentGlossaryTitle"
-                                            entity-to-add="glossary"
-                                        />
-                                    </template>
-                                    <template #trigger>
-                                        <div class="flex items-center">
-                                            <AtlanIcon
-                                                class="m-auto ml-0.5"
-                                                icon="Add"
-                                            />                                
-                                        </div>
-                                    </template>
-                                </AddGtcModal> -->
-                                <AtlanIcon
-                                    class="m-auto ml-0.5"
-                                    icon="Add"
-                                />
-
+                                <GlossaryAddCta :parentGlossaryGuid="parentGlossaryGuid" :parentGlossaryTitle="parentGlossaryTitle" />
                             </div>
                             <div
                                 class="flex flex-col justify-center bg-opacity-0 "
@@ -119,7 +92,7 @@
                                     :treeMode="true"
                                 /> -->
                                 <AtlanIcon
-                                    class="m-auto ml-0.5"
+                                    class="m-auto ml-1"
                                     icon="KebabMenu"
                                 />
                             </div>
@@ -300,6 +273,7 @@
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
     import ModalHeader from '@/glossary/modal/modalHeader.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import GlossaryAddCta from '@/glossary/tree/glossaryAddCta.vue'
     import GlossaryTreeItem from '@/glossary/tree/glossaryTreeItem.vue'
     import GlossaryContextSwitcher from '@/glossary/tree/glossaryContextSwitcher.vue'
 
@@ -325,6 +299,7 @@
             AddGtcModal,
             ModalHeader,
             SearchAdvanced,
+            GlossaryAddCta,
             GlossaryTreeItem,
             GlossaryContextSwitcher,
   

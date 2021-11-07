@@ -825,7 +825,6 @@ const useGlossaryTree = ({
     }
     // TODO: refactor to not have so many if else. Can be simplified
     const dragAndDropNode = async ({ dragNode, node, event }) => {
-        const { data, error: dropError, updateEntity } = useUpdateGtcEntity()
                                                 
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
@@ -855,14 +854,7 @@ const useGlossaryTree = ({
                                 toGuid,
                                 newCategories
                             )
-                            console.log(
-                                dragNode.dataRef.guid,
-                                fromGuid,
-                                toGuid,
-                                newCategories
-                                ,'bruh'
-                            )
-                            updateEntity({
+                            const { error: dropError } = useUpdateGtcEntity({
                                 typeName: 'AtlasGlossaryTerm',
                                 qualifiedName: dragNode.dataRef.qualifiedName,
                                 name: dragNode.dataRef.attributes?.name,
@@ -882,7 +874,7 @@ const useGlossaryTree = ({
                                 }, 1500)
                             })
                         } else {
-                            updateEntity({
+                            const { data } = useUpdateGtcEntity({
                                 typeName: 'AtlasGlossaryTerm',
                                 qualifiedName: dragNode.dataRef.qualifiedName,
                                 name: dragNode.dataRef.attributes?.name,
@@ -920,7 +912,7 @@ const useGlossaryTree = ({
                                 toGuid,
                                 newCategories
                             )
-                            updateEntity({
+                            const { error: dropError } = useUpdateGtcEntity({
                                 typeName: 'AtlasGlossaryTerm',
                                 qualifiedName: dragNode.dataRef.qualifiedName,
                                 name: dragNode.dataRef.attributes?.name,
@@ -940,7 +932,7 @@ const useGlossaryTree = ({
                                 }, 1500)
                             })
                         } else {
-                            updateEntity({
+                            const { data } = useUpdateGtcEntity({
                                 typeName: 'AtlasGlossaryTerm',
                                 qualifiedName: dragNode.dataRef.qualifiedName,
                                 name: dragNode.dataRef.attributes?.name,

@@ -81,84 +81,82 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import { User } from '@services/keycloak/users/users_api'
-import useRoles from '~/composables/roles/useRoles'
+    import { defineComponent, ref, watch } from 'vue'
+    import { Users } from '~/services/service/users/index'
+    import useRoles from '~/composables/roles/useRoles'
 
-export default defineComponent({
-    name: 'UpdateRole',
-    props: {
-        selectedUser: {
-            type: Object,
-            default: {},
+    export default defineComponent({
+        name: 'UpdateRole',
+        props: {
+            selectedUser: {
+                type: Object,
+                default: {},
+            },
+            allowUpdate: {
+                type: Boolean,
+                default: false,
+            },
         },
-        allowUpdate: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    setup(props, context) {
-        const roles = ref([])
-        const { roleList } = useRoles()
-        watch(roleList, () => {
-            if (roleList && roleList.value) roles.value = roleList.value
-        })
-        const isUpdate = ref(false)
-        const roleLocal = ref(props.selectedUser.role_object.name)
-        const updateErrorMessage = ref('')
-        const updateSuccess = ref(false)
-        const updateLoading = ref(false)
-        const onUpdate = () => {
-            roleLocal.value = props.selectedUser.role_object.name
-            updateErrorMessage.value = ''
-            isUpdate.value = true
-        }
-        const onCancel = () => {
-            roleLocal.value = ''
-            isUpdate.value = false
-        }
-        const requestPayload = ref()
-        const handleUpdate = () => {
-            requestPayload.value = {
-                roleId: roleLocal.value,
+        setup(props, context) {
+            const roles = ref([])
+            const { roleList } = useRoles()
+            watch(roleList, () => {
+                if (roleList && roleList.value) roles.value = roleList.value
+            })
+            const isUpdate = ref(false)
+            const roleLocal = ref(props.selectedUser.role_object.name)
+            const updateErrorMessage = ref('')
+            const updateSuccess = ref(false)
+            const updateLoading = ref(false)
+            const onUpdate = () => {
+                roleLocal.value = props.selectedUser.role_object.name
+                updateErrorMessage.value = ''
+                isUpdate.value = true
             }
-            const { data, isReady, error, isLoading } = User.UpdateUserRole(
-                props.selectedUser.id,
-                requestPayload
-            )
-            watch(
-                [data, isReady, error, isLoading],
-                () => {
-                    updateLoading.value = isLoading.value
-                    if (isReady && !error.value && !isLoading.value) {
-                        // context.emit("updatedUser");
-                        updateSuccess.value = true
-                        updateErrorMessage.value = ''
-                        isUpdate.value = false
-                        setTimeout(() => {
-                            updateSuccess.value = false
-                        }, 2000)
-                    } else if (error && error.value) {
-                        updateErrorMessage.value =
-                            'Unable to update role for the user. Please try again.'
-                    }
-                },
-                { immediate: true }
-            )
-        }
-        return {
-            roles,
-            updateLoading,
-            isUpdate,
-            roleLocal,
-            updateErrorMessage,
-            updateSuccess,
-            onUpdate,
-            onCancel,
-            handleUpdate,
-        }
-    },
-})
+            const onCancel = () => {
+                roleLocal.value = ''
+                isUpdate.value = false
+            }
+            const requestPayload = ref()
+            const handleUpdate = () => {
+                requestPayload.value = {
+                    roleId: roleLocal.value,
+                }
+                const { data, isReady, error, isLoading } =
+                    Users.UpdateUserRole(props.selectedUser.id, requestPayload)
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        updateLoading.value = isLoading.value
+                        if (isReady && !error.value && !isLoading.value) {
+                            // context.emit("updatedUser");
+                            updateSuccess.value = true
+                            updateErrorMessage.value = ''
+                            isUpdate.value = false
+                            setTimeout(() => {
+                                updateSuccess.value = false
+                            }, 2000)
+                        } else if (error && error.value) {
+                            updateErrorMessage.value =
+                                'Unable to update role for the user. Please try again.'
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
+            return {
+                roles,
+                updateLoading,
+                isUpdate,
+                roleLocal,
+                updateErrorMessage,
+                updateSuccess,
+                onUpdate,
+                onCancel,
+                handleUpdate,
+            }
+        },
+    })
 </script>
 
 <style></style>

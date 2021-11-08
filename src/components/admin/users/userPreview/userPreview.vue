@@ -15,7 +15,7 @@
                         ghost
                         @click="
                             () => {
-                                getUser()
+                                getUsers()
                             }
                         "
                     >
@@ -96,7 +96,7 @@
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useUser } from '~/composables/user/useUsers'
+    import { useUsers } from '~/composables/user/useUsers'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
 
     export default defineComponent({
@@ -132,12 +132,13 @@
                 filterObj = {
                     $and: [{ email_verified: true }, { id: userId.value }],
                 }
-            const { userList, getUser, isLoading, state, STATES } = useUser({
-                limit: 1,
-                offset: 0,
-                sort: 'first_name',
-                filter: filterObj,
-            })
+            const { userList, getUserList, isLoading, state, STATES } =
+                useUsers({
+                    limit: 1,
+                    offset: 0,
+                    sort: 'first_name',
+                    filter: filterObj,
+                })
             const userObj = computed(() =>
                 userList && userList.value && userList.value.length
                     ? userList.value[0]
@@ -153,7 +154,7 @@
                 return ''
             })
             const handleUserUpdate = async () => {
-                await getUser()
+                await getUserList()
             }
             return {
                 getNameInitials,
@@ -168,7 +169,7 @@
                 state,
                 STATES,
                 activeKey,
-                getUser,
+                getUsers,
             }
         },
     })

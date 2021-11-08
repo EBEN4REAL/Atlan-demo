@@ -71,43 +71,40 @@
         </div>
     </div>
 </template>
-  
-  <script lang="ts">
-import { defineComponent } from 'vue'
-import Tags from '@common/badge/tags/index.vue'
-import UpdateFirstName from '~/components/admin/users/userPreview/about/updateFirstName.vue'
-import UpdateLastName from '~/components/admin/users/userPreview/about/updateLastName.vue'
-import UpdateMobileNumber from '~/components/admin/users/userPreview/about/updateMobileNumber.vue'
-import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
-import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
-import UpdateRole from '~/components/admin/users/userPreview/about/updateRole.vue'
 
-export default defineComponent({
-    name: 'UserPreviewAboutComponent',
-    components: {
-        Tags,
-        UpdateFirstName,
-        UpdateLastName,
-        UpdateMobileNumber,
-        UpdateSkills,
-        UpdateDesignation,
-        UpdateRole,
-    },
-    props: {
-        selectedUser: {
-            type: Object,
-            default: {},
+<script lang="ts">
+    import { defineComponent } from 'vue'
+    import UpdateFirstName from '~/components/admin/users/userPreview/about/updateFirstName.vue'
+    import UpdateLastName from '~/components/admin/users/userPreview/about/updateLastName.vue'
+    import UpdateMobileNumber from '~/components/admin/users/userPreview/about/updateMobileNumber.vue'
+    import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
+    import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
+    import UpdateRole from '~/components/admin/users/userPreview/about/updateRole.vue'
+
+    export default defineComponent({
+        name: 'UserPreviewAboutComponent',
+        components: {
+            UpdateFirstName,
+            UpdateLastName,
+            UpdateMobileNumber,
+            UpdateSkills,
+            UpdateDesignation,
+            UpdateRole,
         },
-        isCurrentUser: {
-            type: Boolean,
-            default: false,
+        props: {
+            selectedUser: {
+                type: Object,
+                default: {},
+            },
+            isCurrentUser: {
+                type: Boolean,
+                default: false,
+            },
         },
-    },
-})
+    })
 </script>
-  <style lang="less" scoped>
-.tab-content-wrapper {
-    min-height: calc(100vh - 10rem) !important;
-}
+<style lang="less" scoped>
+    .tab-content-wrapper {
+        min-height: calc(100vh - 10rem) !important;
+    }
 </style>
-  

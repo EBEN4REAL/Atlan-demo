@@ -54,7 +54,7 @@
             </a-layout-content>
         </a-layout>
     </a-layout>
-    <!-- <PreviewDrawer /> -->
+    <PreviewDrawer />
     <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 
@@ -62,15 +62,17 @@
     import { defineComponent, ref } from 'vue'
     import { useRouter } from 'vue-router'
     import { useMagicKeys, whenever } from '@vueuse/core'
+    import PreviewDrawer from '@/common/drawer/previewDrawer.vue'
 
     import NavMenu from '@/common/layout/navMenu.vue'
     import SidePanel from '@/common/layout/sidePanel.vue'
     import CmndK from '~/components/common/commandk/cmndK.vue'
 
     export default defineComponent({
-        name: 'Default Layout',
+        name: 'DefaultLayout',
         components: {
             NavMenu,
+            PreviewDrawer,
             SidePanel,
             CmndK,
         },

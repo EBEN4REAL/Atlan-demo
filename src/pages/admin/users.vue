@@ -2,6 +2,7 @@
     <Users v-if="isAccess"></Users>
     <NoAccess v-else />
 </template>
+
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
@@ -11,13 +12,14 @@
     import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
+        name: 'UserPage',
         components: {
             Users,
             NoAccess,
         },
         setup() {
             useHead({
-                title: 'Members',
+                title: 'Users',
             })
             const { isAccess } = useAuth()
             return { isAccess }

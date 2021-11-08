@@ -15,7 +15,7 @@
             <div v-if="$slots.header" class="my-3">
                 <slot name="header"></slot>
             </div>
-            <div class="pb-4 overflow-y-auto"><slot /></div>
+            <div class="h-full pb-4 overflow-y-auto"><slot /></div>
         </div>
     </div>
 </template>
@@ -24,6 +24,7 @@
     import { defineComponent } from 'vue'
 
     export default defineComponent({
+        name: 'DefaultLayout',
         props: { title: String, subTitle: String, badge: String },
     })
 </script>

@@ -5,7 +5,7 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
-    import Overview from '@/admin/overview.vue'
+    import Overview from '@/admin/overview/index.vue'
     import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({

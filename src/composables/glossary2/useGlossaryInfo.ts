@@ -3,7 +3,24 @@ export default function useGlossaryInfo() {
         type: String,
         certificateStatus: String
     ): String => {
-        if (type === 'AtlasGlossary') return `Glossary`
+        let typeName = ''
+
+        if (type === 'AtlasGlossary') {
+            typeName = 'Glossary'
+        } else if (type === 'AtlasGlossaryTerm') {
+            typeName = 'Term'
+        } else if (type === 'AtlasGlossaryCategory') {
+            typeName = 'Category'
+        }
+
+        let status = ''
+        if (certificateStatus === 'VERIFIED') {
+            status = 'Verified'
+        } else if (certificateStatus === 'DRAFT') {
+            status = 'Draft'
+        } else if (certificateStatus === 'DEPRECATED') {
+            status = 'Deprecated'
+        }
 
         if (
             certificateStatus === undefined ||
@@ -11,13 +28,9 @@ export default function useGlossaryInfo() {
             certificateStatus === 'is_null' ||
             certificateStatus === null
         )
-            return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
+            return typeName
 
-        return `${type?.charAt(0).toUpperCase()}${type?.slice(
-            1
-        )}${certificateStatus?.charAt(0).toUpperCase()}${certificateStatus
-            ?.slice(1)
-            .toLowerCase()}`
+        return `${typeName}${status}`
     }
 
     return { getEntityStatusIcon }

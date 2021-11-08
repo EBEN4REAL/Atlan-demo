@@ -4,9 +4,7 @@
             :icon="getEntityStatusIcon(item.typeName, certificateStatus(item))"
         />
 
-        <span class="my-auto text-sm leading-5 text-gray-700">{{
-            title(item)
-        }}</span>
+        <span class="ml-1 text-sm text-gray-700">{{ title(item) }}</span>
     </div>
 </template>
 <script lang="ts">

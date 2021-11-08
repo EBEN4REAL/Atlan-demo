@@ -54,7 +54,7 @@ const useGlossaryTree = ({
     const attributes = ref([...InternalAttributes, ...AssetAttributes])
     const relationAttributes = ref([])
     const preference = ref({
-        sort: 'default',
+        sort: 'name.keyword-asc',
     })
 
     const loadedKeys = ref<string[]>([])
@@ -90,8 +90,32 @@ const useGlossaryTree = ({
 
         if (treeNode.typeName === 'AtlasGlossary') {
             facets.value.glossary = treeNode.attributes?.qualifiedName
+            facets.value.isRootTerm = true
             generateBody()
+            try {
+                await mutate()
+                if (!treeNode.dataRef.children) {
+                    treeNode.dataRef.children = []
+                }
 
+                let map = data.value?.entities.map((i) => ({
+                    ...i,
+                    id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                    key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                    isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                }))
+                if (map) {
+                    treeNode.dataRef.children.push(...map)
+                    loadedKeys.value.push(treeNode.dataRef.key)
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        } else if (treeNode.typeName === 'AtlasGlossaryCategory') {
+            facets.value.glossary =
+                treeNode.attributes?.anchor?.uniqueAttributes?.qualifiedName
+            facets.value.category = treeNode.attributes?.qualifiedName
+            generateBody()
             try {
                 await mutate()
                 if (!treeNode.dataRef.children) {
@@ -104,8 +128,10 @@ const useGlossaryTree = ({
                     key: i.attributes?.qualifiedName,
                     isLeaf: i.typeName === 'AtlasGlossaryTerm',
                 }))
-                treeNode.dataRef.children.push(...map)
-                loadedKeys.value.push(treeNode.dataRef.key)
+                if (map) {
+                    treeNode.dataRef.children.push(...map)
+                    loadedKeys.value.push(treeNode.dataRef.key)
+                }
             } catch (e) {
                 console.log(e)
             }

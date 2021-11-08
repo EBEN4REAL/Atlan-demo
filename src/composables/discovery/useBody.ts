@@ -129,6 +129,18 @@ export function useBody(
                 }
                 break
             }
+            case 'category': {
+                if (filterObject) {
+                    base.filter('term', '__categories', filterObject)
+                }
+                break
+            }
+            case 'isRootTerm': {
+                if (filterObject) {
+                    base.notFilter('exists', '__categories')
+                }
+                break
+            }
             case 'guid': {
                 if (filterObject) {
                     base.filter('term', '__guid', filterObject)

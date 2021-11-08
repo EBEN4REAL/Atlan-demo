@@ -6,6 +6,7 @@
         :load-data="onLoadData"
         :loadedKeys="loadedKeys"
         :treeDataSimpleMode="true"
+        class="bg-transparent"
         :auto-expand-parent="false"
     >
         <template #switcherIcon>
@@ -71,78 +72,4 @@
         },
     })
 </script>
-<style lang="less" module>
-    .createDropdownStyles {
-        :global(.ant-dropdown-menu-item) {
-            @apply m-0 p-1 text-sm leading-5 rounded;
-        }
-    }
-
-    .glossaryTree {
-        background-color: #fafafa;
-
-        :global(.ant-select) {
-            min-width: 236px;
-            width: 100%;
-            @apply m-0 p-0;
-        }
-
-        :global(.ant-input-search) {
-            min-width: 196px;
-            height: 32px;
-        }
-
-        .tree-glossary-actions {
-            .treeMode {
-                @apply bg-opacity-100 !important;
-            }
-        }
-
-        .treeStyles {
-            max-height: calc(100vh - 11rem) !important;
-            :global(.ant-tree-switcher_close) {
-                @apply flex;
-            }
-            :global(.ant-tree-switcher_open) {
-                transform: rotate(90deg);
-                @apply pt-2;
-            }
-            :global(.ant-tree-node-selected) {
-                @apply bg-black bg-opacity-5 text-primary font-bold !important;
-                color: blue !important;
-            }
-
-            :global(.ant-tree-title) {
-                @apply pl-1 !important;
-                padding-top: 4px !important;
-                padding-bottom: 4px !important;
-                // max-height: 28px !important;
-
-                &:hover {
-                    @apply bg-black bg-opacity-5 !important;
-                }
-            }
-            // :global(.ant-tree-treenode-switcher-close) {
-            //     max-height: 28px !important;
-            // }
-            // :global(.ant-tree-treenode-switcher-open) {
-            //     li {
-            //         max-height: 28px !important;
-            //     }
-            // }
-            :global(.ant-tree-node-content-wrapper) {
-                @apply mb-2 border-0;
-            }
-        }
-    }
-    .parentGroup {
-        :global(.parent-group-hover) {
-            @apply opacity-0 !important;
-        }
-        &:hover {
-            :global(.parent-group-hover) {
-                @apply opacity-100 !important;
-            }
-        }
-    }
-</style>
+<style lang="less" module></style>

@@ -107,6 +107,7 @@ import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
 import Pencil from '~/assets/images/icons/pencil.svg'
 import Check from '~/assets/images/icons/check.svg'
+import CheckCircled from '~/assets/images/icons/check-circled.svg'
 import Dots from '~/assets/images/icons/dots.svg'
 import Cross from '~/assets/images/icons/cross.svg'
 import FullScreen from '~/assets/images/icons/fullscreen.svg'
@@ -177,8 +178,15 @@ import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
+import StarCircled from '~/assets/images/icons/star-circled.svg'
+import ResendInvite from '~/assets/images/icons/invite.svg'
+import DisableUser from '~/assets/images/icons/disabled-user.svg'
 
 export default {
+    CheckCircled,
+    DisableUser,
+    ResendInvite,
+    StarCircled,
     EmptyLineage,
     IssuesFilled,
     ExplorerTrigger,

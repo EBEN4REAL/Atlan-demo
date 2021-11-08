@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <template v-if="user">
         <p class="mb-1">
             {{
                 `Please select the role you want to assign to ${
@@ -22,7 +22,7 @@
                 >Change role</a-button
             >
         </div>
-    </div>
+    </template>
 </template>
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'

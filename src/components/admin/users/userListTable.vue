@@ -2,9 +2,9 @@
     <a-table
         v-if="userList"
         id="userList"
-        class="overflow-hidden border rounded-lg rounded-table"
-        :scroll="{ y: 'calc(100vh - 20rem)' }"
-        :table-layout="'fixed'"
+        class="overflow-hidden border rounded-lg rounded-table user-table"
+        style="height: 'calc(100vh - 20rem)'"
+        :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
         :data-source="userList"
         :columns="
             userColumns.filter(
@@ -84,12 +84,13 @@
                         "
                         ><template #title
                             ><div class="flex items-center justify-between">
-                                <span>Change Role</span
-                                ><a-button
+                                <span>Change Role</span>
+                                <a-button
                                     type="text"
-                                    class="pr-0 hover:bg-transparent"
+                                    class="pr-0 cursor-pointer  hover:bg-transparent"
                                     @click="emit('closeChangeRolePopover')"
-                                    ><AtlanIcon
+                                >
+                                    <AtlanIcon
                                         icon="Cancel"
                                         class="h-3"
                                     ></AtlanIcon
@@ -110,7 +111,7 @@
                             class="rounded"
                             @click="emit('handleChangeRole', user)"
                         >
-                            <AtlanIcon icon="ChangeRole"></AtlanIcon>
+                            <AtlanIcon icon="StarCircled"></AtlanIcon>
                         </a-button>
                     </a-popover>
                 </a-tooltip>
@@ -139,7 +140,9 @@
                         @confirm="emit('confirmEnableDisablePopover', user)"
                     >
                         <a-button size="small" class="mr-3.5 rounded">
-                            <AtlanIcon icon="DeleteUser"></AtlanIcon> </a-button
+                            <AtlanIcon
+                                icon="DisableUser"
+                            ></AtlanIcon> </a-button
                     ></a-popconfirm>
                 </a-tooltip>
                 <a-tooltip
@@ -162,7 +165,9 @@
                         @confirm="emit('confirmEnableDisablePopover', user)"
                     >
                         <a-button size="small">
-                            <fa icon="fal user-check"></fa> </a-button
+                            <AtlanIcon
+                                icon="CheckCircled"
+                            ></AtlanIcon> </a-button
                     ></a-popconfirm>
                 </a-tooltip>
                 <a-tooltip
@@ -258,14 +263,12 @@
 
 <script lang="ts">
     import { computed, defineComponent, toRefs, watch } from 'vue'
-    import { Modal, message } from 'ant-design-vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
 
     import { userColumns, statusColorCodes } from './static'
     import useRoles from '~/composables/roles/useRoles'
     import ChangeRole from './changeRole.vue'
-    // import { User } from '~/services/keycloak/users/users_api'
 
     export default defineComponent({
         name: 'UserListTable',
@@ -277,6 +280,17 @@
             selectedUserId: { type: String, required: true },
             showChangeRolePopover: { type: Boolean, required: true },
         },
+        emits: [
+            'handleUpdateRole',
+            'showResendInvitationConfirm',
+            'confirmEnableDisablePopover',
+            'change',
+            'showRevokeInvitationConfirm',
+            'showUserPreviewDrawer',
+            'closeChangeRolePopover',
+            'handleChangeRole',
+            'handleErrorUpdateRole',
+        ],
         setup(props, { emit }) {
             const { userList, selectedUserId } = toRefs(props)
 
@@ -327,7 +341,6 @@
 
             return {
                 roleList,
-
                 userColumns,
                 nameCase,
                 selectedUser,
@@ -341,4 +354,11 @@
     })
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+    .user-table {
+        // extra row hide hack
+        :global(.ant-table-measure-row) {
+            @apply hidden;
+        }
+    }
+</style>

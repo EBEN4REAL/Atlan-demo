@@ -67,7 +67,7 @@
                 :selected-user-id="selectedUserId"
                 :show-change-role-popover="showChangeRolePopover"
                 @change="handleTableChange"
-                @handle-Change-Role="handleChangeRole"
+                @handle-change-role="handleChangeRole"
                 @showUserPreviewDrawer="showUserPreviewDrawer"
                 @handleUpdateRole="handleUpdateRole"
                 @handleErrorUpdateRole="handleErrorUpdateRole"
@@ -117,7 +117,7 @@
     import useTenantData from '~/composables/tenant/useTenantData'
     import AtlanButton from '~/components/UI/button.vue'
     import UserListTable from '@/admin/users/userListTable.vue'
-    // import { User } from '~/services/keycloak/users/users_api'
+    import { Users } from '~/services/service/users/index'
 
     export default defineComponent({
         name: 'UsersView',
@@ -319,7 +319,7 @@
                     okType: 'danger',
                     onOk() {
                         const { data, isReady, error, isLoading } =
-                            User.RevokeInvitation(invite.id)
+                            Users.RevokeInvitation(invite.id)
                         watch([data, isReady, error, isLoading], () => {
                             if (isReady && !error.value && !isLoading.value) {
                                 message.success('Invitation revoked.')
@@ -339,10 +339,8 @@
                     const requestPayload = ref({
                         enabled: !user.enabled,
                     })
-                    const { data, isReady, error, isLoading } = User.UpdateUser(
-                        user.id,
-                        requestPayload
-                    )
+                    const { data, isReady, error, isLoading } =
+                        Users.UpdateUser(user.id, requestPayload)
                     watch([data, isReady, error, isLoading], () => {
                         if (isReady && !error.value && !isLoading.value) {
                             getUserList()
@@ -371,7 +369,7 @@
                     okType: 'primary',
                     onOk() {
                         const { data, isReady, error, isLoading } =
-                            User.ResendVerificationEmail(invite.id)
+                            Users.ResendVerificationEmail(invite.id)
                         watch([data, isReady, error, isLoading], () => {
                             if (isReady && !error.value && !isLoading.value) {
                                 message.success('Email sent')

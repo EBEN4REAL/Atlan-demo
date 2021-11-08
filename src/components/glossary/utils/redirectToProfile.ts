@@ -1,7 +1,7 @@
 import { Router, useRouter } from 'vue-router'
 
 export default (router: Router) => (
-    typeName: String,
+    typeName: 'AtlasGlossary' | 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm',
     guid: String,
     queryParams?: {
         tab: 'overview' | 'terms'

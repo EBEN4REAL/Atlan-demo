@@ -125,7 +125,9 @@ watchForGuidChange,
     //             status.id === entity.value?.attributes?.certificateStatus
     //     )
     // )
-    const parentGlossaryGuid = ref<string | undefined>('')
+    const parentGlossaryGuid = ref<string>('')
+    const parentGlossaryQualifiedName = ref<string>('')
+    const parentGlossaryTitle = ref<string>('')
 
 
     watch(entityGuid, (newGuid) => {
@@ -139,8 +141,16 @@ watchForGuidChange,
     })
     watch(entity, (newEntity) => {
         if(newEntity) {
-            if(newEntity.typeName === 'AtlasGlossary') parentGlossaryGuid.value =  newEntity.guid
-            else parentGlossaryGuid.value = newEntity.attributes?.anchor?.guid
+            if(newEntity.typeName === 'AtlasGlossary') {
+                parentGlossaryGuid.value =  newEntity.guid
+                parentGlossaryQualifiedName.value = newEntity.attributes?.qualifiedName
+                parentGlossaryTitle.value = newEntity.attributes?.name
+            }
+            else {
+                parentGlossaryGuid.value = newEntity.attributes?.anchor?.guid
+                parentGlossaryQualifiedName.value = newEntity.attributes?.anchor?.uniqueAttributes?.qualifiedName
+                parentGlossaryTitle.value = newEntity.attributes?.anchor?.attributes?.name
+            }
         }
     })
 
@@ -160,7 +170,9 @@ watchForGuidChange,
         refetch,
         mutate,
         statusMessage,
-        parentGlossaryGuid
+        parentGlossaryGuid,
+        parentGlossaryQualifiedName,
+        parentGlossaryTitle
     }
 }
 

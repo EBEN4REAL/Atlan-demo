@@ -3,6 +3,7 @@ import { Ref } from 'vue'
 
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
+import { useAPIPromise } from '~/services/api/useAPIPromise'
 
 import { useOptions } from '~/services/api/common'
 import { Components } from '~/types/atlas/client'
@@ -29,6 +30,16 @@ const IndexSearch = <T>(
         options || {}
     )
 
+const IndexSearchPromise = <T>(
+    body: Ref<Record<string, any>> | Record<string, any>,
+) =>
+    useAPIPromise<IndexSearchResponse<T>>(
+        map.INDEX_SEARCH(),
+        'POST',
+        { body },
+    )
+
 export const Search = {
     IndexSearch,
+    IndexSearchPromise
 }

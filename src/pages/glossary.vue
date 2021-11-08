@@ -1,5 +1,5 @@
 <template>
-    <splitpanes class="w-full h-full default-theme" v-if="!isHome">
+    <splitpanes class="w-full h-full default-theme">
         <pane
             min-size="12"
             max-size="50"
@@ -104,6 +104,8 @@
                 isLoading,
                 refetch,
                 parentGlossaryGuid,
+                parentGlossaryQualifiedName,
+                parentGlossaryTitle,
             } = useGTCEntity<Glossary | Term | Category>({
                 entityGuid: currentGuid,
                 cache: false,
@@ -127,6 +129,7 @@
                 emit,
                 filterMode: false,
                 parentGlossaryGuid,
+                parentGlossaryQualifiedName,
             })
 
             watch(router.currentRoute, (newRoute) => {

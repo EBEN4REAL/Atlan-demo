@@ -110,6 +110,7 @@
     import { useGlossaryStore } from '~/store/glossary';
 
     export default defineComponent({
+        name: 'GlossaryContextSwitcher',
         props: {
             currentGlossaryGuid: {
                 type: String,
@@ -142,13 +143,13 @@
                 return list
             });
 
-            watch(currentGlossaryGuid, (newGuid) => {
-                // if(newGuid && newGuid !== currentGlossaryGuid.value) {
+            watch(currentGlossaryGuid, (newGuid, prevGuid) => {
+                if(newGuid && newGuid !== prevGuid && prevGuid) {
                     if (newGuid === 'all') router.push(`/glossary`)
                     else { 
                         redirectToProfile('AtlasGlossary', newGuid)
                     }
-                // }
+                }
             });
 
             return {

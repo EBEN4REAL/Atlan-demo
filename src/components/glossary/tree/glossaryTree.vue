@@ -13,8 +13,8 @@
                     <SearchAdvanced
                         v-model:modelValue="searchQuery"
                         :placeholder="
-                            parentGlossary?.displayText
-                                ? `Search in ${parentGlossary?.displayText}`
+                            parentGlossaryTitle
+                                ? `Search in ${parentGlossaryTitle}`
                                 : 'Search'
                         "
                         size="minimal"
@@ -34,11 +34,10 @@
                     v-else-if="!isLoading && !searchQuery?.length"
                     class="h-full mt-2"
                 >
-                                    <div
+                    <!-- Glossary level CTAs -->
+                    <div
                         class="flex justify-between px-4  hover:bg-black hover:bg-opacity-5"
                     >
-
-                        <!-- Glossary level CTAs -->
                         <div class="flex items-center ml-5 pl-0.5">
                             <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                             <div
@@ -46,7 +45,7 @@
                                 @click="
                                     redirectToProfile(
                                         'glossary',
-                                        parentGlossary.guid
+                                        parentGlossaryGuid
                                     )
                                 "
                             >
@@ -55,12 +54,11 @@
                                     :class="{
                                         'text-primary':
                                             currentGuid ===
-                                            parentGlossary?.guid,
+                                            parentGlossaryGuid,
                                     }"
                                 >
                                     {{
-                                        parentGlossary?.displayText ??
-                                        parentGlossary?.attributes?.name
+                                        parentGlossaryTitle
                                     }}
                                 </span>
                             </div>
@@ -71,7 +69,7 @@
                         >
                             <div
                                 v-if="expandedKeys.length"
-                                class="flex w-6 h-6 bg-opacity-0 cursor-pointer  py-auto"
+                                class="flex bg-opacity-0 cursor-pointer  py-auto"
                                 @click="collapseAll"
                             >
                                 <AtlanIcon
@@ -80,17 +78,9 @@
                                 />
                             </div>
                             <div
-                                class="flex flex-col justify-center bg-opacity-0 "
+                                class="flex flex-col justify-center bg-opacity-0 mr-2"
                             >
-                                <!-- <AddCta
-                                    class="w-6 h-6 ml-0.5"
-                                    :entity="parentGlossary"
-                                /> -->
-                                <AtlanIcon
-                                    class="m-auto ml-0.5"
-                                    icon="Add"
-                                />
-
+                                <GlossaryAddCta :parentGlossaryGuid="parentGlossaryGuid" :parentGlossaryTitle="parentGlossaryTitle" />
                             </div>
                             <div
                                 class="flex flex-col justify-center bg-opacity-0 "
@@ -102,12 +92,13 @@
                                     :treeMode="true"
                                 /> -->
                                 <AtlanIcon
-                                    class="m-auto ml-0.5"
+                                    class="m-auto ml-1"
                                     icon="KebabMenu"
                                 />
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Tree Start -->
                     <div 
@@ -263,7 +254,6 @@
     // library
     import {
         defineComponent,
-        computed,
         PropType,
         ref,
         toRef,
@@ -280,8 +270,10 @@
     // import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
     // import AddCta from '~/components/glossary/tree/addCta.vue'
     // import Tooltip from '@/common/ellipsis/index.vue'
-    // import AddGtcModal from '@/glossary/gtcCrud/addGtcModal.vue'
+    import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
+    import ModalHeader from '@/glossary/modal/modalHeader.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import GlossaryAddCta from '@/glossary/tree/glossaryAddCta.vue'
     import GlossaryTreeItem from '@/glossary/tree/glossaryTreeItem.vue'
     import GlossaryContextSwitcher from '@/glossary/tree/glossaryContextSwitcher.vue'
 
@@ -290,7 +282,6 @@
 
     // constant
     // import { List as StatusList } from '~/constant/status'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
 
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
@@ -298,15 +289,17 @@
     import { Glossary } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
+        name: 'GlossaryTree',
         components: {
             // AddCta,
             // LoadingView,
             // ThreeDotMenu,
-            AtlanIcon,
             AtlanBtn,
             // Tooltip,
-            // AddGtcModal,
+            AddGtcModal,
+            ModalHeader,
             SearchAdvanced,
+            GlossaryAddCta,
             GlossaryTreeItem,
             GlossaryContextSwitcher,
   
@@ -347,11 +340,11 @@
                 required: false,
                 default: () => {},
             },
-            parentGlossary: {
-                type: Object as PropType<Glossary>,
-                required: false,
-                default: () => {},
-            },
+            // parentGlossary: {
+            //     type: Object as PropType<Glossary>,
+            //     required: false,
+            //     default: () => {},
+            // },
             isLoading: {
                 type: Boolean,
                 required: false,
@@ -374,6 +367,21 @@
             },
             parentGlossaryGuid: {
                 type: String,
+                required: true,
+                default: '',
+            },
+            parentGlossaryQualifiedName: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            parentGlossaryTitle: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            currentGuid: {
+                type: String,
                 required: false,
                 default: '',
             }
@@ -385,11 +393,7 @@
             const{ parentGlossaryGuid }= useVModels(props, emit)
             const router = useRouter()
 
-            const parentGlossaryQualifiedName = computed(() =>
-                home.value
-                    ? ''
-                    : props?.parentGlossary?.attributes?.qualifiedName ?? ''
-            )
+            const { parentGlossaryQualifiedName, parentGlossaryTitle } = toRefs(props)
 
             const {
                 entities: searchResults,
@@ -441,6 +445,7 @@
                 searchAssetsPaginated,
                 onSearch,
                 parentGlossaryGuid,
+                parentGlossaryTitle
             }
         },
     })
@@ -496,14 +501,7 @@
                     @apply bg-black bg-opacity-5 !important;
                 }
             }
-            // :global(.ant-tree-treenode-switcher-close) {
-            //     max-height: 28px !important;
-            // }
-            // :global(.ant-tree-treenode-switcher-open) {
-            //     li {
-            //         max-height: 28px !important;
-            //     }
-            // }
+
             :global(.ant-tree-node-content-wrapper) {
                 @apply mb-2 border-0;
             }

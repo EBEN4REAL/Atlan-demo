@@ -24,12 +24,14 @@ interface GlossaryAttributes extends BaseAttributes {
     qualifiedName: string
     name: string
     shortDescription?: string
+    description?: string
+    longDescription?: string
     certificateStatus?: 'DRAFT' | 'VERIFIED' | 'ISSUE'
     assetStatusMessage: string
     certificateUpdatedBy?: string
     certificateUpdatedAt?: 0
-    ownerUsers?: string
-    ownerGroups?: string
+    ownerUsers?: string[]
+    ownerGroups?: string[]
     terms?: RelatedEntity[]
     categories?: RelatedEntity[]
 }

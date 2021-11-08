@@ -3,6 +3,7 @@ import { Ref, ref } from 'vue'
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
+import { Search } from '~/services/meta/search'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map } from '~/services/meta/search/key'
 import { InternalAttributes, AssetAttributes } from '~/constant/projection'
@@ -66,9 +67,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body,
-        }) as Promise<BasicSearchResponse<Category>>
+        return Search.IndexSearchPromise<Category>(body)
     }
     const getAllCategories = async (glossaryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
@@ -94,9 +93,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body,
-        }) as Promise<BasicSearchResponse<Category>>
+        return Search.IndexSearchPromise<Category>(body)
     }
     const getRootTerms = async (glossaryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
@@ -129,9 +126,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body,
-        }) as Promise<BasicSearchResponse<Term>>
+        return Search.IndexSearchPromise<Term>(body)
     }
     const getSubCategories = async (categoryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
@@ -159,9 +154,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body,
-        }) as Promise<BasicSearchResponse<Category>>
+        return Search.IndexSearchPromise<Category>(body)
     }
     const getSubTerms = async (categoryQualifiedName: string, { limit, offset }: AdditionalParams) => {
         const body = {
@@ -189,9 +182,7 @@ const useLoadGlossaryTreeData = () => {
             },
             attributes
         }
-        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
-            body,
-        }) as Promise<BasicSearchResponse<Term>>
+        return Search.IndexSearchPromise<Term>(body)
     }
    
     return {

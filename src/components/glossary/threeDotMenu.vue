@@ -137,8 +137,8 @@
                     >
                         <AddGtcModal
                             entityType="term"
-                            :glossaryId="glossaryId"
-                            :categoryId="categoryId"
+                            :parentGlossaryGuid="glossaryId"
+                            :parentCategoryGuid="categoryId"
                             :categoryQualifiedName="categoryQf"
                         >
                             <template #header>
@@ -168,8 +168,8 @@
                     >
                         <AddGtcModal
                             entityType="category"
-                            :glossaryId="glossaryId"
-                            :categoryId="categoryId"
+                            :parentGlossaryGuid="glossaryId"
+                            :parentCategoryGuid="categoryId"
                         >
                             <template #header>
                                 <ModalHeader 
@@ -342,7 +342,7 @@
         </a-dropdown>
 
         <!-- Delete Modal -->
-        <a-modal
+        <!-- <a-modal
             v-model:visible="isModalVisible"
             :closable="false"
             @ok="handleDelete"
@@ -377,7 +377,7 @@
                     want to unlink the term instead.
                 </p>
             </div>
-        </a-modal>
+        </a-modal> -->
     </div>
 </template>
 <script lang="ts">
@@ -468,25 +468,25 @@
             const showCategories = ref(false)
 
             // injects
-            const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
-            const handleFetchListInj: Function | undefined = inject(
-                'handleFetchList',
-                () => null
-            )
-            const updateTreeNode: Function | undefined =
-                inject<any>('updateTreeNode')
-            const refetchGlossaryList = inject<() => void>(
-                'refetchGlossaryList',
-                () => {}
-            )
-            const refreshEntity = inject<() => void>('refreshEntity', () => {})
-            const refetchGlossaryTree = inject<
-                (
-                    guid: string | 'root',
-                    categoryQualifiedName?: string,
-                    refreshEntityType?: 'term' | 'category'
-                ) => void
-            >('refetchGlossaryTree', () => {})
+            // const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
+            // const handleFetchListInj: Function | undefined = inject(
+            //     'handleFetchList',
+            //     () => null
+            // )
+            // const updateTreeNode: Function | undefined =
+            //     inject<any>('updateTreeNode')
+            // const refetchGlossaryList = inject<() => void>(
+            //     'refetchGlossaryList',
+            //     () => {}
+            // )
+            // const refreshEntity = inject<() => void>('refreshEntity', () => {})
+            // const refetchGlossaryTree = inject<
+            //     (
+            //         guid: string | 'root',
+            //         categoryQualifiedName?: string,
+            //         refreshEntityType?: 'term' | 'category'
+            //     ) => void
+            // >('refetchGlossaryTree', () => {})
 
             
             const glossaryId = computed(() => {
@@ -589,21 +589,21 @@
             const redirectToProfile = redirect(router)
 
             // update tree on archive or create new entity
-            const updateTree = (selectedAsset: Glossary | Category | Term) => {
-                if (updateTreeNode && !props.treeMode) {
-                    updateTreeNode({
-                        guid: selectedAsset.guid,
-                        entity: selectedAsset,
-                    })
-                }
-            }
+            // const updateTree = (selectedAsset: Glossary | Category | Term) => {
+            //     if (updateTreeNode && !props.treeMode) {
+            //         updateTreeNode({
+            //             guid: selectedAsset.guid,
+            //             entity: selectedAsset,
+            //         })
+            //     }
+            // }
 
             return {
                 handleCopyProfileLink,
                 assetTypeLabel,
                 isVisible,
                 isModalVisible,
-                updateTree,
+                // updateTree,
                 // handleDelete,
                 handleCancel,
                 showModal,

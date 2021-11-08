@@ -171,6 +171,7 @@ import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Policy from '~/assets/images/icons/policy.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
+import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
 import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
@@ -178,6 +179,7 @@ import Query from '~/assets/images/icons/query.svg'
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 
 export default {
+    EmptyLineage,
     IssuesFilled,
     ExplorerTrigger,
     queryErorrIllus,

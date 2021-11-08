@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { ComputedRef, Ref } from 'vue'
 import { useAPI } from '~/services/api/useAPI'
 import { map } from './key'
 import { assetInterface } from '~/types/assets/asset.interface'
@@ -9,7 +9,7 @@ export interface getLineageOptions {
     direction: string
 }
 
-const getLineage = (options: getLineageOptions | Ref<getLineageOptions>) =>
+const getLineage = (options: getLineageOptions | Ref<getLineageOptions> | ComputedRef<getLineageOptions>) =>
     useAPI(map.GET_LINEAGE, 'GET', {
         pathVariables: options,
         initialState: {

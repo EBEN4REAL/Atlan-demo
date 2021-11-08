@@ -1,9 +1,9 @@
-import { computed, Ref } from 'vue'
+import { computed, Ref, ComputedRef } from 'vue'
 import { getLineageOptions, lineageServiceAPI } from './lineage_api'
 
 export default function useLineageService() {
     function useFetchLineage(
-        config: Ref<getLineageOptions> | getLineageOptions
+        config: Ref<getLineageOptions> | getLineageOptions | ComputedRef<getLineageOptions>
     ) {
         const {
             data,

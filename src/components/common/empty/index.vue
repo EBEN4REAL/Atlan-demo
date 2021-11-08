@@ -36,6 +36,7 @@
     import AtlanButton from '~/components/UI/button.vue'
 
     export default defineComponent({
+        name: 'EmptyPlaceholder',
         props: {
             headline: {
                 type: String,

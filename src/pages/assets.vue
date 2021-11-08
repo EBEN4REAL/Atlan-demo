@@ -2,17 +2,11 @@
     <div class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex w-full h-full">
-                <router-view v-slot="{ Component, route }">
-                    <transition :name="'fade'" mode="out-in">
-                        <keep-alive>
-                            <component
-                                :is="Component"
-                                :selected-asset="selectedAsset"
-                                :key="isItem ? 'profile' : 'discover'"
-                            />
-                        </keep-alive>
-                    </transition>
-                </router-view>
+                <router-view v-if="isItem" :selected-asset="selectedAsset" />
+
+                <AssetDiscovery
+                    :style="isItem ? 'display: none !important;' : ''"
+                ></AssetDiscovery>
             </div>
         </div>
 
@@ -44,7 +38,8 @@
                 title: 'Assets',
             })
             const route = useRoute()
-            const isItem = computed(() => route.params.id)
+            const isItem = computed(() => !!route.params.id)
+
             const { selectedAsset } = useAssetInfo()
             return {
                 isItem,

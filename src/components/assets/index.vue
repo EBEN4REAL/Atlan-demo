@@ -153,11 +153,10 @@
             },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
-                required: true,
+                required: false,
             },
         },
         setup(props, { emit }) {
-            const showFilters = ref(props.showFilters)
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -166,7 +165,9 @@
                 sort: 'default',
             })
             const aggregations = ref(['typeName'])
-            const postFacets = ref({})
+            const postFacets = ref({
+                typeName: '__all',
+            })
             const dependentKey = ref('DEFAULT_ASSET_LIST')
             const defaultAttributes = ref([
                 ...InternalAttributes,
@@ -212,30 +213,6 @@
                 handleSelectedAsset(item)
             }
 
-            // const store = useBusinessMetadataStore()
-            // const BMListLoaded = computed(
-            //     () => store.getBusinessMetadataListLoaded
-            // )
-            // const BMAttributeProjection = computed(
-            //     () => store.getBusinessMetadataListProjections
-            // )
-
-            // const placeholderLabel: Ref<Record<string, string>> = ref({})
-            // const dynamicSearchPlaceholder = computed(() => {
-            //     let placeholder = 'Search assets across Atlan...'
-            //     if (placeholderLabel.value.asset) {
-            //         placeholder = `Search for assets in ${placeholderLabel.value.asset}`
-            //     } else if (placeholderLabel.value.connector) {
-            //         placeholder = `Search for assets in ${placeholderLabel.value.connector}`
-            //     }
-            //     return placeholder
-            // })
-            // function setPlaceholder(label: string, type: string) {
-            //     placeholderLabel.value[type] = label
-            //     if (type === 'connector') placeholderLabel.value.asset = ''
-            // }
-            // // Push all asset type
-
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
@@ -243,26 +220,6 @@
                     trigger: 'discover',
                 })
             }, 150)
-
-            // const handleChangePreferences = (payload: any) => {
-            //     projection.value = payload
-            // }
-            // const handleChangeSort = (payload: any) => {
-            //     sortOrder.value = payload
-            //     isAggregate.value = false
-            //     updateBody()
-            // }
-            // const handleState = (payload: any) => {
-            //     state.value = payload
-            //     isAggregate.value = true
-            //     updateBody()
-            // }
-            // function handleCategoryChange() {
-            //     offset.value = 0
-            //     isAggregate.value = true
-            //     updateBody()
-            //     setRouterOptions()
-            // }
 
             const handleFilterChange = () => {
                 offset.value = 0

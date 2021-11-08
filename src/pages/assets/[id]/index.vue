@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col w-full h-full">
         <AssetHeader :item="selectedAsset"></AssetHeader>
         <a-tabs :class="$style.profiletab" v-model:activeKey="activeKey">
             <a-tab-pane

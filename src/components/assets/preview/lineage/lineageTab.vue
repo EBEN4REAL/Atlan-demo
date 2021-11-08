@@ -11,11 +11,14 @@
             </SearchAndFilter>
             <router-link
                 :to="`/assets/${guid}/lineage`"
-                class="w-24 text-xs underline"
+                class="w-24 text-xs underline group"
                 @click="$event.stopPropagation()"
                 >Graph view
-                <fa icon="fal external-link-alt" class="w-3 h-3 ml-1"></fa
-            ></router-link>
+                <AtlanIcon
+                    icon="External"
+                    class="cursor-pointer group-hover:text-primary"
+                />
+            </router-link>
         </div>
         <a-collapse
             v-model:activeKey="activeKeys"
@@ -163,15 +166,15 @@
 
             const filteredLineageList = computed(() => {
                 const lineageMap = {}
-                for (const [key, assetList] of Object.entries(
-                    allEntities.value
-                )) {
-                    lineageMap[key] = assetList.filter((et) =>
-                        et.displayText
-                            .toLowerCase()
-                            .includes(query.value.toLowerCase())
-                    )
-                }
+                Object.entries(allEntities.value).forEach(
+                    ([key, assetList]) => {
+                        lineageMap[key] = assetList.filter((et) =>
+                            et.displayText
+                                .toLowerCase()
+                                .includes(query.value.toLowerCase())
+                        )
+                    }
+                )
                 return lineageMap
             })
 

@@ -111,7 +111,6 @@
 
             return {
                 localValue,
-                asf: modelValue,
                 searchBar,
                 clearInput,
                 handleChange,

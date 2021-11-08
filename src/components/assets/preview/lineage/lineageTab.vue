@@ -2,8 +2,8 @@
     <div>
         <div class="flex items-center justify-between px-5 my-3 gap-x-2">
             <SearchAndFilter
+                v-model="query"
                 class="flex-grow"
-                v-model:value="query"
                 :placeholder="placeholderText"
                 :autofocus="true"
             >
@@ -11,11 +11,14 @@
             </SearchAndFilter>
             <router-link
                 :to="`/assets/${guid}/lineage`"
-                class="w-24 text-xs underline"
+                class="w-24 text-xs underline group"
                 @click="$event.stopPropagation()"
                 >Graph view
-                <fa icon="fal external-link-alt" class="w-3 h-3 ml-1"></fa
-            ></router-link>
+                <AtlanIcon
+                    icon="External"
+                    class="cursor-pointer group-hover:text-primary"
+                />
+            </router-link>
         </div>
         <a-collapse
             v-model:activeKey="activeKeys"
@@ -40,14 +43,7 @@
             >
                 <template #header>
                     <div
-                        class="
-                            flex
-                            items-center
-                            text-sm
-                            font-bold
-                            select-none
-                            header
-                        "
+                        class="flex items-center text-sm font-bold select-none  header"
                     >
                         {{ stream.name }}
 
@@ -73,12 +69,8 @@
                     "
                     :lineage-list="filteredLineageList[stream.key]"
                 />
-                <div v-else>
-                    <img
-                        :src="emptyScreen"
-                        alt="Empty"
-                        class="w-3/5 m-auto mt-4"
-                    />
+                <div v-else class="flex flex-col">
+                    <AtlanIcon icon="EmptyDiscover" class="w-auto h-32" />
                     <div class="mt-4 text-sm text-center text-gray">
                         No assets found in {{ stream.name }}
                     </div>
@@ -103,13 +95,11 @@
 
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import AssetList from './assetList.vue'
+    import AssetList from './LineagePreviewTabAssetList.vue'
     import Preferences from './preferences.vue'
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
-    // Assets
-    import emptyScreen from '~/assets/images/empty_search.png'
 
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
@@ -176,15 +166,15 @@
 
             const filteredLineageList = computed(() => {
                 const lineageMap = {}
-                for (const [key, assetList] of Object.entries(
-                    allEntities.value
-                )) {
-                    lineageMap[key] = assetList.filter((et) =>
-                        et.displayText
-                            .toLowerCase()
-                            .includes(query.value.toLowerCase())
-                    )
-                }
+                Object.entries(allEntities.value).forEach(
+                    ([key, assetList]) => {
+                        lineageMap[key] = assetList.filter((et) =>
+                            et.displayText
+                                .toLowerCase()
+                                .includes(query.value.toLowerCase())
+                        )
+                    }
+                )
                 return lineageMap
             })
 
@@ -201,11 +191,10 @@
                     DownStreamLineage.isLoading.value
                 )
                     return 'Loading lineage'
-                else {
-                    return totalCount.value
-                        ? `Search ${totalCount.value} assets`
-                        : 'No assets found'
-                }
+
+                return totalCount.value
+                    ? `Search ${totalCount.value} assets`
+                    : 'No assets found'
             })
 
             const isLoading = computed(() => ({
@@ -240,7 +229,6 @@
                 assetTypesLengthMap,
                 activeKeys,
                 streams,
-                emptyScreen,
                 totalCount,
                 placeholderText,
                 isLoading,

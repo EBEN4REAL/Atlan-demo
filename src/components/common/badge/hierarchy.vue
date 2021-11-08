@@ -1,6 +1,8 @@
 <template>
     <div class="flex items-center overflow-hidden text-gray-500 flex-nowrap">
-        <span class="mr-2" style="color: #c4c4c4"> • </span>
+        <span v-if="hierarchyInfo?.length" class="mr-2" style="color: #c4c4c4">
+            •
+        </span>
         <template v-for="(data, index) in hierarchyInfo" :key="data.id">
             <span
                 class="overflow-hidden overflow-ellipsis whitespace-nowrap"

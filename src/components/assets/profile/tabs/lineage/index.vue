@@ -37,7 +37,7 @@
     import useLineageService from '~/services/meta/lineage/lineage_service'
 
     export default defineComponent({
-        name: 'Lineage',
+        name: 'LineageTab',
         components: { LineageGraph },
         setup() {
             const route = useRoute()

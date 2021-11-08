@@ -5,7 +5,10 @@
             v-if="graphLoading"
             style="position: absolute; left: 45%; top: 45%"
         >
-            <a-spin size="large" />
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
         </div>
 
         <!-- Highlight Loader -->
@@ -15,7 +18,10 @@
                 highlightLoadingCords.x - 13
             }px; top: ${highlightLoadingCords.y - 130}px; z-index: 999`"
         >
-            <a-spin size="large" />
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
         </div>
 
         <!-- Graph Container -->
@@ -58,8 +64,16 @@
             <!-- Full screen -->
             <div class="lineage-control__item">
                 <button @click="onFullscreen()">
-                    <fa v-if="false" icon="fal compress-alt"></fa>
-                    <fa v-else icon="fal expand-arrows"></fa>
+                    <AtlanIcon
+                        v-if="isFullscreen"
+                        icon="ExitFullScreen"
+                        class="w-auto"
+                    ></AtlanIcon>
+                    <AtlanIcon
+                        v-else
+                        icon="FullScreen"
+                        class="w-auto"
+                    ></AtlanIcon>
                 </button>
             </div>
 

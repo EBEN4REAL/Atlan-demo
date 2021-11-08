@@ -41,6 +41,7 @@
     import { getNodeTypeIcon } from './util.js'
 
     export default defineComponent({
+        name: 'LineageSearch',
         setup() {
             /** DATA */
             const query = ref('')

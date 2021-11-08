@@ -1,11 +1,14 @@
 <template>
-    <div ref="lineageContainer" class="lineage">
+    <div ref="lineageContainer" class="h-full lineage">
         <!-- Graph Loader -->
         <div
             v-if="graphLoading"
             style="position: absolute; left: 45%; top: 45%"
         >
-            <a-spin size="large" />
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
         </div>
 
         <!-- Highlight Loader -->
@@ -15,23 +18,42 @@
                 highlightLoadingCords.x - 13
             }px; top: ${highlightLoadingCords.y - 130}px; z-index: 999`"
         >
-            <a-spin size="large" />
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
         </div>
 
         <!-- Graph Container -->
         <div
+            v-show="!isLineageEmpty"
             ref="graphContainer"
             style="width: calc(100vw - 1px); height: 1000px"
         ></div>
+
+        <div
+            v-if="isLineageEmpty"
+            class="flex items-center justify-center w-full h-full"
+        >
+            <EmptyScreen
+                emptyScreen="EmptyLineage"
+                desc="No Lineage Found"
+                image-class="h-32"
+            />
+        </div>
 
         <!-- Lineage Header -->
         <LineageHeader @show-process="onShowProcess($event)" />
 
         <!-- Minimap Container -->
-        <div ref="minimapContainer" class="lineage-minimap"></div>
+        <div
+            v-show="!isLineageEmpty"
+            ref="minimapContainer"
+            class="lineage-minimap"
+        ></div>
 
         <!-- Lineage Legend -->
-        <div class="lineage-legend">
+        <div v-show="!isLineageEmpty" class="lineage-legend">
             <div class="lineage-legend__item">
                 <span id="upstream"></span>
                 <span>Upstream</span>
@@ -47,7 +69,7 @@
         </div>
 
         <!-- Lineage Controls -->
-        <div class="lineage-control">
+        <div v-show="!isLineageEmpty" class="lineage-control">
             <!-- Zoom In -->
             <div class="lineage-control__item">
                 <button @click="zoom(0.1)">
@@ -58,8 +80,16 @@
             <!-- Full screen -->
             <div class="lineage-control__item">
                 <button @click="onFullscreen()">
-                    <fa v-if="false" icon="fal compress-alt"></fa>
-                    <fa v-else icon="fal expand-arrows"></fa>
+                    <AtlanIcon
+                        v-if="isFullscreen"
+                        icon="ExitFullScreen"
+                        class="w-auto"
+                    ></AtlanIcon>
+                    <AtlanIcon
+                        v-else
+                        icon="FullScreen"
+                        class="w-auto"
+                    ></AtlanIcon>
                 </button>
             </div>
 
@@ -90,14 +120,18 @@
     import useComputeGraph from './useComputeGraph'
     import useTransformGraph from './useTransformGraph'
     import useHighlight from './useHighlight'
+    import EmptyScreen from '@/common/empty/index.vue'
 
     export default defineComponent({
         name: 'LineageGraph',
-        components: { LineageHeader },
+        components: { LineageHeader, EmptyScreen },
         props: {
             lineage: {
                 type: Object,
                 required: true,
+            },
+            isLineageEmpty: {
+                type: Boolean,
             },
         },
         setup(props) {
@@ -183,13 +217,18 @@
 
             /** LIFECYCLE */
             onMounted(() => {
-                watch(lineage, () => {
-                    if (graph.value) graph.value.dispose()
-                    initialize()
-                })
+                watch(
+                    () => lineage.value,
+                    () => {
+                        if (graph.value) graph.value.dispose()
+                        initialize()
+                    },
+                    { deep: true, immediate: true }
+                )
             })
 
             return {
+                initialize,
                 showProcess,
                 useCyclic,
                 lineageContainer,

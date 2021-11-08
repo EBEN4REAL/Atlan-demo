@@ -1,31 +1,13 @@
 <template>
-    <splitpanes class="w-full h-full default-theme" v-if="!isHome">
+    <splitpanes class="w-full h-full default-theme">
         <pane
             min-size="12"
             max-size="50"
             :size="12"
             style="min-width: 264px"
-            class="relative z-20 bg-white"
-            id="filterPane"
+            class=""
         >
-            <GlossaryTree
-                :glossaryList="[]"
-                :is-home="false"
-                :tree-data="treeData"
-                :on-load-data="onLoadData"
-                :select-node="selectNode"
-                :expand-node="expandNode"
-                :drag-and-drop="dragAndDropNode"
-                :is-loading="isInitingTree"
-                :loaded-keys="loadedKeys"
-                :selected-keys="selectedKeys"
-                :expanded-keys="expandedKeys"
-                :collapse-all="collapseAll"
-                v-model:parentGlossaryGuid="parentGlossaryGuid"
-                :parentGlossaryQualifiedName="parentGlossaryQualifiedName"
-                :parentGlossaryTitle="parentGlossaryTitle"
-                :currentGuid="currentGuid"
-            />        
+            <GlossaryDiscovery />
         </pane>
 
         <pane :size="82" class="bg-white w-ful">
@@ -33,7 +15,7 @@
                 <div class="flex-1 border-r border-gray-300 item-stretch">
                     <div class="flex h-full">
                         <!-- <KeepAlive> -->
-                            <router-view />
+                        <router-view />
                         <!-- </KeepAlive> -->
                     </div>
                 </div>
@@ -50,7 +32,6 @@
             </div>
         </pane>
     </splitpanes>
-
 </template>
 
 <script lang="ts">
@@ -72,13 +53,17 @@
     // import BulkNotification from '~/components/common/bulk/bulkNotification.vue'
     // import useDiscoveryStore from '~/store/discovery'
     // import { storeToRefs } from 'pinia'
-    
+
     // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryTree from '~/composables/glossary/useGlossaryTree'
     import useGTCEntity from '~/composables/glossary/useGTCEntity'
 
-    import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
 
     // export interface initialFiltersType {
     //     facetsFilters: any
@@ -91,7 +76,7 @@
             GlossaryDiscovery,
             GlossaryPreview,
             AssetPreview,
-            GlossaryTree
+            GlossaryTree,
             // BulkSidebar,
             // BulkNotification,
         },
@@ -103,9 +88,9 @@
             // const { selectedAsset } = storeToRefs(storeDiscovery)
             const router = useRouter()
             const route = useRoute()
-    
+
             const isItem = computed(() => route.params.id)
-            
+
             const currentGuid = ref(route.params.id)
 
             const {
@@ -120,13 +105,12 @@
                 refetch,
                 parentGlossaryGuid,
                 parentGlossaryQualifiedName,
-                parentGlossaryTitle
+                parentGlossaryTitle,
             } = useGTCEntity<Glossary | Term | Category>({
                 entityGuid: currentGuid,
                 cache: false,
-                watchForGuidChange: true
+                watchForGuidChange: true,
             })
-
 
             const {
                 treeData,
@@ -140,6 +124,7 @@
                 selectedKeys,
                 reInitTree,
                 collapseAll,
+                parentGlossary,
             } = useGlossaryTree({
                 emit,
                 filterMode: false,
@@ -259,7 +244,7 @@
                 tempTerm,
                 isItem,
                 selectedAsset,
-                
+
                 treeData,
                 loadedKeys,
                 onLoadData,
@@ -272,10 +257,8 @@
                 dragAndDropNode,
                 selectedKeys,
                 parentGlossaryGuid,
-                parentGlossaryQualifiedName,
-                parentGlossaryTitle,
+                parentGlossary,
                 title,
-                currentGuid
             }
         },
     })

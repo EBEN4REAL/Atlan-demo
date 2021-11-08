@@ -8,7 +8,7 @@
             <div class="flex items-center justify-end mr-4 graph-controls">
                 <!-- Reload Lineage -->
                 <button class="lineage-btn" @click="control('reload')">
-                    <fa icon="fas sync"></fa>
+                    <AtlanIcon icon="Reload" class="w-auto"></AtlanIcon>
                 </button>
                 <a-divider type="vertical" />
 
@@ -19,14 +19,14 @@
                 <!-- Lineage Direction and Process -->
                 <a-dropdown :trigger="['click']" placement="bottomRight">
                     <a-button
-                        class="ant-dropdown-link lineage-btn"
+                        class="ant-dropdown-link"
                         @click="(e) => e.preventDefault()"
                     >
-                        <fa icon="fas sliders-v"></fa>
+                        <AtlanIcon icon="Settings" class="w-auto"></AtlanIcon>
                     </a-button>
 
                     <template #overlay>
-                        <a-menu slot="overlay">
+                        <a-menu>
                             <a-menu-item-group title="Direction">
                                 <a-menu-item>
                                     <a-radio-group

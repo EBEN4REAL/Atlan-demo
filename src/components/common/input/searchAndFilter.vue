@@ -13,11 +13,11 @@
             />
             <a-input
                 ref="searchBar"
-                :placeholder="placeholder"
-                @change="handleChange"
                 v-model:value="localValue"
+                :placeholder="placeholder"
                 type="text"
                 class="flex-1 w-2/3 text-sm bg-transparent focus:outline-none"
+                @change="handleChange"
             />
 
             <div class="flex-none w-7 h-7">
@@ -70,6 +70,7 @@
         PropType,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
+
     export default defineComponent({
         name: 'SearchAndFilter',
         props: {
@@ -82,11 +83,11 @@
             },
             modelValue: { type: String, default: () => '' },
         },
-        emits: ['update:value', 'change'],
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { autofocus } = toRefs(props)
 
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue } = useVModels(props)
             const localValue = ref(modelValue.value)
 
             const searchBar: Ref<null | HTMLInputElement> = ref(null)

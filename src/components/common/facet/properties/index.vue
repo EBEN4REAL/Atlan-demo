@@ -68,10 +68,10 @@
             modelValue: {
                 required: false,
             },
-            attributes: {
+            item: {
                 required: false,
                 default() {
-                    return []
+                    return {}
                 },
             },
         },
@@ -84,12 +84,12 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
-            const { attributes } = toRefs(props)
+            const { item } = toRefs(props)
 
             const { propertyAttributeList } = useCustomMetadataFacet()
 
             const filteredList = computed(() =>
-                attributes.value.filter((i) =>
+                item?.value.attributes.filter((i) =>
                     i.displayName
                         .toLowerCase()
                         .includes(queryText.value.toLowerCase())
@@ -115,8 +115,6 @@
                 queryText,
                 handleClick,
                 activeProperty,
-                attributes,
-                handleChange,
             }
         },
     })

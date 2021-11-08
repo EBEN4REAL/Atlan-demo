@@ -1,50 +1,16 @@
 <template>
-    <div class="flex w-full">
-        <div
-            class="
-                flex flex-col
-                h-full
-                bg-gray-100
-                border-r border-gray-300
-                facets
-            "
-        >
-            <div class="flex items-center w-full border-b border-gray-200">
-                <div class="flex-1">
-                    <GlossaryDropdown
-                        class="w-full"
-                        v-model="glossaryQualifiedName"
-                        @change="handleGlossaryChange"
-                        :isTransparent="true"
-                    ></GlossaryDropdown>
-                </div>
-                <div class="flex self-center h-full px-3 bg-primary">
-                    <a-dropdown>
-                        <a
-                            class="mt-3 text-white ant-dropdown-link"
-                            @click="(e) => e.preventDefault()"
-                            ><AtlanIcon icon="Add"></AtlanIcon>
-                        </a>
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item>
-                                    <a href="javascript:;">1st menu item</a>
-                                </a-menu-item>
-                                <a-menu-item>
-                                    <a href="javascript:;">2nd menu item</a>
-                                </a-menu-item>
-                                <a-menu-item>
-                                    <a href="javascript:;">3rd menu item</a>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                    </a-dropdown>
-                </div>
-            </div>
-            <GlossaryDiscover
+    <div
+        class="flex flex-col w-full h-full bg-gray-100 border-r border-gray-100  facets"
+    >
+        <div class="px-3 py-2 border-b border-gray-200">Glossary</div>
+        <GlossaryTree
+            :list="baseTreeData"
+            :onLoadData="onLoadData"
+            :loadedKeys="loadedKeys"
+        ></GlossaryTree>
+        <!-- <GlossaryDiscover
                 :glossary-qualified-name="glossaryQualifiedName"
-            ></GlossaryDiscover>
-        </div>
+            ></GlossaryDiscover> -->
     </div>
 </template>
 
@@ -55,6 +21,10 @@
     import GlossaryDiscover from '@/glossary/discoverlist/index.vue'
     import AtlanIcon from '../common/icon/atlanIcon.vue'
 
+    import GlossaryTree from '@/glossary/tree/glossaryTree2.vue'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useGlossaryData from '~/composables/glossary/useGlossaryData'
+    import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
     // import { useDebounceFn } from '@vueuse/core'
 
     // import { useRouter } from 'vue-router'
@@ -84,6 +54,7 @@
             GlossaryDropdown,
             GlossaryDiscover,
             AtlanIcon,
+            GlossaryTree,
         },
         props: {
             showFilters: {
@@ -93,11 +64,11 @@
             },
         },
         setup(props, { emit }) {
-            const glossaryQualifiedName = ref('')
+            const { initTree, onLoadData, baseTreeData, loadedKeys } =
+                useGlossaryTree({})
 
-            const handleGlossaryChange = () => {
-                console.log('change', glossaryQualifiedName.value)
-            }
+            initTree()
+
             // const showFilters = ref(props.showFilters)
             // const limit = ref(20)
             // const offset = ref(0)
@@ -400,7 +371,7 @@
             //     handleSearchChange,
             // }
 
-            return { glossaryQualifiedName, handleGlossaryChange }
+            return { baseTreeData, onLoadData, loadedKeys }
         },
         // data() {
         //     return {

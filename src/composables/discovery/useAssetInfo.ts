@@ -115,7 +115,8 @@ export default function useAssetInfo() {
     const getPreviewTabs = (asset: assetInterface, context: string) => {
         return getTabs(previewTabs, assetType(asset))
     }
-    const getProfileTabs = (asset: assetInterface, context: string) => {
+    const getProfileTabs = (asset: assetInterface) => {
+        console.log(assetType(asset))
         return getTabs(profileTabs, assetType(asset))
     }
 

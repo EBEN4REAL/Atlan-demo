@@ -5,24 +5,10 @@
         class="flex mx-3 bg-white border border-transparent"
     >
         <div
-            class="
-                flex
-                items-start
-                flex-1
-                px-3
-                py-4
-                border-b border-transparent border-gray-200
-                w-96
-            "
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent border-gray-200  w-96"
         >
             <div
-                class="
-                    box-border
-                    flex flex-col flex-1
-                    overflow-hidden
-                    gap-y-1
-                    lg:pr-16
-                "
+                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
                 <!-- Asset type + Hierarchy bar -->
                 <div class="flex items-center text-gray-500 gap-x-2">
@@ -39,20 +25,7 @@
                                 ? getColumnUrl(item)
                                 : `/assets/${item.guid}/overview`
                         "
-                        class="
-                            flex-shrink
-                            mb-0
-                            overflow-hidden
-                            text-base
-                            font-bold
-                            truncate
-                            cursor-pointer
-                            text-primary
-                            hover:underline
-                            overflow-ellipsis
-                            whitespace-nowrap
-                            text-md
-                        "
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap text-md"
                     >
                         {{ title(item) }}
                     </router-link>

@@ -88,7 +88,7 @@
                                     }}
                                 </div>
                                 <div
-                                    class="flex items-center cursor-pointer text-primary"
+                                    class="flex items-center cursor-pointer  text-primary"
                                     @click="
                                         copyText(
                                             getSamlAssertionUrl(config.alias)
@@ -118,7 +118,7 @@
                                     }}
                                 </div>
                                 <div
-                                    class="flex items-center cursor-pointer text-primary"
+                                    class="flex items-center cursor-pointer  text-primary"
                                     @click="
                                         copyText(
                                             getSamlAssertionUrl(config.alias)
@@ -539,7 +539,7 @@
 
             const createMapper = async (mapper: any) => {
                 try {
-                    const promise = await IdentityProvider.createMapper(
+                    const promise = await Identity.createMapper(
                         config.alias,
                         mapper
                     )
@@ -555,7 +555,7 @@
                 return !!alias
             }
             const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.Get()
+                const tenantResponse: any = await Tenant.GetTenant()
                 tenantStore.setData(tenantResponse)
             }
 
@@ -586,7 +586,7 @@
                 console.log('submit SSO data=>', params, mappers)
                 const mapperResponse: any = []
                 try {
-                    await IdentityProvider.createIDP(params).then(() => {
+                    await Identity.createIDP(params).then(() => {
                         mappers.map((mapper) =>
                             mapperResponse.push(createMapper(mapper))
                         )

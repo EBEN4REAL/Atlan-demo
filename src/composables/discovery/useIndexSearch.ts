@@ -93,6 +93,7 @@ export default function useIndexSearch<T>(
         aggregationMap,
         mutate,
         refresh,
+
         error,
         isLoading,
         isValidating,

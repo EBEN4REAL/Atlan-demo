@@ -1,26 +1,6 @@
 import { useGlossaryStore } from '~/store/glossary'
 
-export const MAX_CONNECTIONS = 100
-export const CONNECTION_ASSET_TYPE = 'Connection'
-export const CONNECTION_ATTRIBUTES = [
-    'connector',
-    'allowQuery',
-    'allowQueryPreview',
-    'queryPreviewConfig',
-    'queryConfig',
-    'defaultCredentialGuid',
-    'displayName',
-    'certificateStatus',
-    'certificateStatusMessage',
-    'certificateUpdatedBy',
-    'certificateUpdatedAt',
-    'ownerUsers',
-    'ownerGroups',
-    'name',
-    'displayName',
-    'description',
-    'userDescription',
-]
+import { computed } from 'vue'
 
 export default function useGlossaryData() {
     const glossaryStore = useGlossaryStore()
@@ -35,7 +15,10 @@ export default function useGlossaryData() {
         return found
     }
 
+    const glossaryList = computed(() => glossaryStore.list)
+
     return {
+        glossaryList,
         list: glossaryStore.list,
         getGlossary,
     }

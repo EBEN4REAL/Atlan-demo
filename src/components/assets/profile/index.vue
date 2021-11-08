@@ -6,6 +6,7 @@
             :class="$style.profiletab"
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
+            class="h-full"
         >
             <a-tab-pane
                 :tab="tab.label"
@@ -69,7 +70,7 @@
 
             const router = useRouter()
             const handleChangeTab = (key) => {
-                router.replace(`/assets/${id.value}/${key}`)
+                router.replace(`/assets/${route.params.id}/${key}`)
             }
 
             onMounted(() => {

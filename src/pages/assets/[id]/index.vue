@@ -6,8 +6,8 @@
         setup() {
             const route = useRoute()
             const router = useRouter()
-            // const id = computed(() => route?.params?.id || '')
-            // router.replace(`/assets/${id.value}/overview`)
+            const id = computed(() => route?.params?.id || '')
+            router.replace(`/assets/${id.value}/overview`)
         },
     })
 </script>

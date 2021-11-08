@@ -1,8 +1,7 @@
 <template>
     <DefaultLayout>
         <template #header>
-            <div class="flex items-center pb-3 -mt-3 text-2xl text-gray">
-                <!-- <div class="flex mr-3 cursor-pointer" @click="showConfigScreen"> -->
+            <div class="flex items-center -mt-3 text-2xl text-gray">
                 <a-button
                     class="
                         px-0.5
@@ -18,65 +17,27 @@
                         class="w-5 h-5 text-gray-500 transform rotate-180"
                     />
                 </a-button>
-                <!-- <AtlanBtn
-                    padding="compact"
-                    size="sm"
-                    class="px-0 bg-transparent border-none hover:border hover:border-gray"
-                    @click="showConfigScreen"
-                >
-                    <AtlanIcon
-                        icon="ArrowRight"
-                        class="transform rotate-180 text-gray"
-                    />
-                </AtlanBtn> -->
 
-                <span class="ml-1">Single Sign on</span>
-            </div>
-            <div class="flex items-center justify-between px-6 mt-5 mb-5">
-                <div class="flex items-center text-lg">
-                    <img
-                        v-if="!provider.isCustomSaml"
-                        :src="provider.image"
-                        alt="provider"
-                        class="w-4 mr-2"
-                    />
-                    <AtlanIcon
-                        v-else
-                        icon="PrimaryKey"
-                        class="self-center h-6 mr-1 text-alert"
-                    />
-                    <span>{{ provider.title || 'SAML 2.0' }}</span>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-lg">
+                        <img
+                            v-if="!provider.isCustomSaml"
+                            :src="provider.image"
+                            alt="provider"
+                            class="w-4 mr-2"
+                        />
+                        <AtlanIcon
+                            v-else
+                            icon="PrimaryKey"
+                            class="self-center h-6 mr-1 text-alert"
+                        />
+                        <span>{{ provider.title || 'SAML 2.0' }}</span>
+                    </div>
                 </div>
             </div>
-            <MinimalTab
-                v-model:active="activeTabKey"
-                :data="tabConfig"
-                class="px-6 sso-tabs"
-            />
         </template>
         <div class="px-5 mx-auto text-gray-600 bg-white rounded">
-            <!-- <div class="flex items-center justify-between mb-5">
-                <div class="flex items-center text-lg">
-                    <img
-                        v-if="!provider.isCustomSaml"
-                        :src="provider.image"
-                        alt="provider"
-                        class="w-4 mr-2"
-                    />
-                    <AtlanIcon
-                        v-else
-                        icon="PrimaryKey"
-                        class="self-center h-6 mr-1 text-alert"
-                    />
-                    <span>{{ provider.title || 'SAML 2.0' }}</span>
-                </div>
-            </div>
-            <MinimalTab
-                v-model:active="activeTabKey"
-                :data="tabConfig"
-                class="sso-tabs"
-            /> -->
-            <div class="mt-5 provider-wrapper">
+            <div class="provider-wrapper">
                 <!-- Alias input for custom SSO -->
                 <div v-if="!isAliasPresent">
                     <a-form
@@ -111,7 +72,7 @@
                     </div>
                 </div>
                 <div v-else>
-                    <div class="">
+                    <div class="p-4 bg-gray-100 rounded">
                         <div class="mb-6 font-bold text-gray-700">
                             Service provider metadata
                         </div>
@@ -127,7 +88,7 @@
                                     }}
                                 </div>
                                 <div
-                                    class="flex items-center cursor-pointer  text-primary"
+                                    class="flex items-center cursor-pointer text-primary"
                                     @click="
                                         copyText(
                                             getSamlAssertionUrl(config.alias)
@@ -157,7 +118,7 @@
                                     }}
                                 </div>
                                 <div
-                                    class="flex items-center cursor-pointer  text-primary"
+                                    class="flex items-center cursor-pointer text-primary"
                                     @click="
                                         copyText(
                                             getSamlAssertionUrl(config.alias)
@@ -173,7 +134,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-4">
+                        <div class="">
                             <div class="mb-2.5">Atlan SSO metadata</div>
                             <div>
                                 <AtlanBtn
@@ -194,7 +155,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="flex items-center justify-between mt-16">
+                        <div class="flex items-center justify-between mt-9">
                             <div class="mb-6 font-bold text-gray-700">
                                 Identity provider metadata
                             </div>
@@ -251,7 +212,7 @@
                             </a-form-item>
                         </a-form>
                     </div>
-                    <div v-if="provider.isCustomSaml" class="mt-12">
+                    <div v-if="provider.isCustomSaml" class="mt-9">
                         <div class="mb-12">
                             <div class="mb-6 font-bold text-gray-700">
                                 Attribute Mapper
@@ -360,7 +321,7 @@
                             <span v-if="isLoading" class="font-bold"
                                 >Configuring</span
                             >
-                            <span v-else class="font-bold">Configure</span>
+                            <span v-else class="font-bold">Save</span>
                         </AtlanBtn>
                     </div>
                     <!-- </a-form> -->

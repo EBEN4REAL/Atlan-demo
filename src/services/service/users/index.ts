@@ -98,8 +98,8 @@ const RevokeInvitation = (id: string, options?: any) =>
         options || {}
     )
 
-const InviteUsers = (id: string, options?: any) =>
-    useAPI(map.INVITE_USERS, 'POST', { pathVariables: { id } }, options || {})
+const InviteUsers = (body, options?: any) =>
+    useAPI(map.INVITE_USERS, 'POST', { body }, options || {})
 
 const ListBulk = (
     body: Ref<Record<string, any>> | Record<string, any>,

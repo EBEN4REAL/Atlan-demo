@@ -41,8 +41,10 @@
 
 <script lang="ts">
     import { defineComponent, ref } from 'vue'
+    import { userStatusOptions } from './static'
 
     export default defineComponent({
+        name: 'UserFilter',
         props: {
             modelValue: {
                 type: Array,
@@ -67,26 +69,12 @@
             }
 
             return {
+                userStatusOptions,
                 statusFilter,
                 handleStatusFilterChange,
                 filterOpened,
                 handleVisibleChange,
                 activeCollapse,
-            }
-        },
-        data() {
-            return {
-                userStatusOptions: [
-                    {
-                        label: 'Active',
-                        value: { enabled: true, email_verified: true },
-                    },
-                    { label: 'Disabled', value: { enabled: false } },
-                    {
-                        label: 'Invited',
-                        value: { enabled: true, email_verified: false },
-                    },
-                ],
             }
         },
     })

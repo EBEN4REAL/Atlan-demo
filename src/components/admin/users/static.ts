@@ -51,3 +51,15 @@ export const statusColorCodes = {
     Disabled: '#FADEE0',
     Invited: '#F8EED3',
 }
+
+export const userStatusOptions = [
+    {
+        label: 'Active',
+        value: { enabled: true, email_verified: true },
+    },
+    { label: 'Disabled', value: { enabled: false } },
+    {
+        label: 'Invited',
+        value: { enabled: true, email_verified: false },
+    },
+]

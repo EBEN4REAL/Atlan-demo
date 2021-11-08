@@ -7,7 +7,7 @@
         <a-input
             :id="`email-${index}`"
             v-model:value="email.value"
-            @keyup.enter="onAddNewUser"
+            @keyup.enter="focusNewInput"
         >
             <template #addonAfter>
                 <a-select v-model:value="email.role" style="width: 150px">
@@ -15,10 +15,9 @@
                         v-for="role in roleList"
                         :key="role.id"
                         :value="role.name"
-                        ><span class="capitalize">{{
-                            role.name
-                        }}</span></a-select-option
                     >
+                        <span class="capitalize">{{ role.name }}</span>
+                    </a-select-option>
                 </a-select>
             </template>
         </a-input>
@@ -48,7 +47,6 @@
             >
         </div>
     </div>
-    <!-- </a-form> -->
 </template>
 <script lang="ts">
     import {
@@ -66,6 +64,7 @@
 
     export default defineComponent({
         name: 'InviteUsersModal',
+        emits: ['handleInviteSent', 'close'],
         setup(props, context) {
             const { roleList } = useRoles()
             const emails = ref([
@@ -99,11 +98,6 @@
                 }
             }
             const onAddNewUser = () => {
-                // emails.value.push({
-                //     value: '',
-                //     role: 'member',
-                //     label: 'Member',
-                // })
                 emails.value = [
                     ...emails.value,
                     {
@@ -113,20 +107,18 @@
                     },
                 ]
             }
-            watch(
-                emails,
-                () => {
-                    nextTick(() => {
-                        const newInput = document.getElementById(
-                            `email-${emails?.value?.length - 1}`
-                        )
-                        if (newInput) newInput.focus()
-                    })
-                },
-                { deep: true }
-            )
+
+            const focusNewInput = () => {
+                onAddNewUser()
+                nextTick(() => {
+                    const newInput = document.getElementById(
+                        `email-${emails?.value?.length - 1}`
+                    )
+                    if (newInput) newInput.focus()
+                })
+            }
+
             const getRoleId = (email) => {
-                console.log(email)
                 const roleObj =
                     roleList.value && roleList.value.length
                         ? roleList.value.find(
@@ -164,6 +156,7 @@
             }
             return {
                 roleList,
+                focusNewInput,
                 emails,
                 handleSubmit,
                 onAddNewUser,

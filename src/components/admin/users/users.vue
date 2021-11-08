@@ -23,14 +23,14 @@
                     />
                 </div>
                 <div class="flex">
-                    <a-button
+                    <AtlanButton
                         v-if="loginWithEmail && permissions.create"
                         type="primary"
                         class="rounded-md"
                         size="default"
                         @click="handleInviteUsers"
-                        >Invite Users</a-button
-                    >
+                        >Invite Users
+                    </AtlanButton>
                 </div>
             </div>
         </template>

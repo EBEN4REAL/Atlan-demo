@@ -3,7 +3,6 @@
         v-if="userList"
         id="userList"
         class="overflow-hidden border rounded-lg rounded-table user-table"
-        style="height: 'calc(100vh - 20rem)'"
         :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
         :data-source="userList"
         :columns="
@@ -262,7 +261,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs, watch } from 'vue'
+    import { computed, defineComponent, toRefs } from 'vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
 

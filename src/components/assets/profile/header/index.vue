@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div class="flex items-center w-full px-4 py-3">
-        <a-button @click="$router.back()" class="px-2">
+    <div class="flex items-center w-full px-8 pt-3">
+        <a-button @click="$router.back()" class="px-1">
             <atlan-icon
                 icon="ArrowRight"
                 class="w-auto h-4 text-gray-500 transform rotate-180"

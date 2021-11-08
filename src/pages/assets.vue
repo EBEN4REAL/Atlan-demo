@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
-            <div class="flex h-full">
+            <div class="flex w-full h-full">
                 <router-view v-slot="{ Component, route }">
                     <transition :name="'fade'" mode="out-in">
                         <keep-alive>
@@ -43,12 +43,9 @@
             useHead({
                 title: 'Assets',
             })
-
             const route = useRoute()
             const isItem = computed(() => route.params.id)
-
             const { selectedAsset } = useAssetInfo()
-
             return {
                 isItem,
                 selectedAsset,

@@ -1,28 +1,14 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div class="flex flex-col w-full mx-3">
-        <div
-            class="flex items-start flex-1 px-3 py-4 transition-all duration-300 "
-        >
-            <a-button
-                class="
-                    px-1
-                    border-transparent
-                    shadow-none
-                    hover:border-gray-300
-                    py-0.5
-                "
-                @click="$router.back()"
-            >
-                <atlan-icon
-                    icon="ArrowRight"
-                    class="w-5 h-5 text-gray-500 transform rotate-180"
-                />
-            </a-button>
-
-            <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
-            >
+    <div class="flex items-center w-full px-4 py-3">
+        <a-button @click="$router.back()" class="px-2">
+            <atlan-icon
+                icon="ArrowRight"
+                class="w-auto h-4 text-gray-500 transform rotate-180"
+            />
+        </a-button>
+        <div class="flex items-center justify-between w-full ml-3">
+            <div class="flex flex-col">
                 <div class="flex items-center mb-0 overflow-hidden">
                     <div
                         class="flex mr-1"
@@ -34,7 +20,7 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
@@ -47,9 +33,7 @@
                         class="mb-0.5"
                     ></CertificateBadge>
                 </div>
-
-                <!-- Info bar -->
-                <div class="flex items-center gap-x-3">
+                <div class="flex items-center mt-1 gap-x-3">
                     <div class="flex items-center">
                         <a-tooltip placement="left">
                             <template #title>
@@ -70,47 +54,6 @@
                         >
                             {{ item.typeName }}
                         </div>
-                    </div>
-
-                    <div
-                        v-if="
-                            ['table', 'view', 'tablepartition'].includes(
-                                item.typeName?.toLowerCase()
-                            )
-                        "
-                        class="flex text-sm text-gray-500 gap-x-1"
-                    >
-                        <a-tooltip placement="bottomLeft">
-                            <span
-                                v-if="
-                                    ['table', 'tablepartition'].includes(
-                                        item.typeName?.toLowerCase()
-                                    )
-                                "
-                                class="text-gray-500"
-                                ><span
-                                    class="font-semibold tracking-tight text-gray-500 "
-                                    >{{ rowCount(item, false) }}
-                                </span>
-                                Rows</span
-                            >
-                            <template #title>
-                                <span
-                                    v-if="sizeBytes(item, false)"
-                                    class="font-semibold"
-                                    >{{ rowCount(item, true) }} rows ({{
-                                        sizeBytes(item, false)
-                                    }})</span
-                                >
-                            </template>
-                        </a-tooltip>
-                        <span class="text-gray-500">
-                            <span
-                                class="font-semibold tracking-tight text-gray-500 "
-                                >{{ columnCount(item, false) }}</span
-                            >
-                            Cols</span
-                        >
                     </div>
 
                     <div
@@ -262,6 +205,14 @@
                     </div>
                 </div>
             </div>
+            <a-button-group>
+                <a-button block class="flex items-center justify-center"
+                    ><AtlanIcon icon="Query" class="mr-1 mb-0.5"
+                /></a-button>
+                <a-button block class="flex items-center justify-center"
+                    ><AtlanIcon icon="Share" class="mr-1 mb-0.5"
+                /></a-button>
+            </a-button-group>
         </div>
     </div>
 </template>

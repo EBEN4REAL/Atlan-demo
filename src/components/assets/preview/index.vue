@@ -1,6 +1,9 @@
 <template>
     <div v-if="selectedAsset?.guid" class="flex flex-col h-full">
-        <div class="flex flex-col px-4 py-3 border-b border-gray-200">
+        <div
+            class="flex flex-col px-4 py-3 border-b border-gray-200"
+            v-if="!isProfile"
+        >
             <div class="flex items-center mb-1" style="padding-bottom: 1px">
                 <div
                     v-if="
@@ -70,7 +73,11 @@
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
-            style="height: calc(100% - 84px)"
+            :style="
+                isProfile
+                    ? 'height: calc(100% - 0px)'
+                    : 'height: calc(100% - 84px)'
+            "
             tab-position="left"
         >
             <a-tab-pane
@@ -97,13 +104,20 @@
 </template>
 
 <script lang="ts">
-    import { defineAsyncComponent, defineComponent, ref, PropType } from 'vue'
+    import {
+        defineAsyncComponent,
+        defineComponent,
+        ref,
+        PropType,
+        watch,
+    } from 'vue'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -190,12 +204,23 @@
 
             const activeKey = ref(0)
 
-            const tabHeights = {
-                discovery: 'calc(100vh - 9.2rem)',
-                profile: 'calc(100vh - 3rem)',
-                biOverview: 'calc(100vh - 9.2rem)',
-                nonBiOverview: 'calc(100vh - 9.2rem)',
+            const route = useRoute()
+
+            const isProfile = ref(false)
+            if (route.params.id) {
+                isProfile.value = true
             }
+            // fetch the user information when params change
+            watch(
+                () => route.params.id,
+                (newId) => {
+                    if (newId) {
+                        isProfile.value = true
+                    } else {
+                        isProfile.value = false
+                    }
+                }
+            )
 
             return {
                 title,
@@ -216,11 +241,12 @@
                 isPrimary,
                 activeKey,
                 getPreviewTabs,
-                tabHeights,
+
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                isProfile,
             }
         },
     })

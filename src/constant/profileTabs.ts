@@ -1,20 +1,23 @@
 export const profileTabs = [
     {
-        name: 'Overview',
-        component: 'info',
+        id: 'overview',
+        label: 'Overview',
+        component: 'overview',
         icon: 'Overview',
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
     },
     {
-        name: 'Columns',
+        id: 'columns',
+        label: 'Columns',
         component: 'columns',
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
     },
     {
-        name: 'Lineage',
+        id: 'lineage',
+        label: 'Lineage',
         component: 'lineage',
         excludes: ['Query', 'QueryFolder'],
         icon: 'Lineage',

@@ -1,5 +1,5 @@
 <template>
-    <AssetDiscovery :selected-asset="selectedAsset"></AssetDiscovery>
+    <router-view></router-view>
 </template>
 
 <script lang="ts">
@@ -7,12 +7,8 @@
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
-    import AssetDiscovery from '@/assets/index.vue'
-
     export default defineComponent({
-        components: {
-            AssetDiscovery,
-        },
+        components: {},
         props: {
             selectedAsset: {
                 type: Object,

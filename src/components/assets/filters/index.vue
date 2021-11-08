@@ -111,7 +111,7 @@
                     <component
                         :key="dirtyFacetTimestamp[item.id]"
                         :is="item.component"
-                        :attributes="item.attributes"
+                        :item="item"
                         v-model="localFacetMap[item.id]"
                         @change="handleChange(item.id)"
                     ></component>

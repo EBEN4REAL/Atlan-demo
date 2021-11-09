@@ -56,9 +56,6 @@ export default function useAssetInfo() {
     const connectorName = (asset: assetInterface) =>
         attributes(asset)?.connectorName ?? ''
 
-    const status = (asset: assetInterface) =>
-        attributes(asset)?.certificateStatus
-
     const assetType = (asset: assetInterface) => asset?.typeName
 
     const databaseName = (asset: assetInterface) =>
@@ -349,6 +346,35 @@ export default function useAssetInfo() {
         return ''
     }
 
+    const announcementType = (asset: assetInterface) => {
+        return attributes(asset)?.announcementType
+    }
+
+    const announcementTitle = (asset: assetInterface) => {
+        return attributes(asset)?.announcementTitle
+    }
+
+    const announcementMessage = (asset: assetInterface) => {
+        return attributes(asset)?.announcementMessage
+    }
+
+    const announcementUpdatedBy = (asset: assetInterface) => {
+        return attributes(asset)?.announcementUpdatedBy
+    }
+
+    const announcementUpdatedAt = (
+        asset: assetInterface,
+        raw: boolean = false
+    ) => {
+        if (attributes(asset)?.announcementUpdatedAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.announcementUpdatedAt) ||
+                      'N/A'
+                : useTimeAgo(attributes(asset)?.announcementUpdatedAt).value
+        }
+        return ''
+    }
+
     const discoveryStore = useDiscoveryStore()
 
     const selectedAsset = computed(() => {
@@ -608,36 +634,6 @@ export default function useAssetInfo() {
         return filteredHierarchy.filter((item) => item.value !== undefined)
     }
 
-    // const getTableauProperties = (
-    //     asset: Ref<assetInterface> | undefined,
-    //     properties: any
-    // ) => {
-    //     const data: any = []
-    //     console.log(properties, 'properties')
-    //     if (asset.value && properties.length > 0) {
-    //         properties.forEach((tableauProperty: any) => {
-    //             const { label, property, relatedProperty } = tableauProperty
-    //             if (attributes(asset.value)[property]) {
-    //                 const temp = {}
-    //                 temp.id = property
-    //                 temp.label = label
-    //                 if (relatedProperty) temp.relatedProperty = relatedProperty
-    //                 temp[property] = attributes(asset.value)[property]
-    //                 if (property === '__timestamp') {
-    //                     temp[property] = createdAt(asset.value)
-    //                     if (relatedProperty)
-    //                         temp[relatedProperty] = createdAt(asset.value, true)
-    //                 } else if (property === '__modificationTimestamp') {
-    //                     temp[property] = updatedAt(asset.value)
-    //                     if (relatedProperty)
-    //                         temp[relatedProperty] = updatedAt(asset.value, true)
-    //                 }
-    //                 data.push(temp)
-    //             }
-    //         })
-    //     }
-    //     return data
-
     return {
         title,
         getConnectorImage,
@@ -651,8 +647,7 @@ export default function useAssetInfo() {
         dataType,
         dataTypeCategoryLabel,
         dataTypeCategoryImage,
-        // getConnectorName,
-        // getConnectorsNameFromQualifiedName,
+
         isPrimary,
         isPartition,
         isDist,
@@ -661,24 +656,11 @@ export default function useAssetInfo() {
         classifications,
         meanings,
         meaningRelationships,
-        // dataTypeImageForColumn,
-        // popularityScore,
+
         createdBy,
-        // modifiedBy,
-        // databaseLogo,
-        // schemaLogo,
-        // databaseName,
-        // schemaName,
-        // attributes,
-        // title,
-        status,
-        // assetType,
-        // dataType,
-        // dataTypeImage,
-        // description,
+
         logo,
-        // integrationName,
-        // assetTypeLabel,
+
         rowCount,
         links,
         columnCount,
@@ -686,9 +668,7 @@ export default function useAssetInfo() {
         getPreviewTabs,
         getProfileTabs,
         selectedAsset,
-        // sizeBytes,
-        // createdAt,
-        // updatedAt,
+
         sourceUpdatedAt,
         sourceCreatedAt,
         sourceCreatedBy,
@@ -697,9 +677,13 @@ export default function useAssetInfo() {
         certificateUpdatedAt,
         certificateStatusMessage,
         certificateUpdatedBy,
-        // lastCrawled,
-        // assetState,
-        // tableInfo,
+
+        announcementTitle,
+        announcementMessage,
+        announcementType,
+        announcementUpdatedAt,
+        announcementUpdatedBy,
+
         ownerGroups,
         ownerUsers,
         modifiedAt,
@@ -707,10 +691,9 @@ export default function useAssetInfo() {
         createdAt,
 
         getHierarchy,
-        // getTableauProperties,
+
         getTableauHierarchy,
-        // previewURL,
-        // viewDefinition,
+
         qualifiedName,
         getAnchorName,
         connectionQualifiedName,

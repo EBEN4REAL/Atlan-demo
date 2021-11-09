@@ -13,7 +13,7 @@
                 v-for="tab in getProfileTabs(selectedAsset)"
                 :key="tab.id"
             >
-                <Readme :entity="selectedAsset" />
+                <Resources :asset="selectedAsset" />
                 <component :is="tab.component" :key="tab.id"></component>
             </a-tab-pane>
         </a-tabs>

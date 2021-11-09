@@ -1,14 +1,13 @@
 <template>
     <div class="relative">
         <div class="flex flex-row justify-between">
-            <div class="flex" :class="userListHeaderClass">
-                <a-button
+            <div class="flex items-center gap-x-3" :class="userListHeaderClass">
+                <AtlanIcon
                     v-if="showHeaderButtons"
-                    class="mr-3"
+                    class="text-gray-500 cursor-pointer h-7"
+                    icon="ChevronLeft"
                     @click="$emit('showGroupMembers')"
-                >
-                    <AtlanIcon class="text-gray-500" icon="ChevronLeft" />
-                </a-button>
+                />
                 <a-input-search
                     v-model:value="searchText"
                     placeholder="Search users"
@@ -22,9 +21,11 @@
                     type="primary"
                     :loading="addMemberLoading"
                     :disabled="addMemberLoading"
+                    class="flex items-center text-sm"
                     @click="$emit('addMembersToGroup')"
                 >
-                    <AtlanIcon icon="Add" class="mr-2" />Add
+                    <AtlanIcon icon="Add" class="mr-2" />
+                    Add
                 </a-button>
             </div>
         </div>

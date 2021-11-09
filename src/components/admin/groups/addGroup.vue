@@ -231,14 +231,5 @@
                 createPermission,
             }
         },
-        data() {
-            return {
-                group: {
-                    name: '',
-                    alias: '',
-                    description: '',
-                },
-            }
-        },
     })
 </script>

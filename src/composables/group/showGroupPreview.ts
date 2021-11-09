@@ -1,43 +1,12 @@
 import { ref, computed } from 'vue'
+import { allTabs } from '~/constant/groups'
 
 const showPreview = ref(false)
 const groupId = ref('')
 const groupAlias = ref('')
 const uniqueAttribute = ref('')
 const defaultTab = ref('about')
-const allTabs = [
-    {
-        // tab name
-        name: 'About',
-        // tab icon
-        iconClass: '',
-        // component name in groupPreview.vue
-        component: 'About',
-        // unique id for tab - the one that'll get passed from different components
-        key: 'about',
-        icon: 'Overview',
-        tooltip: 'User Info',
-        activeIcon: 'InfoActive',
-    },
-    {
-        name: 'Assets',
-        iconClass: '',
-        component: 'Assets',
-        key: 'assets',
-        icon: 'AssetsInactiveLight',
-        tooltip: 'Assets',
-        activeIcon: 'AssetsActiveLight',
-    },
-    {
-        name: 'Members',
-        iconClass: '',
-        component: 'Members',
-        key: 'members',
-        icon: 'UserLight',
-        tooltip: 'Members',
-        activeIcon: 'UserLightActive',
-    },
-]
+
 
 const blacklistedTabs = ref([])
 const allowedTabs = ref([])
@@ -61,28 +30,33 @@ export function useGroupPreview() {
         allowedTabs.value = []
         showPreview.value = false
     }
+    const setGroupAlias = (id: string) => {
+        console.log('setting user id', id)
+        groupAlias.value = id
+        console.log('done', groupAlias.value)
+    }
+
+    const setGroupId = (id: string) => {
+        console.log('setting user id', id)
+        groupId.value = id
+        console.log('done', groupId.value)
+    }
+
     const setGroupUniqueAttribute = (value, key = 'id') => {
         if (key === 'groupAlias') {
             setGroupAlias(value)
         } else setGroupId(value)
         uniqueAttribute.value = key
     }
-    const setGroupId = (id: string) => {
-        console.log('setting user id', id)
-        groupId.value = id
-        console.log('done', groupId.value)
-    }
-    const setGroupAlias = (id: string) => {
-        console.log('setting user id', id)
-        groupAlias.value = id
-        console.log('done', groupAlias.value)
-    }
+
+
     const setAllowedTabs = (tabs) => {
         allowedTabs.value = [...tabs]
     }
     const setBlackListedTabs = (tabs) => {
         blacklistedTabs.value = [...tabs]
     }
+
     const setDefaultTab = (tab) => {
         defaultTab.value = tab
     }

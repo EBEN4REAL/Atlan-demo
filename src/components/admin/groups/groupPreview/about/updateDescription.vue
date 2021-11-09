@@ -2,13 +2,13 @@
     <div class>
         <div>
             <div class="flex flex-row items-center cursor-pointer group">
-                <p class="mb-0 text-gray-500">
+                <p class="flex items-center mb-0 text-gray-500">
                     Description
-                    <fa
+                    <AtlanIcon
                         v-if="updateSuccess"
-                        icon="fal check"
-                        class="ml-1 text-success"
-                    ></fa>
+                        icon="Approve"
+                        class="inline-block h-3 mb-1 ml-1 text-success"
+                    />
                 </p>
                 <p
                     v-if="!isUpdate"
@@ -44,7 +44,11 @@
                         >
                     </div>
                     <div>
-                        <a-spin v-if="updateLoading" size="small" />
+                        <AtlanIcon
+                            v-if="updateLoading"
+                            icon="CircleLoader"
+                            class="h-4 animate-spin"
+                        />
                         <a-popover
                             v-else-if="updateErrorMessage"
                             placement="bottom"
@@ -79,13 +83,14 @@
     import { Groups } from '~/services/service/groups'
 
     export default defineComponent({
-        name: 'About',
+        name: 'UpdateDescription',
         props: {
             group: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
+        emits: ['refreshTable'],
         setup(props, context) {
             const isUpdate = ref(false)
             const updateLoading = ref(false)

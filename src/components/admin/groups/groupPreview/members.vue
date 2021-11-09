@@ -1,21 +1,20 @@
 <template>
     <div class="my-3">
         <div v-if="showGroupMembers">
-            <div class="flex flex-row justify-between">
+            <div class="flex flex-row justify-between gap-x-1">
                 <div>
                     <a-input-search
                         v-model:value="searchText"
                         placeholder="Search Members"
                         :allow-clear="true"
-                        class="mr-1"
+                        class="mr-2"
                         @change="handleSearch"
                     ></a-input-search>
                 </div>
                 <div>
                     <a-button type="primary" ghost @click="handleAddMember"
-                        ><fa icon="fal plus" class="mr-2"></fa>Add
-                        Member</a-button
-                    >
+                        ><fa icon="fal plus" class="mr-2"></fa>Add Member
+                    </a-button>
                 </div>
             </div>
             <div
@@ -168,6 +167,7 @@
                 default: {},
             },
         },
+        emits: ['refreshTable'],
         setup(props, context) {
             const showGroupMembers = ref(true)
             const searchText = ref('')
@@ -273,7 +273,7 @@
                     users: userIds,
                 }
                 const { data, isReady, error, isLoading } =
-                    Group.RemoveMembersFromGroup(
+                    Groups.RemoveMembersFromGroup(
                         props.selectedGroup.id,
                         requestPayload
                     )
@@ -302,11 +302,9 @@
                 return user.email
             }
             const handleAddMember = () => {
-                // showAddMemberModal.value = true;
                 showGroupMembers.value = false
             }
             const handleShowGroupMembers = () => {
-                // showAddToGroupModal.value = false;
                 showGroupMembers.value = true
             }
             const closeAddGroupModal = () => {

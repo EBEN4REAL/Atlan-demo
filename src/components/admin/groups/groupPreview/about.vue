@@ -51,30 +51,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import UpdateName from '~/components/admin/groups/groupPreview/about/updateName.vue'
-import UpdateAlias from '~/components/admin/groups/groupPreview/about/updateAlias.vue'
-import UpdateDescription from '~/components/admin/groups/groupPreview/about/updateDescription.vue'
+    import { defineComponent } from 'vue'
+    import UpdateName from '~/components/admin/groups/groupPreview/about/updateName.vue'
+    import UpdateAlias from '~/components/admin/groups/groupPreview/about/updateAlias.vue'
+    import UpdateDescription from '~/components/admin/groups/groupPreview/about/updateDescription.vue'
 
-export default defineComponent({
-    name: 'About',
-    components: {
-        UpdateName,
-        UpdateAlias,
-        UpdateDescription,
-    },
-    props: {
-        selectedGroup: {
-            type: Object,
-            default: {},
+    export default defineComponent({
+        name: 'AboutTab',
+        components: {
+            UpdateName,
+            UpdateAlias,
+            UpdateDescription,
         },
-    },
-})
+        props: {
+            selectedGroup: {
+                type: Object,
+                default: () => {},
+            },
+        },
+        emits: ['refreshTable'],
+    })
 </script>
-  
+
 <style lang="less" scoped>
-.tab-content-wrapper {
-    min-height: calc(100vh - 10rem) !important;
-}
+    .tab-content-wrapper {
+        min-height: calc(100vh - 10rem) !important;
+    }
 </style>
-  

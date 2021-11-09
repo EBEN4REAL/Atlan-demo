@@ -1,5 +1,5 @@
 <template>
-    <GroupList class="hellooo" v-if="isAccess"></GroupList>
+    <GroupList v-if="isAccess"></GroupList>
     <NoAccess v-else />
 </template>
 

@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout
-        v-if="permissions.list"
+        v-auth="map.LIST_USERS"
         title="Users"
         :badge="totalUserCount"
     >
@@ -22,12 +22,11 @@
                         @change="updateFilters"
                     />
                 </div>
-                <div class="flex">
+                <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton
-                        v-if="loginWithEmail && permissions.create"
+                        v-if="loginWithEmail"
                         type="primary"
                         class="rounded-md"
-                        size="default"
                         @click="handleInviteUsers"
                         >Invite Users
                     </AtlanButton>
@@ -59,7 +58,6 @@
         <template v-else>
             <UserListTable
                 :user-list="userList"
-                :permissions="permissions"
                 :loading="
                     [STATES.PENDING].includes(state) ||
                     [STATES.VALIDATING].includes(state)
@@ -117,6 +115,7 @@
     import AtlanButton from '~/components/UI/button.vue'
     import UserListTable from '@/admin/users/userListTable.vue'
     import { Users } from '~/services/service/users/index'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'UsersView',
@@ -131,14 +130,6 @@
 
         setup() {
             const { loginWithEmailAllowed } = useTenantData()
-
-            const permissions = computed(() => ({
-                list: true,
-                create: true,
-                update: true,
-                delete: true,
-                suspend: true,
-            }))
 
             const loginWithEmail = ref(loginWithEmailAllowed)
 
@@ -382,6 +373,7 @@
             }
 
             return {
+                map,
                 showResendInvitationConfirm,
                 showRevokeInvitationConfirm,
                 searchText,
@@ -414,7 +406,6 @@
                 getUserList,
                 confirmEnableDisablePopover,
                 selectedUserId,
-                permissions,
                 totalUserCount,
                 limit: userListAPIParams.limit,
                 offset: userListAPIParams.offset,

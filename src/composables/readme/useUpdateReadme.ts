@@ -1,49 +1,39 @@
 import { computed, ref, watch } from 'vue'
-import updateAsset from '~/composables/utils/updateAsset'
+import { message } from 'ant-design-vue'
+import { Entity } from '~/services/meta/entity/index'
 
 export default function useUpdateReadme(selectedAsset, readmeContent) {
-    const isCompleted = ref(false)
-    const isLoading = ref(false)
     const body = ref()
 
     const getBody = () => ({
         entities: [
             {
-                guid: selectedAsset.guid,
-                typeName: selectedAsset.typeName,
+                guid: selectedAsset?.guid,
+                typeName: selectedAsset?.typeName,
                 attributes: {
                     qualifiedName:
                         selectedAsset?.attributes?.qualifiedName ||
-                        selectedAsset.uniqueAttributes?.qualifiedName,
-                    name: selectedAsset.attributes?.name,
+                        selectedAsset?.uniqueAttributes?.qualifiedName,
+                    name: selectedAsset?.attributes?.name,
                     description: readmeContent,
                 },
             },
         ],
     })
-    const readme = computed({
-        get: () => selectedAsset?.attributes?.readme?.attributes?.description,
-        set: (newValue: string) => {
-            body.value = getBody()
-        },
-    })
-    const { state, execute, isReady, error } = updateAsset(body, {
-        immediate: false,
-    })
+
     const update = () => {
         body.value = getBody()
-        isLoading.value = true
-        execute()
+        const { data, error, isLoading } = Entity.BulkUpdate(body, {})
+        watch(data, () => {
+            selectedAsset.value.attributes.readme = {
+                ...data.value.mutatedEntities.UPDATE[0],
+            }
+            message.success('Readme updated!')
+        })
+        return { data, error, isLoading }
     }
 
-    watch(state, () => {
-        isLoading.value = false
-    })
-
     return {
-        isCompleted,
-        isLoading,
         update,
-        readme,
     }
 }

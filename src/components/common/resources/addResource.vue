@@ -1,12 +1,8 @@
 <template>
-    <a-popover
-        v-model:visible="popoverVisible"
-        placement="left"
-        trigger="click"
-    >
+    <a-popover v-model:visible="popoverVisible" trigger="click">
         <slot></slot>
         <template #content>
-            <div class="flex flex-col gap-y-4 w-80">
+            <div class="flex flex-col gap-y-4">
                 <div class="flex items-center text-gray-500 flex-nowrap">
                     <span class="overflow-hidden text-sm overflow-ellipsis">{{
                         title(asset)
@@ -115,3 +111,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    :global(.ant-popover-content) {
+        @apply w-80 !important;
+    }
+</style>

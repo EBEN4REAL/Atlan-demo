@@ -18,12 +18,14 @@
                     ></a-input-search>
                 </div>
                 <router-link to="/admin/groups/new">
-                    <a-button
+                    <AtlanButton
                         v-if="permissions.create"
-                        class="rounded-md"
+                        class="px-5"
+                        size="sm"
                         type="primary"
-                        >Create Group</a-button
                     >
+                        Create Group
+                    </AtlanButton>
                 </router-link>
             </div>
         </template>
@@ -34,25 +36,24 @@
         >
             <ErrorView>
                 <div class="mt-3">
-                    <a-button
-                        size="large"
-                        type="primary"
-                        ghost
+                    <AtlanButton
+                        color="secondary"
                         @click="
                             () => {
                                 getGroupList()
                             }
                         "
                     >
-                        <fa icon="fal sync" class="mr-2"></fa>Try again
-                    </a-button>
+                        <AtlanIcon icon="Reload" />
+                        Try again
+                    </AtlanButton>
                 </div>
             </ErrorView>
         </div>
         <a-table
             v-else-if="groupList"
             id="groupList"
-            class="overflow-hidden border rounded-lg"
+            class="overflow-hidden border rounded-lg group-table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :table-layout="'fixed'"
             :pagination="false"
@@ -61,7 +62,7 @@
                 columns.filter(
                     (col) =>
                         col.title !== 'Actions' ||
-                        permissions.delete ||
+                        permissions.remove ||
                         permissions.update
                 )
             "
@@ -125,7 +126,6 @@
     import ErrorView from '@common/error/index.vue'
     import { message } from 'ant-design-vue'
     import { useDebounceFn } from '@vueuse/core'
-    import { useRouter } from 'vue-router'
     import { Groups } from '~/services/service/groups'
     import DefaultLayout from '@/admin/layout.vue'
     import useGroups from '~/composables/group/useGroups'
@@ -133,17 +133,17 @@
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     import ActionButtons from './actionButtons.vue'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
+        name: 'GroupList',
         components: {
             ErrorView,
-
+            AtlanButton,
             DefaultLayout,
-
             ActionButtons,
         },
         setup(props, context) {
-            const router = useRouter()
             const defaultTab = ref('about')
             const showGroupPreview = ref(false)
             const markAsDefaultLoading = ref(false)
@@ -173,6 +173,7 @@
                 current:
                     groupListAPIParams.offset / groupListAPIParams.limit + 1,
             }))
+
             const {
                 groupList,
                 totalGroupsCount,
@@ -181,6 +182,29 @@
                 state,
                 STATES,
             } = useGroups(groupListAPIParams)
+
+            // BEGIN: GROUP PREVIEW
+            const {
+                showPreview,
+                showGroupPreview: openPreview,
+                setGroupUniqueAttribute,
+                setDefaultTab,
+            } = useGroupPreview()
+
+            const showGroupPreviewDrawer = (
+                group: any,
+                activeTabKey = 'about'
+            ) => {
+                selectedGroupId.value = group.id
+                setDefaultTab(activeTabKey)
+                setGroupUniqueAttribute(group.id)
+                openPreview()
+            }
+            watch(showPreview, () => {
+                if (!showPreview.value) getGroupList()
+            })
+            // END: GROUP PREVIEW
+
             // Logic for search input
             const searchText = ref<string>('')
             const onSearch = useDebounceFn(() => {
@@ -234,9 +258,11 @@
                 // fetch groups
                 getGroupList()
             }
+
             const handleAddMembers = (group: any) => {
                 showGroupPreviewDrawer(group, 'members')
             }
+
             const handleGroupClick = (group: any) => {
                 // showGroupPreview.value = true;
                 showGroupPreviewDrawer(group)
@@ -249,6 +275,7 @@
                     )
                 return activeGroupObj
             })
+
             const handleClosePreview = () => {
                 defaultTab.value = 'about'
                 showGroupPreview.value = false
@@ -270,26 +297,7 @@
                     { immediate: true }
                 )
             }
-            // BEGIN: GROUP PREVIEW
-            const {
-                showPreview,
-                showGroupPreview: openPreview,
-                setGroupUniqueAttribute,
-                setDefaultTab,
-            } = useGroupPreview()
-            const showGroupPreviewDrawer = (
-                group: any,
-                activeTabKey = 'about'
-            ) => {
-                selectedGroupId.value = group.id
-                setDefaultTab(activeTabKey)
-                setGroupUniqueAttribute(group.id)
-                openPreview()
-            }
-            watch(showPreview, () => {
-                if (!showPreview.value) getGroupList()
-            })
-            // END: GROUP PREVIEW
+
             const handleToggleDefault = (group: any) => {
                 const requestPayload = ref()
                 requestPayload.value = {
@@ -408,6 +416,15 @@
     .hide-checkbox {
         .ant-checkbox {
             display: none;
+        }
+    }
+</style>
+
+<style lang="less" scoped>
+    .group-table {
+        // extra row hide hack
+        :global(.ant-table-measure-row) {
+            @apply hidden;
         }
     }
 </style>

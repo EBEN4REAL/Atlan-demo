@@ -86,112 +86,112 @@
 </template>
 
 <script lang="ts">
-// @ts-ignore
-import { VueTelInput } from 'vue3-tel-input'
-import 'vue3-tel-input/dist/vue3-tel-input.css'
-import { defineComponent, ref, watch } from 'vue'
-import { User } from '@services/keycloak/users/users_api'
+    // @ts-ignore
+    import { VueTelInput } from 'vue3-tel-input'
+    import 'vue3-tel-input/dist/vue3-tel-input.css'
+    import { defineComponent, ref, watch } from 'vue'
+    import { Users } from '~/services/service/users/index'
 
-export default defineComponent({
-    name: 'UpdateMobileNumber',
-    components: {
-        VueTelInput,
-    },
-    props: {
-        selectedUser: {
-            type: Object,
-            default: {},
+    export default defineComponent({
+        name: 'UpdateMobileNumber',
+        components: {
+            VueTelInput,
         },
-        allowUpdate: {
-            type: Boolean,
-            default: false,
+        props: {
+            selectedUser: {
+                type: Object,
+                default: {},
+            },
+            allowUpdate: {
+                type: Boolean,
+                default: false,
+            },
         },
-    },
-    setup(props, context) {
-        const isUpdate = ref(false)
-        const mobileNumberLocal = ref(
-            props?.selectedUser?.attributes?.mobile_number?.[0] ?? ''
-        )
-        const updateErrorMessage = ref('')
-        const updateSuccess = ref(false)
-        const updateLoading = ref(false)
-        const onUpdate = () => {
-            mobileNumberLocal.value =
+        setup(props, context) {
+            const isUpdate = ref(false)
+            const mobileNumberLocal = ref(
                 props?.selectedUser?.attributes?.mobile_number?.[0] ?? ''
-            updateErrorMessage.value = ''
-            isUpdate.value = true
-        }
-        const onInput = (phone, phoneObject) => {
-            if (phone && phoneObject?.formatted) {
-                mobileNumberLocal.value = phoneObject.formatted
-            } else if (!phone) mobileNumberLocal.value = ''
-        }
-        const onCancel = () => {
-            mobileNumberLocal.value = ''
-            isUpdate.value = false
-        }
-        const requestPayload = ref()
-        const handleUpdate = () => {
-            requestPayload.value = {
-                attributes: {
-                    mobile_number: [mobileNumberLocal.value],
-                },
+            )
+            const updateErrorMessage = ref('')
+            const updateSuccess = ref(false)
+            const updateLoading = ref(false)
+            const onUpdate = () => {
+                mobileNumberLocal.value =
+                    props?.selectedUser?.attributes?.mobile_number?.[0] ?? ''
+                updateErrorMessage.value = ''
+                isUpdate.value = true
             }
-            updateLoading.value = true
-            const { data, isReady, error, isLoading } = User.UpdateUser(
-                props.selectedUser.id,
-                requestPayload
-            )
-            watch(
-                [data, isReady, error, isLoading],
-                () => {
-                    updateLoading.value = isLoading.value
-                    if (isReady && !error.value && !isLoading.value) {
-                        // context.emit("updatedUser");
-                        updateSuccess.value = true
-                        updateErrorMessage.value = ''
-                        props.selectedUser.attributes.mobile_number =
-                            mobileNumberLocal.value
-                        isUpdate.value = false
-                        setTimeout(() => {
-                            updateSuccess.value = false
-                        }, 1000)
-                    } else {
-                        updateErrorMessage.value =
-                            'Unable to update mobile number, please try again.'
-                    }
-                },
-                { immediate: true }
-            )
-        }
-        return {
-            updateLoading,
-            isUpdate,
-            mobileNumberLocal,
-            updateErrorMessage,
-            updateSuccess,
-            onUpdate,
-            onCancel,
-            handleUpdate,
-            onInput,
-        }
-    },
-})
+            const onInput = (phone, phoneObject) => {
+                if (phone && phoneObject?.formatted) {
+                    mobileNumberLocal.value = phoneObject.formatted
+                } else if (!phone) mobileNumberLocal.value = ''
+            }
+            const onCancel = () => {
+                mobileNumberLocal.value = ''
+                isUpdate.value = false
+            }
+            const requestPayload = ref()
+            const handleUpdate = () => {
+                requestPayload.value = {
+                    attributes: {
+                        mobile_number: [mobileNumberLocal.value],
+                    },
+                }
+                updateLoading.value = true
+                const { data, isReady, error, isLoading } = Users.UpdateUser(
+                    props.selectedUser.id,
+                    requestPayload
+                )
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        updateLoading.value = isLoading.value
+                        if (isReady && !error.value && !isLoading.value) {
+                            // context.emit("updatedUser");
+                            updateSuccess.value = true
+                            updateErrorMessage.value = ''
+                            props.selectedUser.attributes.mobile_number =
+                                mobileNumberLocal.value
+                            isUpdate.value = false
+                            setTimeout(() => {
+                                updateSuccess.value = false
+                            }, 1000)
+                        } else {
+                            updateErrorMessage.value =
+                                'Unable to update mobile number, please try again.'
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
+            return {
+                updateLoading,
+                isUpdate,
+                mobileNumberLocal,
+                updateErrorMessage,
+                updateSuccess,
+                onUpdate,
+                onCancel,
+                handleUpdate,
+                onInput,
+            }
+        },
+    })
 </script>
 
 <style lang="less">
-#tel-input-custom {
-    border: 1px solid #d9d9d9;
-    &:focus,
-    &:active,
-    &:focus-within {
-        border-color: #4876d9;
-        border-right-width: 1px !important;
-        outline: 0;
-        box-shadow: 0 0 0 2px rgba(34, 81, 204, 0.2);
+    #tel-input-custom {
+        border: 1px solid #d9d9d9;
+        &:focus,
+        &:active,
+        &:focus-within {
+            border-color: #4876d9;
+            border-right-width: 1px !important;
+            outline: 0;
+            box-shadow: 0 0 0 2px rgba(34, 81, 204, 0.2);
+        }
+        .vti__dropdown {
+            outline: none !important;
+        }
     }
-    .vti__dropdown {
-        outline: none !important;
-    }
-}
 </style>

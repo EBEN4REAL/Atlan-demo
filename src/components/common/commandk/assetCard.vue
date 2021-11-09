@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="'/'" @click="$emit('closeModal')">
+    <router-link :to="assetURL(item)" @click="$emit('closeModal')">
         <div class="flex flex-col">
             <div
                 class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300  hover:bg-gray-100 hover:border-none"
@@ -19,7 +19,7 @@
                         class="flex items-center pl-1 mb-0 overflow-hidden"
                     >
                         <router-link
-                            :to="'/'"
+                            :to="assetURL(item)"
                             class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                             @click="$emit('closeModal')"
                         >
@@ -132,12 +132,11 @@
             } = useAssetInfo()
 
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
-
-            // TODO: uncomment when bringing redirection
-            // const getColumnUrl = (asset) => {
-            //     const tableGuid = asset?.attributes?.table?.guid
-            //     return `/assets/${tableGuid}/overview?column=${asset.guid}`
-            // }
+            const assetURL = (asset) => {
+                return {
+                    path: `/assets/${asset.guid}`,
+                }
+            }
             return {
                 isColumnAsset,
                 // getColumnUrl,
@@ -152,6 +151,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 dataTypeCategoryImage,
+                assetURL,
             }
         },
     })

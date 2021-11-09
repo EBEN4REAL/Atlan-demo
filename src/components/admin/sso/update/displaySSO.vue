@@ -37,7 +37,7 @@
             :closable="false"
             :destroy-on-close="true"
         >
-            <div class="mb-4 text-lg">Required for enforcing SSO</div>
+            <div class="mb-4 text-lg">Enforce SSO</div>
             <div class="mb-3 font-bold">
                 <span class="text-error"> Warning </span>
                 <span class="font-normal"> : </span>
@@ -80,11 +80,11 @@
                 >
                     <span v-if="enforceSSOChanging">
                         {{
-                            ssoForm.enforceSSO ? 'Enabling' : 'Disabling'
+                            ssoForm.enforceSSO ? 'Enforcing' : 'Disabling'
                         }}</span
                     >
                     <span v-else>
-                        {{ ssoForm.enforceSSO ? 'Enable' : 'Disable' }}</span
+                        {{ ssoForm.enforceSSO ? 'Enforce' : 'Disable' }}</span
                     >
                 </AtlanBtn>
             </div>
@@ -92,14 +92,7 @@
     </div>
 </template>
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        reactive,
-        onMounted,
-        computed,
-        watch,
-    } from 'vue'
+    import { defineComponent, ref, reactive, computed } from 'vue'
     import { message } from 'ant-design-vue'
     import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
     import { Identity } from '~/services/service/identity'
@@ -160,7 +153,7 @@
             }
             setConfig()
             const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.Get()
+                const tenantResponse: any = await Tenant.GetTenant()
                 tenantStore.setData(tenantResponse)
             }
             const handleChangeEnableSSO = async () => {

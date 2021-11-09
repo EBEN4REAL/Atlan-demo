@@ -12,7 +12,7 @@
     </span>
     <span v-else>{{ entity.title }}</span>
 </div>
-<div v-else>
+<div class="flex min-w-full" v-else>
     <div
         class="min-w-full"
         @click="
@@ -24,7 +24,7 @@
         "
     >
         <div
-            class="flex justify-between mr-2  group"
+            class="flex justify-between mr-2 group"
         >
             <div class="flex m-0">
                 <span
@@ -57,6 +57,13 @@
                     >{{ entity.title }}</span
                 >
             </div>
+            <ThreeDotMenu 
+                :entity="entity"
+                :visible="false"
+                showLinks
+                showGtcCrud
+                treeMode
+            />
         </div>
     </div>
 </div>
@@ -75,6 +82,8 @@
     import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
     import redirect from '@/glossary/utils/redirectToProfile'
 
+    import ThreeDotMenu from '@/glossary/threeDotMenu.vue'
+
     export default defineComponent({
         name: 'GlossaryTreeItem',
         props: {
@@ -83,6 +92,9 @@
                 required: false,
                 default: () => {},
             }
+        },
+        components: {
+            ThreeDotMenu
         },
         setup(props, { emit }) {
             // data

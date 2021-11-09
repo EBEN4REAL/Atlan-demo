@@ -11,6 +11,7 @@
     import NoAccess from '@/common/secured/access.vue'
 
     export default defineComponent({
+        name: 'GroupsPage',
         components: {
             GroupList,
             NoAccess,

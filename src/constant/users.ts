@@ -3,23 +3,25 @@ export const userColumns = [
         title: 'User',
         key: 'user',
         sorter: true,
-        width: 320,
+        width: 390,
         slots: { customRender: 'name' },
         sortKey: 'first_name',
+        colSpan: 2,
+        align: 'left'
     },
     {
         title: 'Role',
         key: 'role',
         sorter: false,
-        width: 150,
+        width: 200,
         slots: { customRender: 'role' },
-        dataIndex: 'role_object.name',
+        dataIndex: ['role_object', 'name'],
     },
     {
         title: 'Groups',
         key: 'group',
         sorter: true,
-        width: 150,
+        width: 200,
         slots: { customRender: 'group' },
         sortKey: 'group_count',
         dataIndex: 'group_count_string',
@@ -35,11 +37,11 @@ export const userColumns = [
         //   // { text: "Locked", value: JSON.stringify({ locked: true }) },
         // ],
         filterMultiple: false,
-        width: 150,
+        width: 200,
     },
     {
         title: 'Actions',
-        width: 120,
+        width: 200,
         slots: { customRender: 'actions' },
     },
 ]
@@ -49,3 +51,15 @@ export const statusColorCodes = {
     Disabled: '#FADEE0',
     Invited: '#F8EED3',
 }
+
+export const userStatusOptions = [
+    {
+        label: 'Active',
+        value: { enabled: true, email_verified: true },
+    },
+    { label: 'Disabled', value: { enabled: false } },
+    {
+        label: 'Invited',
+        value: { enabled: true, email_verified: false },
+    },
+]

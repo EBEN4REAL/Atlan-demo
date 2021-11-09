@@ -2,26 +2,27 @@
     <DefaultLayout v-if="createPermission">
         <template #header>
             <div class="flex items-center pb-3 -mt-3 text-2xl text-gray">
-                <div class="flex mr-3 cursor-pointer" @click="routeToGroups">
-                    <fa icon="fal chevron-left" />
+                <div class="flex mb-1 cursor-pointer" @click="routeToGroups">
+                    <AtlanIcon icon="ChevronLeft" class="h-10" />
                 </div>
                 <span>Create Group</span>
                 <div class="flex-grow w-0"></div>
-                <a-button
-                    type="link"
-                    class="mr-3 font-bold text-gray-500 cursor-pointer"
+                <AtlanButton
+                    size="sm"
+                    color="secondary"
+                    class="mr-3 text-sm font-bold text-gray-500 cursor-pointer"
                     @click="routeToGroups"
-                    >Cancel</a-button
-                >
-                <a-button
-                    type="primary"
-                    size="large"
+                    >Cancel
+                </AtlanButton>
+                <AtlanButton
+                    class="text-sm"
+                    size="sm"
                     html-type="submit"
                     :disabled="isSubmitDisabled"
                     :loading="createGroupLoading"
                     @click="handleSubmit"
-                    >Create Group</a-button
-                >
+                    >Create Group
+                </AtlanButton>
             </div>
         </template>
         <div class="flex justify-center">
@@ -71,18 +72,19 @@
                             <a-tooltip
                                 :title="'New users will be automatically added to default groups'"
                                 placement="right"
-                                ><span class="ml-1"
-                                    ><fa
-                                        icon="fal info-circle"
-                                        class="pushtop"
-                                    ></fa></span
-                            ></a-tooltip>
+                                ><span class="ml-1">
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="text-gray-500 pushtop"
+                                    ></AtlanIcon>
+                                </span>
+                            </a-tooltip>
                         </template>
                         <a-switch v-model:checked="isDefault" />
                         <span v-if="isDefault" class="ml-2"
                             >All new users will be automatically added to this
-                            group</span
-                        >
+                            group
+                        </span>
                     </a-form-item>
                     <div v-if="listPermission" class="mt-4 border-b"></div>
                     <div v-if="listPermission" class="mt-3 ml-2">
@@ -120,6 +122,7 @@
 
     import UserList from '~/components/admin/groups/common/userList.vue'
     import whoami from '~/composables/user/whoami'
+    import AtlanButton from '@/UI/button.vue'
 
     import NoAcces from '@/common/secured/access.vue'
 
@@ -130,7 +133,7 @@
     }
     export default defineComponent({
         name: 'AddGroup',
-        components: { UserList, DefaultLayout, NoAcces },
+        components: { UserList, DefaultLayout, NoAcces, AtlanButton },
         setup(props, context) {
             const router = useRouter()
             const createGroupLoading = ref(false)

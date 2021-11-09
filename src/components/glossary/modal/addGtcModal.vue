@@ -237,11 +237,11 @@
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
-            const refreshEntity = inject<() => void>('refreshEntity')
+            const refreshEntity = inject<() => void>('refreshEntity', () => {})
             // const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
 
             const updateTreeNode: Function | undefined =
-                inject<any>('updateTreeNode')
+                inject<any>('updateTreeNode',() => {})
             const reorderTreeNodes =
                 inject<
                     (

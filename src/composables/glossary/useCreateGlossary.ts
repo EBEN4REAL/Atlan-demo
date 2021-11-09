@@ -20,7 +20,6 @@ interface createGlossaryParams {
 interface createCategoryParams {
     parentGlossaryGuid: string,
     parentCategoryGuid?: string,
-    parentCategoryQf?: string,
     title?: string,
     description?: string,
     status?: string,
@@ -30,7 +29,6 @@ interface createCategoryParams {
 interface createTermParams {
     parentGlossaryGuid: string,
     parentCategoryGuid?: string,
-    parentCategoryQf?: string,
     title?: string,
     description?: string,
     status?: string,
@@ -118,7 +116,6 @@ const useCreateGlossary = () => {
     const createCategory = ({
         parentGlossaryGuid,
         parentCategoryGuid,
-        parentCategoryQf,
         title,
         description,
         status,
@@ -195,7 +192,6 @@ const useCreateGlossary = () => {
     const createTerm = ({
         parentGlossaryGuid,
         parentCategoryGuid,
-        parentCategoryQf,
         title,
         description,
         status,

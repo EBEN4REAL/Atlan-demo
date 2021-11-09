@@ -3,6 +3,7 @@ import Bookmark from '~/assets/images/icons/bookmark.svg'
 import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
 import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
+import ChevronLeft from '~/assets/images/icons/chevron-left.svg'
 import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import Reload from '~/assets/images/icons/reload.svg'
 import NoAccess from '~/assets/images/icons/no-access.svg'
@@ -107,6 +108,7 @@ import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
 import Pencil from '~/assets/images/icons/pencil.svg'
 import Check from '~/assets/images/icons/check.svg'
+import CheckCircled from '~/assets/images/icons/check-circled.svg'
 import Dots from '~/assets/images/icons/dots.svg'
 import Cross from '~/assets/images/icons/cross.svg'
 import FullScreen from '~/assets/images/icons/fullscreen.svg'
@@ -127,6 +129,7 @@ import CaretRight from '~/assets/images/icons/caret-right.svg'
 import Settings from '~/assets/images/icons/setings.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
+import EmptyResource from '~/assets/images/icons/empty-resources.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -177,9 +180,18 @@ import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
+import StarCircled from '~/assets/images/icons/star-circled.svg'
+import ResendInvite from '~/assets/images/icons/invite.svg'
+import DisableUser from '~/assets/images/icons/disabled-user.svg'
 
 export default {
+    ChevronLeft,
+    CheckCircled,
+    DisableUser,
+    ResendInvite,
+    StarCircled,
     EmptyLineage,
+    EmptyResource,
     IssuesFilled,
     ExplorerTrigger,
     queryErorrIllus,

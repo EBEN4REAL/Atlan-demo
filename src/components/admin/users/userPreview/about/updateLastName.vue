@@ -67,77 +67,77 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import { User } from '@services/keycloak/users/users_api'
+    import { defineComponent, ref, watch } from 'vue'
+    import { Users } from '~/services/service/users/index'
 
-export default defineComponent({
-    name: 'UpdateLastName',
-    props: {
-        selectedUser: {
-            type: Object,
-            default: {},
+    export default defineComponent({
+        name: 'UpdateLastName',
+        props: {
+            selectedUser: {
+                type: Object,
+                default: {},
+            },
+            allowUpdate: {
+                type: Boolean,
+                default: false,
+            },
         },
-        allowUpdate: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    setup(props, context) {
-        const isUpdate = ref(false)
-        const lastNameLocal = ref(props.selectedUser.last_name)
-        const updateErrorMessage = ref('')
-        const updateSuccess = ref(false)
-        const updateLoading = ref(false)
-        const onUpdate = () => {
-            lastNameLocal.value = props.selectedUser.last_name
-            isUpdate.value = true
-        }
-        const onCancel = () => {
-            lastNameLocal.value = ''
-            updateErrorMessage.value = ''
-            isUpdate.value = false
-        }
-        const requestPayload = ref()
-        const handleUpdate = () => {
-            requestPayload.value = {
-                lastName: lastNameLocal.value,
+        setup(props, context) {
+            const isUpdate = ref(false)
+            const lastNameLocal = ref(props.selectedUser.last_name)
+            const updateErrorMessage = ref('')
+            const updateSuccess = ref(false)
+            const updateLoading = ref(false)
+            const onUpdate = () => {
+                lastNameLocal.value = props.selectedUser.last_name
+                isUpdate.value = true
             }
-            const { data, isReady, error, isLoading } = User.UpdateUser(
-                props.selectedUser.id,
-                requestPayload
-            )
-            watch(
-                [data, isReady, error, isLoading],
-                () => {
-                    updateLoading.value = isLoading.value
-                    if (isReady && !error.value && !isLoading.value) {
-                        updateSuccess.value = true
-                        updateErrorMessage.value = ''
-                        props.selectedUser.last_name = lastNameLocal.value
-                        isUpdate.value = false
-                        setTimeout(() => {
-                            updateSuccess.value = false
-                        }, 2000)
-                    } else {
-                        updateErrorMessage.value =
-                            'Unable to update last name, please try again.'
-                    }
-                },
-                { immediate: true }
-            )
-        }
-        return {
-            updateLoading,
-            isUpdate,
-            lastNameLocal,
-            updateErrorMessage,
-            updateSuccess,
-            onUpdate,
-            onCancel,
-            handleUpdate,
-        }
-    },
-})
+            const onCancel = () => {
+                lastNameLocal.value = ''
+                updateErrorMessage.value = ''
+                isUpdate.value = false
+            }
+            const requestPayload = ref()
+            const handleUpdate = () => {
+                requestPayload.value = {
+                    lastName: lastNameLocal.value,
+                }
+                const { data, isReady, error, isLoading } = Users.UpdateUser(
+                    props.selectedUser.id,
+                    requestPayload
+                )
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        updateLoading.value = isLoading.value
+                        if (isReady && !error.value && !isLoading.value) {
+                            updateSuccess.value = true
+                            updateErrorMessage.value = ''
+                            props.selectedUser.last_name = lastNameLocal.value
+                            isUpdate.value = false
+                            setTimeout(() => {
+                                updateSuccess.value = false
+                            }, 2000)
+                        } else {
+                            updateErrorMessage.value =
+                                'Unable to update last name, please try again.'
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
+            return {
+                updateLoading,
+                isUpdate,
+                lastNameLocal,
+                updateErrorMessage,
+                updateSuccess,
+                onUpdate,
+                onCancel,
+                handleUpdate,
+            }
+        },
+    })
 </script>
 
 <style></style>

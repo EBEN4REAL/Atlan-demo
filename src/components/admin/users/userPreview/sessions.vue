@@ -136,198 +136,200 @@
         </div>
     </div>
 </template>
-  
-<script lang="ts">
-import { defineComponent, computed, reactive, ref, watch } from 'vue'
-import { useTimeAgo } from '@vueuse/core'
-import { Modal, message } from 'ant-design-vue'
-import ErrorView from '@common/error/index.vue'
-import { User } from '@services/keycloak/users/users_api'
-import swrvState from '~/composables/utils/swrvState'
 
-export default defineComponent({
-    name: 'UserPreviewSessions',
-    components: {
-        ErrorView,
-    },
-    props: {
-        selectedUser: {
-            type: Object,
-            default: {},
+<script lang="ts">
+    import { defineComponent, computed, reactive, ref, watch } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
+    import { Modal, message } from 'ant-design-vue'
+    import ErrorView from '@common/error/index.vue'
+    import { Users } from '~/services/service/users/index'
+    import swrvState from '~/utils/swrvState'
+
+    export default defineComponent({
+        name: 'UserPreviewSessions',
+        components: {
+            ErrorView,
         },
-    },
-    setup(props, context) {
-        const showDeleteSessionsConfirmPopover = ref(false)
-        const hideDeleteSessionsConfirmPopover = () => {
-            showDeleteSessionsConfirmPopover.value = false
-        }
-        const handleClickChange = (visible) => {
-            showDeleteSessionsConfirmPopover.value = visible
-        }
-        const sessionParams = reactive({ max: 100, first: 0 })
-        const {
-            data,
-            error,
-            isValidating,
-            mutate: fetchUserSessions,
-        } = User.GetUserSessions(props.selectedUser.id, sessionParams, {
-            revalidateOnFocus: false,
-            dedupingInterval: 1,
-        })
-        const { state, STATES } = swrvState(data, error, isValidating)
-        const signOutAllSessionsLoading = ref(false)
-        const signOutSessionByIdLoading = ref(false)
-        const sessionList = computed(() => {
-            if (data.value && data.value.length) {
-                return data.value.map((session: any) => ({
-                    ...session,
-                    started_at_string: new Date(session.start).toLocaleString(),
-                    last_accessed_string: new Date(
-                        session.lastAccess
-                    ).toLocaleString(),
-                    started_time_ago: useTimeAgo(session.start).value,
-                    last_accessed_time_ago: useTimeAgo(session.lastAccess)
-                        .value,
-                }))
+        props: {
+            selectedUser: {
+                type: Object,
+                default: {},
+            },
+        },
+        setup(props, context) {
+            const showDeleteSessionsConfirmPopover = ref(false)
+            const hideDeleteSessionsConfirmPopover = () => {
+                showDeleteSessionsConfirmPopover.value = false
             }
-            return []
-        })
-        const signOutAllSessions = () => {
-            const { data, isReady, error, isLoading } = User.SignOutAllSessions(
-                props.selectedUser.id
-            )
-            watch(
-                [data, isReady, error, isLoading],
-                () => {
-                    signOutAllSessionsLoading.value = isLoading.value
-                    if (isReady && !error.value && !isLoading.value) {
-                        fetchUserSessions()
-                        message.success('All sessions deleted')
-                    } else if (error && error.value) {
-                        message.error(
-                            'Unable to end all sessions, please try again'
-                        )
-                    }
-                },
-                { immediate: true }
-            )
-        }
-        const signOutUserSession = (sessionId: string) => {
-            const { data, isReady, error, isLoading } =
-                User.SignOutSessionById(sessionId)
-            watch(
-                [data, isReady, error, isLoading],
-                () => {
-                    signOutSessionByIdLoading.value = isLoading.value
-                    if (
-                        isReady &&
-                        !error.value &&
-                        !signOutSessionByIdLoading.value
-                    ) {
-                        fetchUserSessions()
-                        message.success('User session ended')
-                    } else if (error && error.value) {
-                        message.error(
-                            'Unable to sign user out, please try again'
-                        )
-                    }
-                },
-                { immediate: true }
-            )
-        }
-        const showDeleteAllSessionsConfirm = () => {
-            Modal.confirm({
-                title: 'Sign Out All Sessions',
-                content: 'Are you sure you want to signout all sessions?',
-                okText: 'Yes',
-                okType: 'danger',
-                onOk() {
-                    signOutAllSessions()
-                },
+            const handleClickChange = (visible) => {
+                showDeleteSessionsConfirmPopover.value = visible
+            }
+            const sessionParams = reactive({ max: 100, first: 0 })
+            const {
+                data,
+                error,
+                isValidating,
+                mutate: fetchUserSessions,
+            } = Users.GetUserSessions(props.selectedUser.id, sessionParams, {
+                revalidateOnFocus: false,
+                dedupingInterval: 1,
             })
-        }
-        const handleTableChange = (
-            pagination: any,
-            filters: any,
-            sorter: any
-        ) => {
-            if (sorter && sorter.columnKey === 'last_accessed') {
-                if (sorter.order === 'descend') {
-                    sessionList.value.sort(
-                        (sessionA, sessionB) =>
-                            new Date(sessionB.lastAccess) -
-                            new Date(sessionA.lastAccess)
-                    )
-                } else if (sorter.order === 'ascend') {
-                    sessionList.value.sort(
-                        (sessionA, sessionB) =>
-                            new Date(sessionA.lastAccess) -
-                            new Date(sessionB.lastAccess)
-                    )
+            const { state, STATES } = swrvState(data, error, isValidating)
+            const signOutAllSessionsLoading = ref(false)
+            const signOutSessionByIdLoading = ref(false)
+            const sessionList = computed(() => {
+                if (data.value && data.value.length) {
+                    return data.value.map((session: any) => ({
+                        ...session,
+                        started_at_string: new Date(
+                            session.start
+                        ).toLocaleString(),
+                        last_accessed_string: new Date(
+                            session.lastAccess
+                        ).toLocaleString(),
+                        started_time_ago: useTimeAgo(session.start).value,
+                        last_accessed_time_ago: useTimeAgo(session.lastAccess)
+                            .value,
+                    }))
+                }
+                return []
+            })
+            const signOutAllSessions = () => {
+                const { data, isReady, error, isLoading } =
+                    Users.SignOutAllSessions(props.selectedUser.id)
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        signOutAllSessionsLoading.value = isLoading.value
+                        if (isReady && !error.value && !isLoading.value) {
+                            fetchUserSessions()
+                            message.success('All sessions deleted')
+                        } else if (error && error.value) {
+                            message.error(
+                                'Unable to end all sessions, please try again'
+                            )
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
+            const signOutUserSession = (sessionId: string) => {
+                const { data, isReady, error, isLoading } =
+                    Users.SignOutSessionById(sessionId)
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        signOutSessionByIdLoading.value = isLoading.value
+                        if (
+                            isReady &&
+                            !error.value &&
+                            !signOutSessionByIdLoading.value
+                        ) {
+                            fetchUserSessions()
+                            message.success('User session ended')
+                        } else if (error && error.value) {
+                            message.error(
+                                'Unable to sign user out, please try again'
+                            )
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
+            const showDeleteAllSessionsConfirm = () => {
+                Modal.confirm({
+                    title: 'Sign Out All Sessions',
+                    content: 'Are you sure you want to signout all sessions?',
+                    okText: 'Yes',
+                    okType: 'danger',
+                    onOk() {
+                        signOutAllSessions()
+                    },
+                })
+            }
+            const handleTableChange = (
+                pagination: any,
+                filters: any,
+                sorter: any
+            ) => {
+                if (sorter && sorter.columnKey === 'last_accessed') {
+                    if (sorter.order === 'descend') {
+                        sessionList.value.sort(
+                            (sessionA, sessionB) =>
+                                new Date(sessionB.lastAccess) -
+                                new Date(sessionA.lastAccess)
+                        )
+                    } else if (sorter.order === 'ascend') {
+                        sessionList.value.sort(
+                            (sessionA, sessionB) =>
+                                new Date(sessionA.lastAccess) -
+                                new Date(sessionB.lastAccess)
+                        )
+                    }
+                }
+                if (sorter && sorter.columnKey === 'session_started') {
+                    if (sorter.order === 'descend') {
+                        sessionList.value.sort(
+                            (sessionA: any, sessionB: any) =>
+                                new Date(sessionB.start) -
+                                new Date(sessionA.start)
+                        )
+                    } else if (sorter.order === 'ascend') {
+                        sessionList.value.sort(
+                            (sessionA, sessionB) =>
+                                new Date(sessionA.start) -
+                                new Date(sessionB.start)
+                        )
+                    }
                 }
             }
-            if (sorter && sorter.columnKey === 'session_started') {
-                if (sorter.order === 'descend') {
-                    sessionList.value.sort(
-                        (sessionA: any, sessionB: any) =>
-                            new Date(sessionB.start) - new Date(sessionA.start)
-                    )
-                } else if (sorter.order === 'ascend') {
-                    sessionList.value.sort(
-                        (sessionA, sessionB) =>
-                            new Date(sessionA.start) - new Date(sessionB.start)
-                    )
-                }
+            const columns = computed(() => [
+                {
+                    title: 'Last Accessed',
+                    key: 'last_accessed',
+                    width: 120,
+                    slots: { customRender: 'time' },
+                    sorter: (sessionA, sessionB) =>
+                        new Date(sessionA.lastAccess) -
+                        new Date(sessionB.lastAccess),
+                },
+                {
+                    title: 'Session Started',
+                    key: 'session_started',
+                    width: 120,
+                    slots: { customRender: 'action' },
+                    sorter: true,
+                },
+                {
+                    title: 'IP Address',
+                    key: 'ip_address',
+                    width: 120,
+                    slots: { customRender: 'ip_address' },
+                },
+                {
+                    title: 'Actions',
+                    key: 'actions',
+                    width: 120,
+                    slots: { customRender: 'actions' },
+                },
+            ])
+            return {
+                state,
+                STATES,
+                sessionList,
+                showDeleteAllSessionsConfirm,
+                handleTableChange,
+                signOutUserSession,
+                columns,
+                signOutAllSessionsLoading,
+                signOutAllSessions,
+                hideDeleteSessionsConfirmPopover,
+                handleClickChange,
+                showDeleteSessionsConfirmPopover,
+                signOutSessionByIdLoading,
+                fetchUserSessions,
             }
-        }
-        const columns = computed(() => [
-            {
-                title: 'Last Accessed',
-                key: 'last_accessed',
-                width: 120,
-                slots: { customRender: 'time' },
-                sorter: (sessionA, sessionB) =>
-                    new Date(sessionA.lastAccess) -
-                    new Date(sessionB.lastAccess),
-            },
-            {
-                title: 'Session Started',
-                key: 'session_started',
-                width: 120,
-                slots: { customRender: 'action' },
-                sorter: true,
-            },
-            {
-                title: 'IP Address',
-                key: 'ip_address',
-                width: 120,
-                slots: { customRender: 'ip_address' },
-            },
-            {
-                title: 'Actions',
-                key: 'actions',
-                width: 120,
-                slots: { customRender: 'actions' },
-            },
-        ])
-        return {
-            state,
-            STATES,
-            sessionList,
-            showDeleteAllSessionsConfirm,
-            handleTableChange,
-            signOutUserSession,
-            columns,
-            signOutAllSessionsLoading,
-            signOutAllSessions,
-            hideDeleteSessionsConfirmPopover,
-            handleClickChange,
-            showDeleteSessionsConfirmPopover,
-            signOutSessionByIdLoading,
-            fetchUserSessions,
-        }
-    },
-})
+        },
+    })
 </script>
 <style lang="scss" scoped></style>
-  

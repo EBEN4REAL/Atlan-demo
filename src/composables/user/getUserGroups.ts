@@ -1,7 +1,7 @@
 import { ref, onMounted, watch, computed, Ref, ComputedRef } from "vue";
 import useSWRV from "swrv";
-import { fetcher, getAPIPath, getAxiosClient } from "~/api";
-import swrvState from "~/composables/utils/swrvState";
+// import { fetcher, getAPIPath, getAxiosClient } from "~/api";
+import swrvState from "~/utils/swrvState";
 import { getFormattedGroup } from "~/composables/group/formatGroup";
 
 export default function getUserGroups(groupListAPIParams: {

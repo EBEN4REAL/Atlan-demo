@@ -32,7 +32,6 @@
                     <StatusBadge
                         :key="item.guid"
                         :show-no-status="false"
-                        :status-id="status(item)"
                         class="flex-none mb-0.5 ml-1"
                     ></StatusBadge>
                 </div>

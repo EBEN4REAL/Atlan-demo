@@ -1,9 +1,12 @@
 <template>
-    <div class="w-full h-min-1/2">
-        <div
-            class="flex items-center justify-between w-full py-1 text-base bg-white "
-        >
-            <div class="mb-3 text-base font-bold text-gray-700">Readme</div>
+    <div class="p-4 bg-white rounded">
+        <div class="flex items-center justify-between mb-3 text-base">
+            <div class="flex items-center">
+                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
+                    class="text-base font-bold text-gray"
+                    >Readme</span
+                >
+            </div>
             <div v-if="editable" class="flex align-items-center">
                 <a-button class="mr-2" @click="handleSave">Save</a-button>
 
@@ -56,7 +59,6 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useUpdateReadme from '~/composables/readme/useUpdateReadme'
     import useCreateReadme from '~/composables/readme/useCreateReadme'
-    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {

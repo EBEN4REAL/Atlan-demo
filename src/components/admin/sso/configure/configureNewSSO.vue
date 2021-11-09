@@ -556,7 +556,7 @@
             }
             const updateTenant = async () => {
                 const tenantResponse: any = await Tenant.GetTenant()
-                tenantStore.setData(tenantResponse)
+                tenantStore.setTenant(tenantResponse)
             }
 
             const onSubmit = async () => {

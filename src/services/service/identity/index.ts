@@ -2,68 +2,67 @@
 
 import { map } from './key'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
-import { resolveUrl } from '~/services/api/common'
 import { AxiosRequestConfig } from 'axios'
 
-const createIDP = (params: any, options?: AxiosRequestConfig) =>
+const createIDP = (body: any, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.CREATE_IDP),
+        map.CREATE_IDP(),
         'POST',
-        { params, options: options || {} },
+        { body, options: options || {} },
     )
 
-const updateIDP = (alias?: string, params?: any, options?: AxiosRequestConfig) =>
+const updateIDP = (alias?: string, body?: any, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.UPDATE_IDP, { alias }),
+        map.UPDATE_IDP({ alias }),
         'POST',
-        { options: options || {} },
+        { body, options: options || {} },
     )
 
 const deleteIDP = (alias?: string, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.DELETE_IDP, { alias }),
+        map.DELETE_IDP({ alias }),
         'POST',
         { options: options || {} },
     )
 
 const getMappers = (alias?: string, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.GET_MAPPER, { alias }),
+        map.GET_MAPPER({ alias }),
         'GET',
         { options: options || {} },
     )
 
-const createMapper = (alias?: string, params?: any, options?: AxiosRequestConfig) =>
+const createMapper = (alias?: string, body?: any, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.CREATE_MAPPER, { alias }),
+        map.CREATE_MAPPER({ alias }),
         'POST',
-        { params, options: options || {} },
+        { body, options: options || {} },
     )
 
 const updateMapper = (alias?: string, params?: any, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.UPDATE_MAPPER, { alias, id: params.id }),
+        map.UPDATE_MAPPER({ alias, id: params.id }),
         'POST',
         { options: options || {} },
     )
 
 const getDefaultIDP = (options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.GET_DEFAULT_IDP),
+        map.GET_DEFAULT_IDP(),
         'GET',
         { options: options || {} },
     )
 
 const setDefaultIDP = (alias?: string, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.SET_DEFAULT_IDP, { alias }),
+        map.SET_DEFAULT_IDP({ alias }),
         'POST',
         { options: options || {} },
     )
 
 const deleteDefaultIDP = (alias?: string, options?: AxiosRequestConfig) =>
     useAPIPromise(
-        resolveUrl(map.DELETE_DEFAULT_IDP, { alias }),
+        map.DELETE_DEFAULT_IDP({ alias }),
         'POST',
         { options: options || {} },
     )

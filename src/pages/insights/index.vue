@@ -19,8 +19,8 @@
     import { Insights as InsightsAPI } from '~/services/meta/insights'
     import { message } from 'ant-design-vue'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
-    import useQueryFolderNamespace from '~/components/insights/explorers/queries/composables/useQueryFolderNamespace'
-    import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
+    // import useQueryFolderNamespace from '~/components/insights/explorers/queries/composables/useQueryFolderNamespace'
+    // import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
     export default defineComponent({
         name: 'Insights Page',
         components: { Insights },
@@ -30,7 +30,7 @@
                 title: 'Insights',
             })
             const route = useRoute()
-            const { getQueryFolderNamespace } = useQueryFolderNamespace()
+            // const { getQueryFolderNamespace } = useQueryFolderNamespace()
             const savedQueryGuidFromURL = ref(route.query?.id)
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<QueryFolderNamespaceInterface> =

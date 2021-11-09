@@ -3,19 +3,21 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { SavedQuery } from '~/types/insights/savedQuery.interface'
-import { decodeQuery as decodeBase64Data } from '~/utils/helper/routerHelper'
+import {
+    decodeQuery as decodeBase64Data,
+    serializeQuery,
+} from '~/utils/helper/routerHelper'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
-import { serializeQuery } from '~/utils/helper/routerHelper'
 import { message } from 'ant-design-vue'
 import whoami from '~/composables/user/whoami'
-import { Insights } from '~/services/atlas/api/insights'
+import { Insights } from '~/services/meta/insights/index'
 import { generateUUID } from '~/utils/helper/generator'
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
-import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    
+import useLinkAssets from '~/components/composables/common/useLinkAssets'
+
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
     activeInlineTab: ComputedRef<activeInlineTabInterface>,
@@ -77,7 +79,8 @@ export function useSavedQuery(
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
             parentGuid: savedQuery.attributes.parent.guid,
-            parentQualifiedName: savedQuery.attributes.parentFolderQualifiedName,
+            parentQualifiedName:
+                savedQuery.attributes.parentFolderQualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
             status: savedQuery.attributes.certificateStatus as string,
             explorer: {
@@ -102,9 +105,9 @@ export function useSavedQuery(
                         rowsCount: -1,
                     },
                     context: {
-                        attributeName: "defaultSchemaQualifiedName",
+                        attributeName: 'defaultSchemaQualifiedName',
                         attributeValue: defaultSchemaQualifiedName,
-                    }
+                    },
                 },
                 resultsPane: {
                     activeTab:
@@ -172,7 +175,6 @@ export function useSavedQuery(
 
         console.log('update query attribute: ', activeInlineTab)
 
-
         const attributeValue =
             activeInlineTab.playground.editor.context.attributeValue
 
@@ -219,9 +221,10 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     isPrivate: true,
                     parent: {
-                        guid: activeInlineTab.parentGuid
+                        guid: activeInlineTab.parentGuid,
                     },
-                    parentFolderQualifiedName: activeInlineTab?.parentQualifiedName
+                    parentFolderQualifiedName:
+                        activeInlineTab?.parentQualifiedName,
                 },
                 guid: activeInlineTab?.queryId,
                 // relationshipAttributes: {
@@ -233,11 +236,10 @@ export function useSavedQuery(
             },
         })
 
-
         // body.value.entity.attributes.parentFolderQualifiedName = activeInlineTab?.parentQualifiedName
         // body.value.entity.attributes.parent = {
         //     guid: activeInlineTab.parentGuid
-        // }    
+        // }
 
         // console.log(body.value, 'update')
         // return
@@ -346,11 +348,10 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-            body.value.entity.attributes.parentFolderQualifiedName =
-                parentFolderQF
-            body.value.entity.attributes.parent = {
-                guid: parentFolderGuid
-            }        
+        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
+        body.value.entity.attributes.parent = {
+            guid: parentFolderGuid,
+        }
         if (type === 'all') {
             body.value.entity.classifications = [
                 {
@@ -483,7 +484,7 @@ export function useSavedQuery(
         })
         body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
         body.value.entity.attributes.parent = {
-            guid: parentFolderGuid
+            guid: parentFolderGuid,
         }
         if (type === 'all') {
             body.value.entity.classifications = [
@@ -600,11 +601,11 @@ export function useSavedQuery(
             },
         })
 
-            body.value.entity.attributes.parentFolderQualifiedName =
-                parentFolderQF.value
-            body.value.entity.attributes.parent = {
-                guid: parentFolderGuid.value
-            }
+        body.value.entity.attributes.parentFolderQualifiedName =
+            parentFolderQF.value
+        body.value.entity.attributes.parent = {
+            guid: parentFolderGuid.value,
+        }
         if (type === 'all') {
             body.value.entity.classifications = [
                 {
@@ -715,11 +716,10 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-            body.value.entity.attributes.parentFolderQualifiedName =
-                parentFolderQF
-            body.value.entity.attributes.parent = {
-                guid: parentFolderGuid
-            }        
+        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
+        body.value.entity.attributes.parent = {
+            guid: parentFolderGuid,
+        }
         if (type === 'all') {
             body.value.entity.classifications = [
                 {
@@ -739,11 +739,14 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
-                    console.log('saved query data: ', data);
+                    console.log('saved query data: ', data)
 
                     // save term
                     const { assignLinkedAssets } = useLinkAssets()
-                    console.log('asset terms inside conposable: ', assetTerms.checked)
+                    console.log(
+                        'asset terms inside conposable: ',
+                        assetTerms.checked
+                    )
 
                     if (assetTerms.length) {
                         assetTerms.map((el_guid) => {
@@ -752,7 +755,6 @@ export function useSavedQuery(
                                 [data.value.mutatedEntities.CREATE[0]]
                             )
                             watch(response, (data) => {
-                                
                                 console.log('terms linked: ', data)
                                 useAddEvent(
                                     'discovery',
@@ -767,7 +769,6 @@ export function useSavedQuery(
                     // handleCancel()
                     console.log('checked terms: ', assetTerms.value)
 
-
                     useAddEvent('insights', 'query', 'saved', {
                         num_variables: undefined,
                     })
@@ -779,7 +780,9 @@ export function useSavedQuery(
                     const guid = data.value.mutatedEntities.CREATE[0].guid
 
                     const parentGuid = data.value.mutatedEntities.UPDATE[0].guid
-                    const parentQualifiedName = data.value.mutatedEntities.UPDATE[0].attributes.qualifiedName
+                    const parentQualifiedName =
+                        data.value.mutatedEntities.UPDATE[0].attributes
+                            .qualifiedName
 
                     console.log(data.value, 'saved')
                     /* Not present in response */
@@ -790,14 +793,15 @@ export function useSavedQuery(
                     activeInlineTabCopy.queryId = guid
 
                     activeInlineTabCopy.parentGuid = parentGuid
-                    activeInlineTabCopy.parentQualifiedName = parentQualifiedName
+                    activeInlineTabCopy.parentQualifiedName =
+                        parentQualifiedName
 
                     // let newActiveInlineTabCopy = {
                     //     ...activeInlineTab,
                     //     parentGuid: parentGuid,
                     //     parentQualifiedName: parentQualifiedName
                     // }
-                    
+
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                     if (routeToGuid) {
                         if (guid) router.push(`/insights?id=${guid}`)
@@ -821,6 +825,6 @@ export function useSavedQuery(
         updateSavedQuery,
         openSavedQueryInNewTab,
         createFolder,
-        saveQueryToDatabaseWithTerms
+        saveQueryToDatabaseWithTerms,
     }
 }

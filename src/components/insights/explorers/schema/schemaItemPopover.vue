@@ -159,7 +159,7 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {

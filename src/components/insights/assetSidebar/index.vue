@@ -63,7 +63,7 @@
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-    import AssetPreview from '@/discovery/preview/assetPreview.vue'
+    import AssetPreview from '~/components/assets/preview/index.vue'
     import useDiscoveryStore from '~/store/discovery'
 
     export default defineComponent({

@@ -97,11 +97,11 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
-    import Avatar from '~/components/common/avatar.vue'
+    import Avatar from '@/common/avatar.vue'
     import Classifications from '@common/sidebar/classifications.vue'
     import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
     import SchemaTreeItem from './schemaTreeItem.vue'
-    // import useAssetInfo from '~/composables/asset/useAssetInfo';
+    // import useAssetInfo from '~/composables/discovery/useAssetInfo';
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     // composables

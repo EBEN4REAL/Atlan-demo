@@ -74,7 +74,7 @@
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import useDiscoveryStore from '~/store/discovery'
     import { storeToRefs } from 'pinia'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import {
         Attributes,

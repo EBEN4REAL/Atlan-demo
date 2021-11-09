@@ -17,12 +17,28 @@
                         </div>
                     </template>
                     <div
-                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                        class="
+                            relative
+                            flex
+                            content-center
+                            w-full
+                            my-auto
+                            overflow-hidden
+                            text-sm
+                            leading-5
+                            text-gray-700
+                        "
                     >
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
-                            class="relative flex items-center justify-between w-full "
+                            class="
+                                relative
+                                flex
+                                items-center
+                                justify-between
+                                w-full
+                            "
                         >
                             <div class="relative parent-ellipsis-container">
                                 <component
@@ -37,7 +53,11 @@
                                     "
                                 ></component>
                                 <span
-                                    class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                    class="
+                                        mb-0
+                                        text-sm text-gray-700
+                                        parent-ellipsis-container-base
+                                    "
                                     >{{ title(item) }}</span
                                 >
                                 <StatusBadge
@@ -54,7 +74,19 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    right-0
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -140,7 +172,13 @@
                                     <div class="flex items-center mr-2">
                                         <AtlanIcon
                                             icon="PrimaryKey"
-                                            class="w-4 h-4 my-auto mr-1  primary-key-color"
+                                            class="
+                                                w-4
+                                                h-4
+                                                my-auto
+                                                mr-1
+                                                primary-key-color
+                                            "
                                         ></AtlanIcon>
                                         <span class="primary-key-color"
                                             >Pkey</span
@@ -170,7 +208,11 @@
                             ></AtlanIcon>
 
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="
+                                    mb-0
+                                    text-sm text-gray-700
+                                    parent-ellipsis-container-base
+                                "
                                 >{{ title(item) }}</span
                             >
                             <!-- <StatusBadge
@@ -187,7 +229,19 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    right-0
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected
@@ -292,7 +346,17 @@
                 class="flex w-full m-0"
             >
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="
+                        relative
+                        flex
+                        content-center
+                        w-full
+                        my-auto
+                        overflow-hidden
+                        text-sm
+                        leading-5
+                        text-gray-700
+                    "
                 >
                     <!--For Others -->
                     <div class="parent-ellipsis-container">
@@ -308,7 +372,11 @@
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            class="
+                                mb-0
+                                text-sm text-gray-700
+                                parent-ellipsis-container-base
+                            "
                             >{{ title(item) }}</span
                         >
                         <StatusBadge
@@ -324,7 +392,20 @@
                         ></StatusBadge>
                         <div
                             v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            class="
+                                absolute
+                                right-0
+                                flex
+                                items-center
+                                h-full
+                                pr-2
+                                text-gray-500
+                                transition
+                                duration-300
+                                opacity-0
+                                margin-align-top
+                                group-hover:opacity-100
+                            "
                             :class="
                                 item?.selected
                                     ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -359,12 +440,28 @@
             <!-- For others component which does not need hoverActions -->
             <div v-if="item?.typeName === 'Column' && !hoverActions">
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="
+                        relative
+                        flex
+                        content-center
+                        w-full
+                        my-auto
+                        overflow-hidden
+                        text-sm
+                        leading-5
+                        text-gray-700
+                    "
                 >
                     <!--For Column-->
                     <div
                         v-if="assetType(item) == 'Column'"
-                        class="relative flex items-center justify-between w-full "
+                        class="
+                            relative
+                            flex
+                            items-center
+                            justify-between
+                            w-full
+                        "
                     >
                         <component
                             :is="dataTypeImage(item)"
@@ -408,7 +505,11 @@
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            class="
+                                mb-0
+                                text-sm text-gray-700
+                                parent-ellipsis-container-base
+                            "
                             >{{ title(item) }}</span
                         >
                         <!-- <StatusBadge
@@ -425,7 +526,19 @@
 
                         <div
                             v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            class="
+                                absolute
+                                right-0
+                                flex
+                                items-center
+                                h-full
+                                text-gray-500
+                                transition
+                                duration-300
+                                opacity-0
+                                margin-align-top
+                                group-hover:opacity-100
+                            "
                             @click.stop="() => {}"
                             :class="
                                 item?.selected
@@ -529,7 +642,17 @@
                 class="flex w-full m-0"
             >
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="
+                        relative
+                        flex
+                        content-center
+                        w-full
+                        my-auto
+                        overflow-hidden
+                        text-sm
+                        leading-5
+                        text-gray-700
+                    "
                 >
                     <!--For Others -->
                     <div class="parent-ellipsis-container">
@@ -545,7 +668,11 @@
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            class="
+                                mb-0
+                                text-sm text-gray-700
+                                parent-ellipsis-container-base
+                            "
                             >{{ title(item) }}</span
                         >
                         <StatusBadge
@@ -582,7 +709,7 @@
         ref,
         watch,
     } from 'vue'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'

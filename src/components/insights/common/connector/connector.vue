@@ -60,7 +60,7 @@
     import { Collapse } from '~/types'
     import { useConnectionsStore } from '~/store/connections'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Button from '~/components/common/radio/button.vue'
 
     export default defineComponent({

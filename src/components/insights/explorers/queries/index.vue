@@ -215,7 +215,12 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
+                        class="
+                            my-2
+                            mb-0 mb-6
+                            text-base text-center text-gray-700
+                            max-width-text
+                        "
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for
@@ -274,7 +279,7 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useDiscoveryStore from '~/store/discovery'
     import { storeToRefs } from 'pinia'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
@@ -416,10 +421,18 @@
                         }
                         const li = document.createElement('li')
                         li.classList.add('flex', 'items-center')
-                        const caret = '<span class="ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
-                        const caretEl = new DOMParser().parseFromString(caret, 'text/html').body.firstElementChild;
-                        const folderSvg = '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto w-5 h-5 my-auto mr-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
-                        const folderSvgEl = new DOMParser().parseFromString(folderSvg, 'text/html').body.firstElementChild;
+                        const caret =
+                            '<span class="ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+                        const caretEl = new DOMParser().parseFromString(
+                            caret,
+                            'text/html'
+                        ).body.firstElementChild
+                        const folderSvg =
+                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto w-5 h-5 my-auto mr-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
+                        const folderSvgEl = new DOMParser().parseFromString(
+                            folderSvg,
+                            'text/html'
+                        ).body.firstElementChild
                         li.appendChild(caretEl)
                         li.appendChild(folderSvgEl)
 

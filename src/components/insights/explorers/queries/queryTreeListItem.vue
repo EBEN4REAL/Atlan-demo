@@ -7,7 +7,17 @@
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="
+                        relative
+                        flex
+                        content-center
+                        w-full
+                        my-auto
+                        overflow-hidden
+                        text-sm
+                        leading-5
+                        text-gray-700
+                    "
                 >
                     <div class="py-1 parent-ellipsis-container">
                         <div class="flex w-full">
@@ -20,7 +30,11 @@
                                 class="w-5 h-5 my-auto mr-1"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="
+                                    mb-0
+                                    text-sm text-gray-700
+                                    parent-ellipsis-container-base
+                                "
                                 >{{ title(item) }}</span
                             >
                         </div>
@@ -35,7 +49,7 @@
     import { defineComponent, PropType, toRefs } from 'vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {},

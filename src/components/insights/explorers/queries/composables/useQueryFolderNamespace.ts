@@ -1,3 +1,4 @@
+// FIXME: CHANGE BASIC -> INDEX
 import { Ref, ref } from 'vue'
 
 import { QueryFolderNamespace } from '~/types/insights/savedQuery.interface'

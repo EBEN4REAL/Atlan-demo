@@ -118,6 +118,7 @@
                 getStatusIcon,
                 getIconClass,
                 onEdit,
+                updateStatus,
             }
         },
     })

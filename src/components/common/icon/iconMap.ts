@@ -128,6 +128,7 @@ import CaretRight from '~/assets/images/icons/caret-right.svg'
 import Settings from '~/assets/images/icons/setings.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
+import EmptyResource from '~/assets/images/icons/empty-resources.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -188,6 +189,7 @@ export default {
     ResendInvite,
     StarCircled,
     EmptyLineage,
+    EmptyResource,
     IssuesFilled,
     ExplorerTrigger,
     queryErorrIllus,

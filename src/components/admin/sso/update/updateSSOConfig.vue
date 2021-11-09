@@ -2,7 +2,7 @@
     <div class="mx-auto text-gray-600 bg-white rounded">
         <div class="mt-5 provider-wrapper">
             <div>
-                <div class="mb-6">
+                <div class="p-4 mb-6 bg-gray-100 rounded">
                     <div class="mb-6 font-bold text-gray-700">
                         Service provider metadata
                     </div>
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-4">
+                    <div>
                         <div class="mb-2.5">Atlan SSO metadata</div>
                         <div>
                             <AtlanBtn
@@ -144,10 +144,6 @@
                                 class="text-gray-500"
                             />
                         </div>
-                        <!-- <fa
-                                icon="fal arrow-circle-right"
-                                class="mx-3 mt-4 text-lg text-gray-600"
-                            ></fa> -->
                         <AtlanIcon icon="Mapper" class="text-gray-500" />
                         <div class="w-5/12">
                             <a-input
@@ -370,7 +366,7 @@
             }
 
             const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.Get()
+                const tenantResponse: any = await Tenant.GetTenant()
                 tenantStore.setData(tenantResponse)
             }
 
@@ -429,7 +425,7 @@
 
             const updateMapper = async (mapper: any) => {
                 try {
-                    const promise = await IdentityProvider.updateMapper(
+                    const promise = await Identity.updateMapper(
                         props.alias,
                         mapper
                     )
@@ -458,13 +454,11 @@
                         (mapper) => mapper?.userAttr && addMapper(mapper)
                     )
                     const mapperResponse: any = []
-                    await IdentityProvider.updateIDP(props.alias, config).then(
-                        () => {
-                            mappers.map((mapper) =>
-                                mapperResponse.push(updateMapper(mapper))
-                            )
-                        }
-                    )
+                    await Identity.updateIDP(props.alias, config).then(() => {
+                        mappers.map((mapper) =>
+                            mapperResponse.push(updateMapper(mapper))
+                        )
+                    })
                     await Promise.all([...mapperResponse])
 
                     await updateTenant()

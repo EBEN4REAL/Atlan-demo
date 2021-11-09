@@ -2,30 +2,56 @@
     <div>
         <div class="flex items-center justify-between mb-3">
             <span class="text-base font-bold text-gray">Resources</span>
-            <AddResources :asset="asset">
-                <button class="flex items-center pr-4 text-gray-500 gap-x-2">
+            <AddResources
+                v-if="links(asset).length > 0"
+                :asset="asset"
+                placement="left"
+            >
+                <a-button
+                    class="text-gray-500 border border-transparent rounded shadow-none  hover:border-gray-400"
+                >
                     <AtlanIcon icon="Add" />
-                    <span class="text-sm">Add</span>
-                </button>
+                </a-button>
             </AddResources>
         </div>
-        <div class="flex flex-col gap-y-2">
-            <a
-                class="flex cursor-pointer gap-x-2 hover:underline"
-                v-for="item in links(asset)"
-                :href="`//${item?.attributes?.link}`"
-                target="_blank"
-                rel="noreferrer"
+        <div style="min-height: 20vh">
+            <div v-if="links(asset).length > 0" class="flex flex-col gap-y-2">
+                <a
+                    class="flex cursor-pointer gap-x-2 hover:underline"
+                    v-for="item in links(asset)"
+                    :href="`//${item?.attributes?.link}`"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <img
+                        :src="`https://www.google.com/s2/favicons?domain=${item?.attributes?.link}`"
+                        :alt="item?.attributes?.name"
+                        class="w-4 h-4"
+                    />
+                    <span class="text-sm text-gray-500">{{
+                        item?.attributes?.name
+                    }}</span>
+                </a>
+            </div>
+            <div
+                v-else
+                class="flex flex-col items-center justify-center h-full gap-y-3"
             >
-                <img
-                    :src="`https://www.google.com/s2/favicons?domain=${item?.attributes?.link}`"
-                    :alt="item?.attributes?.name"
-                    class="w-4 h-4"
+                <AtlanIcon
+                    icon="EmptyResource"
+                    alt="EmptyResource"
+                    class="w-auto h-32"
                 />
-                <span class="text-sm text-gray-500">{{
-                    item?.attributes?.name
-                }}</span>
-            </a>
+                <p class="text-sm text-center text-gray-700">
+                    Add URLs related to this asset
+                </p>
+                <AddResources :asset="asset" placement="top">
+                    <AtlanButton size="lg" color="primary" padding="compact">
+                        <AtlanIcon icon="Add" class="inline mb-0.5 mr-1" />
+                        Add Resource
+                    </AtlanButton></AddResources
+                >
+            </div>
         </div>
     </div>
 </template>
@@ -36,9 +62,10 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AddResources from './addResource.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AtlanButton from '~/components/UI/button.vue'
 
     export default defineComponent({
-        components: { AddResources },
+        components: { AddResources, AtlanButton },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,

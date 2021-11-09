@@ -65,6 +65,17 @@ export interface assetInterface {
                 link: string
             }
         }[]
+        readme?: {
+            guid: string
+            typeName: string
+            uniqueAttributes: {
+                qualifiedName: string
+            }
+            attributes: {
+                description: string
+                name: string
+            }
+        }
         __createdBy: string
         __customAttributes: string
         __guid: string

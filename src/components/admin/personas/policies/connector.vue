@@ -55,7 +55,7 @@
     import { capitalizeFirstLetter } from '~/utils/string'
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
-    import { useConnectionsStore } from '~/store/connections'
+    import { useConnectionStore } from '~/store/connection'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
@@ -111,7 +111,7 @@
                     (item) => !filterSourceIds.includes(item.id)
                 )
 
-            const store = useConnectionsStore()
+            const store = useConnectionStore()
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
             else fetch all the sourcelist from store */

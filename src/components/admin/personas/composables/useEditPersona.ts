@@ -1,6 +1,6 @@
 import { Ref, ref, watch } from 'vue'
 import { IPersona } from '~/types/accessPolicies/personas'
-import usePersonaService from '~/services/heracles/composables/personas'
+import usePersonaService from './usePersonaService'
 import {
     selectedPersona,
     personaList,

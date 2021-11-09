@@ -61,7 +61,7 @@
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Search from your assets</span
                     >
-                    <AssetsWrapper class="h-full" :data-map="filterConfig" />
+                    <!-- <AssetsWrapper class="h-full" :data-map="filterConfig" /> -->
                 </div>
 
                 <div
@@ -112,7 +112,7 @@
         toRefs,
         watch,
     } from 'vue'
-    import AssetsWrapper from '@common/assets/index.vue'
+    // import AssetsWrapper from '@common/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
@@ -125,7 +125,7 @@
             AtlanBtn,
             AssetBrowserTree,
             RaisedTab,
-            AssetsWrapper,
+            // AssetsWrapper,
             CustomAssetSelector,
         },
         props: {

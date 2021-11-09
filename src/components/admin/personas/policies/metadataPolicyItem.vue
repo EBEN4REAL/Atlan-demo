@@ -111,7 +111,7 @@
     import Connector from './connector.vue'
     import MetadataScopes from './metadataScopes.vue'
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
-    import { useConnectionsStore } from '~/store/connections'
+    import { useConnectionStore } from '~/store/connection'
 
     import { MetadataPolicies } from '~/types/accessPolicies/personas'
     import {} from '../composables/useEditPersona'
@@ -137,7 +137,7 @@
             const assetSelectorVisible = ref(false)
             const connectorComponentRef = ref()
             const policyNameRef = ref()
-            const connectionStore = useConnectionsStore()
+            const connectionStore = useConnectionStore()
             function removePolicy() {
                 emit('delete')
             }

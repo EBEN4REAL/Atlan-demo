@@ -25,12 +25,12 @@
                         class="flex flex-col items-center py-1 bg-white rounded"
                         style="width: 260px"
                     >
-                        <UserSelector
+                        <!-- <UserSelector
                             :no-owners-assigned="false"
                             :enableTabs="enableTabs"
                             :data="userGroupData"
                             @change="handleUsersChange"
-                        />
+                        /> -->
                         <div class="w-full mt-2">
                             <div class="flex justify-end text-xs">
                                 <span
@@ -290,20 +290,20 @@
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import UserSelector from '@/common/facets/owners.vue'
+    // import UserSelector from '@/common/facets/owners.vue'
 
     import { IPersona } from '~/types/accessPolicies/personas'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import usePersonaUsers from '../composables/usePersonaUsers'
     import usePersonaGroups from '../composables/usePersonaGroups'
-    import usePersonaService from '~/services/heracles/composables/personas'
-    import Avatar from '~/components/common/avatar.vue'
+    import usePersonaService from '../composables/usePersonaService'
+    import Avatar from '~/components/common/avatar/avatar.vue'
     import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
 
-    import {
-        isEditing,
-        selectedPersonaDirty,
-    } from '../composables/useEditPersona'
+    // import {
+    //     isEditing,
+    //     selectedPersonaDirty,
+    // } from '../composables/useEditPersona'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
@@ -312,7 +312,7 @@
             AtlanBtn,
             RaisedTab,
             SearchAndFilter,
-            UserSelector,
+            // UserSelector,
         },
         props: {
             persona: {

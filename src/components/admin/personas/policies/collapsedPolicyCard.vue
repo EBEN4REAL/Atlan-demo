@@ -66,7 +66,7 @@
         DataPolicies,
         MetadataPolicies,
     } from '~/types/accessPolicies/personas'
-    import { useConnectionsStore } from '~/store/connections'
+    import { useConnectionStore } from '~/store/connection'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -93,7 +93,7 @@
                 }))
             )
 
-            const connStore = useConnectionsStore()
+            const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)
 
             const connectionQfName = computed(() => {

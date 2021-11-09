@@ -1,6 +1,6 @@
 import { invoke, until } from '@vueuse/core'
 import { ref, computed } from 'vue'
-import usePersonaService from '~/services/heracles/composables/personas'
+import usePersonaService from './usePersonaService'
 
 // Main Persona List, fetched from API
 const { listPersonas } = usePersonaService()

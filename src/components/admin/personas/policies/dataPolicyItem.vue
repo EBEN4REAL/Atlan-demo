@@ -126,7 +126,7 @@
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import DataMaskingSelector from './dataMaskingSelector.vue'
 
-    import { useConnectionsStore } from '~/store/connections'
+    import { useConnectionStore } from '~/store/connection'
     import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
 
@@ -152,7 +152,7 @@
             const policyNameRef = ref()
             const assetSelectorVisible = ref(false)
             const filterSourceIds = ['powerBI', 'tableau']
-            const connectionStore = useConnectionsStore()
+            const connectionStore = useConnectionStore()
 
             function removePolicy() {
                 emit('delete')

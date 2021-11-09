@@ -32,7 +32,7 @@
     import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import usePersonaService from '~/services/heracles/composables/personas'
+    import usePersonaService from './composables/usePersonaService'
     import {
         reFetchList,
         selectedPersonaId,

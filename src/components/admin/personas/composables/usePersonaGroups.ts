@@ -1,7 +1,7 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { getFormattedGroup } from '~/composables/group/formatGroup'
-import { IGroup } from '~/services/heracles/apis/groups'
-import { IPersona } from '~/types/accessPolicies/personas'
+// import { IGroup } from '~/services/heracles/apis/groups'
+import { IPersona, IGroup } from '~/types/accessPolicies/personas'
 import fetchGroupList from '~/composables/group/fetchGroupList'
 
 function usePersonaGroupList(persona: Ref<IPersona>) {

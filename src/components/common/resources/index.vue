@@ -62,7 +62,6 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AddResources from './addResource.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import EmptyState from '@common/empty/index.vue'
     import AtlanButton from '~/components/UI/button.vue'
 
     export default defineComponent({

@@ -13,7 +13,6 @@
                 v-for="tab in getProfileTabs(selectedAsset)"
                 :key="tab.id"
             >
-                <Resources :asset="selectedAsset" />
                 <component :is="tab.component" :key="tab.id"></component>
             </a-tab-pane>
         </a-tabs>
@@ -39,9 +38,6 @@
 
     import { assetInterface } from '~/types/assets/asset.interface'
 
-    import Readme from '@common/readme/index.vue'
-    import Resources from '@common/resources/index.vue'
-
     export default defineComponent({
         name: 'AssetProfile',
         props: {
@@ -52,8 +48,6 @@
         },
         components: {
             AssetHeader,
-            Readme,
-            Resources,
             Columns: defineAsyncComponent(
                 () => import('@/assets/profile/tabs/columns/index.vue')
             ),

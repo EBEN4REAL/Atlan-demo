@@ -247,6 +247,7 @@
 <style lang="less">
     .editor {
         position: relative;
+        min-height: 15vh;
         min-width: inherit;
         max-width: inherit;
     }

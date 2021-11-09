@@ -58,7 +58,19 @@ const UpdateGroup = (
         options || {}
     )
 
+const getGroupMembers = (id, params, options) =>
+    useAPI(
+        map.LIST_MEMBERS,
+        'GET',
+        {
+            params,
+            pathVariables: { id },
+        },
+        options || {}
+    )
+
 export const Groups = {
+    getGroupMembers,
     List,
     RemoveMembersFromGroup,
     DeleteGroup,

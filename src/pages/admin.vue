@@ -5,30 +5,30 @@
         >
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
                 <a-menu
+                    v-model:selectedKeys="current"
                     mode="inline"
                     :class="$style.sidebar"
+                    :inline-indent="0"
                     @click="handleClick"
-                    v-model:selectedKeys="current"
-                    :inlineIndent="0"
                 >
                     <a-menu-item-group title="Workspace">
                         <a-menu-item
-                            v-auth="[map.UPDATE_WORKSPACE]"
                             key="overview"
+                            v-auth="[map.UPDATE_WORKSPACE]"
                             >Overview</a-menu-item
                         >
-                        <a-menu-item v-auth="[map.LIST_USERS]" key="members"
-                            >Members</a-menu-item
-                        >
-                        <a-menu-item v-auth="[map.LIST_GROUPS]" key="groups"
-                            >Groups</a-menu-item
-                        >
-                        <a-menu-item key="sso" v-auth="[map.UPDATE_SSO]"
-                            >SSO</a-menu-item
-                        >
-                        <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]"
-                            >SMTP</a-menu-item
-                        >
+                        <a-menu-item key="users" v-auth="[map.LIST_USERS]">
+                            Users
+                        </a-menu-item>
+                        <a-menu-item key="groups" v-auth="[map.LIST_GROUPS]">
+                            Groups
+                        </a-menu-item>
+                        <a-menu-item key="sso" v-auth="[map.UPDATE_SSO]">
+                            SSO
+                        </a-menu-item>
+                        <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]">
+                            SMTP
+                        </a-menu-item>
                     </a-menu-item-group>
                 </a-menu>
             </div>
@@ -46,6 +46,7 @@
     import map from '~/constant/accessControl/map'
 
     export default defineComponent({
+        name: 'AdminPage',
         setup() {
             const router = useRouter()
             const route = useRoute()

@@ -115,7 +115,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
-        name: 'Groups',
+        name: 'GroupList',
         components: {
             ErrorView,
             SearchAndFilter,

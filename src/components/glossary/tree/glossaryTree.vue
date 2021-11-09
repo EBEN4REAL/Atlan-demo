@@ -85,16 +85,23 @@
                             <div
                                 class="flex flex-col justify-center bg-opacity-0 "
                             >
-                                <!-- <ThreeDotMenu
-                                    class="w-6 h-6 ml-0.5"
-                                    :entity="parentGlossary"
+                                <ThreeDotMenu
+                                    :entity="{
+                                        typeName: 'AtlasGlossary',
+                                        guid: parentGlossaryGuid,
+                                        displayText: parentGlossaryTitle,
+                                        attributes: {
+                                            name: parentGlossaryTitle,
+                                            qualifiedName: parentGlossaryQualifiedName
+                                        }
+                                    }"
                                     :showLinks="false"
-                                    :treeMode="true"
-                                /> -->
-                                <AtlanIcon
+                                    treeMode
+                                />
+                                <!-- <AtlanIcon
                                     class="m-auto ml-1"
                                     icon="KebabMenu"
-                                />
+                                /> -->
                             </div>
                         </div>
                     </div>
@@ -267,7 +274,7 @@
 
     // components
     // import LoadingView from '@common/loaders/section.vue'
-    // import ThreeDotMenu from '~/components/glossary/threeDotMenu/threeDotMenu.vue'
+    import ThreeDotMenu from '@/glossary/threeDotMenu.vue'
     // import AddCta from '~/components/glossary/tree/addCta.vue'
     // import Tooltip from '@/common/ellipsis/index.vue'
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
@@ -293,7 +300,7 @@
         components: {
             // AddCta,
             // LoadingView,
-            // ThreeDotMenu,
+            ThreeDotMenu,
             AtlanBtn,
             // Tooltip,
             AddGtcModal,

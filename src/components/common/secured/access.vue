@@ -5,7 +5,7 @@
             <div class="leading-4 text-center text-gray-500 text">
                 Oops, looks like you don't have access to view this page!
             </div>
-            <AtlanButton color="secondary" @onClick="backToHome"
+            <AtlanButton color="secondary" @click="backToHome"
                 >Take me home</AtlanButton
             >
         </div>
@@ -19,8 +19,9 @@
     import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
-        props: {},
+        name: 'NoAccess',
         components: { AtlanButton },
+        props: {},
         setup() {
             const router = useRouter()
 

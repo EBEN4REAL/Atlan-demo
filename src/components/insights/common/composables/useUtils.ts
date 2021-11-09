@@ -1,8 +1,8 @@
-import { useConnectionsStore } from '~/store/connections'
+import { useConnectionStore } from '~/store/connection/index'
 
 export function useUtils() {
     const getFirstQueryConnection = () => {
-        const conenctionStore = useConnectionsStore()
+        const conenctionStore = useConnectionStore()
         let firstConnection = conenctionStore?.data?.entities?.find(
             (item) => item.attributes.connectorName === 'snowflake'
         )

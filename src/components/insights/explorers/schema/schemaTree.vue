@@ -80,49 +80,25 @@
 </template>
 <script lang="ts">
     // library
-    import {
-        defineComponent,
-        computed,
-        PropType,
-        ref,
-        toRefs,
-        watch,
-        ComputedRef,
-        inject,
-    } from 'vue'
+    import { defineComponent, PropType, toRefs, ComputedRef, inject } from 'vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
-
     // components
     import LoadingView from '@common/loaders/section.vue'
-    import Tooltip from '@/common/ellipsis/index.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
-    import Avatar from '@/common/avatar.vue'
-    import Classifications from '@common/sidebar/classifications.vue'
-    import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
+    import OwnerInfoCard from '@/common/hovercards/ownerInfo.vue'
     import SchemaTreeItem from './schemaTreeItem.vue'
-    // import useAssetInfo from '~/composables/discovery/useAssetInfo';
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-
-    // composables
-
-    // constant
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
-    import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
         components: {
             LoadingView,
             AtlanIcon,
             AtlanBtn,
-            Tooltip,
             PillGroup,
             OwnerInfoCard,
-            Avatar,
-            Classifications,
-            ClassificationInfoCard,
             SchemaTreeItem,
         },
         props: {

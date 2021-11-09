@@ -16,7 +16,7 @@
     import { useHead } from '@vueuse/head'
     import Insights from '~/components/insights/index.vue'
     import { useRoute } from 'vue-router'
-    import { Insights as InsightsAPI } from '~/services/atlas/api/insights'
+    import { Insights as InsightsAPI } from '~/services/meta/insights'
     import { message } from 'ant-design-vue'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
     import useQueryFolderNamespace from '~/components/insights/explorers/queries/composables/useQueryFolderNamespace'

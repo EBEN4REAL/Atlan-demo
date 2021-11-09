@@ -110,7 +110,6 @@
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useUsers } from '~/composables/user/useUsers'
-    import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import InviteUsers from './inviteUsers.vue'
 
     import UserFilter from './userFilter.vue'
@@ -390,8 +389,6 @@
                 handleSearch,
                 handleTableChange,
                 showUserPreviewDrawer,
-                getNameInitials,
-                getNameInTitleCase,
                 listType,
                 pagination,
                 userList,

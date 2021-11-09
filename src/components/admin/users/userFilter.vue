@@ -41,7 +41,7 @@
 
 <script lang="ts">
     import { defineComponent, ref } from 'vue'
-    import { userStatusOptions } from './static'
+    import { userStatusOptions } from '~/constant/users'
 
     export default defineComponent({
         name: 'UserFilter',

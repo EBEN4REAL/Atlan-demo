@@ -265,7 +265,7 @@
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
 
-    import { userColumns, statusColorCodes } from './static'
+    import { userColumns, statusColorCodes } from '~/constant/users'
     import useRoles from '~/composables/roles/useRoles'
     import ChangeRole from './changeRole.vue'
 

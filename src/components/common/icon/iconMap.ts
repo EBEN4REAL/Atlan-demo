@@ -103,6 +103,9 @@ import Trash from '~/assets/images/icons/trash.svg'
 import Widgets from '~/assets/images/icons/widgets.svg'
 import Megaphone from '~/assets/images/icons/megaphone.svg'
 import Readme from '~/assets/images/icons/readme.svg'
+import Resources from '~/assets/images/icons/resources.svg'
+import FAQS from '~/assets/images/icons/faqs.svg'
+import TableSummary from '~/assets/images/icons/tableSummary.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
@@ -207,7 +210,9 @@ export default {
     Metadata,
     Relation,
     MorningIcon,
-
+    Resources,
+    FAQS,
+    TableSummary,
     EveningIcon,
     Overview,
     Pin,

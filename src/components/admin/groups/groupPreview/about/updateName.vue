@@ -12,6 +12,7 @@
                 </p>
                 <p
                     v-if="!isUpdate"
+                    v-auth="map.UPDATE_GROUP"
                     class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0  text-primary group-hover:opacity-100"
                     @click="onUpdate"
                 >
@@ -74,6 +75,7 @@
     import { defineComponent, ref, watch } from 'vue'
 
     import { Groups } from '~/services/service/groups'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'UpdateName',
@@ -130,6 +132,7 @@
                 )
             }
             return {
+                map,
                 updateLoading,
                 isUpdate,
                 groupNameLocal,

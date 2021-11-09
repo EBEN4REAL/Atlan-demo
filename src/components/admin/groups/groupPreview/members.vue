@@ -11,7 +11,7 @@
                         @change="handleSearch"
                     ></a-input-search>
                 </div>
-                <div>
+                <div v-auth="map.ADD_USER_GROUP">
                     <a-button type="primary" ghost @click="handleAddMember"
                         ><fa icon="fal plus" class="mr-2"></fa>Add Member
                     </a-button>
@@ -101,6 +101,7 @@
                             </div>
                             <div
                                 v-else
+                                v-auth="map.REMOVE_USER_GROUP"
                                 class="cursor-pointer text-error"
                                 @click="() => removeUserFromGroup(user.id)"
                             >
@@ -153,6 +154,7 @@
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import AddGroupMembers from '~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'GroupMembers',
@@ -164,7 +166,7 @@
         props: {
             selectedGroup: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
         emits: ['refreshTable'],
@@ -320,6 +322,7 @@
                 selectedUserIds.value = [...userList]
             }
             return {
+                map,
                 searchText,
                 showLoadMore,
                 memberList,

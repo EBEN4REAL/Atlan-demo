@@ -111,5 +111,9 @@ meta:
         :global(.ant-tabs-nav) {
             @apply mb-0 !important;
         }
+
+        :global(.ant-tabs-content-holder) {
+            @apply bg-primary-light !important;
+        }
     }
 </style>

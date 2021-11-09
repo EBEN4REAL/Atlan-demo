@@ -1,7 +1,7 @@
 import useSWRV from 'swrv'
 import { computed, ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
-// import { Group, URL } from '@services/keycloak/groups/groups_api'
+import { Groups } from '~/services/service/groups'
 import swrvState from '../utils/swrvState'
 
 export default function fetchGroupList(immediate: boolean = true) {
@@ -15,20 +15,20 @@ export default function fetchGroupList(immediate: boolean = true) {
     params.value.append('columns', 'attributes')
 
     const { data, error, mutate, isValidating } = useSWRV(
-        // [URL.GroupList, params?.value, {}],
-        [],
+        ['/groups', params?.value, {}],
         () => {
-        //     if (immediate) return Group.ListV2(params?.value)
-        //     immediate = true
+            if (immediate) return Groups.List(params?.value)
+            immediate = true
 
-        //     return {}
-        // },
-        // {
-        //     revalidateOnFocus: false,
-        //     cache: new LocalStorageCache(),
-        //     dedupingInterval: 1,
+            return {}
+        },
+        {
+            revalidateOnFocus: false,
+            cache: new LocalStorageCache(),
+            dedupingInterval: 1,
          }
     )
+    
     const { state, STATES } = swrvState(data, error, isValidating)
 
     const list = computed(() => data.value?.records ?? [])

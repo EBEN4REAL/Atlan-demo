@@ -1,21 +1,20 @@
 <template>
-    <!-- <ClassificationHeader
+    <ClassificationHeader
         v-if="selectedClassification"
         :classification="selectedClassification"
     />
-
+<!-- 
     <ClassificationBody
         v-if="selectedClassification"
         :classification="selectedClassification"
     /> -->
-    test {{ classificationId }} {{ selectedClassification }}
 </template>
 
 <script lang="ts">
     import { defineComponent, computed } from 'vue'
-    // import ClassificationHeader from '~/components/admin/classifications/classificationHeader.vue'
     // import { useClassificationStore } from '~/components/admin/classifications/_store'
     // import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
+    import ClassificationHeader from '@/admin/classifications/classificationHeader.vue'
     // import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -23,7 +22,7 @@
     export default defineComponent({
         name: 'ClassificationProfile',
         components: {
-            // ClassificationHeader,
+            ClassificationHeader,
             // ClassificationBody,
         },
         props: {

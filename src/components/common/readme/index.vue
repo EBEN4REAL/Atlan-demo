@@ -59,7 +59,6 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useUpdateReadme from '~/composables/readme/useUpdateReadme'
     import useCreateReadme from '~/composables/readme/useCreateReadme'
-    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {

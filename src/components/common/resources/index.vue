@@ -19,7 +19,7 @@
                 </a-button>
             </AddResources>
         </div>
-        <div style="min-height: 20vh">
+        <div style="min-height: 15vh">
             <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-2">
                 <a
                     class="flex cursor-pointer gap-x-2 hover:underline"

@@ -4,6 +4,7 @@
         id="userList"
         class="overflow-hidden border rounded-lg rounded-table user-table"
         :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
+        :table-layout="'fixed'"
         :data-source="userList"
         :columns="
             userColumns.filter(

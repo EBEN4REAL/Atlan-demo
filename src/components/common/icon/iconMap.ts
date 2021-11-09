@@ -3,6 +3,7 @@ import Bookmark from '~/assets/images/icons/bookmark.svg'
 import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
 import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
+import ChevronLeft from '~/assets/images/icons/chevron-left.svg'
 import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import Reload from '~/assets/images/icons/reload.svg'
 import NoAccess from '~/assets/images/icons/no-access.svg'
@@ -184,6 +185,7 @@ import ResendInvite from '~/assets/images/icons/invite.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 
 export default {
+    ChevronLeft,
     CheckCircled,
     DisableUser,
     ResendInvite,

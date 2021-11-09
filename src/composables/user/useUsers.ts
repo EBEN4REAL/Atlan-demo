@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
@@ -104,6 +104,30 @@ export const useUsers = (userListAPIParams: {
         cacheKey: 'LIST_USERS',
     })
 
+    const localUsersList: Ref<any[]> = ref([])
+
+    watch(data, () => {
+        const escapedData = data?.value?.records ? data?.value?.records?.map((user: any) =>
+            getFormattedUser(user)
+        ) : [] // to prevent maping undefined
+
+        if (data && data.value) {
+            if (userListAPIParams.offset > 0) {
+                localUsersList.value = [
+                    ...localUsersList.value,
+                    ...escapedData
+                ]
+            } else {
+                localUsersList.value = escapedData
+            }
+        }
+    })
+
+    const usersListConcatenated: ComputedRef<any> = computed(
+        () => localUsersList.value || []
+    )
+
+
     const userList = computed(() => {
         if (data.value && data?.value?.records)
             return data?.value.records.map((user: any) =>
@@ -116,7 +140,9 @@ export const useUsers = (userListAPIParams: {
 
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
+
     return {
+        usersListConcatenated,
         userList,
         totalUserCount,
         filteredUserCount,

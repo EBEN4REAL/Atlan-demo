@@ -10,7 +10,10 @@
                 >Saving</span
             >
         </div>
-
+        <AnnouncementWidget
+            class="mx-5"
+            :selected-asset="selectedAsset"
+        ></AnnouncementWidget>
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 px-5"
@@ -171,7 +174,7 @@
         watch,
         Ref,
     } from 'vue'
-
+    import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/assets/preview/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/assets/preview/popover/rowInfo.vue'
@@ -199,6 +202,7 @@
         components: {
             // Experts,
             Description,
+            AnnouncementWidget,
             // Status,
             Owners,
             Classification,

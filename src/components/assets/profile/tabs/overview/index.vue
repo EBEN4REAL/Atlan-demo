@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div class="flex flex-col p-4 bg-primary-light gap-y-4">
-        <!-- <AnnouncementWidget :selectedAsset="selectedAsset"></AnnouncementWidget> -->
+        <AnnouncementWidget :selectedAsset="selectedAsset"></AnnouncementWidget>
         <Readme :entity="selectedAsset" />
         <Resources :asset="selectedAsset" />
     </div>
@@ -21,7 +21,7 @@
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
-                required: true,
+                required: false,
             },
         },
         setup() {},

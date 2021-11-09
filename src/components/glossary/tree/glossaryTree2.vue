@@ -6,6 +6,7 @@
         :load-data="onLoadData"
         :loadedKeys="loadedKeys"
         :treeDataSimpleMode="true"
+        :height="300"
         class="bg-transparent"
         :auto-expand-parent="false"
     >

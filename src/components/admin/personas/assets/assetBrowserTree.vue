@@ -87,7 +87,7 @@
                 // onLoadData,
                 // expandNode,
                 // selectNode,
-                // checkedKeys,
+                checkedKeys,
             }
         },
     })

@@ -13,6 +13,11 @@
             :disabled="disabled"
             @change="onChange"
             @select="selectNode"
+            :ref="
+                (el) => {
+                    treeSelectRef = el
+                }
+            "
         >
             <template #title="node">
                 <div v-if="node?.img" class="flex items-center">
@@ -49,9 +54,9 @@
     } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { Components } from '~/api/atlas/client'
-    import { certificateList } from '~/constant/certification'
+    import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
         props: {
@@ -75,10 +80,9 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
+            const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
             const { data, filterSourceIds } = toRefs(props)
-
-            const store = useConnectionStore()
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
@@ -107,6 +111,7 @@
                     (item) => !filterSourceIds.includes(item.id)
                 )
 
+            const store = useConnectionStore()
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
             else fetch all the sourcelist from store */
@@ -116,13 +121,13 @@
                     : store.getSourceList
             )
             const getImage = (id: string) => store.getImage(id)
-            const list = computed(() => certificateList)
+            const list = computed(() => List)
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             console.log(checkedValues.value, 'model')
 
             const transformConnectionsToTree = (connectorId: string) =>
-                store.list
+                store.getList
                     .filter(
                         (connection) =>
                             getConnectorName(connection?.attributes) ===
@@ -256,6 +261,8 @@
             }
 
             return {
+                treeSelectRef,
+                filterSourceIds,
                 onChange,
                 expandedKeys,
                 selectNode,
@@ -293,7 +300,7 @@
     .connector {
         :global(.ant-select-selector) {
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
-            @apply rounded-lg !important;
+            border-radius: 4px !important;
         }
     }
 </style>

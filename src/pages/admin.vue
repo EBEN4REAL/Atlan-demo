@@ -30,12 +30,6 @@
                             SMTP
                         </a-menu-item>
                     </a-menu-item-group>
-
-                    <a-menu-item-group title="Access Control">
-                        <a-menu-item key="personas" v-auth="[map.LIST_PERSONA]">
-                            Persona
-                        </a-menu-item>
-                    </a-menu-item-group>
                 </a-menu>
             </div>
         </div>

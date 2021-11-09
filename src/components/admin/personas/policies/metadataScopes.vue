@@ -39,7 +39,7 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import {} from '../composables/useEditPersona'
-    import useScopeService from '~/services/heracles/composables/scopes'
+    import useScopeService from '../composables/useScopeService'
 
     export default defineComponent({
         name: 'MetadataScopes',

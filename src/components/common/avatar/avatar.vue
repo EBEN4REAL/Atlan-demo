@@ -49,10 +49,7 @@
 
 <script lang="ts">
     import { ref, watch, PropType } from 'vue'
-    import {
-        getNameInitials,
-        getNameInTitleCase,
-    } from '~/composables//utils/string-operations'
+    import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import uploadAvatar from '~/composables/avatar/uploadAvatar'
 
     export default {

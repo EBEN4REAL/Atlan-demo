@@ -48,7 +48,6 @@
         },
         components: {
             AssetHeader,
-
             Columns: defineAsyncComponent(
                 () => import('@/assets/profile/tabs/columns/index.vue')
             ),

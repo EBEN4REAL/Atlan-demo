@@ -85,10 +85,10 @@
             const editor = ref()
             const { entity } = toRefs(props)
             const editorContent = ref(
-                entity?.attributes?.readme?.attributes?.description ?? ''
+                entity.value?.attributes?.readme?.attributes?.description ?? ''
             )
             const readmeDescription = computed(
-                () => entity?.attributes?.readme?.attributes?.description
+                () => entity.value?.attributes?.readme?.attributes?.description
             )
 
             const onUpdate = (content: string, json: Record<string, any>) => {
@@ -114,18 +114,11 @@
                     readmeDescription.value?.length ||
                     readmeDescription.value === ''
                 ) {
-                    /* const { isCompleted, isLoading, update } = useUpdateReadme(
-                        entity?.attributes?.readme,
+                    const { update } = useUpdateReadme(
+                        entity.value?.attributes?.readme,
                         editorContent.value
                     )
                     update()
-                    watch(isCompleted, (completed) => {
-                        if (completed) {
-                            entity.attributes.readme.attributes.description =
-                                editorContent.value
-                            message.success('Readme saved!')
-                        }
-                    }) */
                 } else {
                     const { createReadme } = useCreateReadme(
                         entity,

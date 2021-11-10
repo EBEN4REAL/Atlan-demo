@@ -21,14 +21,14 @@
             ></RequestModal> -->
             <VirtualList :data="requestList" data-key="id">
                 <template #default="{ item, index }">
-                    {{ item }}
-                    <!-- <RequestListItem
+                    <!-- {{ item }} -->
+                    <RequestListItem
                         :request="item"
                         :selected="isSelected(item.id)"
                         :active="index === selectedIndex"
                         @select="selectRequest(item.id, index)"
                         @action="handleRequestAction($event, index)"
-                    /> -->
+                    />
                 </template>
             </VirtualList>
         </template>
@@ -42,11 +42,11 @@
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { useRequestList } from '~/composables/requests/useRequests'
 
-    import ExplorerLayout from '@/admin/explorerLayout.vue'
+    import DefaultLayout from '@/admin/layout.vue'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import RequestTypeTabs from './requestTypeTabs.vue'
-    // import RequestListItem from '~/components/admin/requests/requestListItem.vue'
+    import RequestListItem from '~/components/admin/requests/requestListItem.vue'
     // import RequestFilters from './filters/requestFilters.vue'
     // import RequestModal from './modal/requestDetailsBase.vue'
     // import NoAcces from '@/admin/common/noAccessPage.vue'
@@ -59,12 +59,12 @@
         name: 'RequestList',
         components: {
             VirtualList,
-            // RequestListItem,
+            RequestListItem,
             SearchAndFilter,
             // RequestFilters,
             // RequestModal,
             // RequestTypeTabs,
-            ExplorerLayout,
+            DefaultLayout,
             // NoAcces
         },
         setup() {

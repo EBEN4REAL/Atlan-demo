@@ -54,11 +54,9 @@
                 :name="request.destination_attribute"
                 :value="request.destination_value"
             />
-
-            <AssetPiece
-                v-else-if="request.source_qualified_name"
-                :asset-qf-name="request.source_qualified_name"
-            /> -->
+ -->
+            <!-- v-else-if="request.source_qualified_name" -->
+            <!-- <AssetPiece :asset-qf-name="request.source_qualified_name" /> -->
         </div>
 
         <div class="flex items-center justify-end col-span-3 pr-4">
@@ -84,13 +82,13 @@
                         Rejected
                     </div>-->
                 </div>
-                <div
-                    class="flex items-center justify-end flex-grow  gap-x-2 group-hover:hidden"
+                <!-- <div
+                    class="flex items-center justify-end flex-grow gap-x-2 group-hover:hidden"
                 >
                     <UserPiece :user="request.createdByUser" :is-pill="false" />
                     •
                     <DatePiece label="Created At" :date="request.created_at" />
-                </div>
+                </div> -->
             </template>
         </div>
     </div>
@@ -104,12 +102,12 @@
 
     // import RequestActions from './requestActions.vue'
 
-    import ClassificationPiece from './pieces/classifications.vue'
+    // import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
-    import AttrPiece from './pieces/attributeUpdate.vue'
-    import UserPiece from './pieces/user.vue'
-    import DatePiece from './pieces/date.vue'
-    import TermPiece from './pieces/term.vue'
+    // import AttrPiece from './pieces/attributeUpdate.vue'
+    // import UserPiece from './pieces/user.vue'
+    // import DatePiece from './pieces/date.vue'
+    // import TermPiece from './pieces/term.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
@@ -123,12 +121,12 @@
         components: {
             VirtualList,
             // RequestActions,
-            ClassificationPiece,
+            // ClassificationPiece,
             AssetPiece,
-            AttrPiece,
-            UserPiece,
-            DatePiece,
-            TermPiece,
+            // AttrPiece,
+            // UserPiece,
+            // DatePiece,
+            // TermPiece,
         },
         props: {
             request: {

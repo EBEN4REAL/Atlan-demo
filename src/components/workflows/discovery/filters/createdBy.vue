@@ -5,8 +5,8 @@
                 v-model:value="queryText"
                 placeholder="Search"
                 :autofocus="true"
-                @change="handleOwnerSearch"
                 size="minimal"
+                @change="handleOwnerSearch"
             >
             </SearchAndFilter>
         </div>
@@ -93,10 +93,10 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
-    import Users from '@common/selector/users/index.vue'
+    // import Users from '@common/selector/users/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { Collapse } from '~/types'
-    import fetchUserList from '~/composables/user/fetchUserList'
+    import useFacetUsers from '~/composables/user/useFacetUsers'
     import { userInterface } from '~/types/users/user.interface'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
@@ -129,22 +129,18 @@
 
             console.log('propsValue', data.value.userValue)
 
-            const handleUsersChange = () => {
-                handleChange()
-            }
-
             const handleChange = () => {
                 // make no owners unchecked
 
                 emit('change')
             }
+
+            const handleUsersChange = () => {
+                handleChange()
+            }
             const noOwnersToggle = () => {
                 data.value.userValue = []
                 emit('change')
-            }
-
-            const handleOwnerSearch = () => {
-                handleUserSearch(queryText.value)
             }
 
             const {
@@ -155,7 +151,11 @@
                 mutate: mutateUsers,
                 setLimit,
                 handleSearch: handleUserSearch,
-            } = fetchUserList()
+            } = useFacetUsers()
+
+            const handleOwnerSearch = () => {
+                handleUserSearch(queryText.value)
+            }
 
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected

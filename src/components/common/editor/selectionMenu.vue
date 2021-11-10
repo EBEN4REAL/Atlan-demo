@@ -1,10 +1,82 @@
 <template>
     <div
         v-if="editor && editable"
-        class="sticky top-0 z-50 max-w-full min-w-full mb-3 border-b-2 rounded-t  editor-menu"
+        class="flex items-center max-w-full min-w-full bg-white border border-gray-200 rounded shadow-sm  editor-menu"
     >
-        <a-button-group class="flex flex-wrap">
-            <a-popover
+        <a-dropdown
+            :trigger="['click']"
+            v-if="getActiveMenu(editor)?.key !== 'uploadimage'"
+        >
+            <div class="flex items-center p-2">
+                {{ getActiveMenu(editor)?.title || 'Text' }}
+                <AtlanIcon icon="ChevronDown" class="ml-1"></AtlanIcon>
+            </div>
+
+            <template #overlay>
+                <a-menu>
+                    <a-menu-item
+                        :class="{
+                            'is-active bg-gray-200': isMenuActive(
+                                editor,
+                                menuItem
+                            ),
+                        }"
+                        v-for="menuItem in blockMenu"
+                        :key="menuItem.key"
+                        @click="() => menuItem.onClick(editor)"
+                    >
+                        {{ menuItem.title }}
+                    </a-menu-item>
+                </a-menu>
+            </template>
+        </a-dropdown>
+
+        <a-popover v-if="getActiveMenu(editor)?.key !== 'uploadimage'">
+            <template #content>
+                <div class="d-flex align-items-center justify-content-start">
+                    <a-input
+                        v-model:value="link"
+                        type="url"
+                        class="add-on"
+                        focused
+                        placeholder="https://"
+                        @keydown.esc="showLinkModal = false"
+                        @keydown.enter="() => setLink(editor)"
+                    >
+                        <template #addonAfter>
+                            <div
+                                v-if="!editor.isActive('link')"
+                                class="text-white cursor-pointer"
+                                @click="() => setLink(editor)"
+                            >
+                                Apply
+                            </div>
+                            <div
+                                v-if="editor.isActive('link')"
+                                class="text-white cursor-pointer"
+                                @click="() => unLink(editor)"
+                            >
+                                Remove Link
+                            </div>
+                        </template>
+                    </a-input>
+                </div>
+            </template>
+
+            <div
+                class="flex items-center p-2 text-gray-500 border-l border-r  hover:text-primary"
+                @click="handleLinkClick(editor)"
+            >
+                <AtlanIcon icon="Globe" class="mr-1"></AtlanIcon>
+                Link
+            </div>
+        </a-popover>
+
+        <div
+            v-if="getActiveMenu(editor)?.key !== 'uploadimage'"
+            class="flex items-center"
+        >
+            <a-tooltip
                 v-for="menuItem in menuData"
                 :key="menuItem.key"
                 placement="bottom"
@@ -16,7 +88,7 @@
                     placement="bottomCenter"
                 >
                     <a-button
-                        class="border-0"
+                        class="p-2 border-0"
                         :class="{
                             'is-active': editor.isActive(`${menuItem.key}`),
                             'border-r-2': menuItem.border,
@@ -84,9 +156,9 @@
                     </template>
                 </a-dropdown>
 
-                <a-button
+                <div
                     v-else
-                    class="border-0"
+                    class="flex p-2 text-gray-500 transition duration-100 ease-in border-0 shadow-none  hover:text-primary inline-center"
                     :class="{
                         'is-active':
                             editor.isActive(`${menuItem.key}`) ||
@@ -97,63 +169,22 @@
                                 editor.isActive({
                                     textAlign: menuItem.key.split('-')[1],
                                 })),
-                        'border-r-2': menuItem.border,
                     }"
                     @click="() => menuItem.onClick(editor)"
                 >
                     <fa
                         v-if="menuItem.icon"
                         :icon="menuItem.icon"
-                        class="m-1"
+                        class="mr-1"
                     />
                     <span v-else>{{ menuItem.title }}</span>
-                </a-button>
+                </div>
 
-                <template #content>{{
+                <template #title>{{
                     menuItem.helpText || menuItem.title
                 }}</template>
-            </a-popover>
-        </a-button-group>
-
-        <a-modal
-            class="mt-16 border-gray-700"
-            :visible="showLinkModal"
-            :title="null"
-            :closable="true"
-            :mask="false"
-            :mask-closable="true"
-            width="50vw"
-            :footer="null"
-            @cancel="() => (showLinkModal = false)"
-        >
-            <div class="d-flex align-items-center justify-content-start">
-                <label>Link</label>
-                <div class="flex">
-                    <a-input
-                        v-model:value="link"
-                        type="url"
-                        focused
-                        placeholder="https://"
-                        @keydown.esc="showLinkModal = false"
-                        @keydown.enter="() => setLink(editor)"
-                    />
-                    <a-button
-                        type="primary"
-                        class="ml-3 mr-2"
-                        @click="() => setLink(editor)"
-                    >
-                        Apply
-                    </a-button>
-                    <a-button
-                        v-if="editor.isActive('link')"
-                        type="default"
-                        @click="() => unLink(editor)"
-                    >
-                        Remove
-                    </a-button>
-                </div>
-            </div>
-        </a-modal>
+            </a-tooltip>
+        </div>
     </div>
 </template>
 
@@ -203,7 +234,7 @@
                 upload,
             } = useUploadImage()
 
-            const menuData: MenuItem[] = [
+            const blockMenu: MenuItem[] = [
                 {
                     title: 'H1',
                     key: 'heading-1',
@@ -241,6 +272,79 @@
                             .toggleHeading({ level: 3 })
                             .run(),
                 },
+
+                {
+                    title: 'Unordered List',
+                    key: 'bulletList',
+                    helpText: '',
+                    icon: 'fa list-ul',
+                    onClick: (editor) =>
+                        editor.chain().focus().toggleBulletList().run(),
+                },
+                {
+                    title: 'Ordered List',
+                    key: 'orderedList',
+                    helpText: '',
+                    icon: 'fa list-ol',
+                    border: true,
+                    onClick: (editor) =>
+                        editor.chain().focus().toggleOrderedList().run(),
+                },
+
+                {
+                    title: 'TaskList',
+                    key: 'taskList',
+                    helpText: '',
+                    icon: 'fa square',
+                    onClick: (editor) =>
+                        editor.chain().focus().toggleTaskList().run(),
+                },
+                {
+                    title: 'Blockquote',
+                    key: 'blockquote',
+                    helpText: '',
+                    icon: 'fa quote-left',
+                    onClick: (editor) =>
+                        editor.chain().focus().toggleBlockquote().run(),
+                },
+                {
+                    title: 'Code Block',
+                    key: 'codeBlock',
+                    helpText: '',
+                    icon: 'fa code',
+                    border: true,
+                    onClick: (editor) =>
+                        editor
+                            .chain()
+                            .focus()
+                            .toggleCodeBlock({ language: 'json' })
+                            .run(),
+                },
+                {
+                    title: 'Image Block',
+                    key: 'uploadimage',
+                    helpText: '',
+                    icon: 'fa image',
+                    border: true,
+                    onClick: (editor) =>
+                        editor.chain().focus().toggleImageBlock().run(),
+                },
+            ]
+
+            const linkMenu: MenuItem[] = [
+                {
+                    title: 'Link',
+                    key: 'link',
+                    helpText: '',
+                    icon: 'fa link',
+                    onClick: (editor) => {
+                        link.value = editor.getAttributes('link').href ?? ''
+                        showLinkModal.value = !showLinkModal.value
+                    },
+                },
+            ]
+
+            const menuData: MenuItem[] = [
                 {
                     title: 'Bold',
                     key: 'bold',
@@ -274,126 +378,7 @@
                     onClick: (editor) =>
                         editor.chain().focus().toggleStrike().run(),
                 },
-                {
-                    title: 'Hr',
-                    key: 'rule',
-                    helpText: '',
-                    border: true,
-                    onClick: (editor) =>
-                        editor.chain().focus().setHorizontalRule().run(),
-                },
-                // {
-                //   title: "Paragraph",
-                //   key: "paragraph",
-                //   helpText: "",
-                //   icon: "fa paragraph",
-                //   onClick: (editor) => editor.chain().focus().createParagraphNear().run(),
-                // },
-                {
-                    title: 'Unordered List',
-                    key: 'bulletList',
-                    helpText: '',
-                    icon: 'fa list-ul',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleBulletList().run(),
-                },
-                {
-                    title: 'Ordered List',
-                    key: 'orderedList',
-                    helpText: '',
-                    icon: 'fa list-ol',
-                    border: true,
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleOrderedList().run(),
-                },
-                {
-                    title: 'Align Left',
-                    key: 'align-left',
-                    helpText: '',
-                    icon: 'fa align-left',
-                    onClick: (editor) =>
-                        editor.chain().focus().setTextAlign('left').run(),
-                },
-                {
-                    title: 'Align Center',
-                    key: 'align-center',
-                    helpText: '',
-                    icon: 'fa align-center',
-                    onClick: (editor) =>
-                        editor.chain().focus().setTextAlign('center').run(),
-                },
-                {
-                    title: 'Align Right',
-                    key: 'align-right',
-                    helpText: '',
-                    icon: 'fa align-right',
-                    border: true,
-                    onClick: (editor) => {
-                        console.log(editor.commands)
-                        editor.chain().focus().setTextAlign('right').run()
-                    },
-                },
-                {
-                    title: 'Link',
-                    key: 'link',
-                    helpText: '',
-                    icon: 'fa link',
-                    onClick: (editor) => {
-                        link.value = editor.getAttributes('link').href ?? ''
-                        showLinkModal.value = !showLinkModal.value
-                    },
-                },
-                {
-                    title: 'Image',
-                    key: 'image',
-                    helpText: '',
-                    icon: 'fa file-image',
-                    onClick: (editor) => {
-                        console.log('image')
-                        if (imageLink.value) {
-                            editor
-                                .chain()
-                                .focus()
-                                .setImage({
-                                    src: imageLink.value,
-                                })
-                                .run()
-                            imageLink.value = ''
-                            showImageDropdown.value = false
-                        }
-                        // link.value = editor.getAttributes("link").href ?? "";
-                        // showLinkModal.value = !showLinkModal.value;
-                    },
-                },
-                {
-                    title: 'TaskList',
-                    key: 'taskList',
-                    helpText: '',
-                    icon: 'fa square',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleTaskList().run(),
-                },
-                {
-                    title: 'Blockquote',
-                    key: 'blockquote',
-                    helpText: '',
-                    icon: 'fa quote-left',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleBlockquote().run(),
-                },
-                {
-                    title: 'Code Block',
-                    key: 'codeBlock',
-                    helpText: '',
-                    icon: 'fa code',
-                    border: true,
-                    onClick: (editor) =>
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleCodeBlock({ language: 'json' })
-                            .run(),
-                },
+
                 {
                     title: 'Undo',
                     key: 'undo',
@@ -411,6 +396,11 @@
                 // table
             ]
 
+            const handleLinkClick = (editor: Editor) => {
+                link.value = editor.getAttributes('link').href ?? ''
+                showLinkModal.value = !showLinkModal.value
+            }
+
             const setLink = (editor: Editor) => {
                 if (link.value) {
                     let url = link.value
@@ -423,8 +413,6 @@
                         url = `https://${url}`
 
                     editor.chain().setLink({ href: url }).run()
-                    link.value = ''
-                    showLinkModal.value = false
                 }
             }
 
@@ -438,6 +426,20 @@
                 upload(file)
             }
 
+            const getActiveMenu = (editor) =>
+                blockMenu.find((menu) => {
+                    const options = {}
+                    let { key } = menu
+                    if (menu.level) {
+                        options.level = menu.level
+                        key = 'heading'
+                    }
+                    return editor.isActive(key, options)
+                })
+
+            const isMenuActive = (editor, menu) =>
+                getActiveMenu(editor)?.key === menu.key
+
             watch(imageUploadData, (newImageUploadData) => {
                 if (newImageUploadData) {
                     if (props.editor) {
@@ -445,7 +447,7 @@
                         const { id } = newImageUploadData
 
                         const imageUrl = getAPIPath(
-                            '/auth',
+                            '/service',
                             `/images/${id}?ContentDisposition=inline&name=image`
                         )
                         editor
@@ -469,22 +471,29 @@
                 setLink,
                 unLink,
                 uploadImage,
+                blockMenu,
+                linkMenu,
+                handleLinkClick,
+                isMenuActive,
+                getActiveMenu,
             }
         },
     })
 </script>
 <style lang="less" scoped>
     .is-active {
-        @apply bg-gray-600 text-white;
+        @apply text-primary !important;
     }
-    .editor-menu {
-        @apply bg-white opacity-100 !important;
+</style>
 
-        button {
-            width: 2.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+<style lang="less">
+    .tableWrapper {
+        overflow-x: auto;
+    }
+
+    .add-on {
+        .ant-input-group-addon {
+            @apply bg-primary border-primary !important;
         }
     }
 </style>

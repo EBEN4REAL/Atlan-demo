@@ -1,4 +1,4 @@
-import { getAPIPath } from '~/services/api/common'
+import { getAPIPath, APIFn } from '~/services/api/common'
 import { BASE_PATH } from '..'
 
 export const LIST_USERS = 'LIST_USERS'
@@ -13,11 +13,30 @@ export const RESEND_INVITATION_EMAIL = 'RESEND_INVITATION_EMAIL'
 export const REVOKE_INVITATION = 'REVOKE_INVITATION'
 export const INVITE_USERS = 'INVITE_USERS'
 export const LIST_BULK = 'LIST_BULK'
+export const GET_USER_GROUPS = 'GET_USER_GROUPS'
 
-export const map = {
+interface Map {
+    LIST_USERS: APIFn
+    GET_USER_SESSIONS: APIFn
+    SIGN_OUT_ALL_SESSIONS: APIFn
+    SIGN_OUT_SESSION_BY_ID: APIFn
+    GET_USER_ACCESS_LOGS: APIFn
+    UPDATE_USER: APIFn
+    UPDATE_USER_ROLE: APIFn
+    ADD_USER_TO_GROUPS: APIFn
+    RESEND_INVITATION_EMAIL: APIFn
+    REVOKE_INVITATION: APIFn
+    INVITE_USERS: APIFn
+    LIST_BULK: APIFn
+    GET_USER_GROUPS: APIFn
+}
+
+export const map: Map = {
     [LIST_USERS]: () => getAPIPath(BASE_PATH, '/users'),
     [GET_USER_SESSIONS]: ({ id }) =>
         getAPIPath('service', `/users/${id}/sessions`),
+    [GET_USER_GROUPS]: ({ id }) =>
+        getAPIPath('service', `/users/${id}/groups`),
     [SIGN_OUT_ALL_SESSIONS]: ({ id }) =>
         getAPIPath('service', `/users/${id}/sessions/delete`),
     [SIGN_OUT_SESSION_BY_ID]: ({ id }) =>

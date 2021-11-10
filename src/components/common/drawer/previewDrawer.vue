@@ -7,6 +7,7 @@
         :mask="false"
         :width="420"
         :closable="false"
+        class="drawer"
     >
         <GroupPreview @close="handleCloseGroupPreview" />
     </a-drawer>
@@ -18,6 +19,7 @@
         :mask="false"
         :width="420"
         :closable="false"
+        class="drawer"
     >
         <UserPreview @close="handleCloseUserPreview" />
     </a-drawer>
@@ -61,3 +63,11 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .drawer {
+        :global(.ant-drawer-body) {
+            @apply overflow-hidden !important;
+        }
+    }
+</style>

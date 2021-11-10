@@ -16,7 +16,7 @@
                 v-model:value="localValue"
                 :placeholder="placeholder"
                 type="text"
-                class="flex-1 w-2/3 text-sm bg-transparent focus:outline-none"
+                class="flex-1 w-2/3 text-sm bg-transparent border-0 outline-none  focus:border-0 focus:border-r-0 focus:shadow-none"
                 @change="handleChange"
             />
 
@@ -124,6 +124,16 @@
         input {
             min-width: 100px;
         }
+        :global(.ant-input:focus) {
+            border: none;
+            border-right: none;
+        }
+
+        :global(.ant-input:hover) {
+            border: none;
+            border-right: none;
+        }
+
         &.default {
             @apply border border-gray-300 rounded shadow;
             &:hover {

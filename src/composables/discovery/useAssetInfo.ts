@@ -22,7 +22,6 @@ import { useAuthStore } from '~/store/auth'
 
 export default function useAssetInfo() {
     const connectionStore = useConnectionStore()
-    const authStore = useAuthStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
     const anchorAttributes = (asset: Term | Category) =>

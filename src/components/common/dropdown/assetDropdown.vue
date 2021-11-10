@@ -27,7 +27,7 @@
         toRefs,
         PropType,
     } from 'vue'
-    import { Components } from '~/api/atlas/client'
+    import { Components } from '~/types/atlas/client'
     import AssetSelector from '~/components/common/dropdown/assetSelector.vue'
     import bodybuilder from 'bodybuilder'
 

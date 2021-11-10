@@ -29,9 +29,9 @@
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search ${selectedUser.group_count}  groups`"
-                        @change="handleSearch"
                         class="mr-1"
                         size="minimal"
+                        @change="handleSearch"
                     />
                 </div>
                 <!-- <div>
@@ -114,26 +114,6 @@
                             />
                             <div>Removing...</div>
                         </div>
-                        <!-- <div class="font-bold">
-                            <div
-                                v-if="removeFromGroupLoading[group.id]"
-                                class="flex cursor-default text-error-muted"
-                            >
-                                <fa
-                                    style="vertical-align: middle"
-                                    icon="fal circle-notch"
-                                    class="mr-1 animate-spin"
-                                />
-                                <div>Removing...</div>
-                            </div>
-                            <div
-                                v-else
-                                class="cursor-pointer text-error"
-                                @click="() => removeUserFromGroup(group)"
-                            >
-                                Remove
-                            </div>
-                        </div> -->
                     </div>
                 </div>
                 <div
@@ -143,7 +123,7 @@
                     "
                     class="flex justify-center mt-3"
                 >
-                    <a-spin></a-spin>
+                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>
@@ -153,11 +133,11 @@
         <div v-else-if="!showUserGroups">
             <GroupList
                 :add-to-group-loading="addToGroupLoading"
+                :show-back-button="false"
+                :show-add-button="false"
                 @updateSelectedGroups="updateSelectedGroups"
                 @showUserGroups="handleShowUserGroups"
                 @addUserToGroups="addUserToGroups"
-                :showBackButton="false"
-                :showAddButton="false"
             />
         </div>
     </div>
@@ -174,11 +154,7 @@
     import { Groups } from '~/services/service/groups'
     import GroupList from '~/components/admin/users/userPreview/groups/groupList.vue'
     import getUserGroups from '~/composables/user/getUserGroups'
-    import {
-        pluralizeString,
-        getNameInitials,
-        getNameInTitleCase,
-    } from '~/utils/string'
+
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
@@ -327,9 +303,7 @@
                 handleSearch,
                 handleAddToGroup,
                 removeUserFromGroup,
-                getNameInitials,
-                getNameInTitleCase,
-                pluralizeString,
+
                 getUserGroupList,
                 searchText,
                 showLoadMore,

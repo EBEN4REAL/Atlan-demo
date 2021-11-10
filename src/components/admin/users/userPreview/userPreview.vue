@@ -79,7 +79,8 @@
                     </template>
                     <component
                         :is="tab.component"
-                        class="px-6 pt-3 overflow-auto component-height"
+                        class="px-6 pt-3 overflow-auto"
+                        :class="$style.componentHeight"
                         :is-current-user="isCurrentUser"
                         :selected-user="selectedUser"
                         @updatedUser="handleUserUpdate"
@@ -97,6 +98,7 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useUsers } from '~/composables/user/useUsers'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'UserPreview',
@@ -109,6 +111,7 @@
             Avatar,
             ErrorView,
             SidePanelTabHeaders,
+            AtlanButton,
         },
         emits: ['close'],
         setup(props, context) {
@@ -177,8 +180,8 @@
 </script>
 
 <style lang="less" module>
-    .component-height {
-        max-height: calc(100vh - 12rem);
+    .componentHeight {
+        max-height: calc(100vh - 7rem) !important;
     }
     .previewtab {
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {

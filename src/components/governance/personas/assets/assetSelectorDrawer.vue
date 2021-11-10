@@ -246,7 +246,10 @@
                         activeTab.value = 'list'
                     } else {
                         tabConfig.value = [{ key: 'custom', label: 'Custom' }]
-
+                        tabConfig.value.unshift({
+                            key: 'list',
+                            label: 'Search',
+                        })
                         tabConfig.value.unshift({
                             key: 'tree',
                             label: 'Browse',

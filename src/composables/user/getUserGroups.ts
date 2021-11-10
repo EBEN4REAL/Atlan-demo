@@ -1,8 +1,9 @@
 import { ref, onMounted, watch, computed, Ref, ComputedRef } from "vue";
-import useSWRV from "swrv";
-// import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import swrvState from "~/utils/swrvState";
 import { getFormattedGroup } from "~/composables/group/formatGroup";
+import { Users } from '~/services/service/users'
+import { GET_USER_GROUPS } from '~/services/service/users/key'
+
 
 export default function getUserGroups(groupListAPIParams: {
   userId: string;
@@ -14,18 +15,14 @@ export default function getUserGroups(groupListAPIParams: {
     error,
     mutate: getUserGroupList,
     isValidating,
-  } = useSWRV(
-    [
-      getAPIPath("service", `/users/${groupListAPIParams.userId}/groups`),
-      groupListAPIParams.params,
-      {},
-    ],
-    fetcher,
-    {
+  } = Users.ListUserGroups(groupListAPIParams.params, groupListAPIParams.userId, {
+    cacheKey: GET_USER_GROUPS,
+    cacheOptions: {
       revalidateOnFocus: false,
       dedupingInterval: 1,
     }
-  );
+  })
+
   watch(data, () => {
     if (groupListAPIParams.params.offset > 0) {
       localGroupsList.value = [

@@ -27,7 +27,7 @@ export function authDirective(app: any) {
                 }
             }
 
-            el.style.display = 'none'
+            el.style.setProperty('display', 'none', 'important');
         },
     })
 }

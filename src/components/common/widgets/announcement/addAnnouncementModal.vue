@@ -189,7 +189,6 @@
             }
 
             return {
-                asset,
                 type,
                 description,
                 annTitle,

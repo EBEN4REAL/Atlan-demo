@@ -5,72 +5,51 @@ import { Access } from '~/services/service/access'
 
 import { useOptions } from '~/services/api/common'
 import { useAuthStore } from '~/store/auth'
+import axios from 'axios'
 
 export default function useEvaluate(
     body: Record<string, any> | Ref<Record<string, any>>,
-    dependentKey?: Ref<any>,
-    token?: any,
-    isCache?: boolean
+    immediate?: Boolean
 ) {
     const options: useOptions = {}
-
-    if (token) {
-        options.options = ref({
-            cancelToken: token.value,
-        })
-    }
-
-    if (!isCache) {
-        if (dependentKey) {
-            if (!dependentKey.value) {
-                options.asyncOptions = ref({
-                    immediate: false,
-                })
-            }
-        } else {
-            options.asyncOptions = ref({
-                immediate: true,
-            })
-        }
-    } else {
-        options.cacheOptions = ref({
-            dedupingInterval: 0,
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            ttl: 0,
-            revalidateDebounce: 0,
-            cache: new LocalStorageCache(),
-        })
-        options.cacheKey = dependentKey
-    }
-
-    const { data, mutate, error, isLoading } = Access.Evaluate(body, options)
-
+    let cancel = axios.CancelToken.source()
+    options.options = ref({
+        cancelToken: cancel.token,
+    })
+    options.asyncOptions = ref({
+        immediate,
+        resetOnExecute: false,
+    })
+    const { data, mutate, error, isLoading, isReady } = Access.Evaluate(
+        body,
+        options
+    )
     const authStore = useAuthStore()
+
     watch(data, () => {
         authStore.setEvaluations(data.value)
     })
+
+    const cancelRequest = () => {
+        if (cancel) {
+            cancel.cancel('operation cancelled')
+        }
+        cancel = axios.CancelToken.source()
+        options.options.value = {
+            cancelToken: cancel.token,
+        }
+    }
+
+    const refresh = () => {
+        cancelRequest()
+        mutate()
+    }
 
     return {
         data,
         mutate,
         error,
+        refresh,
         isLoading,
     }
-
-    // const { data, isReady } = Access.Evaluate({
-    //     cacheKey: 'DEFAULT_PERMISSIONS',
-    //     cache: {
-    //         shouldRetryOnError: false,
-    //         revalidateOnFocus: false,
-    //         cache: new LocalStorageCache(),
-    //         dedupingInterval: 1,
-    //     },
-    // })
-    // const authStore = useAuthStore()
-
-    // return {
-    //     data,
-    //     isReady,
-    // }
 }

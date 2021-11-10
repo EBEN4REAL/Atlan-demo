@@ -36,6 +36,21 @@ export const actions: Actions = {
         this.isAuthenticated = value
     },
     setEvaluations(value) {
-        this.evaluations = value
+        const valueMap = value.map(
+            (evaluation) => `${evaluation.entityGuid}_${evaluation.action}`
+        )
+        const evaluationMap = this.evaluations.map(
+            (evaluation) => `${evaluation.entityGuid}_${evaluation.action}`
+        )
+        const uniqueValues = valueMap.filter(
+            (val) => evaluationMap.indexOf(val) < 0
+        )
+        const uniqueArray = value.filter(
+            (i) => uniqueValues.indexOf(`${i.entityGuid}_${i.action}`) >= 0
+        )
+        if (this.evaluations.length + uniqueArray.length > 30) {
+            this.evaluations.splice(0, uniqueArray.length)
+        }
+        this.evaluations.push(...uniqueArray)
     },
 }

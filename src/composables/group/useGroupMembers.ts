@@ -1,7 +1,8 @@
 import { ref, onMounted, watch, computed, Ref, ComputedRef } from 'vue'
-import useSWRV from 'swrv'
+// import useSWRV from 'swrv'
 // import { fetcher, getAPIPath, getAxiosClient } from '~/api'
-// import swrvState from '~/composables/utils/swrvState'
+import swrvState from '~/utils/swrvState'
+import { Groups } from '~/services/service/groups/index'
 
 export default function useGroupsMembers(memberListParams: {
     groupId: string
@@ -13,21 +14,11 @@ export default function useGroupsMembers(memberListParams: {
         error,
         mutate: getGroupMembersList,
         isValidating,
-    } = useSWRV(
-        [
-            getAPIPath(
-                'service',
-                `/groups/${memberListParams.groupId}/members`
-            ),
-            memberListParams.params,
-            {},
-        ],
-        fetcher,
-        {
-            revalidateOnFocus: false,
-            dedupingInterval: 1,
-        }
-    )
+    } = Groups.getGroupMembers(memberListParams.groupId, memberListParams.params, {
+        revalidateOnFocus: false,
+        dedupingInterval: 1,
+    });
+
     watch(data, () => {
         if (memberListParams.params.offset > 0) {
             localMembersList.value = [
@@ -39,6 +30,7 @@ export default function useGroupsMembers(memberListParams: {
         }
     })
     const { state, STATES } = swrvState(data, error, isValidating)
+
     const memberList: ComputedRef<any> = computed(
         () => localMembersList.value || []
     )

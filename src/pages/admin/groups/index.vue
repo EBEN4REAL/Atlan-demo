@@ -9,6 +9,7 @@
     import GroupList from '@/admin/groups/groups.vue'
     import useAuth from '~/composables/auth/useAuth'
     import NoAccess from '@/common/secured/access.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'GroupsPage',
@@ -22,7 +23,7 @@
             })
             const { isAccess } = useAuth()
 
-            return { isAccess }
+            return { isAccess, map }
         },
     })
 </script>

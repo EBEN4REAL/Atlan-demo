@@ -1,34 +1,24 @@
-import axios, { Method } from 'axios'
-
-import { Ref, computed, ref, isRef } from 'vue'
-
+import { Method } from 'axios'
+import { computed, ref, isRef } from 'vue'
 import useSWRV from 'swrv'
-
 import { useAsyncState } from '@vueuse/core'
 import { useAPIPromise } from './useAPIPromise'
-
-import { resolveUrl, useOptions } from './common'
-
-export interface asyncBaseAPIRequest<T> {
-    params?: Record<string, any> | URLSearchParams
-    body?: Ref<Record<string, any>> | Record<string, any>
-    pathVariables?: Ref<Record<string, any>> | Record<string, any>
-    initialState?: T
-}
+import { resolveUrl, useOptions, AsyncStateAPIParams, APIFn } from './common'
 
 /* eslint-disable import/prefer-default-export */
 export const useAPI = <T>(
-    path: any,
+    path: APIFn,
     method: Method,
     {
         params,
         body,
         pathVariables,
         initialState = <T>{},
-    }: asyncBaseAPIRequest<T>,
+    }: AsyncStateAPIParams<T>,
     { options, asyncOptions, cacheKey, cacheOptions }: useOptions
 ) => {
     if (cacheOptions) {
+        console.log('cache')
         const url = computed(() => resolveUrl(path, pathVariables))
 
         const { data, error, mutate, isValidating } = useSWRV<T>(

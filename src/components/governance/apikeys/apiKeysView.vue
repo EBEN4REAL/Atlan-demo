@@ -31,10 +31,12 @@
         <a-drawer
             :visible="isAPIKeyDrawerVisible"
             :mask="false"
-            width="350"
-            @close="toggleAPIKeyDrawer"
+            :width="350"
+            class="api-key"
+            :closable="false"
         >
             <APIKeyDrawer
+                @closeDrawer="toggleAPIKeyDrawer"
                 :api-key="selectedAPIKey"
                 @updateAPIKey="handleUpdate"
                 @createAPIKey="handleCreate"

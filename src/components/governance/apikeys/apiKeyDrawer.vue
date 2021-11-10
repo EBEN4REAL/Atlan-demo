@@ -1,7 +1,20 @@
 <template>
     <div class="py-5 drawer-container">
-        <div class="px-4 pb-5 font-bold border-b">
-            {{ apiKeyDirty.id ? apiKeyDirty.displayName : 'Add new key' }}
+        <div
+            class="relative flex items-center justify-between px-4 pb-5 border-b "
+        >
+            <div class="text-lg font-bold">
+                {{ apiKeyDirty.id ? apiKeyDirty.displayName : 'Add new key' }}
+            </div>
+            <div
+                class="top-0 p-1 border border-gray-300 rounded cursor-pointer  right-2"
+            >
+                <AtlanIcon
+                    icon="Cross"
+                    class="r"
+                    @click="$emit('closeDrawer')"
+                />
+            </div>
         </div>
         <div class="px-4 py-3">
             <div class="mb-4">

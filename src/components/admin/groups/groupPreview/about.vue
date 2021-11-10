@@ -1,5 +1,5 @@
 <template>
-    <div class="tab-content-wrapper">
+    <div v-auth="map.LIST_GROUPS" class="tab-content-wrapper">
         <div class="mb-3 text-lg font-bold">Group info</div>
         <div class="mb-3">
             <UpdateName
@@ -51,30 +51,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import UpdateName from '~/components/admin/groups/groupPreview/about/updateName.vue'
-import UpdateAlias from '~/components/admin/groups/groupPreview/about/updateAlias.vue'
-import UpdateDescription from '~/components/admin/groups/groupPreview/about/updateDescription.vue'
+    import { defineComponent } from 'vue'
+    import UpdateName from '~/components/admin/groups/groupPreview/about/updateName.vue'
+    import UpdateAlias from '~/components/admin/groups/groupPreview/about/updateAlias.vue'
+    import UpdateDescription from '~/components/admin/groups/groupPreview/about/updateDescription.vue'
+    import map from '~/constant/accessControl/map'
 
-export default defineComponent({
-    name: 'About',
-    components: {
-        UpdateName,
-        UpdateAlias,
-        UpdateDescription,
-    },
-    props: {
-        selectedGroup: {
-            type: Object,
-            default: {},
+    export default defineComponent({
+        name: 'AboutTab',
+        components: {
+            UpdateName,
+            UpdateAlias,
+            UpdateDescription,
         },
-    },
-})
+        props: {
+            selectedGroup: {
+                type: Object,
+                default: () => {},
+            },
+        },
+        emits: ['refreshTable'],
+        setup() {
+            return { map }
+        },
+    })
 </script>
-  
+
 <style lang="less" scoped>
-.tab-content-wrapper {
-    min-height: calc(100vh - 10rem) !important;
-}
+    .tab-content-wrapper {
+        min-height: calc(100vh - 10rem) !important;
+    }
 </style>
-  

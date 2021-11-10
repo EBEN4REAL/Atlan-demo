@@ -1,9 +1,14 @@
 <template>
-    <div>
+    <div class="p-4 bg-white rounded">
         <div class="flex items-center justify-between mb-3">
-            <span class="text-base font-bold text-gray">Resources</span>
+            <div class="flex items-center">
+                <AtlanIcon icon="Resources" class="w-auto h-8 mr-3" /><span
+                    class="text-base font-bold text-gray"
+                    >Resources</span
+                >
+            </div>
             <AddResources
-                v-if="links(asset).length > 0"
+                v-if="links(asset)?.length > 0"
                 :asset="asset"
                 placement="left"
             >
@@ -14,8 +19,8 @@
                 </a-button>
             </AddResources>
         </div>
-        <div style="min-height: 20vh">
-            <div v-if="links(asset).length > 0" class="flex flex-col gap-y-2">
+        <div style="min-height: 15vh">
+            <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-2">
                 <a
                     class="flex cursor-pointer gap-x-2 hover:underline"
                     v-for="item in links(asset)"

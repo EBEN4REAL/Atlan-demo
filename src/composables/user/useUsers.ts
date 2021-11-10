@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
@@ -7,6 +7,8 @@ import swrvState from '~/utils/swrvState'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
+import { LIST_USERS } from '~/services/service/users/key'
+
 
 export const getUserName = (user: any) => {
     const { first_name } = user
@@ -87,7 +89,7 @@ export const useUsers = (userListAPIParams: {
     offset: number
     filter: any
     sort: string
-}) => {
+}, cacheKey?: string) => {
     const {
         data,
         mutate: getUserList,
@@ -101,8 +103,32 @@ export const useUsers = (userListAPIParams: {
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
         },
-        cacheKey: 'LIST_USERS',
+        cacheKey: cacheKey ?? LIST_USERS,
     })
+
+    const localUsersList: Ref<any[]> = ref([])
+
+    watch(data, () => {
+        const escapedData = data?.value?.records ? data?.value?.records?.map((user: any) =>
+            getFormattedUser(user)
+        ) : [] // to prevent maping undefined
+
+        if (data && data.value) {
+            if (userListAPIParams.offset > 0) {
+                localUsersList.value = [
+                    ...localUsersList.value,
+                    ...escapedData
+                ]
+            } else {
+                localUsersList.value = escapedData
+            }
+        }
+    })
+
+    const usersListConcatenated: ComputedRef<any> = computed(
+        () => localUsersList.value || []
+    )
+
 
     const userList = computed(() => {
         if (data.value && data?.value?.records)
@@ -116,7 +142,9 @@ export const useUsers = (userListAPIParams: {
 
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
+
     return {
+        usersListConcatenated,
         userList,
         totalUserCount,
         filteredUserCount,

@@ -1,32 +1,36 @@
 <template>
-    <div class="h-full py-6">
+    <div class="h-full pb-6">
         <div
             v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
             class="flex flex-col items-center justify-center h-full bg-white"
         >
             <ErrorView>
                 <div class="mt-3">
-                    <a-button
-                        size="large"
-                        type="primary"
-                        ghost
+                    <AtlanButton
+                        color="secondary"
                         @click="
                             () => {
                                 getGroup()
                             }
                         "
                     >
-                        <fa icon="fal sync" class="mr-2"></fa>Try again
-                    </a-button>
+                        <AtlanIcon icon="Reload" />
+                        Try again
+                    </AtlanButton>
                 </div>
             </ErrorView>
         </div>
-        <div v-else-if="selectedGroup && selectedGroup.id">
-            <div class="flex px-6 pb-6 border-b">
+        <template v-else-if="selectedGroup && selectedGroup.id">
+            <div class="relative flex m-6">
                 <div class="ml-3">
                     <div class="text-xl capitalize text-gray">
                         {{ selectedGroup.name }}
                     </div>
+                    <AtlanIcon
+                        icon="Cross"
+                        class="absolute top-0 right-0 cursor-pointer"
+                        @click="$emit('close')"
+                    />
                     <div class="text-gray-500">
                         <span class="mr-1">@{{ selectedGroup.alias }}</span>
                         <span v-if="selectedGroup.memberCountString">
@@ -40,16 +44,17 @@
             </div>
             <a-tabs
                 v-model:activeKey="activeKey"
-                tab-position="left"
                 :class="$style.previewtab"
+                tab-position="left"
+                class="border-t"
             >
-                <a-tab-pane v-for="tab in tabs" :key="tab.key">
+                <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
                         <SidePanelTabHeaders
                             :title="tab.name"
                             :icon="tab.icon"
-                            :isActive="activeKey === tab.key"
-                            :activeIcon="tab.activeIcon"
+                            :is-active="activeKey === tab.key"
+                            :active-icon="tab.activeIcon"
                             :class="index === 0 ? 'mt-1' : ''"
                         />
                     </template>
@@ -64,16 +69,12 @@
                     />
                 </a-tab-pane>
             </a-tabs>
-        </div>
+        </template>
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed } from 'vue'
+    import { defineComponent, computed, defineAsyncComponent } from 'vue'
     import ErrorView from '@common/error/index.vue'
-    import { getNameInitials, getNameInTitleCase } from '~/utils/string'
-    import About from './about.vue'
-    import Members from './members.vue'
-    import Assets from '~/components/admin/users/userPreview/assets.vue'
     import { useGroup } from '~/composables/group/useGroups'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
@@ -81,12 +82,15 @@
     export default defineComponent({
         name: 'GroupPreview',
         components: {
-            About,
-            Members,
+            About: defineAsyncComponent(() => import('./about.vue')),
+            Members: defineAsyncComponent(() => import('./members.vue')),
             ErrorView,
-            Assets,
+            Assets: defineAsyncComponent(
+                () => import('~/components/admin/users/userPreview/assets.vue')
+            ),
             SidePanelTabHeaders,
         },
+        emits: ['close'],
         setup(props, context) {
             const {
                 groupId,
@@ -113,9 +117,8 @@
                     ? groupList.value[0]
                     : []
             )
+
             return {
-                getNameInitials,
-                getNameInTitleCase,
                 tabs: finalTabs,
                 getGroup,
                 activeKey,
@@ -147,7 +150,7 @@
         :global(.ant-tabs-tab) {
             height: 48px !important;
             width: 48px !important;
-            @apply p-0 !important;
+            @apply p-0 justify-center !important;
         }
 
         :global(.ant-tabs-content) {

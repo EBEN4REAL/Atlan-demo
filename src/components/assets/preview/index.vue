@@ -110,6 +110,9 @@
         ref,
         PropType,
         watch,
+        toRefs,
+        computed,
+        provide,
     } from 'vue'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -118,6 +121,10 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useRoute } from 'vue-router'
+
+    import useEvaluate from '~/composables/auth/useEvaluate'
+    import { debouncedWatch } from '@vueuse/core'
+    import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -156,28 +163,28 @@
             // ),
             // CertificatePopover,
         },
+
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            page: {
+            tab: {
                 type: String,
                 required: false,
                 default: '',
             },
-            showCrossIcon: {
-                type: Boolean,
-                required: false,
-            },
-            mutateTooltip: {
-                type: Boolean,
-                default: false,
-                required: false,
-            },
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
+            const { selectedAsset } = toRefs(props)
+            const { getAllowedActions } = useAssetEvaluate()
+            const actions = computed(() =>
+                getAllowedActions(selectedAsset.value)
+            )
+            provide('actions', actions)
+            provide('selectedAsset', selectedAsset)
+
             const {
                 title,
                 getConnectorImage,
@@ -210,7 +217,7 @@
             if (route.params.id) {
                 isProfile.value = true
             }
-            // fetch the user information when params change
+
             watch(
                 () => route.params.id,
                 (newId) => {
@@ -220,6 +227,27 @@
                         isProfile.value = false
                     }
                 }
+            )
+
+            const body = ref({})
+            const { refresh } = useEvaluate(body, false)
+            debouncedWatch(
+                () => selectedAsset.value?.attributes?.qualifiedName,
+                (prev) => {
+                    if (prev) {
+                        body.value = {
+                            entities: [
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_UPDATE',
+                                },
+                            ],
+                        }
+                        refresh()
+                    }
+                },
+                { debounce: 100 }
             )
 
             return {
@@ -241,12 +269,13 @@
                 isPrimary,
                 activeKey,
                 getPreviewTabs,
-
+                refresh,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 isProfile,
+                actions,
             }
         },
     })

@@ -6,14 +6,18 @@
             :class="$style.profiletab"
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
-            class="h-full"
+            class="flex-1"
         >
             <a-tab-pane
                 :tab="tab.label"
                 v-for="tab in getProfileTabs(selectedAsset)"
                 :key="tab.id"
             >
-                <component :is="tab.component" :key="tab.id"></component>
+                <component
+                    :is="tab.component"
+                    :key="tab.id"
+                    :selected-asset="selectedAsset"
+                ></component>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -97,11 +101,19 @@ meta:
 <style lang="less" module>
     .profiletab {
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-8;
+            @apply ml-8 !important;
         }
 
         :global(.ant-tabs-tab-active) {
-            @apply font-bold;
+            @apply font-bold !important;
+        }
+
+        :global(.ant-tabs-nav) {
+            @apply mb-0 !important;
+        }
+
+        :global(.ant-tabs-content-holder) {
+            @apply bg-primary-light overflow-y-auto !important;
         }
     }
 </style>

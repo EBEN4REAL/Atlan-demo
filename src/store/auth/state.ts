@@ -33,5 +33,5 @@ export const state: State = {
     createdAt: new Date(),
     roles: useStorage('roles', []),
     permissions: useStorage('permissions', []),
-    evaluations: useStorage('evaluations', []),
+    evaluations: [],
 }

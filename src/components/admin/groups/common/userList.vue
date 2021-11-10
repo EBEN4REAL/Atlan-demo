@@ -1,14 +1,13 @@
 <template>
-    <div>
+    <div class="relative">
         <div class="flex flex-row justify-between">
-            <div class="flex" :class="userListHeaderClass">
-                <a-button
+            <div class="flex items-center gap-x-3" :class="userListHeaderClass">
+                <AtlanIcon
                     v-if="showHeaderButtons"
-                    class="mr-3"
+                    class="text-gray-500 cursor-pointer h-7"
+                    icon="ChevronLeft"
                     @click="$emit('showGroupMembers')"
-                >
-                    <fa class="text-gray-500" icon="fal chevron-left" />
-                </a-button>
+                />
                 <a-input-search
                     v-model:value="searchText"
                     placeholder="Search users"
@@ -22,9 +21,11 @@
                     type="primary"
                     :loading="addMemberLoading"
                     :disabled="addMemberLoading"
+                    class="flex items-center text-sm"
                     @click="$emit('addMembersToGroup')"
                 >
-                    <fa icon="fal plus" class="mr-2" />Add
+                    <AtlanIcon icon="Add" class="mr-2" />
+                    Add
                 </a-button>
             </div>
         </div>
@@ -34,18 +35,17 @@
         >
             <ErrorView>
                 <div class="mt-3">
-                    <a-button
-                        size="large"
-                        type="primary"
-                        ghost
+                    <AtlanButton
+                        color="secondary"
                         @click="
                             () => {
                                 getUserList()
                             }
                         "
                     >
-                        <fa icon="fal sync" class="mr-2"></fa>Try again
-                    </a-button>
+                        <AtlanIcon icon="Reload" />
+                        Try again
+                    </AtlanButton>
                 </div>
             </ErrorView>
         </div>
@@ -60,7 +60,7 @@
                         >
                             <span class="flex justify-between ml-3">
                                 <div class="flex items-center">
-                                    <avatar
+                                    <Avatar
                                         :image-url="imageUrl(user.username)"
                                         :allow-upload="false"
                                         :avatar-name="
@@ -94,10 +94,15 @@
                 "
                 class="flex justify-center mt-3"
             >
-                <a-spin></a-spin>
+                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
-            <div v-else-if="showLoadMore" class="flex justify-center mt-3">
-                <a-button @click="handleLoadMore">load more</a-button>
+            <div
+                v-else-if="showLoadMore"
+                class="absolute flex justify-center w-full mt-3"
+            >
+                <AtlanButton color="secondary" @click="handleLoadMore"
+                    >load more
+                </AtlanButton>
             </div>
         </div>
     </div>
@@ -114,12 +119,14 @@
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import { useUsers } from '~/composables/user/useUsers'
     import Avatar from '~/components/common/avatar/index.vue'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
-        name: 'Users',
+        name: 'UsersList',
         components: {
             ErrorView,
             Avatar,
+            AtlanButton,
         },
         props: {
             addMemberLoading: {
@@ -136,13 +143,14 @@
             },
             userListStyle: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
+        emits: ['updateSelectedUsers', 'addMembersToGroup', 'showGroupMembers'],
         setup(props, context) {
             const selectedIds = ref([])
             const searchText = ref('')
-            const userListAPIParams = reactive({
+            const userListAPIParams: any = reactive({
                 limit: 10,
                 offset: 0,
                 sort: 'first_name',
@@ -191,6 +199,7 @@
                 userListAPIParams.offset = 0
                 getUserList()
             }, 200)
+
             const handleLoadMore = () => {
                 userListAPIParams.offset += userListAPIParams.limit
                 getUserList()
@@ -220,6 +229,7 @@
             }
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
+
             return {
                 searchText,
                 showLoadMore,

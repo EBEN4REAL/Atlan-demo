@@ -5,17 +5,17 @@
                 <span>Add users</span>
             </template>
             <a-button
-                v-if="permissions.update"
+                v-auth="map.ADD_USER_GROUP"
                 size="small"
                 type="secondary"
                 class="mr-3.5 rounded"
                 @click="$emit('addMembers')"
             >
-                <AtlanIcon icon="AddGroupUser"></AtlanIcon>
+                <AtlanIcon icon="AddUser"></AtlanIcon>
             </a-button>
         </a-tooltip>
         <a-dropdown
-            v-if="permissions.remove && permissions.update"
+            v-auth="[map.UPDATE_GROUP]"
             :trigger="['click']"
             :visible="dropDownOpened"
             @visibleChange="handleVisibleChange"
@@ -26,18 +26,17 @@
             <template #overlay>
                 <a-menu>
                     <a-menu-item
-                        v-if="permissions.update"
                         key="1"
+                        v-auth="map.UPDATE_GROUP"
                         :disabled="markAsDefaultLoading || deleteGroupLoading"
                     >
-                        <div class="flex">
-                            <div v-if="markAsDefaultLoading">
-                                <fa
-                                    style="vertical-align: middle"
-                                    icon="fal circle-notch"
-                                    class="mr-1 animate-spin"
+                        <div class="flex items-center">
+                            <template v-if="markAsDefaultLoading">
+                                <AtlanIcon
+                                    icon="CircleLoader"
+                                    class="animate-spin"
                                 />
-                            </div>
+                            </template>
                             <a-checkbox
                                 :class="{
                                     'hide-checkbox': markAsDefaultLoading,
@@ -52,35 +51,38 @@
                                         ? 'Unmark'
                                         : 'Mark as'
                                 }}
-                                default</a-checkbox
-                            >
+                                default
+                            </a-checkbox>
                             <a-tooltip placement="topLeft">
                                 <template #title>
-                                    <span
-                                        >New users are automatically added to
-                                        default groups</span
-                                    >
+                                    <span>
+                                        New users are automatically added to
+                                        default groups
+                                    </span>
                                 </template>
-                                <fa icon="fal info-circle" class="text-xs"></fa>
+
+                                <AtlanIcon
+                                    icon="Info"
+                                    class="text-xs text-gray-500"
+                                />
                             </a-tooltip>
                         </div>
                     </a-menu-item>
                     <a-menu-item
-                        v-if="permissions.remove"
                         key="2"
                         :disabled="deleteGroupLoading || markAsDefaultLoading"
                         @click="$emit('deleteGroup')"
                     >
-                        <div class="flex text-red-600">
+                        <div class="flex items-center text-red-600">
                             <div v-if="deleteGroupLoading">
-                                <fa
-                                    style="vertical-align: middle"
-                                    icon="fal circle-notch"
+                                <AtlanIcon
+                                    icon="CircleLoader"
                                     class="mr-1 animate-spin"
                                 />
                             </div>
-                            <fa v-else icon="fal trash-alt" class="mr-2"></fa
-                            >Delete
+                            <AtlanIcon icon="Trash" class="mb-1 mr-1 text-xs" />
+
+                            Delete
                         </div>
                     </a-menu-item>
                 </a-menu>
@@ -91,15 +93,12 @@
 
 <script lang="ts">
     import { ref, defineComponent, watch, toRefs } from 'vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
+        name: 'GroupsActionButton',
         props: {
             group: {
-                type: Object,
-                default: () => {},
-                required: true,
-            },
-            permissions: {
                 type: Object,
                 default: () => {},
                 required: true,
@@ -150,6 +149,7 @@
             )
 
             return {
+                map,
                 dropDownOpened,
                 handleVisibleChange,
             }

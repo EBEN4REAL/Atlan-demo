@@ -10,7 +10,10 @@
                 >Saving</span
             >
         </div>
-
+        <AnnouncementWidget
+            class="mx-5"
+            :selected-asset="selectedAsset"
+        ></AnnouncementWidget>
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 px-5"
@@ -171,7 +174,7 @@
         watch,
         Ref,
     } from 'vue'
-
+    import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/assets/preview/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/assets/preview/popover/rowInfo.vue'
@@ -199,6 +202,7 @@
         components: {
             // Experts,
             Description,
+            AnnouncementWidget,
             // Status,
             Owners,
             Classification,
@@ -209,30 +213,10 @@
             Terms,
             CertificationPopover,
         },
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-            userHasEditPermission: {
-                type: Boolean,
-                required: false,
-            },
-            page: {
-                type: String,
-                required: false,
-            },
-            isEdit: {
-                type: Boolean,
-                required: false,
-                default() {
-                    return false
-                },
-            },
-        },
-
         setup(props) {
-            const { isEdit, selectedAsset } = toRefs(props)
+            const actions = inject('actions')
+            const selectedAsset = inject('selectedAsset')
+
             const {
                 title,
                 getConnectorImage,
@@ -328,59 +312,6 @@
                 mutateClassification()
             }
 
-            // const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
-            //     inject('mutateSelectedAsset', () => {})
-            // const switchTab: (tabName: string) => void = inject(
-            //     'switchTab',
-            //     () => {}
-            // )
-
-            // const {
-            //     rowCount,
-            //     columnCount,
-            //     sizeBytes,
-            //     sourceUpdatedAt,
-            //     sourceCreatedAt,
-            //     viewDefinition,
-            // } = useAssetInfo()
-
-            // const displaySQL = computed(() =>
-            //     selectedAsset.value ? viewDefinition(selectedAsset.value) : '~'
-            // )
-
-            // const rows = computed(() =>
-            //     selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
-            // )
-            // const size = computed(() =>
-            //     selectedAsset.value
-            //         ? sizeBytes(selectedAsset.value, false)
-            //         : '~'
-            // )
-
-            // const cols = computed(() =>
-            //     selectedAsset.value
-            //         ? columnCount(selectedAsset.value, true)
-            //         : '~'
-            // )
-
-            // const sourceUpdated = computed(() =>
-            //     selectedAsset.value ? sourceUpdatedAt(selectedAsset.value) : ''
-            // )
-            // const sourceUpdatedRaw = computed(() =>
-            //     selectedAsset.value
-            //         ? sourceUpdatedAt(selectedAsset.value, true)
-            //         : ''
-            // )
-
-            // const sourceCreated = computed(() =>
-            //     selectedAsset.value ? sourceCreatedAt(selectedAsset.value) : ''
-            // )
-            // const sourceCreatedRaw = computed(() =>
-            //     selectedAsset.value
-            //         ? sourceCreatedAt(selectedAsset.value, true)
-            //         : ''
-            // )
-
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
                     selectedAsset.typeName === 'View' ||
@@ -399,23 +330,13 @@
             }
 
             return {
-                isEdit,
                 localDescription,
                 selectedAsset,
                 body,
                 handleOwnersChange,
                 localClassifications,
                 handleClassificationChange,
-                // rows,
-                // cols,
-                // sourceUpdated,
-                // sourceUpdatedRaw,
-                // sourceCreated,
-                // sourceCreatedRaw,
-                // size,
-                // format,
-                // selectedAsset,
-                // displaySQL,
+
                 isSelectedAssetHaveRowsAndColumns,
                 title,
                 getConnectorImage,
@@ -442,21 +363,8 @@
                 entity,
                 isLoading,
                 classificationBody,
-                // mutateSelectedAsset,
-                // switchTab,
+                actions,
             }
         },
     })
 </script>
-<style lang="less" scoped>
-    ._bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .hover_bg-primary-light:hover {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .owner-expert {
-        // margin-top: 0.3rem;
-        // margin-bottom: 0.3rem;
-    }
-</style>

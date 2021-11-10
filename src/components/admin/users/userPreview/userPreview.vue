@@ -1,7 +1,7 @@
 <template>
-    <div class="h-full py-6">
+    <div class="h-full pb-6">
         <div v-if="isLoading" class="flex items-center justify-center h-full">
-            <a-spin />
+            <AtlanButton icon="Loader" class="h-5 animate-spin" />
         </div>
         <div
             v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
@@ -9,24 +9,23 @@
         >
             <ErrorView>
                 <div class="mt-3">
-                    <a-button
-                        size="large"
-                        type="primary"
-                        ghost
+                    <AtlanButton
+                        color="secondary"
                         @click="
                             () => {
-                                getUsers()
+                                getUserList()
                             }
                         "
                     >
-                        <fa icon="fal sync" class="mr-2"></fa>Try again
-                    </a-button>
+                        <AtlanIcon icon="Reload" />
+                        Try again
+                    </AtlanButton>
                 </div>
             </ErrorView>
         </div>
-        <div v-else-if="selectedUser && selectedUser.id">
-            <div class="flex px-6 pb-6 border-b">
-                <avatar
+        <template v-else-if="selectedUser && selectedUser.id">
+            <div class="relative flex m-6">
+                <Avatar
                     :image-url="imageUrl"
                     :allow-upload="isCurrentUser"
                     :avatar-name="
@@ -41,6 +40,11 @@
                     <div class="text-xl capitalize text-gray">
                         {{ selectedUser.name }}
                     </div>
+                    <AtlanIcon
+                        icon="Cross"
+                        class="absolute top-0 right-0 cursor-pointer"
+                        @click="$emit('close')"
+                    />
                     <div class="text-gray-500">
                         <span class="mr-1">@{{ selectedUser.username }}</span>
                         <span
@@ -61,14 +65,15 @@
                 v-model:activeKey="activeKey"
                 tab-position="left"
                 :class="$style.previewtab"
+                class="border-t"
             >
                 <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
                         <SidePanelTabHeaders
                             :title="tab.name"
                             :icon="tab.icon"
-                            :isActive="activeKey === tab.key"
-                            :activeIcon="tab.activeIcon"
+                            :is-active="activeKey === tab.key"
+                            :active-icon="tab.activeIcon"
                             :class="index === 0 ? 'mt-1' : ''"
                         />
                     </template>
@@ -81,18 +86,12 @@
                     />
                 </a-tab-pane>
             </a-tabs>
-        </div>
+        </template>
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, computed } from 'vue'
+    import { defineComponent, ref, computed, defineAsyncComponent } from 'vue'
     import ErrorView from '@common/error/index.vue'
-    import { getNameInitials, getNameInTitleCase } from '~/utils/string'
-    import About from './about.vue'
-    import Groups from './groups.vue'
-    import AccessLogs from './accessLogs.vue'
-    import Sessions from './sessions.vue'
-    import Assets from './assets.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -102,15 +101,16 @@
     export default defineComponent({
         name: 'UserPreview',
         components: {
-            About,
-            Groups,
-            AccessLogs,
-            Sessions,
-            Assets,
+            About: defineAsyncComponent(() => import('./about.vue')),
+            Groups: defineAsyncComponent(() => import('./groups.vue')),
+            AccessLogs: defineAsyncComponent(() => import('./accessLogs.vue')),
+            Sessions: defineAsyncComponent(() => import('./sessions.vue')),
+            Assets: defineAsyncComponent(() => import('./assets.vue')),
             Avatar,
             ErrorView,
             SidePanelTabHeaders,
         },
+        emits: ['close'],
         setup(props, context) {
             const {
                 userId,
@@ -133,12 +133,15 @@
                     $and: [{ email_verified: true }, { id: userId.value }],
                 }
             const { userList, getUserList, isLoading, state, STATES } =
-                useUsers({
-                    limit: 1,
-                    offset: 0,
-                    sort: 'first_name',
-                    filter: filterObj,
-                })
+                useUsers(
+                    {
+                        limit: 1,
+                        offset: 0,
+                        sort: 'first_name',
+                        filter: filterObj,
+                    },
+                    'USE_USERS_PREVIEW'
+                )
             const userObj = computed(() =>
                 userList && userList.value && userList.value.length
                     ? userList.value[0]
@@ -157,8 +160,6 @@
                 await getUserList()
             }
             return {
-                getNameInitials,
-                getNameInTitleCase,
                 imageUrl,
                 isCurrentUser,
                 selectedUser: userObj,
@@ -169,7 +170,7 @@
                 state,
                 STATES,
                 activeKey,
-                getUsers,
+                getUserList,
             }
         },
     })
@@ -195,7 +196,7 @@
         :global(.ant-tabs-tab) {
             height: 48px !important;
             width: 48px !important;
-            @apply p-0 !important;
+            @apply p-0 justify-center !important;
         }
 
         :global(.ant-tabs-content) {

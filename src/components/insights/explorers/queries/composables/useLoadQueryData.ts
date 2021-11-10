@@ -6,10 +6,10 @@ import {
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
 
-import { useAPIPromise } from '~/services/api/useAPI'
-import { KeyMaps } from '~/api/keyMap'
+import { useAPIPromise } from '~/services/api/useAPIPromise'
+import { map } from '~/services/meta/insights/key'
 import {
-    BaseAttributes,
+    InternalAttributes,
     BasicSearchAttributes,
     SavedQueryAttributes,
 } from '~/constant/projection'
@@ -55,7 +55,7 @@ const useLoadQueryData = ({
         'folder',
         'compiledQuery',
         'rawQuery',
-        ...BaseAttributes,
+        ...InternalAttributes,
         ...BasicSearchAttributes,
         ...SavedQueryAttributes,
     ]
@@ -133,7 +133,7 @@ const useLoadQueryData = ({
         body.value.offset = 0
         body.value.limit = 100
 
-        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(map.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Folder>>
     }
@@ -148,7 +148,7 @@ const useLoadQueryData = ({
         })
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(map.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Folder>>
     }
@@ -164,7 +164,7 @@ const useLoadQueryData = ({
         })
         body.value.offset = offset ?? 0
 
-        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(map.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<RelationshipSearchResponse<SavedQuery>>
     }
@@ -185,7 +185,7 @@ const useLoadQueryData = ({
         body.value.offset = offset ?? 0
         body.value.limit = limit ?? defaultLimit
 
-        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(map.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<Folder>>
     }
@@ -206,7 +206,7 @@ const useLoadQueryData = ({
         body.value.offset = offset ?? 0
         body.value.limit = limit ?? defaultLimit
 
-        return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(map.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<RelationshipSearchResponse<SavedQuery>>
     }

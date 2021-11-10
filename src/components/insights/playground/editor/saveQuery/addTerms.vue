@@ -22,11 +22,11 @@
                 <div class="p-6">
                     <p class="mb-2 text-sm text-gray-700">Select Terms</p>
                     <div style="height: 300px">
-                        <Governance
+                        <!-- <Governance
                             :data="checkedTerms"
                             :sendTerm="sendTerm"
                             @change="handleTermChange"
-                        />
+                        /> -->
                     </div>
 
                     <div
@@ -64,15 +64,18 @@
     // import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
     // import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
     // import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import Governance from '@/common/facets/governance.vue'
+    // import Governance from '@/common/facets/governance.vue'
     import AtlanBtn from '~/components/UI/button.vue'
-    import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { exitCode } from '@tiptap/core/dist/packages/core/src/commands/exitCode'
+    // import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
+    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    // import { exitCode } from '@tiptap/core/dist/packages/core/src/commands/exitCode'
     // import { message } from 'ant-design-vue'
 
     export default defineComponent({
-        components: { Governance, AtlanBtn },
+        components: {
+            // Governance,
+            AtlanBtn,
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

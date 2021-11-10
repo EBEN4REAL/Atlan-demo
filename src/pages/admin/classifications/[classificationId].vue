@@ -3,11 +3,11 @@
         v-if="selectedClassification"
         :classification="selectedClassification"
     />
-<!-- 
+
     <ClassificationBody
         v-if="selectedClassification"
         :classification="selectedClassification"
-    /> -->
+    />
 </template>
 
 <script lang="ts">
@@ -15,6 +15,7 @@
     // import { useClassificationStore } from '~/components/admin/classifications/_store'
     // import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
     import ClassificationHeader from '@/admin/classifications/classificationHeader.vue'
+    import ClassificationBody from '@/admin/classifications/classificationBody.vue'
     // import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -23,7 +24,7 @@
         name: 'ClassificationProfile',
         components: {
             ClassificationHeader,
-            // ClassificationBody,
+            ClassificationBody,
         },
         props: {
             classificationId: String,

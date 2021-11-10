@@ -1,0 +1,96 @@
+<template>
+    <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+    <KeepAlive>
+        <div>
+            <AssetsWrapper 
+                v-if="activeTabKey === '1'" 
+                :initialFilters="filterConfig" 
+                :showFilters="false"  
+            />
+            <!-- <LinkedTerms
+                v-else-if="activeTabKey === '2'"
+                :selected-classification="selectedClassification?.name"
+            /> -->
+        </div>
+    </KeepAlive>
+</template>
+
+<script lang="ts">
+    import { defineComponent, computed, ref, PropType, toRefs } from 'vue'
+    import AssetsWrapper from '@/assets/index.vue'
+    // import LinkedTerms from './LinkedTerms.vue'
+    import MinimalTab from '@/UI/minimalTab.vue'
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
+    export default defineComponent({
+        name: 'ClassificationBody',
+        components: {
+            AssetsWrapper,
+            // LinkedTerms,
+            MinimalTab,
+        },
+        props: {
+            classification: {
+                type: Object as PropType<ClassificationInterface>,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { classification: selectedClassification } = toRefs(props)
+
+            const activeTabKey = ref('1')
+            const tabConfig = [
+                { key: '1', label: 'Linked Assets' },
+                { key: '2', label: 'Linked Terms' },
+            ]
+
+            const filterConfig = computed(() => ({
+                __traitNames: [selectedClassification.value.name],
+            }))
+            
+            return {
+                selectedClassification,
+                filterConfig,
+                activeTabKey,
+                tabConfig,
+            }
+        },
+    })
+</script>
+
+<style lang="less">
+    .typeTabs {
+        .ant-tabs-tab {
+            padding-left: 2px !important;
+            padding-right: 2px !important;
+            padding-top: 8px !important;
+            padding-bottom: 16px !important;
+            @apply mr-4 !important;
+            @apply text-gray-500;
+            @apply text-sm !important;
+            @apply tracking-wide;
+        }
+        .ant-tabs-tab:first-child {
+            margin-left: 18px !important;
+        }
+        .ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child {
+            @apply ml-0;
+        }
+        .ant-tabs-tab-active {
+            @apply text-gray !important;
+            @apply font-bold !important;
+            @apply tracking-normal;
+        }
+        .ant-tabs-bar {
+            margin-bottom: 0px;
+            @apply border-gray-300 !important;
+        }
+        .ant-tabs-content {
+            padding-right: 0px;
+        }
+        .ant-tabs-ink-bar {
+            @apply rounded-t-sm;
+            margin-bottom: 1px;
+        }
+    }
+</style>

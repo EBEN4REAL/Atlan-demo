@@ -11,14 +11,14 @@
                 :options="classificationDropdownOption"
             ></Dropdown>
         </div>
-        <span class="mb-1 text-xl truncate text-gray">{{ displayName }}</span>
+        <span class="mb-1 text-xl truncate text-gray">{{ selectedClassification?.displayName }}</span>
 
         <div class="flex mb-0 text-sm text-gray-500">
-            <span v-if="!selectedClassification.description"
+            <span v-if="!selectedClassification?.description"
                 >Click to add description</span
             >
             <span v-else class="break-words">{{
-                selectedClassification.description
+                selectedClassification?.description
             }}</span>
         </div>
 
@@ -38,9 +38,8 @@
 
 <script lang="ts">
     import { defineComponent, computed, ref, PropType } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
 
-// import UpdateClassificationModal from './updateClassificationModal.vue'
+    // import UpdateClassificationModal from './updateClassificationModal.vue'
     // import DeleteClassificationModal from './deleteClassificationModal.vue'
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
@@ -70,8 +69,6 @@
             const displayName = computed(
                 () => selectedClassification.value.displayName
             )
-
-
 
             const classificationDropdownOption = computed(() => {
                 const options: Record<string, any>[] = []

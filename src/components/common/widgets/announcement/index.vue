@@ -67,7 +67,7 @@
                     case 'information':
                         return 'InformationAnnouncement'
                     case 'issue':
-                        return 'IssueAnnouncement'
+                        return 'IssuesAnnouncement'
                     case 'warning':
                         return 'WarningAnnouncement'
                     default:

@@ -12,6 +12,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         parentGuid: '',
         parentQualifiedName: '',
         isSQLSnippet: false,
+        savedQueryParentFolderTitle: undefined,
         explorer: {
             schema: {
                 connectors: {
@@ -27,10 +28,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         },
         playground: {
             editor: {
-                context: {
-                    attributeName: undefined,
-                    attributeValue: undefined,
-                },
+                
                 text: '',
                 context: {
                     attributeName: undefined,

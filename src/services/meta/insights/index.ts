@@ -24,7 +24,7 @@ const CreateQueryFolder = (body: Record<string, any>,  options: useOptions) => {
         options || {}
     )
 }
-const GetSavedQuery = (guid: string) => {
+const GetSavedQuery = (guid: string, options: useOptions) => {
     return useAPI<SavedQueryResponse>(
         map.GET_SAVED_QUERY,
         'GET',

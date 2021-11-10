@@ -1,10 +1,14 @@
 <template>
     <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
         <template #header>
-            <SearchAndFilter v-model:value="searchTerm" class="max-w-xl mb-4">
-                <template #filter>
+            <SearchAndFilter
+                v-model:value="searchTerm"
+                class="max-w-xl mb-4"
+                size="minimal"
+            >
+                <!-- <template #filter>
                     <RequestFilters v-model:filters="filters" />
-                </template>
+                </template> -->
             </SearchAndFilter>
             <!-- <RequestTypeTabs v-model:tab="filters.request_type" /> -->
         </template>
@@ -19,6 +23,7 @@
                 @up="traverseUp"
                 @down="traverseDown"
             ></RequestModal> -->
+            {{ searchTerm }}
             <VirtualList :data="requestList" data-key="id">
                 <template #default="{ item, index }">
                     <!-- {{ item }} -->

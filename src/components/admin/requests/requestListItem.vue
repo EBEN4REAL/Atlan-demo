@@ -70,17 +70,17 @@
                 <div
                     class="items-center justify-around hidden group-hover:flex"
                 >
-                    <!-- <RequestActions
+                    <RequestActions
                         v-if="request.status === 'active'"
                         @accept="handleApproval"
                         @reject="handleRejection"
-                    /> 
+                    />
                     <div v-else-if="request.status === 'approved'">
                         Approved
                     </div>
                     <div v-else-if="request.status === 'rejected'">
                         Rejected
-                    </div>-->
+                    </div>
                 </div>
                 <!-- <div
                     class="flex items-center justify-end flex-grow gap-x-2 group-hover:hidden"
@@ -100,7 +100,7 @@
 
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
-    // import RequestActions from './requestActions.vue'
+    import RequestActions from './requestActions.vue'
 
     // import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
@@ -120,7 +120,7 @@
         name: 'RequestListItem',
         components: {
             VirtualList,
-            // RequestActions,
+            RequestActions,
             // ClassificationPiece,
             AssetPiece,
             // AttrPiece,

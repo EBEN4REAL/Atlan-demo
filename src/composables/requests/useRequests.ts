@@ -1,4 +1,4 @@
-import { getRequests, actOnRequest } from '~/services/auth/requests'
+import { getRequests, actOnRequest } from '~/services/service/requests'
 import { Ref, computed, watch } from 'vue'
 import { RequestStatus } from '~/types/atlas/requests'
 import { useDebounceFn } from '@vueuse/core'
@@ -38,6 +38,7 @@ export function useRequestList(
     console.log(data, error)
 
     const debouncedMutation = useDebounceFn(() => {
+        console.log(searchTerm)
         mutate()
     }, 400)
 

@@ -18,6 +18,7 @@ export const useAPI = <T>(
     { options, asyncOptions, cacheKey, cacheOptions }: useOptions
 ) => {
     if (cacheOptions) {
+        console.log('cache')
         const url = computed(() => resolveUrl(path, pathVariables))
 
         const { data, error, mutate, isValidating } = useSWRV<T>(

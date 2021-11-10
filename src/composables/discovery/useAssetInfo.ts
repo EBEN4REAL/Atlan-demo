@@ -14,6 +14,7 @@ import { profileTabs } from '~/constant/profileTabs'
 import { formatDateTime } from '~/utils/date'
 import useDiscoveryStore from '~/store/discovery'
 import { Category, Term } from '~/types/glossary/glossary.interface'
+import { useAuthStore } from '~/store/auth'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -21,6 +22,7 @@ import { Category, Term } from '~/types/glossary/glossary.interface'
 
 export default function useAssetInfo() {
     const connectionStore = useConnectionStore()
+    const authStore = useAuthStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
     const anchorAttributes = (asset: Term | Category) =>
@@ -75,7 +77,7 @@ export default function useAssetInfo() {
     //     return found?.label
     // }
     const description = (asset: assetInterface) =>
-        attributes(asset).userDescription || attributes(asset).description
+        attributes(asset)?.userDescription || attributes(asset)?.description
 
     const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
     const isPartition = (asset: assetInterface) =>
@@ -277,6 +279,11 @@ export default function useAssetInfo() {
 
     const modifiedBy = (asset: assetInterface) =>
         attributes(asset)?.__modifiedBy
+
+    const readmeGuid = (asset: assetInterface) =>
+        attributes(asset)?.readme?.guid
+
+    const isEditAllowed = (asset: assetInterface) => {}
 
     // const modifiedBy = (asset: assetInterface) =>
     //     attributes(asset)?.__modifiedBy
@@ -700,5 +707,6 @@ export default function useAssetInfo() {
         connectionQualifiedName,
         getConnectorImageMap,
         anchorAttributes,
+        readmeGuid,
     }
 }

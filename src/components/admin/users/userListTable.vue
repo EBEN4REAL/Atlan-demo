@@ -6,11 +6,7 @@
         :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
         :table-layout="'fixed'"
         :data-source="userList"
-        :columns="
-            userColumns.filter(
-                (col) => col.title !== 'Actions' || permissions.update
-            )
-        "
+        :columns="userColumns"
         :row-key="(user) => user.id"
         :pagination="false"
         :loading="loading"
@@ -62,13 +58,9 @@
             </div>
         </template>
         <template #actions="{ text: user }">
-            <a-button-group>
+            <a-button-group v-auth="map.UPDATE_USERS">
                 <a-tooltip
-                    v-if="
-                        user.enabled &&
-                        user.email_verified &&
-                        permissions.update
-                    "
+                    v-if="user.enabled && user.email_verified"
                     placement="top"
                     class="mr-3.5"
                 >
@@ -116,11 +108,7 @@
                     </a-popover>
                 </a-tooltip>
                 <a-tooltip
-                    v-if="
-                        user.enabled &&
-                        user.email_verified &&
-                        permissions.update
-                    "
+                    v-if="user.enabled && user.email_verified"
                     placement="top"
                 >
                     <template #title>
@@ -146,7 +134,7 @@
                     ></a-popconfirm>
                 </a-tooltip>
                 <a-tooltip
-                    v-if="!user.enabled && permissions.update"
+                    v-if="!user.enabled"
                     placement="top"
                     class="rounded mr-3.5"
                 >
@@ -171,7 +159,7 @@
                     ></a-popconfirm>
                 </a-tooltip>
                 <a-tooltip
-                    v-if="!user.email_verified && permissions.update"
+                    v-if="!user.email_verified"
                     placement="top"
                     class="rounded mr-3.5"
                 >
@@ -269,13 +257,13 @@
     import { userColumns, statusColorCodes } from '~/constant/users'
     import useRoles from '~/composables/roles/useRoles'
     import ChangeRole from './changeRole.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'UserListTable',
         components: { Avatar, ChangeRole },
         props: {
             userList: { type: Array, required: true },
-            permissions: { type: Object, required: true },
             loading: { type: Boolean, required: true },
             selectedUserId: { type: String, required: true },
             showChangeRolePopover: { type: Boolean, required: true },
@@ -349,6 +337,7 @@
                 emit,
                 isCurrentUser,
                 statusColorCodes,
+                map,
             }
         },
     })

@@ -6,7 +6,7 @@
             :class="$style.profiletab"
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
-            class="h-full"
+            class="flex-1"
         >
             <a-tab-pane
                 :tab="tab.label"
@@ -113,7 +113,7 @@ meta:
         }
 
         :global(.ant-tabs-content-holder) {
-            @apply bg-primary-light !important;
+            @apply bg-primary-light overflow-y-auto !important;
         }
     }
 </style>

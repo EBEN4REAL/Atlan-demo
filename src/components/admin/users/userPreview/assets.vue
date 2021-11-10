@@ -12,7 +12,7 @@
     // import AssetsWrapper from '@common/assets/index.vue'
 
     export default defineComponent({
-        name: 'Assets',
+        name: 'AssetsTabs',
         components: {
             // AssetsWrapper,
         },

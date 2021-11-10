@@ -1,9 +1,5 @@
 <template>
-    <DefaultLayout
-        v-if="permissions.list"
-        title="Groups"
-        :badge="totalGroupsCount"
-    >
+    <DefaultLayout title="Groups" :badge="totalGroupsCount">
         <template #header>
             <div class="flex justify-between">
                 <div class="flex w-1/4">
@@ -19,7 +15,7 @@
                 </div>
                 <router-link to="/admin/groups/new">
                     <AtlanButton
-                        v-if="permissions.create"
+                        v-auth="map.CREATE_GROUP"
                         class="px-5"
                         size="sm"
                         type="primary"
@@ -58,14 +54,7 @@
             :table-layout="'fixed'"
             :pagination="false"
             :data-source="groupList"
-            :columns="
-                columns.filter(
-                    (col) =>
-                        col.title !== 'Actions' ||
-                        permissions.remove ||
-                        permissions.update
-                )
-            "
+            :columns="columns"
             :row-key="(group) => group.id"
             :loading="
                 [STATES.PENDING].includes(state) ||
@@ -101,8 +90,8 @@
             </template>
             <template #actions="{ text: group }">
                 <ActionButtons
+                    v-auth="[map.UPDATE_GROUP]"
                     :group="group"
-                    :permissions="permissions"
                     :mark-as-default-loading="markAsDefaultLoading"
                     :delete-group-loading="deleteGroupLoading"
                     @addMembers="handleAddMembers(group)"
@@ -134,6 +123,7 @@
 
     import ActionButtons from './actionButtons.vue'
     import AtlanButton from '@/UI/button.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'GroupList',
@@ -149,14 +139,6 @@
             const markAsDefaultLoading = ref(false)
             const deleteGroupLoading = ref(false)
             const showActionsDropdown = ref(false)
-
-            const permissions = computed(() => ({
-                list: true,
-                add: true,
-                remove: true,
-                create: true,
-                update: true,
-            }))
 
             const selectedGroupId = ref('')
             const groupListAPIParams = reactive({
@@ -358,7 +340,7 @@
                 markAsDefaultLoading,
                 deleteGroupLoading,
                 showActionsDropdown,
-                permissions,
+                map,
                 handlePagination,
             }
         },
@@ -398,7 +380,6 @@
                     },
                     {
                         title: 'Actions',
-
                         slots: { customRender: 'actions' },
                     },
                 ],

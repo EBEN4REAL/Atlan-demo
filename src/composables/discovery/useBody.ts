@@ -312,7 +312,8 @@ export function useBody(
     if (
         !facets?.typeNames?.includes('AtlasGlossary') &&
         !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
-        !facets?.typeNames?.includes('AtlasGlossaryCategory')
+        !facets?.typeNames?.includes('AtlasGlossaryCategory') &&
+        !facets?.guid
     ) {
         // Global TypeName Filters
         base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])

@@ -12,13 +12,18 @@ import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { map } from '~/services/meta/insights/key'
 import { InternalAttributes, SavedQueryAttributes } from '~/constant/projection'
-import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants';
+import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 
-const searchQueries = (query: Ref<string>, savedQueryType: Ref<'all' | 'personal'>, offset?: Ref<number>, limit?: Ref<number>) => {
+const searchQueries = (
+    query: Ref<string>,
+    savedQueryType: Ref<'all' | 'personal'>,
+    offset?: Ref<number>,
+    limit?: Ref<number>
+) => {
     const body = ref<Record<string, any>>({})
-    const data = ref<BasicSearchResponse<SavedQuery>>();
-    const isLoading = ref(true);
-    const error = ref();
+    const data = ref<BasicSearchResponse<SavedQuery>>()
+    const isLoading = ref(true)
+    const error = ref()
 
     const refreshBody = () => {
         body.value = {
@@ -27,74 +32,80 @@ const searchQueries = (query: Ref<string>, savedQueryType: Ref<'all' | 'personal
             includeClassificationAttributes: true,
             includeSubClassifications: true,
             includeSubTypes: true,
-            attributes: [
-                ...InternalAttributes,
-                ...SavedQueryAttributes,
-            ],
+            attributes: [...InternalAttributes, ...SavedQueryAttributes],
             query: query.value,
             offset: offset?.value ?? 0,
             limit: limit?.value ?? 50,
         }
-        if(savedQueryType?.value === 'all') {
+        if (savedQueryType?.value === 'all') {
             body.value.entityFilters = {
                 condition: 'AND',
-                criterion: [{
-                    condition: "OR",
-                    criterion: [
-                       {
-                         attributeName: "__classificationNames",
-                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                         operator: "eq"
-                       },
-                       {
-                         attributeName: "__propagatedClassificationNames",
-                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                         operator: "eq"
-                       }
-                     ]
-                }]
+                criterion: [
+                    {
+                        condition: 'OR',
+                        criterion: [
+                            {
+                                attributeName: '__classificationNames',
+                                attributeValue:
+                                    ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                                operator: 'eq',
+                            },
+                            {
+                                attributeName:
+                                    '__propagatedClassificationNames',
+                                attributeValue:
+                                    ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                                operator: 'eq',
+                            },
+                        ],
+                    },
+                ],
             }
-        }  else {
+        } else {
             body.value.entityFilters = {
                 condition: 'AND',
-                criterion: [{
-                    condition: "AND",
-                    criterion: [
-                       {
-                         attributeName: "__classificationNames",
-                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                         operator: "neq"
-                       },
-                       {
-                         attributeName: "__propagatedClassificationNames",
-                         attributeValue: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                         operator: "neq"
-                       }
-                     ]
-                }]
+                criterion: [
+                    {
+                        condition: 'AND',
+                        criterion: [
+                            {
+                                attributeName: '__classificationNames',
+                                attributeValue:
+                                    ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                                operator: 'neq',
+                            },
+                            {
+                                attributeName:
+                                    '__propagatedClassificationNames',
+                                attributeValue:
+                                    ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                                operator: 'neq',
+                            },
+                        ],
+                    },
+                ],
             }
         }
     }
-    refreshBody();
+    refreshBody()
 
     const fetchQueries = () => {
         refreshBody()
-        const { data:queries, error: searchError, isLoading:loading } = useAPI<SavedQueryResponse>(
+        const {
+            data: queries,
+            error: searchError,
+            isLoading: loading,
+        } = useAPI<SavedQueryResponse>(
             map.BASIC_SEARCH,
             'POST',
-            {  
+            {
                 body,
             },
             {}
         )
-        watch([queries, searchError, loading], ([newQueries, newError, newLoading]) => {
-            data.value = newQueries
-            error.value = newError
-            isLoading.value = newLoading
-        })
     }
     const onQueryChange = useDebounceFn((query: string) => {
-        if(query.length) fetchQueries()
+        if (query.length) fetchQueries()
     })
 
     watch([query, savedQueryType], ([newQuery]) => {

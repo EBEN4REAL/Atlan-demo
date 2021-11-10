@@ -40,3 +40,20 @@ export interface IPersona {
     createdAt?: string
     createdBy?: string
 }
+
+export interface IUser {
+    email: string
+    firstName: string
+    lastName: string
+    username: string
+}
+
+export interface IGroup {
+    alias: string
+    description: string
+    memberCountString: string
+    memberCount: number
+    id: string
+    name: string
+    user_count: string
+}

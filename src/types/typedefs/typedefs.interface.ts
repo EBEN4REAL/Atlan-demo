@@ -1,8 +1,8 @@
-import { classificationInterface } from '~/types/classifications/classification.interface'
+import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
-export interface typedefsInterface {
+export interface TypedefsInterface {
     businessMetadataDefs: Array<any>
-    classificationDefs: classificationInterface[]
+    classificationDefs: ClassificationInterface[]
     entityDefs: Array<any>
     enumDefs: Array<any>
     relationshipDefs: Array<any>

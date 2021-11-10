@@ -12,13 +12,16 @@
 
 <script lang="ts">
     import { defineComponent, computed } from 'vue'
-    import ClassificationHeader from '~/components/admin/classifications/classificationHeader.vue'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
-    import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
-    import { classificationInterface } from '~/types/classifications/classification.interface'
+    // import { useClassificationStore } from '~/components/admin/classifications/_store'
+    // import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
+    import ClassificationHeader from '@/admin/classifications/classificationHeader.vue'
+    import ClassificationBody from '@/admin/classifications/classificationBody.vue'
+    // import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
-        name: 'ClassificationProfileWrapper',
+        name: 'ClassificationProfile',
         components: {
             ClassificationHeader,
             ClassificationBody,
@@ -27,27 +30,12 @@
             classificationId: String,
         },
         setup(props) {
-            const store = useClassificationStore()
-            const classifications = computed(() => store.classifications)
+            const { classificationList } = useTypedefData()
 
-            const selectedClassification = computed(
-                (): classificationInterface | undefined => {
-                    if (!props.classificationId) {
-                        return undefined
-                    }
-                    if (classifications.value.length === 0) {
-                        return undefined
-                    }
-                    return classifications.value.find(
-                        (classification) =>
-                            (classification.name || '') ===
-                            decodeURI(props.classificationId as string)
-                    )
-                }
-            )
-
+            const selectedClassification = computed(() => classificationList.value.find((classification) => classification.name === props.classificationId))
+      
             return {
-                selectedClassification,
+                selectedClassification
             }
         },
     })

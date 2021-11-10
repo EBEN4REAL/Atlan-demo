@@ -13,8 +13,13 @@
             :disabled="disabled"
             @change="onChange"
             @select="selectNode"
+            :ref="
+                (el) => {
+                    treeSelectRef = el
+                }
+            "
         >
-            <template #title="node">
+            <!-- <template #title="node">
                 <div v-if="node?.img" class="flex items-center">
                     <img :src="node.img" class="w-auto h-3 mr-2" />
                     <span class="">{{
@@ -28,7 +33,7 @@
                     />
                     <span class="">{{ node.name }}</span>
                 </div>
-            </template>
+            </template> -->
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
@@ -49,9 +54,9 @@
     } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { Components } from '~/api/atlas/client'
-    import { certificateList } from '~/constant/certification'
+    import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
         props: {
@@ -75,10 +80,9 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
+            const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
             const { data, filterSourceIds } = toRefs(props)
-
-            const store = useConnectionStore()
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
@@ -107,6 +111,7 @@
                     (item) => !filterSourceIds.includes(item.id)
                 )
 
+            const store = useConnectionStore()
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
             else fetch all the sourcelist from store */
@@ -116,13 +121,13 @@
                     : store.getSourceList
             )
             const getImage = (id: string) => store.getImage(id)
-            const list = computed(() => certificateList)
+            const list = computed(() => List)
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
             console.log(checkedValues.value, 'model')
 
             const transformConnectionsToTree = (connectorId: string) =>
-                store.list
+                store.getList
                     .filter(
                         (connection) =>
                             getConnectorName(connection?.attributes) ===
@@ -155,9 +160,9 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
-                                slots: {
-                                    title: 'title',
-                                },
+                                title:
+                                    connection.attributes.name ||
+                                    connection.attributes.qualifiedName,
                             }
                         }
                     })
@@ -171,9 +176,7 @@
                         img: item.image,
                         connector: item.id,
                         connection: undefined,
-                        slots: {
-                            title: 'title',
-                        },
+                        title: item.id,
                         children: transformConnectionsToTree(item.id),
                     }
                     tree.push(treeNodeObj)
@@ -256,6 +259,8 @@
             }
 
             return {
+                treeSelectRef,
+                filterSourceIds,
                 onChange,
                 expandedKeys,
                 selectNode,
@@ -293,7 +298,7 @@
     .connector {
         :global(.ant-select-selector) {
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
-            @apply rounded-lg !important;
+            border-radius: 4px !important;
         }
     }
 </style>

@@ -1,4 +1,4 @@
-import { getAPIPath } from '~/services/api/common'
+import { getAPIPath, PathParams } from '~/services/api/common'
 import { BASE_PATH } from '..'
 
 export const LIST_PERSONAS = 'LIST_PERSONAS'
@@ -7,6 +7,12 @@ export const UPDATE_PERSONA = 'UPDATE_PERSONA'
 
 export const map = {
     LIST_PERSONAS: () => getAPIPath('/service', '/personas'),
-    CREATE_PERSONA: () => getAPIPath('/service', '/personas'),
-    UPDATE_PERSONA: ({ guid }) => getAPIPath('/service', `/personas/${guid}`),
+        CREATE_PERSONA: () => getAPIPath('/service', '/personas'),
+        UPDATE_PERSONA: ({ guid }: PathParams) =>
+            getAPIPath('/service', `/personas/${guid}`),
+        UPDATE_PERSONA_USERS: ({ guid }: PathParams) =>
+            getAPIPath('/service', `/personas/${guid}/subjects`),
+        DELETE_PERSONA: ({ guid }: PathParams) =>
+            getAPIPath('/service', `/personas/${guid}`),
+        LIST_SCOPES: () => getAPIPath('/service', '/scopes'),
 }

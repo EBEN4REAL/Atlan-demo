@@ -644,6 +644,7 @@ export default function useAssetInfo() {
     return {
         title,
         getConnectorImage,
+        getConnectorName,
         connectionName,
         assetType,
         databaseName,

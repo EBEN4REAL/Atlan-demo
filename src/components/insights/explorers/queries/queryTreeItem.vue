@@ -325,7 +325,6 @@
     } from 'vue'
 
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
-
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
     import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'

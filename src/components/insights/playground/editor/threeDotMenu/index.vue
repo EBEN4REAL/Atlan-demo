@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-dropdown :trigger="['click']">
+        <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
                 class="

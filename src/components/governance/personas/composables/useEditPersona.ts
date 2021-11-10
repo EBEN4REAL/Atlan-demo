@@ -173,7 +173,7 @@ export function savePolicy(type: PolicyType, id: string) {
 }
 
 export function discardPolicy(type: PolicyType, id: string) {
-    if (id.includes('new')) {
+    if (id?.includes('new')) {
         if (type === 'meta') {
             const dirtyPolicyIndex =
                 selectedPersonaDirty.value?.metadataPolicies?.findIndex(

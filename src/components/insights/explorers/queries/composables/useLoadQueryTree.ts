@@ -2,11 +2,14 @@ import { Ref, ref } from 'vue'
 
 import {
     SavedQuery,
-    BasicSearchResponse,
 } from '~/types/insights/savedQuery.interface'
 
-import { useAPIPromise } from '~/services/api/useAPI'
-import { KeyMaps } from '~/api/keyMap'
+import {
+    BasicSearchResponse,
+} from '~/types/common/atlasSearch.interface'
+
+import { useAPIPromise } from '~/services/api/useAPIPromise'
+import { map } from '~/services/meta/insights/key'
 
 const useLoadQueryTree = () => {
     const body = ref({
@@ -35,7 +38,7 @@ const useLoadQueryTree = () => {
     ) => {
         /*TODO: Add connector in entity filters default is snowlfake*/
         body.value.offset = offset ?? 0
-        return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
+        return useAPIPromise(map.BASIC_SEARCH(), 'POST', {
             body,
         }) as Promise<BasicSearchResponse<SavedQuery>>
     }

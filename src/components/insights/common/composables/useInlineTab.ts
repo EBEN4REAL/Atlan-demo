@@ -216,7 +216,7 @@ export function useInlineTab(
     }
 
     const tabsArray: Ref<activeInlineTabInterface[]> = ref(
-        setInlineTabsArray(shouldDefaultTabAdd)
+        setInlineTabsArray(Boolean(shouldDefaultTabAdd))
     )
     const activeInlineTabKey = ref(setActiveInlineTabKey())
     const activeInlineTab = computed(() =>

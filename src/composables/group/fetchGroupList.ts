@@ -1,5 +1,5 @@
 import useSWRV from 'swrv'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Groups } from '~/services/service/groups'
 import swrvState from '../utils/swrvState'
@@ -26,9 +26,9 @@ export default function fetchGroupList(immediate: boolean = true) {
             revalidateOnFocus: false,
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
-         }
+        }
     )
-    
+
     const { state, STATES } = swrvState(data, error, isValidating)
 
     const list = computed(() => data.value?.records ?? [])
@@ -62,6 +62,9 @@ export default function fetchGroupList(immediate: boolean = true) {
             mutate()
         }, 200)
     }
+    watch([list, data], () => {
+        console.log('grps', list.value, data.value?.data.value?.records)
+    })
 
     return {
         list,

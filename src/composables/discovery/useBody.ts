@@ -141,6 +141,20 @@ export function useBody(
                 }
                 break
             }
+            case 'isRootCategory': {
+                if (filterObject) {
+                    base.notFilter('exists', '__parentCategory')
+                }
+                break
+            }
+
+            case 'parentCategory': {
+                if (filterObject) {
+                    base.orFilter('term', '__categories', filterObject)
+                    base.orFilter('term', '__parentCategory', filterObject)
+                }
+                break
+            }
             case 'guid': {
                 if (filterObject) {
                     base.filter('term', '__guid', filterObject)

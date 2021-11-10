@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+        v-if="error"
         class="flex flex-col items-center h-full align-middle bg-white"
     >
         <ErrorView>
@@ -21,10 +21,7 @@
         </ErrorView>
     </div>
     <div
-        v-else-if="
-            [STATES.PENDING].includes(state) ||
-            [STATES.VALIDATING].includes(state)
-        "
+        v-else-if="isLoading"
         class="flex items-center justify-center w-full componentHeight"
     >
         <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
@@ -78,11 +75,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, reactive, ref } from 'vue'
+    import { defineComponent, computed, reactive, ref, watch } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import ErrorView from '@common/error/index.vue'
     import { Users } from '~/services/service/users/index'
-    import swrvState from '~/utils/swrvState'
     import EmptyState from '@/common/empty/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
@@ -101,6 +97,9 @@
         },
         setup(props, context) {
             const accessLogsParams: any = reactive({ max: 10, first: 0 })
+            const pV = computed(() => ({
+                id: props.selectedUser.id,
+            }))
             const params = new URLSearchParams({ max: '10', first: '0' })
             const searchText = ref('')
             const fetchLogs = () => {
@@ -125,14 +124,13 @@
             const {
                 data,
                 error,
-                isValidating,
+                isLoading,
                 mutate: fetchUserAccessLogs,
-            } = Users.GetUserAccessLogs(props.selectedUser.id, params, {
-                revalidateOnFocus: false,
-                dedupingInterval: 1,
+            } = Users.GetUserAccessLogs(pV, params, {
+                asyncOptions: { immediate: false },
             })
-            const { state, STATES } = swrvState(data, error, isValidating)
             const accessLogs = computed(() => {
+                if (isLoading.value) return []
                 if (data.value && data.value.length) {
                     return data.value.map((log: any) => ({
                         ...log,
@@ -167,14 +165,6 @@
                 accessLogsParams.first = 0
                 applyIPAddressFilter(null)
             }
-            const handleTableChange = (pagination, filters) => {
-                // apply filters
-                if (filters && filters.action) {
-                    accessLogsParams.first = 0
-                    applyLogTypeFilter(filters.action)
-                }
-                fetchLogs()
-            }
             const paginateLogs = (value) => {
                 if (value === 'start') {
                     accessLogsParams.first = 0
@@ -188,74 +178,24 @@
                     fetchLogs()
                 }
             }
+            watch(
+                pV,
+                () => {
+                    fetchLogs()
+                },
+                { deep: true, immediate: true }
+            )
             return {
                 searchText,
                 accessLogs,
-                state,
-                STATES,
+                isLoading,
                 fetchLogs,
+                error,
                 accessLogsParams,
                 handleResetIPAddressFilter,
                 handleApplyIPAddressFilter,
-                handleTableChange,
                 paginateLogs,
             }
-        },
-        computed: {
-            columns() {
-                return [
-                    {
-                        title: 'Time',
-                        key: 'time_ago',
-
-                        slots: { customRender: 'time' },
-                    },
-                    {
-                        title: 'Action',
-                        key: 'action',
-
-                        slots: { customRender: 'action' },
-                        filters: [
-                            {
-                                text: 'LOGOUT',
-                                value: 'LOGOUT',
-                            },
-                            {
-                                text: 'LOGIN',
-                                value: 'LOGIN',
-                            },
-
-                            {
-                                text: 'LOGIN_ERROR',
-                                value: 'LOGIN_ERROR',
-                            },
-                            {
-                                text: 'CODE_TO_TOKEN',
-                                value: 'CODE_TO_TOKEN',
-                            },
-                            {
-                                text: 'REGISTER',
-                                value: 'REGISTER',
-                            },
-                        ],
-                    },
-                    {
-                        title: 'Error',
-                        key: 'error',
-
-                        slots: { customRender: 'error' },
-                    },
-                    {
-                        title: 'IP Address',
-                        key: 'ip_address',
-
-                        slots: {
-                            customRender: 'ip_address',
-                            filterDropdown: 'filterDropdown',
-                        },
-                    },
-                ]
-            },
         },
     })
 </script>

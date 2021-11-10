@@ -4,6 +4,7 @@ import { State } from './state'
 import { SourceList } from '~/constant/source'
 
 export interface Getters {
+    getList(state: State): ConnectionType[]
     getSourceList(): any[]
     getConnectorImageMapping(): any
     getImage(): (id: string) => any
@@ -11,7 +12,6 @@ export interface Getters {
 }
 
 export const getters: GettersTree<State> & Getters = {
-
     getList(state: State) {
         return state.list
     },

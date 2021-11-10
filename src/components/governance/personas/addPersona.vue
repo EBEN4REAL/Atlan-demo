@@ -32,7 +32,7 @@
     import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import { Persona } from '~/services/service/persona'
+    import usePersonaService from './composables/usePersonaService'
     import {
         reFetchList,
         selectedPersonaId,
@@ -66,9 +66,17 @@
                 modalVisible.value = !modalVisible.value
             }
 
+            const { createPersona } = usePersonaService()
+
             async function handleCreation() {
+                const messageKey = Date.now()
+                message.loading({
+                    content: 'Adding new persona',
+                    duration: 0,
+                    key: messageKey,
+                })
                 try {
-                    const newPersona: IPersona = await Persona.Create({
+                    const newPersona: IPersona = await createPersona({
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
@@ -76,14 +84,22 @@
                         users: [],
                         groups: [],
                         personaType: 'persona',
-                        datapolicies: [],
+                        dataPolicies: [],
                     })
-                    message.success(`${title.value} persona Created`)
+                    message.success({
+                        content: `${title.value} persona Created`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
                     reFetchList()
                     selectedPersonaId.value = newPersona.id!
                     modalVisible.value = false
                 } catch (error) {
-                    message.error('Failed to create persona')
+                    message.error({
+                        content: 'Failed to create persona',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
                 }
             }
 

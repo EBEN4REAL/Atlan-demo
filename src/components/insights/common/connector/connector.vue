@@ -14,7 +14,7 @@
             :data-test-id="'conector'"
             @select="selectNode"
         >
-            <template #title="node">
+            <!-- <template #title="node">
                 <div class="flex items-center" v-if="node?.img">
                     <img :src="node.img" class="w-auto h-3 mr-2" />
                     <span class="">{{
@@ -28,7 +28,7 @@
                     />
                     <span class="">{{ node.name }}</span>
                 </div>
-            </template>
+            </template> -->
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
@@ -167,6 +167,9 @@
                                 name:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,
+                                title:
+                                    connection.attributes.name ||
+                                    connection.attributes.qualifiedName,
                                 value: connection.attributes.qualifiedName,
                                 connector: getConnectorName(
                                     connection?.attributes
@@ -175,9 +178,6 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
-                                slots: {
-                                    title: 'title',
-                                },
                             }
                         }
                     })
@@ -188,13 +188,11 @@
                 data.forEach((item: any) => {
                     let treeNodeObj = {
                         value: item.id,
+                        title: item.id,
                         key: item.id,
                         img: item.image,
                         connector: item.id,
                         connection: undefined,
-                        slots: {
-                            title: 'title',
-                        },
                         children: transformConnectionsToTree(item.id),
                     }
                     tree.push(treeNodeObj)

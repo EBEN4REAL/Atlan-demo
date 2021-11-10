@@ -164,6 +164,9 @@
                                 name:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,
+                                title:
+                                    connection.attributes.name ||
+                                    connection.attributes.qualifiedName,
                                 value: connection.attributes.qualifiedName,
                                 connector: getConnectorName(
                                     connection?.attributes
@@ -172,9 +175,6 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
-                                slots: {
-                                    title: 'title',
-                                },
                             }
                         }
                     })
@@ -185,13 +185,11 @@
                 data.forEach((item: any) => {
                     let treeNodeObj = {
                         value: item.id,
+                        title: item.id,
                         key: item.id,
                         img: item.image,
                         connector: item.id,
                         connection: undefined,
-                        slots: {
-                            title: 'title',
-                        },
                         children: transformConnectionsToTree(item.id),
                     }
                     tree.push(treeNodeObj)

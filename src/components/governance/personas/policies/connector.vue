@@ -19,7 +19,7 @@
                 }
             "
         >
-            <template #title="node">
+            <!-- <template #title="node">
                 <div v-if="node?.img" class="flex items-center">
                     <img :src="node.img" class="w-auto h-3 mr-2" />
                     <span class="">{{
@@ -33,7 +33,7 @@
                     />
                     <span class="">{{ node.name }}</span>
                 </div>
-            </template>
+            </template> -->
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
@@ -160,9 +160,9 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
-                                slots: {
-                                    title: 'title',
-                                },
+                                title:
+                                    connection.attributes.name ||
+                                    connection.attributes.qualifiedName,
                             }
                         }
                     })
@@ -176,9 +176,7 @@
                         img: item.image,
                         connector: item.id,
                         connection: undefined,
-                        slots: {
-                            title: 'title',
-                        },
+                        title: item.id,
                         children: transformConnectionsToTree(item.id),
                     }
                     tree.push(treeNodeObj)

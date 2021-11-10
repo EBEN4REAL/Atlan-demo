@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col p-4 bg-white border border-gray-100 rounded"
+        class="flex flex-col px-6 py-4 bg-white border border-gray-100 rounded"
         v-if="guid || isEdit"
     >
         <div class="flex items-center justify-between">
@@ -14,6 +14,7 @@
             <a-button
                 class="flex items-center"
                 v-if="!isLoading && !content && isEdit"
+                @click="handleEditMode"
             >
                 <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Start a
                 readme</a-button

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col w-full h-full" ref="glossaryBox">
         <div class="px-3 pt-3 pb-1">
             <Search
                 placeholder="Search Terms & Categories"
@@ -11,13 +11,19 @@
             </Search>
         </div>
 
-        <GlossaryList :list="list" class="pb-3"></GlossaryList>
+        <GlossaryList :list="list" class="pb-3" v-if="queryText"></GlossaryList>
+        <GlossaryTree
+            :list="baseTreeData"
+            :height="height"
+            v-else
+        ></GlossaryTree>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, ref, watch, Ref } from 'vue'
     import Search from '@/common/input/searchAdvanced.vue'
+    import GlossaryTree from '@/glossary/tree/glossaryTree2.vue'
     import GlossaryList from '@/glossary/discoverlist/list.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import {
@@ -27,11 +33,13 @@
     } from '~/constant/projection'
     import { debouncedWatch } from '@vueuse/core'
     import { useDebounceFn } from '@vueuse/core'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         components: {
             GlossaryList,
             Search,
+            GlossaryTree,
         },
         props: {
             showFilters: {
@@ -77,7 +85,7 @@
                 limit,
                 offset,
                 attributes: defaultAttributes,
-                relationAttributes
+                relationAttributes,
             })
 
             console.log('fetching')
@@ -102,7 +110,22 @@
                 // })
             }, 150)
 
+            const { initTree } = useGlossaryData()
+            const baseTreeData = ref(initTree())
+
+            const glossaryBox = ref()
+
+            const height = computed(() => {
+                if (glossaryBox.value) {
+                    return glossaryBox.value.clientHeight - 90
+                }
+                return 400
+            })
+
             return {
+                baseTreeData,
+                glossaryBox,
+                height,
                 isLoading,
                 queryText,
                 assetTypeAggregationList,

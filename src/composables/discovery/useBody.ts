@@ -15,15 +15,29 @@ export function useBody(
     const base = bodybuilder()
 
     if (queryText) {
-        base.orQuery('match', 'name', { query: queryText })
+        base.orQuery('match', 'name', {
+            query: queryText,
+            boost: 2,
+            analyzer: 'search_synonyms',
+        })
+
         base.orQuery('match', 'name', {
             query: queryText,
             operator: 'AND',
+            boost: 3,
+        })
+        base.orQuery('match', 'name.keyword', {
+            query: queryText,
+            boost: 10,
         })
         base.orQuery('match_phrase', 'name', {
             query: queryText,
-            boost: 2,
+            boost: 5,
         })
+        base.orQuery('wildcard', 'name.keyword', {
+            value: `${queryText}*`,
+        })
+        base.orQuery('match', 'name.stemmed', { query: queryText })
         base.queryMinimumShouldMatch(1)
     }
 

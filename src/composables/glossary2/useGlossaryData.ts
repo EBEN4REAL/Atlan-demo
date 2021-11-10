@@ -15,7 +15,15 @@ export default function useGlossaryData() {
         return found
     }
 
-    const glossaryList = computed(() => glossaryStore.list)
+    const glossaryList = computed(() =>
+        glossaryStore.list.sort((a, b) =>
+            a.attributes.name > b.attributes.name
+                ? 1
+                : b.attributes.name > a.attributes.name
+                ? -1
+                : 0
+        )
+    )
 
     const getEntityStatusIcon = (
         type: String,

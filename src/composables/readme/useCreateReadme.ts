@@ -22,12 +22,7 @@ export default function useUpdateReadme(selectedAsset, readmeContent) {
     })
     const createReadme = () => {
         const { data, error, isLoading } = Entity.EntityUpdate(body, {})
-        watch(data, () => {
-            selectedAsset.value.attributes.readme = {
-                ...data.value.mutatedEntities.CREATE[0],
-            }
-            message.success('Readme saved!')
-        })
+
         return { data, error, isLoading }
     }
     return {

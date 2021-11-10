@@ -37,13 +37,19 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             ...activeInlineTabCopy.playground.editor.variables[index],
             value: variable.value,
             name: variable.name,
-            type: variable.type 
+            type: variable.type,
+            options: variable.options,
+            allowMultiple: variable.allowMultiple,
+            dummy: variable.dummy
         }
         activeInlineTabCopy.playground.editor.savedVariables[savedIndex] = {
             ...activeInlineTabCopy.playground.editor.savedVariables[savedIndex],
             value: variable.value,
             name: variable.name,
-            type: variable.type 
+            type: variable.type,
+            options: variable.options,
+            allowMultiple: variable.allowMultiple,
+            dummy: variable.dummy
         }
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
 
@@ -95,6 +101,9 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             key,
             type: 'string',
             value: '',
+            options: [],
+            allowMultiple: false,
+            dummy: ''
         }
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign({}, activeInlineTab.value);
         //check if variable is present in cache
@@ -109,6 +118,9 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                     key,
                     type: 'string',
                     value: '',
+                    options: [],
+                    allowMultiple: false,
+                    dummy: ''
                 }
                 activeInlineTabCopy.playground.editor.variables = [...activeInlineTabCopy.playground.editor.variables, variable]
                 activeInlineTabCopy.playground.editor.savedVariables = [...activeInlineTabCopy.playground.editor.savedVariables, variable]
@@ -224,6 +236,9 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                             key: generateUUID(),
                             type: 'string',
                             value: '',
+                            options: [],
+                            allowMultiple: false,
+                            dummy: ''
                         }
                         newSqlVariables.push(new_variable)
                     }
@@ -265,6 +280,9 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                     key,
                     type: 'string',
                     value: '',
+                    options: [],
+                    allowMultiple: false,
+                    dummy: ''
                 }
                 data.push(new_variable)
             }

@@ -16,13 +16,13 @@
     } from 'vue'
     import { useHead } from '@vueuse/head'
     import InsightsComponent from '~/components/insights/index.vue'
-    import AssetDiscovery from '@/assets/index.vue'
+    // import AssetDiscovery from '@/assets/index.vue'
     import { useRoute } from 'vue-router'
     import { Insights as InsightsAPI } from '~/services/meta/insights'
     import { message } from 'ant-design-vue'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
     import useQueryFolderNamespace from '~/components/insights/explorers/queries/composables/useQueryFolderNamespace'
-    import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
+    // import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
     export default defineComponent({
         name: 'Insights Page',
         components: { InsightsComponent },
@@ -76,47 +76,48 @@
             provide('permissions', permissions)
             /* --------------------- */
             console.log(savedQueryGuidFromURL.value)
-            // const fetchAndPassSavedQueryInfo = () => {
-            //     const { data, error, isLoading } = InsightsAPI.GetSavedQuery(
-            //         savedQueryGuidFromURL.value as string
-            //     )
-            //     watch([data, error, isLoading], () => {
-            //         if (isLoading.value == false) {
-            //             isSavedQueryInfoLoaded.value = false
-            //             if (error.value === undefined) {
-            //                 isSavedQueryInfoLoaded.value = false
-            //                 savedQueryInfo.value = data.value.entity
-            //             } else {
-            //                 message.error({
-            //                     content: `Error in loading this query!`,
-            //                 })
-            //             }
-            //         }
-            //     })
-            // }
-            // const fetchQueryFolderNamespace = () => {
-            //     const { data, error, isLoading } = getQueryFolderNamespace()
-            //     watch([data, error, isLoading], () => {
-            //         if (isLoading.value == false) {
-            //             if (error.value === undefined) {
-            //                 if (
-            //                     data.value?.entities &&
-            //                     data.value?.entities?.length > 0
-            //                 ) {
-            //                     queryFolderNamespace.value =
-            //                         data.value.entities[0]
-            //                 }
-            //             } else {
-            //                 message.error({
-            //                     content: `Error in fetching root Info`,
-            //                 })
-            //             }
-            //         }
-            //     })
-            // }
+            const fetchAndPassSavedQueryInfo = () => {
+                const { data, error, isLoading } = InsightsAPI.GetSavedQuery(
+                    savedQueryGuidFromURL.value as string,
+                    {}
+                )
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value == false) {
+                        isSavedQueryInfoLoaded.value = false
+                        if (error.value === undefined) {
+                            isSavedQueryInfoLoaded.value = false
+                            savedQueryInfo.value = data.value.entity
+                        } else {
+                            message.error({
+                                content: `Error in loading this query!`,
+                            })
+                        }
+                    }
+                })
+            }
+            const fetchQueryFolderNamespace = () => {
+                const { data, error, isLoading } = getQueryFolderNamespace()
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value == false) {
+                        if (error.value === undefined) {
+                            if (
+                                data.value?.entities &&
+                                data.value?.entities?.length > 0
+                            ) {
+                                queryFolderNamespace.value =
+                                    data.value.entities[0]
+                            }
+                        } else {
+                            message.error({
+                                content: `Error in fetching root Info`,
+                            })
+                        }
+                    }
+                })
+            }
             onMounted(() => {
-                // fetchQueryFolderNamespace()
-                // if (savedQueryGuidFromURL.value) fetchAndPassSavedQueryInfo()
+                fetchQueryFolderNamespace()
+                if (savedQueryGuidFromURL.value) fetchAndPassSavedQueryInfo()
             })
         },
     })

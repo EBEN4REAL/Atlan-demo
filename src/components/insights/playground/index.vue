@@ -6,7 +6,7 @@
         "
     >
         <div class="relative flex flex-col">
-            <div class="flex w-full bg-gray-light text-gray">
+            <div class="flex w-full text-gray">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
                     :class="$style.inline_tabs"
@@ -248,6 +248,7 @@
                     parentGuid: '',
                     parentQualifiedName: '',
                     isSQLSnippet: false,
+                    savedQueryParentFolderTitle: undefined,
                     explorer: {
                         schema: {
                             connectors: {
@@ -527,11 +528,19 @@
                 visibility: hidden;
                 transition: none !important;
             }
+            .ant-tabs-tab-remove .anticon {
+                visibility: hidden;
+                transition: none !important;
+            }
             &:hover {
                 .unsaved-dot {
                     visibility: hidden;
                 }
                 .ant-tabs-close-x {
+                    visibility: visible !important;
+                }
+
+                .ant-tabs-tab-remove .anticon {
                     visibility: visible !important;
                 }
             }

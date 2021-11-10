@@ -47,7 +47,7 @@ TR
             </div>
             <div
                 :data-test-id="'noData'"
-                v-else-if="!treeData.length"
+                v-else-if="!treeData.length && showEmptyState"
                 class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
                 <div class="flex flex-col items-center justify-center">
@@ -103,6 +103,8 @@ TR
         Ref,
         toRefs,
         ComputedRef,
+        ref,
+        watch,
     } from 'vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
@@ -175,6 +177,9 @@ TR
                 required: true,
                 default: () => [],
             },
+            showEmptyState: {
+                type: Boolean,
+            },
         },
         setup(props, { emit }) {
             const { savedQueryType } = toRefs(props)
@@ -204,6 +209,7 @@ TR
             const toggleCreateQueryModal = () => {
                 emit('toggleCreateQueryModal')
             }
+
             const createFolderInput = () => {
                 emit('createFolderInput')
             }
@@ -215,7 +221,6 @@ TR
                 StatusList,
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
-
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

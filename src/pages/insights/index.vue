@@ -1,5 +1,6 @@
 <template>
-    <Insights />
+    <InsightsComponent />
+    <div></div>
 </template>
 
 <script lang="ts">
@@ -14,16 +15,17 @@
         onMounted,
     } from 'vue'
     import { useHead } from '@vueuse/head'
-    import Insights from '~/components/insights/index.vue'
+    import InsightsComponent from '~/components/insights/index.vue'
+    // import AssetDiscovery from '@/assets/index.vue'
     import { useRoute } from 'vue-router'
     import { Insights as InsightsAPI } from '~/services/meta/insights'
     import { message } from 'ant-design-vue'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
     import useQueryFolderNamespace from '~/components/insights/explorers/queries/composables/useQueryFolderNamespace'
-    import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
+    // import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
     export default defineComponent({
         name: 'Insights Page',
-        components: { Insights },
+        components: { InsightsComponent },
         props: {},
         setup(props) {
             useHead({
@@ -33,8 +35,7 @@
             const { getQueryFolderNamespace } = useQueryFolderNamespace()
             const savedQueryGuidFromURL = ref(route.query?.id)
             const isSavedQueryInfoLoaded = ref(true)
-            const queryFolderNamespace: Ref<QueryFolderNamespaceInterface> =
-                ref()
+            const queryFolderNamespace: Ref<any> = ref()
             const savedQueryInfo = ref(undefined) as unknown as Ref<
                 SavedQuery | undefined
             >

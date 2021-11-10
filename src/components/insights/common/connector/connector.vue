@@ -14,7 +14,7 @@
             :data-test-id="'conector'"
             @select="selectNode"
         >
-            <template #title="node">
+            <!-- <template #title="node">
                 <div class="flex items-center" v-if="node?.img">
                     <img :src="node.img" class="w-auto h-3 mr-2" />
                     <span class="">{{
@@ -28,19 +28,19 @@
                     />
                     <span class="">{{ node.name }}</span>
                 </div>
-            </template>
+            </template> -->
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
-        <!-- <AssetDropdown
+        <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
             :filter="data"
             @change="handleChange"
             @label-change="setPlaceholder($event, 'asset')"
-        ></AssetDropdown> -->
+        ></AssetDropdown>
     </div>
 </template>
 
@@ -59,7 +59,7 @@
     import { List } from '~/constant/status'
     // import { Collapse } from '~/types'
     import { useConnectionStore } from '~/store/connection'
-    // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     // import Button from '~/components/common/radio/button.vue'
 
@@ -84,7 +84,7 @@
             },
         },
         components: {
-            // AssetDropdown,
+            AssetDropdown,
             // Button,
         },
         emits: ['change', 'update:data'],
@@ -167,6 +167,9 @@
                                 name:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,
+                                title:
+                                    connection.attributes.name ||
+                                    connection.attributes.qualifiedName,
                                 value: connection.attributes.qualifiedName,
                                 connector: getConnectorName(
                                     connection?.attributes
@@ -175,9 +178,6 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
-                                slots: {
-                                    title: 'title',
-                                },
                             }
                         }
                     })
@@ -188,13 +188,11 @@
                 data.forEach((item: any) => {
                     let treeNodeObj = {
                         value: item.id,
+                        title: item.id,
                         key: item.id,
                         img: item.image,
                         connector: item.id,
                         connection: undefined,
-                        slots: {
-                            title: 'title',
-                        },
                         children: transformConnectionsToTree(item.id),
                     }
                     tree.push(treeNodeObj)
@@ -267,7 +265,8 @@
             const selectNode = (value, node?: any) => {
                 /* Checking if isLeafNodeSelectable by default it is selectable */
 
-                if (node?.children.length > 0 && !isLeafNodeSelectable.value) {
+                console.log('node: ', node)
+                if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {
                     expandNode([], node)
                     return
                 }

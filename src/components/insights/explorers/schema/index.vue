@@ -91,7 +91,7 @@
         setup(props, { emit }) {
             const { qualifiedName } = useAssetInfo()
             const storeDiscovery = useDiscoveryStore()
-            const { selectedAsset } = storeToRefs(storeDiscovery)
+            const { selectedAsset } = ref()
             const isSchemaInitialized = ref(true)
             const { getFirstQueryConnection } = useUtils()
             const tables: tableInterface[] = tablesData

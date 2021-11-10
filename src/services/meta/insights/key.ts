@@ -8,7 +8,6 @@ export const UPDATE_SAVED_QUERY = 'UPDATE_SAVED_QUERY'
 export const DELETE_ENTITY = 'DELETE_ENTITY'
 
 export const map = {
-    
     [BASIC_SEARCH]: () => getAPIPath('meta', '/search/basic'),
     [CREATE_SAVED_QUERY]: () => getAPIPath('meta', '/entity'),
     [CREATE_QUERY_FOLDER]: () => getAPIPath('meta', '/entity'),

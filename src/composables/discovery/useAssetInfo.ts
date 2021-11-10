@@ -22,7 +22,6 @@ import { useAuthStore } from '~/store/auth'
 
 export default function useAssetInfo() {
     const connectionStore = useConnectionStore()
-    const authStore = useAuthStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
     const anchorAttributes = (asset: Term | Category) =>
@@ -644,6 +643,7 @@ export default function useAssetInfo() {
     return {
         title,
         getConnectorImage,
+        getConnectorName,
         connectionName,
         assetType,
         databaseName,
@@ -654,7 +654,6 @@ export default function useAssetInfo() {
         dataType,
         dataTypeCategoryLabel,
         dataTypeCategoryImage,
-
         isPrimary,
         isPartition,
         isDist,
@@ -663,11 +662,8 @@ export default function useAssetInfo() {
         classifications,
         meanings,
         meaningRelationships,
-
         createdBy,
-
         logo,
-
         rowCount,
         links,
         columnCount,
@@ -675,7 +671,6 @@ export default function useAssetInfo() {
         getPreviewTabs,
         getProfileTabs,
         selectedAsset,
-
         sourceUpdatedAt,
         sourceCreatedAt,
         sourceCreatedBy,
@@ -684,33 +679,26 @@ export default function useAssetInfo() {
         certificateUpdatedAt,
         certificateStatusMessage,
         certificateUpdatedBy,
-
         announcementTitle,
         announcementMessage,
         announcementType,
         announcementUpdatedAt,
         announcementUpdatedBy,
-
         ownerGroups,
         ownerUsers,
         modifiedAt,
         modifiedBy,
         createdAt,
-
         getHierarchy,
-
         getTableauHierarchy,
-
         qualifiedName,
         getAnchorName,
         connectionQualifiedName,
         getConnectorImageMap,
         anchorAttributes,
         readmeGuid,
-
-        getConnectorName,
         getConnectorsNameFromQualifiedName,
         dataTypeImage,
-        dataTypeImageForColumn
+        dataTypeImageForColumn,
     }
 }

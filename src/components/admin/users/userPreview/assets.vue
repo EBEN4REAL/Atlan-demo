@@ -3,37 +3,41 @@
         <div class="mb-2 text-base font-bold text-gray-500">Assets Owned</div>
         <div class="flex flex-col h-full border rounded-lg">
             <!-- <AssetsWrapper :dataMap="ownerFilter" /> -->
+            <AssetsWrapper
+                :initial-filters="ownerFilter"
+                :show-filters="false"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
-    // import AssetsWrapper from '@common/assets/index.vue'
+    import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetsTabs',
         components: {
-            // AssetsWrapper,
+            AssetsWrapper,
         },
         props: {
             selectedUser: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
             selectedGroup: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
         setup(props) {
             const { selectedUser, selectedGroup } = toRefs(props)
             const ownerFilter = computed(() => ({
                 owners: {
-                    userValue: selectedUser.value.username
+                    userValue: selectedUser.value?.username
                         ? [selectedUser.value.username]
                         : [],
-                    groupValue: selectedGroup.value.name
+                    groupValue: selectedGroup.value?.name
                         ? [selectedGroup.value.name]
                         : [],
                 },

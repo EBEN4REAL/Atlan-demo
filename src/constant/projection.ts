@@ -28,19 +28,6 @@ export const InternalAttributes = [
     '__labels',
     'anchor',
 ]
-export const SavedQueryAttributes = [
-    'connectionLastSyncedJob',
-    'qualifiedName',
-    'connectionName',
-    'isDiscoverable',
-    'alias',
-    'rawQuery',
-    'compiledQuery',
-    'connectionId',
-    'isPrivate',
-    'variablesSchemaBase64',
-    'isSnippet',
-]
 
 export const AssetAttributes = [
     'name',

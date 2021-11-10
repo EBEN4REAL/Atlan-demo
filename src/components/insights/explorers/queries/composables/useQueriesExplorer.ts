@@ -1,8 +1,14 @@
 import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
-import { Attributes,  Query, BasicSearchResponse } from '~/types/insights/savedQuery.interface
-import { Components } from '~/api/atlas/client'
+// import { Attributes,  BasicSearchResponse } from '~/types/insights/savedQuery.interface'
+import { Attributes } from '~/types/insights/savedQuery.interface'
+
+import {
+    BasicSearchResponse,
+} from '~/types/common/atlasSearch.interface'
+
+import { Components } from '~/types/atlas/client'
 
 import store from '~/utils/storage'
 

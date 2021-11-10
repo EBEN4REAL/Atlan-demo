@@ -6,11 +6,11 @@
             style="max-height: 101%"
         >
             <table ref="tableRef" :data-test-id="'output-table'">
-                <!-- <slot name="header" /> -->
-                <thead>
+                <slot name="header" />
+                <!-- <thead>
                     <tr>
                         <th
-                            class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border border-gray-light"
                             style="z-index: 4"
                         >
                             #
@@ -20,14 +20,14 @@
                         <th
                             v-for="(col, index) in columnsData"
                             :key="index"
-                            class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                            class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border border-gray-light"
                             style="z-index: 3"
                         >
                             {{ col.title }}
                             <span class="resize-handle"></span>
                         </th>
                     </tr>
-                </thead>
+                </thead> -->
                 <tbody id="contentArea" class="clusterize-content"></tbody>
             </table>
         </div>

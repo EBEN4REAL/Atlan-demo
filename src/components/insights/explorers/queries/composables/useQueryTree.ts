@@ -11,7 +11,7 @@ import {
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
 
-import { Components } from '~/api/atlas/client'
+import { Components } from '~/types/atlas/client'
 
 import store from '~/utils/storage'
 

@@ -14,9 +14,7 @@
             <div class="flex w-full h-full bg-white">
                 <div class="flex-1 border-r border-gray-300 item-stretch">
                     <div class="flex h-full">
-                        <!-- <KeepAlive> -->
-                        <router-view />
-                        <!-- </KeepAlive> -->
+                        <router-view :selected-glossary="selectedGlossary" />
                     </div>
                 </div>
 
@@ -42,6 +40,7 @@
 
     // composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         components: {
@@ -54,10 +53,10 @@
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
 
-            const { selectedAsset } = useAssetInfo()
+            const { selectedGlossary } = useGlossaryData()
             return {
                 isItem,
-                selectedAsset,
+                selectedGlossary,
             }
         },
     })

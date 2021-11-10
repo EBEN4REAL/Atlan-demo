@@ -2,6 +2,7 @@
     <div
         class="flex flex-col px-6 py-4 bg-white border border-gray-100 rounded"
     >
+        {{ selectedAsset }}
         <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <AtlanIcon icon="Readme" class="w-auto h-6 mr-3" /><span
@@ -94,10 +95,14 @@
                 required: false,
                 default: true,
             },
+            selectedAsset: {
+                required: false,
+            },
         },
         setup(props) {
+            const { selectedAsset } = toRefs(props)
             const actions = inject('actions')
-            const selectedAsset = inject('selectedAsset')
+
             const { readmeGuid } = useAssetInfo()
 
             const guid = computed(() => {
@@ -127,7 +132,7 @@
             })
 
             watch(list, () => {
-                if (list.value.length > 0) {
+                if (list?.value?.length > 0) {
                     readme.value = list.value[0]
                     console.log(description(readme?.value))
                     content.value = description(readme?.value)
@@ -159,13 +164,13 @@
             const entity = ref({
                 typeName: 'Readme',
                 attributes: {
-                    qualifiedName: `${selectedAsset.value.guid}/readme`,
+                    qualifiedName: `${selectedAsset?.value?.guid}/readme`,
                     name: `Readme`,
                 },
                 relationshipAttributes: {
                     asset: {
-                        guid: selectedAsset.value?.guid,
-                        typeName: selectedAsset.value?.typeName,
+                        guid: selectedAsset?.value?.guid,
+                        typeName: selectedAsset?.value?.typeName,
                     },
                 },
             })

@@ -6,6 +6,7 @@
         :load-data="onLoadData"
         :loadedKeys="loadedKeys"
         :treeDataSimpleMode="true"
+        @select="handleSelect"
         class="pl-3 bg-transparent"
         :auto-expand-parent="false"
     >
@@ -25,6 +26,7 @@
     import GlossaryTreeItem2 from '@/glossary/tree/glossaryTreeItem2.vue'
 
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         components: {
@@ -37,15 +39,23 @@
                 default: () => [],
             },
         },
+        emits: ['select'],
         setup(props, { emit }) {
             const { list } = toRefs(props)
 
+            const router = useRouter()
+
             const { onLoadData, loadedKeys } = useGlossaryTree({})
+
+            const handleSelect = (node, e) => {
+                emit('select', e.node.dataRef)
+            }
 
             return {
                 list,
                 onLoadData,
                 loadedKeys,
+                handleSelect,
             }
             // data
         },

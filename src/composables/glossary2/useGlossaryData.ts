@@ -25,6 +25,10 @@ export default function useGlossaryData() {
         )
     )
 
+    const handleSelectedGlossary = (item) => {
+        glossaryStore.setSelectedGlossary(item)
+    }
+
     const getEntityStatusIcon = (
         type: String,
         certificateStatus: String
@@ -74,11 +78,17 @@ export default function useGlossaryData() {
         })
     }
 
+    const selectedGlossary = computed(() => {
+        return glossaryStore.selectedGlossary
+    })
+
     return {
         glossaryList,
         list: glossaryStore.list,
         getGlossary,
         getEntityStatusIcon,
         initTree,
+        handleSelectedGlossary,
+        selectedGlossary,
     }
 }

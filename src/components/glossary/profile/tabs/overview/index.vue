@@ -2,6 +2,7 @@
     <div class="flex flex-col p-6 gap-y-4">
         <AnnouncementWidget :selectedAsset="selectedAsset"></AnnouncementWidget>
         <Readme :selectedAsset="selectedAsset" />
+
         <Resources :asset="selectedAsset" />
     </div>
 </template>
@@ -14,6 +15,7 @@
     import Readme from '@/common/widgets/readme/index.vue'
     import Resources from '@common/resources/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { toRefs } from 'vue'
 
     export default defineComponent({
         name: 'Overview',
@@ -24,10 +26,12 @@
                 required: false,
             },
         },
-        setup() {
+        setup(props) {
             const { readmeGuid } = useAssetInfo()
 
-            return { readmeGuid }
+            const { selectedAsset } = toRefs(props)
+
+            return { readmeGuid, selectedAsset }
         },
     })
 </script>

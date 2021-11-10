@@ -1,6 +1,6 @@
 <template>
     <div class="w-full h-full">
-        <!-- <SchemaTree
+        <SchemaTree
             v-if="treeData.length > 0"
             :tree-data="treeData"
             :checkable="true"
@@ -14,7 +14,7 @@
             v-model:checkedKeys="checkedKeys"
             :checkStrictly="true"
             :hoverActions="false"
-        /> -->
+        />
         <div
             class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500 "
         >
@@ -27,16 +27,16 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
-    // import SchemaTree from '@/insights/explorers/schema/schemaTree.vue'
+    import SchemaTree from '@/insights/explorers/schema/schemaTree.vue'
 
-    // import useSchemaExplorerTree from '@/insights/explorers/schema/composables/useSchemaExplorerTree'
+    import useSchemaExplorerTree from '@/insights/explorers/schema/composables/useSchemaExplorerTree'
 
     export default defineComponent({
         name: 'AssetBrowserTree',
         components: {
             AtlanBtn,
 
-            // SchemaTree
+            SchemaTree,
         },
         props: {
             connectionQfName: {
@@ -61,32 +61,32 @@
                 },
             })
 
-            // const {
-            //     treeData,
-            //     loadedKeys,
-            //     isInitingTree,
-            //     selectedKeys,
-            //     expandedKeys,
-            //     onLoadData,
-            //     expandNode,
-            //     selectNode,
-            // } = useSchemaExplorerTree({
-            //     emit,
-            //     // initSelectedKeys,
-            //     connectionQualifiedName,
-            //     // databaseQualifiedName,
-            //     // schemaQualifiedName,
-            // })
+            const {
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
+            } = useSchemaExplorerTree({
+                emit,
+                // initSelectedKeys,
+                connectionQualifiedName,
+                // databaseQualifiedName,
+                // schemaQualifiedName,
+            })
 
             return {
-                // treeData,
-                // loadedKeys,
-                // isInitingTree,
-                // selectedKeys,
-                // expandedKeys,
-                // onLoadData,
-                // expandNode,
-                // selectNode,
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
                 checkedKeys,
             }
         },

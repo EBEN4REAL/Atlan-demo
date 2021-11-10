@@ -2,47 +2,53 @@ import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { getFormattedGroup } from '~/composables/group/formatGroup'
 // import { IGroup } from '~/services/heracles/apis/groups'
 import { IPersona, IGroup } from '~/types/accessPolicies/personas'
-import fetchGroupList from '~/composables/group/fetchGroupList'
+import useGroups from '~/composables/group/useGroups'
 
 function usePersonaGroupList(persona: Ref<IPersona>) {
-    const {
-        list: data,
-        error: groupListError,
-        mutate,
-        STATES,
-        state,
-    } = fetchGroupList()
+    const params = ref(new URLSearchParams())
+    // this is needed as there are multiple keys with the same param name
+    params.value.append('limit', '20')
+    params.value.append('sort', 'name')
+    params.value.append('columns', 'name')
+    params.value.append('columns', 'user_count')
+    params.value.append('columns', 'id')
+    params.value.append('columns', 'attributes')
 
-    const list: ComputedRef<IGroup[]> = computed(() =>
-        data.value.map((grp) => getFormattedGroup(grp))
-    )
+    const {
+        groupList: data,
+        getGroupList,
+        state,
+        STATES,
+    } = useGroups(params.value)
 
     watch(
         () => persona.value.id,
-        () => mutate()
+        () => getGroupList()
     )
     const groupList: Ref<IGroup[]> = ref([])
     watch(
         data,
         () => {
+            // console.log(data.value, 'data edit first')
             groupList.value = []
             persona.value.groups?.forEach((grpname) => {
-                list.value.forEach((t) => {
+                data.value.forEach((t) => {
                     if (t.alias === grpname) {
                         groupList.value.push(t)
                     }
                 })
             })
+            // console.log(data.value, 'data edit end')
         },
         { immediate: true }
     )
 
     return {
-        getGroupsList: mutate,
+        list: data,
+        getGroupList,
         state,
         STATES,
         groupList,
-        groupListError,
     }
 }
 

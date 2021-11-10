@@ -17,7 +17,7 @@
         </template>
         <template #sidebar>
             <SearchAndFilter
-                v-model:value="searchTerm"
+                v-model:modelValue="searchTerm"
                 placeholder="Search for personas"
                 class="mx-4 mt-6 mb-4 bg-white"
                 :autofocus="true"

@@ -21,12 +21,13 @@ export const selectedPersona = computed(() => {
 // Filtered Persona List
 export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
-    if (searchTerm.value)
+    if (searchTerm.value) {
         return personaList.value.filter((ps) =>
             ps
                 .displayName!.toLowerCase()
                 .includes(searchTerm.value.toLowerCase())
         )
+    }
     return personaList.value
 })
 

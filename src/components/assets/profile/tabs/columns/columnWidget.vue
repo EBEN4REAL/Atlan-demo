@@ -154,7 +154,7 @@
     // import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     // Composables
-    import { images, dataTypeCategoryList } from '~/constant/datatype'
+    import { images, dataTypeCategoryList } from '~/constant/dataType'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     // import {
     //     useColumnsList,
@@ -458,10 +458,12 @@
                 // isLoading,
                 // loadMore,
                 // handleFilterChange,
+                isLoadMore,
                 dataTypeCategoryList,
                 handleCloseColumnSidebar,
                 propagateToColumnList,
                 clearAllFilters,
+                isLoading,
                 columnsList,
                 selectedRow,
                 columnsData,
@@ -532,13 +534,5 @@
     }
     :global(.ant-progress-inner) {
         background-color: rgba(189, 205, 244, 0.53) !important;
-    }
-
-    .chip {
-        @apply px-1  mr-1;
-        @apply rounded;
-        @apply flex;
-        @apply items-center;
-        @apply text-xs;
     }
 </style>

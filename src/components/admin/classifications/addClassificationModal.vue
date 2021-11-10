@@ -32,17 +32,19 @@
                 >
             </div>
         </a-form>
-        <!-- <p v-if="createErrorText" class="mt-4 mb-0 text-sm text-red-500">
+        <p v-if="createErrorText" class="mt-4 mb-0 text-sm text-red-500">
             {{ createErrorText }}
-        </p> -->
+        </p>
     </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, reactive, UnwrapRef, ref, PropType, toRefs } from 'vue'
+    import { defineComponent, reactive, watch, ref, PropType, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
+    import useCreateTypedefs from '~/composables/typedefs/useCreateTypedefs'
 
     export default defineComponent({
         name: 'AddClassificationModal',
@@ -62,6 +64,8 @@
         setup(props, { emit }) {
             const { classification: selectedClassification } = toRefs(props)
             const { modalVisible } = useVModels(props, emit)
+            const createClassificationFormRef = ref()
+            const createErrorText = ref('')
             const formState = reactive({
                 name: '',
                 description: '',
@@ -70,6 +74,7 @@
             const closeModal = () => {
                 modalVisible.value = false
                 formState.name = '';
+                formState.description = '';
             }
 
             const urlValidationRegex = new RegExp(
@@ -90,12 +95,38 @@
                 ],
             }
 
+            const createClassification = () => {
+                createClassificationFormRef.value.validate()
+                    .then(() => {
+                        const { data, error, isLoading }  = useCreateTypedefs({
+                            classificationDefs: [
+                                {
+                                    attributeDefs: [],
+                                    displayName: formState.name,
+                                    description: formState.description,
+                                    superTypes: []
+                                }
+                            ]
+                        })
+
+                        watch(data, () => {
+                            closeModal()
+                        })
+                        watch(error, (newError) => {
+                            createErrorText.value = newError
+                        })
+                    })
+            }
+
             return {
                 selectedClassification,
                 modalVisible,
                 closeModal,
                 rules,
-                formState
+                formState,
+                createClassificationFormRef,
+                createClassification,
+                createErrorText
             }
         },
     })

@@ -14,7 +14,7 @@
             :data-test-id="'conector'"
             @select="selectNode"
         >
-            <template #title="node">
+            <!-- <template #title="node">
                 <div class="flex items-center" v-if="node?.img">
                     <img :src="node.img" class="w-auto h-3 mr-2" />
                     <span class="">{{
@@ -28,7 +28,7 @@
                     />
                     <span class="">{{ node.name }}</span>
                 </div>
-            </template>
+            </template> -->
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />

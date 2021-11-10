@@ -52,7 +52,7 @@
         <div
             class="mt-3 border-0"
             style="min-height: 200px"
-            v-else-if="(guid && !isLoading) || isEditMode"
+            v-else-if="(guid && !isLoading) || isEditMode || readme.guid"
         >
             <Editor ref="editor" :isEditMode="isEditMode" v-model="content" />
         </div>
@@ -150,6 +150,8 @@
 
             const handleCancel = () => {
                 if (editor.value) {
+                    console.log(readme.value)
+                    console.log(description(readme.value))
                     editor.value.resetEditor(description(readme?.value))
                 }
                 isEditMode.value = false
@@ -180,9 +182,15 @@
             } = updateAsset(body)
 
             watch(data, () => {
-                if (data.value?.mutatedEntities?.UPDATE?.length > 0) {
+                if (data.value?.mutatedEntities?.CREATE?.length > 0) {
+                    readme.value = data.value?.mutatedEntities?.CREATE[0]
+                    selectedAsset.value.readme = {
+                        guid: readme.value?.guid,
+                    }
+                    handleCancel()
+                } else if (data.value?.mutatedEntities?.UPDATE?.length > 0) {
                     readme.value.attributes.description =
-                        data.value?.mutatedEntities?.UPDATE[0].attributes.description
+                        data.value?.mutatedEntities?.UPDATE[0].attributes?.description
                     isEditMode.value = false
                 } else {
                     isEditMode.value = false

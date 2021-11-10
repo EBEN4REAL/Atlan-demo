@@ -13,7 +13,7 @@ const ListUserGroups = (params: any, id: string, options?: useOptions) =>
 
 const GetUserSessions = (id: string, params?: any, options?: useOptions) =>
     useAPI(
-        map.LIST_USERS,
+        map.GET_USER_SESSIONS,
         'GET',
         { params, pathVariables: { id } },
         options || {}

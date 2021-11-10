@@ -27,7 +27,7 @@
     </div>
     <div v-else class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
         >
             <WorkflowFilters
                 :ref="
@@ -39,7 +39,7 @@
                 :filters-list="defaultfiltersList"
                 @refresh="handleFilterChange"
                 @initialize="handleFilterInit"
-            ></WorkflowFilters>
+            />
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
@@ -90,7 +90,7 @@
                     :creator-details="creatorDetails"
                     @preview="handlePreview"
                     @loadMore="loadMore"
-                ></WorkflowList>
+                />
             </div>
         </div>
 
@@ -204,7 +204,6 @@
             )
 
             watch(error, (v) => {
-                console.log('error', v)
                 const errMsg = v?.response?.data?.message
 
                 message.error({
@@ -241,9 +240,6 @@
             const isFilterAppplied = ref(false)
 
             const shootQuery = () => {
-                // console.log(filters.value)
-                console.log({ ...AllFilters.value.facetsFilters })
-                console.log('filters', transformToFilters(AllFilters.value))
                 const filters = transformToFilters(AllFilters.value)
                 //! check if filter is user specific applied check to show empty state
                 const filterCopy = filters?.filter
@@ -260,7 +256,6 @@
             }, 600)
 
             const handleChangeSort = (payload: any) => {
-                console.log(payload)
                 AllFilters.value.sortOrder = payload
                 isAggregate.value = true
                 shootQuery()
@@ -270,7 +265,6 @@
                 payload: any,
                 filterMapData: Record<string, Components.Schemas.FilterCriteria>
             ) => {
-                // console.log(payload, filterMapData)
                 AllFilters.value.facetsFilters = filterMapData
                 filters.value = payload
                 offset.value = 0

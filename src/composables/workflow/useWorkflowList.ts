@@ -26,7 +26,6 @@ export function useWorkflowSearchList(immediate: boolean = true) {
 
     watch(data, () => {
         if (!data?.value?.records) return
-        // console.log('useWorkflowSearchList', data.value.records)
         const filtered = data.value.records.map((el) => ({
             id: el?.labels['workflows.argoproj.io/creator'],
             email_verified: true,
@@ -44,15 +43,11 @@ export function useWorkflowSearchList(immediate: boolean = true) {
             offset.value = totalCount.value
             params.value.set('offset', offset.value.toString())
         }
-        // console.log(offset.value);
         mutate()
     }
 
     const filterList = (AllFilters) => {
-        console.log('Tranformed: ', AllFilters)
-
         const { filter, sort } = AllFilters
-
         // rest list
         workflowList.value = []
         // reset offset
@@ -206,7 +201,6 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
     const filter_record = ref()
     watch(data, () => {
         if (!data?.value?.records) return
-        console.log('useWorkflowConfigMaps', data.value.records)
         totalCount.value = data.value.total_record
         filter_record.value = data.value.filter_record
         workflowList.value.push(...data.value.records)
@@ -220,7 +214,6 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
     }
 
     const filterList = (AllFilters) => {
-        console.log('Tranformed: ', AllFilters)
 
         const { filter, sort } = AllFilters
 
@@ -290,7 +283,6 @@ export function useWorkflowTemplates(immediate: boolean = true) {
     const filter_record = ref()
     watch(data, () => {
         if (!data?.value?.records) return
-        console.log('useWorkflowTemplates', data.value.records)
         totalCount.value = data.value.total_record
         filter_record.value = data.value.filter_record
         workflowList.value.push(...data.value.records)
@@ -304,8 +296,6 @@ export function useWorkflowTemplates(immediate: boolean = true) {
     }
 
     const filterList = (AllFilters) => {
-        console.log('Tranformed: ', AllFilters)
-
         const { filter, sort } = AllFilters
 
         // rest list

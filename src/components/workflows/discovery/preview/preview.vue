@@ -34,7 +34,7 @@
                         :selected-workflow="selectedWorkflow"
                         :is-loaded="isLoaded"
                         @change="handleChange"
-                    ></component>
+                    />
                 </div>
             </a-tab-pane>
         </a-tabs>
@@ -168,6 +168,8 @@
         :global(.ant-tabs-tab) {
             height: 48px !important;
             width: 48px !important;
+            display: flex;
+            justify-content: center;
             @apply p-0 !important;
         }
 

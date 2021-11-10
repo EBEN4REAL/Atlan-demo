@@ -180,7 +180,7 @@ const getArchivedRunLogs = (id, { immediate, options, params }) =>
 
 export const Workflows = {
     URL,
-    List,
+    // List,
     retryRun,
     stopRun,
     getRunList,

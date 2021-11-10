@@ -30,6 +30,11 @@
                             SMTP
                         </a-menu-item>
                     </a-menu-item-group>
+                    <a-menu-item-group title="Governance">
+                        <a-menu-item key="requests" v-auth="[map.LIST_USERS]"
+                            >Requests</a-menu-item
+                        >
+                    </a-menu-item-group>
                 </a-menu>
             </div>
         </div>
@@ -52,6 +57,7 @@
             const route = useRoute()
 
             const handleClick = ({ key }) => {
+                console.log(key)
                 router.push(`/admin/${key}`)
             }
             const initialRoute = route.path.split('/').slice(-1)

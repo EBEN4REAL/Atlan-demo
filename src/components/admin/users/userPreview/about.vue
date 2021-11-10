@@ -1,5 +1,5 @@
 <template>
-    <div class="tab-content-wrapper">
+    <div class="px-4 py-2 tab-content-wrapper">
         <div class="mb-3 text-lg font-bold">User info</div>
         <div class="mb-3">
             <UpdateFirstName

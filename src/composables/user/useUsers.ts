@@ -1,4 +1,4 @@
-import { computed, Ref, ref, watch } from 'vue'
+import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 

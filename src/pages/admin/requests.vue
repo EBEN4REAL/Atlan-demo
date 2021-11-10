@@ -5,29 +5,15 @@
 <script lang="ts">
     import { defineComponent, watch } from 'vue'
     import { useHead } from '@vueuse/head'
-    import RequestList from '@/admin/requests/requestList.vue'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
-    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
-    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
-    import { Classification } from '~/api/atlas/classification'
-    import useAuth from '~/composables/auth/useAuth'
-
+    import RequestList from '~/components/admin/requests/index.vue'
+    // import Overview from '~/components/admin/overview/index.vue'
     export default defineComponent({
         components: { RequestList },
+        // components: { Overview },
         setup() {
             useHead({
                 title: 'Requests',
             })
-            const {
-                isClassificationInitializedInStore,
-                initializeClassificationsInStore,
-            } = useClassifications()
-            if (!isClassificationInitializedInStore()) {
-                initializeClassificationsInStore()
-            }
-
-            const { isAccess } = useAuth()
-            return { isAccess }
         },
     })
 </script>

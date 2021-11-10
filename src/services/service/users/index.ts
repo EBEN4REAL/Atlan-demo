@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { Ref } from 'vue'
+import { ref, Ref } from 'vue'
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 
@@ -13,7 +13,7 @@ const ListUserGroups = (params: any, id: string, options?: useOptions) =>
 
 const GetUserSessions = (id: string, params?: any, options?: useOptions) =>
     useAPI(
-        map.LIST_USERS,
+        map.GET_USER_SESSIONS,
         'GET',
         { params, pathVariables: { id } },
         options || {}
@@ -36,13 +36,14 @@ const SignOutSessionById = (id: string, options?: useOptions) =>
     )
 
 // Access Logs
-const GetUserAccessLogs = (id: string, params?: any, options?: any) =>
-    useAPI(
+const GetUserAccessLogs = (pathVariables, params?: any, options?: any) => {
+    return useAPI(
         map.GET_USER_ACCESS_LOGS,
         'GET',
-        { params, pathVariables: { id } },
+        { params, pathVariables },
         options || {}
     )
+}
 
 // User Actions
 const UpdateUser = (

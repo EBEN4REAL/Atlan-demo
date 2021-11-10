@@ -97,12 +97,17 @@
                 <a-menu-item
                     key="announcement"
                     :disabled="!editPermission"
-                    @click="handleAnnouncementModal"
-                >
-                    <div class="flex items-center">
-                        <AtlanIcon icon="Megaphone" />
-                        <span class="pl-2 text-sm">Add Announcement</span>
-                    </div></a-menu-item
+                    @click="closeMenu"
+                    ><AnnouncementModal :asset="asset"
+                        ><template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Megaphone" />
+                                <span class="pl-2 text-sm"
+                                    >Add Announcement</span
+                                >
+                            </div></template
+                        ></AnnouncementModal
+                    ></a-menu-item
                 >
                 <a-menu-item
                     key="archive"
@@ -119,14 +124,15 @@
 </template>
 <script lang="ts">
     import { defineComponent, ref, PropType, toRefs } from 'vue'
-    import { useRouter } from 'vue-router'
+
     // components
+    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import { assetInterface } from '~/types/assets/asset.interface'
     export default defineComponent({
-        components: {},
+        components: { AnnouncementModal },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -141,7 +147,7 @@
         setup(props, context) {
             // data
             const isVisible = ref(false)
-            const router = useRouter()
+
             const { asset } = toRefs(props)
             const closeMenu = () => {
                 isVisible.value = false
@@ -151,12 +157,11 @@
                 const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
                 copyToClipboard(text)
             }
-            function handleAnnouncementModal() {}
+
             return {
                 handleCopyProfileLink,
                 isVisible,
                 closeMenu,
-                handleAnnouncementModal,
             }
         },
     })

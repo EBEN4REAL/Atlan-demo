@@ -1,4 +1,4 @@
-import { Components } from '~/api/atlas/client'
+import { Components } from '~/types/atlas/client'
 
 export type BasicSearchResponse<T> = Omit<Components.Schemas.AtlasSearchResult, 'entities'> & {
     entities?: T[],

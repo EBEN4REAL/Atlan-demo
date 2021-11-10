@@ -1,6 +1,6 @@
 
 
-import { Components } from "~/api/atlas/client";
+import { Components } from "~/types/atlas/client";
 import { BaseAttributes } from "../asset";
 
 export interface GlossaryAttributes extends BaseAttributes {

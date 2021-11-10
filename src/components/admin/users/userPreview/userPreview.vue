@@ -79,7 +79,7 @@
                     </template>
                     <component
                         :is="tab.component"
-                        class="px-6 pt-3 overflow-auto"
+                        class="pt-3"
                         :class="$style.componentHeight"
                         :is-current-user="isCurrentUser"
                         :selected-user="selectedUser"
@@ -180,9 +180,6 @@
 </script>
 
 <style lang="less" module>
-    .componentHeight {
-        max-height: calc(100vh - 7rem) !important;
-    }
     .previewtab {
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0 !important;

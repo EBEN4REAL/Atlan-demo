@@ -17,6 +17,7 @@ export const useAPI = <T>(
     }: AsyncStateAPIParams<T>,
     { options, asyncOptions, cacheKey, cacheOptions }: useOptions
 ) => {
+    // Make sure to specify cacheKey as well as cacheOptions if you want to use SWRV otherwise this won't make the API call
     if (cacheOptions) {
         console.log('cache')
         const url = computed(() => resolveUrl(path, pathVariables))

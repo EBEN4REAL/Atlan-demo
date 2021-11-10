@@ -1,6 +1,6 @@
 import { ref, Ref } from 'vue'
 import { KeyMaps } from '../heka_keyMaps'
-import { useAPIAsyncState, useAPIPromise } from '~/services/api/useAPI'
+import { useAPIPromise } from '~/services/api/useAPIPromise'
 
 import {
     BasicSearchResponse,

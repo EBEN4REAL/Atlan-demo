@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, watch, Ref, PropType } from 'vue'
+    import { computed, defineComponent, ref, watch, toRefs, PropType } from 'vue'
     import EmptyView from '@common/empty/discover.vue'
     // import AssetPagination from '@common/pagination/index.vue'
 
@@ -155,6 +155,10 @@
                 type: Object as PropType<assetInterface>,
                 required: false,
             },
+            initialFilters: {
+                type: Object,
+                required: false
+            }
         },
         setup(props, { emit }) {
             const limit = ref(20)
@@ -177,9 +181,16 @@
             const relationAttributes = ref([...AssetRelationAttributes])
             const discoveryStore = useDiscoveryStore()
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-
+            const { initialFilters } = toRefs(props)
             if (discoveryStore.activeFacet) {
                 facets.value = discoveryStore.activeFacet
+            }
+
+            if(props.initialFilters) {
+                facets.value = {
+                    ...facets.value,
+                    ...initialFilters
+                }
             }
 
             if (!facets.value.typeName) {
@@ -249,6 +260,15 @@
                 quickChange()
             }
 
+            watch(initialFilters, (newInitialFilters) => {
+                if(newInitialFilters) {
+                    facets.value = {
+                        ...facets.value,
+                        ...newInitialFilters
+                    }
+                    quickChange()
+                }
+            })
             return {
                 handleFilterChange,
                 isLoading,

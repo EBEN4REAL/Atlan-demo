@@ -336,13 +336,15 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
 
-    import { Classification } from '~/services/meta/classifications'
+    // import { Classification } from '~/api/atlas/classification'
     import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
-    import { Insights } from '~/services/meta/insights'
+    import { Insights } from '~/services/sql/query'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+
+    // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { message } from 'ant-design-vue'
 
     export default defineComponent({
@@ -472,23 +474,23 @@
                     },
                 ])
 
-                const { error, isLoading } = Classification.linkClassification({
-                    cache: undefined,
-                    payload,
-                    entityGuid: props.item.guid,
-                })
+                // const { error, isLoading } = Classification.linkClassification({
+                //     cache: undefined,
+                //     payload,
+                //     entityGuid: props.item.guid,
+                // })
 
-                watch([isLoading], () => {
-                    if (isLoading.value == false && !error.value) {
-                        useAddEvent('insights', 'folder', 'space_changed', {
-                            finalSpace: 'public',
-                        })
-                        message.success({
-                            content: `${item.value?.attributes?.name} was made public!`,
-                        })
-                        refetchParentNode(props.item.guid, 'queryFolder')
-                    }
-                })
+                // watch([isLoading], () => {
+                //     if (isLoading.value == false && !error.value) {
+                //         useAddEvent('insights', 'folder', 'space_changed', {
+                //             finalSpace: 'public',
+                //         })
+                //         message.success({
+                //             content: `${item.value?.attributes?.name} was made public!`,
+                //         })
+                //         refetchParentNode(props.item.guid, 'queryFolder')
+                //     }
+                // })
             }
             const renameFolder = () => {
                 useAddEvent('insights', 'folder', 'renamed', undefined)

@@ -301,24 +301,24 @@ export default function useAssetInfo() {
     // const lastCrawled = (asset: assetInterface) =>
     //     useTimeAgo(attributes(asset)?.connectionLastSyncedAt).value
 
-    // const dataTypeImage = (asset: assetInterface) => {
-    //     const found = dataTypeList.find((d) =>
-    //         d.type.find(
-    //             (type) => type.toLowerCase() === dataType(asset)?.toLowerCase()
-    //         )
-    //     )
-    //     return found?.image
-    // }
+    const dataTypeImage = (asset: assetInterface) => {
+        const found = dataTypeCategoryList.find((d) =>
+            d.type.find(
+                (type) => type.toLowerCase() === dataType(asset)?.toLowerCase()
+            )
+        )
+        return found?.image
+    }
     // /* Use this when attributes are spread out like in child tree in insights */
-    // const dataTypeImageForColumn = (asset: any) => {
-    //     const found = dataTypeList.find((d) =>
-    //         d.type.find(
-    //             (type) => type.toLowerCase() === asset?.dataType?.toLowerCase()
-    //         )
-    //     )
-    //     console.log(found?.image, 'asset')
-    //     return found?.image
-    // }
+    const dataTypeImageForColumn = (asset: any) => {
+        const found = dataTypeCategoryList.find((d) =>
+            d.type.find(
+                (type) => type.toLowerCase() === asset?.dataType?.toLowerCase()
+            )
+        )
+        console.log(found?.image, 'asset')
+        return found?.image
+    }
 
     // const tableInfo = (asset: assetInterface) => attributes(asset)?.table
     // const popularityScore = (asset: assetInterface) =>
@@ -708,5 +708,10 @@ export default function useAssetInfo() {
         getConnectorImageMap,
         anchorAttributes,
         readmeGuid,
+
+        getConnectorName,
+        getConnectorsNameFromQualifiedName,
+        dataTypeImage,
+        dataTypeImageForColumn
     }
 }

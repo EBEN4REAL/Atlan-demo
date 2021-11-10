@@ -1,33 +1,32 @@
-import { KeyMaps } from './key'
+import { map} from './key'
 import { useAPI } from '~/services/api/useAPI'
 import { SavedQueryResponse } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
+import { useOptions } from '~/services/api/common'
 
-const CreateSavedQuery = (body: Record<string, any>) => {
-    const { data, error, isLoading } = useAPI<BasicSearchResponse<any>>(
-        KeyMaps.insights.CREATE_SAVED_QUERY,
+const CreateSavedQuery = (body: Record<string, any>, options: useOptions) => {
+    return useAPI<BasicSearchResponse<any>>(
+        map.CREATE_SAVED_QUERY,
         'POST',
         {
             body,
         },
-        {}
+        options || {}
     )
-    return { data, error, isLoading }
 }
-const CreateQueryFolder = (body: Record<string, any>) => {
-    const { data, error, isLoading } = useAPI<BasicSearchResponse<any>>(
-        KeyMaps.insights.CREATE_QUERY_FOLDER,
+const CreateQueryFolder = (body: Record<string, any>,  options: useOptions) => {
+    return useAPI<BasicSearchResponse<any>>(
+        map.CREATE_QUERY_FOLDER,
         'POST',
         {
             body,
         },
-        {}
+        options || {}
     )
-    return { data, error, isLoading }
 }
 const GetSavedQuery = (guid: string) => {
-    const { data, error, isLoading } = useAPI<SavedQueryResponse>(
-        KeyMaps.insights.GET_SAVED_QUERY,
+    return useAPI<SavedQueryResponse>(
+        map.GET_SAVED_QUERY,
         'GET',
         {
             pathVariables: { guid },
@@ -35,34 +34,31 @@ const GetSavedQuery = (guid: string) => {
                 ignoreRelationships: true,
             },
         },
-        {}
+        options || {}
     )
-    return { data, error, isLoading }
 }
-const UpdateSavedQuery = (body: Record<string, any>) => {
-    const { data, error, isLoading } = useAPI<SavedQueryResponse>(
-        KeyMaps.insights.UPDATE_SAVED_QUERY,
+const UpdateSavedQuery = (body: Record<string, any>, options: useOptions) => {
+    return useAPI<SavedQueryResponse>(
+        map.UPDATE_SAVED_QUERY,
         'POST',
         {
             body,
         },
-        {}
+        options || {}
     )
-    return { data, error, isLoading }
 }
 
-const DeleteEntity = (guid: string) => {
-    const { data, error, isLoading } = useAPI<SavedQueryResponse>(
-        KeyMaps.insights.DELETE_ENTITY,
+const DeleteEntity = (guid: string, options: useOptions) => {
+    return useAPI<SavedQueryResponse>(
+        map.DELETE_ENTITY,
         'DELETE',
         {
             pathVariables: {
                 guid,
             },
         },
-        {}
+        options || {}
     )
-    return { data, error, isLoading }
 }
 export const Insights = {
     UpdateSavedQuery,

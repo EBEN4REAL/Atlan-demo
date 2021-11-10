@@ -33,7 +33,7 @@
     </a-select> -->
     <div></div>
 
-    <!-- <a-tree-select
+    <a-tree-select
         :value="modelValue"
         style="width: 100%; border-radius: 8px"
         :class="$style.connector"
@@ -46,22 +46,22 @@
         :allowClear="true"
         :loading="isLoading"
     >
-        <template #title="node">
+        <!-- <template #title="node">
             <div class="flex items-center">
                 <AtlanIcon :icon="typeName + `Gray`" class="h-4 mr-1.5" />
                 <span class="">{{ node.label }}</span>
             </div>
-        </template>
+        </template> -->
 
         <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-        </template> -->
-    <!-- </a-tree-select> -->
+        </template>
+    </a-tree-select>
 </template>
 
 <script lang="ts">
     import { defineComponent, watch, toRefs, computed } from 'vue'
-    // import { useAssetListing } from '@/discovery/useAssetListing'
+    import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -93,75 +93,72 @@
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            // const { disabled, filters, typeName } = toRefs(props)
-            // const initialBody = {
-            //     dsl: filters.value,
-            //     attributes: ['name', 'displayName'],
-            // }
-            // const { list, replaceBody, data, isLoading } = useAssetListing(
-            //     '',
-            //     false
-            // )
-            // const totalCount = computed(() => data.value?.approximateCount || 0)
-            // watch(
-            //     [disabled, filters],
-            //     () => {
-            //         if (!disabled.value) {
-            //             initialBody.dsl = filters.value
-            //             replaceBody(initialBody)
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
-            // const handleChange = (checkedValues: string) => {
-            //     emit('update:modelValue', checkedValues)
-            //     emit('change', checkedValues)
-            // }
-            //     const dropdownOption = computed(() => {
-            //         // const tree: Record<string, any>[] = []
-            //         // list.value.forEach((ls) => {
-            //         //     let treeNodeObj = {
-            //         //         label:
-            //         //             ls.attributes?.displayName || ls.attributes?.name,
-            //         //         value: ls.attributes.qualifiedName,
-            //         //         slots: {
-            //         //             title: 'title',
-            //         //         },
-            //         //         children: [],
-            //         //     }
-            //         //     tree.push(treeNodeObj)
-            //         //     console.log('selector tree data: ', tree)
-            //         // })
-            //         // tree.sort((x, y) => {
-            //         //     if (x.label < y.label) return -1
-            //         //     if (x.label > y.label) return 1
-            //         //     return 0
-            //         // })
-            //         // return tree
-            //         let data = list.value.map((ls) => ({
-            //             label: ls.attributes?.displayName || ls.attributes?.name,
-            //             value: ls.attributes.qualifiedName,
-            //             slots: {
-            //                 title: 'title',
-            //             },
-            //         }))
-            //         data.sort((x, y) => {
-            //             if (x.label < y.label) return -1
-            //             if (x.label > y.label) return 1
-            //             return 0
-            //         })
-            //         console.log('data here: ', data)
-            //         return data
-            //     })
-            //     return {
-            //         typeName,
-            //         list,
-            //         handleChange,
-            //         totalCount,
-            //         data,
-            //         isLoading,
-            //         dropdownOption,
-            //     }
+            const { disabled, filters, typeName } = toRefs(props)
+            const initialBody = {
+                dsl: filters.value,
+                attributes: ['name', 'displayName'],
+            }
+            const { list, replaceBody, data, isLoading } = useAssetListing(
+                '',
+                false
+            )
+            const totalCount = computed(() => data.value?.approximateCount || 0)
+            watch(
+                [disabled, filters],
+                () => {
+                    if (!disabled.value) {
+                        initialBody.dsl = filters.value
+                        replaceBody(initialBody)
+                    }
+                },
+                { immediate: true }
+            )
+            const handleChange = (checkedValues: string) => {
+                emit('update:modelValue', checkedValues)
+                emit('change', checkedValues)
+            }
+            const dropdownOption = computed(() => {
+                // const tree: Record<string, any>[] = []
+                // list.value.forEach((ls) => {
+                //     let treeNodeObj = {
+                //         label:
+                //             ls.attributes?.displayName || ls.attributes?.name,
+                //         value: ls.attributes.qualifiedName,
+                //         slots: {
+                //             title: 'title',
+                //         },
+                //         children: [],
+                //     }
+                //     tree.push(treeNodeObj)
+                //     console.log('selector tree data: ', tree)
+                // })
+                // tree.sort((x, y) => {
+                //     if (x.label < y.label) return -1
+                //     if (x.label > y.label) return 1
+                //     return 0
+                // })
+                // return tree
+                let data = list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    value: ls.attributes.qualifiedName,
+                }))
+                data.sort((x, y) => {
+                    if (x.label < y.label) return -1
+                    if (x.label > y.label) return 1
+                    return 0
+                })
+                // console.log('data here: ', data)
+                return data
+            })
+            return {
+                typeName,
+                list,
+                handleChange,
+                totalCount,
+                data,
+                isLoading,
+                dropdownOption,
+            }
         },
     })
 </script>

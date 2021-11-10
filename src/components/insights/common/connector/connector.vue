@@ -34,13 +34,13 @@
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
-        <!-- <AssetDropdown
+        <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
             :filter="data"
             @change="handleChange"
             @label-change="setPlaceholder($event, 'asset')"
-        ></AssetDropdown> -->
+        ></AssetDropdown>
     </div>
 </template>
 
@@ -59,7 +59,7 @@
     import { List } from '~/constant/status'
     // import { Collapse } from '~/types'
     import { useConnectionStore } from '~/store/connection'
-    // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     // import Button from '~/components/common/radio/button.vue'
 
@@ -84,7 +84,7 @@
             },
         },
         components: {
-            // AssetDropdown,
+            AssetDropdown,
             // Button,
         },
         emits: ['change', 'update:data'],
@@ -265,7 +265,8 @@
             const selectNode = (value, node?: any) => {
                 /* Checking if isLeafNodeSelectable by default it is selectable */
 
-                if (node?.children.length > 0 && !isLeafNodeSelectable.value) {
+                console.log('node: ', node)
+                if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {
                     expandNode([], node)
                     return
                 }

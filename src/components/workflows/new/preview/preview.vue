@@ -174,7 +174,6 @@
                 selectedWorkflow.value.configmap?.data?.templateName,
                 true
             )
-
             const body = computed(() => ({
                 metadata: {
                     name: workflowName.value,
@@ -192,10 +191,16 @@
                                         name: 'run',
                                         arguments: {
                                             parameters: [
-                                                // FIXME update with latest
-                                                ...workflowTemplate.value?.workflowtemplate.spec.templates[0]?.inputs?.parameters
-                                                    // eslint-disable-next-line no-prototype-builtins
-                                                    ?.filter(
+                                                ...workflowTemplate.value?.workflowtemplate.spec.templates
+                                                    ?.find(
+                                                        (t) =>
+                                                            t.name ===
+                                                            workflowTemplate
+                                                                .value
+                                                                ?.workflowtemplate
+                                                                .spec.entrypoint
+                                                    )
+                                                    ?.inputs?.parameters?.filter(
                                                         (p) =>
                                                             // eslint-disable-next-line no-prototype-builtins
                                                             !p.hasOwnProperty(

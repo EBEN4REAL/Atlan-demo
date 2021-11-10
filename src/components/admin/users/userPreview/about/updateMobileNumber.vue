@@ -23,7 +23,8 @@
                     <!-- v-model on vue-3-tel-input does not work, we need to handle the 2 way binding by listening to input event manually-->
                     <!-- more context: https://stackoverflow.com/questions/67806831/using-vue3-tel-input-why-v-model-directive-doesnt-work-->
 
-                    <vue-tel-input
+                    <!-- fix me  -->
+                    <!-- <vue-tel-input
                         id="tel-input-custom"
                         :value="mobileNumberLocal"
                         valid-characters-only
@@ -31,6 +32,10 @@
                         validate
                         :input-options="{ showDialCode: true }"
                         @input="onInput"
+                    /> -->
+                    <a-input-number
+                        class="w-full"
+                        v-model:value="mobileNumberLocal"
                     />
                 </div>
                 <div class="flex items-center justify-between max-w-full mt-1">
@@ -87,16 +92,12 @@
 
 <script lang="ts">
     // @ts-ignore
-    import { VueTelInput } from 'vue3-tel-input'
-    import 'vue3-tel-input/dist/vue3-tel-input.css'
     import { defineComponent, ref, watch } from 'vue'
     import { Users } from '~/services/service/users/index'
 
     export default defineComponent({
         name: 'UpdateMobileNumber',
-        components: {
-            VueTelInput,
-        },
+        components: {},
         props: {
             selectedUser: {
                 type: Object,
@@ -121,11 +122,11 @@
                 updateErrorMessage.value = ''
                 isUpdate.value = true
             }
-            const onInput = (phone, phoneObject) => {
-                if (phone && phoneObject?.formatted) {
-                    mobileNumberLocal.value = phoneObject.formatted
-                } else if (!phone) mobileNumberLocal.value = ''
-            }
+            // const onInput = (phone, phoneObject) => {
+            //     if (phone && phoneObject?.formatted) {
+            //         mobileNumberLocal.value = phoneObject.formatted
+            //     } else if (!phone) mobileNumberLocal.value = ''
+            // }
             const onCancel = () => {
                 mobileNumberLocal.value = ''
                 isUpdate.value = false
@@ -173,7 +174,6 @@
                 onUpdate,
                 onCancel,
                 handleUpdate,
-                onInput,
             }
         },
     })

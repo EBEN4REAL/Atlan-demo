@@ -203,17 +203,28 @@
     :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
         @apply bg-gray-light;
     }
-    // :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
-    //         > .ant-tree-switcher_open) {
-    //     background-color: rgba(219, 234, 254, 1) !important;
-    //     height: 32px !important;
-    //     justify-content: center;
-    //     display: inline-flex !important;
-    //     align-items: center;
-    // }
-    // :global(.ant-tree li .ant-tree-node-content-wrapper) {
-    //     border-radius: 0px !important;
-    // }
+    :global(.ant-tree .ant-tree-treenode) {
+        @apply p-0 !important;
+    }
+    :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
+            > .ant-tree-switcher_open) {
+        background-color: rgba(219, 234, 254, 1) !important;
+        height: 32px !important;
+        justify-content: center;
+        display: inline-flex !important;
+        align-items: center;
+    }
+    :global(.ant-tree li .ant-tree-node-content-wrapper) {
+        border-radius: 0px !important;
+        padding: 0 !important;
+    }
+    :global(.ant-tree .ant-tree-node-content-wrapper) {
+        padding: 0 !important;
+        overflow: hidden;
+    }
+    :global(.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected) {
+        background-color: rgba(219, 234, 254, 1) !important;
+    }
     // :global(.ant-tree-treenode-switcher-close.ant-tree-treenode-selected
     //         > .ant-tree-switcher_open) {
     //     background-color: rgba(219, 234, 254, 1) !important;

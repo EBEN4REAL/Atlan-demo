@@ -54,7 +54,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -187,7 +187,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected

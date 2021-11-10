@@ -5,7 +5,7 @@
             fullSreenState ? 'height: calc( 100vh - 40px )' : 'height:100vh'
         "
     >
-        <div class="relative flex flex-col">
+        <div class="relative flex flex-col bg-gray-light">
             <div class="flex w-full text-gray">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
@@ -16,7 +16,7 @@
                     @change="onTabClick"
                     @edit="onEdit"
                 >
-                    <template #tabBarExtraContent>
+                    <template #rightExtra>
                         <div class="inline-flex items-center ml-1 mr-2">
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
@@ -102,10 +102,6 @@
                     </a-tab-pane>
                 </a-tabs>
             </div>
-            <div
-                class="absolute bottom-0 flex-1 w-full bg-white"
-                style="height: 3px"
-            ></div>
         </div>
 
         <div
@@ -586,6 +582,8 @@
 </style>
 <style lang="less" module>
     .inline_tabs {
+        height: 30px !important;
+
         :global(.ant-tabs-tab > div) {
             @apply flex items-center !important;
         }
@@ -595,8 +593,18 @@
         :global(.ant-tabs-nav .ant-tabs-tab-active) {
             @apply text-white !important;
         }
+        :global(.ant-tabs-nav) {
+            margin: 0 !important;
+        }
         :global(.ant-tabs-top-content) {
             @apply hidden !important;
+        }
+        :global(.ant-tabs-tab) {
+            margin: 0 !important;
+        }
+
+        :global(.ant-tabs-nav)::before {
+            border-bottom: none !important;
         }
     }
 </style>

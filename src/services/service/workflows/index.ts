@@ -24,7 +24,7 @@ const getWorkflows = ({ immediate, options, params }) =>
         {
             params,
         },
-        { options }
+        { options, asyncOptions: {immediate} }
     )
 
 // const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>

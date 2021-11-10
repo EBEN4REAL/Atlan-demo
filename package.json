@@ -48,6 +48,7 @@
         "bodybuilder": "^2.4.0",
         "chart.js": "^3.6.0",
         "chartjs-plugin-datalabels": "^2.0.0",
+        "clusterize.js": "^0.18.1",
         "cron-parser": "^4.1.0",
         "dayjs": "^1.10.7",
         "emoji-mart-vue-fast": "^10.0.1",

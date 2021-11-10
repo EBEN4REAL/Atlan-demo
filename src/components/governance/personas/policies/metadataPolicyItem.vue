@@ -6,38 +6,45 @@
             v-model:assets="policy.assets"
             :connection-qf-name="connectorData.attributeValue"
         />
-        <div class="flex items-center justify-between mb-6">
-            <span class="text-base font-bold leading-8 text-gray-500"
-                >{{ policy.name }} details</span
-            >
-
+        <div class="flex justify-between mb-6">
+            <div>
+                <div class="relative mb-2 text-sm text-gray-500 required">
+                    Policy name
+                </div>
+                <div class="max-w-xs">
+                    <a-input
+                        :ref="
+                            (el) => {
+                                policyNameRef = el
+                            }
+                        "
+                        v-model:value="policy.name"
+                        placeholder="Policy Name"
+                    />
+                </div>
+            </div>
             <AtlanBtn
                 size="sm"
                 color="secondary"
                 padding="compact"
+                class="plus-btn"
                 @click="removePolicy"
                 ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
             ></AtlanBtn>
         </div>
 
-        <span class="mb-2 text-sm text-gray-500">Name</span>
-        <div class="max-w-xs mb-4">
-            <a-input v-model:value="policy.name" placeholder="Policy Name" />
-        </div>
-
-        <span class="mb-2 text-sm text-gray-500">Description</span>
-        <div class="max-w-xs mb-4">
-            <a-textarea
-                v-model:value="policy.description"
-                show-count
-                placeholder="About the policy"
-                :maxlength="140"
-                :auto-size="{ minRows: 1, maxRows: 3 }"
-            />
-        </div>
-
-        <span class="mb-2 text-sm text-gray-500">Connection</span>
-        <Connector v-model:data="connectorData" class="max-w-xs mb-4" />
+        <span class="mb-2 text-sm text-gray-500 required">Connection</span>
+        <Connector
+            v-model:data="connectorData"
+            class="max-w-xs mb-6"
+            :disabled="!policy?.isNew"
+            @change="handleConnectorChange"
+            :ref="
+                (el) => {
+                    connectorComponentRef = el
+                }
+            "
+        />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
@@ -90,7 +97,7 @@
                 size="sm"
                 color="primary"
                 padding="compact"
-                @click="$emit('save')"
+                @click="handleSave"
                 >Save</AtlanBtn
             >
         </div>
@@ -128,13 +135,19 @@
         setup(props, { emit }) {
             const { policy } = toRefs(props)
             const assetSelectorVisible = ref(false)
+            const connectorComponentRef = ref()
+            const policyNameRef = ref()
             const connectionStore = useConnectionStore()
             function removePolicy() {
                 emit('delete')
             }
 
             function openAssetSelector() {
-                assetSelectorVisible.value = true
+                if (!connectorData.value.attributeValue) {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                } else {
+                    assetSelectorVisible.value = true
+                }
             }
 
             const assets = computed({
@@ -146,10 +159,23 @@
                     policy.value.assets = val.map((ast) => ast.label)
                 },
             })
+            const handleConnectorChange = () => {
+                policy.value.assets = []
+            }
+            const handleSave = () => {
+                if (!policy.value.name) {
+                    policyNameRef.value?.focus()
+                    return
+                } else if (!connectorData.value.attributeValue) {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                } else {
+                    emit('save')
+                }
+            }
 
             const connectorData = computed({
                 get: () => {
-                    const found = connectionStore.list.find(
+                    const found = connectionStore.getList.find(
                         (conn) => conn.guid === policy.value.connectionId
                     )
                     return {
@@ -168,6 +194,10 @@
             })
 
             return {
+                handleSave,
+                policyNameRef,
+                handleConnectorChange,
+                connectorComponentRef,
                 connectorData,
                 assetSelectorVisible,
                 removePolicy,
@@ -177,3 +207,15 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .required:after {
+        content: ' *';
+        color: red;
+    }
+    .plus-btn:focus {
+        border-color: #7b9ce3;
+        border-right-width: 1 px !important;
+        outline: 0;
+        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+    }
+</style>

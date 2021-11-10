@@ -18,7 +18,7 @@
             <AtlanIcon icon="Policy" class="h-6" />
             <span class="text-sm font-bold">Policies</span>
             <span class="data-policy-pill">
-                <b>{{ persona.datapolicies?.length || 'No' }}</b> Data policies
+                <b>{{ persona.dataPolicies?.length || 'No' }}</b> Data policies
             </span>
             <span class="metadata-policy-pill">
                 <b>{{ persona.metadataPolicies?.length || 'No' }}</b> Metadata
@@ -50,11 +50,7 @@
     import { defineComponent, PropType } from 'vue'
 
     import { IPersona } from '~/types/accessPolicies/personas'
-    import {
-        isEditing,
-        enablePersona,
-        selectedPersonaDirty,
-    } from '../composables/useEditPersona'
+    import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
 
     export default defineComponent({
@@ -69,9 +65,7 @@
         emits: ['update:persona', 'update:isEditMode'],
         setup() {
             return {
-                isEditing,
                 enablePersona,
-                selectedPersonaDirty,
                 setActiveTab,
             }
         },

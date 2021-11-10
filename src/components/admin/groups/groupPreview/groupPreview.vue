@@ -63,7 +63,8 @@
                     </template> -->
                     <component
                         :is="tab.component"
-                        class="px-6 pt-3 overflow-auto component-height"
+                        class="px-6 pt-3 overflow-auto"
+                        :class="$style.componentHeight"
                         :selected-group="selectedGroup"
                         @refreshTable="getGroup"
                     />
@@ -131,8 +132,8 @@
 </script>
 
 <style lang="less" module>
-    .component-height {
-        max-height: calc(100vh - 12rem);
+    .componentHeight {
+        max-height: calc(100vh - 7rem) !important;
     }
     .previewtab {
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {

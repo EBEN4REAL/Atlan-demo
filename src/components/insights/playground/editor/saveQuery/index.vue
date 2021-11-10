@@ -62,58 +62,29 @@
                         :ref="titleBarRef"
                         v-model:value="title"
                         :placeholder="`Untitled ${getLastUntitledNumber()}`"
-                        class="
-                            text-lg
-                            font-bold
-                            text-gray-500
-                            border-0
-                            shadow-none
-                            outline-none
-                        "
+                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
                     />
                 </div>
                 <a-textarea
                     v-model:value="description"
                     placeholder="Add Description"
-                    class="
-                        text-sm text-gray-500
-                        border-0
-                        shadow-none
-                        outline-none
-                    "
+                    class="text-sm text-gray-500 border-0 shadow-none outline-none "
                     :rows="3"
                     show-count
                     :maxlength="140"
                 />
             </div>
             <div class="flex items-center w-full">
-                <AddTerms @saveTerms="saveTerms" />
+                <!-- <AddTerms @saveTerms="saveTerms" /> -->
 
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-end
-                        flex-1
-                        mb-1
-                        text-gray-700
-                        cursor-pointer
-                    "
+                    class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer "
                 >
                     <AtlanBtn
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            h-6
-                            py-1
-                            ml-3
-                            border-none
-                            hover:text-primary
-                        "
+                        class="flex items-center justify-between h-6 py-1 ml-3 border-none  hover:text-primary"
                         @click="closeModal"
                     >
                         <span>Cancel</span>
@@ -123,15 +94,7 @@
                         size="sm"
                         color="primary"
                         padding="compact"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            h-6
-                            py-1
-                            ml-2
-                            border-none
-                        "
+                        class="flex items-center justify-between h-6 py-1 ml-2 border-none "
                         @click="createSaveQuery"
                     >
                         <div class="flex items-center text-white rounded">
@@ -174,10 +137,10 @@
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-    import AddTerms from './addTerms.vue'
+    // import AddTerms from './addTerms.vue'
 
     export default defineComponent({
-        components: { StatusBadge, QueryFolderSelector, AtlanBtn, AddTerms },
+        components: { StatusBadge, QueryFolderSelector, AtlanBtn },
         props: {
             showSaveQueryModal: {
                 type: Object as PropType<boolean>,

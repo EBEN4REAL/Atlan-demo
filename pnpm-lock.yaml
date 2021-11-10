@@ -57,6 +57,7 @@ specifiers:
   bodybuilder: ^2.4.0
   chart.js: ^3.6.0
   chartjs-plugin-datalabels: ^2.0.0
+  clusterize.js: ^0.18.1
   cron-parser: ^4.1.0
   dayjs: ^1.10.7
   dotenv: ^10.0.0
@@ -153,6 +154,7 @@ dependencies:
   bodybuilder: 2.4.0
   chart.js: 3.6.0
   chartjs-plugin-datalabels: 2.0.0_chart.js@3.6.0
+  clusterize.js: 0.18.1
   cron-parser: 4.1.0
   dayjs: 1.10.7
   emoji-mart-vue-fast: 10.0.1_vue@3.2.21
@@ -3214,6 +3216,10 @@ packages:
     dependencies:
       is-regexp: 2.1.0
     dev: true
+
+  /clusterize.js/0.18.1:
+    resolution: {integrity: sha512-UsLhW2lG3TaTnE8LI7ninvovua3FLrlsbksb9uzx0fVzzV2WFScO5FU/4yFwdM8RW8iuYVWFraBpDjsosReFlg==}
+    dev: false
 
   /color-convert/1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}

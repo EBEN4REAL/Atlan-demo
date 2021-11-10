@@ -11,7 +11,7 @@
     // library
     import { defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import useGlossaryInfo from '~/composables/glossary2/useGlossaryInfo'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     import {
         Glossary,
@@ -31,7 +31,7 @@
             // data
             const { item } = toRefs(props)
 
-            const { getEntityStatusIcon } = useGlossaryInfo()
+            const { getEntityStatusIcon } = useGlossaryData()
             const { certificateStatus, title } = useAssetInfo()
 
             return { getEntityStatusIcon, certificateStatus, title }

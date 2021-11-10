@@ -1,17 +1,27 @@
 <template>
-    <div></div>
-    <!-- <SchemaTree
-        :tree-data="treeData"
-        :checkable="true"
-        :on-load-data="onLoadData"
-        :select-node="selectNode"
-        :expand-node="expandNode"
-        :is-loading="isInitingTree"
-        :loaded-keys="loadedKeys"
-        :selected-keys="selectedKeys"
-        :expanded-keys="expandedKeys"
-        v-model:checkedKeys="checkedKeys"
-    /> -->
+    <div class="w-full h-full">
+        <!-- <SchemaTree
+            v-if="treeData.length > 0"
+            :tree-data="treeData"
+            :checkable="true"
+            :on-load-data="onLoadData"
+            :select-node="selectNode"
+            :expand-node="expandNode"
+            :is-loading="isInitingTree"
+            :loaded-keys="loadedKeys"
+            :selected-keys="selectedKeys"
+            :expanded-keys="expandedKeys"
+            v-model:checkedKeys="checkedKeys"
+            :checkStrictly="true"
+            :hoverActions="false"
+        /> -->
+        <div
+            class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500 "
+        >
+            <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
+            <p class="mt-6 mb-0 text-base text-gray-700">No assets available</p>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -23,7 +33,11 @@
 
     export default defineComponent({
         name: 'AssetBrowserTree',
-        components: { AtlanBtn },
+        components: {
+            AtlanBtn,
+
+            // SchemaTree
+        },
         props: {
             connectionQfName: {
                 type: String,
@@ -41,7 +55,10 @@
 
             const checkedKeys = computed({
                 get: () => assets.value,
-                set: (val) => emit('update:assets', val),
+                set: (val) => {
+                    console.log(val, 'val')
+                    emit('update:assets', val.checked)
+                },
             })
 
             // const {

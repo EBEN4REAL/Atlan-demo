@@ -14,6 +14,7 @@ import { profileTabs } from '~/constant/profileTabs'
 import { formatDateTime } from '~/utils/date'
 import useDiscoveryStore from '~/store/discovery'
 import { Category, Term } from '~/types/glossary/glossary.interface'
+import { useAuthStore } from '~/store/auth'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -75,7 +76,7 @@ export default function useAssetInfo() {
     //     return found?.label
     // }
     const description = (asset: assetInterface) =>
-        attributes(asset).userDescription || attributes(asset).description
+        attributes(asset)?.userDescription || attributes(asset)?.description
 
     const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
     const isPartition = (asset: assetInterface) =>
@@ -168,20 +169,20 @@ export default function useAssetInfo() {
     //     return name.charAt(0).toUpperCase() + name.slice(1)
     // }
 
-    // const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
-    //     let connectorsName: undefined | string = undefined
-    //     const values = qualifiedName?.split('/')
-    //     if (values?.length > 1) {
-    //         connectorsName = values[1]
-    //     }
-    //     return connectorsName
-    // }
-    // const getConnectorName = (attributes: any) => {
-    //     return (
-    //         attributes?.connectorName ??
-    //         getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
-    //     )
-    // }
+    const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
+        let connectorsName: undefined | string = undefined
+        const values = qualifiedName?.split('/')
+        if (values?.length > 1) {
+            connectorsName = values[1]
+        }
+        return connectorsName
+    }
+    const getConnectorName = (attributes: any) => {
+        return (
+            attributes?.connectorName ??
+            getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
+        )
+    }
 
     const rowCount = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -278,6 +279,11 @@ export default function useAssetInfo() {
     const modifiedBy = (asset: assetInterface) =>
         attributes(asset)?.__modifiedBy
 
+    const readmeGuid = (asset: assetInterface) =>
+        attributes(asset)?.readme?.guid
+
+    const isEditAllowed = (asset: assetInterface) => {}
+
     // const modifiedBy = (asset: assetInterface) =>
     //     attributes(asset)?.__modifiedBy
 
@@ -294,24 +300,24 @@ export default function useAssetInfo() {
     // const lastCrawled = (asset: assetInterface) =>
     //     useTimeAgo(attributes(asset)?.connectionLastSyncedAt).value
 
-    // const dataTypeImage = (asset: assetInterface) => {
-    //     const found = dataTypeList.find((d) =>
-    //         d.type.find(
-    //             (type) => type.toLowerCase() === dataType(asset)?.toLowerCase()
-    //         )
-    //     )
-    //     return found?.image
-    // }
+    const dataTypeImage = (asset: assetInterface) => {
+        const found = dataTypeCategoryList.find((d) =>
+            d.type.find(
+                (type) => type.toLowerCase() === dataType(asset)?.toLowerCase()
+            )
+        )
+        return found?.image
+    }
     // /* Use this when attributes are spread out like in child tree in insights */
-    // const dataTypeImageForColumn = (asset: any) => {
-    //     const found = dataTypeList.find((d) =>
-    //         d.type.find(
-    //             (type) => type.toLowerCase() === asset?.dataType?.toLowerCase()
-    //         )
-    //     )
-    //     console.log(found?.image, 'asset')
-    //     return found?.image
-    // }
+    const dataTypeImageForColumn = (asset: any) => {
+        const found = dataTypeCategoryList.find((d) =>
+            d.type.find(
+                (type) => type.toLowerCase() === asset?.dataType?.toLowerCase()
+            )
+        )
+        console.log(found?.image, 'asset')
+        return found?.image
+    }
 
     // const tableInfo = (asset: assetInterface) => attributes(asset)?.table
     // const popularityScore = (asset: assetInterface) =>
@@ -637,6 +643,7 @@ export default function useAssetInfo() {
     return {
         title,
         getConnectorImage,
+        getConnectorName,
         connectionName,
         assetType,
         databaseName,
@@ -647,7 +654,6 @@ export default function useAssetInfo() {
         dataType,
         dataTypeCategoryLabel,
         dataTypeCategoryImage,
-
         isPrimary,
         isPartition,
         isDist,
@@ -656,11 +662,8 @@ export default function useAssetInfo() {
         classifications,
         meanings,
         meaningRelationships,
-
         createdBy,
-
         logo,
-
         rowCount,
         links,
         columnCount,
@@ -668,7 +671,6 @@ export default function useAssetInfo() {
         getPreviewTabs,
         getProfileTabs,
         selectedAsset,
-
         sourceUpdatedAt,
         sourceCreatedAt,
         sourceCreatedBy,
@@ -677,27 +679,26 @@ export default function useAssetInfo() {
         certificateUpdatedAt,
         certificateStatusMessage,
         certificateUpdatedBy,
-
         announcementTitle,
         announcementMessage,
         announcementType,
         announcementUpdatedAt,
         announcementUpdatedBy,
-
         ownerGroups,
         ownerUsers,
         modifiedAt,
         modifiedBy,
         createdAt,
-
         getHierarchy,
-
         getTableauHierarchy,
-
         qualifiedName,
         getAnchorName,
         connectionQualifiedName,
         getConnectorImageMap,
         anchorAttributes,
+        readmeGuid,
+        getConnectorsNameFromQualifiedName,
+        dataTypeImage,
+        dataTypeImageForColumn,
     }
 }

@@ -6,7 +6,7 @@
             :class="$style.profiletab"
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
-            class="h-full"
+            class="flex-1"
         >
             <a-tab-pane
                 :tab="tab.label"
@@ -33,6 +33,7 @@
         onMounted,
         PropType,
         toRefs,
+        provide,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -41,6 +42,7 @@
     import AssetHeader from '@/assets/profile/header/index.vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
 
     export default defineComponent({
         name: 'AssetProfile',
@@ -64,6 +66,13 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
+            const { getAllowedActions } = useAssetEvaluate()
+            const actions = computed(() =>
+                getAllowedActions(selectedAsset.value)
+            )
+            provide('actions', actions)
+            provide('selectedAsset', selectedAsset)
+
             const { getProfileTabs } = useAssetInfo()
 
             const refs: { [key: string]: any } = ref({})
@@ -113,7 +122,7 @@ meta:
         }
 
         :global(.ant-tabs-content-holder) {
-            @apply bg-primary-light !important;
+            @apply bg-primary-light overflow-y-auto !important;
         }
     }
 </style>

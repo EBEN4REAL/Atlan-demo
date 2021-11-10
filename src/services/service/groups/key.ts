@@ -17,7 +17,7 @@ export const map = {
     [DELETE_GROUP]: ({ id }) => getAPIPath('service', `/groups/${id}/delete`),
     [CREATE_GROUP]: () => getAPIPath('service', `/groups`),
     [REMOVE_MEMBERS_FROM_GROUP]: ({ id }) =>
-        getAPIPath('service', `/groups/${id}/members/remove`),
+        getAPIPath(BASE_PATH, `/groups/${id}/members/remove`),
     [ADD_MEMBERS_TO_GROUP]: ({ id }) =>
-        getAPIPath('service', `/groups/${id}/members`),
+        getAPIPath(BASE_PATH, `/groups/${id}/members`),
 }

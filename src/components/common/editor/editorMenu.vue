@@ -1,10 +1,10 @@
 <template>
     <div
         v-if="editor && editable"
-        class="sticky top-0 z-50 max-w-full min-w-full mb-3 border-b-2 rounded-t  editor-menu"
+        class="max-w-full min-w-full mt-2 mb-4 border-b border-gray-200 shadow-sm  editor-menu"
     >
-        <a-button-group class="flex flex-wrap">
-            <a-popover
+        <a-button-group class="flex flex-wrap shadow-none">
+            <a-tooltip
                 v-for="menuItem in menuData"
                 :key="menuItem.key"
                 placement="bottom"
@@ -86,7 +86,7 @@
 
                 <a-button
                     v-else
-                    class="border-0"
+                    class="text-gray-700 border-0 shadow-none"
                     :class="{
                         'is-active':
                             editor.isActive(`${menuItem.key}`) ||
@@ -97,7 +97,7 @@
                                 editor.isActive({
                                     textAlign: menuItem.key.split('-')[1],
                                 })),
-                        'border-r-2': menuItem.border,
+                        'border-r-2 border-gray-100': menuItem.border,
                     }"
                     @click="() => menuItem.onClick(editor)"
                 >
@@ -109,10 +109,10 @@
                     <span v-else>{{ menuItem.title }}</span>
                 </a-button>
 
-                <template #content>{{
+                <template #title>{{
                     menuItem.helpText || menuItem.title
                 }}</template>
-            </a-popover>
+            </a-tooltip>
         </a-button-group>
 
         <a-modal
@@ -242,6 +242,22 @@
                             .run(),
                 },
                 {
+                    title: 'Hr',
+                    key: 'rule',
+                    helpText: '',
+                    border: true,
+                    onClick: (editor) =>
+                        editor.chain().focus().setHorizontalRule().run(),
+                },
+                {
+                    title: 'Paragraph',
+                    key: 'paragraph',
+                    helpText: '',
+                    icon: 'fa paragraph',
+                    onClick: (editor) =>
+                        editor.chain().focus().createParagraphNear().run(),
+                },
+                {
                     title: 'Bold',
                     key: 'bold',
                     helpText: '',
@@ -274,21 +290,7 @@
                     onClick: (editor) =>
                         editor.chain().focus().toggleStrike().run(),
                 },
-                {
-                    title: 'Hr',
-                    key: 'rule',
-                    helpText: '',
-                    border: true,
-                    onClick: (editor) =>
-                        editor.chain().focus().setHorizontalRule().run(),
-                },
-                // {
-                //   title: "Paragraph",
-                //   key: "paragraph",
-                //   helpText: "",
-                //   icon: "fa paragraph",
-                //   onClick: (editor) => editor.chain().focus().createParagraphNear().run(),
-                // },
+
                 {
                     title: 'Unordered List',
                     key: 'bulletList',
@@ -306,6 +308,24 @@
                     onClick: (editor) =>
                         editor.chain().focus().toggleOrderedList().run(),
                 },
+                // {
+                //     title: 'Insert Table',
+                //     key: 'insertTable',
+                //     helpText: '',
+                //     icon: 'fa table',
+                //     border: true,
+                //     onClick: (editor) =>
+                //         editor
+                //             .chain()
+                //             .focus()
+                //             .insertTable({
+                //                 rows: 3,
+                //                 cols: 3,
+                //                 withHeaderRow: true,
+                //             })
+                //             .run(),
+                // },
+
                 {
                     title: 'Align Left',
                     key: 'align-left',
@@ -359,8 +379,6 @@
                             imageLink.value = ''
                             showImageDropdown.value = false
                         }
-                        // link.value = editor.getAttributes("link").href ?? "";
-                        // showLinkModal.value = !showLinkModal.value;
                     },
                 },
                 {
@@ -473,7 +491,7 @@
 </script>
 <style lang="less" scoped>
     .is-active {
-        @apply bg-gray-600 text-white;
+        @apply bg-primary-light text-primary !important;
     }
     .editor-menu {
         @apply bg-white opacity-100 !important;
@@ -484,5 +502,67 @@
             justify-content: center;
             align-items: center;
         }
+    }
+</style>
+
+<style lang="less">
+    .ProseMirror {
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+
+            td,
+            th {
+                min-width: 1em;
+                border: 2px solid #ced4da;
+                padding: 3px 5px;
+                vertical-align: top;
+                box-sizing: border-box;
+                position: relative;
+
+                > * {
+                    margin-bottom: 0;
+                }
+            }
+
+            th {
+                font-weight: bold;
+                text-align: left;
+                background-color: #f1f3f5;
+            }
+
+            .selectedCell:after {
+                z-index: 2;
+                position: absolute;
+                content: '';
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                background: rgba(200, 200, 255, 0.4);
+                pointer-events: none;
+            }
+
+            .column-resize-handle {
+                position: absolute;
+                right: -2px;
+                top: 0;
+                bottom: -2px;
+                width: 4px;
+                background-color: #adf;
+                pointer-events: none;
+            }
+
+            p {
+                margin: 0;
+            }
+        }
+    }
+
+    .tableWrapper {
+        overflow-x: auto;
     }
 </style>

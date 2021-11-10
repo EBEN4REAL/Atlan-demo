@@ -8,9 +8,12 @@ import { useOptions } from '~/services/api/common'
 const List = (params: any, options?: useOptions) =>
     useAPI(map.LIST_USERS, 'GET', { params }, options || {})
 
+const ListUserGroups = (params: any, id: string, options?: useOptions) =>
+    useAPI(map.GET_USER_GROUPS, 'GET', { params, pathVariables: { id } }, options || {})
+
 const GetUserSessions = (id: string, params?: any, options?: useOptions) =>
     useAPI(
-        map.LIST_USERS,
+        map.GET_USER_SESSIONS,
         'GET',
         { params, pathVariables: { id } },
         options || {}
@@ -114,6 +117,7 @@ export interface IUser {
 }
 
 export const Users = {
+    ListUserGroups,
     List,
     GetUserSessions,
     RevokeInvitation,

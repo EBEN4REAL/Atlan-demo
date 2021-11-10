@@ -1,71 +1,25 @@
 <template>
     <div class="w-full h-full bg-white editor">
-        <editor-menu :editable="editable" :editor="editor" />
-
         <bubble-menu
-            v-if="editor"
-            key="imageWidth"
+            v-if="!editor?.isActive('uploadimage') && editor"
+            class="bubble-menu"
+            :tippy-options="{
+                duration: 100,
+                zIndex: 1,
+                placement: 'top-start',
+            }"
             :editor="editor"
-            @blur="showImageBubble = false"
         >
-            <div
-                v-if="editable && showImageBubble"
-                class="flex flex-col w-48 px-5 py-3 bg-white rounded shadow-xl"
-            >
-                <a-radio-group
-                    v-model:value="widthOption"
-                    class="flex flex-col"
-                >
-                    <a-radio :value="1">Orignal Size</a-radio>
-                    <div class="flex flex-col pt-4">
-                        <a-radio class="pb-2" :value="2">Width</a-radio>
-                        <div class="flex p-0 m-0">
-                            <a-input-number
-                                v-model:value="customWidth"
-                                class="w-48 ml-2 rounded-r-none"
-                                :min="5"
-                                :max="200"
-                                :disabled="widthOption === 1"
-                            />
-                            <span
-                                class="
-                                    border-gray-300 border border-l-0
-                                    pt-1.5
-                                    px-1
-                                    h-8
-                                "
-                            >
-                                %
-                            </span>
-                        </div>
-                        <div
-                            class="flex justify-between ml-2 text-xs text-gray"
-                        >
-                            <span class="">Min: 5</span><span>Max: 200</span>
-                        </div>
-                    </div>
-                </a-radio-group>
-                <a-button
-                    class="mt-4"
-                    type="primary"
-                    @click="() => applyImageWidth(editor)"
-                    >Apply</a-button
-                >
-            </div>
+            <selection-menu :editor="editor" :editable="isEditMode" />
         </bubble-menu>
 
-        <!-- <bubble-menu key="selectionMenu" :editor="editor" v-if="editor">
-      <selection-menu :editor="editor" :editable="editable" />
-    </bubble-menu> -->
-
-        <!-- TODO: removed px-7 to make it generic - test edge cases -->
-        <editor-content :editor="editor" />
+        <editor-content :editor="editor" class="mb-4" />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
+    import { defineComponent, ref, watch, computed, toRefs } from 'vue'
+    import { useDebounceFn, useVModels } from '@vueuse/core'
 
     import { useEditor, EditorContent, BubbleMenu, Editor } from '@tiptap/vue-3'
     import StarterKit from '@tiptap/starter-kit'
@@ -74,50 +28,63 @@
     import TaskList from '@tiptap/extension-task-list'
     import TaskItem from '@tiptap/extension-task-item'
     import TextAlign from '@tiptap/extension-text-align'
-    import Image from '@tiptap/extension-image'
     import Placeholder from '@tiptap/extension-placeholder'
+
+    import Gapcursor from '@tiptap/extension-gapcursor'
+
+    import Image from '@tiptap/extension-image'
+
     import Highlight from '@tiptap/extension-highlight'
 
-    import EditorMenu from './editorMenu.vue'
+    import Document from '@tiptap/extension-document'
+
     import SelectionMenu from './selectionMenu.vue'
     import SlashCommands from './extensions/slashCommands/commands'
+    import ImageUpload from './extensions/imageUpload/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
+
+    const CustomDocument = Document.extend({
+        content: 'heading block*',
+    })
 
     export default defineComponent({
         components: {
             EditorContent,
             BubbleMenu,
-            EditorMenu,
+
             SelectionMenu,
         },
         props: {
-            editable: {
+            isEditMode: {
                 type: Boolean,
                 default: false,
             },
             placeholder: {
                 type: String,
-                default: 'Add some details here...',
-            },
-            content: {
-                type: String,
                 default: '',
             },
+            modelValue: {
+                type: String,
+                default: ``,
+            },
         },
-        events: ['onEditorContentUpdate'],
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const showImageBubble = ref(false)
             const widthOption = ref(1)
             const customWidth = ref(100)
-            const editable = computed(() => props.editable)
 
-            const debouncedEmit = useDebounceFn(
-                (content: string, json: Record<string, any>) => {
-                    emit('onEditorContentUpdate', content, json)
-                },
-                500
-            )
+            const { isEditMode } = toRefs(props)
+            const { modelValue } = useVModels(props, emit)
+
+            const localModelValue = ref(modelValue.value)
+
+            const debouncedEmit = useDebounceFn((content: string) => {
+                console.log(content)
+                modelValue.value = content
+                emit('change')
+            }, 500)
 
             const CustomImage = Image.extend({
                 addAttributes() {
@@ -173,49 +140,52 @@
             }
 
             const editor = useEditor({
-                content: props.content,
-                editable: false,
+                content: localModelValue.value,
+                editable: isEditMode.value,
+                editorProps: {
+                    attributes: {
+                        class: 'prose prose-sm focus:outline-none w-full',
+                    },
+                },
                 extensions: [
-                    StarterKit,
+                    CustomDocument,
+                    StarterKit.configure({
+                        document: false,
+                    }),
                     Underline,
                     Link,
                     TaskList,
                     TaskItem,
-                    CustomImage.configure({
-                        inline: true,
-                    }),
+
                     TextAlign.configure({
                         types: ['heading', 'paragraph'],
                     }),
-                    Placeholder.configure({
-                        placeholder: props.placeholder,
-                        showOnlyWhenEditable: false,
-                    }),
+
                     SlashCommands,
                     LinkPreview,
+                    ImageUpload,
                     Highlight.configure({ multicolor: true }),
+                    Placeholder.configure({
+                        placeholder: ({ node }) => {
+                            if (node.type.name === 'heading') {
+                                return 'Readme Title'
+                            }
+
+                            return props.placeholder
+                        },
+                        showOnlyWhenEditable: false,
+                    }),
                 ],
                 onUpdate({ editor }) {
                     const content = editor.getHTML()
                     const json = editor.getJSON()
-                    debouncedEmit(content, json)
-                },
-                onSelectionUpdate({ editor }) {
-                    const { node } = editor.state.selection
-                    if (node && node.type.name === 'image') {
-                        widthOption.value =
-                            node.attrs.imageWidth === 100 ? 1 : 2
-                        customWidth.value = node.attrs.imageWidth
 
-                        showImageBubble.value = true
-                    } else {
-                        showImageBubble.value = false
-                    }
+                    debouncedEmit(content)
                 },
             })
 
-            const resetEditor = () => {
-                editor.value?.chain().setContent(props.content).run()
+            const resetEditor = (content) => {
+                editor.value?.chain().setContent(content).run()
             }
             const applyTemplate = (content: string) => {
                 editor.value?.chain().setContent(content).run()
@@ -226,8 +196,8 @@
                 return { content, json }
             }
 
-            watch(editable, (newEditable) => {
-                editor.value?.setEditable(newEditable)
+            watch(isEditMode, () => {
+                editor.value?.setEditable(isEditMode.value)
             })
 
             return {
@@ -239,6 +209,7 @@
                 resetEditor,
                 applyTemplate,
                 getEditorContent,
+                isEditMode,
             }
         },
     })
@@ -250,79 +221,5 @@
         min-height: 15vh;
         min-width: inherit;
         max-width: inherit;
-    }
-
-    .ProseMirror {
-        strong {
-            font-family: 'Avenir-heavy' !important;
-            // @apply font-black text-black !important;
-        }
-        img {
-            display: inline-block;
-        }
-        .ProseMirror-selectednode {
-            outline: 1px dashed #3b82f6 !important;
-        }
-        ul {
-            @apply list-disc;
-
-            &[data-type='taskList'] {
-                list-style-type: none;
-                @apply p-0 m-0;
-
-                li {
-                    @apply p-0 m-0 flex align-middle;
-
-                    label {
-                        @apply my-1 mr-2 flex align-middle;
-                    }
-                    div {
-                        @apply p-0 m-0 flex align-middle;
-                    }
-                }
-            }
-        }
-        ol {
-            @apply list-decimal;
-        }
-
-        blockquote {
-            @apply m-0;
-            border-left: 2px solid rgba(#161515, 0.1) !important;
-
-            p {
-                @apply p-2 bg-gray-100 rounded !important;
-            }
-        }
-
-        hr {
-            border: none;
-            border-top: 2px solid rgba(#0d0d0d, 0.1);
-            margin: 2rem 0;
-        }
-
-        h1 {
-            @apply text-3xl;
-        }
-        h2 {
-            @apply text-2xl;
-        }
-        h3 {
-            @apply text-lg;
-        }
-        p.is-empty::before {
-            content: "Type '/' for commands";
-            float: left;
-            pointer-events: none;
-            height: 0;
-            @apply text-gray;
-        }
-        p.is-editor-empty:first-child::before {
-            content: attr(data-placeholder);
-            float: left;
-            pointer-events: none;
-            height: 0;
-            @apply text-gray-500;
-        }
     }
 </style>

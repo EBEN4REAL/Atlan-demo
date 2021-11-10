@@ -1,4 +1,4 @@
-import { computed, Ref, ref, watch } from 'vue'
+import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
@@ -7,6 +7,8 @@ import swrvState from '~/utils/swrvState'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
+import { LIST_USERS } from '~/services/service/users/key'
+
 
 export const getUserName = (user: any) => {
     const { first_name } = user
@@ -87,7 +89,7 @@ export const useUsers = (userListAPIParams: {
     offset: number
     filter: any
     sort: string
-}) => {
+}, cacheKey?: string) => {
     const {
         data,
         mutate: getUserList,
@@ -101,7 +103,7 @@ export const useUsers = (userListAPIParams: {
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
         },
-        cacheKey: 'LIST_USERS',
+        cacheKey: cacheKey ?? LIST_USERS,
     })
 
     const localUsersList: Ref<any[]> = ref([])

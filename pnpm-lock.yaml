@@ -81,7 +81,7 @@ specifiers:
   openapi-typescript-codegen: ^0.11.8
   pinia: ^2.0.2
   pluralize: ^8.0.0
-  pnpm: ^6.20.4
+  pnpm: ^6.21.0
   postcss: ^8.3.11
   prettier: ^2.4.1
   prosemirror-model: 1.14.1
@@ -100,7 +100,7 @@ specifiers:
   turndown: ^7.1.1
   typescript: ^4.4.4
   unplugin-vue-components: ^0.17.2
-  vite: ^2.6.14
+  vite: ^2.6.13
   vite-plugin-pages: ^0.18.2
   vite-plugin-pwa: ^0.11.3
   vite-plugin-style-import: ^1.3.0
@@ -113,7 +113,6 @@ specifiers:
   vue-loader: ^16.5.0
   vue-router: ^4.0.12
   vue-tsc: ^0.3.0
-  vue3-tel-input: ^1.0.4
   vue3-timepicker: ^1.0.0-beta.2
 
 dependencies:
@@ -182,7 +181,6 @@ dependencies:
   vue-chart-3: 0.5.11_chart.js@3.6.0+vue@3.2.21
   vue-linkify: 1.0.1
   vue-router: 4.0.12_vue@3.2.21
-  vue3-tel-input: 1.0.4
   vue3-timepicker: 1.0.0-beta.2
 
 devDependencies:
@@ -209,7 +207,7 @@ devDependencies:
   https-localhost: 4.7.0
   husky: 7.0.4
   openapi-typescript-codegen: 0.11.8
-  pnpm: 6.20.4
+  pnpm: 6.21.0
   postcss: 8.3.11
   prettier: 2.4.1
   rollup-plugin-visualizer: 5.5.2
@@ -3383,11 +3381,6 @@ packages:
     requiresBuild: true
     dev: false
 
-  /core-js/3.17.1:
-    resolution: {integrity: sha512-C8i/FNpVN2Ti89QIJcFn9ZQmnM+HaAQr2OpE+ja3TRM9Q34FigsGlAVuwPGkIgydSVClo/1l1D1grP8LVt9IYA==}
-    requiresBuild: true
-    dev: false
-
   /core-js/3.18.2:
     resolution: {integrity: sha512-zNhPOUoSgoizoSQFdX1MeZO16ORRb9FFQLts8gSYbZU5FcgXhp24iMWMxnOQo5uIaIG7/6FA/IqJPwev1o9ZXQ==}
     requiresBuild: true
@@ -5279,10 +5272,6 @@ packages:
       type-check: 0.4.0
     dev: true
 
-  /libphonenumber-js/1.9.25:
-    resolution: {integrity: sha512-LsSjcmXXGujESsrOsF2rrLdmuABj3OluCzPJKVNslJ2qc7xF5KdKXN8y0OcxHVurqosVf1/r4itrVrKSrlbVHA==}
-    dev: false
-
   /lilconfig/2.0.3:
     resolution: {integrity: sha512-EHKqr/+ZvdKCifpNrJCKxBTgk5XupZA3y/aCPY9mxfgBzmgh93Mt/WqjjQ38oMxXuvDokaKiM3lAgvSH2sjtHg==}
     engines: {node: '>=10'}
@@ -6044,8 +6033,8 @@ packages:
     engines: {node: '>=4'}
     dev: false
 
-  /pnpm/6.20.4:
-    resolution: {integrity: sha512-t50posttANTjAqBfEapojvrD4JKPTcOiPOHxKIGLlcMYke4mKbOhDY+4asSToZI6e7fwQfQpPDPGFI+/qz7Z4A==}
+  /pnpm/6.21.0:
+    resolution: {integrity: sha512-Emhpjbr7MiINYUP6d/X5c2vPa5ltkA1EhJ0wmGotrYZs7DCFvy6SW+RKTGNddedqLhL14LTK+4pE1rHWcQnnfg==}
     engines: {node: '>=12.17'}
     hasBin: true
     dev: true
@@ -7506,10 +7495,6 @@ packages:
     dependencies:
       punycode: 2.1.1
 
-  /user/0.0.0:
-    resolution: {integrity: sha1-8n8bI/xRHyqO+kDbVc+6Ejgk4Co=}
-    dev: false
-
   /util-deprecate/1.0.2:
     resolution: {integrity: sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=}
     dev: true
@@ -7931,15 +7916,6 @@ packages:
       '@vue/runtime-dom': 3.2.21
       '@vue/server-renderer': 3.2.21_vue@3.2.21
       '@vue/shared': 3.2.21
-    dev: false
-
-  /vue3-tel-input/1.0.4:
-    resolution: {integrity: sha512-C60OyAq5ORDErSJ4x7UmJJbF95CDncMswnySmAUtbuBP0pcVcJBu6DOTxKquykvTbJEh9I73DXyqMtDxtLrwJg==}
-    dependencies:
-      core-js: 3.17.1
-      libphonenumber-js: 1.9.25
-      user: 0.0.0
-      vue: 3.2.21
     dev: false
 
   /vue3-timepicker/1.0.0-beta.2:

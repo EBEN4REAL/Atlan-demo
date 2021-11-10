@@ -1,11 +1,10 @@
 <template>
     <div
         class="flex flex-col px-6 py-4 bg-white border border-gray-100 rounded"
-        v-if="guid || isEdit"
     >
         <div class="flex items-center justify-between">
             <div class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-5 mr-3" /><span
+                <AtlanIcon icon="Readme" class="w-auto h-6 mr-3" /><span
                     class="text-sm font-semibold text-gray-700"
                     >Readme</span
                 >
@@ -13,15 +12,35 @@
 
             <a-button
                 class="flex items-center"
-                v-if="!isLoading && !content && isEdit"
+                v-if="!isLoading && !content && isEdit && !isEditMode"
                 @click="handleEditMode"
             >
                 <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Start a
                 readme</a-button
             >
+
+            <div v-if="!isLoading && isEdit && isEditMode" class="flex gap-x-1">
+                <a-button
+                    class="flex items-center"
+                    @click="handleCancel"
+                    v-if="!isAssetUpdateLoading"
+                >
+                    Cancel</a-button
+                >
+
+                <a-button
+                    class="flex items-center"
+                    type="primary"
+                    @click="handleUpdate"
+                    :loading="isAssetUpdateLoading"
+                >
+                    Save</a-button
+                >
+            </div>
+
             <a-button
                 class="flex items-center"
-                v-if="!isLoading && isEdit && content"
+                v-if="!isLoading && isEdit && content && !isEditMode"
                 @click="handleEditMode"
             >
                 <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Edit</a-button
@@ -30,13 +49,12 @@
         <div class="h-24" v-if="isLoading" style="min-height: 200px">
             <SectionLoader></SectionLoader>
         </div>
-        <div class="mt-3 border-0" style="min-height: 200px">
-            <Editor
-                ref="editor"
-                :editable="isEditMode"
-                :content="content"
-                @onEditorContentUpdate="handleUpdate"
-            />
+        <div
+            class="mt-3 border-0"
+            style="min-height: 200px"
+            v-else-if="(guid && !isLoading) || isEditMode"
+        >
+            <Editor ref="editor" :isEditMode="isEditMode" v-model="content" />
         </div>
     </div>
 </template>
@@ -49,6 +67,7 @@
         watch,
         computed,
         toRefs,
+        inject,
     } from 'vue'
 
     import Editor from '@/common/editor/index.vue'
@@ -57,6 +76,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import SectionLoader from '@/common/loaders/section.vue'
+    import updateAsset from '~/composables/discovery/updateAsset'
 
     export default defineComponent({
         components: {
@@ -76,7 +96,14 @@
             },
         },
         setup(props) {
-            const { guid, isEdit } = toRefs(props)
+            const actions = inject('actions')
+            const selectedAsset = inject('selectedAsset')
+            const { readmeGuid } = useAssetInfo()
+
+            const guid = computed(() => {
+                return readmeGuid(selectedAsset.value)
+            })
+            const isEdit = ref(true)
 
             const isEditMode = ref(false)
 
@@ -85,9 +112,10 @@
             const facets = ref({
                 guid: guid.value,
             })
-            const dependentKey = ref(guid.value)
+            const dependentKey = ref(guid?.value)
             const defaultAttributes = ref([...InternalAttributes])
             const readme = ref({})
+            const content = ref('')
 
             const { list, isLoading } = useDiscoverList({
                 isCache: false,
@@ -101,65 +129,65 @@
             watch(list, () => {
                 if (list.value.length > 0) {
                     readme.value = list.value[0]
+                    console.log(description(readme?.value))
+                    content.value = description(readme?.value)
                 }
             })
 
             const { description } = useAssetInfo()
-            const content = computed(() => description(readme?.value))
 
             const handleEditMode = () => {
                 isEditMode.value = !isEditMode.value
             }
 
-            // const editable = ref(false)
-            // const editor = ref()
-            // const { entity } = toRefs(props)
-            // const editorContent = ref(
-            //     entity.value?.attributes?.readme?.attributes?.description ?? ''
-            // )
-            // const readmeDescription = computed(
-            //     () => entity.value?.attributes?.readme?.attributes?.description
-            // )
+            const editor = ref()
 
-            const handleUpdate = (
-                content: string,
-                json: Record<string, any>
-            ) => {
-                console.log(content)
+            const handleUpdate = () => {
+                entity.value.attributes.description = content.value
+                body.value.entities = [entity.value]
+                mutate()
             }
 
-            // const onCancel = () => {
-            //     if (editor.value) {
-            //         editor.value.resetEditor()
-            //     }
-            //     editorContent.value = readmeDescription.value
+            const handleCancel = () => {
+                if (editor.value) {
+                    editor.value.resetEditor(description(readme?.value))
+                }
+                isEditMode.value = false
+            }
+            const entity = ref({
+                typeName: 'Readme',
+                attributes: {
+                    qualifiedName: `${selectedAsset.value.guid}/readme`,
+                    name: `Readme`,
+                },
+                relationshipAttributes: {
+                    asset: {
+                        guid: selectedAsset.value?.guid,
+                        typeName: selectedAsset.value?.typeName,
+                    },
+                },
+            })
 
-            //     editable.value = false
-            // }
+            const body = ref({
+                entities: [],
+            })
 
-            // const startEdit = () => {
-            //     editable.value = true
-            // }
+            const {
+                data,
+                mutate,
+                isLoading: isAssetUpdateLoading,
+                error: isAssetUpdateError,
+            } = updateAsset(body)
 
-            // const handleSave = () => {
-            //     editable.value = false
-            //     if (
-            //         readmeDescription.value?.length ||
-            //         readmeDescription.value === ''
-            //     ) {
-            //         const { update } = useUpdateReadme(
-            //             entity.value?.attributes?.readme,
-            //             editorContent.value
-            //         )
-            //         update()
-            //     } else {
-            //         const { createReadme } = useCreateReadme(
-            //             entity,
-            //             editorContent.value
-            //         )
-            //         createReadme()
-            //     }
-            // }
+            watch(data, () => {
+                if (data.value?.mutatedEntities?.UPDATE?.length > 0) {
+                    readme.value.attributes.description =
+                        data.value?.mutatedEntities?.UPDATE[0].attributes.description
+                    isEditMode.value = false
+                } else {
+                    isEditMode.value = false
+                }
+            })
 
             return {
                 isLoading,
@@ -169,14 +197,11 @@
                 handleUpdate,
                 isEditMode,
                 handleEditMode,
-                // editable,
-                // editor,
-                // editorContent,
-                // onUpdate,
-                // onCancel,
-                // startEdit,
-                // handleSave,
-                // readmeDescription,
+                handleCancel,
+                editor,
+                isAssetUpdateLoading,
+                entity,
+                isAssetUpdateError,
             }
         },
     })

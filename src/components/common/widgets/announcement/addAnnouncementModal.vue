@@ -1,5 +1,13 @@
 <template>
-    <a-modal :class="$style.input" width="800px" :closable="false">
+    <div @click="showModal">
+        <slot name="trigger" @click="showModal" />
+    </div>
+    <a-modal
+        :class="$style.input"
+        width="800px"
+        :closable="false"
+        :visible="visible"
+    >
         <template #title>
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center text-gray-500 flex-nowrap">
@@ -26,7 +34,7 @@
                                 <div class="flex items-center space-x-2">
                                     <component
                                         :is="item.icon"
-                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                        class="w-auto h-4 ml-1 mr-2"
                                     />
 
                                     {{ item.label }}
@@ -34,11 +42,12 @@
                             </a-menu-item>
                         </a-menu>
                     </template>
-                    <AtlanIcon :icon="icon" class="" />{{ type }}
-                    <AtlanIcon
-                        class="pt-1 ml-4 transform -rotate-90"
-                        icon="ChevronDown"
-                    />
+                    <div class="flex items-center cursor-pointer">
+                        <AtlanIcon :icon="icon" class="w-auto h-4 mr-1" /><span
+                            class="text-sm capitalize"
+                            >{{ type }}</span
+                        >
+                    </div>
                 </a-dropdown>
             </div>
         </template>
@@ -58,14 +67,12 @@
             v-model:value="annTitle"
             placeholder="Add Announcement Header..."
             class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-            @change="handleTitleUpdate"
         />
         <a-textarea
             v-model:value="description"
             placeholder="Add description..."
             class="text-gray-500 border-0 shadow-none outline-none"
             :maxlength="280"
-            @change="handleTextAreaUpdate"
         />
     </a-modal>
 </template>
@@ -76,20 +83,19 @@
         defineComponent,
         PropType,
         toRefs,
-        onMounted,
         nextTick,
         ref,
         Ref,
+        watch,
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AnnouncementList from '~/constant/announcement'
     import updateAsset from '~/composables/discovery/updateAsset'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'AnnouncementModal',
-        components: {},
-
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -108,6 +114,7 @@
             const description = ref(announcementMessage(asset.value) || '')
             const type = ref(announcementType(asset.value) || 'information')
             const annTitle = ref(announcementTitle(asset.value) || '')
+            const visible = ref<boolean>(false)
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
@@ -122,20 +129,13 @@
                     case 'information':
                         return 'InformationAnnouncement'
                     case 'issue':
-                        return 'IssueAnnouncement'
+                        return 'IssuesAnnouncement'
                     case 'warning':
                         return 'WarningAnnouncement'
                     default:
                         return 'InformationAnnouncement'
                 }
             })
-
-            const handleTextAreaUpdate = (e: any) => {
-                description.value = e.target.value
-            }
-            const handleTitleUpdate = (e: any) => {
-                annTitle.value = e.target.value
-            }
 
             const entity = ref<assetInterface>({
                 guid: asset.value.guid,
@@ -151,44 +151,58 @@
                 entities: <assetInterface[]>[],
             })
 
-            const { mutate, isLoading } = updateAsset(body)
+            const { data, mutate, error, isLoading } = updateAsset(body)
 
             const handleUpdate = () => {
                 entity.value.attributes.announcementTitle = annTitle.value
                 entity.value.attributes.announcementMessage = description.value
                 entity.value.attributes.announcementType = type.value
                 body.value.entities = [entity.value]
-                mutate()
+                mutate().then(
+                    watch([data, error, isLoading], () => {
+                        if (!error.value && !isLoading.value) {
+                            message.success('Announcement added')
+                            visible.value = false
+                        } else if (error && error.value) {
+                            message.error(
+                                'Not able to add announcement, try again later'
+                            )
+                            visible.value = false
+                        }
+                    })
+                )
             }
 
             const handleCancel = () => {
                 resetInput()
+                visible.value = false
+            }
+
+            const showModal = async () => {
+                visible.value = true
+                await nextTick()
+                titleBar.value?.focus()
             }
 
             const handleMenuClick = (announcement) => {
                 type.value = announcement.id
             }
 
-            onMounted(async () => {
-                await nextTick()
-                titleBar.value?.focus()
-            })
-
             return {
                 asset,
                 type,
                 description,
                 annTitle,
+                showModal,
                 icon,
                 title,
                 titleBar,
-                handleTextAreaUpdate,
-                handleTitleUpdate,
                 AnnouncementList,
                 isLoading,
                 handleUpdate,
                 handleCancel,
                 handleMenuClick,
+                visible,
             }
         },
     })

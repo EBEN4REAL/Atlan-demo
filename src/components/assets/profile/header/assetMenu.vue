@@ -97,12 +97,17 @@
                 <a-menu-item
                     key="announcement"
                     :disabled="!editPermission"
-                    @click="handleAnnouncementModal"
-                >
-                    <div class="flex items-center">
-                        <AtlanIcon icon="Megaphone" />
-                        <span class="pl-2 text-sm">Add Announcement</span>
-                    </div></a-menu-item
+                    @click="closeMenu"
+                    ><AnnouncementModal :asset="asset"
+                        ><template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Megaphone" />
+                                <span class="pl-2 text-sm"
+                                    >Add Announcement</span
+                                >
+                            </div></template
+                        ></AnnouncementModal
+                    ></a-menu-item
                 >
                 <a-menu-item
                     key="archive"
@@ -116,7 +121,6 @@
             </a-menu>
         </template>
     </a-dropdown>
-    <AnnouncementModal :asset="asset" :visible="announcementModalVisible" />
 </template>
 <script lang="ts">
     import { defineComponent, ref, PropType, toRefs } from 'vue'
@@ -143,7 +147,6 @@
         setup(props, context) {
             // data
             const isVisible = ref(false)
-            const announcementModalVisible = ref(false)
 
             const { asset } = toRefs(props)
             const closeMenu = () => {
@@ -154,15 +157,11 @@
                 const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
                 copyToClipboard(text)
             }
-            function handleAnnouncementModal() {
-                announcementModalVisible.value = true
-            }
+
             return {
                 handleCopyProfileLink,
                 isVisible,
                 closeMenu,
-                handleAnnouncementModal,
-                announcementModalVisible,
             }
         },
     })

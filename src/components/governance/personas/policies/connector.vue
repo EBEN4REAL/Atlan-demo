@@ -48,7 +48,7 @@
         watch,
     } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
-    import { Components } from '~/api/atlas/client'
+    import { Components } from '~/types/atlas/client'
     import { certificateList } from '~/constant/certification'
     import { useConnectionStore } from '~/store/connection'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'

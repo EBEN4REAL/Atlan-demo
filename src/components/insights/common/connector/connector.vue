@@ -57,9 +57,11 @@
     } from 'vue'
     import { Components } from '~/types/atlas/client'
     import { List } from '~/constant/status'
+    // import { Collapse } from '~/types'
     import { useConnectionStore } from '~/store/connection'
-    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    // import Button from '~/components/common/radio/button.vue'
 
     export default defineComponent({
         props: {
@@ -82,7 +84,8 @@
             },
         },
         components: {
-            AssetDropdown,
+            // AssetDropdown,
+            // Button,
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {

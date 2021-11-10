@@ -4,10 +4,10 @@ import { Ref, ref } from 'vue'
 import { QueryFolderNamespace } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
-import { useAPIAsyncState } from '~/services/api/useAPI'
-import { KeyMaps } from '~/api/keyMap'
+import { useAPI } from '~/services/api/useAPI'
+import { map } from '~/services/meta/insights/key'
 import {
-    BaseAttributes,
+    InternalAttributes,
     BasicSearchAttributes,
     SavedQueryAttributes,
 } from '~/constant/projection'
@@ -37,7 +37,7 @@ const useQueryFolderNamespace = () => {
         'folder',
         'compiledQuery',
         'rawQuery',
-        ...BaseAttributes,
+        ...InternalAttributes,
         ...BasicSearchAttributes,
         ...SavedQueryAttributes,
     ]
@@ -61,12 +61,13 @@ const useQueryFolderNamespace = () => {
     refreshBody()
     const getQueryFolderNamespace = () => {
         refreshBody()
-        return useAPIAsyncState<BasicSearchResponse<QueryFolderNamespace>>(
-            KeyMaps.insights.BASIC_SEARCH,
+        return useAPI<BasicSearchResponse<QueryFolderNamespace>>(
+            map.BASIC_SEARCH,
             'POST',
             {
                 body,
-            }
+            },
+            {}
         )
     }
 

@@ -1,12 +1,13 @@
 import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
+import { map } from '~/services/sql/query/key'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { generateQueryStringParamsFromObj } from '~/utils/queryString'
-import { Insights } from '~/services/query/insights'
-import { map as KeyMaps } from '~/services/query/insights/key'
+// import HEKA_SERVICE_API from '~/services/heka/index'
+import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 
 export default function useProject() {
@@ -144,7 +145,7 @@ export default function useProject() {
             error,
             isLoading,
         } = useSSE({
-            path: KeyMaps.insights.RUN_QUERY,
+            path: map.insights.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
         })

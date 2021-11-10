@@ -594,8 +594,12 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { getLastMappedKeyword } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
 
-    import { useMapping } from '~/components/insights/playground/editor/common/composables/useMapping'
-    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import {
+        useMapping,
+        nextKeywords,
+    } from '~/components/insights/playground/editor/common/composables/useMapping'
+    // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
 
     export default defineComponent({
         components: { SchemaTreeItemPopover, StatusBadge },

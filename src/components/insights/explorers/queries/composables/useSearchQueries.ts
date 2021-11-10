@@ -1,6 +1,8 @@
 import { ref, Ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
+// import { useAPIAsyncState } from '~/services/api/useAPI'
+
 import { useAPI } from '~/services/api/useAPI'
 import {
     SavedQueryResponse,
@@ -8,8 +10,8 @@ import {
 } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
-import { map as KeyMaps } from '~/services/meta/search/key'
-import { AssetAttributes, SavedQueryAttributes } from '~/constant/projection'
+import { map } from '~/services/meta/insights/key'
+import { InternalAttributes, SavedQueryAttributes } from '~/constant/projection'
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 
 const searchQueries = (
@@ -30,7 +32,7 @@ const searchQueries = (
             includeClassificationAttributes: true,
             includeSubClassifications: true,
             includeSubTypes: true,
-            attributes: [...AssetAttributes, ...SavedQueryAttributes],
+            attributes: [...InternalAttributes, ...SavedQueryAttributes],
             query: query.value,
             offset: offset?.value ?? 0,
             limit: limit?.value ?? 50,
@@ -94,20 +96,12 @@ const searchQueries = (
             error: searchError,
             isLoading: loading,
         } = useAPI<SavedQueryResponse>(
-            KeyMaps.INDEX_SEARCH,
+            map.BASIC_SEARCH,
             'POST',
             {
                 body,
             },
             {}
-        )
-        watch(
-            [queries, searchError, loading],
-            ([newQueries, newError, newLoading]) => {
-                data.value = newQueries
-                error.value = newError
-                isLoading.value = newLoading
-            }
         )
     }
     const onQueryChange = useDebounceFn((query: string) => {

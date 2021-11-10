@@ -5,7 +5,8 @@ import { useMapping, nextKeywords } from './useMapping'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
-import HEKA_SERVICE_API from '~/services/heka/index'
+// import HEKA_SERVICE_API from '~/services/heka/index'
+import { Insights } from '~/services/sql/query'
 import {
     autosuggestionEntityColumn,
     autosuggestionResponse,
@@ -274,7 +275,7 @@ async function getSuggestionsUsingType(
             if (currentWord.length > 1) {
                 cancelTokenSource.value = axios.CancelToken.source()
                 const entitiesResponsPromise =
-                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(
+                    Insights.GetAutoSuggestions(
                         body,
                         cancelTokenSource
                     )
@@ -298,7 +299,7 @@ async function getSuggestionsUsingType(
             if (currentWord.length > 1) {
                 cancelTokenSource.value = axios.CancelToken.source()
                 const entitiesResponsPromise =
-                    HEKA_SERVICE_API.Insights.GetAutoSuggestions(
+                    Insights.GetAutoSuggestions(
                         body,
                         cancelTokenSource
                     )

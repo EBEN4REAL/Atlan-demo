@@ -119,14 +119,14 @@
     import { useRouter } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
-    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: {
             QueryTreeList,
             AtlanBtn,
-            AssetDropdown,
+            // AssetDropdown,
         },
         props: {
             selectedFolderQF: {

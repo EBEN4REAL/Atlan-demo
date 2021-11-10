@@ -7,11 +7,11 @@ import {
     Column,
     View,
 } from '~/types/insights/table.interface'
-import { IndexSearchResponse } from '~/types/common/atlasSearch.interface'
+import { IndexSearchResponse } from '~/services/meta/search/index'
 
-import { useAPIPromise } from '~/services/api/useAPI'
-import { KeyMaps } from '~/api/keyMap'
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { useAPIPromise } from '~/services/api/useAPIPromise'
+import {map} from '~/services/meta/search/key'
+import { InternalAttributes, BasicSearchAttributes } from '~/constant/projection'
 
 const attributes = [
     'name',
@@ -26,7 +26,7 @@ const attributes = [
     'classifications',
     'tableCount',
     'columnCount',
-    ...BaseAttributes,
+    ...InternalAttributes,
     ...BasicSearchAttributes,
 ]
 
@@ -88,7 +88,7 @@ const useLoadTreeData = () => {
 
         refreshBody();
 
-        return useAPIPromise(KeyMaps.insights.SCHEMA_TREE(), 'POST', {
+        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<IndexSearchResponse<Database>>
     }
@@ -110,7 +110,7 @@ const useLoadTreeData = () => {
 
         refreshBody();
 
-        return useAPIPromise(KeyMaps.insights.SCHEMA_TREE(), 'POST', {
+        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<IndexSearchResponse<Schema>>
     }
@@ -132,7 +132,7 @@ const useLoadTreeData = () => {
 
         refreshBody();
 
-        return useAPIPromise(KeyMaps.insights.SCHEMA_TREE(), 'POST', {
+        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<IndexSearchResponse<Table | View>>
     }
@@ -154,7 +154,7 @@ const useLoadTreeData = () => {
 
         refreshBody();
 
-        return useAPIPromise(KeyMaps.insights.SCHEMA_TREE(), 'POST', {
+        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<IndexSearchResponse<Column>>
     }
@@ -176,7 +176,7 @@ const useLoadTreeData = () => {
 
         refreshBody();
 
-        return useAPIPromise(KeyMaps.insights.SCHEMA_TREE(), 'POST', {
+        return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<IndexSearchResponse<Column>>
     }

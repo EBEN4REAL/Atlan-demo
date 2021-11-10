@@ -40,7 +40,7 @@
     import { capitalizeFirstLetter } from '~/utils/string'
     import { computed, defineComponent, ref, Ref, toRefs, PropType } from 'vue'
     import { List } from '~/constant/status'
-    import { useConnectionsStore } from '~/store/connections'
+    import { useConnectionStore } from '~/store/connection'
 
     export default defineComponent({
         props: {
@@ -58,7 +58,7 @@
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { connector: selectedValue, filterSourceIds } = toRefs(props)
-            const store = useConnectionsStore()
+            const store = useConnectionStore()
             /* Remove the sources mentioned in filterIds array */
             const filterSourceList = (filterSourceIds: string[]) => {
                 return store.getSourceList.filter(
@@ -114,8 +114,8 @@
         :global(.ant-select-selector) {
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
             background-color: #fbfbfb !important;
-            border: 1px solid #E9EBF1 !important;
-            color: #6F7590 !important;
+            border: 1px solid #e9ebf1 !important;
+            color: #6f7590 !important;
             border-radius: 8px !important;
         }
     }

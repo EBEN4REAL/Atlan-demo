@@ -104,13 +104,13 @@
                     popover-trigger="hover"
                 >
                     <template #pillPrefix="{ item }">
-                        <avatar
+                        <!-- <avatar
                             class="-ml-2.5"
                             v-if="item && item.type === 'user'"
                             :image-url="
-                                KeyMaps.auth.avatar.GET_AVATAR({
-                                    username: item.username,
-                                })
+                                // KeyMaps.auth.avatar.GET_AVATAR({
+                                //     username: item.username,
+                                // })
                             "
                             :allow-upload="false"
                             :avatar-name="item.username"
@@ -126,11 +126,12 @@
                                 text-primary
                                 group-hover:text-white
                             "
-                        />
+                        /> -->
                     </template>
-                    <template #popover="{ item }"
-                        ><OwnerInfoCard :user="item"
-                    /></template>
+                    <template #popover="{ item }">
+                        <!-- <OwnerInfoCard :user="item"
+                    /> -->
+                    </template>
                     <template #suffix>
                         <span
                             v-if="splittedUsers.b.length > 0"
@@ -180,25 +181,25 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
+    // import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Pill from '~/components/UI/pill/pill.vue'
-    import { KeyMaps } from '~/api/keyMap'
-    import Avatar from '~/components/common/avatar.vue'
+    // import { KeyMaps } from '~/api/keyMap'
+    // import Avatar from '~/components/common/avatar'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
-    import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
+    // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
             StatusBadge,
             PillGroup,
-            ClassificationInfoCard,
-            OwnerInfoCard,
+            // ClassificationInfoCard,
+            // OwnerInfoCard,
             Pill,
-            Avatar,
+            // Avatar,
         },
         props: {
             item: {
@@ -313,7 +314,7 @@
                 oSidebar,
                 splittedUsers,
                 mixedTermsAndClassifications,
-                KeyMaps,
+                // KeyMaps,
                 List,
                 savedQueryType,
             }

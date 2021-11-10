@@ -218,7 +218,7 @@
             editable: {
                 type: Boolean,
                 default: false,
-                required: true,
+                required: false,
             },
         },
         setup(props) {

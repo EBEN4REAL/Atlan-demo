@@ -121,15 +121,16 @@
 <style lang="less" scoped>
     .searchbar {
         min-width: 100px;
+
         input {
             min-width: 100px;
         }
-        :global(.ant-input:focus) {
+        .ant-input:focus {
             border: none;
             border-right: none;
         }
 
-        :global(.ant-input:hover) {
+        .ant-input:hover {
             border: none;
             border-right: none;
         }

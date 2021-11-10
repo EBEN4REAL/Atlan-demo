@@ -78,7 +78,8 @@
             console.log(savedQueryGuidFromURL.value)
             const fetchAndPassSavedQueryInfo = () => {
                 const { data, error, isLoading } = InsightsAPI.GetSavedQuery(
-                    savedQueryGuidFromURL.value as string
+                    savedQueryGuidFromURL.value as string,
+                    {}
                 )
                 watch([data, error, isLoading], () => {
                     if (isLoading.value == false) {

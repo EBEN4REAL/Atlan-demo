@@ -248,6 +248,7 @@
                     parentGuid: '',
                     parentQualifiedName: '',
                     isSQLSnippet: false,
+                    savedQueryParentFolderTitle: undefined,
                     explorer: {
                         schema: {
                             connectors: {

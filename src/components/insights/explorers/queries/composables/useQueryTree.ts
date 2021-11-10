@@ -265,12 +265,15 @@ const useTree = ({
     const selectNode = (selected: any, event: any) => {
         const item = event.node.dataRef.entity as Folder | SavedQuery
         console.log('opened query: ', event.node)
+        const parentTitle = event.node.dataRef?.parentTitle;
+
         if (item.typeName === 'Query') {
             immediateParentFolderQF.value =
                 item.attributes.parentFolderQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
-            openSavedQueryInNewTab(item)
+            openSavedQueryInNewTab({...item, parentTitle: parentTitle})
+            
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
                 pushGuidToURL(item.guid)

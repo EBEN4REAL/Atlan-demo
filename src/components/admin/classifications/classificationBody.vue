@@ -41,13 +41,13 @@
             const activeTabKey = ref('1')
             const tabConfig = [
                 { key: '1', label: 'Linked Assets' },
-                { key: '2', label: 'Linked Terms' },
+                // { key: '2', label: 'Linked Terms' },
             ]
 
             const filterConfig = computed(() => ({
                 __traitNames: [selectedClassification.value.name],
             }))
-            
+
             return {
                 selectedClassification,
                 filterConfig,

@@ -9,6 +9,7 @@
                 size="sm"
                 color="secondary"
                 padding="compact"
+                @click="createClassificationModalVisible = true"
             >
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
@@ -48,7 +49,7 @@
         </template>
 
         <router-view />
-
+        <AddClassificationModal v-model:modalVisible="createClassificationModalVisible" />
         <!-- <a-modal
             :visible="modalVisible"
             title="Add"
@@ -112,6 +113,7 @@
     import ExplorerList from '@/admin/common/explorerList.vue'
     import NoAcces from '@/common/secured/access.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import AddClassificationModal from '@/admin/classifications/addClassificationModal.vue'
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
@@ -131,6 +133,7 @@
             ExplorerList,
             NoAcces,
             SearchAdvanced,
+            AddClassificationModal
         },
         setup(props) {
             const router = useRouter()
@@ -138,7 +141,7 @@
             const { classificationList } = useTypedefData()
             const searchQuery = ref('');
             const selectedClassificationName = ref('');
-
+            const createClassificationModalVisible = ref(false)
 
             
             const filteredClassificationList = computed(() => {
@@ -169,7 +172,8 @@
                 filteredClassificationList,
                 searchQuery,
                 selectedClassificationName,
-                selectClassification
+                selectClassification,
+                createClassificationModalVisible
             }
         },
     })

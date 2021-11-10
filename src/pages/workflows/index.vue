@@ -95,11 +95,11 @@
         </div>
 
         <div class="border-l border-gray-300 preview-container">
-            <!-- <DiscoveryPreview
+            <DiscoveryPreview
                 v-if="selected"
                 :selected-workflow="selected"
                 :creator-details="creatorDetails"
-            /> -->
+            />
         </div>
     </div>
 </template>
@@ -310,10 +310,10 @@
                     : {}
             )
 
-            const { userList, getUser, state, STATES } = useUsers(params)
+            const { userList, getUserList, state, STATES } = useUsers(params)
 
             watch(iDs, () => {
-                // getUser()
+                getUserList()
             })
 
             const creatorDetails = computed(() => {

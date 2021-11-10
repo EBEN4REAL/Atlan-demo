@@ -168,20 +168,20 @@ export default function useAssetInfo() {
     //     return name.charAt(0).toUpperCase() + name.slice(1)
     // }
 
-    // const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
-    //     let connectorsName: undefined | string = undefined
-    //     const values = qualifiedName?.split('/')
-    //     if (values?.length > 1) {
-    //         connectorsName = values[1]
-    //     }
-    //     return connectorsName
-    // }
-    // const getConnectorName = (attributes: any) => {
-    //     return (
-    //         attributes?.connectorName ??
-    //         getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
-    //     )
-    // }
+    const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
+        let connectorsName: undefined | string = undefined
+        const values = qualifiedName?.split('/')
+        if (values?.length > 1) {
+            connectorsName = values[1]
+        }
+        return connectorsName
+    }
+    const getConnectorName = (attributes: any) => {
+        return (
+            attributes?.connectorName ??
+            getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
+        )
+    }
 
     const rowCount = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -637,6 +637,7 @@ export default function useAssetInfo() {
     return {
         title,
         getConnectorImage,
+        getConnectorName,
         connectionName,
         assetType,
         databaseName,

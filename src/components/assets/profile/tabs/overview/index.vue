@@ -1,9 +1,11 @@
 <template>
     <div class="flex flex-col p-6 gap-y-4">
-        <AnnouncementWidget :selectedAsset="selectedAsset"></AnnouncementWidget>
+        <AnnouncementWidget
+            :selected-asset="selectedAsset"
+        ></AnnouncementWidget>
+        <TableSumamry :asset="selectedAsset" />
         <Readme :guid="readmeGuid(selectedAsset)" />
         <Resources :asset="selectedAsset" />
-        <TableSumamry :asset="selectedAsset" />
     </div>
 </template>
 

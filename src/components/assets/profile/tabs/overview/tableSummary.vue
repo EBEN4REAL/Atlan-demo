@@ -1,36 +1,39 @@
 <template>
-    <div class="flex flex-col p-4 bg-white rounded gap-y-10">
-        <div class="flex items-center mb-3">
+    <div class="p-4 bg-white rounded">
+        <div class="flex items-center mb-4">
             <AtlanIcon icon="TableSummary" class="w-auto h-8 mr-3" /><span
                 class="text-base font-bold text-gray"
                 >Table Summary</span
             >
         </div>
-        <!-- Profile Widgets -->
-        <ProfileWidgets :asset="asset" />
+        <div class="flex flex-col gap-y-10">
+            <!-- Profile Widgets -->
+            <ProfileWidgets :asset="asset" />
 
-        <!-- Column and Table Preview-->
-        <div class="flex flex-col w-full">
-            <!-- Preview Selector-->
-            <a-tooltip
-                placement="right"
-                :title="
-                    !showTablePreview && 'No sample data found for this asset'
-                "
-            >
-                <RaisedTab
-                    v-model:active="activePreviewTabKey"
-                    class="flex-none flex-grow-0 mb-4 mr-auto"
-                    :data="tabConfig"
-                    :disabled="!showTablePreview"
+            <!-- Column and Table Preview-->
+            <div class="flex flex-col w-full">
+                <!-- Preview Selector-->
+                <a-tooltip
+                    placement="right"
+                    :title="
+                        !showTablePreview &&
+                        'No sample data found for this asset'
+                    "
+                >
+                    <RaisedTab
+                        v-model:active="activePreviewTabKey"
+                        class="flex-none flex-grow-0 mb-4 mr-auto"
+                        :data="tabConfig"
+                        :disabled="!showTablePreview"
+                    />
+                </a-tooltip>
+
+                <OverviewColumns v-if="activePreviewTabKey === 'column'" />
+                <SampleDataTable
+                    v-else-if="activePreviewTabKey === 'table'"
+                    :asset="asset"
                 />
-            </a-tooltip>
-
-            <OverviewColumns v-if="activePreviewTabKey === 'column'" />
-            <SampleDataTable
-                v-else-if="activePreviewTabKey === 'table'"
-                :asset="asset"
-            />
+            </div>
         </div>
     </div>
 </template>

@@ -1,73 +1,65 @@
 <template>
-    <div>
+    <div
+        class="grid gap-y-3 gap-x-16"
+        :class="
+            asset.typeName == 'Table' || asset.typeName == 'TablePartition'
+                ? 'summary-grid-3'
+                : 'summary-grid-2'
+        "
+    >
+        <SQL
+            v-if="
+                asset.typeName == 'View' || asset.typeName == 'MaterialisedView'
+            "
+            :sql="definition(asset)"
+        >
+            <div class="flex flex-col text-sm cursor-pointer">
+                <span class="mb-2 text-sm text-gray-500">Definition</span>
+                <span class="text-primary">SQL</span>
+            </div>
+        </SQL>
+        <RowInfoHoverCard
+            v-if="
+                asset.typeName == 'Table' || asset.typeName == 'TablePartition'
+            "
+            :image="getConnectorImage(asset)"
+            :row-count="rowCount(asset)"
+            :size-bytes="sizeBytes(asset)"
+            :source-updated-at="sourceUpdatedAt(asset)"
+            :source-updated-at-raw="sourceUpdatedAt(asset, true)"
+            :source-created-at="sourceCreatedAt(asset)"
+            :source-created-at-raw="sourceCreatedAt(asset, true)"
+        >
+            <div class="flex flex-col text-sm cursor-pointer">
+                <span class="mb-1 text-sm text-gray-500">Rows</span>
+                <span class="text-gray-700">{{ rowCount(asset) }}</span>
+            </div>
+        </RowInfoHoverCard>
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-sm text-gray-500">Columns</span>
+            <span class="text-gray-700">{{ columnCount(asset) }}</span>
+        </div>
+        <div class="max-w-screen-md">
+            <div class="flex flex-col">
+                <p class="mb-1 text-sm text-gray-500">Description</p>
+                <Description v-model="localDescription" />
+            </div>
+        </div>
         <div
-            class="grid gap-y-3 gap-x-16"
             :class="
                 asset.typeName == 'Table' || asset.typeName == 'TablePartition'
-                    ? 'summary-grid-3'
-                    : 'summary-grid-2'
+                    ? 'status-grid'
+                    : ''
             "
         >
-            <SQL
-                v-if="
-                    asset.typeName == 'View' ||
-                    asset.typeName == 'MaterialisedView'
-                "
-                :sql="definition(asset)"
-            >
-                <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-2 text-sm text-gray-500">Definition</span>
-                    <span class="text-primary">SQL</span>
-                </div>
-            </SQL>
-            <RowInfoHoverCard
-                v-if="
-                    asset.typeName == 'Table' ||
-                    asset.typeName == 'TablePartition'
-                "
-                :image="getConnectorImage(asset)"
-                :row-count="rowCount(asset)"
-                :size-bytes="sizeBytes(asset)"
-                :source-updated-at="sourceUpdatedAt(asset)"
-                :source-updated-at-raw="sourceUpdatedAt(asset, true)"
-                :source-created-at="sourceCreatedAt(asset)"
-                :source-created-at-raw="sourceCreatedAt(asset, true)"
-            >
-                <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-1 text-sm text-gray-500">Rows</span>
-                    <span class="text-gray-700">{{ rowCount(asset) }}</span>
-                </div>
-            </RowInfoHoverCard>
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Columns</span>
-                <span class="text-gray-700">{{ columnCount(asset) }}</span>
-            </div>
-            <div class="max-w-screen-md">
-                <div class="flex flex-col">
-                    <p class="mb-1 text-sm text-gray-500">Description</p>
-                    <Description v-model="localDescription" />
-                </div>
-            </div>
-            <div
-                :class="
-                    asset.typeName == 'Table' ||
-                    asset.typeName == 'TablePartition'
-                        ? 'status-grid'
-                        : ''
-                "
-            >
-                <CertificationPopover
-                    :selected-asset="asset"
-                    placement="bottom"
-                >
-                    <Certificate :selected-asset="asset" />
-                </CertificationPopover>
-            </div>
+            <CertificationPopover :selected-asset="asset" placement="bottom">
+                <Certificate :selected-asset="asset" />
+            </CertificationPopover>
+        </div>
 
-            <div v-if="asset.guid" class="flex flex-col">
-                <p class="mb-1 text-sm text-gray-500">Owners</p>
-                <Owners v-model="localOwners" @change="handleOwnersChange" />
-            </div>
+        <div v-if="asset.guid" class="flex flex-col">
+            <p class="mb-1 text-sm text-gray-500">Owners</p>
+            <Owners v-model="localOwners" @change="handleOwnersChange" />
         </div>
     </div>
 </template>
@@ -84,7 +76,7 @@
     import CertificationPopover from '@/assets/preview/popover/certification.vue'
 
     // Composables
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAsset from '~/composables/discovery/updateAsset'
 
     // Types

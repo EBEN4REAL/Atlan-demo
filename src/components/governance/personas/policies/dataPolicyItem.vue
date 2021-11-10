@@ -6,11 +6,23 @@
             v-model:assets="policy.assets"
             :connection-qf-name="connectorData.attributeValue"
         />
-        <div class="flex items-center justify-between mb-6">
-            <span class="text-base font-bold leading-8 text-gray-500"
-                >{{ policy.name }} details</span
-            >
-
+        <div class="flex justify-between mb-6">
+            <div>
+                <span class="mb-2 text-sm text-gray-500 required"
+                    >Policy name</span
+                >
+                <div class="max-w-xs">
+                    <a-input
+                        :ref="
+                            (el) => {
+                                policyNameRef = el
+                            }
+                        "
+                        v-model:value="policy.name"
+                        placeholder="Policy Name"
+                    />
+                </div>
+            </div>
             <AtlanBtn
                 size="sm"
                 color="secondary"
@@ -20,24 +32,19 @@
             ></AtlanBtn>
         </div>
 
-        <span class="mb-2 text-sm text-gray-500">Name</span>
-        <div class="max-w-xs mb-4">
-            <a-input v-model:value="policy.name" placeholder="Policy Name" />
-        </div>
-
-        <span class="mb-2 text-sm text-gray-500">Description</span>
-        <div class="max-w-xs mb-4">
-            <a-textarea
-                v-model:value="policy.description"
-                show-count
-                placeholder="About the policy"
-                :maxlength="140"
-                :auto-size="{ minRows: 1, maxRows: 3 }"
-            />
-        </div>
-
-        <span class="mb-2 text-sm text-gray-500">Connection</span>
-        <Connector v-model:data="connectorData" class="max-w-xs mb-4" />
+        <span class="mb-2 text-sm text-gray-500 required">Connection</span>
+        <Connector
+            v-model:data="connectorData"
+            class="max-w-xs mb-6"
+            :filterSourceIds="filterSourceIds"
+            @change="handleConnectorChange"
+            :disabled="!policy?.isNew"
+            :ref="
+                (el) => {
+                    connectorComponentRef = el
+                }
+            "
+        />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
@@ -55,16 +62,19 @@
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Query permissions</span>
+            <AtlanIcon class="h-3 ml-2 text-gray-500" icon="RunSuccess" />
+            <span class="text-sm text-gray-500"
+                >Query access allowed by default</span
+            >
         </div>
-        <DataScopes v-model:actions="policy.actions" class="mb-4" />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Globe" />
             <span class="text-sm text-gray-500">Masking</span>
         </div>
-        <a-select
-            v-model:value="policy.maskingOption"
-            :options="maskingOptions"
+
+        <DataMaskingSelector
+            v-model:maskingOption="policy.maskingOption"
             class="mb-6 w-80"
         />
 
@@ -101,7 +111,7 @@
                 size="sm"
                 color="primary"
                 padding="compact"
-                @click="$emit('save')"
+                @click="handleSave"
                 >Save</AtlanBtn
             >
         </div>
@@ -113,9 +123,10 @@
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Connector from './connector.vue'
-    import DataScopes from './dataScopes.vue'
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
+    import DataMaskingSelector from './dataMaskingSelector.vue'
 
+    import { useConnectionStore } from '~/store/connection'
     import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
 
@@ -124,9 +135,9 @@
         components: {
             AtlanBtn,
             Connector,
-            DataScopes,
             PillGroup,
             AssetSelectorDrawer,
+            DataMaskingSelector,
         },
         props: {
             policy: {
@@ -137,14 +148,33 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const connectorComponentRef = ref()
+            const policyNameRef = ref()
             const assetSelectorVisible = ref(false)
+            const filterSourceIds = ['powerBI', 'tableau']
+            const connectionStore = useConnectionStore()
 
             function removePolicy() {
                 emit('delete')
             }
 
             function openAssetSelector() {
-                assetSelectorVisible.value = true
+                if (!connectorData.value.attributeValue) {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                } else {
+                    assetSelectorVisible.value = true
+                }
+            }
+
+            const handleSave = () => {
+                if (!policy.value.name) {
+                    policyNameRef.value?.focus()
+                    return
+                } else if (!connectorData.value.attributeValue) {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                } else {
+                    emit('save')
+                }
             }
 
             const assets = computed({
@@ -157,6 +187,10 @@
                 },
             })
 
+            const handleConnectorChange = () => {
+                policy.value.assets = []
+            }
+
             const connectorData = computed({
                 get: () => ({
                     attributeName: 'connectionQualifiedName',
@@ -167,49 +201,28 @@
                         val.attributeName === 'connectionQualifiedName'
                             ? val.attributeValue
                             : ''
+
+                    const found = connectionStore.getList.find(
+                        (conn) =>
+                            conn.attributes?.qualifiedName ===
+                            val.attributeValue
+                    )
+                    policy.value.connectionId = found?.guid || ''
                 },
             })
 
-            // FIXME: Take it out to a config file
-            const maskingOptions = [
-                {
-                    value: 'MASK_REDACT',
-                    label: 'MASK_REDACT',
-                },
-                {
-                    value: 'MASK_HASH',
-                    label: 'MASK_HASH',
-                },
-                {
-                    value: 'MASK_SHOW_LAST_4',
-                    label: 'MASK_SHOW_LAST_4',
-                },
-                {
-                    value: 'MASK_SHOW_FIRST_4',
-                    label: 'MASK_SHOW_FIRST_4',
-                },
-                {
-                    value: 'MASK_NULL',
-                    label: 'MASK_NULL',
-                },
-                {
-                    value: 'MASK_NONE',
-                    label: 'MASK_NONE',
-                },
-                {
-                    value: 'MASK_DATE_SHOW_YEAR',
-                    label: 'MASK_DATE_SHOW_YEAR',
-                },
-            ]
-
             return {
+                handleConnectorChange,
+                filterSourceIds,
                 connectorData,
                 assetSelectorVisible,
                 removePolicy,
                 openAssetSelector,
                 assets,
-                maskingOptions,
                 removeEditFlag,
+                handleSave,
+                policyNameRef,
+                connectorComponentRef,
             }
         },
     })

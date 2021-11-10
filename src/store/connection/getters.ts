@@ -4,12 +4,17 @@ import { State } from './state'
 import { SourceList } from '~/constant/source'
 
 export interface Getters {
+    getList(state: State): ConnectionType[]
     getSourceList(): any[]
     getConnectorImageMapping(): any
     getImage(): (id: string) => any
+    getList(): any
 }
 
 export const getters: GettersTree<State> & Getters = {
+    getList(state: State) {
+        return state.list
+    },
     getSourceList() {
         const duplicateList = this.list?.map((i) =>
             i.attributes?.connectorName?.toLowerCase()

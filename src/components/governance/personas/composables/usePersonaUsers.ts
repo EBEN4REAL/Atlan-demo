@@ -1,37 +1,58 @@
-import { computed, ComputedRef, Ref, watch } from 'vue'
+import { computed, ComputedRef, Ref, watch, reactive, ref } from 'vue'
 import { getFormattedUser } from '~/composables/user/useUsers'
-import { Users, IUser } from '~/services/service/users'
-import { IPersona } from '~/types/accessPolicies/personas'
+// import { IUser } from '~/services/heracles/apis/users'
+import { IPersona, IUser } from '~/types/accessPolicies/personas'
+import {useUsers} from '~/composables/user/useUsers'
 
 function usePersonaUserList(persona: Ref<IPersona>) {
-    const personaUsers = computed(() => persona.value.users!)
-
-    // userNames: Ref<string[]> = ref([])
-    const body = computed(() => ({
-        method: 'in',
-        usernames: personaUsers.value,
-    }))
+    const userListAPIParams: Ref<any> = ref({
+        limit: 15,
+        offset: 0,
+        sort: 'first_name',
+        filter: { $and: [] },
+    })
 
     const {
-        data,
-        isLoading,
-        mutate,
-        error: userListError,
-    } = Users.ListBulk(body)
+        userList: data,
+        getUserList,
+        state,
+        STATES,
+    } = useUsers(userListAPIParams)
 
-    const userList: ComputedRef<IUser[]> = computed(() =>
+    const list: ComputedRef<IUser[]> = computed(() =>
         data.value.map((usr) => getFormattedUser(usr))
     )
+    const userList: Ref<IUser[]> = ref([])
 
     watch(
+        data,
+        () => {
+            userList.value = []
+            let data: IUser[] = []
+            list.value.forEach((t) => {
+                persona.value.users?.forEach((username) => {
+                    if (t.username === username) {
+                        data.push(t)
+                    }
+                })
+            })
+            console.log(data, 'usrList')
+
+            userList.value = data
+        },
+        { immediate: true }
+    )
+    watch(
         () => persona.value.id,
-        () => mutate()
+        () => getUserList()
     )
 
     return {
+        userListAPIParams,
+        getUserList,
         userList,
-        isLoading,
-        userListError,
+        STATES,
+        state,
     }
 }
 
@@ -45,6 +66,13 @@ const userColumns = [
         sortKey: 'first_name',
     },
     {
+        title: 'Role',
+        key: 'role',
+        slots: { customRender: 'role' },
+        filterMultiple: false,
+        width: 150,
+    },
+    {
         title: 'Groups',
         key: 'group',
         sorter: true,
@@ -53,13 +81,7 @@ const userColumns = [
         sortKey: 'group_count',
         dataIndex: 'group_count_string',
     },
-    {
-        title: 'Status',
-        key: 'status',
-        slots: { customRender: 'status' },
-        filterMultiple: false,
-        width: 150,
-    },
+
     {
         title: 'Actions',
         width: 120,

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-4 gap-y-4">
+    <div class="flex flex-col p-6 gap-y-4">
         <AnnouncementWidget :selectedAsset="selectedAsset"></AnnouncementWidget>
         <Readme :guid="readmeGuid(selectedAsset)" />
         <Resources :asset="selectedAsset" />

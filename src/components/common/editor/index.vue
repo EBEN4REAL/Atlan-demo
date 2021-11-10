@@ -1,65 +1,19 @@
 <template>
     <div class="w-full h-full bg-white editor">
-        <editor-menu :editable="editable" :editor="editor" />
-
         <bubble-menu
-            v-if="editor"
-            key="imageWidth"
+            class="bubble-menu"
+            :tippy-options="{
+                duration: 100,
+                zIndex: 1,
+                placement: 'top-start',
+            }"
             :editor="editor"
-            @blur="showImageBubble = false"
+            v-if="editor"
         >
-            <div
-                v-if="editable && showImageBubble"
-                class="flex flex-col w-48 px-5 py-3 bg-white rounded shadow-xl"
-            >
-                <a-radio-group
-                    v-model:value="widthOption"
-                    class="flex flex-col"
-                >
-                    <a-radio :value="1">Orignal Size</a-radio>
-                    <div class="flex flex-col pt-4">
-                        <a-radio class="pb-2" :value="2">Width</a-radio>
-                        <div class="flex p-0 m-0">
-                            <a-input-number
-                                v-model:value="customWidth"
-                                class="w-48 ml-2 rounded-r-none"
-                                :min="5"
-                                :max="200"
-                                :disabled="widthOption === 1"
-                            />
-                            <span
-                                class="
-                                    border-gray-300 border border-l-0
-                                    pt-1.5
-                                    px-1
-                                    h-8
-                                "
-                            >
-                                %
-                            </span>
-                        </div>
-                        <div
-                            class="flex justify-between ml-2 text-xs text-gray"
-                        >
-                            <span class="">Min: 5</span><span>Max: 200</span>
-                        </div>
-                    </div>
-                </a-radio-group>
-                <a-button
-                    class="mt-4"
-                    type="primary"
-                    @click="() => applyImageWidth(editor)"
-                    >Apply</a-button
-                >
-            </div>
+            <selection-menu :editable="editable" :editor="editor" />
         </bubble-menu>
 
-        <!-- <bubble-menu key="selectionMenu" :editor="editor" v-if="editor">
-      <selection-menu :editor="editor" :editable="editable" />
-    </bubble-menu> -->
-
-        <!-- TODO: removed px-7 to make it generic - test edge cases -->
-        <editor-content :editor="editor" />
+        <editor-content :editor="editor" class="mb-4" />
     </div>
 </template>
 
@@ -74,15 +28,30 @@
     import TaskList from '@tiptap/extension-task-list'
     import TaskItem from '@tiptap/extension-task-item'
     import TextAlign from '@tiptap/extension-text-align'
-    import Image from '@tiptap/extension-image'
     import Placeholder from '@tiptap/extension-placeholder'
+    import TableExtension from '@tiptap/extension-table'
+    import TableRow from '@tiptap/extension-table-row'
+    import TableHeader from '@tiptap/extension-table-header'
+    import TableCell from '@tiptap/extension-table-cell'
+
+    import Gapcursor from '@tiptap/extension-gapcursor'
+
+    import Image from '@tiptap/extension-image'
+
     import Highlight from '@tiptap/extension-highlight'
+
+    import Document from '@tiptap/extension-document'
 
     import EditorMenu from './editorMenu.vue'
     import SelectionMenu from './selectionMenu.vue'
     import SlashCommands from './extensions/slashCommands/commands'
+    import ImageUpload from './extensions/imageUpload/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
+
+    const CustomDocument = Document.extend({
+        content: 'heading block*',
+    })
 
     export default defineComponent({
         components: {
@@ -98,11 +67,12 @@
             },
             placeholder: {
                 type: String,
-                default: 'Add some details here...',
+                default: '',
             },
             content: {
                 type: String,
-                default: '',
+                default: `<h1>Try to move the cursor after the image with your arrow keys! You should see a</h1>
+        <image-upload src="https://source.unsplash.com/8xznAGy4HcY/800x400" />`,
             },
         },
         events: ['onEditorContentUpdate'],
@@ -175,25 +145,49 @@
             const editor = useEditor({
                 content: props.content,
                 editable: false,
+                editorProps: {
+                    attributes: {
+                        class: 'prose prose-sm focus:outline-none w-full',
+                    },
+                },
                 extensions: [
-                    StarterKit,
+                    CustomDocument,
+                    StarterKit.configure({
+                        document: false,
+                    }),
                     Underline,
                     Link,
                     TaskList,
                     TaskItem,
-                    CustomImage.configure({
-                        inline: true,
-                    }),
+                    Gapcursor,
+                    Image,
+                    // CustomImage.configure({
+                    //     inline: true,
+                    // }),
                     TextAlign.configure({
                         types: ['heading', 'paragraph'],
                     }),
-                    Placeholder.configure({
-                        placeholder: props.placeholder,
-                        showOnlyWhenEditable: false,
-                    }),
+
                     SlashCommands,
                     LinkPreview,
+                    TableExtension.configure({
+                        resizable: true,
+                    }),
+                    TableRow,
+                    TableCell,
+                    TableHeader,
+                    ImageUpload,
                     Highlight.configure({ multicolor: true }),
+                    Placeholder.configure({
+                        placeholder: ({ node }) => {
+                            if (node.type.name === 'heading') {
+                                return 'Readme Title'
+                            }
+
+                            return props.placeholder
+                        },
+                        showOnlyWhenEditable: false,
+                    }),
                 ],
                 onUpdate({ editor }) {
                     const content = editor.getHTML()

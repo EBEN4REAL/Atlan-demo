@@ -1,12 +1,13 @@
 import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
-import { KeyMaps } from '~/services/heka/heka_keyMaps'
+import { map } from '~/services/sql/query/key'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { generateQueryStringParamsFromObj } from '~/utils/queryString'
-import HEKA_SERVICE_API from '~/services/heka/index'
+// import HEKA_SERVICE_API from '~/services/heka/index'
+import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 
 export default function useProject() {
@@ -144,7 +145,7 @@ export default function useProject() {
             error,
             isLoading,
         } = useSSE({
-            path: KeyMaps.insights.RUN_QUERY,
+            path: map.insights.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
         })
@@ -333,7 +334,7 @@ export default function useProject() {
             activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
         }
         /* Change loading state */
-        HEKA_SERVICE_API.Insights.AbortQuery(body)
+        Insights.AbortQuery(body)
             .then(() => {
                 activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
                     ''

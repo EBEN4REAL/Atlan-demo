@@ -82,24 +82,24 @@
                 handleChange()
             }
 
-            const { o, Escape, d } = useMagicKeys()
+            // const { o, Escape, d } = useMagicKeys()
 
-            watch(o, (v) => {
-                if (v) {
-                    console.log('o')
-                    if (!isEdit.value) {
-                        isEdit.value = true
-                    }
-                }
-            })
-            watch(Escape, (v) => {
-                if (v) {
-                    console.log('esc')
-                    if (isEdit.value) {
-                        isEdit.value = false
-                    }
-                }
-            })
+            // watch(o, (v) => {
+            //     if (v) {
+            //         console.log('o')
+            //         if (!isEdit.value) {
+            //             isEdit.value = true
+            //         }
+            //     }
+            // })
+            // watch(Escape, (v) => {
+            //     if (v) {
+            //         console.log('esc')
+            //         if (isEdit.value) {
+            //             isEdit.value = false
+            //         }
+            //     }
+            // })
 
             const ownerFacetRef: Ref<null | HTMLInputElement> = ref(null)
 

@@ -1,4 +1,4 @@
-import { Components } from '~/api/atlas/client'
+import { Components } from '~/types/atlas/client'
 
 interface BaseAttributes {
     __createdBy: string

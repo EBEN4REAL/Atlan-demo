@@ -9,9 +9,10 @@ import {
     Column,
     View,
 } from '~/types/insights/table.interface'
-import { IndexSearchResponse } from '~/types/common/atlasSearch.interface'
+// import { IndexSearchResponse } from '~/types/common/atlasSearch.interface'
+import {IndexSearchResponse} from '~/services/meta/search/index'
 
-import { Components } from '~/api/atlas/client'
+import { Components } from '~/types/atlas/client'
 
 import store from '~/utils/storage'
 

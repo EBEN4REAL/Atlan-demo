@@ -116,17 +116,19 @@
             </a-menu>
         </template>
     </a-dropdown>
+    <AnnouncementModal :asset="asset" :visible="announcementModalVisible" />
 </template>
 <script lang="ts">
     import { defineComponent, ref, PropType, toRefs } from 'vue'
-    import { useRouter } from 'vue-router'
+
     // components
+    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import { assetInterface } from '~/types/assets/asset.interface'
     export default defineComponent({
-        components: {},
+        components: { AnnouncementModal },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -141,7 +143,8 @@
         setup(props, context) {
             // data
             const isVisible = ref(false)
-            const router = useRouter()
+            const announcementModalVisible = ref(false)
+
             const { asset } = toRefs(props)
             const closeMenu = () => {
                 isVisible.value = false
@@ -151,12 +154,15 @@
                 const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
                 copyToClipboard(text)
             }
-            function handleAnnouncementModal() {}
+            function handleAnnouncementModal() {
+                announcementModalVisible.value = true
+            }
             return {
                 handleCopyProfileLink,
                 isVisible,
                 closeMenu,
                 handleAnnouncementModal,
+                announcementModalVisible,
             }
         },
     })

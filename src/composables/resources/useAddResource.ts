@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
+import { message } from 'ant-design-vue'
 import { Entity } from '~/services/meta/entity/index'
 import { generateUUID } from '~/utils/helper/generator'
-import { message } from 'ant-design-vue'
 
 export default function useAddResource(selectedAsset, link, linkTitle) {
     const body = ref({
@@ -10,7 +10,7 @@ export default function useAddResource(selectedAsset, link, linkTitle) {
             attributes: {
                 qualifiedName: generateUUID(),
                 name: linkTitle,
-                link: link,
+                link,
             },
             relationshipAttributes: {
                 asset: {

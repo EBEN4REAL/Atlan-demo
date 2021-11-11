@@ -45,6 +45,7 @@
                 :selected-pod="selectedPod"
                 :graph-data="graphData"
                 @change="handleClickNode"
+                @refresh="handleRefresh"
             />
         </div>
         <EmptyView
@@ -106,10 +107,9 @@
             /** METHODS */
 
             // getRunList
-            const { liveList } = getRunList(id.value)
-
+            const { liveList, mutate: mutateRunList } = getRunList(id.value)
             // getArchivedRunList
-            const { archivedList, isLoading } = getArchivedRunList(
+            const { archivedList, isLoading, mutate } = getArchivedRunList(
                 id.value,
                 true
             )
@@ -178,6 +178,10 @@
             const handleClickNode = (node, type, clickedPod) => {
                 emit('setSelectedPod', clickedPod)
             }
+            const handleRefresh = () => {
+              mutate()
+              mutateRunList()
+            }
             return {
                 graphData,
                 isLoading,
@@ -186,6 +190,7 @@
                 handleClickNode,
                 selectedPod,
                 loadingGeneral,
+                handleRefresh
             }
         },
     })

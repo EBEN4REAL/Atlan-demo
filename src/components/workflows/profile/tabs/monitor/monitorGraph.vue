@@ -21,7 +21,7 @@
             <div class="flex items-center flex-1 controls">
                 <div
                     class="mr-3 cursor-pointer"
-                    @click="isRunning ? onStopRun() : onRetryRun()"
+                    @click="initialize(true)"
                 >
                     <a-tooltip placement="top">
                         <template #title>

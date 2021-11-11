@@ -90,6 +90,8 @@ export const AssetRelationAttributes = [
     'link',
 ]
 
+export const DefaultRelationAttributes = []
+
 export const BasicSearchAttributes = [
     '__timestamp',
     '__modificationTimestamp',

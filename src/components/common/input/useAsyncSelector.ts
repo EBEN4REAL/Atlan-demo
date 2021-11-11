@@ -88,18 +88,16 @@ export default function useAsyncSelector(
         if (document.location.hostname === 'localhost')
             parsedUrl = parsedUrl.replace('https', 'http')
         try {
-            const { data: response, mutate } = genericAPI(
+            const response = await genericAPI(
                 parsedUrl,
                 method,
                 {
                     params: genParams(valueObject.value, params),
                     body,
                 },
-                { asyncOptions: { immediate: false, onError: e => { throw e } } }
             )
 
-            await mutate()
-            setConfigData(response.value)
+            setConfigData(response)
             createNewVisibility.value = true
         } catch (e) {
             newConfigError.value = true
@@ -125,17 +123,15 @@ export default function useAsyncSelector(
         if (document.location.hostname === 'localhost')
             parsedUrl = parsedUrl.replace('https', 'http')
         try {
-            const { data: response, mutate } = genericAPI(
+            const response = await genericAPI(
                 getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
                 {
                     params: genParams(valueObject.value, params),
                     body: getParsedBody(addFormValues),
                 },
-                { asyncOptions: { immediate: false, onError: e => { throw e } } }
             )
-            await mutate()
-            setData(response.value)
+            setData(response)
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig.value
             shouldRefetch.value = true

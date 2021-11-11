@@ -44,19 +44,18 @@ export default function useAsyncTreeSelect(
             parsedUrl = parsedUrl.replace('https', 'http')
 
         try {
-            const { data: response, mutate } = genericAPI(
+            const response = await genericAPI(
                 getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
                 {
                     params: genParams(valueObject.value, params),
                     body,
                 },
-                { asyncOptions: { immediate: false, onError: e => { throw e } } }
+
             )
-            await mutate()
             // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
             // eslint-disable-next-line no-param-reassign
-            n.dataRef.children = [...getData(response.value)].map((r) => ({
+            n.dataRef.children = [...getData(response)].map((r) => ({
                 pid: n.value,
                 title: r.label,
                 isLeaf: true,

@@ -41,5 +41,9 @@
                 },
             },
         },
+
+        setup() {
+            console.log('hello')
+        },
     })
 </script>

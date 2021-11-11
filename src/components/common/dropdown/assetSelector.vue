@@ -1,5 +1,5 @@
 <template>
-    <!-- <a-select
+    <a-select
         :value="modelValue"
         style="width: 100%; border-radius: 8px"
         :class="$style.connector"
@@ -30,10 +30,10 @@
         <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
         </template>
-    </a-select> -->
+    </a-select>
     <div></div>
 
-    <a-tree-select
+    <!-- <a-tree-select
         :value="modelValue"
         style="width: 100%; border-radius: 8px"
         :class="$style.connector"
@@ -45,18 +45,18 @@
         dropdownClassName="connectorDropdown"
         :allowClear="true"
         :loading="isLoading"
-    >
-        <!-- <template #title="node">
+    > -->
+    <!-- <template #title="node">
             <div class="flex items-center">
                 <AtlanIcon :icon="typeName + `Gray`" class="h-4 mr-1.5" />
                 <span class="">{{ node.label }}</span>
             </div>
         </template> -->
 
-        <template #suffixIcon>
+    <!-- <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
         </template>
-    </a-tree-select>
+    </a-tree-select> -->
 </template>
 
 <script lang="ts">

@@ -9,7 +9,7 @@
             <AtlanIcon
                 v-if="!$slots.categoryFilter"
                 icon="Search"
-                class="flex-none pr-1 text-gray-500"
+                class="flex-none pl-1 text-gray-500"
             />
             <a-input
                 ref="searchBar"

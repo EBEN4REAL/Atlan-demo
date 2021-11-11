@@ -1,16 +1,30 @@
 <template>
-    <div
-        class="flex items-center w-full px-3 mt-2"
-        :class="activeInlineTab?.queryId ? 'justify-between' : 'justify-end'"
-    >
-        <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId">
-            <span class="mr-1">{{ activeInlineTab.label }}</span>
-            <div class="-mt-0.5">
+    <div class="flex items-center justify-between w-full px-3 mt-2">
+        <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
+
+        <div class="flex items-center mr-3">
+            <div>
+                <AtlanIcon
+                    :icon="
+                        getEntityStatusIcon('query', activeInlineTab?.status)
+                    "
+                    class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                ></AtlanIcon>
+            </div>
+            <span
+                class="mr-1 text-base text-gray-500"
+                v-if="activeInlineTab?.savedQueryParentFolderTitle"
+                >{{ activeInlineTab?.savedQueryParentFolderTitle }} /
+            </span>
+            <span class="mr-1 text-base text-gray-700">{{
+                activeInlineTab.label
+            }}</span>
+            <!-- <div class="-mt-0.5">
                 <StatusBadge
                     :status-id="activeInlineTab.status"
                     show-no-status
                 ></StatusBadge>
-            </div>
+            </div> -->
         </div>
         <a-popover
             trigger="click"
@@ -70,26 +84,39 @@
                         class="w-4 h-4 mx-1 connector_icon"
                     />
                     <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
-                    <span v-else>Select Connection</span>
+                    <span v-else class="text-gray-500">Select Connector</span>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center" v-if="connectionName">
                     <!-- <div class="mx-1">/</div> -->
                     <!-- <AtlanIcon
                         class="w-4 h-4 mr-1 -mt-0.5"
                         icon="DatabaseGrayscale"
                     /> -->
-                    <div v-if="databaseName">{{ databaseName }}</div>
-                    <div v-if="databaseName">.</div>
-                    <span v-else>database/</span>
+                    <div v-if="databaseName" class="text-gray-700">
+                        {{ databaseName }}
+                    </div>
+                    <div
+                        v-if="databaseName"
+                        :class="schemaName ? `text-gray-700` : `text-gray-500`"
+                        class="text-base font-bold"
+                    >
+                        .
+                    </div>
+                    <span v-else class="text-gray-500">Select database</span>
                     <!-- <div class="mx-1">/</div> -->
                 </div>
-                <div class="flex items-center">
+                <div
+                    class="flex items-center"
+                    v-if="connectionName && databaseName"
+                >
                     <!-- <AtlanIcon
                         class="w-4 h-4 mr-1 -mt-0.5"
                         icon="SchemaGrayscale"
                     /> -->
-                    <span v-if="schemaName">{{ schemaName }}</span>
-                    <span v-else>schema</span>
+                    <span v-if="schemaName" class="text-gray-700">{{
+                        schemaName
+                    }}</span>
+                    <span v-else class="text-gray-500">select schema</span>
                 </div>
                 <div class="flex items-center">
                     <AtlanIcon
@@ -182,6 +209,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         name: 'Editor Context',
@@ -276,6 +304,7 @@
                 handleChange,
                 connectorAsset,
                 activeInlineTab,
+                getEntityStatusIcon,
             }
         },
     })
@@ -289,7 +318,7 @@
 </style>
 <style lang="less" scoped>
     .connector_icon {
-        margin-top: -3.3px;
+        margin-top: -2.3px;
         margin-right: 2px;
     }
 </style>

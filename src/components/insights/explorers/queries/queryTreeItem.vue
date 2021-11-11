@@ -338,7 +338,7 @@
 
     // import { Classification } from '~/api/atlas/classification'
     import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
-    import { Insights } from '~/services/sql/query'
+    import { Insights } from '~/services/meta/insights/index'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 

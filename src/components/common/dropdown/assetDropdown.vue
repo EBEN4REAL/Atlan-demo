@@ -4,7 +4,7 @@
             <div>
                 <AssetSelector
                     :key="getKey(index)"
-                    :value="asset[item.attribute]"
+                    :modelValue="asset[item.attribute]"
                     :type-name="item.typeName"
                     :filters="getFilter(index)"
                     :disabled="isDisabled(index)"

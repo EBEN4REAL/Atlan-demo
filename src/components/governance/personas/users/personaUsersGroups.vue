@@ -23,7 +23,7 @@
                 <template #content>
                     <div
                         class="flex flex-col items-center py-1 bg-white rounded"
-                        style="width: 260px"
+                        style="width: 270px"
                     >
                         <!-- <UserSelector
                             :no-owners-assigned="false"
@@ -33,34 +33,35 @@
                         /> -->
                         <UserSelector
                             :showNoOwners="false"
-                            :modelValue="userGroupData"
+                            :enableTabs="enableTabs"
+                            v-model:modelValue="userGroupData"
                             @change="handleUsersChange"
                         />
                         <div class="w-full mt-2">
                             <div class="flex justify-end text-xs">
                                 <span
-                                    v-if="userGroupData.userValue.length > 0"
+                                    v-if="userGroupData.ownerUsers.length > 0"
                                     >{{
-                                        `${userGroupData.userValue.length} user(s)`
+                                        `${userGroupData.ownerUsers.length} user(s)`
                                     }}</span
                                 >
                                 <span
                                     v-if="
-                                        userGroupData.userValue.length &&
-                                        userGroupData.groupValue.length
+                                        userGroupData.ownerUsers.length &&
+                                        userGroupData.ownerGroups.length
                                     "
                                     >{{ `&nbsp;&` }}</span
                                 >
                                 <span
-                                    v-if="userGroupData.groupValue.length > 0"
+                                    v-if="userGroupData.ownerGroups.length > 0"
                                     >{{
-                                        ` &nbsp;${userGroupData.groupValue.length} group(s)`
+                                        ` &nbsp;${userGroupData.ownerGroups.length} group(s)`
                                     }}</span
                                 >
                                 <span
                                     v-if="
-                                        userGroupData.groupValue.length > 0 ||
-                                        userGroupData.userValue.length > 0
+                                        userGroupData.ownerGroups.length > 0 ||
+                                        userGroupData.ownerUsers.length > 0
                                     "
                                     >{{ `&nbsp;selected` }}</span
                                 >
@@ -108,6 +109,7 @@
             :data-source="filteredList"
             :columns="userColumns"
             :row-key="(user) => user.id"
+            :class="$style.table"
             :loading="
                 [USER_STATES.PENDING].includes(userState) ||
                 [USER_STATES.VALIDATING].includes(userState)
@@ -199,7 +201,7 @@
                             () => {
                                 listType === 'users'
                                     ? getUserList()
-                                    : getGroupsList()
+                                    : getGroupList()
                             }
                         "
                     >
@@ -214,6 +216,7 @@
             v-if="filteredList && listType === 'groups'"
             id="groupList"
             :key="persona.id"
+            :class="$style.table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :table-layout="'fixed'"
             :data-source="filteredList"
@@ -305,10 +308,10 @@
     import Avatar from '~/components/common/avatar/avatar.vue'
     import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
 
-    // import {
-    //     isEditing,
-    //     selectedPersonaDirty,
-    // } from '../composables/useEditPersona'
+    import {
+        isEditing,
+        selectedPersonaDirty,
+    } from '../composables/useEditPersona'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
@@ -350,6 +353,7 @@
             const { usePersonaGroupList, groupColumns } = usePersonaGroups
             const { updateUsers } = usePersonaService()
             const {
+                list: allUsers,
                 getUserList,
                 userListAPIParams,
                 STATES: USER_STATES,
@@ -357,11 +361,11 @@
                 userList,
             } = usePersonaUserList(persona)
             const {
-                getGroupsList,
+                list: allGroups,
+                getGroupList,
                 STATES: GROUP_STATES,
                 state: groupState,
                 groupList,
-                groupListError,
             } = usePersonaGroupList(persona)
 
             const filteredList = computed(() => {
@@ -405,11 +409,6 @@
                 showUserPreview()
             }
 
-            whenever(groupListError.value, () => {
-                message.error('Failed to get groups')
-                console.error(groupListError.value)
-            })
-
             // const userGroupData = computed({
             //     get: () => ({
             //         userValue: selectedPersonaDirty.value!.users,
@@ -445,7 +444,7 @@
                             addUsersLoading.value = false
                             popoverVisible.value = false
                             getUserList()
-                            getGroupsList()
+                            getGroupList()
                         })
                         .catch((e) => {
                             addUsersLoading.value = false
@@ -460,11 +459,11 @@
             }
 
             const userGroupData: Ref<{
-                userValue: string[]
-                groupValue: string[]
+                ownerUsers: string[]
+                ownerGroups: string[]
             }> = ref({
-                userValue: persona.value.users ?? [],
-                groupValue: persona.value.groups ?? [],
+                ownerUsers: persona.value.users ?? [],
+                ownerGroups: persona.value.groups ?? [],
             })
 
             const insertUserstoMap = (
@@ -478,6 +477,11 @@
                         }
                     })
                 })
+                console.log(
+                    selectedUsernameToUserMap.value,
+                    usernames,
+                    usersList
+                )
             }
             const insertGroupstoMap = (
                 groupnames: string[],
@@ -552,10 +556,10 @@
                 })
                     .then(() => {
                         addUsersLoading.value = false
-                        userGroupData.value.userValue = usernames
-                        userGroupData.value.groupValue = groupaliases
+                        userGroupData.value.ownerUsers = usernames
+                        userGroupData.value.ownerGroups = groupaliases
                         getUserList()
-                        getGroupsList()
+                        getGroupList()
                     })
                     .catch((e) => {
                         if (type === 'user') {
@@ -576,17 +580,15 @@
             }
 
             const handleUsersChange = (data: {
-                usersList: string[]
-                groupsList: string[]
+                ownerUsers: string[]
+                ownerGroups: string[]
             }) => {
-                insertUserstoMap(userGroupData.value.userValue, data.usersList)
-                persona.value.users = userGroupData.value.userValue
+                insertUserstoMap(data?.ownerUsers ?? [], allUsers.value)
+                persona.value.users = data?.ownerUsers ?? []
 
-                insertGroupstoMap(
-                    userGroupData.value.groupValue,
-                    data.groupsList
-                )
-                persona.value.groups = userGroupData.value.groupValue
+                insertGroupstoMap(data?.ownerGroups ?? [], allGroups.value)
+                persona.value.groups = data?.ownerGroups ?? []
+                return
             }
             /* Users related functions */
             const handleUsersTableChange = (
@@ -610,7 +612,7 @@
                 filters: any,
                 sorter: any
             ) => {
-                getGroupsList()
+                getGroupList()
             }
 
             // BEGIN: GROUP PREVIEW
@@ -625,8 +627,10 @@
             }
 
             return {
+                selectedGroupnameToGroupMap,
+                selectedUsernameToUserMap,
                 showGroupPreviewDrawer,
-                getGroupsList,
+                getGroupList,
                 getUserList,
                 USER_STATES,
                 userState,
@@ -652,9 +656,17 @@
                 showUserPreviewDrawer,
                 userGroupData,
                 groupColumns,
+                groupList,
                 /* Users */
                 handleUsersTableChange,
             }
         },
     })
 </script>
+<style lang="less" module>
+    .table {
+        :global(.ant-table-measure-row) {
+            display: none;
+        }
+    }
+</style>

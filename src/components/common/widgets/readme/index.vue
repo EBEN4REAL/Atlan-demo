@@ -1,12 +1,9 @@
 <template>
-    <div
-        class="flex flex-col px-6 py-4 bg-white border border-gray-100 rounded"
-    >
-        {{ selectedAsset }}
+    <div class="flex flex-col p-4 bg-white border border-gray-100 rounded">
         <div class="flex items-center justify-between">
             <div class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-6 mr-3" /><span
-                    class="text-sm font-semibold text-gray-700"
+                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
+                    class="text-base font-bold text-gray"
                     >Readme</span
                 >
             </div>

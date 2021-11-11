@@ -83,6 +83,7 @@ export function useSavedQuery(
                 savedQuery.attributes.parentFolderQualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
             status: savedQuery.attributes.certificateStatus as string,
+            savedQueryParentFolderTitle: savedQuery?.parentTitle,
             explorer: {
                 schema: {
                     connectors: connectors,
@@ -244,7 +245,7 @@ export function useSavedQuery(
         // console.log(body.value, 'update')
         // return
         isUpdating.value = true
-        const { data, error, isLoading } = Insights.UpdateSavedQuery(body.value)
+        const { data, error, isLoading } = Insights.UpdateSavedQuery(body.value, {})
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -499,7 +500,7 @@ export function useSavedQuery(
         }
         // chaing loading to true
         saveQueryLoading.value = true
-        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
+        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value, {})
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -619,7 +620,7 @@ export function useSavedQuery(
         }
         // chaing loading to true
         saveFolderLoading.value = true
-        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
+        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value, {})
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -733,7 +734,7 @@ export function useSavedQuery(
         }
         // chaing loading to true
         saveQueryLoading.value = true
-        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value)
+        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value, {})
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {

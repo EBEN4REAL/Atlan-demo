@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { computed, ref, Ref } from 'vue'
-import { useAPI } from '~/services/api/useAPI';
+import genericAPI from '~/services/api/generic';
 import { Schema, ProcessedSchema, ProcessedRule } from './builder.interface'
 import { getStringFromPath } from '@/common/input/asyncSelect.utils'
 
@@ -341,15 +341,17 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
       let parsedUrl = url;
       if (parsedUrl.includes('{{domain}}'))
         parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
-      const response = await useAPI(
-        () => parsedUrl, 
-        method, 
-        { 
-          params, 
-          body: finalConfigObject(processedSchema.value) 
+      if (document.location.hostname === 'localhost')
+        parsedUrl = parsedUrl.replace('https', 'http')
+      const response = await genericAPI(
+        parsedUrl,
+        method,
+        {
+          params,
+          body: finalConfigObject(processedSchema.value)
         },
-        {}
       )
+
       submitStatus.value.success = true;
       submitStatus.value.successMessage = f.apiConfig?.successMessage || 'success'
     } catch (e) {

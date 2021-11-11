@@ -1,6 +1,6 @@
 <template>
-    <div class="">
-        <div class="flex items-center justify-between px-4 mb-2">
+    <div class="w-full py-1">
+        <div class="flex items-center justify-between mb-2">
             <SearchAdvanced
                 ref="ownerSearchRef"
                 v-model="queryText"
@@ -10,26 +10,42 @@
             >
                 <template #tab>
                     <div class="flex gap-1">
-                        <AtlanIcon
+                        <div
                             :class="
-                                componentType === 'users'
-                                    ? 'text-primary font-bold'
+                                !enableTabs.includes('users')
+                                    ? 'pointer-events-none cursor-not-allowed'
                                     : ''
                             "
-                            icon="User"
-                            class="mx-auto"
-                            @click="handleUserClick"
-                        />
-                        <AtlanIcon
+                        >
+                            <AtlanIcon
+                                :class="
+                                    componentType === 'users'
+                                        ? 'text-primary font-bold '
+                                        : ''
+                                "
+                                icon="User"
+                                class="mx-auto"
+                                @click="handleUserClick"
+                            />
+                        </div>
+                        <div
                             :class="
-                                componentType === 'groups'
-                                    ? 'text-primary font-bold'
+                                !enableTabs.includes('groups')
+                                    ? 'pointer-events-none cursor-not-allowed'
                                     : ''
                             "
-                            icon="GroupStatic"
-                            class="mx-auto"
-                            @click="handleGroupClick"
-                        />
+                        >
+                            <AtlanIcon
+                                :class="
+                                    componentType === 'groups'
+                                        ? 'text-primary font-bold'
+                                        : ''
+                                "
+                                icon="GroupStatic"
+                                class="mx-auto"
+                                @click="handleGroupClick"
+                            />
+                        </div>
                     </div>
                 </template>
             </SearchAdvanced>
@@ -107,13 +123,24 @@
                     return true
                 },
             },
+            enableTabs: {
+                type: Object as PropType<Array<any>>,
+                default: ['users', 'groups'],
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNoOwners } = toRefs(props)
+            const { showNoOwners, enableTabs } = toRefs(props)
             const componentType = ref('users')
+            if (enableTabs.value.length < 2) {
+                watch(enableTabs, () => {
+                    componentType.value = enableTabs.value[0] as
+                        | 'users'
+                        | 'groups'
+                })
+            }
 
             const queryText = ref('')
 
@@ -142,7 +169,7 @@
                     delete localValue.value.ownerGroups
                 }
                 modelValue.value = localValue.value
-                emit('change')
+                emit('change', localValue.value)
             })
 
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
@@ -157,6 +184,7 @@
             }
 
             return {
+                enableTabs,
                 handleGroupClick,
                 componentType,
                 handleUserClick,

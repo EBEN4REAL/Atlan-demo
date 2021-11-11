@@ -182,12 +182,27 @@ import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
+import QueryVerified from '~/assets/images/icons/query-verified.svg'
+import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
+import QueryDraft from '~/assets/images/icons/query-draft.svg'
+
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
 import ResendInvite from '~/assets/images/icons/invite.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 
+import Code from '~/assets/images/readme/code.svg'
+import Underline from '~/assets/images/readme/text-underline.svg'
+import Bold from '~/assets/images/readme/text-bold.svg'
+import Italic from '~/assets/images/readme/text-italic.svg'
+import Strike from '~/assets/images/readme/text-strike.svg'
+import Undo from '~/assets/images/readme/undo.svg'
+import Redo from '~/assets/images/readme/redo.svg'
+
 export default {
+    QueryVerified,
+    QueryDeprecated,
+    QueryDraft,
     ChevronLeft,
     CheckCircled,
     DisableUser,
@@ -376,4 +391,11 @@ export default {
     DatabaseGray,
     SchemaGray,
     NoResultsFound,
+    Code,
+    Underline,
+    Bold,
+    Italic,
+    Strike,
+    Undo,
+    Redo,
 }

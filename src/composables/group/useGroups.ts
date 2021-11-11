@@ -27,7 +27,7 @@ export const useGroup = (groupListAPIParams: {
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
         },
-        cacheKey: LIST_GROUP
+        cacheKey: LIST_GROUP,
     })
 
     const { state, STATES } = swrvState(data, error, isValidating)
@@ -82,24 +82,28 @@ export default function useGroups(groupListAPIParams: {
         return []
     })
     const localGroupsList: Ref<any[]> = ref([])
-    watch(data, () => {
-        const escapedData = data?.value?.records
-            ? data?.value?.records?.map((group: any) =>
-                getFormattedGroup(group)
-            )
-            : []
+    watch(
+        data,
+        () => {
+            const escapedData = data?.value?.records
+                ? data?.value?.records?.map((group: any) =>
+                      getFormattedGroup(group)
+                  )
+                : []
 
-        if (data && data.value) {
-            if (groupListAPIParams.offset > 0) {
-                localGroupsList.value = [
-                    ...localGroupsList.value,
-                    ...escapedData,
-                ]
-            } else {
-                localGroupsList.value = escapedData
+            if (data && data.value) {
+                if (groupListAPIParams.offset > 0) {
+                    localGroupsList.value = [
+                        ...localGroupsList.value,
+                        ...escapedData,
+                    ]
+                } else {
+                    localGroupsList.value = escapedData
+                }
             }
-        }
-    })
+        },
+        { immediate: true }
+    )
     const groupListConcatenated: ComputedRef<any> = computed(
         () => localGroupsList.value || []
     )

@@ -1,11 +1,9 @@
 <template>
-    <div
-        class="flex flex-col px-6 py-4 bg-white border border-gray-100 rounded"
-    >
+    <div class="flex flex-col p-4 bg-white border border-gray-100 rounded">
         <div class="flex items-center justify-between">
             <div class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-6 mr-3" /><span
-                    class="text-sm font-semibold text-gray-700"
+                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
+                    class="text-base font-bold text-gray"
                     >Readme</span
                 >
             </div>
@@ -52,7 +50,7 @@
         <div
             class="mt-3 border-0"
             style="min-height: 200px"
-            v-else-if="(guid && !isLoading) || isEditMode"
+            v-else-if="(guid && !isLoading) || isEditMode || readme.guid"
         >
             <Editor ref="editor" :isEditMode="isEditMode" v-model="content" />
         </div>
@@ -94,10 +92,14 @@
                 required: false,
                 default: true,
             },
+            selectedAsset: {
+                required: false,
+            },
         },
         setup(props) {
+            const { selectedAsset } = toRefs(props)
             const actions = inject('actions')
-            const selectedAsset = inject('selectedAsset')
+
             const { readmeGuid } = useAssetInfo()
 
             const guid = computed(() => {
@@ -127,7 +129,7 @@
             })
 
             watch(list, () => {
-                if (list.value.length > 0) {
+                if (list?.value?.length > 0) {
                     readme.value = list.value[0]
                     console.log(description(readme?.value))
                     content.value = description(readme?.value)
@@ -150,6 +152,8 @@
 
             const handleCancel = () => {
                 if (editor.value) {
+                    console.log(readme.value)
+                    console.log(description(readme.value))
                     editor.value.resetEditor(description(readme?.value))
                 }
                 isEditMode.value = false
@@ -157,13 +161,13 @@
             const entity = ref({
                 typeName: 'Readme',
                 attributes: {
-                    qualifiedName: `${selectedAsset.value.guid}/readme`,
+                    qualifiedName: `${selectedAsset?.value?.guid}/readme`,
                     name: `Readme`,
                 },
                 relationshipAttributes: {
                     asset: {
-                        guid: selectedAsset.value?.guid,
-                        typeName: selectedAsset.value?.typeName,
+                        guid: selectedAsset?.value?.guid,
+                        typeName: selectedAsset?.value?.typeName,
                     },
                 },
             })
@@ -180,9 +184,15 @@
             } = updateAsset(body)
 
             watch(data, () => {
-                if (data.value?.mutatedEntities?.UPDATE?.length > 0) {
+                if (data.value?.mutatedEntities?.CREATE?.length > 0) {
+                    readme.value = data.value?.mutatedEntities?.CREATE[0]
+                    selectedAsset.value.readme = {
+                        guid: readme.value?.guid,
+                    }
+                    handleCancel()
+                } else if (data.value?.mutatedEntities?.UPDATE?.length > 0) {
                     readme.value.attributes.description =
-                        data.value?.mutatedEntities?.UPDATE[0].attributes.description
+                        data.value?.mutatedEntities?.UPDATE[0].attributes?.description
                     isEditMode.value = false
                 } else {
                     isEditMode.value = false

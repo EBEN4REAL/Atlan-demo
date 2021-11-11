@@ -4,7 +4,7 @@
             <Loading v-if="isQueryRunning === 'loading'" />
 
             <!-- <LoadingView v-if="isQueryRunning === 'loading'" size="small" class="w-1 h-1 mr-4" /> -->
-            <AtlanTable
+            <!-- <AtlanTable
                 :columnsData="activeInlineTab.playground.editor.columnList"
                 rowClassNames=""
                 v-else-if="
@@ -15,7 +15,43 @@
                 "
                 :dataList="activeInlineTab.playground.editor.dataList"
                 :showLoading="false"
-            />
+            /> -->
+
+            <AtlanTable
+                :columnsData="activeInlineTab.playground.editor.columnList"
+                v-if="
+                    activeInlineTab.playground.editor.columnList.length > 0 &&
+                    isQueryRunning === 'success'
+                        ? true
+                        : false
+                "
+                :dataList="activeInlineTab.playground.editor.dataList"
+            >
+                <template #header>
+                    <thead>
+                        <tr>
+                            <th
+                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                style="z-index: 4"
+                            >
+                                #
+                                <span class="resize-handle"></span>
+                            </th>
+
+                            <th
+                                v-for="(col, index) in activeInlineTab
+                                    .playground.editor.columnList"
+                                :key="index"
+                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                style="z-index: 3"
+                            >
+                                {{ col.title }}
+                                <span class="resize-handle"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                </template>
+            </AtlanTable>
 
             <!-- --------------- -->
 

@@ -16,12 +16,14 @@
             </AtlanBtn>
         </template>
         <template #sidebar>
-            <SearchAndFilter
-                v-model:value="searchTerm"
-                placeholder="Search for personas"
-                class="mx-4 mt-6 mb-4 bg-white"
-                :autofocus="true"
-            />
+            <div class="px-4">
+                <SearchAndFilter
+                    v-model:modelValue="searchTerm"
+                    placeholder="Search for personas"
+                    class="mt-6 mb-4 bg-white"
+                    :autofocus="true"
+                />
+            </div>
 
             <ExplorerList
                 v-model:selected="selectedPersonaId"

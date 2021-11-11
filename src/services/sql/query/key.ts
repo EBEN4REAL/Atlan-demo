@@ -12,6 +12,6 @@ export const map = {
         [RUN_QUERY]: ({ params }: PathParams) => getAPIPath('api/sql/query', `/stream?${params}`),
     },
     asset: {
-        [PREVIEW_TABLE]: () => 'query/preview',
+        [PREVIEW_TABLE]: () => getAPIPath('sql', '/query/preview'),
     },
 }

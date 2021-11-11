@@ -6,8 +6,8 @@
         :load-data="onLoadData"
         :loadedKeys="loadedKeys"
         :treeDataSimpleMode="true"
-        :height="300"
-        class="bg-transparent"
+        @select="handleSelect"
+        class="pl-3 bg-transparent"
         :auto-expand-parent="false"
     >
         <template #switcherIcon>
@@ -21,26 +21,12 @@
 </template>
 <script lang="ts">
     // library
-    import {
-        defineComponent,
-        computed,
-        PropType,
-        ref,
-        toRef,
-        toRefs,
-        watch,
-    } from 'vue'
-    import { useRouter } from 'vue-router'
-    import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
-    import { useDebounceFn } from '@vueuse/core'
-    import { useVModels } from '@vueuse/core'
+    import { defineComponent, computed, toRefs } from 'vue'
 
     import GlossaryTreeItem2 from '@/glossary/tree/glossaryTreeItem2.vue'
 
-    // composables
-    import useGtcSearch from '~/composables/glossary/useGtcSearch'
-
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         components: {
@@ -52,25 +38,31 @@
                 required: false,
                 default: () => [],
             },
-            onLoadData: {
-                type: Function,
-                required: false,
-                default: () => {},
-            },
-            loadedKeys: {
-                type: Array as PropType<string[]>,
-                required: true,
-                default: () => [],
-            },
         },
+        emits: ['select'],
         setup(props, { emit }) {
             const { list } = toRefs(props)
 
+            const router = useRouter()
+
+            const { onLoadData, loadedKeys } = useGlossaryTree({})
+
+            const handleSelect = (node, e) => {
+                emit('select', e.node.dataRef)
+            }
+
             return {
                 list,
+                onLoadData,
+                loadedKeys,
+                handleSelect,
             }
             // data
         },
     })
 </script>
-<style lang="less" module></style>
+<style lang="less" module>
+    :global(.ant-tree-switcher_open) {
+        transform: rotate(90deg);
+    }
+</style>

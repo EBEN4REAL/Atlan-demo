@@ -4,9 +4,13 @@ export interface Actions extends State {
     setList(value: any): void
     setTermsCount(value: any): void
     setCategoryCount(value: any): void
+    setSelectedGlossary(value: any): void
 }
 
 export const actions: Actions = {
+    setSelectedGlossary(value) {
+        this.selectedGlossary = value
+    },
     setList(value) {
         this.list = value
     },

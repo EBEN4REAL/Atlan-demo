@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-3">
+    <div class="px-4 py-2 mb-3">
         <div class="flex items-center justify-between mb-4">
             <div class="text-lg font-bold">Groups</div>
             <div v-if="showUserGroups">
@@ -28,7 +28,9 @@
                 <div class="w-full">
                     <SearchAndFilter
                         v-model:value="searchText"
-                        :placeholder="`Search ${selectedUser.group_count}  groups`"
+                        :placeholder="`Search ${
+                            selectedUser.group_count ?? 0
+                        }  groups`"
                         class="mr-1"
                         size="minimal"
                         @change="handleSearch"
@@ -47,8 +49,10 @@
                 v-if="!selectedUser.group_count"
                 class="flex flex-col items-center justify-center"
             >
-                <div class="mt-6 text-center">
-                    <p class="text-lg">This user is not part of any group.</p>
+                <div
+                    class="flex items-center justify-center w-full  componentHeight"
+                >
+                    <EmptyState desc="This user is not part of any group." />
                 </div>
             </div>
             <div
@@ -157,12 +161,14 @@
 
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import EmptyState from '@/common/empty/index.vue'
 
     export default defineComponent({
         name: 'UserPreviewGroups',
         components: {
             ErrorView,
             GroupList,
+            EmptyState,
             SearchAndFilter,
         },
         props: {
@@ -322,4 +328,8 @@
     })
 </script>
 
-<style lang="less" module></style>
+<style lang="less" scoped>
+    .componentHeight {
+        height: calc(100vh - 12rem);
+    }
+</style>

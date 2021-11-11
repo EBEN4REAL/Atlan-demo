@@ -22,8 +22,8 @@ import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
 
 interface UseTreeParams {
-    emit: any
-    parentGlossaryGuid: Ref<string | undefined>
+    emit?: any
+    parentGlossaryGuid?: Ref<string | undefined>
     optimisticUpdate?: boolean
     filterMode?: boolean
     cacheKey?: string
@@ -40,8 +40,6 @@ const useGlossaryTree = ({
     parentGlossaryGuid,
     nodesKey = 'guid',
 }: UseTreeParams) => {
-    const baseTreeData = ref([])
-
     const limit = ref(100)
     const offset = ref(0)
     const queryText = ref('')
@@ -50,7 +48,7 @@ const useGlossaryTree = ({
     })
     const aggregations = ref([])
     const postFacets = ref({})
-    const dependentKey = ref('DEFAULT_GLOSSARY')
+    const dependentKey = ref(null)
     const attributes = ref([...InternalAttributes, ...AssetAttributes])
     const relationAttributes = ref([])
     const preference = ref({
@@ -80,7 +78,7 @@ const useGlossaryTree = ({
     const { data, mutate } = useIndexSearch<assetInterface>(
         defaultBody,
         dependentKey,
-        true,
+        false,
         false,
         1
     )
@@ -89,8 +87,13 @@ const useGlossaryTree = ({
         treeNode.dataRef.isOpen = true
 
         if (treeNode.typeName === 'AtlasGlossary') {
-            facets.value.glossary = treeNode.attributes?.qualifiedName
-            facets.value.isRootTerm = true
+            facets.value = {
+                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                glossary: treeNode.attributes?.qualifiedName,
+                isRootTerm: true,
+                isRootCategory: true,
+            }
+
             generateBody()
             try {
                 await mutate()
@@ -112,9 +115,14 @@ const useGlossaryTree = ({
                 console.log(e)
             }
         } else if (treeNode.typeName === 'AtlasGlossaryCategory') {
-            facets.value.glossary =
-                treeNode.attributes?.anchor?.uniqueAttributes?.qualifiedName
-            facets.value.category = treeNode.attributes?.qualifiedName
+            facets.value = {
+                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                glossary:
+                    treeNode.attributes?.anchor?.uniqueAttributes
+                        ?.qualifiedName,
+                parentCategory: treeNode.attributes?.qualifiedName,
+            }
+
             generateBody()
             try {
                 await mutate()
@@ -122,37 +130,25 @@ const useGlossaryTree = ({
                     treeNode.dataRef.children = []
                 }
 
-                let map = data.value?.entities.map((i) => ({
-                    ...i,
-                    id: i.attributes?.qualifiedName,
-                    key: i.attributes?.qualifiedName,
-                    isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                }))
-                if (map) {
-                    treeNode.dataRef.children.push(...map)
-                    loadedKeys.value.push(treeNode.dataRef.key)
+                if (data.value?.entities) {
+                    let map = data.value?.entities?.map((i) => ({
+                        ...i,
+                        id: i.attributes?.qualifiedName,
+                        key: i.attributes?.qualifiedName,
+                        isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                    }))
+                    if (map) {
+                        treeNode.dataRef.children.push(...map)
+                        loadedKeys.value.push(treeNode.dataRef.key)
+                    }
+                } else {
+                    treeNode.dataRef.children = null
+                    treeNode.dataRef.isLeaf = true
                 }
             } catch (e) {
                 console.log(e)
             }
         }
-    }
-
-    const { glossaryList } = useGlossaryData()
-
-    const initTree = () => {
-        baseTreeData.value = glossaryList.value.map((i) => {
-            let isLeafFlag = false
-            if (i.termsCount === 0 && i.categoryCount === 0) {
-                isLeafFlag = true
-            }
-            return {
-                ...i,
-                id: i.attributes?.qualifiedName,
-                key: i.attributes?.qualifiedName,
-                isLeaf: isLeafFlag,
-            }
-        })
     }
 
     // watch(data, () => {
@@ -186,8 +182,7 @@ const useGlossaryTree = ({
 
     return {
         onLoadData,
-        baseTreeData,
-        initTree,
+
         generateBody,
         data,
         loadedKeys,

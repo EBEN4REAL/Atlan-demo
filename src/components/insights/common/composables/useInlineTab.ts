@@ -122,10 +122,10 @@ export function useInlineTab(
             (tab) => tab.key === activeTab.key
         )
         console.log(index, activeTab, 'dds')
-        // if (index !== -1) {
-        //     console.log(index, activeTab, 'modifyTab')
-        //     tabsArray.value[index] = activeTab
-        // }
+        if (index !== -1) {
+            console.log(index, activeTab, 'modifyTab')
+            tabsArray.value[index] = activeTab
+        }
         if (localStorageSync) {
             console.log('localStorageSync')
             // syncying inline tabarray in localstorage
@@ -216,7 +216,7 @@ export function useInlineTab(
     }
 
     const tabsArray: Ref<activeInlineTabInterface[]> = ref(
-        setInlineTabsArray(shouldDefaultTabAdd)
+        setInlineTabsArray(Boolean(shouldDefaultTabAdd))
     )
     const activeInlineTabKey = ref(setActiveInlineTabKey())
     const activeInlineTab = computed(() =>

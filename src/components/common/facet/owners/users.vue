@@ -60,6 +60,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            console.log(localValue, 'localValues Users')
             const { list, handleSearch, total } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
 

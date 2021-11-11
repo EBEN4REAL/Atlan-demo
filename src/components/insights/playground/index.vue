@@ -21,10 +21,20 @@
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
-                                    class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                                    class="
+                                        inline-flex
+                                        items-center
+                                        justify-center
+                                        p-1.5
+                                        rounded-full
+                                        btn-add
+                                        hover:bg-gray-300
+                                    "
+                                    style="margin-top: 1px"
                                     @click="handleAdd"
                                 >
-                                    <fa icon="fal plus" class />
+                                    <!-- <fa icon="fal plus" class="text-gray-700" /> -->
+                                    <AtlanIcon icon="Add" />
                                 </span>
                             </a-tooltip>
                         </div>

@@ -196,7 +196,9 @@
                 },
             })
             function removePolicy() {
-                emit('delete')
+                /* Delete when the policy is saved */
+                if (!policy.value?.isNew) emit('delete')
+                emit('cancel')
             }
 
             function openAssetSelector() {

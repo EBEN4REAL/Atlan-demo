@@ -253,6 +253,7 @@ export function discardPolicy(type: PolicyType, id: string) {
 export function enablePersona() {
     // selectedPersonaDirty.value!.enabled = isEnabled
 }
+export function isSavedPolicy() {}
 
 export async function deletePersonaById(id: string) {
     await deletePersona(id)

@@ -200,7 +200,7 @@
             <fa icon="fal user-edit"></fa>
         </a-button> -->
     </a-input-group>
-    <UserSelector v-if="dataType === 'users'"></UserSelector>
+    <!-- <UserSelector v-if="dataType === 'users'"></UserSelector> -->
     <div v-if="errorM || treeErrorM || fileError" class="text-red-600">
         {{ errorM || treeErrorM || 'Some error occured.' }}
     </div>
@@ -221,14 +221,14 @@
         Ref,
         computed,
     } from 'vue'
-    import UserSelector from '@common/selector/users/index.vue'
+    // import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
     import useAsyncTreeSelect from './useAsyncTreeSelect'
     import useFileUploader from './useFileUploader'
 
     export default defineComponent({
         components: {
-            UserSelector,
+            // UserSelector,
             FormGenerator: defineAsyncComponent(
                 () => import('@/common/formGenerator/index.vue')
             ),

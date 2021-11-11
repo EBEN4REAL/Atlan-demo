@@ -18,7 +18,6 @@
             /> -->
 
             <AtlanTable
-                :columnsData="activeInlineTab.playground.editor.columnList"
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
                     isQueryRunning === 'success'

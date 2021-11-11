@@ -1,51 +1,39 @@
 <template>
     <div
-        v-if="isLoading"
-        class="flex items-center justify-center mt-4 text-sm leading-none"
+        class="flex items-center justify-center w-full max-w-full border rounded  h-96 border-gray-light"
     >
-        <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>Getting sample data</span>
-    </div>
-    <div v-else class="w-full p-0 m-0 border rounded border-gray-light">
-        <table class="relative block w-full p-0 m-0 overflow-auto h-96">
-            <thead>
-                <tr>
-                    <th
-                        v-for="(col, index) in tableColumns"
-                        :key="index"
-                        class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 bg-gray-100 border  border-gray-light"
-                    >
-                        <div class="flex">
-                            <component
-                                :is="images[col.data_type]"
-                                class="w-4 h-4 mr-1"
-                            ></component>
-                            <Tooltip
-                                :tooltip-text="`${col.title}`"
-                                classes="cursor-pointer"
-                            />
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr v-for="(row, index) in results" :key="index">
-                    <td
-                        v-for="(rowData, key) in row"
-                        :key="key"
-                        class="px-4 py-2 text-xs text-gray-700 bg-white border  border-gray-light"
-                    >
-                        <div v-if="key == 'hash_index'">{{ rowData }}</div>
-                        <Tooltip
-                            v-else
-                            :tooltip-text="`${rowData}`"
-                            classes="cursor-pointer"
-                        />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div v-if="isLoading" class="text-sm leading-none">
+            <a-spin size="small" class="mr-2 leading-none"></a-spin
+            ><span>Getting sample data</span>
+        </div>
+        <div v-else class="w-full h-full max-w-full">
+            <AtlanTable :dataList="results">
+                <template #header>
+                    <thead>
+                        <tr>
+                            <th
+                                v-for="(col, index) in tableColumns"
+                                :key="index"
+                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                style="z-index: 3"
+                            >
+                                <div class="flex">
+                                    <component
+                                        :is="images[col.data_type]"
+                                        class="w-4 h-4 mr-1"
+                                    ></component>
+                                    <Tooltip
+                                        :tooltip-text="`${col.title}`"
+                                        classes="cursor-pointer"
+                                    />
+                                </div>
+                                <span class="resize-handle"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                </template>
+            </AtlanTable>
+        </div>
     </div>
 </template>
 
@@ -62,13 +50,14 @@
     } from 'vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import AtlanTable from '@/UI/table.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     // API
     import { Insights } from '~/services/sql/query'
 
     export default defineComponent({
-        components: { Tooltip },
+        components: { Tooltip, AtlanTable },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -110,7 +99,7 @@
                         dataIndex: 'hash_index',
                         ellipsis: true,
                     })
-                    // convert data from API in Antd-table format
+                    // convert data from API in table format
                     data.value.columns.forEach((col) => {
                         const obj = {
                             dataIndex: col.label,
@@ -143,7 +132,7 @@
 </script>
 
 <style lang="less" scoped>
-    table {
+    /*  table {
         td,
         th {
             max-width: 150px;
@@ -160,5 +149,5 @@
             width: 35px;
             min-width: 35px;
         }
-    }
+    } */
 </style>

@@ -771,16 +771,6 @@
                             '/' +
                             item.value?.schemaName
 
-                        // console.log(
-                        //     'schemaQualifiedName: ',
-                        //     schemaQualifiedName
-                        // )
-
-                        // activeInlineTabCopy.explorer.schema.connectors = {
-                        //     attributeName: 'schemaQualifiedName',
-                        //     attributeValue: schemaQualifiedName,
-                        // }
-
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
                         /* Setting the current connectors context to editor context so that it can be run */

@@ -5,6 +5,7 @@
         class="relative flex items-center text-gray-700 transition duration-300 border border-gray-300 rounded-full cursor-pointer  gap-x-1 group hover:border-primary hover:bg-primary hover:text-white"
         :class="size === 'sm' ? 'px-2' : 'px-3'"
         :style="{ height: size === 'sm' ? '22px' : '30px' }"
+        @blur="blur"
     >
         <slot name="prefix"></slot>
         <span v-if="label">{{ label }}</span>
@@ -14,6 +15,7 @@
             v-if="!disabled && hasAction"
             :tabindex="!disabled && hasAction ? 0 : undefined"
             @click.stop="emitActions"
+            @blur="blur"
         >
             <slot v-if="$slots.action" name="action" />
             <AtlanIcon v-else class="h-3 text-white" icon="Cancel" />
@@ -44,14 +46,17 @@
             },
         },
         // Do not uncomment, else code will break
-        emits: ['action'],
+        emits: ['action', 'blur'],
         setup(prop, { emit }) {
             const { disabled } = toRefs(prop)
             function emitActions() {
                 if (!disabled.value) emit('action')
             }
+            const blur = () => {
+                emit('blur')
+            }
             console.log()
-            return { emitActions }
+            return { emitActions, blur }
         },
     })
 </script>

@@ -32,7 +32,12 @@
             ></Pill>
         </template>
         <slot name="suffix"></slot>
-        <Pill v-if="!readOnly" class="group" @click="handleAdd">
+        <Pill
+            v-if="!readOnly"
+            class="group"
+            @click="handleAdd"
+            @blur="handleBlur"
+        >
             <template #prefix>
                 <AtlanIcon
                     icon="Add"
@@ -69,7 +74,7 @@
                 default: () => '',
             },
         },
-        emits: ['delete', 'update:data', 'select', 'add'],
+        emits: ['delete', 'update:data', 'select', 'add', 'blur'],
         components: { Pill },
         setup(prop, { emit }) {
             const { data } = toRefs(prop)
@@ -86,7 +91,11 @@
             function handleAdd() {
                 emit('add')
             }
-            return { handleDelete, handleClick, handleAdd }
+            function handleBlur() {
+                emit('blur')
+            }
+
+            return { handleDelete, handleClick, handleAdd, handleBlur }
         },
     })
 </script>

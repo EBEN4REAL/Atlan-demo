@@ -3,6 +3,7 @@ import { getAPIPath, PathParams } from '~/services/api/common'
 import { BASE_PATH } from '..'
 
 export const SCHEDULES = 'SCHEDULES'
+export const CREATE_WORKFLOW = 'CREATE_WORKFLOW'
 export const UPDATE_SCHEDULE = 'UPDATE_SCHEDULE'
 export const DELETE_SCHEDULE = 'DELETE_SCHEDULE'
 export const RETRY_RUN = 'RETRY_RUN'
@@ -29,6 +30,7 @@ export const map = {
         getAPIPath(BASE_PATH, `/runs/${name}/retry`),
     [STOP_RUN]: ({ name }: PathParams) =>
         getAPIPath(BASE_PATH, `/runs/${name}/stop`),
+    [CREATE_WORKFLOW]: () => getAPIPath('/service', `/workflows?submit=false`),
     [WORKFLOW]: () => getAPIPath(BASE_PATH, '/workflows'),
     [RUN_WORKFLOW]: () => getAPIPath(BASE_PATH, '/workflows/submit'),
     [DELETE_WORKFLOW]: ({ name }: PathParams) =>

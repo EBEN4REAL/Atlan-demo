@@ -1,43 +1,46 @@
 <template>
     <template v-if="selectedTab === 'setup'">
-      <div class="relative w-full h-full">
-        <div
-          v-if="loadingFetchPod"
-          class="absolute flex items-center justify-center w-full h-full"
-        >
-            <a-spin />
-        </div>
+        <div class="relative w-full h-full">
+            <div
+                v-if="loadingFetchPod"
+                class="absolute flex items-center justify-center w-full h-full"
+            >
+                <a-spin />
+            </div>
 
-        <div v-else-if="formConfig[selectedDag]" class="flex flex-col h-full">
-            <div class="flex-grow m-3">
-                <h3 class="mb-3 text-2xl">{{ selectedDag }}</h3>
+            <div
+                v-else-if="formConfig[selectedDag]"
+                class="flex flex-col h-full"
+            >
+                <div class="flex-grow m-3">
+                    <h3 class="mb-3 text-2xl">{{ selectedDag }}</h3>
 
-                <FormBuilder
-                    ref="formRef"
-                    :config="formConfig[selectedDag]"
-                    :default-values="defaultValues"
-                    :global-values="selectedWorkflow"
-                    @change="handleChange"
+                    <FormBuilder
+                        ref="formRef"
+                        :config="formConfig[selectedDag]"
+                        :default-values="defaultValues"
+                        :global-values="selectedWorkflow"
+                        @change="handleChange"
+                    />
+                </div>
+                <AtlanButton
+                    class="m-2"
+                    size="sm"
+                    color="primary"
+                    padding="compact"
+                    @click="updateWorkflow"
+                >
+                    Save
+                </AtlanButton>
+            </div>
+            <div v-else class="flex flex-col items-center h-full">
+                <EmptyState
+                    :empty-screen="EmptyScreen"
+                    desc="No UI config found."
+                    desc-class="w-56 text-center"
                 />
             </div>
-            <AtlanButton
-                class="m-2"
-                size="sm"
-                color="primary"
-                padding="compact"
-                @click="updateWorkflow"
-            >
-                Save
-            </AtlanButton>
         </div>
-        <div v-else class="flex flex-col items-center h-full">
-            <EmptyState
-                :empty-screen="EmptyScreen"
-                desc="No UI config found."
-                desc-class="w-56 text-center"
-            />
-        </div>
-      </div>
     </template>
     <a-tabs
         v-else
@@ -63,7 +66,17 @@
                 :style="{ height: 'calc(100vh - 0.8rem)' }"
             >
                 <div
-                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        px-4
+                        pt-2
+                        mt-2
+                        text-lg
+                        font-semibold
+                        text-gray-700
+                    "
                 >
                     {{ tab.name }}
                 </div>
@@ -141,12 +154,13 @@
             },
             loadingFetchPod: {
                 type: Boolean,
-                required: true
-            }
+                required: true,
+            },
         },
         emits: ['assetMutation', 'closeSidebar', 'change', 'updateSelected'],
         setup(props, { emit }) {
-            const { selectedWorkflow, selectedDag, loadingFetchPod } = toRefs(props)
+            const { selectedWorkflow, selectedDag, loadingFetchPod } =
+                toRefs(props)
 
             const formRef = ref()
 
@@ -211,10 +225,15 @@
                                 key: `${props.selectedDag}`,
                             })
                             // update the selected workflow
-                            emit('updateSelected', {
-                                ...selectedWorkflow.value,
-                                workflowtemplate: workflow.value,
-                            }, "sucess", selectedDag.value)
+                            emit(
+                                'updateSelected',
+                                {
+                                    ...selectedWorkflow.value,
+                                    workflowtemplate: workflow.value,
+                                },
+                                'success',
+                                selectedDag.value
+                            )
                         } else if (error.value) {
                             const errMsg = error.value?.response?.data?.message
                             message.error({
@@ -288,7 +307,7 @@
                 filteredTabs,
                 emit,
                 EmptyScreen,
-                loadingFetchPod
+                loadingFetchPod,
             }
         },
     })

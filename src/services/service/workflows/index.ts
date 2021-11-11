@@ -1,10 +1,6 @@
-// import { AxiosRequestConfig } from 'axios'
-// import { getAPIPath, getAxiosClient } from '~/api'
-// import { KeyMaps } from '~/api/keyMap'
+
 import { useAPI } from '~/services/api/useAPI'
 import { map } from './key'
-
-// const serviceAlias = 'auth/argo'
 
 export const URL = {
     WorkflowList: '/workflows/default',
@@ -25,19 +21,8 @@ const getWorkflows = ({ immediate, options, params }) =>
             options,
             params,
         },
-        { options, asyncOptions: {immediate} }
+        { options, asyncOptions: { immediate } }
     )
-
-// const getWorkflows = ({ immediate, options, params }) =>
-// useAPIAsyncState(
-//     KeyMaps.workflow.WORKFLOW,
-//     'GET',
-//     {
-//         options,
-//         params,
-//     },
-//     { immediate }
-// )
 
 const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>
     useAPI(
@@ -48,7 +33,7 @@ const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>
             pathVariables,
             params,
         },
-        { immediate }
+        { options, asyncOptions: { immediate } }
     )
 
 const getWorkflowConfigMap = ({ pathVariables, immediate, options, params }) =>
@@ -60,7 +45,7 @@ const getWorkflowConfigMap = ({ pathVariables, immediate, options, params }) =>
             options,
             params,
         },
-        { immediate }
+        { options, asyncOptions: { immediate } }
     )
 
 const updateWorkflowByName = (name, body, { immediate, options }) =>
@@ -74,7 +59,7 @@ const updateWorkflowByName = (name, body, { immediate, options }) =>
                 name,
             },
         },
-        { immediate }
+        { options, asyncOptions: { immediate } }
     )
 
 // ! depreciated, use filter on /workflowtemplate
@@ -86,32 +71,32 @@ const getWorkflowTemplateByName = ({ immediate, options, pathVariables }) =>
             pathVariables,
             options,
         },
-        { immediate }
+        { asyncOptions: { immediate } }
     )
 
 const retryRun = (pathVariables) =>
     useAPI(map.RETRY_RUN, 'POST', {
-        pathVariables,
-    })
+        pathVariables
+    }, {})
 
 const stopRun = (pathVariables) =>
     useAPI(map.STOP_RUN, 'POST', {
         pathVariables,
-    })
+    }, {})
 
 const getRunList = (pathVariables, { options, params }) =>
-    useAPISWRV(map.WORKFLOW_RUN, 'GET', 'getRunList', {
+    useAPI(map.WORKFLOW_RUN, 'GET', {
         params,
         options,
         pathVariables,
-    })
+    }, {})
 
 const getArchivedRunList = (pathVariables, { options, params }) =>
-    useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', 'getArchivedRunList', {
+    useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', {
         params,
         options,
         pathVariables,
-    })
+    }, {})
 
 const deleteWorkflowByName = ({ pathVariables, immediate, options }) =>
     useAPI(
@@ -121,7 +106,7 @@ const deleteWorkflowByName = ({ pathVariables, immediate, options }) =>
             options,
             pathVariables,
         },
-        { immediate }
+        { asyncOptions: { immediate } }
     )
 
 const runWorkflowByName = ({ body, immediate, options }) =>
@@ -132,7 +117,7 @@ const runWorkflowByName = ({ body, immediate, options }) =>
             body,
             options,
         },
-        { immediate }
+        { asyncOptions: { immediate } }
     )
 
 const createWorkflow = ({ params, body, immediate, options }) =>
@@ -144,24 +129,24 @@ const createWorkflow = ({ params, body, immediate, options }) =>
             body,
             options,
         },
-        { immediate }
+        { asyncOptions: { immediate } }
     )
 
 const deleteSchedule = ({ pathVariables }) =>
     useAPI(map.DELETE_SCHEDULE, 'POST', {
         pathVariables,
-    })
+    }, {})
 
 const updateSchedule = ({ body, pathVariables }) =>
     useAPI(map.UPDATE_SCHEDULE, 'POST', {
         body,
         pathVariables,
-    })
+    }, {})
 
-const addSchedule = ({ body }) => useAPI(map.SCHEDULES, 'POST', { body })
+const addSchedule = ({ body }) => useAPI(map.SCHEDULES, 'POST', { body }, {})
 
 const getSchedules = ({ params }) =>
-    useAPI(map.SCHEDULES, 'GET', 'getSchedules', { params })
+    useAPI(map.SCHEDULES, 'GET', { params }, {})
 
 const getArchivedRunLogs = (id, { immediate, options, params }) =>
     useAPI(
@@ -175,7 +160,7 @@ const getArchivedRunLogs = (id, { immediate, options, params }) =>
                 isArchived: true, // TODO
             },
         },
-        { immediate }
+        { asyncOptions: { immediate } }
     )
 
 export const Workflows = {

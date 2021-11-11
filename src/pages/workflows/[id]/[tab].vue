@@ -167,11 +167,6 @@
                     name: 'Monitor',
                     component: 'monitor',
                 },
-                // {
-                //     id: 3,
-                //     name: 'Settings',
-                //     component: 'settings',
-                // },
             ]
 
             /** UTILS */
@@ -234,7 +229,7 @@
                     storeWorkflow.setErrorVisible(false)
                     storeWorkflow.setError('')
                 }
-                if (is === 'sucess') {
+                if (is === 'success') {
                     const nodesShared = graphRef?.value?.nodesShared
                     const emitSelectionShared =
                         graphRef?.value?.emitSelectionShared

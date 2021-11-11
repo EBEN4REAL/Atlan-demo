@@ -2,7 +2,7 @@
     <LoadingView v-if="data?.isLoading" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
     <div v-else class="flex w-full h-full">
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full container-workFlow">
             <Header
                 :workflow="data.asset"
                 class="px-5 pt-3 bg-white"
@@ -13,7 +13,7 @@
                 :class="$style.profiletab"
                 @change="selectTab($event)"
             >
-                <a-tab-pane v-for="t in tabs" :key="t.id" :tab="t.name">
+                <a-tab-pane v-for="t in tabs" :key="t.id" class="tabs-workflow" :tab="t.name">
                     <component
                         :is="t.component"
                         v-if="workflowTemplate"
@@ -369,13 +369,18 @@ meta:
         :global(.ant-tabs-tab) {
             padding-left: 2px;
             padding-right: 2px;
+            // margin-right: 0px;
             @apply pb-5 mr-5 text-gray-500 text-sm tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
+            // margin-right: 1.25rem;
             @apply ml-5;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;
+        }
+        :global(.ant-tabs-nav) {
+          padding-left: 1.75rem;
         }
         :global(.ant-tabs-tab-active) {
             @apply text-gray font-bold;
@@ -412,4 +417,12 @@ meta:
         min-width: 420px !important;
         max-width: 420px !important;
     }
+</style>
+
+<style lang="less">
+.container-workFlow{
+  .ant-tabs-tab{
+    margin-right: 0px;
+  }
+}
 </style>

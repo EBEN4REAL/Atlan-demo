@@ -33,7 +33,6 @@ export default function useAsyncTreeSelect(
 
     const errorM = ref('')
     const onLoadData = async (n: { [key: string]: any; dataRef }) => {
-        console.log('onLoadData', n)
         const { url, method, params, body } = reqConfig
         errorM.value = ''
         let parsedUrl: string = url
@@ -46,12 +45,13 @@ export default function useAsyncTreeSelect(
 
         try {
             const response = await useAPI(
-                getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
+                () => getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
                 {
                     params: genParams(valueObject.value, params),
                     body,
-                }
+                },
+                {}
             )
             // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
             // eslint-disable-next-line no-param-reassign

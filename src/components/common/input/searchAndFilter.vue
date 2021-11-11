@@ -121,6 +121,7 @@
 <style lang="less" scoped>
     .searchbar {
         min-width: 100px;
+        @apply pb-1 !important;
 
         input {
             min-width: 100px;
@@ -134,14 +135,20 @@
             border: none;
             border-right: none;
         }
+        .ant-input::placeholder {
+            @apply text-gray-500;
+        }
 
         &.default {
-            @apply border border-gray-300 rounded shadow;
+            border-width: 1px;
+            border: none;
+            border-bottom: 1px solid
+                rgba(230, 230, 235, var(--tw-border-opacity));
             &:hover {
-                @apply shadow-md;
+                @apply shadow-none;
             }
             &:focus-within {
-                @apply ring-2 border-primary shadow-none;
+                @apply shadow-none;
             }
         }
 

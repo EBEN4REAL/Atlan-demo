@@ -35,7 +35,9 @@
                     <span
                         class="text-sm truncate"
                         :class="
-                            isSelected ? 'text-primary font-bold' : 'text-gray'
+                            isSelected
+                                ? 'text-primary'
+                                : 'text-gray hover:text-primary'
                         "
                     >
                         {{ item.displayName }}

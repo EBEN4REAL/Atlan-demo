@@ -8,8 +8,8 @@
 
             <a-switch
                 class="ml-auto"
-                :checked="true"
-                @update:checked="enablePersona"
+                :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
+                v-model:checked="enablePersonaCheck"
             />
             <span class="text-sm text-gray">Enable Persona</span>
         </div>
@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
 
     import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPersona'
@@ -64,7 +64,9 @@
         },
         emits: ['update:persona', 'update:isEditMode'],
         setup() {
+            const enablePersonaCheck = ref(true)
             return {
+                enablePersonaCheck,
                 enablePersona,
                 setActiveTab,
             }
@@ -90,5 +92,8 @@
         @apply rounded-full text-sm px-2 py-1;
         background-color: #fcf3fc;
         color: #d452d7;
+    }
+    .btn-checked {
+        background: #00a680 !important;
     }
 </style>

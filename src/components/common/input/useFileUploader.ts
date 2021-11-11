@@ -1,7 +1,7 @@
 
 
 import { computed, ref, Ref } from 'vue'
-import { useAPIPromise } from '~/services/api/useAPI';
+import { useAPI } from '~/services/api/useAPI';
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 interface FileItem {
@@ -50,7 +50,17 @@ export default function useFileUploader(reqConfig, emit) {
         try {
             success.value = false
             error.value = false
-            const res = await useAPIPromise(parsedUrl, "POST", { body: formData, options: { headers: { "Content-Type": `multipart/form-data boundary=${formData._boundary}` } } })
+            const res = await useAPI(
+              () => parsedUrl, 
+              "POST", 
+              { body: formData },
+              { options: {
+                   headers: { 
+                     "Content-Type": `multipart/form-data boundary=${formData._boundary}` 
+                  } 
+                } 
+              }
+            )
             emit('change', res)
             fileList.value = []
             success.value = true

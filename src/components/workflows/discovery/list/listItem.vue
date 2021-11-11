@@ -9,7 +9,7 @@
         "
     >
         <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent  w-96"
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent w-96"
             :class="{ ' border-gray-200': !isSelected }"
         >
             <a-checkbox
@@ -20,7 +20,7 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
+                class="box-border flex flex-col flex-1 overflow-hidden gap-y-1 lg:pr-16"
             >
                 <div class="flex items-center gap-x-3">
                     <div class="flex text-sm text-gray-500">
@@ -41,7 +41,7 @@
                                 : 'text-xl'
                         "
                         :to="`/workflows/${item.workflowtemplate.metadata.name}/setup`"
-                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ item.workflowtemplate.metadata.name }}
                     </router-link>

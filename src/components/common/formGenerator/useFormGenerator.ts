@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { computed, ref, Ref } from 'vue'
-import { useAPIPromise } from '~/services/api/useAPI';
+import { useAPI } from '~/services/api/useAPI';
 import { Schema, ProcessedSchema, ProcessedRule } from './builder.interface'
 import { getStringFromPath } from '@/common/input/asyncSelect.utils'
 
@@ -341,7 +341,15 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
       let parsedUrl = url;
       if (parsedUrl.includes('{{domain}}'))
         parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
-      const response = await useAPIPromise(parsedUrl, method, { params, body: finalConfigObject(processedSchema.value) })
+      const response = await useAPI(
+        () => parsedUrl, 
+        method, 
+        { 
+          params, 
+          body: finalConfigObject(processedSchema.value) 
+        },
+        {}
+      )
       submitStatus.value.success = true;
       submitStatus.value.successMessage = f.apiConfig?.successMessage || 'success'
     } catch (e) {
@@ -356,7 +364,6 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   const handleInputChange = (v) => {
     // temp fix for glossary 
     if (v) {
-      console.log({ v })
       emit('vchange', v)
     }
     handleConditional()

@@ -12,7 +12,7 @@
                     item.workflowtemplate.metadata.uid === selectedItemId
                 "
                 @click="handlePreview(item)"
-            ></ListItem>
+            />
         </template>
         <template #footer>
             <div
@@ -21,13 +21,13 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, ref, toRefs, watch } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import ListItem from './listItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 

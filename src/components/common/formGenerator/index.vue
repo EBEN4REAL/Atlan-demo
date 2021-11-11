@@ -41,7 +41,7 @@
                                     <fa
                                         icon="fal info-circle"
                                         class="ml-2 text-xs"
-                                    ></fa>
+                                    />
                                 </a-popover>
                                 <a-form-item :name="c.id">
                                     <DynamicInput
@@ -82,7 +82,7 @@
                                         "
                                         @change="handleInputChange"
                                         @getGlobal="setGlobal"
-                                    ></DynamicInput>
+                                    />
                                 </a-form-item>
                             </div>
                         </a-collapse-panel>

@@ -1,5 +1,5 @@
 import { ref, computed, watch, Ref } from 'vue'
-import { useAPIPromise } from '~/services/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { ReqConfig, ResConfig } from './asyncSelect.interface'
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
@@ -33,7 +33,6 @@ export default function useAsyncSelector(
     }
 
     const getParsedBody = (keys) => {
-        console.log('keys', keys)
         const { body } = reqConfig.value
 
         const b = { ...body }
@@ -41,7 +40,6 @@ export default function useAsyncSelector(
         keys.forEach((k) => {
             b[k] = valueObject.value[k]
         })
-        console.log('getParsedBody', b)
         return b
     }
 
@@ -90,14 +88,18 @@ export default function useAsyncSelector(
         if (document.location.hostname === 'localhost')
             parsedUrl = parsedUrl.replace('https', 'http')
         try {
-            const response = await useAPIPromise(parsedUrl, method, {
+            const response = await useAPI(
+               () => parsedUrl,
+               method, 
+               {
                 params: genParams(valueObject.value, params),
                 body,
-            })
+              },
+              {}
+            )
             setConfigData(response)
             createNewVisibility.value = true
         } catch (e) {
-            console.log({ e })
             newConfigError.value = true
         }
         newConfigLoading.value = false
@@ -121,13 +123,14 @@ export default function useAsyncSelector(
         if (document.location.hostname === 'localhost')
             parsedUrl = parsedUrl.replace('https', 'http')
         try {
-            const response = await useAPIPromise(
-                getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
+            const response = await useAPI(
+                () => getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
                 {
                     params: genParams(valueObject.value, params),
                     body: getParsedBody(addFormValues),
-                }
+                }, 
+                {}
             )
             setData(response)
         } catch (e) {

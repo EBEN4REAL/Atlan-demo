@@ -18,13 +18,13 @@
             >
                 <AtlanIcon icon="Shield" class="text-pink-400" />
                 <div class="w-80">
-                    <div class="flex items-center gap-1">
-                        <p class="mr-1 text-base font-bold">
-                            {{ selectedPod?.displayName }}
-                        </p>
-                        <p class="text-sm truncate ...">{{ selectedPod.id }}</p>
-                    </div>
-                    <div class="flex items-center gap-1">
+                    <p class="text-base font-bold">
+                        {{ selectedPod?.displayName }}
+                    </p>
+                    <p class="text-sm truncate ...">
+                        {{ selectedPod.id }}
+                    </p>
+                    <div class="flex items-center gap-1 mt-1">
                         <p>{{ selectedPod.timecalc }}</p>
                         <div class="dot" />
                         <p class="ml-2">

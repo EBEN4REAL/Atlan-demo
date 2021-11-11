@@ -2,7 +2,7 @@
     <div class="px-4 py-2 mb-3">
         <div class="flex items-center justify-between mb-4">
             <div class="text-lg font-bold">Groups</div>
-            <div v-if="showUserGroups">
+            <div v-if="showUserGroups" v-auth="map.ADD_USER_GROUP">
                 <a-button @click="handleAddToGroup">
                     <div class="flex items-center">
                         <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
@@ -23,7 +23,7 @@
                 </a-button>
             </div>
         </div>
-        <div v-if="showUserGroups">
+        <div v-if="showUserGroups" v-auth="map.LIST_GROUPS">
             <div class="flex flex-row justify-between">
                 <div class="w-full">
                     <SearchAndFilter
@@ -63,7 +63,7 @@
                                 }
                             "
                         >
-                            <fa icon="fal sync" class="mr-2"></fa>Try again
+                            <AtlanIcon icon="Refresh" class="mr-2" />Try again
                         </a-button>
                     </div>
                 </ErrorView>
@@ -94,6 +94,7 @@
                         </div>
                         <div
                             v-if="!removeFromGroupLoading[group.id]"
+                            v-auth="map.REMOVE_USER_GROUP"
                             class="opacity-0 cursor-pointer  text-error group-hover:opacity-100"
                             @click="() => removeUserFromGroup(group)"
                         >
@@ -103,11 +104,7 @@
                             v-else
                             class="flex cursor-default text-error-muted"
                         >
-                            <fa
-                                style="vertical-align: middle"
-                                icon="fal circle-notch"
-                                class="mr-1 animate-spin"
-                            />
+                            <AtlanIcon icon="Loader" class="h-5 mr-1" />
                             <div>Removing...</div>
                         </div>
                     </div>
@@ -126,7 +123,7 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="!showUserGroups">
+        <div v-else-if="!showUserGroups" v-auth="map.LIST_GROUPS">
             <GroupList
                 :add-to-group-loading="addToGroupLoading"
                 :show-back-button="false"
@@ -154,6 +151,8 @@
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import EmptyState from '@/common/empty/index.vue'
+    import map from '~/constant/accessControl/map'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'UserPreviewGroups',
@@ -162,6 +161,7 @@
             GroupList,
             EmptyState,
             SearchAndFilter,
+            AtlanIcon,
         },
         props: {
             selectedUser: {
@@ -301,7 +301,7 @@
                 handleSearch,
                 handleAddToGroup,
                 removeUserFromGroup,
-
+                map,
                 getUserGroupList,
                 searchText,
                 showLoadMore,

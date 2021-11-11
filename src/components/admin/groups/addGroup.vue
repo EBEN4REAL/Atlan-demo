@@ -4,9 +4,7 @@
             class="relative flex items-center justify-between px-4 pb-5 border-b "
         >
             <div class="text-lg font-bold">Create Group</div>
-            <div
-                class="top-0 p-1 border border-gray-300 rounded cursor-pointer  right-2"
-            >
+            <div class="top-0 p-1 rounded cursor-pointer right-2">
                 <AtlanIcon
                     icon="Cross"
                     class="r"

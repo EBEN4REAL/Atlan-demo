@@ -12,7 +12,10 @@
             class="-mt-20"
         />
         <div v-else-if="graphData.name" class="absolute w-full h-full">
-            <div v-if="selectedPod.id" class="absolute flex items-center gap-4 toolbar-workflow">
+            <div
+                v-if="selectedPod.id"
+                class="absolute flex items-center gap-4 toolbar-workflow"
+            >
                 <AtlanIcon icon="Shield" class="text-pink-400" />
                 <div class="w-80">
                     <div class="flex items-center gap-1">
@@ -38,13 +41,17 @@
                     <AtlanIcon icon="ArrowRight" />
                 </a-button>
             </div>
-            <MonitorGraph :selected-pod="selectedPod" :graph-data="graphData" @change="handleClickNode" />
+            <MonitorGraph
+                :selected-pod="selectedPod"
+                :graph-data="graphData"
+                @change="handleClickNode"
+            />
         </div>
         <EmptyView
-          v-else
-          :empty-screen="EmptyScreen"
-          class="-mt-20"
-          desc="Don't worry, something broke on our end, you can send this info to us."
+            v-else
+            :empty-screen="EmptyScreen"
+            class="-mt-20"
+            desc="Don't worry, something broke on our end, you can send this info to us."
         />
     </div>
 </template>
@@ -100,7 +107,7 @@
             /** METHODS */
 
             // getRunList
-            const { liveList } = getRunList(id.value, true)
+            const { liveList } = getRunList(id.value)
 
             // getArchivedRunList
             const { archivedList, isLoading } = getArchivedRunList(
@@ -180,7 +187,7 @@
                 openLog,
                 handleClickNode,
                 selectedPod,
-                loadingGeneral
+                loadingGeneral,
             }
         },
     })

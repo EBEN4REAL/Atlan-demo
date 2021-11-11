@@ -84,19 +84,11 @@ const stopRun = (pathVariables) =>
         pathVariables,
     }, {})
 
-const getRunList = (pathVariables, { options, params }) =>
-    useAPI(map.WORKFLOW_RUN, 'GET', {
-        params,
-        options,
-        pathVariables,
-    }, {})
+const getRunList = (reqOptions, apiOptions) =>
+    useAPI(map.WORKFLOW_RUN, 'GET', reqOptions, apiOptions)
 
-const getArchivedRunList = (pathVariables, { options, params }) =>
-    useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', {
-        params,
-        options,
-        pathVariables,
-    }, {})
+const getArchivedRunList = (reqOptions, apiOptions) =>
+    useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', reqOptions, apiOptions)
 
 const deleteWorkflowByName = ({ pathVariables, immediate, options }) =>
     useAPI(

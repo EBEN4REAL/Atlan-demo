@@ -28,10 +28,7 @@
                             <span>Refresh</span>
                         </template>
 
-                        <AtlanIcon
-                            :icon="'Refresh'"
-                            class="outline-none"
-                        />
+                        <AtlanIcon :icon="'Refresh'" class="outline-none" />
                     </a-tooltip>
                 </div>
                 <div
@@ -247,7 +244,7 @@
                 () => {
                     // this is causing API runs & archived get hit multiple times
                     // and as a result, view logs toolbar always get override
-                    // initialize(true)
+                    initialize(true)
                 },
                 { deep: true }
             )
@@ -272,7 +269,7 @@
                 onRetryRun,
                 onStopRun,
                 initialize,
-                isLoadingRefresh
+                isLoadingRefresh,
             }
         },
     })

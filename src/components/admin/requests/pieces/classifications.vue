@@ -1,29 +1,35 @@
 <template>
-    <PillGroup
-        :data="
-            !typeName && data.length
-                ? formattedClassifications
-                : localClassification
-        "
-        label-key="name"
-        popover-trigger="hover"
-        read-only
-    >
-        <template #pillPrefix>
-            <AtlanIcon icon="Shield"></AtlanIcon>
-        </template>
-        <template #popover="{ item }">
-            <ClassificationInfoCard :classification="item" class="w-32"
-        /></template>
-    </PillGroup>
+    <div class="flex flex-col">
+        <span class="pb-1 pr-2 text-gray-500">Link classifications</span>
+        <!-- !typeName && data.length
+                    ? formattedClassifications
+                    : localClassification -->
+        <PillGroup
+            v-if="
+                localClassification?.length &&
+                localClassification[0]?.displayName
+            "
+            :data="localClassification"
+            label-key="displayName"
+            popover-trigger="hover"
+            read-only
+        >
+            <template #pillPrefix>
+                <AtlanIcon icon="Shield" class="text-pink-500"></AtlanIcon>
+            </template>
+            <template #popover="{ item }">
+                <ClassificationInfoCard :classification="item" class="w-32"
+            /></template>
+        </PillGroup>
+    </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, toRefs, PropType } from 'vue'
 
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
 
     export default defineComponent({
         props: {
@@ -36,7 +42,9 @@
         components: { PillGroup, ClassificationInfoCard },
         setup(props) {
             const { data, typeName } = toRefs(props)
-            const classificationsStore = useClassificationStore()
+            const { classificationList } = useTypedefData()
+            console.log(classificationList.value)
+            console.log(data.value)
 
             const formattedClassifications = computed(() =>
                 data.value.map((clsf) => ({
@@ -44,16 +52,18 @@
                     typeName: clsf.name,
                 }))
             )
-
             const localClassification = computed(() =>
                 // Wrapped it in an array to use it with pillGroup
                 [
-                    classificationsStore.classifications.find(
-                        (clsf) => clsf.name === typeName.value
+                    classificationList.value.find(
+                        (clsf) => clsf?.displayName === typeName.value
                     ),
                 ]
             )
-            return { formattedClassifications, localClassification }
+            return {
+                formattedClassifications,
+                localClassification,
+            }
         },
     })
 </script>

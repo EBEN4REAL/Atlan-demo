@@ -25,7 +25,6 @@
         components: { AssetLogo },
         setup(props) {
             const { assetQfName } = toRefs(props)
-            console.log(assetQfName)
             const assetWrappper = computed(() => ({
                 attributes: {
                     integrationName: assetQfName.value.split('/')[1],

@@ -1,18 +1,18 @@
 <template>
-    <div class="flex flex-col gap-y-1" :key="index">
+    <div :key="index" class="flex flex-col gap-y-1">
         <div
-            class="flex items-center gap-x-1"
             v-if="property.typeName !== 'boolean'"
+            class="flex items-center gap-x-1"
         >
             <a-select
-                class="flex-1"
                 v-model:value="localCondition.operator"
+                class="flex-1"
                 @change="handleOperatorChange"
             >
                 <a-select-option
-                    :value="item.id"
                     v-for="item in defaultOperator"
                     :key="item.id"
+                    :value="item.id"
                 >
                     {{ item?.label }}
                 </a-select-option>
@@ -28,8 +28,8 @@
 
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
             <DynamicInput
-                :dataType="property.typeName"
                 v-model="localCondition.value"
+                :data-type="property.typeName"
                 @change="handleValueChange"
             ></DynamicInput>
         </div>
@@ -40,7 +40,7 @@
     import { useVModels } from '@vueuse/core'
     import { defineComponent, PropType, toRefs, ref } from 'vue'
 
-    import DynamicInput from '@/common/input/dyanmicInput.vue'
+    import DynamicInput from '~/components/common/input/dynamicInput.vue'
     import { operators } from '~/constant/filters/operators'
 
     export default defineComponent({

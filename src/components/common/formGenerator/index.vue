@@ -179,7 +179,6 @@
 </template>
 
 <script>
-    import DynamicInput from '@common/input/dynamic.vue'
     import {
         defineComponent,
         ref,
@@ -190,6 +189,7 @@
         // Suspense,
     } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import DynamicInput from '~/components/common/input/dynamicInput.vue'
     import useFormGenerator from './useFormGenerator'
 
     export default defineComponent({

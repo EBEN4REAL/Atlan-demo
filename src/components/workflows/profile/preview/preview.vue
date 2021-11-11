@@ -62,7 +62,7 @@
             </template>
 
             <div
-                class="flex flex-col"
+                class="relative flex flex-col"
                 :style="{ height: 'calc(100vh - 0.8rem)' }"
             >
                 <div

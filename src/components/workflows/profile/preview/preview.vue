@@ -66,7 +66,17 @@
                 :style="{ height: 'calc(100vh - 0.8rem)' }"
             >
                 <div
-                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        px-4
+                        pt-2
+                        mt-2
+                        text-lg
+                        font-semibold
+                        text-gray-700
+                    "
                 >
                     {{ tab.name }}
                 </div>
@@ -104,7 +114,7 @@
     import AtlanButton from '@/UI/button.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import FormBuilder from '@/common/formGenerator/index.vue'
-    import { updateWorkflowByName } from '~/composables/workflow/useWorkFlowList'
+    import { updateWorkflowByName } from '~/composables/workflow/useWorkflowList'
     import useWorkflowStore from '~/store/workflows'
 
     export default defineComponent({

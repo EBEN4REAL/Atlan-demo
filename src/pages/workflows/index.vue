@@ -28,7 +28,14 @@
     </div>
     <div v-else class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-gray-100
+                border-r border-gray-300
+                facets
+            "
         >
             <WorkflowFilters
                 :ref="

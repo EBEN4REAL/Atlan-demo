@@ -79,9 +79,11 @@
                 </svg>
             </div>
             <EmptyView
-                v-else-if="error || (!response && !isLoading)"
+                v-else-if="isEmptyLogs || (!response && !isLoading)"
                 :desc="!error ? 'There are no logs for this run. ' : error"
-                empty-screen="WFEmptyTab"
+                :empty-screen="
+                    isEmptyLogs && !error ? 'EmptyLogs' : 'ErrorLogs'
+                "
                 desc-class="w-56 text-center"
             />
 
@@ -138,6 +140,7 @@
             const response = ref([])
             const error = ref(null)
             const isLoading = ref(false)
+            const isEmptyLogs = ref(true)
 
             const { getLiveLogs, status } = useWorkflowLogsStream(
                 runId.value
@@ -153,6 +156,7 @@
             watch(isOpen, () => {
                 if (isOpen.value) {
                     isLoading.value = true
+                    isEmptyLogs.value = false
                     response.value = ''
                     const idPod = selectedPod.value.id
                     const idGraph = selectedGraph.value.uid
@@ -187,12 +191,12 @@
                                 contentId: 'contentArea-log',
                             })
                         }, 200)
-                        if (!newVal) {
-                            error.value = 'There are no logs for this run.'
-                        }
+                        if (!newVal) isEmptyLogs.value = true
                     })
 
                     watch(err, (newVal) => {
+                        isEmptyLogs.value = true
+                        isLoading.value = false
                         error.value = newVal
                     })
                 }
@@ -239,6 +243,7 @@
                 runId,
                 selectedPod,
                 selectedGraph,
+                isEmptyLogs,
             }
         },
     })

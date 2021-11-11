@@ -200,11 +200,13 @@ import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
 import Running from '~/assets/images/icons/running.svg'
 import Refresh from '~/assets/images/icons/refresh.svg'
-import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg';
-import CreateWF from '~/assets/images/workflows/createWF.svg';
-import NoRuns from '~/assets/images/workflows/noRuns.svg';
+import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
+import CreateWF from '~/assets/images/workflows/createWF.svg'
+import NoRuns from '~/assets/images/workflows/noRuns.svg'
 import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
+import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
+import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 
 export default {
     NoRuns,
@@ -412,4 +414,6 @@ export default {
     Redo,
     Running,
     Refresh,
+    ErrorLogs,
+    EmptyLogs,
 }

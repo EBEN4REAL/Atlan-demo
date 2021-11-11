@@ -109,10 +109,11 @@
             // getRunList
             const { liveList, mutate: mutateRunList } = getRunList(id.value)
             // getArchivedRunList
-            const { archivedList, isLoading, mutate } = getArchivedRunList(
-                id.value,
-                true
-            )
+            const {
+                archivedList,
+                isLoading,
+                mutate: mutateArchivedList,
+            } = getArchivedRunList(id.value, true)
             // watcher
             watch([liveList, archivedList], ([newX, newY]) => {
                 if (newX && newY) {
@@ -179,8 +180,8 @@
                 emit('setSelectedPod', clickedPod)
             }
             const handleRefresh = () => {
-              mutate()
-              mutateRunList()
+                mutateRunList()
+                mutateArchivedList()
             }
             return {
                 graphData,
@@ -190,7 +191,7 @@
                 handleClickNode,
                 selectedPod,
                 loadingGeneral,
-                handleRefresh
+                handleRefresh,
             }
         },
     })

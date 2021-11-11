@@ -1,5 +1,5 @@
 <template>
-    <div class="overflow-y-scroll table_height clusterize" id="table-container">
+    <div id="table-container" class="table_height clusterize">
         <div
             id="scrollArea"
             class="clusterize-scroll -mt-0.5"
@@ -39,31 +39,26 @@
     import Clusterize from 'clusterize.js'
 
     export default defineComponent({
-        name: 'TableUI',
+        name: 'AtlanTable',
         components: {},
         props: {
             dataList: {
                 type: Array as PropType<any[]>,
                 required: true,
             },
-            columnsData: {
-                type: Array as PropType<any[]>,
-                required: true,
-            },
             showLoading: {
                 type: Boolean,
                 default: true,
-                required: true,
+                required: false,
             },
             rowClassNames: {
                 type: String,
-                required: true,
+                required: false,
                 default: '',
             },
         },
         setup(props) {
-            const { showLoading, dataList, rowClassNames, columnsData } =
-                toRefs(props)
+            const { showLoading, dataList, rowClassNames } = toRefs(props)
             let tableRef = ref(null)
             const defaultRowClassNames =
                 'px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light'

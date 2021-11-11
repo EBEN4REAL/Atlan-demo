@@ -308,6 +308,7 @@
                                 errorDecorations: [],
                                 eventSourceInstance: undefined,
                                 buttonDisable: false,
+                                isQueryAborted: false,
                             },
                             metadata: {},
                             queries: {},

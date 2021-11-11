@@ -55,6 +55,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     errorDecorations: [],
                     eventSourceInstance: undefined,
                     buttonDisable: false,
+                    isQueryAborted: false
                 },
                 metadata: {},
                 queries: {},

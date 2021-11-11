@@ -86,6 +86,7 @@ export default function useProject() {
     ) => {
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
+        activeInlineTab.value.playground.resultsPane.result.isQueryAborted = false
         const attributeValue =
             activeInlineTab.value?.playground?.editor?.context?.attributeValue
         let queryText
@@ -333,11 +334,14 @@ export default function useProject() {
         ) {
             activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
         }
+
         /* Change loading state */
         Insights.AbortQuery(body)
             .then(() => {
                 activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
                     ''
+                activeInlineTab.value.playground.resultsPane.result.isQueryAborted = true
+
                 activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
                     undefined
 
@@ -353,6 +357,7 @@ export default function useProject() {
                     inlineTabs,
                     activeInlineTabCopy.isSaved
                 )
+
             })
             .catch((error) => {
                 /* Query related data */

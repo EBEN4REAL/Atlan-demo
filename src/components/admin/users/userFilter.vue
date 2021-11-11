@@ -30,7 +30,7 @@
             class="px-2 text-gray-500 rounded-md"
             @click="filterOpened = !filterOpened"
         >
-            <fa icon="fal filter"></fa>
+            <AtlanIcon icon="Filter" />
             <div
                 v-if="statusFilter?.length"
                 class="absolute w-2 h-2 bg-blue-500 rounded -top-1 -right-1"

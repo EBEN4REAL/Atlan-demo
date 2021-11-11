@@ -36,14 +36,6 @@
                         @change="handleSearch"
                     />
                 </div>
-                <!-- <div>
-                    <a-button @click="handleAddToGroup">
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
-                            <span>Add to group</span>
-                        </div>
-                    </a-button>
-                </div> -->
             </div>
             <div
                 v-if="!selectedUser.group_count"

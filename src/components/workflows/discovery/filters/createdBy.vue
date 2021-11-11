@@ -15,8 +15,7 @@
                 <div class="w-full overflow-y-auto h-44">
                     <div
                         v-if="
-                            STATES.SUCCESS === userOwnerState &&
-                            userList.length < 1
+                            !isValidating && !isLoading && userList.length < 1
                         "
                         class="flex flex-col items-center justify-center h-full"
                     >
@@ -30,7 +29,7 @@
                         </div>
                     </div>
                     <div
-                        v-if="STATES.SUCCESS === userOwnerState"
+                        v-if="!isValidating && !isLoading"
                         class="flex flex-col w-full"
                     >
                         <a-checkbox-group
@@ -93,7 +92,7 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
-    // import Users from '@common/selector/users/index.vue'
+    import Users from '@common/select/users.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { Collapse } from '~/types'
     import useFacetUsers from '~/composables/user/useFacetUsers'
@@ -104,7 +103,7 @@
     export default defineComponent({
         name: 'OwnersFilter',
         components: {
-            // Users,
+            Users,
             SearchAndFilter,
         },
         props: {
@@ -146,8 +145,9 @@
             const {
                 list: listUsers,
                 total: totalUsersCount,
-                state: userOwnerState,
-                STATES,
+                isLoading,
+                error,
+                isValidating,
                 mutate: mutateUsers,
                 setLimit,
                 handleSearch: handleUserSearch,
@@ -232,8 +232,10 @@
                 queryText,
                 noOwnersToggle,
                 totalUsersCount,
-                userOwnerState,
-                STATES,
+
+                isLoading,
+                error,
+                isValidating,
                 myUsername,
                 isOwner,
                 onSelectUser,

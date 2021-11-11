@@ -224,7 +224,7 @@
                     }
                     setTimeout(() => {
                       isReady.value = true
-                    }, 200);
+                    }, 300);
                 }
             })
 

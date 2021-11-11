@@ -34,7 +34,7 @@
                 ? 'There are no runs for this workflow. '
                 : 'Sorry, we couldn’t find the workflow you were looking for.'
         "
-        :empty-screen="EmptyScreen"
+        empty-screen="WFEmptyTab"
         desc-class="w-56 text-center"
         button-icon="ArrowRight"
         :button-text="error ? '' : 'Open Profile'"
@@ -51,7 +51,6 @@
     import RunCard from '@/workflows/shared/runCard.vue'
 
     // Assets
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -100,7 +99,6 @@
                 error,
                 isLoading,
                 emit,
-                EmptyScreen,
             }
         },
     })

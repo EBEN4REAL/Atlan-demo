@@ -8,7 +8,7 @@
         </div>
         <EmptyView
             v-else-if="!isLoading && !graphData?.name"
-            :empty-screen="EmptyScreen"
+            empty-screen="WFEmptyTab"
             class="-mt-20"
         />
         <div v-else-if="graphData.name" class="absolute w-full h-full">

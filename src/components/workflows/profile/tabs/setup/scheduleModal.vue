@@ -31,7 +31,7 @@
             >
                 <EmptyView
                     desc="No schedules found"
-                    :empty-screen="EmptyScreen"
+                    empty-screen="WFEmptyTab"
                     desc-class="w-56 text-center"
                     button-icon="ArrowRight"
                 />
@@ -301,7 +301,6 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     /** ASSETS */
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     /** COMPOSABLES */
     import {
@@ -618,7 +617,6 @@
                 bodyParams,
                 loadingSubmit,
                 selectedSchedule,
-                EmptyScreen,
             }
         },
     })

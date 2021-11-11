@@ -81,7 +81,7 @@
             <EmptyView
                 v-else-if="error || (!response && !isLoading)"
                 :desc="!error ? 'There are no logs for this run. ' : error"
-                :empty-screen="EmptyScreen"
+                empty-screen="WFEmptyTab"
                 desc-class="w-56 text-center"
             />
 
@@ -112,7 +112,6 @@
     import { useArchivedWorkflowRunLogs } from '~/composables/workflow/useWorkFlowList'
     import useWorkflowLogsStream from '~/composables/workflow/useWorkflowLogsStream'
 
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
     import WorkflowMixin from '~/mixins/workflow'
 
     export default defineComponent({
@@ -233,7 +232,6 @@
                 error,
                 isLoading,
                 response,
-                EmptyScreen,
                 downloadFile,
                 isDownloading,
                 // settings

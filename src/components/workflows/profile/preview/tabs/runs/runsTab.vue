@@ -107,9 +107,6 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import RunSort from './runSort.vue'
 
-    // Assets
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
-
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -240,7 +237,6 @@
                 isLoading,
                 isLoadingRunGraph,
                 selectedRunName,
-                EmptyScreen,
                 isLoadMore,
                 totalCount,
                 filter_record,

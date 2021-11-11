@@ -83,7 +83,7 @@
             No information available for this workflow template
         "
                 desc-class="w-56 mb-24 text-center"
-                :empty-screen="EmptyScreen"
+                empty-screen="WFEmptyTab"
             />
         </template>
     </div>
@@ -123,7 +123,6 @@
     } from '~/composables/workflow/useWorkFlowList'
     import AtlanButton from '@/UI/button.vue'
     import PreviewHeader from '@/workflows/shared/previewHeader.vue'
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     export default defineComponent({
         name: 'SetupWorkflowPreview',
@@ -297,7 +296,6 @@
                 workflowTemplateError,
                 workflowTemplateLoading,
                 body,
-                EmptyScreen,
                 images,
                 visible,
                 workflowName,

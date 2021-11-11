@@ -84,7 +84,7 @@
                 :empty-screen="EmptyScreen"
                 desc-class="w-56 text-center"
             />
-       
+
             <div
                 v-else
                 id="scrollArea-log"
@@ -93,7 +93,7 @@
             >
                 <pre
                     id="contentArea-log"
-                    class="w-full h-full p-4 font-mono whitespace-normal bg-gray-100 border border-gray-300 rounded-md clusterize-content"
+                    class="w-full h-full p-4 font-mono whitespace-normal bg-gray-100 border border-gray-300 rounded-md  clusterize-content"
                 >
                   <span v-for="(item, index) in response" :key="index">
                   <span class="no">{{index + 1}}</span>
@@ -107,7 +107,7 @@
 
 <script lang="ts">
     import Clusterize from 'clusterize.js'
-    import { defineComponent, ref, toRefs, watch, nextTick } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import { useArchivedWorkflowRunLogs } from '~/composables/workflow/useWorkFlowList'
     import useWorkflowLogsStream from '~/composables/workflow/useWorkflowLogsStream'
@@ -181,13 +181,13 @@
                         }
                         response.value = chunks
                         isLoading.value = false
-                        nextTick(() => {
+                        setTimeout(() => {
                             // eslint-disable-next-line no-new
                             new Clusterize({
                                 scrollId: 'scrollArea-log',
                                 contentId: 'contentArea-log',
                             })
-                        })
+                        }, 200)
                         if (!newVal) {
                             error.value = 'There are no logs for this run.'
                         }
@@ -246,7 +246,7 @@
     })
 </script>
 <style lang="css">
-  @import url('clusterize.js/clusterize.css');
+    @import url('clusterize.js/clusterize.css');
 </style>
 <style lang="less">
     .drawer-workflow-logs {
@@ -255,9 +255,9 @@
         }
     }
     pre {
-      .clusterize-extra-row{
-        display: none;
-      }
+        .clusterize-extra-row {
+            display: none;
+        }
         counter-reset: line;
         span {
             display: block;

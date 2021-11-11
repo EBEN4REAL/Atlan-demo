@@ -29,7 +29,7 @@
                             class="outline-none"
                             :class="{ 'animate-spin block': isWorkflowRunning, 'text-gray-300':  !isAllowtoRun}"
                             @click="isAllowtoRun ? onRunWorkflow() : null"
-                        ></AtlanIcon>
+                        />
                     </a-tooltip>
                 </div>
 

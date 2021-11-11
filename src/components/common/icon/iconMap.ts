@@ -198,6 +198,7 @@ import Italic from '~/assets/images/readme/text-italic.svg'
 import Strike from '~/assets/images/readme/text-strike.svg'
 import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
+import Running from '~/assets/images/icons/running.svg'
 
 export default {
     QueryVerified,
@@ -398,4 +399,5 @@ export default {
     Strike,
     Undo,
     Redo,
+    Running
 }

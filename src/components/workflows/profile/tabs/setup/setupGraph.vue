@@ -9,7 +9,7 @@
         <!-- Setup Controls -->
         <div
             class="setup-control"
-            :class="isFullscreen ? 'bottom-7' : 'bottom-44'"
+            :class="isFullscreen ? 'bottom-7' : 'bottom-48'"
         >
             <!-- Minimap Container -->
             <div

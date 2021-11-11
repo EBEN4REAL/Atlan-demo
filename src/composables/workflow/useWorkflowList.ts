@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { watch, ref } from 'vue'
 import { Workflows } from '~/services/service/workflows'
-import { WORKFLOW_RUN, ARCHIVED_WORKFLOW_RUN } from '~/services/service/workflows/key'
 
 export function useWorkflowSearchList(immediate: boolean = true) {
     const params = ref(new URLSearchParams())
@@ -118,7 +117,7 @@ export function getRunList(name) {
     const { data, error, isLoading } = Workflows.getRunList({
         pathVariables,
         params,
-    }, { cacheKey: WORKFLOW_RUN, cacheOptions: { refreshInterval: 30000 } })
+    })
 
     watch(data, () => {
         liveList.value = data.value
@@ -147,10 +146,10 @@ export function getArchivedRunList(name) {
     // params.value.append('limit', limit.value.toString())
     params.value.append('offset', offset.value.toString())
 
-    const { data, error, isLoading, mutate } = Workflows.getArchivedRunList(
-        { params, pathVariables },
-        { cacheKey: ARCHIVED_WORKFLOW_RUN, cacheOptions: { refreshInterval: 30000 } }
-    )
+    const { data, error, isLoading, mutate } = Workflows.getArchivedRunList({
+        params,
+        pathVariables,
+    })
 
     const loadMore = () => {
         // offset.value += limit.value
@@ -215,7 +214,6 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
     }
 
     const filterList = (AllFilters) => {
-
         const { filter, sort } = AllFilters
 
         // rest list

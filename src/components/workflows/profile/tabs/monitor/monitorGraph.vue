@@ -163,9 +163,9 @@
                 required: true,
             },
             selectedPod: {
-              type: Object,
-              required: true
-            }
+                type: Object,
+                required: true,
+            },
         },
         setup(props, { emit }) {
             /** DATA */

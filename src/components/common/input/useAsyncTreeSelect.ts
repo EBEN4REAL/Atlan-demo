@@ -1,5 +1,5 @@
 import { computed, ref, Ref } from 'vue'
-import { useAPIPromise } from '~/services/api/useAPI'
+import { useAPI } from '~/services/api/useAPI'
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 export default function useAsyncTreeSelect(
@@ -45,7 +45,7 @@ export default function useAsyncTreeSelect(
             parsedUrl = parsedUrl.replace('https', 'http')
 
         try {
-            const response = await useAPIPromise(
+            const response = await useAPI(
                 getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
                 {
@@ -65,10 +65,12 @@ export default function useAsyncTreeSelect(
             }))
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig
-            const errMsg = e.response?.data?.errorMessage || ""
-            const generalError = "Don't worry, something broke on our end, you can send this info to us."
+            const errMsg = e.response?.data?.errorMessage || ''
+            const generalError =
+                "Don't worry, something broke on our end, you can send this info to us."
             errorM.value =
-                errorMessage || errMsg ||
+                errorMessage ||
+                errMsg ||
                 (errorLabelPath && getStringFromPath(e, errorLabelPath)) ||
                 generalError
             console.log(e)

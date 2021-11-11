@@ -9,7 +9,7 @@
         <!-- Monitor Controls -->
         <div
             class="monitor-control"
-            :class="isFullscreen ? 'bottom-7' : 'bottom-44'"
+            :class="isFullscreen ? 'bottom-7' : 'bottom-48'"
         >
             <!-- Minimap Container -->
             <div
@@ -19,6 +19,21 @@
             ></div>
 
             <div class="flex items-center flex-1 controls">
+                <div
+                    class="mr-3 cursor-pointer"
+                    @click="isRunning ? onStopRun() : onRetryRun()"
+                >
+                    <a-tooltip placement="top">
+                        <template #title>
+                            <span>Refresh</span>
+                        </template>
+
+                        <AtlanIcon
+                            :icon="'Refresh'"
+                            class="outline-none"
+                        />
+                    </a-tooltip>
+                </div>
                 <div
                     v-if="graphData.phase === 'Running'"
                     class="mr-3 cursor-pointer"
@@ -167,6 +182,7 @@
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isRunning = ref(true)
+            const isLoadingRefresh = ref(false)
 
             /** METHODS */
             // controls
@@ -188,7 +204,7 @@
             // initialize
             const initialize = (reload = false) => {
                 if (reload) graph.value.dispose()
-
+                isLoadingRefresh.value = true
                 // useGraph
                 const { graphLayout } = useCreateGraph(
                     graph,
@@ -223,6 +239,7 @@
                 graph.value.on('cell:mousewheel', () => {
                     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
                 })
+                isLoadingRefresh.value = false
             }
 
             watch(
@@ -230,7 +247,7 @@
                 () => {
                     // this is causing API runs & archived get hit multiple times
                     // and as a result, view logs toolbar always get override
-                    initialize(true)
+                    // initialize(true)
                 },
                 { deep: true }
             )
@@ -254,6 +271,8 @@
                 onFullscreen,
                 onRetryRun,
                 onStopRun,
+                initialize,
+                isLoadingRefresh
             }
         },
     })

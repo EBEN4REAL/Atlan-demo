@@ -202,10 +202,12 @@ import Running from '~/assets/images/icons/running.svg'
 import Refresh from '~/assets/images/icons/refresh.svg'
 import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg';
 import CreateWF from '~/assets/images/workflows/createWF.svg';
+import NoRuns from '~/assets/images/workflows/noRuns.svg';
 import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
 
 export default {
+    NoRuns,
     CreateWF,
     Warning,
     Error,

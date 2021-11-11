@@ -200,8 +200,9 @@ import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
 import Running from '~/assets/images/icons/running.svg'
 import Refresh from '~/assets/images/icons/refresh.svg'
-
+import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg';
 export default {
+    WFEmptyTab,
     QueryVerified,
     QueryDeprecated,
     QueryDraft,

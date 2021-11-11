@@ -9,7 +9,8 @@
 
         <EmptyView
             v-else-if="!isLoading && !tasks?.length"
-            :empty-screen="EmptyScreen"
+            empty-screen="WFEmptyTab"
+            desc="Couldn’t load workflow graph."
             class="-mt-20"
         />
 
@@ -32,7 +33,6 @@
     // Components
     import EmptyView from '@common/empty/index.vue'
     import SetupGraph from './setupGraph.vue'
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     // Composables
     import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkFlowList'
@@ -110,7 +110,6 @@
 
             return {
                 isLoading,
-                EmptyScreen,
                 data,
                 tasks,
                 emit,

@@ -49,7 +49,7 @@
         </div>
         <EmptyView
             v-else
-            :empty-screen="EmptyScreen"
+            empty-screen="WFEmptyTab"
             class="-mt-20"
             desc="Don't worry, something broke on our end, you can send this info to us."
         />
@@ -71,7 +71,6 @@
         getRunList,
         getArchivedRunList,
     } from '~/composables/workflow/useWorkFlowList'
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
 
     import WorkflowMixin from '~/mixins/workflow'
 
@@ -181,7 +180,6 @@
             }
             return {
                 graphData,
-                EmptyScreen,
                 isLoading,
                 list,
                 openLog,

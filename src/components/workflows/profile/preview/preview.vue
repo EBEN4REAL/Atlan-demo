@@ -35,7 +35,7 @@
             </div>
             <div v-else class="flex flex-col items-center h-full">
                 <EmptyState
-                    :empty-screen="EmptyScreen"
+                    empty-screen="EmptyDiscover"
                     desc="No UI config found."
                     desc-class="w-56 text-center"
                 />
@@ -99,7 +99,6 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
     import { message } from 'ant-design-vue'
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
     import EmptyState from '~/components/common/empty/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
@@ -296,7 +295,6 @@
                 activeKey,
                 filteredTabs,
                 emit,
-                EmptyScreen,
                 loadingFetchPod,
             }
         },

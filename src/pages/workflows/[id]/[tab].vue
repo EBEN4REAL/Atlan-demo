@@ -13,7 +13,12 @@
                 :class="$style.profiletab"
                 @change="selectTab($event)"
             >
-                <a-tab-pane v-for="t in tabs" :key="t.id" class="tabs-workflow" :tab="t.name">
+                <a-tab-pane
+                    v-for="t in tabs"
+                    :key="t.id"
+                    class="tabs-workflow"
+                    :tab="t.name"
+                >
                     <component
                         :is="t.component"
                         v-if="workflowTemplate"
@@ -52,7 +57,7 @@
             class="border-l border-gray-300 preview-container"
         >
             <EmptyView
-                :empty-screen="EmptyScreen"
+                empty-screen="EmptyDiscover"
                 :desc="`Invalid config UI found: ${errorCaptured}`"
                 desc-class="w-56 text-center"
             />
@@ -105,7 +110,6 @@
         getWorkflowConfigMapByName,
     } from '~/composables/workflow/useWorkFlowList'
 
-    import EmptyScreen from '~/assets/images/workflows/empty_tab.png'
     import useWorkflowStore from '~/store/workflows'
 
     export default defineComponent({
@@ -339,7 +343,6 @@
                 refs,
                 selectedDag,
                 data,
-                EmptyScreen,
                 selectTab,
                 templateName,
                 workflowTemplate,
@@ -380,7 +383,7 @@ meta:
             @apply ml-0;
         }
         :global(.ant-tabs-nav) {
-          padding-left: 1.75rem;
+            padding-left: 1.75rem;
         }
         :global(.ant-tabs-tab-active) {
             @apply text-gray font-bold;
@@ -420,9 +423,9 @@ meta:
 </style>
 
 <style lang="less">
-.container-workFlow{
-  .ant-tabs-tab{
-    margin-right: 0px;
-  }
-}
+    .container-workFlow {
+        .ant-tabs-tab {
+            margin-right: 0px;
+        }
+    }
 </style>

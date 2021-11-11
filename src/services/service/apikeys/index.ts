@@ -27,8 +27,19 @@ const Create = (body: any, options?: useOptions) =>
         },
         options || {}
     )
+const Delete = (id: any, options?: useOptions) => {
+    return useAPI(
+        map.DELETE_API_KEY,
+        'DELETE',
+        {
+            pathVariables: { id },
+        },
+        options || {}
+    )
+}
 export const APIKey = {
     List,
     Update,
     Create,
+    Delete,
 }

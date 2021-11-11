@@ -11,7 +11,7 @@
         <EmptyState
             desc="Sorry! We couldn’t find any workflow templates."
             button-text="Back to Workflows"
-            :empty-screen="EmptyScreen"
+            empty-screen="EmptyDiscover"
             button-icon="ArrowRight"
             @event="$router.push('/workflows')"
         />
@@ -96,7 +96,7 @@
                             v-if="workflowList.length === 0 && !isLoading"
                             desc="Sorry! We couldn’t find any workflow templates. try resetting your filters."
                             button-text="Reset filters"
-                            :empty-screen="EmptyScreen"
+                            empty-screen="EmptyDiscover"
                             @event="handleClearFiltersFromList"
                         />
                         <WorkflowList
@@ -126,7 +126,6 @@
     import { computed, defineComponent, ref, toRefs, Ref, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
-    import EmptyScreen from '~/assets/images/workflows/empty_template.png'
     import EmptyState from '~/components/common/empty/index.vue'
 
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -311,7 +310,6 @@
                 selected,
                 workflowList,
                 loadMore,
-                EmptyScreen,
                 isLoadMore,
                 handleSearchChange,
                 handlePreview,

@@ -12,7 +12,7 @@
             v-if="error"
             desc="Don't worry, something broke on our end, you can send this info to us."
             headline="Oops! Something went wrong"
-            :empty-screen="ErrorScreen"
+            empty-screen="ErrorScreen"
         />
         <EmptyState
             v-else
@@ -20,14 +20,14 @@
             Atlan, run cron jobs and much more."
             headline="Create a workflow!"
             button-text="Get Started"
-            :empty-screen="EmptyScreen"
+            empty-screen="EmptyDiscover"
             button-icon="ArrowRight"
             @event="$router.push('/workflows/new')"
         />
     </div>
     <div v-else class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
         >
             <WorkflowFilters
                 :ref="
@@ -77,7 +77,7 @@
                     v-if="workflowList.length === 0 && !isLoading"
                     desc="Sorry! We couldn’t find any workflow templates. try resetting your filters."
                     button-text="Reset filters"
-                    :empty-screen="EmptyScreen"
+                    empty-screen="EmptyDiscover"
                     @event="handleClearFiltersFromList"
                 />
                 <WorkflowList
@@ -118,8 +118,6 @@
 
     import { useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
-    import EmptyScreen from '~/assets/images/workflows/emptyDiscovery.png'
-    import ErrorScreen from '~/assets/images/somethingWrong.png'
     import EmptyState from '~/components/common/empty/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '@/workflows/discovery/list/preference.vue'
@@ -332,7 +330,6 @@
             return {
                 creatorDetails,
                 isFilterAppplied,
-                ErrorScreen,
                 handleClearFiltersFromList,
                 autoSelect,
                 workflowFilterRef,
@@ -342,7 +339,6 @@
                 workflowList,
                 isLoadMore,
                 loadMore,
-                EmptyScreen,
                 handleSearchChange,
                 handlePreview,
                 queryText,

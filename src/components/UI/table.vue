@@ -61,7 +61,7 @@
             const { showLoading, dataList, rowClassNames } = toRefs(props)
             let tableRef = ref(null)
             const defaultRowClassNames =
-                'px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light'
+                'px-4 py-2 text-xs text-gray-700 truncate bg-gray-100 border border-gray-light'
 
             watch(tableRef, () => {
                 // if (isQueryRunning === 'success') {
@@ -71,7 +71,7 @@
                             rowClassNames.value !== ''
                                 ? rowClassNames.value
                                 : defaultRowClassNames
-                        }">${index}</td>`
+                        }">${index + 1}</td>`
                         for (const [key, value] of Object.entries(row)) {
                             rows += `<td class="px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light">${
                                 value == null ? '-' : value

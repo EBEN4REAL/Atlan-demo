@@ -1,16 +1,23 @@
 <template>
     <div
-        class="flex items-center justify-center w-full max-w-full border rounded  h-96 border-gray-light"
+        class="flex items-center justify-center w-full border rounded  h-96 border-gray-light"
     >
         <div v-if="isLoading" class="text-sm leading-none">
             <a-spin size="small" class="mr-2 leading-none"></a-spin
             ><span>Getting sample data</span>
         </div>
-        <div v-else class="w-full h-full max-w-full">
+        <div v-else class="w-full h-full">
             <AtlanTable :dataList="results">
                 <template #header>
                     <thead>
                         <tr>
+                            <th
+                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                style="z-index: 4"
+                            >
+                                #
+                                <span class="resize-handle"></span>
+                            </th>
                             <th
                                 v-for="(col, index) in tableColumns"
                                 :key="index"
@@ -92,26 +99,17 @@
             /** WATCHERS */
             watch([data], () => {
                 if (data.value) {
-                    tableColumns.value.push({
-                        width: 50,
-                        fixed: 'left',
-                        title: '#',
-                        dataIndex: 'hash_index',
-                        ellipsis: true,
-                    })
                     // convert data from API in table format
                     data.value.columns.forEach((col) => {
                         const obj = {
                             dataIndex: col.label,
                             title: col.columnName,
-                            data_type: getDataType(col.type.rep),
-                            width: 150,
-                            ellipsis: true,
+                            data_type: getDataType(col.type.name),
                         }
                         tableColumns.value.push(obj)
                     })
                     data.value.rows.forEach((val, index) => {
-                        let obj = { hash_index: index + 1 }
+                        let obj = {}
                         data.value.columns.forEach((col, i) => {
                             obj[col.columnName] = val[i] || '---'
                         })
@@ -130,24 +128,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    /*  table {
-        td,
-        th {
-            max-width: 150px;
-            min-width: 150px;
-        }
-        tbody {
-            font-family: Hack;
-            font-weight: 400;
-            src: url('~/assets/fonts/hack/Hack-Regular.ttf') format('ttf');
-        }
-        td:first-child,
-        th {
-            @apply bg-gray-100 text-center !important;
-            width: 35px;
-            min-width: 35px;
-        }
-    } */
-</style>

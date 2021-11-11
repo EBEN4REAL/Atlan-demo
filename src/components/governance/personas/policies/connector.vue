@@ -13,6 +13,7 @@
             :disabled="disabled"
             @change="onChange"
             @select="selectNode"
+            @blur="onBlur"
             :ref="
                 (el) => {
                     treeSelectRef = el
@@ -78,7 +79,7 @@
                 default: () => false,
             },
         },
-        emits: ['change', 'update:data'],
+        emits: ['change', 'update:data', 'blur'],
         setup(props, { emit }) {
             const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
@@ -258,6 +259,10 @@
                 emit('change')
             }
 
+            const onBlur = () => {
+                emit('blur')
+            }
+
             return {
                 treeSelectRef,
                 filterSourceIds,
@@ -277,6 +282,7 @@
                 capitalizeFirstLetter,
                 connector,
                 connection,
+                onBlur,
             }
         },
     })

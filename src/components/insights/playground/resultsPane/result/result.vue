@@ -56,6 +56,8 @@
             <!-- --------------- -->
 
             <!-- First screen -->
+            <QueryAbort v-else-if="isQueryRunning === '' && isQueryAborted" />
+
             <div
                 v-else-if="isQueryRunning === ''"
                 class="flex flex-col items-center justify-center w-full h-full"
@@ -140,6 +142,7 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import ResultsImg from '~/assets/images/insights/results.png'
     import QueryError from './queryError.vue'
+    import QueryAbort from './queryAbort.vue'
     import Loading from './loading.vue'
     import ResultPaneFooter from './resultPaneFooter.vue'
     import LineError from './lineError.vue'
@@ -158,6 +161,7 @@
             Loading,
             QueryError,
             AtlanBtn,
+            QueryAbort,
         },
         props: {
             dataList: {
@@ -196,9 +200,16 @@
                     activeInlineTab.value?.playground?.resultsPane?.result
                         ?.isQueryRunning
             )
+            const isQueryAborted = computed(
+                () =>
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryAborted
+            )
             const errorDecorations =
                 activeInlineTab.value?.playground?.resultsPane?.result
                     ?.errorDecorations
+
+            // let isQueryAborted = ref(false)
 
             const abortRunningQuery = () => {
                 abortQuery(
@@ -207,6 +218,7 @@
                     editorInstance,
                     monacoInstance
                 )
+                // isQueryAborted.value = true
             }
 
             return {
@@ -221,6 +233,7 @@
                 activeInlineTab,
 
                 abortRunningQuery,
+                isQueryAborted,
                 // printData
             }
         },

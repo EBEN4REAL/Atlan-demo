@@ -59,6 +59,7 @@ export interface activeInlineTabInterface {
                 errorDecorations: any
                 eventSourceInstance: any
                 buttonDisable: boolean
+                isQueryAborted: boolean
             }
             metadata: Object
             queries: Object

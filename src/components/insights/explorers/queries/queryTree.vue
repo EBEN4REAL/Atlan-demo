@@ -180,6 +180,11 @@ TR
             showEmptyState: {
                 type: Boolean,
             },
+            // refetchTreeData: {
+            //     type: Function,
+            //     required: false,
+            //     default: () => {},
+            // },
         },
         setup(props, { emit }) {
             const { savedQueryType } = toRefs(props)

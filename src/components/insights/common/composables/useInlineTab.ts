@@ -121,12 +121,12 @@ export function useInlineTab(
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
-        console.log('dds: ', {index, activeTab})
-        console.log('dds tab: ', tabsArray)
-        if (index !== -1) {
-            console.log(index, activeTab, 'modifyTab')
-            tabsArray.value[index] = activeTab
-        }
+        // console.log('dds: ', {index, activeTab})
+        // console.log('dds tab: ', tabsArray)
+        // if (index !== -1) {
+        //     console.log(index, activeTab, 'modifyTab')
+        //     tabsArray.value[index] = activeTab
+        // }
         if (localStorageSync) {
             console.log('localStorageSync')
             // syncying inline tabarray in localstorage

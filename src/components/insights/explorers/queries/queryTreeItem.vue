@@ -445,6 +445,8 @@
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
+
+                            // console.log('query entity1: ', t)
                             activeInlineTabCopy.assetSidebar.assetInfo =
                                 t.entity
                             activeInlineTabCopy.assetSidebar.isVisible = true

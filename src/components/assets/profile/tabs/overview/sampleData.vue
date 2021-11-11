@@ -24,15 +24,18 @@
                                 class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
                                 style="z-index: 3"
                             >
-                                <div class="flex">
-                                    <component
-                                        :is="images[col.data_type]"
-                                        class="w-4 h-4 mr-1"
-                                    ></component>
-                                    <Tooltip
-                                        :tooltip-text="`${col.title}`"
-                                        classes="cursor-pointer"
-                                    />
+                                <div class="flex items-center">
+                                    <a-tooltip>
+                                        <template #title>{{
+                                            col.data_type
+                                        }}</template>
+                                        <component
+                                            :is="images[col.data_type]"
+                                            class="w-4 h-4 mr-1 cursor-pointer"
+                                        ></component>
+                                    </a-tooltip>
+
+                                    <Tooltip :tooltip-text="`${col.title}`" />
                                 </div>
                                 <span class="resize-handle"></span>
                             </th>

@@ -2,17 +2,19 @@
     <div class="flex w-full h-full bg-white">
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex w-full h-full">
-                <router-view v-if="isItem" :selected-asset="selectedAsset" />
-
-                <AssetDiscovery
-                    :style="isItem ? 'display: none !important;' : ''"
-                ></AssetDiscovery>
+                <transition name="fade" v-if="isItem">
+                    <router-view :selected-asset="selectedAsset" />
+                </transition>
+                <keep-alive>
+                    <AssetDiscovery
+                        :style="isItem ? 'display: none !important;' : ''"
+                    ></AssetDiscovery>
+                </keep-alive>
             </div>
         </div>
 
         <div
-            id="overAssetPreviewSidebar"
-            class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:hidden lg:block"
+            class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
         >
             <AssetPreview :selected-asset="selectedAsset"></AssetPreview>
         </div>
@@ -20,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, Ref, watch, nextTick } from 'vue'
+    import { computed, defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -39,7 +41,6 @@
             })
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
-
             const { selectedAsset } = useAssetInfo()
             return {
                 isItem,
@@ -55,18 +56,20 @@
     }
 </style>
 
+<style lang="less">
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.3s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0;
+    }
+</style>
+
 <route lang="yaml">
 meta:
     layout: default
     requiresAuth: true
 </route>
-
-<style lang="less">
-    .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity 0.3s;
-    }
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-        opacity: 0;
-    }
-</style>

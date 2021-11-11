@@ -11,11 +11,11 @@ const List = (params: any, options?: useOptions) =>
 const ListUserGroups = (params: any, id: string, options?: useOptions) =>
     useAPI(map.GET_USER_GROUPS, 'GET', { params, pathVariables: { id } }, options || {})
 
-const GetUserSessions = (id: string, params?: any, options?: useOptions) =>
+const GetUserSessions = (pathVariables, params?: any, options?: useOptions) =>
     useAPI(
         map.GET_USER_SESSIONS,
         'GET',
-        { params, pathVariables: { id } },
+        { params, pathVariables },
         options || {}
     )
 

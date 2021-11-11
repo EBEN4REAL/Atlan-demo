@@ -1,28 +1,25 @@
 <template>
     <div
-        class="flex items-center w-full transition duration-300 searchbar h-7"
+        class="flex items-center transition duration-300 searchbar"
         :class="size"
     >
-        <!-- <slot name="categoryFilter" /> -->
-
-        <div class="flex items-center justify-between flex-grow pl-1">
+        <slot name="categoryFilter" />
+        <div class="flex items-center justify-between flex-grow py-1">
             <AtlanIcon
-                v-if="!$slots.categoryFilter"
                 icon="Search"
-                class="flex-none pl-1 text-gray-500"
+                class="flex-none pl-2 pr-1 text-gray-500"
             />
-            <a-input
+            <input
                 ref="searchBar"
-                v-model:value="localValue"
+                v-model="value"
                 :placeholder="placeholder"
                 type="text"
-                class="flex-1 w-2/3 text-sm bg-transparent border-0 outline-none  focus:border-0 focus:border-r-0 focus:shadow-none"
-                @change="handleChange"
+                class="flex-1 text-sm bg-transparent focus:outline-none"
+                @keyup.esc="$event.target.blur()"
             />
-
-            <div class="flex-none w-7 h-7">
+            <div class="flex-none h-7 w-7">
                 <button
-                    v-if="localValue?.length"
+                    v-if="value?.length"
                     class="text-gray-500 hover:text-gray"
                 >
                     <AtlanIcon
@@ -44,7 +41,7 @@
                 </template>
 
                 <button
-                    class="p-1 mr-2 transition-colors rounded  hover:bg-gray-light"
+                    class="p-1 mr-2 transition-colors rounded hover:bg-gray-light"
                 >
                     <AtlanIcon
                         :icon="dot ? 'FilterDot' : 'Filter'"
@@ -69,7 +66,6 @@
         toRefs,
         PropType,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'SearchAndFilter',
@@ -81,16 +77,24 @@
                 type: String as PropType<'default' | 'minimal'>,
                 default: () => 'default',
             },
-            modelValue: { type: String, default: () => '' },
+            value: { type: String },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['update:value', 'change'],
         setup(props, { emit }) {
-            const { autofocus } = toRefs(props)
-
-            const { modelValue } = useVModels(props)
-            const localValue = ref(modelValue.value)
-
+            const { autofocus, value: val } = toRefs(props)
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
+            const value = computed({
+                get: () => val.value,
+                set: (newVal) => {
+                    emit('update:value', newVal)
+                    emit('change', newVal)
+                },
+            })
+
+            function clearInput() {
+                emit('update:value', '')
+                emit('change', '')
+            }
 
             onMounted(async () => {
                 if (autofocus.value) {
@@ -99,21 +103,10 @@
                 }
             })
 
-            const handleChange = () => {
-                modelValue.value = localValue.value
-                emit('change')
-            }
-
-            function clearInput() {
-                localValue.value = ''
-                handleChange()
-            }
-
             return {
-                localValue,
+                value,
                 searchBar,
                 clearInput,
-                handleChange,
             }
         },
     })

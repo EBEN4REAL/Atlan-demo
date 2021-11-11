@@ -21,7 +21,7 @@
             <div class="flex items-center flex-1 controls">
                 <div
                     class="mr-3 cursor-pointer"
-                    @click="initialize(true)"
+                    @click="handleRefresh"
                 >
                     <a-tooltip placement="top">
                         <template #title>
@@ -254,7 +254,9 @@
                 if (graph.value) graph.value.dispose()
                 initialize()
             })
-
+            const handleRefresh = () => {
+              emit("refresh")
+            }
             return {
                 minimapContainer,
                 monitorContainer,
@@ -270,6 +272,7 @@
                 onStopRun,
                 initialize,
                 isLoadingRefresh,
+                handleRefresh
             }
         },
     })

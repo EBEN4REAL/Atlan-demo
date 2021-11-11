@@ -114,7 +114,7 @@ export function getRunList(name) {
     )
     params.value.append('labelSelector', labelSelector.value)
 
-    const { data, error, isLoading } = Workflows.getRunList({
+    const { data, error, isLoading, mutate } = Workflows.getRunList({
         pathVariables,
         params,
     })
@@ -123,7 +123,7 @@ export function getRunList(name) {
         liveList.value = data.value
     })
 
-    return { liveList, error, isLoading }
+    return { liveList, error, isLoading, mutate }
 }
 
 export function getArchivedRunList(name) {
@@ -167,7 +167,6 @@ export function getArchivedRunList(name) {
         filter_record.value = data.value.filter_record
         archivedList.value = data.value
     })
-
     return {
         archivedList,
         error,
@@ -175,6 +174,7 @@ export function getArchivedRunList(name) {
         totalCount,
         filter_record,
         loadMore,
+        mutate
     }
 }
 

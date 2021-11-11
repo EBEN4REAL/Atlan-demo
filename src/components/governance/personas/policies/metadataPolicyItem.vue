@@ -7,12 +7,18 @@
             :connection-qf-name="connectorData.attributeValue"
         />
         <div class="flex justify-between mb-6">
-            <div>
+            <div class="relative">
                 <div class="relative mb-2 text-sm text-gray-500 required">
                     Policy name
                 </div>
                 <div class="max-w-xs">
                     <a-input
+                        @blur="
+                            () => {
+                                if (!policy.name) rules.policyName.show = true
+                                else rules.policyName.show = false
+                            }
+                        "
                         :ref="
                             (el) => {
                                 policyNameRef = el
@@ -21,6 +27,12 @@
                         v-model:value="policy.name"
                         placeholder="Policy Name"
                     />
+                </div>
+                <div
+                    class="absolute text-xs text-red-500 -bottom-5"
+                    v-if="rules.policyName.show"
+                >
+                    {{ rules.policyName.text }}
                 </div>
             </div>
             <AtlanBtn
@@ -33,31 +45,60 @@
             ></AtlanBtn>
         </div>
 
-        <span class="mb-2 text-sm text-gray-500 required">Connection</span>
-        <Connector
-            v-model:data="connectorData"
-            class="max-w-xs mb-6"
-            :disabled="!policy?.isNew"
-            @change="handleConnectorChange"
-            :ref="
-                (el) => {
-                    connectorComponentRef = el
-                }
-            "
-        />
-
-        <div class="flex items-center mb-2 gap-x-1">
-            <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
-            <span class="text-sm text-gray-500">Assets</span>
-        </div>
-        <div
-            class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5 mb-4"
-        >
-            <PillGroup
-                v-model:data="assets"
-                label-key="label"
-                @add="openAssetSelector"
+        <div class="relative">
+            <div class="mb-2 text-sm text-gray-500 required">Connection</div>
+            <Connector
+                v-model:data="connectorData"
+                class="max-w-xs mb-6"
+                :disabled="!policy?.isNew"
+                @change="handleConnectorChange"
+                @blur="
+                    () => {
+                        if (!connectorData.attributeValue)
+                            rules.connection.show = true
+                        else rules.connection.show = false
+                    }
+                "
+                :ref="
+                    (el) => {
+                        connectorComponentRef = el
+                    }
+                "
             />
+            <div
+                class="absolute text-xs text-red-500 -bottom-5"
+                v-if="rules.connection.show"
+            >
+                {{ rules.connection.text }}
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="flex items-center mb-2 gap-x-1">
+                <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
+                <span class="text-sm text-gray-500 required">Assets</span>
+            </div>
+            <div
+                class="
+                    flex flex-wrap
+                    items-center
+                    flex-grow
+                    gap-x-1 gap-y-1.5
+                    mb-6
+                "
+            >
+                <PillGroup
+                    v-model:data="assets"
+                    label-key="label"
+                    @add="openAssetSelector"
+                />
+            </div>
+            <div
+                class="absolute text-xs text-red-500 -bottom-5"
+                v-if="rules.assets.show && connectorData.attributeValue"
+            >
+                {{ rules.assets.text }}
+            </div>
         </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
@@ -138,6 +179,22 @@
             const connectorComponentRef = ref()
             const policyNameRef = ref()
             const connectionStore = useConnectionStore()
+
+            const rules = ref({
+                policyName: {
+                    text: 'Enter a policy name!',
+                    show: false,
+                },
+                connection: {
+                    text: 'Connection is required!',
+                    show: false,
+                },
+                assets: { text: 'Select atleast 1 asset!', show: false },
+                metadata: {
+                    text: 'Select atleast 1 permissions!',
+                    show: false,
+                },
+            })
             function removePolicy() {
                 emit('delete')
             }
@@ -151,23 +208,33 @@
             }
 
             const assets = computed({
-                get: () =>
-                    policy.value.assets.map((name) => ({
+                get: () => {
+                    return policy.value.assets.map((name) => ({
                         label: name,
-                    })),
+                    }))
+                },
                 set: (val) => {
                     policy.value.assets = val.map((ast) => ast.label)
+                    if (val.length > 0) rules.value.assets.show = false
+                    else rules.value.assets.show = true
                 },
             })
             const handleConnectorChange = () => {
                 policy.value.assets = []
             }
             const handleSave = () => {
+                /* Validation for name */
                 if (!policy.value.name) {
                     policyNameRef.value?.focus()
+                    rules.value.policyName.show = true
                     return
-                } else if (!connectorData.value.attributeValue) {
+                } /* Validation for connection */ else if (
+                    !connectorData.value.attributeValue
+                ) {
                     connectorComponentRef.value?.treeSelectRef?.focus()
+                    rules.value.connection.show = true
+                } else if (policy.value.assets.length < 1) {
+                    rules.value.assets.show = true
                 } else {
                     emit('save')
                 }
@@ -194,6 +261,7 @@
             })
 
             return {
+                rules,
                 handleSave,
                 policyNameRef,
                 handleConnectorChange,

@@ -4,8 +4,10 @@
         <StatusBadge :status-id="value" show-no-status show-label />
     </template>
     <template v-else>
-        <span class="pr-2 text-gray-500">{{ attrLabel }}:</span>
-        <span class="overflow-ellipsis text-gray">{{ value }}</span>
+        <div class="flex flex-col">
+            <span class="pb-1 pr-2 text-gray-500">{{ attrLabel }}</span>
+            <span class="overflow-ellipsis text-gray">{{ value }}</span>
+        </div>
     </template>
 </template>
 
@@ -22,8 +24,8 @@
         setup(props) {
             const { name } = toRefs(props)
             const labelMap = {
-                userDescription: 'DESC',
-                certificateStatus: 'STATUS',
+                userDescription: 'Update description',
+                certificateStatus: 'Update certificate',
             }
 
             const attrLabel = computed(() => labelMap[name.value] || 'ATTR')

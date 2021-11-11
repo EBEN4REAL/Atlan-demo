@@ -1,5 +1,5 @@
 import { ref, computed, watch, Ref } from 'vue'
-import { useAPI } from '~/services/api/useAPI'
+import genericAPI from '~/services/api/generic'
 import { ReqConfig, ResConfig } from './asyncSelect.interface'
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
@@ -88,16 +88,18 @@ export default function useAsyncSelector(
         if (document.location.hostname === 'localhost')
             parsedUrl = parsedUrl.replace('https', 'http')
         try {
-            const response = await useAPI(
-               () => parsedUrl,
-               method, 
-               {
-                params: genParams(valueObject.value, params),
-                body,
-              },
-              {}
+            const { data: response, mutate } = genericAPI(
+                parsedUrl,
+                method,
+                {
+                    params: genParams(valueObject.value, params),
+                    body,
+                },
+                { asyncOptions: { immediate: false, onError: e => { throw e } } }
             )
-            setConfigData(response)
+
+            await mutate()
+            setConfigData(response.value)
             createNewVisibility.value = true
         } catch (e) {
             newConfigError.value = true
@@ -123,16 +125,17 @@ export default function useAsyncSelector(
         if (document.location.hostname === 'localhost')
             parsedUrl = parsedUrl.replace('https', 'http')
         try {
-            const response = await useAPI(
-                () => getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
+            const { data: response, mutate } = genericAPI(
+                getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
                 {
                     params: genParams(valueObject.value, params),
                     body: getParsedBody(addFormValues),
-                }, 
-                {}
+                },
+                { asyncOptions: { immediate: false, onError: e => { throw e } } }
             )
-            setData(response)
+            await mutate()
+            setData(response.value)
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig.value
             shouldRefetch.value = true

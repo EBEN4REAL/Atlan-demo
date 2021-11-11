@@ -1,5 +1,5 @@
 import { computed, ref, Ref } from 'vue'
-import { useAPI } from '~/services/api/useAPI'
+import genericAPI from '~/services/api/generic'
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 export default function useAsyncTreeSelect(
@@ -44,18 +44,19 @@ export default function useAsyncTreeSelect(
             parsedUrl = parsedUrl.replace('https', 'http')
 
         try {
-            const response = await useAPI(
-                () => getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
+            const { data: response, mutate } = genericAPI(
+                getStringFromPath(valueObject.value, parsedUrl) ?? parsedUrl,
                 method,
                 {
                     params: genParams(valueObject.value, params),
                     body,
                 },
-                {}
+                { asyncOptions: { immediate: false, onError: e => { throw e } } }
             )
+            await mutate()
             // ? parent child can have same key value, eg, PUBLIC, FOODBEVERAGES, need key & value to be unique, so added "val"
             // eslint-disable-next-line no-param-reassign
-            n.dataRef.children = [...getData(response)].map((r) => ({
+            n.dataRef.children = [...getData(response.value)].map((r) => ({
                 pid: n.value,
                 title: r.label,
                 isLeaf: true,

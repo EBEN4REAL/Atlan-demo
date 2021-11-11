@@ -294,7 +294,7 @@
                     data.value.error = error.value
                     data.value.isLoading = isLoading.value
                     fetchUIConfig()
-                    updateSelected(data.value.asset, null)
+                    updateSelected(data.value.asset, null, null)
                 })
             }
 

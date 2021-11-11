@@ -30,7 +30,7 @@ export const map = {
         getAPIPath(BASE_PATH, `/runs/${name}/retry`),
     [STOP_RUN]: ({ name }: PathParams) =>
         getAPIPath(BASE_PATH, `/runs/${name}/stop`),
-    [CREATE_WORKFLOW]: () => getAPIPath('/service', `/workflows?submit=false`),
+    [CREATE_WORKFLOW]: () => getAPIPath('/service', `/workflows`),
     [WORKFLOW]: () => getAPIPath(BASE_PATH, '/workflows'),
     [RUN_WORKFLOW]: () => getAPIPath(BASE_PATH, '/workflows/submit'),
     [DELETE_WORKFLOW]: ({ name }: PathParams) =>

@@ -1,5 +1,5 @@
 <template>
-    <ExplorerLayout
+    <!-- <ExplorerLayout
         v-if="permissions.list"
         title="Custom Metadata"
         sub-title="Manage Custom Metadata & it's attributes"
@@ -48,92 +48,92 @@
             @clearNewBm="newBm = null"
         />
     </ExplorerLayout>
-    <NoAcces v-else />
+    <NoAcces v-else /> -->
 </template>
 <script lang="ts">
     // ? components
-    import { defineComponent, computed, onMounted } from 'vue'
-    import { useHead } from '@vueuse/head'
-    import BusinessMetadataList from '@/admin/custom-metadata/businessMetadataList.vue'
-    import BusinessMetadataProfile from '@/admin/custom-metadata/businessMetadataProfile.vue'
-    import AtlanBtn from '@/UI/button.vue'
-    import ExplorerLayout from '@/admin/explorerLayout.vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import { useAccessStore } from '~/services/access/accessStore'
+    // import { defineComponent, computed, onMounted } from 'vue'
+    // import { useHead } from '@vueuse/head'
+    // import BusinessMetadataList from '@/admin/custom-metadata/businessMetadataList.vue'
+    // import BusinessMetadataProfile from '@/admin/custom-metadata/businessMetadataProfile.vue'
+    // import AtlanBtn from '@/UI/button.vue'
+    // import ExplorerLayout from '@/admin/explorerLayout.vue'
+    // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    // import { useAccessStore } from '~/services/access/accessStore'
 
-    // ? Media
+    // // ? Media
 
-    // ? Composables
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    // // ? Composables
+    // import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
 
-    import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
-    import NoAcces from '@/common/secured/access.vue'
-    import useAuth from '~/composables/auth/useAuth'
+    // import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
+    // import NoAcces from '@/common/secured/access.vue'
+    // import useAuth from '~/composables/auth/useAuth'
 
-    export default defineComponent({
-        name: 'BusinessMetadata',
-        components: {
-            BusinessMetadataList,
-            BusinessMetadataProfile,
-            ExplorerLayout,
-            SearchAndFilter,
-            AtlanBtn,
-            NoAcces,
-        },
-        setup() {
-            useHead({
-                title: computed(() => 'Custom Metadata'),
-            })
-            const accessStore = useAccessStore()
-            const permissions = computed(() => ({
-                list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
-                create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
-                delete: accessStore.checkPermission('DELETE_BUSINESS_METADATA'),
-            }))
-            const {
-                fetchBMonStore,
-                selectedBm,
-                discardNewBm,
-                searchText,
-                handleSelectBm,
-                clearSearchText,
-                newBm,
-                updatedBm,
-                onUpdate,
-                handleAfterArchive,
-                onCreateNewBmClick,
-                businessMetadataList,
-                businessMetadataListError,
-                searchedBusinessMetadataList,
-                finalBusinessMetadataList,
-            } = useBusinessMetadata()
+    // export default defineComponent({
+    //     name: 'BusinessMetadata',
+    //     components: {
+    //         BusinessMetadataList,
+    //         BusinessMetadataProfile,
+    //         ExplorerLayout,
+    //         SearchAndFilter,
+    //         AtlanBtn,
+    //         NoAcces,
+    //     },
+    //     setup() {
+    //         useHead({
+    //             title: computed(() => 'Custom Metadata'),
+    //         })
+    //         const accessStore = useAccessStore()
+    //         const permissions = computed(() => ({
+    //             list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
+    //             create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
+    //             delete: accessStore.checkPermission('DELETE_BUSINESS_METADATA'),
+    //         }))
+    //         const {
+    //             fetchBMonStore,
+    //             selectedBm,
+    //             discardNewBm,
+    //             searchText,
+    //             handleSelectBm,
+    //             clearSearchText,
+    //             newBm,
+    //             updatedBm,
+    //             onUpdate,
+    //             handleAfterArchive,
+    //             onCreateNewBmClick,
+    //             businessMetadataList,
+    //             businessMetadataListError,
+    //             searchedBusinessMetadataList,
+    //             finalBusinessMetadataList,
+    //         } = useBusinessMetadata()
 
-            onMounted(() => {
-                fetchBMonStore()
-            })
+    //         onMounted(() => {
+    //             fetchBMonStore()
+    //         })
 
-            const { isAccess } = useAuth()
+    //         const { isAccess } = useAuth()
 
-            return {
-                isAccess,
-                EmptyBusinessMetadata,
-                businessMetadataList,
-                businessMetadataListError,
-                clearSearchText,
-                discardNewBm,
-                finalBusinessMetadataList,
-                handleAfterArchive,
-                handleSelectBm,
-                newBm,
-                onCreateNewBmClick,
-                onUpdate,
-                searchText,
-                searchedBusinessMetadataList,
-                selectedBm,
-                updatedBm,
-                permissions,
-            }
-        },
-    })
+    //         return {
+    //             isAccess,
+    //             EmptyBusinessMetadata,
+    //             businessMetadataList,
+    //             businessMetadataListError,
+    //             clearSearchText,
+    //             discardNewBm,
+    //             finalBusinessMetadataList,
+    //             handleAfterArchive,
+    //             handleSelectBm,
+    //             newBm,
+    //             onCreateNewBmClick,
+    //             onUpdate,
+    //             searchText,
+    //             searchedBusinessMetadataList,
+    //             selectedBm,
+    //             updatedBm,
+    //             permissions,
+    //         }
+    //     },
+    // })
 </script>
 <style scoped></style>

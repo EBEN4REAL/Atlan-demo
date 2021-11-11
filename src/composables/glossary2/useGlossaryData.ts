@@ -15,7 +15,19 @@ export default function useGlossaryData() {
         return found
     }
 
-    const glossaryList = computed(() => glossaryStore.list)
+    const glossaryList = computed(() =>
+        glossaryStore.list.sort((a, b) =>
+            a.attributes.name > b.attributes.name
+                ? 1
+                : b.attributes.name > a.attributes.name
+                ? -1
+                : 0
+        )
+    )
+
+    const handleSelectedGlossary = (item) => {
+        glossaryStore.setSelectedGlossary(item)
+    }
 
     const getEntityStatusIcon = (
         type: String,
@@ -66,11 +78,17 @@ export default function useGlossaryData() {
         })
     }
 
+    const selectedGlossary = computed(() => {
+        return glossaryStore.selectedGlossary
+    })
+
     return {
         glossaryList,
         list: glossaryStore.list,
         getGlossary,
         getEntityStatusIcon,
         initTree,
+        handleSelectedGlossary,
+        selectedGlossary,
     }
 }

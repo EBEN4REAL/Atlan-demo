@@ -7,7 +7,7 @@ export interface State {
 }
 
 export const state: State = {
-    selectedAsset: {},
+    selectedAsset: useStorage('selectedAsset', {}),
     activeFacetTab: useStorage('activeFacetTab', []),
     activeFacet: useStorage('activeFacet', {}),
 }

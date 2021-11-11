@@ -8,14 +8,14 @@
                 <AtlanIcon icon="AddUser" />
             </template>
         </Pill>
-        <span v-else class="text-gray-500">{{ user?.username || 'Bot' }}</span>
+        <span v-else class="text-gray-700">{{ user?.username || 'Bot' }}</span>
     </a-popover>
 </template>
 
 <script lang="ts">
     import { defineComponent } from 'vue'
 
-    import UserInfo from '@/discovery/preview/hovercards/ownerInfo.vue'
+    import UserInfo from '~/components/common/hovercards/ownerInfo.vue'
     import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({

@@ -191,6 +191,14 @@ import StarCircled from '~/assets/images/icons/star-circled.svg'
 import ResendInvite from '~/assets/images/icons/invite.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 
+import Code from '~/assets/images/readme/code.svg'
+import Underline from '~/assets/images/readme/text-underline.svg'
+import Bold from '~/assets/images/readme/text-bold.svg'
+import Italic from '~/assets/images/readme/text-italic.svg'
+import Strike from '~/assets/images/readme/text-strike.svg'
+import Undo from '~/assets/images/readme/undo.svg'
+import Redo from '~/assets/images/readme/redo.svg'
+
 export default {
     QueryVerified,
     QueryDeprecated,
@@ -383,4 +391,11 @@ export default {
     DatabaseGray,
     SchemaGray,
     NoResultsFound,
+    Code,
+    Underline,
+    Bold,
+    Italic,
+    Strike,
+    Undo,
+    Redo,
 }

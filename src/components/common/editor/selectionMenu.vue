@@ -172,12 +172,7 @@
                     }"
                     @click="() => menuItem.onClick(editor)"
                 >
-                    <fa
-                        v-if="menuItem.icon"
-                        :icon="menuItem.icon"
-                        class="mr-1"
-                    />
-                    <span v-else>{{ menuItem.title }}</span>
+                    <AtlanIcon :icon="menuItem.icon" class="w-auto h-4 mr-1" />
                 </div>
 
                 <template #title>{{
@@ -349,7 +344,7 @@
                     title: 'Bold',
                     key: 'bold',
                     helpText: '',
-                    icon: 'fa bold',
+                    icon: 'Bold',
                     onClick: (editor) => {
                         editor.chain().focus().toggleBold().run()
                     },
@@ -358,7 +353,7 @@
                     title: 'Italic',
                     key: 'italic',
                     helpText: '',
-                    icon: 'fa italic',
+                    icon: 'Italic',
                     onClick: (editor) =>
                         editor.chain().focus().toggleItalic().run(),
                 },
@@ -366,7 +361,7 @@
                     title: 'Underline',
                     key: 'underline',
                     helpText: '',
-                    icon: 'fa underline',
+                    icon: 'Underline',
                     onClick: (editor) =>
                         editor.chain().focus().toggleUnderline().run(),
                 },
@@ -374,7 +369,7 @@
                     title: 'Strikethrough',
                     key: 'strike',
                     helpText: '',
-                    icon: 'fa strikethrough',
+                    icon: 'Strike',
                     onClick: (editor) =>
                         editor.chain().focus().toggleStrike().run(),
                 },
@@ -383,14 +378,14 @@
                     title: 'Undo',
                     key: 'undo',
                     helpText: '',
-                    icon: 'fa undo',
+                    icon: 'Undo',
                     onClick: (editor) => editor.chain().focus().undo().run(),
                 },
                 {
                     title: 'Redo',
                     key: 'redo',
                     helpText: '',
-                    icon: 'fa redo',
+                    icon: 'Redo',
                     onClick: (editor) => editor.chain().focus().redo().run(),
                 },
                 // table

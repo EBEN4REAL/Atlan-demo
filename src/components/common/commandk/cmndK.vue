@@ -162,7 +162,7 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import AssetCard from '@/common/commandK/assetCard.vue'
+    import AssetCard from '@/common/commandk/assetCard.vue'
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'

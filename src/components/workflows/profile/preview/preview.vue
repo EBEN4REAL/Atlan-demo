@@ -66,17 +66,7 @@
                 :style="{ height: 'calc(100vh - 0.8rem)' }"
             >
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        px-4
-                        pt-2
-                        mt-2
-                        text-lg
-                        font-semibold
-                        text-gray-700
-                    "
+                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
                 >
                     {{ tab.name }}
                 </div>
@@ -86,7 +76,7 @@
                     :selected-workflow="selectedWorkflow"
                     :is-loaded="isLoaded"
                     @change="emit('change', $event)"
-                ></component>
+                />
             </div>
         </a-tab-pane>
     </a-tabs>
@@ -340,6 +330,8 @@
         :global(.ant-tabs-tab) {
             height: 48px !important;
             width: 48px !important;
+            display: flex;
+            justify-content: center;
             @apply p-0 !important;
         }
 

@@ -56,7 +56,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     // Composables
-    import { getArchivedRunList } from '~/composables/workflow/useWorkFlowList'
+    import { getArchivedRunList } from '~/composables/workflow/useWorkflowList'
 
     export default defineComponent({
         components: { RunCard, EmptyView },

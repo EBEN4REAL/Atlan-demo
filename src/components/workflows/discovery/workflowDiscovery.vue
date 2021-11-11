@@ -1,7 +1,14 @@
 <template>
     <div class="flex w-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AtlanBtn
                 class="m-2"
@@ -91,7 +98,7 @@
 
     import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
 
-    import { useWorkflowSearchList } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowSearchList } from '~/composables/workflow/useWorkflowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import DiscoveryPreview from '@/workflows/discovery/preview/preview.vue'
 

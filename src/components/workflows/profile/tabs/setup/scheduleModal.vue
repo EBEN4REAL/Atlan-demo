@@ -55,7 +55,15 @@
                 <div
                     v-for="(s, index) in data.items"
                     :key="index"
-                    class="flex items-center px-2 py-3 text-base cursor-pointer  hover:bg-primary-light"
+                    class="
+                        flex
+                        items-center
+                        px-2
+                        py-3
+                        text-base
+                        cursor-pointer
+                        hover:bg-primary-light
+                    "
                 >
                     <div class="w-full mr-3">
                         <!-- Name -->
@@ -88,7 +96,15 @@
                     </div>
                     <!-- Label -->
                     <div
-                        class="flex items-center px-3 py-1 mr-3 border rounded-full "
+                        class="
+                            flex
+                            items-center
+                            px-3
+                            py-1
+                            mr-3
+                            border
+                            rounded-full
+                        "
                     >
                         <AtlanIcon
                             :icon="s.spec.suspend ? 'Pause' : 'RunSuccess'"
@@ -108,7 +124,12 @@
                         >
                             <template #content>
                                 <div
-                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
+                                    class="
+                                        px-4
+                                        py-2
+                                        cursor-pointer
+                                        hover:bg-primary-light
+                                    "
                                     @click="setSuspend(s)"
                                 >
                                     {{
@@ -118,13 +139,24 @@
                                     }}
                                 </div>
                                 <div
-                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
+                                    class="
+                                        px-4
+                                        py-2
+                                        cursor-pointer
+                                        hover:bg-primary-light
+                                    "
                                     @click="setUpdate(s)"
                                 >
                                     Edit
                                 </div>
                                 <div
-                                    class="px-4 py-2 cursor-pointer  text-error hover:bg-primary-light"
+                                    class="
+                                        px-4
+                                        py-2
+                                        cursor-pointer
+                                        text-error
+                                        hover:bg-primary-light
+                                    "
                                     @click="onDeleteSchedule(s.metadata.name)"
                                 >
                                     Delete
@@ -307,7 +339,7 @@
         useGetSchedules,
         useSchedule,
         useDeleteSchedule,
-    } from '~/composables/workflow/useWorkFlowList'
+    } from '~/composables/workflow/useWorkflowList'
 
     /**  UTILS */
     import { timezones, formRules, frequencyOptions } from './scheduleUtils.js'

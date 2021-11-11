@@ -18,7 +18,13 @@
     </div>
     <div v-else class="flex w-full h-full">
         <div
-            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AtlanBtn
                 class="m-2"
@@ -139,7 +145,7 @@
     import useFilterUtils from '@/workflows/discovery/filters/useFilterUtils'
     import { transformToFilters } from '~/components/workflows/discovery/filters/useFilterTransform'
 
-    import { useWorkflowConfigMaps } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowConfigMaps } from '~/composables/workflow/useWorkflowList'
     import AtlanBtn from '~/components/UI/button.vue'
     import WorkflowCards from '@/workflows/new/cards.vue'
     import SetupPreview from '@/workflows/new/preview/preview.vue'

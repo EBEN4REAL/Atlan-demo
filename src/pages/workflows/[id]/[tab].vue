@@ -108,7 +108,7 @@
     import {
         useWorkflowByName,
         getWorkflowConfigMapByName,
-    } from '~/composables/workflow/useWorkFlowList'
+    } from '~/composables/workflow/useWorkflowList'
 
     import useWorkflowStore from '~/store/workflows'
 

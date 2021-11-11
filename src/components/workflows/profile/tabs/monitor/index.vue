@@ -70,7 +70,7 @@
     import {
         getRunList,
         getArchivedRunList,
-    } from '~/composables/workflow/useWorkFlowList'
+    } from '~/composables/workflow/useWorkflowList'
 
     import WorkflowMixin from '~/mixins/workflow'
 

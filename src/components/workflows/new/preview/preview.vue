@@ -18,7 +18,14 @@
         <a-input
             v-model:value="workflowName"
             :placeholder="`Untitled Workflow`"
-            class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+            class="
+                text-lg
+                font-bold
+                text-gray-700
+                border-0
+                shadow-none
+                outline-none
+            "
         ></a-input>
         <p v-if="invalidName" class="mt-3 text-red-600">
             Name consist of lower case alphanumeric characters, '-' or '.', and
@@ -46,7 +53,17 @@
         ></ErrorView>
         <template v-else>
             <div
-                class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
+                class="
+                    flex
+                    items-center
+                    justify-between
+                    px-4
+                    pt-2
+                    mt-2
+                    text-lg
+                    font-semibold
+                    text-gray-700
+                "
             >
                 Overview
             </div>
@@ -57,7 +74,13 @@
             >
                 <div v-for="(v, k) in overview" :key="v" class="mb-3">
                     <p
-                        class="mb-1 text-sm tracking-wide text-gray-500 capitalize "
+                        class="
+                            mb-1
+                            text-sm
+                            tracking-wide
+                            text-gray-500
+                            capitalize
+                        "
                     >
                         {{
                             k
@@ -120,7 +143,7 @@
     import {
         createWorkflow,
         useWorkflowTemplateByName,
-    } from '~/composables/workflow/useWorkFlowList'
+    } from '~/composables/workflow/useWorkflowList'
     import AtlanButton from '@/UI/button.vue'
     import PreviewHeader from '@/workflows/shared/previewHeader.vue'
 

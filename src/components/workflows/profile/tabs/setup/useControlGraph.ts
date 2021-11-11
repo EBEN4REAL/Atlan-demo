@@ -7,7 +7,7 @@ import { message } from 'ant-design-vue'
 import {
     runWorkflowByName,
     deleteWorkflowByName,
-} from '~/composables/workflow/useWorkFlowList'
+} from '~/composables/workflow/useWorkflowList'
 
 export default function useControlGraph() {
     const router = useRouter()
@@ -35,7 +35,7 @@ export default function useControlGraph() {
             }
             if (newY) {
                 isWorkflowRunning.value = false
-                const msgErr  = newY?.response?.data?.message || "Don't worry, something broke on our end, you can send this info to us."
+                const msgErr = newY?.response?.data?.message || "Don't worry, something broke on our end, you can send this info to us."
                 message.error({
                     content: msgErr,
                 })

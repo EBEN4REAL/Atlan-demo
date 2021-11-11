@@ -35,7 +35,7 @@
     import SetupGraph from './setupGraph.vue'
 
     // Composables
-    import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkFlowList'
+    import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkflowList'
 
     export default defineComponent({
         name: 'WorkflowSetupTab',

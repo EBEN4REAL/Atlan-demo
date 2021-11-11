@@ -39,7 +39,7 @@
     import Clusterize from 'clusterize.js'
 
     export default defineComponent({
-        name: 'Table',
+        name: 'TableUI',
         components: {},
         props: {
             dataList: {
@@ -71,22 +71,22 @@
             watch(tableRef, () => {
                 // if (isQueryRunning === 'success') {
                 if (tableRef.value) {
-                    let data_here = dataList.value.map((row, index) => {
+                    const data_here = dataList.value.map((row, index) => {
                         let rows = `<td style="z-index: 2" class="${
                             rowClassNames.value !== ''
                                 ? rowClassNames.value
                                 : defaultRowClassNames
                         }">${index}</td>`
-                        for (let [key, value] of Object.entries(row)) {
+                        for (const [key, value] of Object.entries(row)) {
                             rows += `<td class="px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light">${
                                 value == null ? '-' : value
                             }</td>`
                         }
-                        let res = '<tr>' + rows + '</tr>'
+                        const res = '<tr>' + rows + '</tr>'
                         return res
                     })
 
-                    let clusterize = new Clusterize({
+                    const clusterize = new Clusterize({
                         rows: data_here,
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
@@ -175,10 +175,7 @@
             })
 
             return {
-                columnsData,
                 tableRef,
-                showLoading,
-                dataList,
             }
         },
     })

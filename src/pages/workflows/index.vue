@@ -8,11 +8,12 @@
         "
         class="h-full"
     >
+        <!-- TODO update this to better error screen -->
         <EmptyState
             v-if="error"
             desc="Don't worry, something broke on our end, you can send this info to us."
             headline="Oops! Something went wrong"
-            empty-screen="ErrorScreen"
+            empty-screen="Error"
         />
         <EmptyState
             v-else
@@ -20,7 +21,7 @@
             Atlan, run cron jobs and much more."
             headline="Create a workflow!"
             button-text="Get Started"
-            empty-screen="EmptyDiscover"
+            empty-screen="CreateWF"
             button-icon="ArrowRight"
             @event="$router.push('/workflows/new')"
         />
@@ -131,6 +132,7 @@
     import { useUsers } from '~/composables/user/useUsers'
 
     import { useWorkflowSearchList } from '~/composables/workflow/useWorkflowList'
+
     import AtlanButton from '~/components/UI/button.vue'
     import DiscoveryPreview from '@/workflows/discovery/preview/preview.vue'
 

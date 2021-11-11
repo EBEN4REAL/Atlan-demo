@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col w-full h-full max-profile-width">
         <AssetHeader :item="selectedAsset"></AssetHeader>
 
         <a-tabs
@@ -124,5 +124,11 @@ meta:
         :global(.ant-tabs-content-holder) {
             @apply bg-primary-light overflow-y-auto !important;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .max-profile-width {
+        max-width: calc(100vw - 420px);
     }
 </style>

@@ -68,6 +68,7 @@ export const dataTypeCategoryList = [
             'VARBINARY',
             'BPCHAR',
             'VARCHAR',
+            'ANY',
         ],
         image: string,
     },

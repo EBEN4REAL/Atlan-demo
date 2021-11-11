@@ -55,7 +55,7 @@ const useAssetAudit = (params: any, guid: string) => {
     const getEntityUpdateLogs = (logs: any) => {
         const data = {
             displayValue: 'Asset was updated',
-            value: [],
+            value: <any>[],
             component: '',
         }
         if ('attributes' in logs) {
@@ -68,8 +68,9 @@ const useAssetAudit = (params: any, guid: string) => {
                 'shortDescription' in attributes
 
             if (owners) {
-                let users = [];
-                let groups = [];
+                let users = <any>[];
+                let groups = <any>[];
+
 
                 if (attributes.ownerUsers) {
                     users = attributes.ownerUsers.split(',')

@@ -20,7 +20,6 @@
                 <AtlanIcon class icon="KebabMenu" />
             </div>
             <template #overlay>
-                <!-- w-64 -->
                 <a-menu style="min-width: 264px" :class="$style.menu_class">
                     <a-sub-menu key="themes">
                         <template #title>

@@ -75,20 +75,30 @@ const getWorkflowTemplateByName = ({ immediate, options, pathVariables }) =>
     )
 
 const retryRun = (pathVariables) =>
-    useAPI(map.RETRY_RUN, 'POST', {
-        pathVariables
-    }, {})
+    useAPI(
+        map.RETRY_RUN,
+        'POST',
+        {
+            pathVariables,
+        },
+        {}
+    )
 
 const stopRun = (pathVariables) =>
-    useAPI(map.STOP_RUN, 'POST', {
-        pathVariables,
-    }, {})
+    useAPI(
+        map.STOP_RUN,
+        'POST',
+        {
+            pathVariables,
+        },
+        {}
+    )
 
-const getRunList = (reqOptions, apiOptions) =>
-    useAPI(map.WORKFLOW_RUN, 'GET', reqOptions, apiOptions)
+const getRunList = (reqOptions) =>
+    useAPI(map.WORKFLOW_RUN, 'GET', reqOptions, {})
 
-const getArchivedRunList = (reqOptions, apiOptions) =>
-    useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', reqOptions, apiOptions)
+const getArchivedRunList = (reqOptions) =>
+    useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', reqOptions, {})
 
 const deleteWorkflowByName = ({ pathVariables, immediate, options }) =>
     useAPI(

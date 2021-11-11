@@ -117,7 +117,7 @@ export function getRunList(name) {
     const { data, error, isLoading } = Workflows.getRunList({
         pathVariables,
         params,
-    }, {})
+    })
 
     watch(data, () => {
         liveList.value = data.value
@@ -146,10 +146,10 @@ export function getArchivedRunList(name) {
     // params.value.append('limit', limit.value.toString())
     params.value.append('offset', offset.value.toString())
 
-    const { data, error, isLoading, mutate } = Workflows.getArchivedRunList(
-        { params, pathVariables },
-        {}
-    )
+    const { data, error, isLoading, mutate } = Workflows.getArchivedRunList({
+        params,
+        pathVariables,
+    })
 
     const loadMore = () => {
         // offset.value += limit.value
@@ -214,7 +214,6 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
     }
 
     const filterList = (AllFilters) => {
-
         const { filter, sort } = AllFilters
 
         // rest list

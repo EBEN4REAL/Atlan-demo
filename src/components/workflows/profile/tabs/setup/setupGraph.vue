@@ -27,7 +27,10 @@
                         <AtlanIcon
                             :icon="isWorkflowRunning ? 'Running' : 'Play'"
                             class="outline-none"
-                            :class="{ 'animate-spin block': isWorkflowRunning, 'text-gray-300':  !isAllowtoRun}"
+                            :class="{
+                                'animate-spin block': isWorkflowRunning,
+                                'text-gray-300': !isAllowtoRun,
+                            }"
                             @click="isAllowtoRun ? onRunWorkflow() : null"
                         />
                     </a-tooltip>
@@ -165,7 +168,7 @@
             isAllowtoRun: {
                 type: Boolean,
                 required: true,
-            }
+            },
         },
         setup(props, { emit }) {
             /** DATA */
@@ -270,7 +273,7 @@
                 onDeleteWorkflow,
                 nodesShared,
                 emitSelectionShared,
-                isAllowtoRun
+                isAllowtoRun,
             }
         },
     })

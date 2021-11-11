@@ -4,7 +4,7 @@
             v-if="isLoading"
             class="absolute flex items-center justify-center w-full h-full"
         >
-            <a-spin />
+            <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
         </div>
 
         <EmptyView

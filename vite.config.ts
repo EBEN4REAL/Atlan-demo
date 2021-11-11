@@ -52,7 +52,9 @@ export default defineConfig(({ mode }) => {
                 },
             },
             terserOptions: {
-                drop_console: true,
+                compress: {
+                    drop_console: true,
+                },
             },
         },
         plugins: [

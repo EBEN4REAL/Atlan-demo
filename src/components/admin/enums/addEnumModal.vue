@@ -16,7 +16,7 @@
                 ></a-input>
             </a-form-item>
 
-            <a-form-item label="Values - Press enter to add a value">
+            <a-form-item label="Values">
                 <a-select
                     mode="tags"
                     placeholder="Enter enum values"

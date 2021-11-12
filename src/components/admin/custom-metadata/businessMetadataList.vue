@@ -7,14 +7,29 @@
         @update:selected="selectBm"
     >
         <template #default="{ item, isSelected }">
-            <div class="flex justify-between">
-                <p
-                    class="pr-2 m-0 overflow-hidden text-sm truncate"
-                    :class="isSelected ? 'text-primary' : 'text-gray'"
-                >
-                    {{ item.displayName || item.name }}
-                    <sup v-if="item && item.guid === 'new'"> * </sup>
-                </p>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center overflow-hidden">
+                    <div
+                        class="mr-1 overflow-hidden bg-gray-100 rounded cursor-pointer "
+                        style="width: 16px; height: 16px"
+                    >
+                        <img
+                            v-if="item?.options?.imagePath"
+                            :src="imageUrl(item)"
+                            alt=""
+                            class="object-cover w-full"
+                            style="height: 16px"
+                        />
+                        <AtlanIcon v-else icon="NoAvatar" />
+                    </div>
+                    <p
+                        class="pr-2 m-0 overflow-hidden text-sm truncate"
+                        :class="isSelected ? 'text-primary' : 'text-gray'"
+                    >
+                        {{ item.displayName || item.name }}
+                        <sup v-if="item && item.guid === 'new'"> * </sup>
+                    </p>
+                </div>
                 <span class="flex-none text-xs text-gray-500 flex-inital"
                     >{{ item.attributeDefs.length || 0 }}
                     {{
@@ -28,7 +43,7 @@
     </ExplorerList>
 </template>
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, toRefs, computed } from 'vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
 
     export default defineComponent({
@@ -47,8 +62,12 @@
                 context.emit('selectBm', item)
             }
 
+            const imageUrl = (bm) =>
+                `${window.location.origin}/api/service${bm?.options?.imagePath}`
+
             return {
                 selectBm,
+                imageUrl,
             }
         },
     })

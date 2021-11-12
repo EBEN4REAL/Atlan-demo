@@ -92,7 +92,8 @@
     } from 'vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message, Modal } from 'ant-design-vue'
-    import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
+    import { Types } from '~/services/meta/types'
+
     import { useTypedefStore as useBusinessMetadataStore } from '~/store/typedef'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
 
@@ -141,7 +142,7 @@
                         const tempBM = { ...metadata.value }
                         tempBM.attributeDefs.splice(index, 1)
                         const { data, error, isReady } =
-                            BusinessMetadataService.updateNewBusinessMetadata({
+                            Types.updateCustomMetadata({
                                 businessMetadataDefs: [tempBM],
                             })
                         watch([data, isReady, error], () => {
@@ -226,7 +227,7 @@
                 const tempBM = { ...metadata.value }
                 tempBM.attributeDefs = sortedProperties.value
                 const { data, error, isReady } =
-                    BusinessMetadataService.updateNewBusinessMetadata({
+                    Types.updateCustomMetadata({
                         businessMetadataDefs: [tempBM],
                     })
                 watch([data, isReady, error], () => {

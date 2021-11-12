@@ -76,9 +76,7 @@
                     class="mt-2"
                 >
                     <div
-                        v-if="
-                            STATES.SUCCESS === userOwnerState && showMoreUsers
-                        "
+                        v-if="showMoreUsers"
                         class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
                         @click="toggleShowMore"
                     >

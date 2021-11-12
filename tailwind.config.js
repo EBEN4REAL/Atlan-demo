@@ -37,7 +37,7 @@ module.exports = {
                     muted: '#c9f9ee',
                 },
                 error: {
-                    DEFAULT: '#dc2626',
+                    DEFAULT: '#DC5252',
                     muted: '#f9dcd2',
                 },
                 alert: {

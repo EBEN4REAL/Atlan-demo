@@ -1,3 +1,4 @@
+<!-- This component works in 3 modes/views: 1/ form to generate a key 2/ form to update/delete a key 3/ info for generated key; generatedAPIKey (3) is the first level of distinction bw these modes/views, if value exists for that we show the third screen; If not we check if the passed in key (props) that we take in this component as apiKeyDirty has an id or not; if it has id, we are in edit mode i.e. 2nd screen (form is prefilled) else new key generation mode (form is empty)-->
 <template>
     <div class="flex flex-col justify-between h-full pt-5">
         <div>
@@ -19,11 +20,7 @@
                 <div
                     class="top-0 p-1 border border-gray-300 rounded cursor-pointer  right-2"
                 >
-                    <AtlanIcon
-                        icon="Cross"
-                        class="r"
-                        @click="$emit('closeDrawer')"
-                    />
+                    <AtlanIcon icon="Cross" class="r" @click="handleClose" />
                 </div>
             </div>
             <div class="px-4 py-3" v-if="!generatedAPIKey.attributes">
@@ -93,7 +90,7 @@
                         <template #content>
                             <PersonaList
                                 class="persona-list"
-                                :selected-personas="apiKeyDirty.personas || []"
+                                :selectedPersonas="apiKeyDirty.personas"
                             />
                         </template>
                     </a-popover>
@@ -112,7 +109,7 @@
                 </div>
                 <div class="flex items-center justify-between w-full mb-3">
                     <AtlanBtn
-                        class="px-10 bg-transparent border-none text-primary"
+                        class="px-8 bg-transparent border-none text-primary"
                         size="sm"
                         color="secondary"
                         padding="compact"
@@ -129,24 +126,35 @@
                         padding="compact"
                         @click="handleCopy"
                     >
-                        <AtlanIcon icon="CopyOutlined" class="ml-2"></AtlanIcon>
-                        Copy
+                        <div class="flex items-center">
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="mr-2"
+                            ></AtlanIcon>
+                            <div>Copy</div>
+                        </div>
                     </AtlanBtn>
                 </div>
             </div>
         </div>
         <div
-            class="flex justify-end px-4 py-5 border-t"
+            class="flex justify-between px-4 py-5 border-t"
             v-if="!generatedAPIKey.attributes"
         >
-            <!-- <AtlanBtn
-                    class="mr-3 bg-transparent border-none text-error"
-                    size="lg"
-                    padding="compact"
-                >
-                    <AtlanIcon icon="Delete" /> <span>Delete</span></AtlanBtn
-                > -->
-            <div class="flex">
+            <AtlanBtn
+                v-if="apiKeyDirty.id"
+                class="mr-3 bg-transparent border-none text-error"
+                size="lg"
+                padding="compact"
+                @click="$emit('deleteAPIKey', apiKeyDirty.id)"
+                :is-loading="deleteAPIKeyLoading"
+                :disabled="deleteAPIKeyLoading"
+            >
+                <AtlanIcon icon="Delete" />
+                <span v-if="deleteAPIKeyLoading">Deleting</span>
+                <span v-else>Delete</span>
+            </AtlanBtn>
+            <div class="flex justify-end w-full">
                 <AtlanBtn
                     color="secondary"
                     padding="compact"
@@ -162,10 +170,13 @@
                     color="primary"
                     padding="compact"
                     @click="handleSave"
-                    :is-loading="createAPIKeyLoading"
-                    ><span v-if="createAPIKeyLoading">Saving</span>
-                    <span v-else>Save</span></AtlanBtn
-                >
+                    :is-loading="createUpdateLoading"
+                    :disabled="createUpdateLoading"
+                    ><span v-if="createUpdateLoading">{{
+                        apiKeyDirty.id ? 'Updating' : 'Saving'
+                    }}</span>
+                    <span v-else>{{ apiKeyDirty.id ? 'Update' : 'Save' }}</span>
+                </AtlanBtn>
             </div>
         </div>
         <div v-else class="px-4 py-6">
@@ -181,7 +192,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs, ref, watch } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { useVModels } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import PillGroup from '@/UI/pill/pillGroup.vue'
@@ -202,7 +213,11 @@ export default defineComponent({
             type: Object,
             default: () => {},
         },
-        createAPIKeyLoading: {
+        createUpdateLoading: {
+            type: Boolean,
+            default: false,
+        },
+        deleteAPIKeyLoading: {
             type: Boolean,
             default: false,
         },
@@ -214,6 +229,8 @@ export default defineComponent({
     emits: ['updateAPIKey', 'createAPIKey', 'closeDrawer'],
     setup(props, { emit }) {
         const apiKeyDirty = ref({})
+        // const apiKeyDirtyPersonas = ref([])
+
         const nameEmptyOnSubmit = ref(false)
         const addPersonaPopoverVisible = ref(false)
 
@@ -224,7 +241,13 @@ export default defineComponent({
                 nameEmptyOnSubmit.value = true
                 return
             }
-            if (props?.apiKey?.id) emit('updateAPIKey', apiKeyDirty)
+            if (props?.apiKey?.id)
+                emit('updateAPIKey', {
+                    ...apiKeyDirty.value,
+                    personas: (apiKeyDirty?.value?.personas ?? []).map(
+                        (p) => p.id
+                    ),
+                })
             else
                 emit('createAPIKey', {
                     ...apiKeyDirty.value,
@@ -237,12 +260,13 @@ export default defineComponent({
             () => props?.apiKey,
             () => {
                 const personas = (props?.apiKey?.personas || []).map(
-                    (persona) => ({ id: persona, name: 'ex' })
+                    (persona) => ({ id: persona.id, name: persona.persona })
                 )
                 apiKeyDirty.value = { ...props.apiKey, personas }
             },
             { immediate: true, deep: true }
         )
+
         const toggleAddPersonaPopover = () => {
             addPersonaPopoverVisible.value = !addPersonaPopoverVisible.value
         }
@@ -269,8 +293,9 @@ export default defineComponent({
                 message.success('API Key Copied')
             }
         }
-        const handleDone = () => {
-            generatedAPIKey.value = {}
+        const handleClose = () => {
+            if (generatedAPIKey && generatedAPIKey.value)
+                generatedAPIKey.value = {}
             emit('closeDrawer')
         }
         return {
@@ -281,7 +306,7 @@ export default defineComponent({
             nameEmptyOnSubmit,
             handleDownload,
             handleCopy,
-            handleDone,
+            handleClose,
             generatedAPIKey,
             SuccessIllustration,
         }

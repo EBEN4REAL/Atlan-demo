@@ -77,8 +77,12 @@
                 :api-key="selectedAPIKey"
                 @updateAPIKey="handleUpdate"
                 @createAPIKey="handleCreate"
+                @deleteAPIKey="handleDelete"
                 @closeDrawer="toggleAPIKeyDrawer"
-                :createAPIKeyLoading="createAPIKeyLoading"
+                :createUpdateLoading="
+                    createAPIKeyLoading || updateAPIKeyLoading
+                "
+                :deleteAPIKeyLoading="deleteAPIKeyLoading"
                 v-model:generatedAPIKey="generatedAPIKey"
             />
         </a-drawer>
@@ -91,7 +95,8 @@ import { message } from 'ant-design-vue'
 import map from '~/constant/accessControl/map'
 import { APIKey } from '~/services/service/apikeys'
 import useAPIKeysList from '@/governance/apikeys/composables/useAPIKeysList'
-import useUpdateAPIKey from '@/governance/apikeys/composables/useUpdateAPIKey'
+//TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
+// import useUpdateAPIKey from '@/governance/apikeys/composables/useUpdateAPIKey'
 import useCreateAPIKey from '@/governance/apikeys/composables/useCreateAPIKey'
 import DefaultLayout from '~/components/admin/layout.vue'
 import AtlanBtn from '@/UI/button.vue'
@@ -112,6 +117,7 @@ export default defineComponent({
         /**LOCAL STATE */
         const apiKeyDirty = ref({})
         const deleteAPIKeyLoading = ref(false)
+        const updateAPIKeyLoading = ref(false)
         const searchText: Ref<string> = ref('')
         const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
 
@@ -134,20 +140,47 @@ export default defineComponent({
             createAPIKey,
             isLoading: createAPIKeyLoading,
         } = useCreateAPIKey(apiKeyDirty)
-        const { updateAPIKey } = useUpdateAPIKey(apiKeyDirty)
+        //TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
+        // const { updateAPIKey, isLoading: updateAPIKeyLoading } =
+        //     useUpdateAPIKey(apiKeyDirty)
 
         /**METHODS */
-        const toggleAPIKeyDrawer = () => {
-            isAPIKeyDrawerVisible.value = !isAPIKeyDrawerVisible.value
+        const toggleAPIKeyDrawer = (val: boolean | undefined = undefined) => {
+            if (val === undefined)
+                isAPIKeyDrawerVisible.value = !isAPIKeyDrawerVisible.value
+            else isAPIKeyDrawerVisible.value = val
         }
         const handleGenerateKey = () => {
             toggleAPIKeyDrawer()
             resetSelectedAPIKey()
         }
         const handleUpdate = async (apiKey) => {
-            apiKeyDirty.value = apiKey.value
-            await updateAPIKey()
-            reFetchList()
+            apiKeyDirty.value = apiKey
+            const { data, isReady, error, isLoading } =
+                APIKey.Update(apiKeyDirty)
+            watch(
+                isLoading,
+                () => {
+                    updateAPIKeyLoading.value = isLoading.value
+                },
+                { immediate: true }
+            )
+            watch(
+                [data, isReady, error, isLoading],
+                () => {
+                    if (isReady && !error.value && !isLoading.value) {
+                        toggleAPIKeyDrawer()
+                        reFetchList()
+                        message.success('API Key updated successfully.')
+                    } else if (error && error.value) {
+                        toggleAPIKeyDrawer()
+                        message.error(
+                            'Unable to update API Key. Please try again.'
+                        )
+                    }
+                },
+                { immediate: true }
+            )
         }
         const handleCreate = async (apiKey) => {
             try {
@@ -174,9 +207,11 @@ export default defineComponent({
                 [data, isReady, error, isLoading],
                 () => {
                     if (isReady && !error.value && !isLoading.value) {
+                        toggleAPIKeyDrawer(false)
                         reFetchList()
                         message.success('API Key deleted successfully.')
                     } else if (error && error.value) {
+                        toggleAPIKeyDrawer(false)
                         message.error(
                             'Unable to delete API Key. Please try again.'
                         )
@@ -187,9 +222,16 @@ export default defineComponent({
         }
         const handleSelectAPIKey = (apikey) => {
             // Disabling edit flow for now
-            // toggleAPIKeyDrawer()
+            toggleAPIKeyDrawer()
+            const localAPIKey = {
+                displayName: apikey?.display_name,
+                description: apikey?.attributes?.description,
+                validitySeconds: apikey?.['access.token.lifespan'],
+                personas: apikey?.attributes?.personas || [],
+                id: apikey?.id,
+            }
             setSelectedAPIKey({
-                ...apikey,
+                ...localAPIKey,
             })
         }
         const handlePagination = (page: number) => {
@@ -218,6 +260,7 @@ export default defineComponent({
             handleCreate,
             handleDelete,
             createAPIKeyLoading,
+            updateAPIKeyLoading,
             deleteAPIKeyLoading,
             handleSelectAPIKey,
             toggleAPIKeyDrawer,

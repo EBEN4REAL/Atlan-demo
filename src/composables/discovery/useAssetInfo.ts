@@ -81,7 +81,9 @@ export default function useAssetInfo() {
     //     return found?.label
     // }
     const description = (asset: assetInterface) =>
-        attributes(asset)?.userDescription || attributes(asset)?.description
+        attributes(asset)?.userDescription ||
+        attributes(asset)?.description ||
+        ''
 
     const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
     const isPartition = (asset: assetInterface) =>

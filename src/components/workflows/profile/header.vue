@@ -51,8 +51,10 @@
                         <span>{{ creator?.first_name }}</span>
                     </div>
                     <div v-if="latRun" style="color: rgb(196, 196, 196)">•</div>
-                    <div class="flex text-sm text-gray-500">
-                        <span class="text-gray-500"> {{ latRun }}</span>
+                    <div v-if="latRun" class="flex text-sm text-gray-500">
+                        <span class="text-gray-500">
+                            Last run {{ latRun }}</span
+                        >
                     </div>
                     <template v-if="totalRun !== 0">
                         <div style="color: rgb(196, 196, 196)">•</div>

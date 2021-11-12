@@ -252,7 +252,11 @@
                 </div>
 
                 <div class="flex">
-                    <p class="text-xs text-gray-500">{{ description(item) }}</p>
+                    <span
+                        class="text-xs text-gray-500"
+                        v-if="preference.display.includes('description')"
+                        >{{ description(item) }}</span
+                    >
                 </div>
             </div>
         </div>

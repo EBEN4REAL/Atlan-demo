@@ -202,10 +202,8 @@
                     ...addSufffix(checkedKeys.value),
                     ...assets.value,
                     ...regexKeys.value,
-                    ...addSufffix(
-                        getQualifiedNamesFromAssets(
-                            bulkStore.bulkSelectedAssets
-                        )
+                    ...getQualifiedNamesFromAssets(
+                        bulkStore.bulkSelectedAssets
                     ),
                 ])
                 emit('update:assets', [...assetSet])

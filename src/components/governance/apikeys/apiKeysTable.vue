@@ -18,7 +18,10 @@
                         <template #content>
                             {{ apikey.attributes.description }}
                         </template>
-                        <div @click="$emit('selectAPIKey', apikey)">
+                        <div
+                            @click="$emit('selectAPIKey', apikey)"
+                            class="cursor-pointer"
+                        >
                             {{ apikey.attributes.displayName }}
                         </div>
                     </a-popover>

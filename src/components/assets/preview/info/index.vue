@@ -30,7 +30,7 @@
                     <span class="text-primary">SQL</span>
                 </div>
             </SQL>
-            <RowInfoHoverCard
+            <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
                     selectedAsset.typeName == 'TablePartition'
@@ -42,21 +42,31 @@
                 :source-updated-at-raw="sourceUpdatedAt(selectedAsset, true)"
                 :source-created-at="sourceCreatedAt(selectedAsset)"
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
+            > -->
+            <div
+                v-if="rowCount(selectedAsset) > 0"
+                class="flex flex-col text-sm cursor-pointer"
             >
-                <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-2 text-sm text-gray-500">Rows</span>
-                    <span class="text-gray-700">{{
-                        rowCount(selectedAsset)
-                    }}</span>
-                </div>
-            </RowInfoHoverCard>
+                <span class="mb-2 text-sm text-gray-500">Rows</span>
+                <span class="text-gray-700">{{ rowCount(selectedAsset) }}</span>
+            </div>
+            <!-- </RowInfoHoverCard> -->
             <div
                 class="flex flex-col text-sm cursor-pointer"
-                @click="switchTab('Columns')"
+                @click="switchTab(selectedAsset, 'Columns')"
             >
                 <span class="mb-2 text-sm text-gray-500">Columns</span>
-                <span class="text-primary">{{
+                <span class="font-semibold text-primary">{{
                     columnCount(selectedAsset)
+                }}</span>
+            </div>
+            <div
+                class="flex flex-col text-sm cursor-pointer"
+                v-if="sizeBytes(selectedAsset) > 0"
+            >
+                <span class="mb-2 text-sm text-gray-500">Size</span>
+                <span class="text-gray-700">{{
+                    sizeBytes(selectedAsset)
                 }}</span>
             </div>
         </div>
@@ -216,6 +226,7 @@
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
+            const switchTab = inject('switchTab')
 
             const {
                 title,
@@ -364,6 +375,7 @@
                 isLoading,
                 classificationBody,
                 actions,
+                switchTab,
             }
         },
     })

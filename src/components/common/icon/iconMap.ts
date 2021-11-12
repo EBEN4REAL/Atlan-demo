@@ -183,6 +183,7 @@ import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
 import ResendInvite from '~/assets/images/icons/invite.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
+import ImpactedAssets from '~/assets/images/icons/impacted-assets.svg'
 
 export default {
     ChevronLeft,
@@ -371,4 +372,5 @@ export default {
     DatabaseGray,
     SchemaGray,
     NoResultsFound,
+    ImpactedAssets
 }

@@ -65,7 +65,17 @@
                     >
                         <a-tooltip :title="action.label">
                             <div>
+                                <router-link
+                                    v-if="action.id === 'query'"
+                                    :to="getAssetQueryPath(selectedAsset)"
+                                >
+                                    <AtlanIcon
+                                        :icon="action.icon"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                </router-link>
                                 <AtlanIcon
+                                    v-else
                                     :icon="action.icon"
                                     class="mr-1 mb-0.5"
                                 /></div></a-tooltip
@@ -189,6 +199,8 @@
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
 
+            console.log('selectedAsset', selectedAsset.value)
+
             const {
                 title,
                 getConnectorImage,
@@ -197,6 +209,7 @@
                 sizeBytes,
                 dataType,
                 getActions,
+                getAssetQueryPath,
                 columnCount,
                 databaseName,
                 schemaName,
@@ -266,6 +279,37 @@
                 if (idx > -1) activeKey.value = idx
             })
 
+            // let queryPath = ref(`/insights`)
+            // watch(
+            //     selectedAsset,
+            //     () => {
+            //         console.log('selected asste update: ', selectedAsset.value)
+            // CTA to insights
+            // let databaseQualifiedName =
+            //     selectedAsset?.value?.attributes
+            //         ?.connectionQualifiedName +
+            //     '/' +
+            //     selectedAsset?.value?.attributes?.databaseName
+            // let schema = selectedAsset?.value?.attributes?.schemaName
+            // if (selectedAsset?.value?.typeName === 'Column') {
+            //     let tableName =
+            //         selectedAsset?.value?.attributes?.tableName
+            //     let columnName = selectedAsset?.value?.attributes?.name
+            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&columnNameFromURL=${columnName}`
+            // } else if (
+            //     selectedAsset?.value?.typeName === 'Table' ||
+            //     selectedAsset?.value?.typeName === 'View'
+            // ) {
+            //     let tableName = selectedAsset?.value?.attributes.name
+            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+            // } else {
+            //     queryPath.value = `/insights`
+            // }
+            // console.log('query path: ', queryPath.value)
+            //     },
+            //     { immediate: true }
+            // )
+
             return {
                 title,
                 getConnectorImage,
@@ -295,6 +339,7 @@
                 assetURL,
                 assetTypeLabel,
                 getActions,
+                getAssetQueryPath,
             }
         },
     })

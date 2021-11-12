@@ -19,7 +19,7 @@
                     />
                 </div>
                 <router-link
-                    to="/"
+                    :to="assetURL(selectedAsset)"
                     class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
@@ -55,27 +55,28 @@
                     </div>
                 </div>
                 <a-button-group>
-                    <a-button class="flex items-center justify-center"
-                        ><AtlanIcon icon="OpenTermProfile" class="mr-1 mb-0.5"
-                    /></a-button>
                     <a-button
-                        block
                         class="flex items-center justify-center"
-                        v-if="
-                            selectedAsset.typeName === 'Table' ||
-                            selectedAsset.typeName === 'Column' ||
-                            selectedAsset.typeName === 'View'
-                        "
+                        v-for="action in getActions(selectedAsset)"
+                        :key="action.id"
                     >
-                        <router-link :to="queryPath">
-                            <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
-                        </router-link>
-                    </a-button>
-                    <a-button block class="flex items-center justify-center"
-                        ><AtlanIcon icon="Share" class="mr-1 mb-0.5"
-                    /></a-button>
-
-                    <a-button><AtlanIcon icon="External" /></a-button>
+                        <a-tooltip :title="action.label">
+                            <div>
+                                <router-link
+                                    v-if="action.id === 'query'"
+                                    :to="getAssetQueryPath(selectedAsset)"
+                                >
+                                    <AtlanIcon
+                                        :icon="action.icon"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                </router-link>
+                                <AtlanIcon
+                                    v-else
+                                    :icon="action.icon"
+                                    class="mr-1 mb-0.5"
+                                /></div></a-tooltip
+                    ></a-button>
                 </a-button-group>
             </div>
         </div>
@@ -204,6 +205,8 @@
                 rowCount,
                 sizeBytes,
                 dataType,
+                getActions,
+                getAssetQueryPath,
                 columnCount,
                 databaseName,
                 schemaName,
@@ -228,6 +231,10 @@
             if (route.params.id) {
                 isProfile.value = true
             }
+
+            const assetURL = (asset) => ({
+                path: `/assets/${asset.guid}`,
+            })
 
             watch(
                 () => route.params.id,
@@ -268,40 +275,36 @@
                 if (idx > -1) activeKey.value = idx
             })
 
-            let queryPath = ref(`/insights`)
-            watch(
-                selectedAsset,
-                () => {
-                    // console.log('selected asste update: ', selectedAsset.value)
-
-                    // CTA to insights
-
-                    let databaseQualifiedName =
-                        selectedAsset?.value?.attributes
-                            ?.connectionQualifiedName +
-                        '/' +
-                        selectedAsset?.value?.attributes?.databaseName
-                    let schema = selectedAsset?.value?.attributes?.schemaName
-                    if (selectedAsset?.value?.typeName === 'Column') {
-                        let tableName =
-                            selectedAsset?.value?.attributes?.tableName
-                        let columnName = selectedAsset?.value?.attributes?.name
-
-                        queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&columnNameFromURL=${columnName}`
-                    } else if (
-                        selectedAsset?.value?.typeName === 'Table' ||
-                        selectedAsset?.value?.typeName === 'View'
-                    ) {
-                        let tableName = selectedAsset?.value?.attributes.name
-                        queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
-                    } else {
-                        queryPath.value = `/insights`
-                    }
-
-                    // console.log('query path: ', queryPath.value)
-                },
-                { immediate: true }
-            )
+            // let queryPath = ref(`/insights`)
+            // watch(
+            //     selectedAsset,
+            //     () => {
+            //         console.log('selected asste update: ', selectedAsset.value)
+            // CTA to insights
+            // let databaseQualifiedName =
+            //     selectedAsset?.value?.attributes
+            //         ?.connectionQualifiedName +
+            //     '/' +
+            //     selectedAsset?.value?.attributes?.databaseName
+            // let schema = selectedAsset?.value?.attributes?.schemaName
+            // if (selectedAsset?.value?.typeName === 'Column') {
+            //     let tableName =
+            //         selectedAsset?.value?.attributes?.tableName
+            //     let columnName = selectedAsset?.value?.attributes?.name
+            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&columnNameFromURL=${columnName}`
+            // } else if (
+            //     selectedAsset?.value?.typeName === 'Table' ||
+            //     selectedAsset?.value?.typeName === 'View'
+            // ) {
+            //     let tableName = selectedAsset?.value?.attributes.name
+            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+            // } else {
+            //     queryPath.value = `/insights`
+            // }
+            // console.log('query path: ', queryPath.value)
+            //     },
+            //     { immediate: true }
+            // )
 
             return {
                 title,
@@ -329,7 +332,9 @@
                 certificateStatusMessage,
                 isProfile,
                 actions,
-                queryPath,
+                assetURL,
+                getActions,
+                getAssetQueryPath,
             }
         },
     })

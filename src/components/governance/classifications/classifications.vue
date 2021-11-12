@@ -23,7 +23,7 @@
                     class="mx-4 mt-6 mb-4 bg-white border-b-0"
                     size="minimal"
                 />
-            </div>     
+            </div>
             <ExplorerList
                 :list="filteredClassificationList"
                 :selected="selectedClassificationName"
@@ -45,11 +45,13 @@
                         </span>
                     </div>
                 </template>
-            </ExplorerList>       
+            </ExplorerList>
         </template>
 
         <router-view />
-        <AddClassificationModal v-model:modalVisible="createClassificationModalVisible" />
+        <AddClassificationModal
+            v-model:modalVisible="createClassificationModalVisible"
+        />
         <!-- <a-modal
             :visible="modalVisible"
             title="Add"
@@ -103,7 +105,7 @@
         computed,
         ref,
         watch,
-        onMounted
+        onMounted,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -113,7 +115,7 @@
     import ExplorerList from '@/admin/common/explorerList.vue'
     import NoAcces from '@/common/secured/access.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import AddClassificationModal from '@/admin/classifications/addClassificationModal.vue'
+    import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
@@ -133,21 +135,22 @@
             ExplorerList,
             NoAcces,
             SearchAdvanced,
-            AddClassificationModal
+            AddClassificationModal,
         },
         setup(props) {
             const router = useRouter()
 
             const { classificationList } = useTypedefData()
-            const searchQuery = ref('');
-            const selectedClassificationName = ref('');
+            const searchQuery = ref('')
+            const selectedClassificationName = ref('')
             const createClassificationModalVisible = ref(false)
 
-            
             const filteredClassificationList = computed(() => {
-                if(searchQuery.value) {
-                    return classificationList.value.filter(
-                        (classification) => classification.displayName.toLowerCase().includes(searchQuery.value)
+                if (searchQuery.value) {
+                    return classificationList.value.filter((classification) =>
+                        classification.displayName
+                            .toLowerCase()
+                            .includes(searchQuery.value)
                     )
                 }
                 return classificationList.value
@@ -158,12 +161,18 @@
             }
 
             onMounted(() => {
-                selectedClassificationName.value = router.currentRoute.value.params?.classificationId as string ?? classificationList.value[0]?.name  ?? ''
+                selectedClassificationName.value =
+                    (router.currentRoute.value.params
+                        ?.classificationId as string) ??
+                    classificationList.value[0]?.name ??
+                    ''
             })
 
             watch(selectedClassificationName, (newClassificationName) => {
                 router.push(
-                    `/admin/classifications/${encodeURIComponent(newClassificationName as string)}`
+                    `/governance/classifications/${encodeURIComponent(
+                        newClassificationName as string
+                    )}`
                 )
             })
 
@@ -173,14 +182,12 @@
                 searchQuery,
                 selectedClassificationName,
                 selectClassification,
-                createClassificationModalVisible
+                createClassificationModalVisible,
             }
         },
     })
 </script>
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>
 <route lang="yaml">
 meta:
 layout: default

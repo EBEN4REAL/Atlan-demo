@@ -30,17 +30,6 @@
                             SMTP
                         </a-menu-item>
                     </a-menu-item-group>
-                    <a-menu-item-group title="Governance">
-                        <a-menu-item key="requests" v-auth="[map.LIST_USERS]"
-                            >Requests</a-menu-item
-                        >
-                        <a-menu-item
-                            key="classifications"
-                            v-auth="map.LIST_CLASSIFICATION"
-                        >
-                            Classifications
-                        </a-menu-item>
-                    </a-menu-item-group>
                 </a-menu>
             </div>
         </div>

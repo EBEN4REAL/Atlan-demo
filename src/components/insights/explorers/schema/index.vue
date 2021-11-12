@@ -241,6 +241,10 @@
                 activeInlineTab,
                 () => {
                     if (activeInlineTab.value) {
+                        // console.log(
+                        //     'location activeTab: ',
+                        //     activeInlineTab.value
+                        // )
                         if (
                             activeInlineTab?.value?.explorer?.schema?.connectors
                                 ?.attributeName
@@ -250,6 +254,7 @@
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
+
                             let firstConnection = getFirstQueryConnection()
                             if (
                                 firstConnection &&
@@ -265,15 +270,25 @@
                                     activeInlineTabCopy.playground.editor.context =
                                         connectorsData.value
                                 }
+                                // console.log(
+                                //     'location activetab updated: ',
+                                //     activeInlineTabCopy
+                                // )
+                                modifyActiveInlineTab(
+                                    activeInlineTabCopy,
+                                    tabs,
+                                    activeInlineTabCopy.isSaved
+                                )
+                            } else {
                             }
 
                             /* Insert the already selected connector */
 
-                            modifyActiveInlineTab(
-                                activeInlineTabCopy,
-                                tabs,
-                                activeInlineTabCopy.isSaved
-                            )
+                            // modifyActiveInlineTab(
+                            //     activeInlineTabCopy,
+                            //     tabs,
+                            //     activeInlineTabCopy.isSaved
+                            // )
                         }
                     } else {
                         connectorsData.value = {

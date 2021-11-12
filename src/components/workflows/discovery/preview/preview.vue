@@ -88,7 +88,6 @@
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
             const { selectedWorkflow } = toRefs(props)
-
             const filteredTabs = [
                 {
                     name: 'Overview',

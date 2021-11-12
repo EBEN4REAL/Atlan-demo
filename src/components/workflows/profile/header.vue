@@ -36,7 +36,7 @@
                     <h3 class="text-xl capitalize">
                         {{ workflow?.name }}
                         <span
-                            class="px-2 py-1 text-xs border border-transparent border-gray-200 rounded shadow-none  hover:border-gray-300"
+                            class="px-2 py-1 text-xs border border-transparent border-gray-200 rounded shadow-none hover:border-gray-300"
                             @click="$router.back()"
                         >
                             Scheduled
@@ -52,12 +52,14 @@
                     </div>
                     <div style="color: rgb(196, 196, 196)">•</div>
                     <div class="flex text-sm text-gray-500">
-                        <span class="text-gray-500"> Last run 8 days ago</span>
+                        <span class="text-gray-500"> {{latRun}}</span>
                     </div>
-                    <div style="color: rgb(196, 196, 196)">•</div>
-                    <div class="flex text-sm text-gray-500">
-                        <span class="text-gray-500">308 total runs</span>
-                    </div>
+                    <template v-if="totalRun !== 0">
+                      <div style="color: rgb(196, 196, 196)">•</div>
+                      <div class="flex text-sm text-gray-500">
+                          <span class="text-gray-500">{{totalRun}} total runs</span>
+                      </div>
+                    </template>
                 </div>
             </div>
             <div class="flex space-x-2">
@@ -71,8 +73,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, watch, ref } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import UtilityButtons from '@/workflows/shared/utilityButtons.vue'
+    import {
+        getArchivedRunList,
+    } from '~/composables/workflow/useWorkflowList'
 
     export default defineComponent({
         components: {
@@ -81,6 +87,25 @@
         props: {
             workflow: { type: Object, default: () => {} },
         },
+        setup () {
+          const totalRun = ref(0)
+          const latRun = ref("")
+          const {
+            archivedList,
+          } = getArchivedRunList("tes-samiran-new") 
+          watch(archivedList, (newVal) => {
+            totalRun.value = newVal.filter_record
+            if(newVal?.records?.length > 0){
+              const lastRun = newVal.records[newVal?.records.length - 1]
+              latRun.value = useTimeAgo(lastRun.finished_at).value
+            
+            }
+          })
+          return {
+            totalRun,
+            latRun
+          }
+        }
         // emits: ['openLogs'],
     })
 </script>

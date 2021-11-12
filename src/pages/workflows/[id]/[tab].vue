@@ -384,6 +384,7 @@ meta:
         }
         :global(.ant-tabs-nav) {
             padding-left: 1.75rem;
+            margin-bottom: 0px;
         }
         :global(.ant-tabs-tab-active) {
             @apply text-gray font-bold;

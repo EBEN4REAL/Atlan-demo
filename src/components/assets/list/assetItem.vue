@@ -10,12 +10,6 @@
                         class="flex mr-1"
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
                     >
-                        <!-- <component
-                                :is="dataTypeImage(item)"
-                                class="w-auto h-4 text-gray-500"
-                                style="margin-top: 1px"
-                            ></component> -->
-
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 text-gray-500 mb-0.5"
@@ -35,7 +29,6 @@
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
                     ></CertificateBadge>
-                    <!-- <CertificatePopover :data="item" /> -->
                 </div>
 
                 <!-- Info bar -->
@@ -257,26 +250,19 @@
                         </a-tooltip>
                     </div>
                 </div>
-            </div>
-            <!-- <ThreeDotMenu
-                v-if="showThreeDotMenu"
-                :entity="item"
-                :visible="false"
-                :show-gtc-crud="false"
-                :show-links="false"
-                :show-unlink-asset="true"
-                @unlinkAsset="$emit('unlinkAsset', item)"
-            /> -->
-        </div>
 
-        <!-- <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" /> -->
+                <div class="flex">
+                    <p class="text-xs text-gray-500">{{ description(item) }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     // import HierarchyBar from '@common/badge/hierarchy.vue'
     // import StatusBadge from '@common/badge/status/index.vue'
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     // import Pill from '@/UI/pill/pill.vue'
@@ -316,11 +302,11 @@
                     return 0
                 },
             },
-            projection: {
-                type: Array,
+            preference: {
+                type: Object,
                 required: false,
                 default() {
-                    return []
+                    return {}
                 },
             },
             isSelected: {
@@ -363,7 +349,9 @@
             },
         },
         emits: ['listItem:check', 'unlinkAsset'],
-        setup() {
+        setup(props) {
+            const { preference } = toRefs(props)
+
             const {
                 title,
                 getConnectorImage,
@@ -387,6 +375,7 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                description,
             } = useAssetInfo()
 
             // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
@@ -482,6 +471,8 @@
                 certificateStatusMessage,
                 tableName,
                 viewName,
+                preference,
+                description,
             }
         },
     })

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col py-1 rounded gap-y-3 preference-container">
+    <div class="flex flex-col py-1 rounded gap-y-3">
         <div class="flex items-center justify-between">
             <p class="mb-1 text-sm text-gray-500">Sort By</p>
             <Sorting
@@ -10,6 +10,14 @@
         </div>
         <div class="">
             <p class="mb-2 text-sm text-gray-500">Show/Hide</p>
+            <div class="flex flex-wrap">
+                <CustomRadioButton
+                    :list="displayProperties"
+                    :isMultiple="true"
+                    v-model="localValue.display"
+                    @change="handleChangeDisplay"
+                ></CustomRadioButton>
+            </div>
         </div>
     </div>
 </template>
@@ -20,9 +28,13 @@
     import Sorting from '@/common/select/sorting.vue'
     import { useVModels } from '@vueuse/core'
 
+    import { displayProperties } from '~/constant/displayProperties'
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
+
     export default defineComponent({
         components: {
             Sorting,
+            CustomRadioButton,
         },
         props: {
             modelValue: {
@@ -47,12 +59,10 @@
                 },
             },
         },
-        emits: ['change', 'sort', 'state'],
+        emits: ['change', 'display'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-
             const localValue = ref(modelValue.value)
-
             const { assetType } = toRefs(props)
 
             const handleChangeSort = () => {
@@ -60,10 +70,17 @@
                 emit('change')
             }
 
+            const handleChangeDisplay = () => {
+                modelValue.value = localValue.value
+                emit('display')
+            }
+
             return {
                 localValue,
                 handleChangeSort,
                 assetType,
+                displayProperties,
+                handleChangeDisplay,
             }
         },
     })

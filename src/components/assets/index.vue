@@ -82,6 +82,7 @@
                     v-else
                     ref="assetlistRef"
                     :list="list"
+                    :preference="preference"
                     :selected-asset="selectedAsset"
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
@@ -161,6 +162,7 @@
             const facets = ref({})
             const preference = ref({
                 sort: 'default',
+                display: [],
             })
             const aggregations = ref(['typeName'])
             const postFacets = ref({

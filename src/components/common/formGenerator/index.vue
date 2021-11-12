@@ -91,7 +91,7 @@
                 <div v-else-if="f.type === 'toggle'" class="mb-5">
                     <div class="my-2">{{ f.label }}</div>
                     <CustomRadioButton
-                        v-model:data="valueObject[f.id]"
+                        v-model="valueObject[f.id]"
                         :form-type="f.type"
                         class="pb-4 border-b"
                         :list="f.options"

@@ -223,9 +223,9 @@
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
-                tracking.send(events.EVENT_ASSET_SEARCH, {
-                    trigger: 'discover',
-                })
+                // tracking.send(events.EVENT_ASSET_SEARCH, {
+                //     trigger: 'discover',
+                // })
             }, 150)
 
             const handleFilterChange = () => {

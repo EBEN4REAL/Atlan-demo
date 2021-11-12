@@ -19,25 +19,35 @@ export function useBody(
     if (queryText) {
         base.orQuery('match', 'name', {
             query: queryText,
-            boost: 2,
+            boost: 40,
             analyzer: 'search_synonyms',
+        })
+        base.orQuery('match', 'name', {
+            query: queryText,
+            boost: 40,
         })
 
         base.orQuery('match', 'name', {
             query: queryText,
             operator: 'AND',
-            boost: 3,
+            boost: 40,
         })
         base.orQuery('match', 'name.keyword', {
             query: queryText,
-            boost: 10,
+            boost: 100,
         })
         base.orQuery('match_phrase', 'name', {
             query: queryText,
-            boost: 5,
+            boost: 70,
         })
         base.orQuery('wildcard', 'name.keyword', {
             value: `${queryText}*`,
+        })
+        base.orQuery('match', 'description', {
+            query: queryText,
+        })
+        base.orQuery('match', 'userDescription', {
+            query: queryText,
         })
         base.orQuery('match', 'name.stemmed', { query: queryText })
         base.queryMinimumShouldMatch(1)

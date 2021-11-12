@@ -379,6 +379,19 @@
             const newFolderCreateable = ref(true)
             let showEmptyState = ref(true)
 
+            // const refetchTreeData = () => {
+            //     setTimeout(async () => {
+            //         await per_refetchNode(
+            //             getRelevantTreeData().parentGuid.value,
+            //             'queryFolder'
+            //         )
+            //         await all_refetchNode(
+            //             getRelevantTreeData().parentGuid.value,
+            //             'queryFolder'
+            //         )
+            //     }, 1000)
+            // }
+
             const createFolderInput = () => {
                 const inputClassName = `${per_immediateParentGuid.value}_folder_input`
 
@@ -813,6 +826,7 @@
                 per_immediateParentGuid,
                 getRelevantTreeData,
                 showEmptyState,
+                // refetchTreeData,
             }
         },
     })

@@ -9,14 +9,14 @@
             class="flex-1"
         >
             <a-tab-pane
-                :tab="tab.label"
-                v-for="tab in getProfileTabs(selectedAsset)"
+                v-for="tab in getProfileTabs(asset)"
                 :key="tab.id"
+                :tab="tab.label"
             >
                 <component
                     :is="tab.component"
                     :key="tab.id"
-                    :selected-asset="selectedAsset"
+                    :selected-asset="asset"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -46,12 +46,6 @@
 
     export default defineComponent({
         name: 'AssetProfile',
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-        },
         components: {
             AssetHeader,
             Columns: defineAsyncComponent(
@@ -64,14 +58,18 @@
                 () => import('@/assets/profile/tabs/lineage/index.vue')
             ),
         },
+        props: {
+            asset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+            },
+        },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { asset } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
-            const actions = computed(() =>
-                getAllowedActions(selectedAsset.value)
-            )
+            const actions = computed(() => getAllowedActions(asset.value))
             provide('actions', actions)
-            provide('selectedAsset', selectedAsset)
+            provide('selectedAsset', asset)
 
             const { getProfileTabs } = useAssetInfo()
 
@@ -91,7 +89,7 @@
 
             return {
                 refs,
-                selectedAsset,
+                asset,
 
                 getProfileTabs,
                 activeKey,

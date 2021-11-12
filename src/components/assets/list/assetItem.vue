@@ -10,12 +10,6 @@
                         class="flex mr-1"
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
                     >
-                        <!-- <component
-                                :is="dataTypeImage(item)"
-                                class="w-auto h-4 text-gray-500"
-                                style="margin-top: 1px"
-                            ></component> -->
-
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 text-gray-500 mb-0.5"
@@ -35,12 +29,11 @@
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
                     ></CertificateBadge>
-                    <!-- <CertificatePopover :data="item" /> -->
                 </div>
 
                 <!-- Info bar -->
-                <div class="flex items-center gap-x-3">
-                    <div class="flex items-center">
+                <div class="flex items-center gap-x-2">
+                    <div class="flex items-center mr-1">
                         <a-tooltip placement="left">
                             <template #title>
                                 <span>{{
@@ -58,7 +51,7 @@
                         <div
                             class="text-sm tracking-tight text-gray-500 uppercase "
                         >
-                            {{ item.typeName }}
+                            {{ assetTypeLabel(item) || item.typeName }}
                         </div>
                     </div>
 
@@ -68,16 +61,16 @@
                                 item.typeName?.toLowerCase()
                             )
                         "
-                        class="flex text-sm text-gray-500 gap-x-1"
+                        class="flex text-sm text-gray-500"
                     >
                         <a-tooltip placement="bottomLeft">
                             <span
                                 v-if="
                                     ['table', 'tablepartition'].includes(
                                         item.typeName?.toLowerCase()
-                                    )
+                                    ) && rowCount(item, false) !== '-'
                                 "
-                                class="text-gray-500"
+                                class="mr-2 text-gray-500"
                                 ><span
                                     class="font-semibold tracking-tight text-gray-500 "
                                     >{{ rowCount(item, false) }}
@@ -133,9 +126,9 @@
 
                             <component
                                 :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500"
+                                class="h-4 text-gray-500 mt-0.5"
                             />
-                            <span class="ml-1 text-sm text-gray-500">{{
+                            <span class="text-sm text-gray-500">{{
                                 dataType(item)
                             }}</span>
                         </div>
@@ -257,26 +250,23 @@
                         </a-tooltip>
                     </div>
                 </div>
-            </div>
-            <!-- <ThreeDotMenu
-                v-if="showThreeDotMenu"
-                :entity="item"
-                :visible="false"
-                :show-gtc-crud="false"
-                :show-links="false"
-                :show-unlink-asset="true"
-                @unlinkAsset="$emit('unlinkAsset', item)"
-            /> -->
-        </div>
 
-        <!-- <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" /> -->
+                <div class="flex">
+                    <span
+                        class="text-xs text-gray-500"
+                        v-if="preference?.display?.includes('description')"
+                        >{{ description(item) }}</span
+                    >
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     // import HierarchyBar from '@common/badge/hierarchy.vue'
     // import StatusBadge from '@common/badge/status/index.vue'
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     // import Pill from '@/UI/pill/pill.vue'
@@ -316,11 +306,11 @@
                     return 0
                 },
             },
-            projection: {
-                type: Array,
+            preference: {
+                type: Object,
                 required: false,
                 default() {
-                    return []
+                    return {}
                 },
             },
             isSelected: {
@@ -363,7 +353,9 @@
             },
         },
         emits: ['listItem:check', 'unlinkAsset'],
-        setup() {
+        setup(props) {
+            const { preference } = toRefs(props)
+
             const {
                 title,
                 getConnectorImage,
@@ -387,6 +379,8 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                description,
+                assetTypeLabel,
             } = useAssetInfo()
 
             // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
@@ -482,6 +476,9 @@
                 certificateStatusMessage,
                 tableName,
                 viewName,
+                preference,
+                assetTypeLabel,
+                description,
             }
         },
     })

@@ -5,14 +5,10 @@ export const displayProperties = [
     },
     {
         id: 'terms',
-        label: 'Business Terms',
+        label: 'Terms',
     },
     {
         id: 'classifications',
         label: 'Classifications',
-    },
-    {
-        id: 'hierarchy',
-        label: 'Hierarchy',
     },
 ]

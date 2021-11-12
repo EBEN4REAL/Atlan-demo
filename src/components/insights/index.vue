@@ -110,7 +110,7 @@
         provideDataInterface,
     } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
-    import { useEditor } from './common/composables/useEditor'
+    // import { useEditor } from './common/composables/useEditor'
     import { useEditorPreference } from './common/composables/useEditorPreference'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useHotKeys } from './common/composables/useHotKeys'
@@ -119,6 +119,8 @@
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 
     export default defineComponent({
         components: {
@@ -151,17 +153,35 @@
             const { fullSreenState } = useFullScreen()
             const savedQueryGuidFromURL = ref(route.query?.id)
 
+            const databaseQualifiedNameFromURL = inject(
+                'databaseQualifiedNameFromURL'
+            )
+            const schemaNameFromURL = inject('schemaNameFromURL')
+            const tableNameFromURL = inject('tableNameFromURL')
+            const columnNameFromURL = inject('columnNameFromURL')
+
+            const { queryRun } = useRunQuery()
+
+            // const schemaNameFromURL = ref(route.query?.schemaNameFromURL)
+            // const tableNameFromURL = ref(route.query?.tableNameFromURL)
+            // const columnNameFromURL = ref(route.query?.columnNameFromURL)
+
             const { filteredTabs: tabsList } = useInsightsTabList()
             const {
                 setUserPreferenceToLocalStorage,
                 syncInlineTabsInLocalStorage,
                 syncActiveInlineTabKeyInLocalStorage,
             } = useLocalStorageSync()
-            const { tabsArray, activeInlineTabKey, activeInlineTab } =
-                useInlineTab(
-                    undefined,
-                    savedQueryGuidFromURL.value ? false : true
-                )
+            const {
+                tabsArray,
+                activeInlineTabKey,
+                activeInlineTab,
+                inlineTabAdd,
+                modifyActiveInlineTabEditor,
+            } = useInlineTab(
+                undefined,
+                savedQueryGuidFromURL.value ? false : true
+            )
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -258,8 +278,156 @@
                     //prevent the default action
                 }
             }
+
+            const getData = (dataList, columnList) => {
+                if (activeInlineTab && tabsArray?.value) {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    activeInlineTabCopy.playground.editor.dataList = dataList
+
+                    activeInlineTabCopy.playground.editor.columnList =
+                        columnList
+                    const saveQueryDataInLocalStorage = false
+                    modifyActiveInlineTabEditor(
+                        activeInlineTabCopy,
+                        tabsArray,
+                        saveQueryDataInLocalStorage
+                    )
+                    // setSelection(
+                    //     toRaw(editorInstanceRef.value),
+                    //     toRaw(monacoInstanceRef.value),
+                    //     selectionObject.value
+                    // )
+                    // focusEditor(toRaw(editorInstanceRef.value))
+                }
+            }
+
+            const detectQuery = () => {
+                let queryTab: activeInlineTabInterface = {
+                    key: String(new Date().getTime()),
+                    label: 'Test Query',
+                    isSaved: false,
+                    queryId: undefined,
+                    status: 'DRAFT',
+                    connectionId: '',
+                    description: '',
+                    qualifiedName: '',
+                    parentGuid: '',
+                    parentQualifiedName: '',
+                    isSQLSnippet: false,
+                    savedQueryParentFolderTitle: undefined,
+                    explorer: {
+                        schema: {
+                            connectors: {
+                                attributeName: undefined,
+                                attributeValue: undefined,
+                            },
+                        },
+                        queries: {
+                            connectors: {
+                                connector: undefined,
+                            },
+                        },
+                    },
+                    playground: {
+                        editor: {
+                            text: '',
+                            context: {
+                                attributeName: undefined,
+                                attributeValue: undefined,
+                            },
+                            dataList: [],
+                            columnList: [],
+                            variables: [],
+                            savedVariables: [],
+                            limitRows: {
+                                checked: false,
+                                rowsCount: -1,
+                            },
+                        },
+                        resultsPane: {
+                            activeTab: 0,
+                            result: {
+                                title: `Result`,
+                                runQueryId: undefined,
+                                isQueryRunning: '',
+                                queryErrorObj: {},
+                                totalRowsCount: -1,
+                                executionTime: -1,
+                                errorDecorations: [],
+                                eventSourceInstance: undefined,
+                                buttonDisable: false,
+                                isQueryAborted: false,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
+                    },
+                    favico: 'https://atlan.com/favicon.ico',
+                    assetSidebar: {
+                        isVisible: false,
+                        assetInfo: {},
+                        title: '',
+                        id: '',
+                    },
+                }
+
+                let newQuery
+                if (columnNameFromURL) {
+                    newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                } else {
+                    newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+                }
+
+                let attributeName = 'schemaQualifiedName'
+                let attributeValue =
+                    databaseQualifiedNameFromURL + '/' + schemaNameFromURL
+
+                // const newText = `${newQuery}${prevText}`
+                queryTab.playground.editor.text = newQuery
+
+                queryTab.playground.editor.context = {
+                    attributeName: attributeName,
+                    attributeValue: attributeValue,
+                }
+
+                queryTab.explorer.schema.connectors = {
+                    attributeName: attributeName,
+                    attributeValue: attributeValue,
+                }
+
+                inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
+                // activeInlineTabKey.value = queryTab.key
+                // syncInlineTabsInLocalStorage(tabsArray.value)
+
+                queryRun(activeInlineTab, getData)
+            }
+
             onMounted(() => {
                 window.addEventListener('keydown', _keyListener)
+
+                if (
+                    databaseQualifiedNameFromURL &&
+                    schemaNameFromURL &&
+                    tableNameFromURL
+                ) {
+                    console.log('url params: ', {
+                        databaseQualifiedNameFromURL:
+                            databaseQualifiedNameFromURL,
+                        schemaNameFromURL: schemaNameFromURL,
+                        tableNameFromURL: tableNameFromURL,
+                    })
+                    // if (columnNameFromURL.value) {
+                    // } else {
+                    // }
+
+                    detectQuery()
+                }
             })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)

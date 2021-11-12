@@ -1,13 +1,7 @@
 <template>
-    <div>
-        <div class="mb-2 text-base font-bold text-gray-500">Assets Owned</div>
-        <div class="flex flex-col h-full border rounded-lg">
-            <!-- <AssetsWrapper :dataMap="ownerFilter" /> -->
-            <AssetsWrapper
-                :initial-filters="ownerFilter"
-                :show-filters="false"
-            />
-        </div>
+    <div class="mb-2 text-base font-bold text-gray-500">Assets Owned</div>
+    <div class="flex flex-col h-full border rounded-lg">
+        <AssetsWrapper :initial-filters="ownerFilter" :show-filters="false" />
     </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+        v-if="error"
         class="flex flex-col items-center h-full align-middle bg-white"
     >
         <ErrorView>
@@ -22,10 +22,7 @@
         </ErrorView>
     </div>
     <div
-        v-else-if="
-            [STATES.PENDING].includes(state) ||
-            [STATES.VALIDATING].includes(state)
-        "
+        v-else-if="isLoading"
         class="flex items-center justify-center w-full componentHeight"
     >
         <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
@@ -34,7 +31,7 @@
         <h1 class="px-4 py-2 text-xl font-bold">Sessions</h1>
         <div class="mx-4">
             <SearchAndFilter
-                v-model="searchText"
+                v-model:value="searchText"
                 :placeholder="`Search via IP address`"
                 size="minimal"
                 class=""
@@ -86,8 +83,6 @@
     import { useTimeAgo } from '@vueuse/core'
     import ErrorView from '@common/error/index.vue'
     import { Users } from '~/services/service/users/index'
-    import swrvState from '~/utils/swrvState'
-    import { GET_USER_SESSIONS } from '~/services/service/users/key'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import EmptyState from '@/common/empty/index.vue'
 
@@ -108,16 +103,23 @@
             const searchText = ref('')
 
             const sessionParams = reactive({ max: 100, first: 0 })
+            const pV = computed(() => ({ id: props.selectedUser.id }))
             const {
                 data,
                 error,
-                isValidating,
                 mutate: fetchUserSessions,
-            } = Users.GetUserSessions(props.selectedUser.id, sessionParams, {
-                cacheKey: GET_USER_SESSIONS,
-                cacheOptions: { revalidateOnFocus: false, dedupingInterval: 1 },
+                isLoading,
+            } = Users.GetUserSessions(pV, sessionParams, {
+                asyncOptions: { immediate: false },
             })
-            const { state, STATES } = swrvState(data, error, isValidating)
+
+            watch(
+                pV,
+                () => {
+                    fetchUserSessions()
+                },
+                { deep: true, immediate: true }
+            )
             // const signOutAllSessionsLoading = ref(false)
             // const signOutSessionByIdLoading = ref(false)
 
@@ -183,8 +185,8 @@
 
             return {
                 searchText,
-                state,
-                STATES,
+                isLoading,
+                error,
                 sessionList,
                 fetchUserSessions,
             }

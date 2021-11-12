@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col h-full">
-        <div class="px-4 py-2.5 text-sm border-b bg-gray-10">
+        <div class="px-4 py-2.5 text-sm border-b shadow-sm bg-white">
             <div
                 class="flex items-center justify-between"
                 v-if="totalFilteredCount > 0"
@@ -17,105 +17,30 @@
                     </span>
                 </div>
             </div>
-            <div class="flex items-center justify-between" v-else>
+            <div class="flex items-center justify-between text-gray-500" v-else>
                 <span> Filters</span>
             </div>
         </div>
         <div class="h-full overflow-y-auto">
             <a-collapse
                 v-model:activeKey="activeKey"
+                :accordion="isAccordion"
+                :class="$style.filter"
                 expand-icon-position="right"
                 @change="handleActivePanelChange"
                 :bordered="false"
-                class="relative bg-transparent"
-                :class="$style.filter"
-                :accordion="isAccordion"
             >
-                <a-collapse-panel
+                <template
                     v-for="item in dynamicList"
-                    :key="item.id"
-                    class="relative group"
-                    :show-arrow="false"
-                    :class="isFiltered(item.id) ? 'bg-white text-primary' : ''"
+                    :key="`${item.id}_${componentState}`"
                 >
-                    <template #header>
-                        <div :key="dirtyTimestamp[item.id]" class="select-none">
-                            <div class="flex flex-col flex-1">
-                                <div
-                                    class="flex items-center justify-between  hover:text-primary"
-                                >
-                                    <span
-                                        class="text-xs uppercase  text-gray hover:text-primary title"
-                                        style="letter-spacing: 0.07em"
-                                    >
-                                        <img
-                                            v-if="item.image"
-                                            :src="item.image"
-                                            class="float-left w-auto h-4 mr-2"
-                                        />
-
-                                        {{ item.label }}</span
-                                    >
-                                    <span
-                                        v-if="isFiltered(item.id)"
-                                        class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
-                                        @click.stop.prevent="
-                                            handleClear(item.id)
-                                        "
-                                    >
-                                        Clear
-                                    </span>
-                                    <AtlanIcon
-                                        icon="ChevronDown"
-                                        class="ml-3 text-gray-500 transition-transform duration-300 transform  hover:text-primary title"
-                                        :class="
-                                            activeKey.includes(item.id)
-                                                ? '-rotate-180'
-                                                : 'rotate-0'
-                                        "
-                                    />
-                                </div>
-                            </div>
-                            <div
-                                v-if="
-                                    isFiltered(item.id) &&
-                                    !activeKey.includes(item.id)
-                                "
-                                class="flex items-center"
-                            >
-                                {{
-                                    getConnectorImageMap[
-                                        getConnectorImageMap[
-                                            getFilterValue(item.id)
-                                        ]
-                                    ]
-                                }}
-                                <img
-                                    :src="
-                                        getConnectorImageMap[
-                                            getFilterValue(
-                                                item.id
-                                            ).toLocaleLowerCase()
-                                        ]
-                                    "
-                                    v-if="item.id === 'hierarchy'"
-                                    class="w-auto h-4 mr-1"
-                                />
-                                <span class="text-primary">
-                                    {{ getFilterValue(item.id) }}</span
-                                >
-                            </div>
-                        </div>
-                    </template>
-
-                    <component
-                        :key="dirtyFacetTimestamp[item.id]"
-                        :is="item.component"
+                    <Panel
                         :item="item"
-                        v-model="localFacetMap[item.id]"
-                        @change="handleChange(item.id)"
-                    ></component>
-                </a-collapse-panel>
+                        v-model="localValue"
+                        :activeKey="activeKey"
+                        @change="handleChange"
+                    ></Panel>
+                </template>
             </a-collapse>
         </div>
     </div>
@@ -123,47 +48,19 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import {
-        computed,
-        defineAsyncComponent,
-        defineComponent,
-        ref,
-        Ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { computed, defineComponent, ref, Ref, toRefs, watch } from 'vue'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
+
+    import Panel from './panel.vue'
 
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useDiscoveryStore from '~/store/discovery'
-    import { capitalizeFirstLetter } from '~/utils/string'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
         components: {
-            // RaisedTabSmall,
-            Certificate: defineAsyncComponent(
-                () => import('@common/facet/certificate/index.vue')
-            ),
-            Connector: defineAsyncComponent(
-                () => import('@common/treeselect/connector/index.vue')
-            ),
-            Owners: defineAsyncComponent(
-                () => import('@common/facet/owners/index.vue')
-            ),
-            Connection: defineAsyncComponent(
-                () => import('@/common/facet/connection/index.vue')
-            ),
-            Classifications: defineAsyncComponent(
-                () => import('@/common/facet/classification/index.vue')
-            ),
-            Properties: defineAsyncComponent(
-                () => import('@/common/facet/properties/index.vue')
-            ),
-            AtlanIcon,
+            Panel,
         },
         props: {
             filtersList: {
@@ -199,18 +96,17 @@
         setup(props, { emit }) {
             const discoveryStore = useDiscoveryStore()
             const { getConnectorImageMap } = useAssetInfo()
-
             const { modelValue } = useVModels(props, emit)
-
             const { typeName } = toRefs(props)
-
-            const localFacetMap = ref(modelValue.value)
+            const localValue = ref(modelValue.value)
 
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
 
-            const dirtyTimestamp = ref({})
-            const dirtyFacetTimestamp = ref({})
+            const componentState = ref(0)
+            const forceRender = () => {
+                componentState.value += 1
+            }
 
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -254,142 +150,33 @@
                 return [...arr, ...cmList.value]
             })
 
-            const isFiltered = (id) => {
-                if (localFacetMap?.value) {
-                    if (localFacetMap?.value[id]) {
-                        if (localFacetMap?.value[id].constructor === Object) {
-                            if (
-                                Object.keys(localFacetMap?.value[id]).length ===
-                                0
-                            ) {
-                                return false
-                            }
-                        }
-                        if (localFacetMap?.value[id].constructor === Array) {
-                            if (localFacetMap?.value[id].length === 0) {
-                                return false
-                            }
-                        }
-                    }
+            const totalFilteredCount = computed(() => {
+                console.log(Object.keys(localValue.value))
+                if (
+                    !!Object.keys(localValue.value).find(
+                        (k) => k === 'typeName'
+                    )
+                ) {
+                    return Object.keys(localValue.value).length - 1
                 }
-                return localFacetMap.value[id]
-            }
+                return Object.keys(localValue.value).length
+            })
 
-            const totalFilteredCount = computed(
-                () => discoveryFilters.filter((i) => isFiltered(i.id)).length
-            )
-
-            const handleChange = (id) => {
-                console.log(localFacetMap.value)
-                modelValue.value = localFacetMap.value
+            const handleChange = () => {
+                modelValue.value = localValue.value
                 emit('change')
-                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
-                totalAppliedFiltersCount.value = Object.keys(
-                    localFacetMap.value
-                ).length
             }
 
-            const handleClear = (id: string) => {
-                delete localFacetMap.value[id]
-                dirtyTimestamp.value[id] = `dirty_${Date.now().toString()}`
-                dirtyFacetTimestamp.value[id] = `dirty_${Date.now().toString()}`
-                handleChange(id)
-            }
+            const handleClear = (id: string) => {}
 
             const handleResetAll = () => {
-                localFacetMap.value = {}
-                modelValue.value = localFacetMap.value
-
-                discoveryFilters.forEach((i) => {
-                    dirtyFacetTimestamp.value[
-                        i.id
-                    ] = `dirty_${Date.now().toString()}`
-                    dirtyTimestamp.value[
-                        i.id
-                    ] = `dirty_${Date.now().toString()}`
-                })
+                localValue.value = {}
                 activeKey.value = []
-                emit('change')
-                totalAppliedFiltersCount.value = Object.keys(
-                    localFacetMap.value
-                ).length
+                handleChange()
+                forceRender()
             }
 
             // Function to build filter applied string for owner facet
-            const getOwnerFilterAppliedString = (
-                usersLength,
-                groupsLength
-            ): String => {
-                let str = ''
-                if (usersLength)
-                    str += `${usersLength} ${
-                        usersLength > 1 ? 'users' : 'user'
-                    }`
-                if (usersLength && groupsLength) str += ' & '
-                if (groupsLength)
-                    str += `${groupsLength} ${
-                        groupsLength > 1 ? 'groups' : 'group'
-                    }`
-                return str
-            }
-            const getFilterValue = (id: string) => {
-                if (id === 'hierarchy') {
-                    if (localFacetMap.value[id].connectorName) {
-                        return capitalizeFirstLetter(
-                            localFacetMap.value[id].connectorName
-                        )
-                    }
-                }
-                if (id === '__traitNames' && localFacetMap.value[id]) {
-                    const { classificationList } = useTypedefData()
-
-                    const list = classificationList.value
-                        .filter((i) => localFacetMap.value[id].includes(i.name))
-                        .map((i) => i.displayName)
-
-                    return list.length < 3
-                        ? list.join(',')
-                        : `${list?.length} applied`
-                }
-
-                if (id === 'certificateStatus' && localFacetMap.value[id]) {
-                    return localFacetMap.value[id]?.length < 3
-                        ? localFacetMap.value[id].join(',')
-                        : `${localFacetMap.value[id]?.length} applied`
-                }
-
-                if (id === 'owners') {
-                    let usersLength = 0
-                    let groupsLength = 0
-
-                    if (localFacetMap.value[id]?.ownerUsers) {
-                        usersLength = localFacetMap.value[id]?.ownerUsers.length
-                    }
-                    if (localFacetMap.value[id]?.ownerGroups) {
-                        groupsLength =
-                            localFacetMap.value[id]?.ownerGroups?.length
-                    }
-
-                    if (usersLength === 0 && groupsLength < 3) {
-                        return localFacetMap.value[id]?.ownerGroups?.join(', ')
-                    }
-                    if (usersLength < 3 && groupsLength === 0) {
-                        return localFacetMap.value[id]?.ownerUsers?.join(', ')
-                    }
-
-                    if (usersLength === 1 && groupsLength === 1) {
-                        return localFacetMap.value[id]?.ownerUsers
-                            .concat(localFacetMap.value[id]?.ownerGroups)
-                            .join(', ')
-                    }
-
-                    return `${getOwnerFilterAppliedString(
-                        usersLength,
-                        groupsLength
-                    )}`
-                }
-                return ''
-            }
 
             const handleActivePanelChange = () => {
                 discoveryStore.setActivePanel(activeKey.value)
@@ -397,19 +184,17 @@
 
             return {
                 activeKey,
-                dirtyTimestamp,
+
                 dynamicList,
-                localFacetMap,
+
                 handleChange,
                 handleClear,
-                isFiltered,
-
-                getFilterValue,
+                localValue,
                 handleActivePanelChange,
                 getConnectorImageMap,
                 totalFilteredCount,
                 handleResetAll,
-                dirtyFacetTimestamp,
+                componentState,
             }
         },
     })
@@ -448,6 +233,9 @@
             padding-right: 0px;
             padding-left: 0px;
             padding-top: 0px !important;
+        }
+        :global(.ant-collapse-content) {
+            @apply bg-white !important;
         }
     }
 </style>

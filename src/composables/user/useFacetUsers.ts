@@ -14,7 +14,7 @@ export default function useFacetUsers() {
     params.value.append('columns', 'id')
     params.value.append('filter', '{"$and":[{"email_verified":true}]}')
 
-    const { data, mutate } = Users.List(params, {
+    const { data, mutate, isLoading, error, isValidating } = Users.List(params, {
         cacheOptions: {
             shouldRetryOnError: false,
             revalidateOnFocus: false,
@@ -34,9 +34,9 @@ export default function useFacetUsers() {
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.total_record)
-    const total: ComputedRef<userInterface[]> = computed(
-        () => data.value?.filter_record
-    )
+    const filterTotal = computed(() => data.value?.filter_record)
+
+    const total = computed(() => data.value?.total_record)
 
     function setLimit(limit = 20) {
         params.value.set('limit', `${limit}`)
@@ -72,6 +72,9 @@ export default function useFacetUsers() {
     }
 
     return {
+        isLoading,
+        error,
+        isValidating,
         list,
         total,
         data,
@@ -79,5 +82,6 @@ export default function useFacetUsers() {
         params,
         handleSearch,
         setLimit,
+        filterTotal,
     }
 }

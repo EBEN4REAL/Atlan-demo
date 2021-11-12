@@ -1,11 +1,14 @@
 <template>
     <div>
         <div class="flex items-center mb-6 gap-x-3">
-            <SearchAndFilter
-                v-model:value="queryText"
-                class="bg-white w-80"
-                :placeholder="placeholder"
-            />
+            <div style="width: 300px">
+                <SearchAndFilter
+                    v-model:value="queryText"
+                    class="bg-white w-80"
+                    :placeholder="placeholder"
+                    size="bordered"
+                />
+            </div>
             <RaisedTab v-model:active="listType" :data="tabConfig" />
 
             <a-popover
@@ -14,11 +17,12 @@
                 trigger="click"
             >
                 <AtlanBtn
-                    color="light"
+                    color="secondary"
                     padding="compact"
-                    class="ml-auto"
+                    class="items-center ml-auto"
                     @click="() => setPopoverState(!popoverVisible)"
-                    >Add users/Groups</AtlanBtn
+                    ><span class="text-xl">+</span>
+                    <span>Add users / Groups</span></AtlanBtn
                 >
                 <template #content>
                     <div
@@ -103,6 +107,7 @@
         <a-table
             v-if="filteredList && listType === 'users'"
             id="userList"
+            class="border rounded border-300"
             :key="persona.id"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :table-layout="'fixed'"
@@ -116,6 +121,11 @@
             "
             @change="handleUsersTableChange"
         >
+            <template #headerCell="{ title, column }">
+                <div class="flex justify-center">
+                    <span>{{ title }}</span>
+                </div>
+            </template>
             <template #name="{ text: user }">
                 <div class="flex items-center align-middle">
                     <avatar
@@ -175,9 +185,11 @@
                         >
                             <a-button
                                 size="small"
-                                class="mr-3.5 w-8 h-8 rounded"
+                                class="ml-3.5 w-8 h-8 rounded"
                             >
-                                <AtlanIcon icon="Delete"></AtlanIcon> </a-button
+                                <AtlanIcon
+                                    icon="RemoveUser"
+                                ></AtlanIcon> </a-button
                         ></a-popconfirm>
                     </a-tooltip>
                 </a-button-group>
@@ -228,6 +240,11 @@
             "
             @change="handleGroupsTableChange"
         >
+            <template #headerCell="{ title, column }">
+                <div class="flex justify-center">
+                    <span>{{ title }}</span>
+                </div>
+            </template>
             <template #group="{ text: group }">
                 <div class="flex items-center align-middle">
                     <avatar
@@ -271,9 +288,11 @@
                         >
                             <a-button
                                 size="small"
-                                class="mr-3.5 w-8 h-8 rounded"
+                                class="ml-3.5 w-8 h-8 rounded"
                             >
-                                <AtlanIcon icon="Delete"></AtlanIcon> </a-button
+                                <AtlanIcon
+                                    icon="RemoveUser"
+                                ></AtlanIcon> </a-button
                         ></a-popconfirm>
                     </a-tooltip>
                 </a-button-group>
@@ -393,7 +412,7 @@
 
             const placeholder = computed(
                 () =>
-                    `Search ${
+                    `Search from ${
                         listType.value === 'users'
                             ? userList.value.length
                             : groupList.value.length
@@ -443,6 +462,10 @@
                         .then(() => {
                             addUsersLoading.value = false
                             popoverVisible.value = false
+                            selectedPersonaDirty.value.users =
+                                userGroupData.value.ownerUsers
+                            selectedPersonaDirty.value.groups =
+                                userGroupData.value.ownerGroups
                             getUserList()
                             getGroupList()
                         })
@@ -544,8 +567,10 @@
                 }
                 const usernames = users.map((user) => user.username)
                 persona.value.users = usernames
+                selectedPersonaDirty.value.users = usernames
                 const groupaliases = groups.map((group) => group.alias)
                 persona.value.groups = groupaliases
+                selectedPersonaDirty.value.groups = groupaliases
                 let userIds = users.map((user) => user.id)
                 let groupIds = groups.map((group) => group.id)
 
@@ -558,6 +583,7 @@
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = usernames
                         userGroupData.value.ownerGroups = groupaliases
+
                         getUserList()
                         getGroupList()
                     })
@@ -667,6 +693,9 @@
     .table {
         :global(.ant-table-measure-row) {
             display: none;
+        }
+        :global(.ant-table-pagination.ant-pagination) {
+            @apply m-4 !important;
         }
     }
 </style>

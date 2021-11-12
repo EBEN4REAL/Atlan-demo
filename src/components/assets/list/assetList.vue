@@ -11,6 +11,7 @@
             >
                 <AssetItem
                     :item="item"
+                    :preference="preference"
                     @click="handlePreview(item)"
                 ></AssetItem>
             </div>
@@ -85,11 +86,11 @@
                     return {}
                 },
             },
-            projection: {
-                type: Array,
+            preference: {
+                type: Object,
                 required: false,
                 default() {
-                    return []
+                    return {}
                 },
             },
             isLoading: {
@@ -115,7 +116,7 @@
         },
         emits: ['preview', 'loadMore', 'update:autoSelect'],
         setup(props, { emit }) {
-            const { list, autoSelect, selectedGuid } = toRefs(props)
+            const { list, preference, selectedGuid } = toRefs(props)
             // const storeDiscovery = useDiscoveryStore()
             // const { selectedAsset } = storeToRefs(storeDiscovery)
             const selectedAssetId = ref(selectedGuid.value)
@@ -203,6 +204,7 @@
                 selectedAssetId,
                 list,
                 handlePreview,
+                preference,
                 // bulkSelectedAssets,
                 // updateBulkSelectedAssets,
                 // handleCardClicked,

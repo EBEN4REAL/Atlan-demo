@@ -3,7 +3,9 @@ import { State } from './state'
 export interface Actions extends State {
     setSelectedAsset(value: any): void
     setActivePanel(value: any): void
+    setPreferences(value: any): void
     setActiveFacet(value: any): void
+    setActivePostFacet(value: any): void
 }
 
 export const actions: Actions = {
@@ -15,6 +17,12 @@ export const actions: Actions = {
     },
     setActiveFacet(value) {
         this.activeFacet = value
+    },
+    setPreferences(value) {
+        this.preferences = value
+    },
+    setActivePostFacet(value) {
+        this.activePostFacet = value
     },
 }
 export default actions

@@ -26,11 +26,11 @@
                 />
             </div>
         </CreationModal>
-        <div class="flex items-center mb-2 gap-x-2">
+        <div class="flex mb-2 gap-x-2">
             <div>
-                <span class="mb-1 text-xl font-bold truncate text-gray">{{
-                    persona.displayName
-                }}</span>
+                <div class="mb-1 text-xl font-bold truncate text-gray">
+                    {{ persona.displayName }}
+                </div>
                 <div class="flex mb-0 text-sm text-gray-500">
                     <span class="truncate">{{ persona.description }}</span>
                 </div>

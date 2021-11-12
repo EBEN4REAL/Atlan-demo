@@ -42,6 +42,7 @@ import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
+import RemoveUser from '~/assets/images/icons/remove-user.svg'
 import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
 import CircleLoader from '~/assets/images/icons/circle-loader.svg'
@@ -198,8 +199,23 @@ import Italic from '~/assets/images/readme/text-italic.svg'
 import Strike from '~/assets/images/readme/text-strike.svg'
 import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
+import Running from '~/assets/images/icons/running.svg'
+import Refresh from '~/assets/images/icons/Refresh.svg'
+import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
+import CreateWF from '~/assets/images/workflows/createWF.svg'
+import NoRuns from '~/assets/images/workflows/noRuns.svg'
+import Error from '~/assets/images/error.svg'
+import Warning from '~/assets/images/warning.svg'
+import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
+import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 
 export default {
+    RemoveUser,
+    NoRuns,
+    CreateWF,
+    Warning,
+    Error,
+    WFEmptyTab,
     QueryVerified,
     QueryDeprecated,
     QueryDraft,
@@ -398,4 +414,8 @@ export default {
     Strike,
     Undo,
     Redo,
+    Running,
+    Refresh,
+    ErrorLogs,
+    EmptyLogs,
 }

@@ -1,14 +1,58 @@
 <template>
     <template v-if="selectedPersonaDirty">
-        <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+        <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
+            <template #label="t">
+                <div class="flex items-center">
+                    <span
+                        class="text-base"
+                        :class="
+                            activeTabKey === t?.data?.key
+                                ? 'text-gray-700'
+                                : 'text-gray-500'
+                        "
+                        >{{ t?.data?.label }}</span
+                    >
+                    <div
+                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        v-if="t?.data?.key === 'policies'"
+                        :class="
+                            activeTabKey === t?.data?.key
+                                ? 'text-primary bg-primary-light'
+                                : 'text-gray-500 bg-gray-100'
+                        "
+                    >
+                        {{
+                            selectedPersonaDirty?.metadataPolicies?.length ??
+                            0 + selectedPersonaDirty?.datapolicies?.length ??
+                            0
+                        }}
+                    </div>
+                    <div
+                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        v-if="t?.data?.key === 'users'"
+                        :class="
+                            activeTabKey === t?.data?.key
+                                ? 'text-primary bg-primary-light'
+                                : 'text-gray-500 bg-gray-100'
+                        "
+                    >
+                        {{
+                            selectedPersonaDirty?.users?.length ??
+                            0 + selectedPersonaDirty?.groups?.length ??
+                            0
+                        }}
+                    </div>
+                </div>
+            </template>
+        </MinimalTab>
 
-        <div class="overflow-y-auto">
+        <div class="px-4 overflow-y-auto">
             <PersonaMeta
                 v-if="activeTabKey === 'details'"
                 class="pb-2"
                 :persona="persona"
             />
-            <div v-else-if="activeTabKey === 'policies'">
+            <div v-else-if="activeTabKey === 'policies'" class="mt-6">
                 <template
                     v-for="(
                         policy, idx
@@ -33,6 +77,7 @@
                         @edit="setEditFlag('meta', policy.id!)"
                     />
                 </template>
+
                 <template
                     v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
                     :key="idx"
@@ -109,7 +154,7 @@
             </div>
             <PersonaUsersGroups
                 v-else-if="activeTabKey === 'users'"
-                class="px-5 pt-4 pb-2"
+                class="pt-6 pb-2"
                 v-model:persona="persona"
             />
         </div>

@@ -81,13 +81,13 @@ export const operators = {
             label: 'Less Than Equal(<=)',
         },
     ],
-    __user: [
+    string__user: [
         {
             id: 'equals',
             label: 'Equals(=)',
         },
         {
-            id: 'not equals',
+            id: 'notEquals',
             label: 'Not Equals(!=)',
         },
         {
@@ -97,6 +97,64 @@ export const operators = {
         {
             id: 'isNotNull',
             label: 'Is Not Null',
+        },
+    ],
+    string___user_mandatory: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+    ],
+    string_mandatory: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+        {
+            id: 'startsWith',
+            label: 'Starts With',
+        },
+        {
+            id: 'endsWith',
+            label: 'Ends With',
+        },
+        {
+            id: 'pattern',
+            label: 'Pattern',
+        },
+    ],
+    datetime_mandatory: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+        {
+            id: 'greaterThan',
+            label: 'Greater Than(>)',
+        },
+        {
+            id: 'greaterThanEqual',
+            label: 'Greater Than Equal(>=)',
+        },
+        {
+            id: 'lessThan',
+            label: 'Less Than(<)',
+        },
+        {
+            id: 'lessThanEqual',
+            label: 'Less Than Equal(<=)',
         },
     ],
 }

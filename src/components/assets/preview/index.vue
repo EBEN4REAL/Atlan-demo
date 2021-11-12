@@ -20,20 +20,7 @@
                 </div>
                 <router-link
                     to="/"
-                    class="
-                        flex-shrink
-                        mb-0
-                        mr-1
-                        overflow-hidden
-                        font-bold
-                        truncate
-                        cursor-pointer
-                        text-md text-primary
-                        hover:underline
-                        overflow-ellipsis
-                        whitespace-nowrap
-                        leadiing-none
-                    "
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -261,6 +248,13 @@
                 },
                 { debounce: 100 }
             )
+
+            provide('switchTab', (asset, tabName: string) => {
+                const idx = getPreviewTabs(asset).findIndex(
+                    (tl) => tl.name === tabName
+                )
+                if (idx > -1) activeKey.value = idx
+            })
 
             return {
                 title,

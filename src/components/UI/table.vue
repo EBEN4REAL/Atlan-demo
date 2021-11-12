@@ -7,27 +7,7 @@
         >
             <table ref="tableRef" :data-test-id="'output-table'">
                 <slot name="header" />
-                <!-- <thead>
-                    <tr>
-                        <th
-                            class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border border-gray-light"
-                            style="z-index: 4"
-                        >
-                            #
-                            <span class="resize-handle"></span>
-                        </th>
 
-                        <th
-                            v-for="(col, index) in columnsData"
-                            :key="index"
-                            class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border border-gray-light"
-                            style="z-index: 3"
-                        >
-                            {{ col.title }}
-                            <span class="resize-handle"></span>
-                        </th>
-                    </tr>
-                </thead> -->
                 <tbody id="contentArea" class="clusterize-content"></tbody>
             </table>
         </div>
@@ -63,7 +43,7 @@
             const defaultRowClassNames =
                 'px-4 py-2 text-xs text-gray-700 truncate bg-gray-100 border border-gray-light'
 
-            watch(tableRef, () => {
+            watch([tableRef, dataList], () => {
                 // if (isQueryRunning === 'success') {
                 if (tableRef.value) {
                     const data_here = dataList.value.map((row, index) => {
@@ -92,78 +72,79 @@
                     // }, 500)
 
                     // if (tableRef.value) {
-                    const min = 150
-                    const columnTypeToRatioMap = 1.67
-                    const table = document.querySelector('table')
-                    const columns = []
-                    let headerBeingResized
+                    // const min = 150
+                    // const columnTypeToRatioMap = 1.67
+                    // const table = document.querySelector('table')
+                    // const columns = []
+                    // let headerBeingResized
 
-                    const onMouseMove = (e) =>
-                        requestAnimationFrame(() => {
-                            let horizontalScrollOffset =
-                                document.getElementById(
-                                    'table-container'
-                                )?.scrollLeft
+                    // const onMouseMove = (e) =>
+                    //     requestAnimationFrame(() => {
+                    //         let horizontalScrollOffset =
+                    //             document.getElementById(
+                    //                 'table-container'
+                    //             )?.scrollLeft
 
-                            const width =
-                                horizontalScrollOffset +
-                                e?.clientX -
-                                headerBeingResized?.offsetLeft
+                    //         const width =
+                    //             horizontalScrollOffset +
+                    //             e?.clientX -
+                    //             headerBeingResized?.offsetLeft
 
-                            const column = columns?.find(
-                                ({ header }) => header === headerBeingResized
-                            )
-                            column.size = Math.max(min, width) + 'px'
-                            console.log(width, column, 'col')
+                    //         const column = columns?.find(
+                    //             ({ header }) => header === headerBeingResized
+                    //         )
+                    //         column.size = Math.max(min, width) + 'px'
+                    //         console.log(width, column, 'col')
 
-                            table.style.gridTemplateColumns = columns
-                                ?.map(({ header, size }) => size)
-                                ?.join(' ')
-                            // console.log(
-                            //     table.style.gridTemplateColumns,
-                            //     'solkumn'
-                            // )
-                        })
+                    //         table.style.gridTemplateColumns = columns
+                    //             ?.map(({ header, size }) => size)
+                    //             ?.join(' ')
 
-                    const onMouseUp = () => {
-                        console?.log('mouseup')
-                        window.removeEventListener('mousemove', onMouseMove)
-                        window.removeEventListener('mouseup', onMouseUp)
-                        headerBeingResized.classList?.remove(
-                            'header--being-resized'
-                        )
-                        headerBeingResized = null
-                    }
+                    // console.log(
+                    //     table.style.gridTemplateColumns,
+                    //     'solkumn'
+                    // )
+                    // })
 
-                    const initResize = ({ target }) => {
-                        console.log('mouse down')
-                        console.log('target: ', target)
-                        headerBeingResized = target?.parentNode
-                        console.log(headerBeingResized)
-                        window.addEventListener('mousemove', onMouseMove)
-                        window.addEventListener('mouseup', onMouseUp)
-                        headerBeingResized.classList.add(
-                            'header--being-resized'
-                        )
-                    }
+                    // const onMouseUp = () => {
+                    //     console?.log('mouseup')
+                    //     window.removeEventListener('mousemove', onMouseMove)
+                    //     window.removeEventListener('mouseup', onMouseUp)
+                    //     headerBeingResized.classList?.remove(
+                    //         'header--being-resized'
+                    //     )
+                    //     headerBeingResized = null
+                    // }
 
-                    function init() {
-                        document.querySelectorAll('th').forEach((header) => {
-                            const max = columnTypeToRatioMap + 'fr'
-                            columns.push({
-                                header,
+                    // const initResize = ({ target }) => {
+                    //     console.log('mouse down')
+                    //     console.log('target: ', target)
+                    //     headerBeingResized = target?.parentNode
+                    //     console.log(headerBeingResized)
+                    //     window.addEventListener('mousemove', onMouseMove)
+                    //     window.addEventListener('mouseup', onMouseUp)
+                    //     headerBeingResized.classList.add(
+                    //         'header--being-resized'
+                    //     )
+                    // }
 
-                                size: `minmax(${min}px, ${max})`,
-                            })
-                            header
-                                .querySelector('.resize-handle')
-                                .addEventListener('mousedown', initResize)
-                        })
+                    // function init() {
+                    //     document.querySelectorAll('th').forEach((header) => {
+                    //         const max = columnTypeToRatioMap + 'fr'
+                    //         columns.push({
+                    //             header,
 
-                        table.style.gridTemplateColumns = columns
-                            .map(({ header, size }) => size)
-                            .join(' ')
-                    }
+                    //             size: `minmax(${min}px, ${max})`,
+                    //         })
+                    //         header
+                    //             .querySelector('.resize-handle')
+                    //             .addEventListener('mousedown', initResize)
+                    //     })
+
+                    //     table.style.gridTemplateColumns = columns
+                    //         .map(({ header, size }) => size)
+                    //         .join(' ')
+                    // }
 
                     // init()
                 }

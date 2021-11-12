@@ -9,8 +9,6 @@
         :get-popup-container="(target) => target.parentNode"
         notFoundContent="No connection found"
     >
-        {{ filteredList }}
-
         <a-select-option
             :value="item.attributes?.qualifiedName"
             v-for="item in filteredList"
@@ -18,7 +16,7 @@
         >
             <div class="flex flex-col">
                 {{ item?.attributes.displayName || item.attributes.name }}
-                <span class="text-xs text-gray-500"
+                <span class="text-xs text-gray-500" v-if="showCount"
                     >{{ item.assetCount }} assets</span
                 >
             </div>
@@ -58,7 +56,7 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { connector } = toRefs(props)
+            const { connector, showCount } = toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
 
@@ -77,29 +75,34 @@
             }
 
             const filteredList = computed(() => {
-                let tempList = []
-                tempList = list.filter((i) => {
-                    let isConnector = true
-                    if (connector?.value !== '') {
-                        isConnector =
-                            i.attributes?.connectorName?.toLowerCase() ===
-                            connector.value.toLowerCase()
-                    }
-                    if (queryText?.value !== '') {
-                        return (
-                            isConnector &&
-                            (i.attributes?.name
-                                ?.toLowerCase()
-                                .includes(queryText.value.toLowerCase()) ||
-                                i.attributes?.displayName
+                return list
+                    .filter((i) => {
+                        let isConnector = true
+                        if (connector?.value !== '') {
+                            isConnector =
+                                i.attributes?.connectorName?.toLowerCase() ===
+                                connector.value.toLowerCase()
+                        }
+                        if (queryText?.value !== '') {
+                            return (
+                                isConnector &&
+                                (i.attributes?.name
                                     ?.toLowerCase()
-                                    .includes(queryText.value.toLowerCase()))
-                        )
-                    }
-                    return isConnector
-                })
-                console.log(tempList)
-                return tempList
+                                    .includes(queryText.value.toLowerCase()) ||
+                                    i.attributes?.displayName
+                                        ?.toLowerCase()
+                                        .includes(
+                                            queryText.value.toLowerCase()
+                                        ))
+                            )
+                        }
+                        return isConnector
+                    })
+                    .sort((a, b) => {
+                        if (a.assetCount > b.assetCount) return -1
+                        if (a.assetCount < b.assetCount) return 1
+                        return 0
+                    })
             })
 
             return {
@@ -109,6 +112,7 @@
                 selectedValue,
                 handleChange,
                 handleSearch,
+                showCount,
             }
         },
     })

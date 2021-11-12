@@ -27,9 +27,9 @@ export default function useFacetGroups() {
     )
 
     // const total: ComputedRef<number> = computed(() => data.value?.total_record)
-    const total: ComputedRef<userInterface[]> = computed(
-        () => data.value?.filter_record
-    )
+    const filterTotal = computed(() => data.value?.filter_record)
+
+    const total = computed(() => data.value?.total_record)
 
     function setLimit(limit = 20) {
         params.value.set('limit', `${limit}`)
@@ -70,5 +70,6 @@ export default function useFacetGroups() {
         params,
         handleSearch,
         setLimit,
+        filterTotal,
     }
 }

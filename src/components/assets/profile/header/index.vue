@@ -20,7 +20,7 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
@@ -223,7 +223,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, inject, PropType } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
@@ -237,12 +237,6 @@
             AssetMenu,
         },
         props: {
-            item: {
-                required: false,
-                default() {
-                    return {}
-                },
-            },
             score: {
                 type: Number,
                 required: false,
@@ -323,12 +317,15 @@
                 certificateStatusMessage,
             } = useAssetInfo()
 
+            const item = inject('selectedAsset')
+
             const assetURL = (asset) => {
                 return `/assets/${asset.guid}`
             }
 
             return {
                 title,
+                item,
                 getConnectorImage,
                 assetType,
                 dataType,

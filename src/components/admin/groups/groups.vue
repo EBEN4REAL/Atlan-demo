@@ -13,18 +13,30 @@
                         @change="onSearch"
                     ></a-input-search>
                 </div>
-                <router-link to="/admin/groups/new">
-                    <AtlanButton
-                        v-auth="map.CREATE_GROUP"
-                        class="px-5"
-                        size="sm"
-                        type="primary"
-                    >
-                        Create Group
-                    </AtlanButton>
-                </router-link>
+
+                <AtlanButton
+                    v-auth="map.CREATE_GROUP"
+                    @click="isGroupDrawerVisible = true"
+                    class="px-5"
+                    size="sm"
+                    type="primary"
+                >
+                    Create Group
+                </AtlanButton>
             </div>
         </template>
+        <a-drawer
+            :visible="isGroupDrawerVisible"
+            :mask="false"
+            :width="350"
+            :closable="false"
+            :destroyOnClose="true"
+        >
+            <AddGroup
+                @closeDrawer="isGroupDrawerVisible = false"
+                @refresh="getGroupList"
+            />
+        </a-drawer>
 
         <div
             v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
@@ -124,11 +136,14 @@
     import ActionButtons from './actionButtons.vue'
     import AtlanButton from '@/UI/button.vue'
     import map from '~/constant/accessControl/map'
+    import AddGroup from '@/admin/groups/addGroup.vue'
+    import { columns } from '~/constant/groups'
 
     export default defineComponent({
         name: 'GroupList',
         components: {
             ErrorView,
+            AddGroup,
             AtlanButton,
             DefaultLayout,
             ActionButtons,
@@ -139,6 +154,7 @@
             const markAsDefaultLoading = ref(false)
             const deleteGroupLoading = ref(false)
             const showActionsDropdown = ref(false)
+            const isGroupDrawerVisible = ref(false)
 
             const selectedGroupId = ref('')
             const groupListAPIParams = reactive({
@@ -320,6 +336,8 @@
                 )
             }
             return {
+                columns,
+                isGroupDrawerVisible,
                 searchText,
                 onSearch,
                 groupList,
@@ -342,47 +360,6 @@
                 showActionsDropdown,
                 map,
                 handlePagination,
-            }
-        },
-        data() {
-            return {
-                dataSource: [],
-                columns: [
-                    {
-                        title: 'Group Name',
-                        key: 'name',
-                        sorter: true,
-                        ellipsis: true,
-                        width: 300,
-                        sortKey: 'alias',
-                        slots: { title: 'customTitle', customRender: 'name' },
-                    },
-                    {
-                        title: 'Members',
-                        dataIndex: 'memberCountString',
-                        key: 'memberCountString',
-                        sorter: true,
-                        ellipsis: true,
-                        sortKey: 'user_count',
-                    },
-                    {
-                        title: 'Created By',
-                        dataIndex: 'createdBy',
-                        key: 'createdBy',
-                    },
-                    {
-                        title: 'Created on',
-                        dataIndex: 'createdAtTimeAgo',
-                        key: 'createdAt',
-                        sorter: true,
-                        ellipsis: true,
-                        sortKey: 'created_at',
-                    },
-                    {
-                        title: 'Actions',
-                        slots: { customRender: 'actions' },
-                    },
-                ],
             }
         },
     })

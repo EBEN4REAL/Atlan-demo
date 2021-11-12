@@ -2,7 +2,7 @@ import { isRef, Ref, ref, computed } from 'vue'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 import { useAsyncState } from '@vueuse/core'
 import { UserModule } from '~/types'
-import { APIFn } from '~/api'
+import { APIFn } from '~/services/api/common'
 
 interface useSSEParams {
     path: APIFn

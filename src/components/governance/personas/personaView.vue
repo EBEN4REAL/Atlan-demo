@@ -1,8 +1,5 @@
 <template>
-    <ExplorerLayout
-        title="Personas"
-        sub-title="Access controls for user personas"
-    >
+    <ExplorerLayout title="Personas" sub-title="">
         <template #action>
             <AtlanBtn
                 :disabled="isEditing"
@@ -19,10 +16,15 @@
             <div class="px-4">
                 <SearchAndFilter
                     v-model:modelValue="searchTerm"
-                    placeholder="Search for personas"
-                    class="mt-6 mb-4 bg-white"
+                    :placeholder="`Search from ${filteredPersonas?.length} personas`"
+                    class="mt-4 mb-2 bg-white"
                     :autofocus="true"
-                />
+                    size="minimal"
+                >
+                    <template #filter>
+                        <div></div>
+                    </template>
+                </SearchAndFilter>
             </div>
 
             <ExplorerList
@@ -32,14 +34,19 @@
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
-                    <span
-                        class="text-sm truncate"
-                        :class="
-                            isSelected ? 'text-primary font-bold' : 'text-gray'
-                        "
-                    >
-                        {{ item.displayName }}
-                    </span>
+                    <div class="flex items-center justify-between">
+                        <span
+                            class="text-sm truncate"
+                            :class="
+                                isSelected
+                                    ? 'text-primary'
+                                    : 'text-gray hover:text-primary'
+                            "
+                        >
+                            {{ item.displayName }}
+                        </span>
+                        <div class="w-1.5 h-1.5 rounded-full success"></div>
+                    </div>
                 </template>
             </ExplorerList>
         </template>
@@ -124,3 +131,8 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .success {
+        background: #00a680;
+    }
+</style>

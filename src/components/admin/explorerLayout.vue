@@ -1,8 +1,6 @@
 <template>
     <div class="flex divide-x scroll-container">
-        <aside
-            class="flex flex-col w-1/4 h-full overflow-y-hidden bg-gray-100  pt-7"
-        >
+        <aside class="flex flex-col w-1/4 h-full overflow-y-hidden pt-7">
             <div class="flex items-center justify-between px-4 mb-2">
                 <span class="text-2xl">{{ title }}</span>
                 <slot name="action"></slot>

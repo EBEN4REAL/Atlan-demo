@@ -90,11 +90,14 @@
         emits: ['edit'],
         setup(props) {
             const { policy, type } = toRefs(props)
-            const assets = computed(() =>
-                policy.value.assets.map((name) => ({
-                    label: name.split('/').slice(3).join('/'),
+            const assets = computed(() => {
+                return policy.value.assets.map((name) => ({
+                    label:
+                        name.split('/').length > 3
+                            ? name.split('/').slice(3).join('/')
+                            : name.split('/').slice(2).join('/'),
                 }))
-            )
+            })
 
             const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)

@@ -60,7 +60,7 @@
                 scopeList.map((scp) => ({
                     type: scp.type,
                     scopes: actions.value.filter((ac) =>
-                        scp.scopes.includes(ac)
+                        scp.scopes.find((e) => e.value === ac)
                     ),
                 }))
             )
@@ -86,7 +86,10 @@
                     groupedActions.value[idx].scopes.length <
                     scopeList[idx].scopes.length
                 )
-                    updateSelection(scopeList[idx].type, scopeList[idx].scopes)
+                    updateSelection(
+                        scopeList[idx].type,
+                        scopeList[idx].scopes.map((e) => e.value)
+                    )
                 else updateSelection(scopeList[idx].type, [])
             }
 

@@ -47,8 +47,8 @@
                 </template>
             </Pill>
         </template>
-        <template v-else>
-            <slot name="addBtn"></slot>
+        <template v-if="hasAddBtn && !readOnly">
+            <slot name="addBtn" :item="{ handleAdd, handleBlur }"></slot>
         </template>
     </div>
 </template>
@@ -87,7 +87,7 @@
 
             // Check if the slot exists by name and has content.
             // It returns an empty array if it's empty.
-            if (slots.label && slots.label().length) {
+            if (slots.addBtn && slots.addBtn().length) {
                 hasAddBtn.value = true
             }
 

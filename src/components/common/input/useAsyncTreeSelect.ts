@@ -33,6 +33,7 @@ export default function useAsyncTreeSelect(
 
     const errorM = ref('')
     const onLoadData = async (n: { [key: string]: any; dataRef }) => {
+        if (n.dataRef.isLeaf) return;
         const { url, method, params, body } = reqConfig
         errorM.value = ''
         let parsedUrl: string = url
@@ -62,6 +63,7 @@ export default function useAsyncTreeSelect(
                 key: `${n.value}/${r.value}`,
                 value: `${n.value}/${r.value}`,
                 val: r.value,
+                chidlren: undefined
             }))
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig

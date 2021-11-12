@@ -1,12 +1,12 @@
 <template>
     <div
-      v-if="isLoadingCreator"
-      class="absolute flex items-center justify-center w-full h-full"
+        v-if="isLoadingCreator"
+        class="absolute flex items-center justify-center w-full h-full"
     >
         <a-spin />
     </div>
     <div v-else class="flex flex-col px-5 mt-2 space-y-3">
-        <div>
+        <!-- <div>
             <div class="flex items-center">
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
                     Unique ID (GUID)
@@ -26,7 +26,7 @@
                 </a-tooltip>
             </div>
             <p class="mb-0 text-gray-700">{{ creator?.id || '-' }}</p>
-        </div>
+        </div> -->
         <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Creator Name</p>
             <p class="mb-0 text-gray-700">
@@ -41,7 +41,7 @@
                 <Tooltip :tooltip-text="creator?.email || '-'" :rows="2" />
             </p>
         </div>
-        <div>
+        <!-- <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">
                 Email Verified
             </p>
@@ -57,8 +57,8 @@
                     :rows="2"
                 />
             </p>
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Last updated</p>
             <p class="mb-0 text-gray-700">
                 {{
@@ -67,13 +67,17 @@
                         : '-'
                 }}
             </p>
-        </div>
+        </div> -->
         <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Created</p>
             <p class="mb-0 text-gray-700">
                 {{
-                    creator?.created_timestamp
-                        ? formatDateTime(creator?.created_timestamp)
+                    selectedWorkflow?.workflowtemplate?.metadata
+                        ?.creationTimestamp
+                        ? formatDateTime(
+                              selectedWorkflow.workflowtemplate.metadata
+                                  .creationTimestamp
+                          )
                         : '-'
                 }}
             </p>
@@ -112,7 +116,7 @@
                 copyAPI,
                 creator,
                 formatDateTime,
-                isLoadingCreator
+                isLoadingCreator,
             }
         },
     })

@@ -1,5 +1,5 @@
 
-
+//! this should be dynamic
 export const WorkflowTypeList = [
   {
     id: "snowflake",
@@ -8,5 +8,9 @@ export const WorkflowTypeList = [
   {
     id: "athena",
     label: "Athena",
+  },
+  {
+    id: "powerbi",
+    label: "powerBI",
   },
 ];

@@ -88,20 +88,20 @@
                         localList.value.push(currentType)
                     }
                     if (sum !== 0) {
-                        localList.value.unshift({
-                            id: '__all',
-                            label: 'All',
-                            count: sum,
-                        })
+                        if (localList.value.length !== 1) {
+                            localList.value.unshift({
+                                id: '__all',
+                                label: 'All',
+                                count: sum,
+                            })
+                        }
                     }
-                } else {
-                    if (localList.value.length !== 1) {
-                        localList.value.unshift({
-                            id: '__all',
-                            label: 'All',
-                            count: sum,
-                        })
-                    }
+                } else if (localList.value.length !== 1) {
+                    localList.value.unshift({
+                        id: '__all',
+                        label: 'All',
+                        count: sum,
+                    })
                 }
             })
 

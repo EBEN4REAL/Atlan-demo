@@ -37,7 +37,7 @@ module.exports = {
                     muted: '#c9f9ee',
                 },
                 error: {
-                    DEFAULT: '#dc2626',
+                    DEFAULT: '#DC5252',
                     muted: '#f9dcd2',
                 },
                 alert: {
@@ -46,6 +46,7 @@ module.exports = {
                 },
                 warning: {
                     DEFAULT: '#ff751f',
+                    light: '#FFF8E5',
                 },
                 blueGray: {
                     light: '#e8e8f8',
@@ -56,12 +57,12 @@ module.exports = {
                     light: '#F9F4FD',
                 },
                 purple: {
-                    DEFAULT: '#6D6DDA'
-                }
+                    DEFAULT: '#6D6DDA',
+                },
             },
             outline: {
-                primary: ['1px solid #5277D7', '0px']
-            }
+                primary: ['1px solid #5277D7', '0px'],
+            },
         },
     },
     variants: {

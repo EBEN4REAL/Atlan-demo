@@ -7,7 +7,7 @@ import getAntDesignVariables from './src/styles/antd_variables'
 import postcss from './postcss.config.js'
 import styleImport from 'vite-plugin-style-import'
 import svgLoader from 'vite-svg-loader'
-import strip from '@rollup/plugin-strip';
+import strip from '@rollup/plugin-strip'
 // import Components from 'unplugin-vue-components/vite'
 
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -45,21 +45,7 @@ export default defineConfig(({ mode }) => {
             commonjsOptions: {
                 //transformMixedEsModules: true,
                 //defaultIsModuleExports: true
-            },
-            rollupOptions: {
-                plugins: [
-                    strip({})
-                  ],
-                output: {
-                    // manualChunks(id)  {
-                    // },
-                },
-            },
-            terserOptions: {
-                compress: {
-                    drop_console: true,
-                },
-            },
+            }
         },
         plugins: [
             visualizer(),
@@ -78,6 +64,10 @@ export default defineConfig(({ mode }) => {
                 libs: [],
             }),
             svgLoader(),
+            {
+                ...strip({ include: '**/*.+(vue|js|ts)' }),
+                apply: 'build'
+              },
             // Components(),
         ],
         optimizeDeps: {

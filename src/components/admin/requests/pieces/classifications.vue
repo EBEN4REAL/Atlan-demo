@@ -56,7 +56,7 @@
                 // Wrapped it in an array to use it with pillGroup
                 [
                     classificationList.value.find(
-                        (clsf) => clsf?.displayName === typeName.value
+                        (clsf) => clsf?.name === typeName.value
                     ),
                 ]
             )

@@ -77,14 +77,20 @@
                         @accept="handleApproval"
                         @reject="handleRejection"
                     />
-                    <div v-else-if="request.status === 'approved'">
+                    <div
+                        v-else-if="request.status === 'approved'"
+                        class="text-success"
+                    >
                         Approved
                     </div>
-                    <div v-else-if="request.status === 'rejected'">
+                    <div
+                        v-else-if="request.status === 'rejected'"
+                        class="text-error"
+                    >
                         Rejected
                     </div>
                 </div>
-                <div class="flex flex-col gap-x-2 group-hover:hidden">
+                <div class="flex flex-col w-1/2 gap-x-2 group-hover:hidden">
                     <UserPiece :user="request.createdByUser" :is-pill="false" />
                     <DatePiece
                         label="Created At"

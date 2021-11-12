@@ -59,6 +59,11 @@ export default function useAssetInfo() {
 
     const assetType = (asset: assetInterface) => asset?.typeName
 
+    const assetTypeLabel = (asset: assetInterface) => {
+        const found = assetTypeList.find((d) => d.id === assetType(asset))
+        return found?.label
+    }
+
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
@@ -700,5 +705,6 @@ export default function useAssetInfo() {
         getConnectorsNameFromQualifiedName,
         dataTypeImage,
         dataTypeImageForColumn,
+        assetTypeLabel,
     }
 }

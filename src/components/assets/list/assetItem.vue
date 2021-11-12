@@ -51,7 +51,7 @@
                         <div
                             class="text-sm tracking-tight text-gray-500 uppercase "
                         >
-                            {{ item.typeName }}
+                            {{ assetTypeLabel(item) || item.typeName }}
                         </div>
                     </div>
 
@@ -376,6 +376,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 description,
+                assetTypeLabel,
             } = useAssetInfo()
 
             // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
@@ -472,6 +473,7 @@
                 tableName,
                 viewName,
                 preference,
+                assetTypeLabel,
                 description,
             }
         },

@@ -76,8 +76,6 @@
                     (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
                 )
 
-                console.log(currentType)
-
                 const found = list.value.find(
                     (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
                 )

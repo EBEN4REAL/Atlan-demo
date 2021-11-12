@@ -49,7 +49,7 @@
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import RequestTypeTabs from './requestTypeTabs.vue'
-    import RequestListItem from '~/components/admin/requests/requestListItem.vue'
+    import RequestListItem from '~/components/governance/requests/requestListItem.vue'
     // import RequestFilters from './filters/requestFilters.vue'
     // import RequestModal from './modal/requestDetailsBase.vue'
     // import NoAcces from '@/admin/common/noAccessPage.vue'

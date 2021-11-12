@@ -22,10 +22,16 @@
 
                     <a-menu-item-group title="Governance">
                         <a-menu-item
-                            v-auth="[map.LIST_CLASSIFICATION]"
                             key="classifications"
-                            >Classifications</a-menu-item
+                            v-auth="map.LIST_CLASSIFICATION"
                         >
+                            Classifications
+                        </a-menu-item>
+
+                        <a-menu-item key="requests" v-auth="[map.LIST_USERS]"
+                            >Requests</a-menu-item
+                        >
+
                         <a-menu-item
                             key="custom-metadata"
                             v-auth="[map.LIST_BUSINESS_METADATA]"

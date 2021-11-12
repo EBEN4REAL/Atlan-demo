@@ -233,7 +233,6 @@ export default function useProject() {
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
                     /* Setting it undefined for new run */
-                    console.log('HEKA ERROR: ', error.value)
 
                     activeInlineTab.value.playground.resultsPane.result.runQueryId =
                         undefined
@@ -250,10 +249,13 @@ export default function useProject() {
                         'error'
                     /* ------------------- */
                     /* USE SSE ERROR */
+                    console.log('HEKA ERROR: ', error.value)
                     if (
                         error.value?.error &&
                         Array.isArray(error.value?.error?.message)
                     ) {
+                        
+
                         activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
                             {
                                 requestId: '',

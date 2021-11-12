@@ -1,9 +1,5 @@
 <template>
-    <DefaultLayout
-        v-if="permissions.list"
-        title="Groups"
-        :badge="totalGroupsCount"
-    >
+    <DefaultLayout title="Groups" :badge="totalGroupsCount">
         <template #header>
             <div class="flex justify-between">
                 <div class="flex w-1/4">
@@ -17,18 +13,30 @@
                         @change="onSearch"
                     ></a-input-search>
                 </div>
-                <router-link to="/admin/groups/new">
-                    <AtlanButton
-                        v-if="permissions.create"
-                        class="px-5"
-                        size="sm"
-                        type="primary"
-                    >
-                        Create Group
-                    </AtlanButton>
-                </router-link>
+
+                <AtlanButton
+                    v-auth="map.CREATE_GROUP"
+                    @click="isGroupDrawerVisible = true"
+                    class="px-5"
+                    size="sm"
+                    type="primary"
+                >
+                    Create Group
+                </AtlanButton>
             </div>
         </template>
+        <a-drawer
+            :visible="isGroupDrawerVisible"
+            :mask="false"
+            :width="350"
+            :closable="false"
+            :destroyOnClose="true"
+        >
+            <AddGroup
+                @closeDrawer="isGroupDrawerVisible = false"
+                @refresh="getGroupList"
+            />
+        </a-drawer>
 
         <div
             v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
@@ -58,14 +66,7 @@
             :table-layout="'fixed'"
             :pagination="false"
             :data-source="groupList"
-            :columns="
-                columns.filter(
-                    (col) =>
-                        col.title !== 'Actions' ||
-                        permissions.remove ||
-                        permissions.update
-                )
-            "
+            :columns="columns"
             :row-key="(group) => group.id"
             :loading="
                 [STATES.PENDING].includes(state) ||
@@ -101,8 +102,8 @@
             </template>
             <template #actions="{ text: group }">
                 <ActionButtons
+                    v-auth="[map.UPDATE_GROUP]"
                     :group="group"
-                    :permissions="permissions"
                     :mark-as-default-loading="markAsDefaultLoading"
                     :delete-group-loading="deleteGroupLoading"
                     @addMembers="handleAddMembers(group)"
@@ -134,11 +135,15 @@
 
     import ActionButtons from './actionButtons.vue'
     import AtlanButton from '@/UI/button.vue'
+    import map from '~/constant/accessControl/map'
+    import AddGroup from '@/admin/groups/addGroup.vue'
+    import { columns } from '~/constant/groups'
 
     export default defineComponent({
         name: 'GroupList',
         components: {
             ErrorView,
+            AddGroup,
             AtlanButton,
             DefaultLayout,
             ActionButtons,
@@ -149,14 +154,7 @@
             const markAsDefaultLoading = ref(false)
             const deleteGroupLoading = ref(false)
             const showActionsDropdown = ref(false)
-
-            const permissions = computed(() => ({
-                list: true,
-                add: true,
-                remove: true,
-                create: true,
-                update: true,
-            }))
+            const isGroupDrawerVisible = ref(false)
 
             const selectedGroupId = ref('')
             const groupListAPIParams = reactive({
@@ -338,6 +336,8 @@
                 )
             }
             return {
+                columns,
+                isGroupDrawerVisible,
                 searchText,
                 onSearch,
                 groupList,
@@ -358,50 +358,8 @@
                 markAsDefaultLoading,
                 deleteGroupLoading,
                 showActionsDropdown,
-                permissions,
+                map,
                 handlePagination,
-            }
-        },
-        data() {
-            return {
-                dataSource: [],
-                columns: [
-                    {
-                        title: 'Group Name',
-                        key: 'name',
-                        sorter: true,
-                        ellipsis: true,
-                        width: 300,
-                        sortKey: 'alias',
-                        slots: { title: 'customTitle', customRender: 'name' },
-                    },
-                    {
-                        title: 'Members',
-                        dataIndex: 'memberCountString',
-                        key: 'memberCountString',
-                        sorter: true,
-                        ellipsis: true,
-                        sortKey: 'user_count',
-                    },
-                    {
-                        title: 'Created By',
-                        dataIndex: 'createdBy',
-                        key: 'createdBy',
-                    },
-                    {
-                        title: 'Created on',
-                        dataIndex: 'createdAtTimeAgo',
-                        key: 'createdAt',
-                        sorter: true,
-                        ellipsis: true,
-                        sortKey: 'created_at',
-                    },
-                    {
-                        title: 'Actions',
-
-                        slots: { customRender: 'actions' },
-                    },
-                ],
             }
         },
     })

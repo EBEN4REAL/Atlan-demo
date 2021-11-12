@@ -6,44 +6,27 @@
     >
         <div class="flex flex-col w-full">
             <template v-for="item in certificateList" :key="item.id">
-                <div class="status">
-                    <a-checkbox
-                        :value="item.id"
-                        class="inline-flex flex-row-reverse items-center w-full mb-1  atlan-reverse"
-                    >
-                        <component
-                            :is="item.icon"
-                            class="inline-flex self-center w-auto h-4 mb-0.5"
-                        />
-                        <span class="mb-0 ml-1 text-gray">
-                            {{ item.label }}
-                        </span>
-                    </a-checkbox>
-                </div>
-            </template>
-
-            <div class="mt-1">
                 <a-checkbox
-                    :value="null"
-                    class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+                    :value="item.id"
+                    class="inline-flex flex-row-reverse items-center w-full mb-1  atlan-reverse"
                 >
                     <component
-                        :is="noStatus"
+                        :is="item.icon"
                         class="inline-flex self-center w-auto h-4 mb-0.5"
                     />
-                    <span class="mb-0 ml-1 text-gray-500">No Certificate</span>
+                    <span class="mb-0 ml-1 text-gray">
+                        {{ item.label }}
+                    </span>
                 </a-checkbox>
-            </div>
+            </template>
         </div>
     </a-checkbox-group>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRef, toRefs, watch } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import { certificateList } from '~/constant/certification'
-    import noStatus from '~/assets/images/status/nostatus.svg'
 
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
@@ -65,7 +48,7 @@
             return {
                 certificateList,
                 localValue,
-                noStatus,
+
                 handleChange,
             }
         },

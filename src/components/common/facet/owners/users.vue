@@ -5,7 +5,7 @@
             class="flex flex-col items-center justify-center h-full"
         >
             <div class="flex flex-col items-center">
-                <span class="text-gray-500">No Users Found</span>
+                <span class="text-gray-500">No users found</span>
             </div>
         </div>
         <div class="flex flex-col w-full">
@@ -32,6 +32,9 @@
                     </a-checkbox>
                 </template>
             </a-checkbox-group>
+            <p class="px-4 mt-1 text-xs text-gray-500">
+                showing {{ userList.length }} of {{ total }} users
+            </p>
         </div>
     </div>
 </template>
@@ -60,7 +63,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { list, handleSearch, total } = useFacetUsers()
+            const { list, handleSearch, total, filterTotal } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
 
             watch(
@@ -94,9 +97,6 @@
                 return `${item.username}`
             }
 
-            const avatarUrl = (item) =>
-                `${window.location.origin}/api/services/avatar/${item.username}`
-
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -105,11 +105,11 @@
             return {
                 userList,
                 fullName,
-                avatarUrl,
                 username,
                 handleSearch,
                 total,
                 localValue,
+                filterTotal,
                 handleChange,
             }
         },

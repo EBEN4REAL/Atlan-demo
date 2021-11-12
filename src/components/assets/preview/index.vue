@@ -19,7 +19,7 @@
                     />
                 </div>
                 <router-link
-                    to="/"
+                    :to="assetURL(selectedAsset)"
                     class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
@@ -51,21 +51,35 @@
                     </a-tooltip>
 
                     <div class="text-sm tracking-tight uppercase text-gray">
-                        {{ selectedAsset.typeName }}
+                        {{
+                            assetTypeLabel(selectedAsset) ||
+                            selectedAsset.typeName
+                        }}
                     </div>
                 </div>
                 <a-button-group>
-                    <a-button class="flex items-center justify-center"
-                        ><AtlanIcon icon="OpenTermProfile" class="mr-1 mb-0.5"
-                    /></a-button>
-                    <a-button block class="flex items-center justify-center"
-                        ><AtlanIcon icon="Query" class="mr-1 mb-0.5"
-                    /></a-button>
-                    <a-button block class="flex items-center justify-center"
-                        ><AtlanIcon icon="Share" class="mr-1 mb-0.5"
-                    /></a-button>
-
-                    <a-button><AtlanIcon icon="External" /></a-button>
+                    <a-button
+                        class="flex items-center justify-center"
+                        v-for="action in getActions(selectedAsset)"
+                        :key="action.id"
+                    >
+                        <a-tooltip :title="action.label">
+                            <div>
+                                <router-link
+                                    v-if="action.id === 'query'"
+                                    :to="getAssetQueryPath(selectedAsset)"
+                                >
+                                    <AtlanIcon
+                                        :icon="action.icon"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                </router-link>
+                                <AtlanIcon
+                                    v-else
+                                    :icon="action.icon"
+                                    class="mr-1 mb-0.5"
+                                /></div></a-tooltip
+                    ></a-button>
                 </a-button-group>
             </div>
         </div>
@@ -110,6 +124,9 @@
         ref,
         PropType,
         watch,
+        toRefs,
+        computed,
+        provide,
     } from 'vue'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -118,6 +135,10 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useRoute } from 'vue-router'
+
+    import useEvaluate from '~/composables/auth/useEvaluate'
+    import { debouncedWatch } from '@vueuse/core'
+    import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -156,28 +177,30 @@
             // ),
             // CertificatePopover,
         },
+
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            page: {
+            tab: {
                 type: String,
                 required: false,
                 default: '',
             },
-            showCrossIcon: {
-                type: Boolean,
-                required: false,
-            },
-            mutateTooltip: {
-                type: Boolean,
-                default: false,
-                required: false,
-            },
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
+            const { selectedAsset } = toRefs(props)
+            const { getAllowedActions } = useAssetEvaluate()
+            const actions = computed(() =>
+                getAllowedActions(selectedAsset.value)
+            )
+            provide('actions', actions)
+            provide('selectedAsset', selectedAsset)
+
+            console.log('selectedAsset', selectedAsset.value)
+
             const {
                 title,
                 getConnectorImage,
@@ -185,6 +208,8 @@
                 rowCount,
                 sizeBytes,
                 dataType,
+                getActions,
+                getAssetQueryPath,
                 columnCount,
                 databaseName,
                 schemaName,
@@ -200,17 +225,21 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                assetTypeLabel,
             } = useAssetInfo()
 
             const activeKey = ref(0)
 
             const route = useRoute()
-
             const isProfile = ref(false)
             if (route.params.id) {
                 isProfile.value = true
             }
-            // fetch the user information when params change
+
+            const assetURL = (asset) => ({
+                path: `/assets/${asset.guid}`,
+            })
+
             watch(
                 () => route.params.id,
                 (newId) => {
@@ -221,6 +250,65 @@
                     }
                 }
             )
+
+            const body = ref({})
+            const { refresh } = useEvaluate(body, false)
+            debouncedWatch(
+                () => selectedAsset.value?.attributes?.qualifiedName,
+                (prev) => {
+                    if (prev) {
+                        body.value = {
+                            entities: [
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_UPDATE',
+                                },
+                            ],
+                        }
+                        refresh()
+                    }
+                },
+                { debounce: 100 }
+            )
+
+            provide('switchTab', (asset, tabName: string) => {
+                const idx = getPreviewTabs(asset).findIndex(
+                    (tl) => tl.name === tabName
+                )
+                if (idx > -1) activeKey.value = idx
+            })
+
+            // let queryPath = ref(`/insights`)
+            // watch(
+            //     selectedAsset,
+            //     () => {
+            //         console.log('selected asste update: ', selectedAsset.value)
+            // CTA to insights
+            // let databaseQualifiedName =
+            //     selectedAsset?.value?.attributes
+            //         ?.connectionQualifiedName +
+            //     '/' +
+            //     selectedAsset?.value?.attributes?.databaseName
+            // let schema = selectedAsset?.value?.attributes?.schemaName
+            // if (selectedAsset?.value?.typeName === 'Column') {
+            //     let tableName =
+            //         selectedAsset?.value?.attributes?.tableName
+            //     let columnName = selectedAsset?.value?.attributes?.name
+            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&columnNameFromURL=${columnName}`
+            // } else if (
+            //     selectedAsset?.value?.typeName === 'Table' ||
+            //     selectedAsset?.value?.typeName === 'View'
+            // ) {
+            //     let tableName = selectedAsset?.value?.attributes.name
+            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+            // } else {
+            //     queryPath.value = `/insights`
+            // }
+            // console.log('query path: ', queryPath.value)
+            //     },
+            //     { immediate: true }
+            // )
 
             return {
                 title,
@@ -241,12 +329,17 @@
                 isPrimary,
                 activeKey,
                 getPreviewTabs,
-
+                refresh,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 isProfile,
+                actions,
+                assetURL,
+                assetTypeLabel,
+                getActions,
+                getAssetQueryPath,
             }
         },
     })

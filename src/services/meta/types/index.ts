@@ -4,11 +4,35 @@ import { useAPI } from '~/services/api/useAPI'
 
 import { useOptions } from '~/services/api/common'
 
+import { TypedefsInterface } from '~/types/typedefs/typedefs.interface'
+
 const GetTypedefs = (
-    params: Record<string, any> | URLSearchParams,
-    options?: useOptions
+  params: Record<string, any> | URLSearchParams,
+  options?: useOptions
 ) => useAPI(map.GET_TYPEDEFS, 'GET', { params }, options || {})
 
+const CreateTypedefs = (
+  body: Record<string, any>,
+  options?: useOptions
+) => useAPI<TypedefsInterface>(map.CREATE_TYPEDEFS, 'POST', { body }, options || {})
+
+
+const updateCustomMetadata = (
+  body: Record<string, any>,
+  options?: useOptions
+) => useAPI<TypedefsInterface>(map.GET_TYPEDEFS, 'PUT', { body, }, options || {})
+
+// const updateCustomMetadata = (
+//   guid: String,
+//   body: Record<string, any>,
+//   options?: useOptions
+// ) => useAPI<TypedefsInterface>(map.UPDATE_CUSTOM_METADATA, 'PUT', { body, pathVariables: { guid }, }, options || {})
+
+
+
+
 export const Types = {
-    GetTypedefs,
+  GetTypedefs,
+  CreateTypedefs,
+  updateCustomMetadata
 }

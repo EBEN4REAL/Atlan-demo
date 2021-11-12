@@ -1,11 +1,15 @@
 import { invoke, until } from '@vueuse/core'
 import { ref, computed } from 'vue'
-import { Persona } from '~/services/service/persona'
+import usePersonaService from './usePersonaService'
 
 // Main Persona List, fetched from API
-
-const { data: personaList, isReady, mutate: reFetchList } = Persona.List()
-export { reFetchList, personaList }
+const { listPersonas } = usePersonaService()
+const {
+    data: personaList,
+    isReady: isPersonaListReady,
+    mutate: reFetchList,
+} = listPersonas()
+export { reFetchList, personaList, isPersonaListReady }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
 export const selectedPersona = computed(() => {
@@ -17,17 +21,18 @@ export const selectedPersona = computed(() => {
 // Filtered Persona List
 export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
-    if (searchTerm.value)
+    if (searchTerm.value) {
         return personaList.value.filter((ps) =>
             ps
                 .displayName!.toLowerCase()
                 .includes(searchTerm.value.toLowerCase())
         )
+    }
     return personaList.value
 })
 
 invoke(async () => {
-    await until(isReady).toBe(true)
+    await until(isPersonaListReady).toBe(true)
     if (personaList.value?.length)
         selectedPersonaId.value = personaList.value[0].id!
 })

@@ -42,6 +42,7 @@ import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
+import RemoveUser from '~/assets/images/icons/remove-user.svg'
 import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
 import CircleLoader from '~/assets/images/icons/circle-loader.svg'
@@ -103,6 +104,9 @@ import Trash from '~/assets/images/icons/trash.svg'
 import Widgets from '~/assets/images/icons/widgets.svg'
 import Megaphone from '~/assets/images/icons/megaphone.svg'
 import Readme from '~/assets/images/icons/readme.svg'
+import Resources from '~/assets/images/icons/resources.svg'
+import FAQS from '~/assets/images/icons/faqs.svg'
+import TableSummary from '~/assets/images/icons/tableSummary.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 import Home from '~/assets/images/icons/home.svg'
 import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
@@ -129,8 +133,8 @@ import CaretRight from '~/assets/images/icons/caret-right.svg'
 import Settings from '~/assets/images/icons/setings.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
-import EmptyResource from '~/assets/images/icons/empty-resources.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
+import EmptyResource from '~/assets/images/icons/empty-resources.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
 import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
@@ -179,13 +183,55 @@ import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
+import QueryVerified from '~/assets/images/icons/query-verified.svg'
+import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
+import QueryDraft from '~/assets/images/icons/query-draft.svg'
+
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
 import ResendInvite from '~/assets/images/icons/invite.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 import ImpactedAssets from '~/assets/images/icons/impacted-assets.svg'
 
+import Code from '~/assets/images/readme/code.svg'
+import Underline from '~/assets/images/readme/text-underline.svg'
+import Bold from '~/assets/images/readme/text-bold.svg'
+import Italic from '~/assets/images/readme/text-italic.svg'
+import Strike from '~/assets/images/readme/text-strike.svg'
+import Undo from '~/assets/images/readme/undo.svg'
+import Redo from '~/assets/images/readme/redo.svg'
+import Running from '~/assets/images/icons/running.svg'
+import Refresh from '~/assets/images/icons/Refresh.svg'
+import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
+import CreateWF from '~/assets/images/workflows/createWF.svg'
+import NoRuns from '~/assets/images/workflows/noRuns.svg'
+import Error from '~/assets/images/error.svg'
+import Warning from '~/assets/images/warning.svg'
+import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
+import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
+
+import Download from '~/assets/images/icons/download.svg'
+import Upload from '~/assets/images/icons/upload.svg'
+import Enum from '~/assets/images/icons/label.svg'
+import Boolean from '~/assets/images/icons/boolean.svg'
+import String from '~/assets/images/icons/string.svg'
+import MoveItem from '~/assets/images/icons/move-item.svg'
+import DateTime from '~/assets/images/icons/datetime.svg'
+import Number from '~/assets/images/icons/number.svg'
+
+import NoAvatar from '~/assets/images/icons/no-avatar.svg'
+import Enter from '~/assets/images/icons/enter.svg'
+
 export default {
+    RemoveUser,
+    NoRuns,
+    CreateWF,
+    Warning,
+    Error,
+    WFEmptyTab,
+    QueryVerified,
+    QueryDeprecated,
+    QueryDraft,
     ChevronLeft,
     CheckCircled,
     DisableUser,
@@ -208,7 +254,9 @@ export default {
     Metadata,
     Relation,
     MorningIcon,
-
+    Resources,
+    FAQS,
+    TableSummary,
     EveningIcon,
     Overview,
     Pin,
@@ -372,5 +420,26 @@ export default {
     DatabaseGray,
     SchemaGray,
     NoResultsFound,
-    ImpactedAssets
+    ImpactedAssets,
+    Code,
+    Underline,
+    Bold,
+    Italic,
+    Strike,
+    Undo,
+    Redo,
+    Running,
+    Refresh,
+    ErrorLogs,
+    EmptyLogs,
+    Download,
+    Upload,
+    Enum,
+    Boolean,
+    String,
+    MoveItem,
+    DateTime,
+    Number,
+    NoAvatar,
+    Enter,
 }

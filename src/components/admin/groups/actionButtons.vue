@@ -5,7 +5,7 @@
                 <span>Add users</span>
             </template>
             <a-button
-                v-if="permissions.update"
+                v-auth="map.ADD_USER_GROUP"
                 size="small"
                 type="secondary"
                 class="mr-3.5 rounded"
@@ -15,7 +15,7 @@
             </a-button>
         </a-tooltip>
         <a-dropdown
-            v-if="permissions.remove && permissions.update"
+            v-auth="[map.UPDATE_GROUP]"
             :trigger="['click']"
             :visible="dropDownOpened"
             @visibleChange="handleVisibleChange"
@@ -26,8 +26,8 @@
             <template #overlay>
                 <a-menu>
                     <a-menu-item
-                        v-if="permissions.update"
                         key="1"
+                        v-auth="map.UPDATE_GROUP"
                         :disabled="markAsDefaultLoading || deleteGroupLoading"
                     >
                         <div class="flex items-center">
@@ -69,7 +69,6 @@
                         </div>
                     </a-menu-item>
                     <a-menu-item
-                        v-if="permissions.remove"
                         key="2"
                         :disabled="deleteGroupLoading || markAsDefaultLoading"
                         @click="$emit('deleteGroup')"
@@ -94,16 +93,12 @@
 
 <script lang="ts">
     import { ref, defineComponent, watch, toRefs } from 'vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'GroupsActionButton',
         props: {
             group: {
-                type: Object,
-                default: () => {},
-                required: true,
-            },
-            permissions: {
                 type: Object,
                 default: () => {},
                 required: true,
@@ -154,6 +149,7 @@
             )
 
             return {
+                map,
                 dropDownOpened,
                 handleVisibleChange,
             }

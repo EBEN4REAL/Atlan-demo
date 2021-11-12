@@ -1,18 +1,18 @@
 <template>
-    <div class="flex flex-col gap-y-1" :key="index">
+    <div class="flex flex-col gap-y-1">
         <div
             class="flex items-center gap-x-1"
-            v-if="property.typeName !== 'boolean'"
+            v-if="attribute.typeName !== 'boolean'"
         >
             <a-select
-                class="flex-1"
                 v-model:value="localCondition.operator"
+                class="flex-1"
                 @change="handleOperatorChange"
             >
                 <a-select-option
-                    :value="item.id"
                     v-for="item in defaultOperator"
                     :key="item.id"
+                    :value="item.id"
                 >
                     {{ item?.label }}
                 </a-select-option>
@@ -27,27 +27,27 @@
         </div>
 
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
-            <DynamicInput
-                :dataType="property.typeName"
+            <DynamicInput2
                 v-model="localCondition.value"
+                :data-type="attribute.subTypeName || attribute.typeName"
                 @change="handleValueChange"
-            ></DynamicInput>
+            ></DynamicInput2>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, PropType, toRefs, ref } from 'vue'
+    import { defineComponent, PropType, toRefs, ref, computed } from 'vue'
 
-    import DynamicInput from '@/common/input/dyanmicInput.vue'
+    import DynamicInput2 from '~/components/common/input/dynamicInput2.vue'
     import { operators } from '~/constant/filters/operators'
 
     export default defineComponent({
         name: 'TermPopover',
-        components: { DynamicInput },
+        components: { DynamicInput2 },
         props: {
-            property: {
+            attribute: {
                 type: Object,
                 required: false,
                 default() {
@@ -61,9 +61,6 @@
                     return {}
                 },
             },
-            index: {
-                required: false,
-            },
         },
         emits: ['clear', 'update:Condition', 'change'],
         setup(props, { emit }) {
@@ -71,9 +68,23 @@
 
             const localCondition = ref(condition.value)
 
-            const { property } = toRefs(props)
+            const { attribute } = toRefs(props)
 
-            const defaultOperator = ref(operators[property.value?.typeName])
+            const operatorDataType = computed(() => {
+                let keys = []
+                keys.push(attribute.value?.typeName)
+
+                if (attribute.value?.subTypeName) {
+                    keys.push(attribute.value?.subTypeName)
+                }
+
+                if (attribute.value.isMandatory) {
+                    keys.push('mandatory')
+                }
+                return keys.join('_')
+            })
+
+            const defaultOperator = ref(operators[operatorDataType.value])
             const localOperator = ref(condition.operator)
 
             if (!localCondition.value.operator) {
@@ -87,17 +98,17 @@
             }
 
             const handleOperatorChange = () => {
-                condition.value.operand = property.value.name
+                condition.value.operand = attribute.value.name
                 condition.value.operator = localCondition.value.operator
                 emit('change')
             }
 
             const handleValueChange = () => {
-                if (property.value.typeName === 'boolean') {
+                if (attribute.value?.typeName === 'boolean') {
                     condition.value.operator = 'boolean'
                 }
 
-                condition.value.operand = property.value.name
+                condition.value.operand = attribute.value.name
                 condition.value.value = localCondition.value.value
                 emit('change')
             }
@@ -109,6 +120,8 @@
                 defaultOperator,
                 handleOperatorChange,
                 handleValueChange,
+                operatorDataType,
+                attribute,
             }
         },
     })

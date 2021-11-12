@@ -1,5 +1,5 @@
 <template>
-    <a-collapse expand-icon-position="right">
+    <a-collapse expand-icon-position="right" :activeKey="defaultExpandedState">
         <template #expandIcon="{ isActive }">
             <div>
                 <AtlanIcon
@@ -10,7 +10,7 @@
             </div>
         </template>
 
-        <a-collapse-panel v-for="(scope, idx) in scopeList" :key="idx">
+        <a-collapse-panel v-for="(scope, idx) in scopeList" :key="scope.type">
             <template #header>
                 <a-checkbox
                     :checked="
@@ -37,9 +37,9 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import {} from '../composables/useEditPersona'
-    import useScope from '~/composables/scope/useScope'
+    import useScopeService from '../composables/useScopeService'
 
     export default defineComponent({
         name: 'MetadataScopes',
@@ -53,16 +53,19 @@
         emits: ['update:actions'],
         setup(props, { emit }) {
             const { actions } = toRefs(props)
-            const { scopeList } = useScope()
+            const { scopeList } = useScopeService().listScopes()
+            const collapseRef = ref()
 
             const groupedActions = computed(() =>
                 scopeList.map((scp) => ({
                     type: scp.type,
                     scopes: actions.value.filter((ac) =>
-                        scp.scopes.includes(ac)
+                        scp.scopes.find((e) => e.value === ac)
                     ),
                 }))
             )
+
+            const defaultExpandedState = ref(scopeList.map((scp) => scp.type))
 
             function updateSelection(scopeType: string, checked: string[]) {
                 const allScopes = Object.values(groupedActions.value).reduce(
@@ -83,15 +86,20 @@
                     groupedActions.value[idx].scopes.length <
                     scopeList[idx].scopes.length
                 )
-                    updateSelection(scopeList[idx].type, scopeList[idx].scopes)
+                    updateSelection(
+                        scopeList[idx].type,
+                        scopeList[idx].scopes.map((e) => e.value)
+                    )
                 else updateSelection(scopeList[idx].type, [])
             }
 
             return {
+                collapseRef,
                 scopeList,
                 groupedActions,
                 updateSelection,
                 toggleCheckAll,
+                defaultExpandedState,
             }
         },
     })

@@ -1,16 +1,40 @@
 <template>
-    <div class="py-6 border-b border-gray-300">
+    <div class="py-6 mb-2 border rounded border-primary">
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"
             v-model:assets="policy.assets"
             :connection-qf-name="connectorData.attributeValue"
         />
-        <div class="flex items-center justify-between mb-6">
-            <span class="text-base font-bold leading-8 text-gray-500"
-                >{{ policy.name }} details</span
-            >
-
+        <div class="flex justify-between mb-6">
+            <div class="relative">
+                <div class="relative mb-2 text-sm text-gray-500 required">
+                    Policy name
+                </div>
+                <div class="max-w-xs">
+                    <a-input
+                        @blur="
+                            () => {
+                                if (!policy.name) rules.policyName.show = true
+                                else rules.policyName.show = false
+                            }
+                        "
+                        :ref="
+                            (el) => {
+                                policyNameRef = el
+                            }
+                        "
+                        v-model:value="policy.name"
+                        placeholder="Policy Name"
+                    />
+                </div>
+                <div
+                    class="absolute text-xs text-red-500 -bottom-5"
+                    v-if="rules.policyName.show"
+                >
+                    {{ rules.policyName.text }}
+                </div>
+            </div>
             <AtlanBtn
                 size="sm"
                 color="secondary"
@@ -20,56 +44,145 @@
             ></AtlanBtn>
         </div>
 
-        <span class="mb-2 text-sm text-gray-500">Name</span>
-        <div class="max-w-xs mb-4">
-            <a-input v-model:value="policy.name" placeholder="Policy Name" />
-        </div>
-
-        <span class="mb-2 text-sm text-gray-500">Description</span>
-        <div class="max-w-xs mb-4">
-            <a-textarea
-                v-model:value="policy.description"
-                show-count
-                placeholder="About the policy"
-                :maxlength="140"
-                :auto-size="{ minRows: 1, maxRows: 3 }"
+        <div class="relative">
+            <div class="mb-2 text-sm text-gray-500 required">Connection</div>
+            <Connector
+                v-model:data="connectorData"
+                class="max-w-xs mb-6"
+                :disabled="!policy?.isNew"
+                @change="handleConnectorChange"
+                @blur="
+                    () => {
+                        if (!connectorData.attributeValue)
+                            rules.connection.show = true
+                        else rules.connection.show = false
+                    }
+                "
+                :ref="
+                    (el) => {
+                        connectorComponentRef = el
+                    }
+                "
             />
+            <div
+                class="absolute text-xs text-red-500 -bottom-5"
+                v-if="rules.connection.show"
+            >
+                {{ rules.connection.text }}
+            </div>
         </div>
 
-        <span class="mb-2 text-sm text-gray-500">Connection</span>
-        <Connector v-model:data="connectorData" class="max-w-xs mb-4" />
+        <div class="relative">
+            <div class="flex items-center mb-2 gap-x-1">
+                <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
+                <span class="text-sm text-gray-500 required">Assets</span>
+            </div>
+            <div
+                class="
+                    flex flex-wrap
+                    items-center
+                    flex-grow
+                    gap-x-1 gap-y-1.5
+                    mb-6
+                "
+            >
+                <PillGroup
+                    v-model:data="assets"
+                    label-key="label"
+                    @add="openAssetSelector"
+                >
+                    <template #addBtn="d">
+                        <div>
+                            <div
+                                v-if="assets.length > 0 && !isreadOnlyPillGroup"
+                            >
+                                <Pill
+                                    class="group"
+                                    @click="d?.item?.handleAdd"
+                                    @blur="d?.item?.handleBlur"
+                                >
+                                    <template #prefix>
+                                        <AtlanIcon
+                                            icon="Add"
+                                            class="
+                                                h-4
+                                                -mx-1.5
+                                                text-gray
+                                                group-hover:text-white
+                                            "
+                                        />
+                                    </template>
+                                </Pill>
+                            </div>
+                            <div
+                                v-else-if="assets.length === 0"
+                                class="flex items-center"
+                            >
+                                <Pill class="group" @click="addConnectionAsset">
+                                    <template #prefix>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                icon="Add"
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                            />
+                                            <span class="text-xs">Add All</span>
+                                        </div>
+                                    </template>
+                                </Pill>
 
-        <div class="flex items-center mb-2 gap-x-1">
-            <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
-            <span class="text-sm text-gray-500">Assets</span>
-        </div>
-        <div
-            class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5 mb-4"
-        >
-            <PillGroup
-                v-model:data="assets"
-                label-key="label"
-                @add="openAssetSelector"
-            />
+                                <span class="mx-2 text-xs">OR</span>
+                                <Pill
+                                    class="group"
+                                    @click="d?.item?.handleAdd"
+                                    @blur="d?.item?.handleBlur"
+                                >
+                                    <template #prefix>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                icon="Add"
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                            />
+                                            <span class="text-xs"
+                                                >Custom select</span
+                                            >
+                                        </div>
+                                    </template>
+                                </Pill>
+                            </div>
+                        </div>
+                    </template>
+                </PillGroup>
+            </div>
+            <div
+                class="absolute text-xs text-red-500 -bottom-5"
+                v-if="rules.assets.show && connectorData.attributeValue"
+            >
+                {{ rules.assets.text }}
+            </div>
         </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Query permissions</span>
+            <AtlanIcon class="h-3 ml-2 text-gray-500" icon="RunSuccess" />
+            <span class="text-sm text-gray-500"
+                >Query access allowed by default</span
+            >
         </div>
-        <DataScopes v-model:actions="policy.actions" class="mb-4" />
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Globe" />
             <span class="text-sm text-gray-500">Masking</span>
         </div>
-        <a-select
-            v-model:value="policy.maskingOption"
-            :options="maskingOptions"
+
+        <DataMaskingSelector
+            v-model:maskingOption="policy.maskingOption"
             class="mb-6 w-80"
         />
 
         <div class="flex items-center gap-x-2">
             <a-switch
+                :class="policy.allow ? '' : 'checked'"
+                style="width: 44px"
                 :checked="!policy.allow"
                 @update:checked="policy.allow = !$event"
             />
@@ -101,7 +214,7 @@
                 size="sm"
                 color="primary"
                 padding="compact"
-                @click="$emit('save')"
+                @click="handleSave"
                 >Save</AtlanBtn
             >
         </div>
@@ -113,20 +226,22 @@
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Connector from './connector.vue'
-    import DataScopes from './dataScopes.vue'
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
-
+    import DataMaskingSelector from './dataMaskingSelector.vue'
+    import Pill from '@/UI/pill/pill.vue'
+    import { useConnectionStore } from '~/store/connection'
     import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
 
     export default defineComponent({
         name: 'DataPolicy',
         components: {
+            Pill,
             AtlanBtn,
             Connector,
-            DataScopes,
             PillGroup,
             AssetSelectorDrawer,
+            DataMaskingSelector,
         },
         props: {
             policy: {
@@ -137,25 +252,86 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const connectorComponentRef = ref()
+            const policyNameRef = ref()
             const assetSelectorVisible = ref(false)
+            const filterSourceIds = ['powerBI', 'tableau']
+            const connectionStore = useConnectionStore()
+
+            const rules = ref({
+                policyName: {
+                    text: 'Enter a policy name!',
+                    show: false,
+                },
+                connection: {
+                    text: 'Connection is required!',
+                    show: false,
+                },
+                assets: { text: 'Select atleast 1 asset!', show: false },
+                metadata: {
+                    text: 'Select atleast 1 permissions!',
+                    show: false,
+                },
+            })
 
             function removePolicy() {
-                emit('delete')
+                /* Delete when the policy is saved */
+                if (!policy.value?.isNew) emit('delete')
+                emit('cancel')
             }
 
             function openAssetSelector() {
-                assetSelectorVisible.value = true
+                if (!connectorData.value.attributeValue) {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                } else {
+                    assetSelectorVisible.value = true
+                }
             }
 
+            const handleSave = () => {
+                /* Validation for name */
+                if (!policy.value.name) {
+                    policyNameRef.value?.focus()
+                    rules.value.policyName.show = true
+                    return
+                } /* Validation for connection */ else if (
+                    !connectorData.value.attributeValue
+                ) {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                    rules.value.connection.show = true
+                } else if (policy.value.assets.length < 1) {
+                    rules.value.assets.show = true
+                } else {
+                    emit('save')
+                }
+            }
             const assets = computed({
-                get: () =>
-                    policy.value.assets.map((name) => ({
+                get: () => {
+                    return policy.value.assets.map((name) => ({
                         label: name,
-                    })),
+                    }))
+                },
                 set: (val) => {
                     policy.value.assets = val.map((ast) => ast.label)
+                    if (val.length > 0) rules.value.assets.show = false
+                    else rules.value.assets.show = true
                 },
             })
+
+            const handleConnectorChange = () => {
+                policy.value.assets = []
+            }
+            const addConnectionAsset = () => {
+                if (connectorData.value.attributeValue) {
+                    assets.value = [
+                        { label: connectorData.value.attributeValue },
+                    ]
+                    policy.value.assets = [connectorData.value.attributeValue]
+                } else {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                    rules.value.connection.show = true
+                }
+            }
 
             const connectorData = computed({
                 get: () => ({
@@ -167,50 +343,55 @@
                         val.attributeName === 'connectionQualifiedName'
                             ? val.attributeValue
                             : ''
+
+                    const found = connectionStore.getList.find(
+                        (conn) =>
+                            conn.attributes?.qualifiedName ===
+                            val.attributeValue
+                    )
+                    policy.value.connectionId = found?.guid || ''
                 },
             })
 
-            // FIXME: Take it out to a config file
-            const maskingOptions = [
-                {
-                    value: 'MASK_REDACT',
-                    label: 'MASK_REDACT',
-                },
-                {
-                    value: 'MASK_HASH',
-                    label: 'MASK_HASH',
-                },
-                {
-                    value: 'MASK_SHOW_LAST_4',
-                    label: 'MASK_SHOW_LAST_4',
-                },
-                {
-                    value: 'MASK_SHOW_FIRST_4',
-                    label: 'MASK_SHOW_FIRST_4',
-                },
-                {
-                    value: 'MASK_NULL',
-                    label: 'MASK_NULL',
-                },
-                {
-                    value: 'MASK_NONE',
-                    label: 'MASK_NONE',
-                },
-                {
-                    value: 'MASK_DATE_SHOW_YEAR',
-                    label: 'MASK_DATE_SHOW_YEAR',
-                },
-            ]
+            const isreadOnlyPillGroup = computed(() => {
+                return Boolean(
+                    assets.value.find(
+                        (e) => e.label === connectorData.value.attributeValue
+                    )
+                )
+            })
 
             return {
+                addConnectionAsset,
+                isreadOnlyPillGroup,
+                handleConnectorChange,
+                filterSourceIds,
                 connectorData,
                 assetSelectorVisible,
                 removePolicy,
                 openAssetSelector,
                 assets,
-                maskingOptions,
                 removeEditFlag,
+                handleSave,
+                policyNameRef,
+                connectorComponentRef,
+                rules,
             }
         },
     })
 </script>
+<style lang="less" scoped>
+    .required:after {
+        content: ' *';
+        color: red;
+    }
+    .plus-btn:focus {
+        border-color: #7b9ce3;
+        border-right-width: 1 px !important;
+        outline: 0;
+        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+    }
+    .checked {
+        background: #e04f1a;
+    }
+</style>

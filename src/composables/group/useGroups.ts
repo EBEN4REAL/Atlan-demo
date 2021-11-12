@@ -7,6 +7,7 @@ import swrvState from '~/utils/swrvState'
 import { getFormattedGroup } from '~/composables/group/formatGroup'
 
 import { Groups } from '~/services/service/groups'
+import { LIST_GROUPS, LIST_GROUP } from '~/services/service/groups/key'
 
 export const useGroup = (groupListAPIParams: {
     limit: number
@@ -26,7 +27,7 @@ export const useGroup = (groupListAPIParams: {
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
         },
-        cacheKey: 'LIST_GROUPS',
+        cacheKey: LIST_GROUP,
     })
 
     const { state, STATES } = swrvState(data, error, isValidating)
@@ -39,6 +40,7 @@ export const useGroup = (groupListAPIParams: {
     })
     const totalGroupCount = computed(() => data?.value?.total_record ?? 0)
     const filteredGroupCount = computed(() => data?.value?.filter_record ?? 0)
+
     return {
         groupList,
         totalGroupCount,
@@ -56,7 +58,6 @@ export default function useGroups(groupListAPIParams: {
     sort: string
 }) {
     // API to get groups based on params groupListAPIParams
-
     const {
         data,
         error,
@@ -69,7 +70,7 @@ export default function useGroups(groupListAPIParams: {
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
         },
-        cacheKey: 'LIST_GROUPS',
+        cacheKey: LIST_GROUPS,
     })
 
     const { state, STATES } = swrvState(data, error, isValidating)
@@ -81,24 +82,28 @@ export default function useGroups(groupListAPIParams: {
         return []
     })
     const localGroupsList: Ref<any[]> = ref([])
-    watch(data, () => {
-        const escapedData = data?.value?.records
-            ? data?.value?.records?.map((group: any) =>
-                  getFormattedGroup(group)
-              )
-            : []
+    watch(
+        data,
+        () => {
+            const escapedData = data?.value?.records
+                ? data?.value?.records?.map((group: any) =>
+                    getFormattedGroup(group)
+                )
+                : []
 
-        if (data && data.value) {
-            if (groupListAPIParams.offset > 0) {
-                localGroupsList.value = [
-                    ...localGroupsList.value,
-                    ...escapedData,
-                ]
-            } else {
-                localGroupsList.value = escapedData
+            if (data && data.value) {
+                if (groupListAPIParams.offset > 0) {
+                    localGroupsList.value = [
+                        ...localGroupsList.value,
+                        ...escapedData,
+                    ]
+                } else {
+                    localGroupsList.value = escapedData
+                }
             }
-        }
-    })
+        },
+        { immediate: true }
+    )
     const groupListConcatenated: ComputedRef<any> = computed(
         () => localGroupsList.value || []
     )

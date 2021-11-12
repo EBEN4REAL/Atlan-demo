@@ -1,28 +1,28 @@
 <template>
-    <div>
-        <a-drawer
-            :visible="showGroupPreview"
-            :destroy-on-close="true"
-            placement="right"
-            :body-style="{ height: '100%' }"
-            :mask="false"
-            :width="420"
-            @close="handleCloseGroupPreview"
-        >
-            <GroupPreview />
-        </a-drawer>
-        <a-drawer
-            :visible="showUserPreview"
-            :destroy-on-close="true"
-            placement="right"
-            :body-style="{ height: '100%' }"
-            :mask="false"
-            :width="420"
-            @close="handleCloseUserPreview"
-        >
-            <UserPreview />
-        </a-drawer>
-    </div>
+    <a-drawer
+        :visible="showGroupPreview"
+        :destroy-on-close="true"
+        placement="right"
+        :body-style="{ height: '100%' }"
+        :mask="false"
+        :width="420"
+        :closable="false"
+        class="drawer"
+    >
+        <GroupPreview @close="handleCloseGroupPreview" />
+    </a-drawer>
+    <a-drawer
+        :visible="showUserPreview"
+        :destroy-on-close="true"
+        placement="right"
+        :body-style="{ height: '100%' }"
+        :mask="false"
+        :width="420"
+        :closable="false"
+        class="drawer"
+    >
+        <UserPreview @close="handleCloseUserPreview" />
+    </a-drawer>
 </template>
 
 <script lang="ts">
@@ -63,3 +63,11 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .drawer {
+        :global(.ant-drawer-body) {
+            @apply overflow-hidden !important;
+        }
+    }
+</style>

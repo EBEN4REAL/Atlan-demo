@@ -7,8 +7,8 @@ import { AxiosRequestConfig } from 'axios'
 
 import { useOptions, resolveUrl } from '~/services/api/common'
 
-const GetTenant = (options?: AxiosRequestConfig) =>
-    useAPIPromise(resolveUrl(map.GET_TENANT), 'GET', { options: options || {} })
+const GetTenant = (options?: useOptions) =>
+    useAPI(map.GET_TENANT, 'GET', {}, options || {})
 
 const UpdateTenant = (
     body: Ref<Record<string, any>> | Record<string, any>,
@@ -19,14 +19,24 @@ const UploadLogo = (body?: Ref<any>, options?: useOptions) =>
     useAPI(map.UPLOAD_LOGO, 'POST', { body }, options || {})
 
 const TestSmtpConfig = (body?: Ref<any>, options?: useOptions) =>
-    useAPI(map.TEST_SMTP_CONFIG, 'POST', {
-        body,
-    }, options || {})
+    useAPI(
+        map.TEST_SMTP_CONFIG,
+        'POST',
+        {
+            body,
+        },
+        options || {}
+    )
 
 const UpdateSmtpConfig = (body?: Ref<any>, options?: useOptions) =>
-    useAPI(map.POST_SMTP_CONFIG, 'POST', {
-        body,
-    }, options || {})
+    useAPI(
+        map.POST_SMTP_CONFIG,
+        'POST',
+        {
+            body,
+        },
+        options || {}
+    )
 
 export const Tenant = {
     GetTenant,

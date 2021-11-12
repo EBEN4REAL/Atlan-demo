@@ -15,7 +15,10 @@ export interface activeInlineTabInterface {
     connectionId: string
     description: string
     qualifiedName: string
+    parentGuid: string
+    parentQualifiedName: string
     isSQLSnippet: boolean
+    savedQueryParentFolderTitle: string | undefined
     explorer: {
         schema: {
             connectors: connectorsWidgetInterface
@@ -29,6 +32,7 @@ export interface activeInlineTabInterface {
     favico: string | undefined
     playground: {
         editor: {
+            context: connectorsWidgetInterface
             text: string
             dataList: Array<any>
             columnList: Array<{
@@ -55,6 +59,7 @@ export interface activeInlineTabInterface {
                 errorDecorations: any
                 eventSourceInstance: any
                 buttonDisable: boolean
+                isQueryAborted: boolean
             }
             metadata: Object
             queries: Object

@@ -32,19 +32,29 @@
             ></Pill>
         </template>
         <slot name="suffix"></slot>
-        <Pill v-if="!readOnly" class="group" @click="handleAdd">
-            <template #prefix>
-                <AtlanIcon
-                    icon="Add"
-                    class="h-4 -mx-1.5 text-gray group-hover:text-white"
-                />
-            </template>
-        </Pill>
+        <template v-if="!hasAddBtn">
+            <Pill
+                v-if="!readOnly"
+                class="group"
+                @click="handleAdd"
+                @blur="handleBlur"
+            >
+                <template #prefix>
+                    <AtlanIcon
+                        icon="Add"
+                        class="h-4 -mx-1.5 text-gray group-hover:text-white"
+                    />
+                </template>
+            </Pill>
+        </template>
+        <template v-if="hasAddBtn && !readOnly">
+            <slot name="addBtn" :item="{ handleAdd, handleBlur }"></slot>
+        </template>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, PropType, toRefs, ref } from 'vue'
     import Pill from './pill.vue'
 
     export default defineComponent({
@@ -69,10 +79,18 @@
                 default: () => '',
             },
         },
-        emits: ['delete', 'update:data', 'select', 'add'],
+        emits: ['delete', 'update:data', 'select', 'add', 'blur'],
         components: { Pill },
-        setup(prop, { emit }) {
+        setup(prop, { emit, slots }) {
             const { data } = toRefs(prop)
+            const hasAddBtn = ref(false)
+
+            // Check if the slot exists by name and has content.
+            // It returns an empty array if it's empty.
+            if (slots.addBtn && slots.addBtn().length) {
+                hasAddBtn.value = true
+            }
+
             function handleDelete(index: number) {
                 emit('delete', data.value[index])
 
@@ -86,7 +104,17 @@
             function handleAdd() {
                 emit('add')
             }
-            return { handleDelete, handleClick, handleAdd }
+            function handleBlur() {
+                emit('blur')
+            }
+
+            return {
+                handleDelete,
+                hasAddBtn,
+                handleClick,
+                handleAdd,
+                handleBlur,
+            }
         },
     })
 </script>

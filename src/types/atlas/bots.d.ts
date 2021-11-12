@@ -1,6 +1,6 @@
 
 
-import { Components } from "~/api/atlas/client";
+import { Components } from "~/types/atlas/client";
 import { SourceList } from "~/constant/source";
 import { BaseAttributes } from "../asset";
 

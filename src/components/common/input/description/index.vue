@@ -80,16 +80,16 @@
                 start()
             }
 
-            const { d /* keys you want to monitor */ } = useMagicKeys()
+            // const { d /* keys you want to monitor */ } = useMagicKeys()
 
-            watch(d, (v) => {
-                if (v) {
-                    console.log('Description')
-                    if (!isEdit.value) {
-                        handleEdit()
-                    }
-                }
-            })
+            // watch(d, (v) => {
+            //     if (v) {
+            //         console.log('Description')
+            //         if (!isEdit.value) {
+            //             handleEdit()
+            //         }
+            //     }
+            // })
 
             return {
                 localValue,

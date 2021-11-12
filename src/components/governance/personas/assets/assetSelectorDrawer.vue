@@ -32,8 +32,15 @@
             />
             <a-divider class="my-4" />
 
-            <keep-alive>
-                <template v-if="activeTab === 'tree'">
+            <div
+                class="relative overflow-x-hidden overflow-y-hidden  drawer_height"
+            >
+                <div
+                    class="absolute w-full h-full bg-white"
+                    :class="
+                        activeTab === 'tree' ? 'front-z-index' : 'rear-z-index'
+                    "
+                >
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Browse from your assets</span
                     >
@@ -43,14 +50,28 @@
                             :connection-qf-name="connectionQfName"
                         />
                     </div>
-                </template>
-                <template v-else-if="activeTab === 'list'">
+                </div>
+
+                <div
+                    class="absolute w-full h-full bg-white"
+                    :class="
+                        activeTab === 'list' ? 'front-z-index' : 'rear-z-index'
+                    "
+                >
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Search from your assets</span
                     >
                     <!-- <AssetsWrapper class="h-full" :data-map="filterConfig" /> -->
-                </template>
-                <template v-else-if="activeTab === 'custom'">
+                </div>
+
+                <div
+                    class="absolute w-full h-full bg-white"
+                    :class="
+                        activeTab === 'custom'
+                            ? 'front-z-index'
+                            : 'rear-z-index'
+                    "
+                >
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Select assets matching
                     </span>
@@ -59,8 +80,8 @@
                         class="h-full py-4"
                         :connection-qf-name="connectionQfName"
                     />
-                </template>
-            </keep-alive>
+                </div>
+            </div>
 
             <a-divider />
             <div class="flex items-center justify-end m-2 gap-x-2">
@@ -96,6 +117,7 @@
     import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
     import CustomAssetSelector from './customAssetSelector.vue'
+    import useBulkUpdateStore from '~/store/bulkUpdate'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -124,6 +146,8 @@
         setup(props, { emit }) {
             const { visible, assets, connectionQfName } = toRefs(props)
 
+            const bulkStore = useBulkUpdateStore()
+
             // Drawer Visibility
             const isVisible = computed({
                 get: () => visible.value,
@@ -135,11 +159,38 @@
             // Asset related stuff
             const checkedKeys = ref([] as string[])
             const regexKeys = ref([] as string[])
+            const BIAssets = ['powerbi', 'tableau']
+
+            const getConnectorName = (qualifiedName: string) => {
+                let attributeValues: string[]
+                let connectorName: string = ''
+                if (qualifiedName) {
+                    attributeValues = qualifiedName?.split('/')
+                    if (attributeValues.length > 0) {
+                        connectorName = attributeValues[1]
+                    }
+                }
+
+                return connectorName
+            }
 
             function resetAssetState() {
                 checkedKeys.value = []
                 regexKeys.value = []
                 isVisible.value = false
+                bulkStore.setBulkSelectedAssets([])
+            }
+
+            const getQualifiedNamesFromAssets = (assets: any[]) => {
+                return assets.map((asset) => asset?.attributes.qualifiedName)
+            }
+            /* Adds /* to pathname */
+            const addSufffix = (qualifiedNames: string[]) => {
+                return (
+                    qualifiedNames?.map(
+                        (qualifiedName) => `${qualifiedName}/*`
+                    ) ?? []
+                )
             }
 
             function saveAssets() {
@@ -151,13 +202,19 @@
                     ...checkedKeys.value,
                     ...assets.value,
                     ...regexKeys.value,
+                    ...getQualifiedNamesFromAssets(
+                        bulkStore.bulkSelectedAssets
+                    ),
                 ])
                 emit('update:assets', [...assetSet])
                 resetAssetState()
             }
 
             const selectedAssetCount = computed(
-                () => checkedKeys.value.length + assets.value.length
+                () =>
+                    checkedKeys.value.length +
+                    assets.value.length +
+                    bulkStore.bulkSelectedAssets?.length
             )
 
             const filterConfig = computed(() => ({
@@ -169,11 +226,37 @@
 
             // Tab related data
             const activeTab = ref('custom')
-            const tabConfig = [
-                { key: 'tree', label: 'Browse' },
-                { key: 'list', label: 'Search' },
-                { key: 'custom', label: 'Custom' },
-            ]
+            const tabConfig = ref([{ key: 'custom', label: 'Custom' }])
+
+            watch(
+                connectionQfName,
+                () => {
+                    if (
+                        BIAssets.includes(
+                            getConnectorName(connectionQfName.value)
+                        )
+                    ) {
+                        tabConfig.value = [{ key: 'custom', label: 'Custom' }]
+                        tabConfig.value.unshift({
+                            key: 'list',
+                            label: 'Search',
+                        })
+                        activeTab.value = 'list'
+                    } else {
+                        tabConfig.value = [{ key: 'custom', label: 'Custom' }]
+                        tabConfig.value.unshift({
+                            key: 'list',
+                            label: 'Search',
+                        })
+                        tabConfig.value.unshift({
+                            key: 'tree',
+                            label: 'Browse',
+                        })
+                        activeTab.value = 'tree'
+                    }
+                },
+                { immediate: true }
+            )
 
             return {
                 activeTab,
@@ -196,5 +279,16 @@
             overflow-y: hidden;
             height: 100%;
         }
+    }
+</style>
+<style lang="less" scoped>
+    .rear-z-index {
+        z-index: 1001;
+    }
+    .front-z-index {
+        z-index: 1002;
+    }
+    .drawer_height {
+        height: calc(100vh - 14rem);
     }
 </style>

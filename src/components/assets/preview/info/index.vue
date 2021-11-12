@@ -10,7 +10,28 @@
                 >Saving</span
             >
         </div>
+        <AnnouncementWidget
+            class="mx-5"
+            :selected-asset="selectedAsset"
+        ></AnnouncementWidget>
 
+        <div class="px-5" v-if="webURL(selectedAsset)">
+            <a-button
+                block
+                @click="handlePreviewClick"
+                class="flex items-center justify-between"
+                ><div class="flex items-center">
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
+                        class="h-5 mr-1"
+                    />
+                    {{
+                        assetTypeLabel(selectedAsset) || selectedAsset.typeName
+                    }}
+                </div>
+                <AtlanIcon icon="External" />
+            </a-button>
+        </div>
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 px-5"
@@ -27,7 +48,7 @@
                     <span class="text-primary">SQL</span>
                 </div>
             </SQL>
-            <RowInfoHoverCard
+            <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
                     selectedAsset.typeName == 'TablePartition'
@@ -39,21 +60,31 @@
                 :source-updated-at-raw="sourceUpdatedAt(selectedAsset, true)"
                 :source-created-at="sourceCreatedAt(selectedAsset)"
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
+            > -->
+            <div
+                v-if="rowCount(selectedAsset) > 0"
+                class="flex flex-col text-sm cursor-pointer"
             >
-                <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-2 text-sm text-gray-500">Rows</span>
-                    <span class="text-gray-700">{{
-                        rowCount(selectedAsset)
-                    }}</span>
-                </div>
-            </RowInfoHoverCard>
+                <span class="mb-2 text-sm text-gray-500">Rows</span>
+                <span class="text-gray-700">{{ rowCount(selectedAsset) }}</span>
+            </div>
+            <!-- </RowInfoHoverCard> -->
             <div
                 class="flex flex-col text-sm cursor-pointer"
-                @click="switchTab('Columns')"
+                @click="switchTab(selectedAsset, 'Columns')"
             >
                 <span class="mb-2 text-sm text-gray-500">Columns</span>
-                <span class="text-primary">{{
+                <span class="font-semibold text-primary">{{
                     columnCount(selectedAsset)
+                }}</span>
+            </div>
+            <div
+                class="flex flex-col text-sm cursor-pointer"
+                v-if="sizeBytes(selectedAsset) > 0"
+            >
+                <span class="mb-2 text-sm text-gray-500">Size</span>
+                <span class="text-gray-700">{{
+                    sizeBytes(selectedAsset)
                 }}</span>
             </div>
         </div>
@@ -171,7 +202,7 @@
         watch,
         Ref,
     } from 'vue'
-
+    import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/assets/preview/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/assets/preview/popover/rowInfo.vue'
@@ -199,6 +230,7 @@
         components: {
             // Experts,
             Description,
+            AnnouncementWidget,
             // Status,
             Owners,
             Classification,
@@ -209,30 +241,11 @@
             Terms,
             CertificationPopover,
         },
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-            userHasEditPermission: {
-                type: Boolean,
-                required: false,
-            },
-            page: {
-                type: String,
-                required: false,
-            },
-            isEdit: {
-                type: Boolean,
-                required: false,
-                default() {
-                    return false
-                },
-            },
-        },
-
         setup(props) {
-            const { isEdit, selectedAsset } = toRefs(props)
+            const actions = inject('actions')
+            const selectedAsset = inject('selectedAsset')
+            const switchTab = inject('switchTab')
+
             const {
                 title,
                 getConnectorImage,
@@ -257,6 +270,8 @@
                 sourceCreatedAt,
                 classifications,
                 definition,
+                webURL,
+                assetTypeLabel,
             } = useAssetInfo()
 
             const entity = ref({
@@ -276,7 +291,7 @@
 
             const { mutate, isLoading } = updateAsset(body)
 
-            const localDescription = ref(description(selectedAsset.value))
+            const localDescription = ref(description(selectedAsset?.value))
 
             watch(localDescription, () => {
                 entity.value.attributes.userDescription = localDescription.value
@@ -328,59 +343,6 @@
                 mutateClassification()
             }
 
-            // const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
-            //     inject('mutateSelectedAsset', () => {})
-            // const switchTab: (tabName: string) => void = inject(
-            //     'switchTab',
-            //     () => {}
-            // )
-
-            // const {
-            //     rowCount,
-            //     columnCount,
-            //     sizeBytes,
-            //     sourceUpdatedAt,
-            //     sourceCreatedAt,
-            //     viewDefinition,
-            // } = useAssetInfo()
-
-            // const displaySQL = computed(() =>
-            //     selectedAsset.value ? viewDefinition(selectedAsset.value) : '~'
-            // )
-
-            // const rows = computed(() =>
-            //     selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
-            // )
-            // const size = computed(() =>
-            //     selectedAsset.value
-            //         ? sizeBytes(selectedAsset.value, false)
-            //         : '~'
-            // )
-
-            // const cols = computed(() =>
-            //     selectedAsset.value
-            //         ? columnCount(selectedAsset.value, true)
-            //         : '~'
-            // )
-
-            // const sourceUpdated = computed(() =>
-            //     selectedAsset.value ? sourceUpdatedAt(selectedAsset.value) : ''
-            // )
-            // const sourceUpdatedRaw = computed(() =>
-            //     selectedAsset.value
-            //         ? sourceUpdatedAt(selectedAsset.value, true)
-            //         : ''
-            // )
-
-            // const sourceCreated = computed(() =>
-            //     selectedAsset.value ? sourceCreatedAt(selectedAsset.value) : ''
-            // )
-            // const sourceCreatedRaw = computed(() =>
-            //     selectedAsset.value
-            //         ? sourceCreatedAt(selectedAsset.value, true)
-            //         : ''
-            // )
-
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
                     selectedAsset.typeName === 'View' ||
@@ -398,24 +360,18 @@
                 console.log('edit click')
             }
 
+            const handlePreviewClick = () => {
+                window.open(webURL(selectedAsset.value), '_blank').focus()
+            }
+
             return {
-                isEdit,
                 localDescription,
                 selectedAsset,
                 body,
                 handleOwnersChange,
                 localClassifications,
                 handleClassificationChange,
-                // rows,
-                // cols,
-                // sourceUpdated,
-                // sourceUpdatedRaw,
-                // sourceCreated,
-                // sourceCreatedRaw,
-                // size,
-                // format,
-                // selectedAsset,
-                // displaySQL,
+
                 isSelectedAssetHaveRowsAndColumns,
                 title,
                 getConnectorImage,
@@ -442,21 +398,12 @@
                 entity,
                 isLoading,
                 classificationBody,
-                // mutateSelectedAsset,
-                // switchTab,
+                actions,
+                switchTab,
+                webURL,
+                handlePreviewClick,
+                assetTypeLabel,
             }
         },
     })
 </script>
-<style lang="less" scoped>
-    ._bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .hover_bg-primary-light:hover {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .owner-expert {
-        // margin-top: 0.3rem;
-        // margin-bottom: 0.3rem;
-    }
-</style>

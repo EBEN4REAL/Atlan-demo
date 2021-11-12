@@ -1,6 +1,9 @@
 <template>
-    <div class="flex flex-col py-6 border-b border-gray-300 gap-y-2 group">
-        <div class="flex items-center mb-1 gap-x-3">
+    <div
+        class="flex flex-col py-4 mb-2 border-b border-gray-300 rounded  group hover:shadow"
+        style="paddingleft: 12px; paddingroght: 12px"
+    >
+        <div class="flex items-center mb-4 gap-x-3">
             <span class="text-base font-bold text-gray">{{ policy.name }}</span>
             <span v-if="type === 'data'" class="data-policy-pill"
                 >Data Policy</span
@@ -24,22 +27,27 @@
                 </span>
             </div>
         </div>
-        <div class="flex items-center gap-x-6">
+        <div class="flex items-center mb-3 gap-x-6">
             <span class="flex-none text-sm">
                 <b>{{ policy.assets.length }}</b> assets selected
             </span>
             <div
                 v-if="type === 'meta'"
-                class="flex items-center mb-2 overflow-hidden gap-x-1"
+                class="flex items-center overflow-hidden gap-x-1"
             >
-                <AtlanIcon class="text-gray-500" icon="Lock" />
+                <AtlanIcon class="flex-none text-gray-500" icon="Lock" />
                 <span class="text-sm text-gray-500 truncate">{{
                     policy.actions.join(',')
                 }}</span>
             </div>
         </div>
         <div class="flex items-center">
-            <PillGroup :data="assets" label-key="label" read-only />
+            <PillGroup
+                :data="assets"
+                label-key="label"
+                class="text-gray-700"
+                read-only
+            />
             <AtlanBtn
                 class="flex-none opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
                 size="sm"
@@ -47,7 +55,7 @@
                 padding="compact"
                 @click.prevent="$emit('edit')"
             >
-                <AtlanIcon icon="Edit" class="-mx-1" />
+                <AtlanIcon icon="Edit" class="mr-0.5" /> Edit
             </AtlanBtn>
         </div>
     </div>
@@ -82,18 +90,21 @@
         emits: ['edit'],
         setup(props) {
             const { policy, type } = toRefs(props)
-            const assets = computed(() =>
-                policy.value.assets.map((name) => ({
-                    label: name.split('/').slice(3).join('/'),
+            const assets = computed(() => {
+                return policy.value.assets.map((name) => ({
+                    label:
+                        name.split('/').length > 3
+                            ? name.split('/').slice(3).join('/')
+                            : name.split('/').slice(2).join('/'),
                 }))
-            )
+            })
 
             const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)
 
             const connectionQfName = computed(() => {
                 if (type.value === 'meta') {
-                    const found = connStore.list.find(
+                    const found = connStore.getList.find(
                         (conn) => conn.guid === policy.value.connectionId
                     )
                     return found?.attributes?.qualifiedName
@@ -108,18 +119,21 @@
 
 <style scoped>
     .data-policy-pill {
-        @apply rounded-full text-sm px-2;
+        @apply rounded-full text-sm px-2 py-1;
         background-color: #eeffef;
         color: #00a680;
     }
     .metadata-policy-pill {
-        @apply rounded-full text-sm px-2;
+        @apply rounded-full text-sm px-2 py-1;
         background-color: #fcf3fc;
         color: #d452d7;
     }
     .denied-policy-pill {
-        @apply rounded-full text-sm px-2;
+        @apply rounded-full text-sm px-2 py-1;
         background-color: #fdf5f1;
         color: #e04f1a;
+    }
+    .card {
+        box-shadow: 1px 2px 3px 3px rgba(0, 0, 0, 0.05);
     }
 </style>

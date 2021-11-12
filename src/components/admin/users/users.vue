@@ -1,9 +1,5 @@
 <template>
-    <DefaultLayout
-        v-if="permissions.list"
-        title="Users"
-        :badge="totalUserCount"
-    >
+    <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div class="flex justify-between">
                 <div class="flex w-1/4">
@@ -22,12 +18,11 @@
                         @change="updateFilters"
                     />
                 </div>
-                <div class="flex">
+                <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton
-                        v-if="loginWithEmail && permissions.create"
+                        v-if="loginWithEmail"
                         type="primary"
                         class="rounded-md"
-                        size="default"
                         @click="handleInviteUsers"
                         >Invite Users
                     </AtlanButton>
@@ -58,14 +53,16 @@
         <!-- Table for users-->
         <template v-else>
             <UserListTable
+                v-auth="map.LIST_USERS"
                 :user-list="userList"
-                :permissions="permissions"
                 :loading="
                     [STATES.PENDING].includes(state) ||
                     [STATES.VALIDATING].includes(state)
                 "
                 :selected-user-id="selectedUserId"
                 :show-change-role-popover="showChangeRolePopover"
+                :showDisableEnablePopover="showDisableEnablePopover"
+                @toggleDisableEnablePopover="toggleDisableEnablePopover"
                 @change="handleTableChange"
                 @handle-change-role="handleChangeRole"
                 @showUserPreviewDrawer="showUserPreviewDrawer"
@@ -117,6 +114,7 @@
     import AtlanButton from '~/components/UI/button.vue'
     import UserListTable from '@/admin/users/userListTable.vue'
     import { Users } from '~/services/service/users/index'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'UsersView',
@@ -131,14 +129,6 @@
 
         setup() {
             const { loginWithEmailAllowed } = useTenantData()
-
-            const permissions = computed(() => ({
-                list: true,
-                create: true,
-                update: true,
-                delete: true,
-                suspend: true,
-            }))
 
             const loginWithEmail = ref(loginWithEmailAllowed)
 
@@ -254,6 +244,15 @@
 
                 showChangeRolePopover.value = true
             }
+
+            const showDisableEnablePopover = ref<boolean>(false)
+
+            const toggleDisableEnablePopover = (user: any) => {
+                if (user) selectedUserId.value = user.id
+
+                showDisableEnablePopover.value = !showDisableEnablePopover.value
+            }
+
             const closeChangeRolePopover = () => {
                 showChangeRolePopover.value = false
                 selectedUserId.value = ''
@@ -356,6 +355,7 @@
                         }
                     })
                 }
+                showDisableEnablePopover.value = false
             }
 
             const showResendInvitationConfirm = (invite: {
@@ -382,6 +382,7 @@
             }
 
             return {
+                map,
                 showResendInvitationConfirm,
                 showRevokeInvitationConfirm,
                 searchText,
@@ -396,6 +397,8 @@
                 state,
                 STATES,
                 loginWithEmail,
+                showDisableEnablePopover,
+                toggleDisableEnablePopover,
                 showChangeRolePopover,
                 handleChangeRole,
                 closeChangeRolePopover,
@@ -414,7 +417,6 @@
                 getUserList,
                 confirmEnableDisablePopover,
                 selectedUserId,
-                permissions,
                 totalUserCount,
                 limit: userListAPIParams.limit,
                 offset: userListAPIParams.offset,

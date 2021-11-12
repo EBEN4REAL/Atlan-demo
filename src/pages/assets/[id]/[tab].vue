@@ -1,6 +1,6 @@
 <template>
     <Loader v-if="isLoading"></Loader>
-    <AssetProfile :selected-asset="selectedAsset" v-else></AssetProfile>
+    <AssetProfile :asset="selectedAsset" v-else></AssetProfile>
 </template>
 
 <script lang="ts">
@@ -15,7 +15,7 @@
         AssetAttributes,
         InternalAttributes,
         SQLAttributes,
-        AssetRelationAttributes,
+        DefaultRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -55,7 +55,7 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
             ])
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             const { handleSelectedAsset, list, isLoading } = useDiscoverList({
                 isCache: false,
@@ -80,12 +80,6 @@
         },
     })
 </script>
-<style scoped>
-    .asset-preview-container {
-        width: 420px !important;
-        max-width: 420px !important;
-    }
-</style>
 
 <route lang="yaml">
 meta:

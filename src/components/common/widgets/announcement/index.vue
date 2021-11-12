@@ -1,89 +1,89 @@
-<!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex justify-between p-4 border rounded"
-        :class="
-            announcementType === 'information'
-                ? 'information-bg information-border'
-                : announcementType === 'issue'
-                ? 'issue-bg issue-border'
-                : announcementType === 'warning'
-                ? 'warning-bg warning-border'
-                : ''
-        "
+        class="flex justify-between px-3 py-2 border rounded"
+        v-if="announcementTitle(selectedAsset)"
+        :class="bgClass"
     >
-        <div class="flex">
-            <div>
-                <!-- <component
-                    :is="announcementObject?.icon"
-                    class="w-auto h-4 mt-1 mr-4"
-                /> -->
+        <div class="flex flex-col">
+            <div class="font-bold text-gray-700">
+                {{ announcementTitle(selectedAsset) }}
             </div>
-            <div>
-                <div class="mb-1 text-lg font-bold text-gray-700">
-                    {{ title }}
-                </div>
-                <div class="w-11/12 mb-2 text-gray-500">
-                    {{ message }}
-                </div>
-                <div class="flex items-center justify-between text-gray-500">
-                    <div class="flex text-sm">
-                        <div class="ml-1">by {{ username }}</div>
+            <div class="text-gray-500">
+                {{ announcementMessage(selectedAsset) }}
+            </div>
+            <div class="flex items-center mt-2 text-gray-500 gap-x-1">
+                <div class="flex text-sm">
+                    <AtlanIcon :icon="icon" class="mt-0.5"></AtlanIcon>
+                    <div class="ml-1">
+                        {{ announcementUpdatedBy(selectedAsset) }},
                     </div>
-                    {{ timestamp }}
                 </div>
+                {{ announcementUpdatedAt(selectedAsset, true) }}
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'Announcement',
         components: {},
+
         props: {
-            announcementType: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            title: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            message: {
-                type: String,
-                required: false,
-            },
-            username: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            timestamp: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            placement: {
-                type: String,
-                required: false,
-                default: () => 'right',
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
             },
         },
         setup(props) {
-            const { announcementType, title, message, timestamp, username } =
-                toRefs(props)
+            const { selectedAsset } = toRefs(props)
+            const {
+                announcementTitle,
+                announcementMessage,
+                announcementType,
+                announcementUpdatedAt,
+                announcementUpdatedBy,
+            } = useAssetInfo()
+
+            const bgClass = computed(() => {
+                switch (announcementType(selectedAsset.value).toLowerCase()) {
+                    case 'information':
+                        return 'information-bg information-border'
+                    case 'issue':
+                        return 'issue-bg issue-border'
+                    case 'warning':
+                        return 'warning-bg warning-border'
+                    default:
+                        return 'information-bg information-border'
+                }
+            })
+
+            const icon = computed(() => {
+                switch (announcementType(selectedAsset.value).toLowerCase()) {
+                    case 'information':
+                        return 'InformationAnnouncement'
+                    case 'issue':
+                        return 'IssuesAnnouncement'
+                    case 'warning':
+                        return 'WarningAnnouncement'
+                    default:
+                        return 'InformationAnnouncement'
+                }
+            })
 
             return {
+                selectedAsset,
+                announcementTitle,
+                announcementMessage,
                 announcementType,
-                title,
-                message,
-                timestamp,
-                username,
+                announcementUpdatedAt,
+                announcementUpdatedBy,
+                bgClass,
+                icon,
             }
         },
     })

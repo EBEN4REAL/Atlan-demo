@@ -5,15 +5,7 @@ import { Tenant } from '~/services/service/tenant'
 import { watch } from 'vue'
 
 export default function useTenant() {
-    const { data } = Tenant.GetTenant({
-        cacheKey: 'DEFAULT_TENANT',
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
-    })
+    const { data } = Tenant.GetTenant()
     const tenantStore = useTenantStore()
     watch(data, () => {
         tenantStore.setTenant(data.value)

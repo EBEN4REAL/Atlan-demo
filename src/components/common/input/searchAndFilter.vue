@@ -1,28 +1,25 @@
 <template>
     <div
-        class="flex items-center w-full transition duration-300 searchbar h-7"
+        class="flex items-center w-full transition duration-300 searchbar"
         :class="size"
     >
-        <!-- <slot name="categoryFilter" /> -->
-
-        <div class="flex items-center justify-between flex-grow pl-1">
+        <slot name="categoryFilter" />
+        <div class="flex items-center justify-between flex-grow py-1">
             <AtlanIcon
-                v-if="!$slots.categoryFilter"
                 icon="Search"
-                class="flex-none pr-1 text-gray-500"
+                class="flex-none pl-2 pr-1 text-gray-500"
             />
-            <a-input
+            <input
                 ref="searchBar"
-                v-model:value="localValue"
+                v-model="value"
                 :placeholder="placeholder"
                 type="text"
-                class="flex-1 w-2/3 text-sm bg-transparent focus:outline-none"
-                @change="handleChange"
+                class="flex-1 text-sm bg-transparent focus:outline-none"
+                @keyup.esc="$event.target.blur()"
             />
-
-            <div class="flex-none w-7 h-7">
+            <div class="flex-none h-7 w-7">
                 <button
-                    v-if="localValue?.length"
+                    v-if="value?.length"
                     class="text-gray-500 hover:text-gray"
                 >
                     <AtlanIcon
@@ -69,7 +66,6 @@
         toRefs,
         PropType,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'SearchAndFilter',
@@ -78,19 +74,27 @@
             dot: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
-                type: String as PropType<'default' | 'minimal'>,
+                type: String as PropType<'default' | 'minimal' | 'bordered'>,
                 default: () => 'default',
             },
-            modelValue: { type: String, default: () => '' },
+            value: { type: String },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['update:value', 'change'],
         setup(props, { emit }) {
-            const { autofocus } = toRefs(props)
-
-            const { modelValue } = useVModels(props)
-            const localValue = ref(modelValue.value)
-
+            const { autofocus, value: val } = toRefs(props)
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
+            const value = computed({
+                get: () => val.value,
+                set: (newVal) => {
+                    emit('update:value', newVal)
+                    emit('change', newVal)
+                },
+            })
+
+            function clearInput() {
+                emit('update:value', '')
+                emit('change', '')
+            }
 
             onMounted(async () => {
                 if (autofocus.value) {
@@ -99,21 +103,10 @@
                 }
             })
 
-            const handleChange = () => {
-                modelValue.value = localValue.value
-                emit('change')
-            }
-
-            function clearInput() {
-                localValue.value = ''
-                handleChange()
-            }
-
             return {
-                localValue,
+                value,
                 searchBar,
                 clearInput,
-                handleChange,
             }
         },
     })
@@ -121,13 +114,37 @@
 <style lang="less" scoped>
     .searchbar {
         min-width: 100px;
+        min-height: 32px;
+
         input {
             min-width: 100px;
         }
+        .ant-input:focus {
+            border: none;
+            border-right: none;
+        }
+
+        .ant-input:hover {
+            border: none;
+            border-right: none;
+        }
+        .ant-input::placeholder {
+            @apply text-gray-500;
+        }
+
         &.default {
             @apply border border-gray-300 rounded shadow;
             &:hover {
                 @apply shadow-md;
+            }
+            &:focus-within {
+                @apply ring-2 border-primary shadow-none;
+            }
+        }
+        &.bordered {
+            @apply border border-gray-300 rounded shadow-none;
+            &:hover {
+                @apply shadow-none;
             }
             &:focus-within {
                 @apply ring-2 border-primary shadow-none;

@@ -1,21 +1,20 @@
 <template>
     <div class="my-3">
         <div v-if="showGroupMembers">
-            <div class="flex flex-row justify-between">
+            <div class="flex flex-row justify-between gap-x-1">
                 <div>
                     <a-input-search
                         v-model:value="searchText"
                         placeholder="Search Members"
                         :allow-clear="true"
-                        class="mr-1"
+                        class="mr-2"
                         @change="handleSearch"
                     ></a-input-search>
                 </div>
-                <div>
+                <div v-auth="map.ADD_USER_GROUP">
                     <a-button type="primary" ghost @click="handleAddMember"
-                        ><fa icon="fal plus" class="mr-2"></fa>Add
-                        Member</a-button
-                    >
+                        ><fa icon="fal plus" class="mr-2"></fa>Add Member
+                    </a-button>
                 </div>
             </div>
             <div
@@ -102,6 +101,7 @@
                             </div>
                             <div
                                 v-else
+                                v-auth="map.REMOVE_USER_GROUP"
                                 class="cursor-pointer text-error"
                                 @click="() => removeUserFromGroup(user.id)"
                             >
@@ -154,6 +154,7 @@
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import AddGroupMembers from '~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'GroupMembers',
@@ -165,9 +166,10 @@
         props: {
             selectedGroup: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
+        emits: ['refreshTable'],
         setup(props, context) {
             const showGroupMembers = ref(true)
             const searchText = ref('')
@@ -273,7 +275,7 @@
                     users: userIds,
                 }
                 const { data, isReady, error, isLoading } =
-                    Group.RemoveMembersFromGroup(
+                    Groups.RemoveMembersFromGroup(
                         props.selectedGroup.id,
                         requestPayload
                     )
@@ -302,11 +304,9 @@
                 return user.email
             }
             const handleAddMember = () => {
-                // showAddMemberModal.value = true;
                 showGroupMembers.value = false
             }
             const handleShowGroupMembers = () => {
-                // showAddToGroupModal.value = false;
                 showGroupMembers.value = true
             }
             const closeAddGroupModal = () => {
@@ -322,6 +322,7 @@
                 selectedUserIds.value = [...userList]
             }
             return {
+                map,
                 searchText,
                 showLoadMore,
                 memberList,

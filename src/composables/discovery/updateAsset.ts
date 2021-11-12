@@ -6,9 +6,9 @@ export default function updateAsset(
     body: Record<string, any> | Ref<Record<string, any>>
 ) {
     const options: useOptions = {}
-
     options.asyncOptions = ref({
         immediate: false,
+        onError: (e) => { throw (e) }
     })
     const { data, mutate, error, isLoading } = Entity.BulkUpdate(body, options)
     return {

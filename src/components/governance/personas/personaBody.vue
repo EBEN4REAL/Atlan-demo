@@ -1,14 +1,58 @@
 <template>
     <template v-if="selectedPersonaDirty">
-        <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+        <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
+            <template #label="t">
+                <div class="flex items-center">
+                    <span
+                        class="text-base"
+                        :class="
+                            activeTabKey === t?.data?.key
+                                ? 'text-gray-700'
+                                : 'text-gray-500'
+                        "
+                        >{{ t?.data?.label }}</span
+                    >
+                    <div
+                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        v-if="t?.data?.key === 'policies'"
+                        :class="
+                            activeTabKey === t?.data?.key
+                                ? 'text-primary bg-primary-light'
+                                : 'text-gray-500 bg-gray-100'
+                        "
+                    >
+                        {{
+                            selectedPersonaDirty?.metadataPolicies?.length ??
+                            0 + selectedPersonaDirty?.datapolicies?.length ??
+                            0
+                        }}
+                    </div>
+                    <div
+                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        v-if="t?.data?.key === 'users'"
+                        :class="
+                            activeTabKey === t?.data?.key
+                                ? 'text-primary bg-primary-light'
+                                : 'text-gray-500 bg-gray-100'
+                        "
+                    >
+                        {{
+                            selectedPersonaDirty?.users?.length ??
+                            0 + selectedPersonaDirty?.groups?.length ??
+                            0
+                        }}
+                    </div>
+                </div>
+            </template>
+        </MinimalTab>
 
-        <div class="overflow-y-auto">
+        <div class="px-4 overflow-y-auto">
             <PersonaMeta
                 v-if="activeTabKey === 'details'"
                 class="pb-2"
                 :persona="persona"
             />
-            <div v-else-if="activeTabKey === 'policies'">
+            <div v-else-if="activeTabKey === 'policies'" class="mt-2">
                 <template
                     v-for="(
                         policy, idx
@@ -17,34 +61,35 @@
                 >
                     <!-- Render it if the policy is being edited -->
                     <MetadataPolicy
-                        v-if="policyEditMap.metadataPolicies[idx]"
+                        v-if="policyEditMap.metadataPolicies[policy.id!]"
                         class="px-5"
                         :policy="policy"
-                        @delete="deletePolicy('meta', idx)"
-                        @save="removeEditFlag('meta', idx)"
-                        @cancel="removeEditFlag('meta', idx)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
+                        @save="savePolicyUI('meta', policy.id!)"
+                        @cancel="discardPolicy('meta', policy.id!)"
                     />
-                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
+
                     <PolicyCard
                         v-else
                         class="px-5"
                         :policy="policy"
                         type="meta"
-                        @edit="setEditFlag('meta', idx)"
+                        @edit="setEditFlag('meta', policy.id!)"
                     />
                 </template>
+
                 <template
-                    v-for="(policy, idx) in selectedPersonaDirty.datapolicies"
+                    v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
                     <DataPolicy
-                        v-if="policyEditMap.dataPolicies[idx]"
+                        v-if="policyEditMap.dataPolicies[policy.id!]"
                         class="px-5"
                         :policy="policy"
-                        @delete="deletePolicy('data', idx)"
-                        @save="removeEditFlag('meta', idx)"
-                        @cancel="removeEditFlag('meta', idx)"
+                        @delete="deletePolicyUI('data', policy.id!)"
+                        @save="savePolicyUI('data', policy.id!)"
+                        @cancel="discardPolicy('data', policy.id!)"
                     />
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
@@ -52,10 +97,21 @@
                         class="px-5"
                         :policy="policy"
                         type="data"
-                        @edit="setEditFlag('data', idx)"
+                        @edit="setEditFlag('data', policy.id!)"
                     />
                 </template>
-
+                <div
+                    v-if="
+                        !selectedPersonaDirty.metadataPolicies?.length &&
+                        !selectedPersonaDirty.dataPolicies?.length
+                    "
+                    class="flex flex-col items-center justify-center mt-8"
+                >
+                    <component :is="NewPolicyIllustration"></component>
+                    <span class="text-2xl font-bold text-gray">
+                        Create Policies</span
+                    >
+                </div>
                 <a-dropdown trigger="click">
                     <AtlanBtn
                         class="flex-none mx-auto mt-6"
@@ -69,7 +125,7 @@
                         </template>
                         Add new policy
                         <template #suffix>
-                            <AtlanIcon icon="ChevronDown" />
+                            <AtlanIcon icon="ChevronDown" class="text-white" />
                         </template>
                     </AtlanBtn>
 
@@ -98,20 +154,21 @@
             </div>
             <PersonaUsersGroups
                 v-else-if="activeTabKey === 'users'"
-                class="px-5 pt-4 pb-2"
-                :persona="persona"
+                class="pt-6 pb-2"
+                v-model:persona="persona"
             />
         </div>
     </template>
-    <div v-else class="flex items-center justify-center h-full">
-        <span class="mx-auto">Add a new persona or select one to edit it</span>
-    </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, watch } from 'vue'
+    import { message } from 'ant-design-vue'
+
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
+
+    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
 
     import PolicyCard from './policies/collapsedPolicyCard.vue'
     import PersonaUsersGroups from './users/personaUsersGroups.vue'
@@ -126,6 +183,9 @@
         policyEditMap,
         setEditFlag,
         removeEditFlag,
+        savePolicy,
+        discardPolicy,
+        PolicyType,
     } from './composables/useEditPersona'
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
 
@@ -146,10 +206,7 @@
                 required: true,
             },
         },
-        setup(props) {
-            // Persona related stuff
-            const { persona } = toRefs(props)
-
+        setup() {
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
@@ -163,15 +220,64 @@
                 },
             ]
 
+            async function savePolicyUI(type: PolicyType, id: string) {
+                const messageKey = Date.now()
+                message.loading({
+                    content: 'Saving policy',
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await savePolicy(type, id)
+                    message.success({
+                        content: 'Policy saved',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                } catch (error) {
+                    message.error({
+                        content: 'Failed to save policy',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                }
+            }
+
+            async function deletePolicyUI(type: PolicyType, id: string) {
+                const messageKey = Date.now()
+                message.loading({
+                    content: 'Deleting policy',
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await deletePolicy(type, id)
+                    message.success({
+                        content: 'Policy deleted',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                } catch (error) {
+                    message.error({
+                        content: 'Failed to delete policy',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                }
+            }
+
             return {
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,
-                deletePolicy,
                 addPolicyDropdownConfig,
                 policyEditMap,
                 setEditFlag,
                 removeEditFlag,
+                savePolicyUI,
+                deletePolicyUI,
+                discardPolicy,
+                NewPolicyIllustration,
             }
         },
     })

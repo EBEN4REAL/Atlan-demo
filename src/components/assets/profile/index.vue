@@ -1,19 +1,22 @@
 <template>
-    <div class="flex flex-col w-full h-full asset-profile">
+    <div class="flex flex-col w-full h-full max-profile-width">
         <AssetHeader :item="selectedAsset"></AssetHeader>
 
         <a-tabs
             v-model:activeKey="activeKey"
-            class="h-full"
-            :class="$style.profiletab"
             @change="handleChangeTab"
+            class="flex-1"
         >
             <a-tab-pane
-                v-for="tab in getProfileTabs(selectedAsset)"
+                v-for="tab in getProfileTabs(asset)"
                 :key="tab.id"
                 :tab="tab.label"
             >
-                <component :is="tab.component" :key="tab.id"></component>
+                <component
+                    :is="tab.component"
+                    :key="tab.id"
+                    :selected-asset="asset"
+                ></component>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -27,6 +30,7 @@
         onMounted,
         PropType,
         toRefs,
+        provide,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -35,6 +39,7 @@
     import AssetHeader from '@/assets/profile/header/index.vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
 
     export default defineComponent({
         name: 'AssetProfile',
@@ -51,13 +56,18 @@
             ),
         },
         props: {
-            selectedAsset: {
+            asset: {
                 type: Object as PropType<assetInterface>,
-                required: true,
+                required: false,
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { asset } = toRefs(props)
+            const { getAllowedActions } = useAssetEvaluate()
+            const actions = computed(() => getAllowedActions(asset.value))
+            provide('actions', actions)
+            provide('selectedAsset', asset)
+
             const { getProfileTabs } = useAssetInfo()
 
             const refs: { [key: string]: any } = ref({})
@@ -76,6 +86,8 @@
 
             return {
                 refs,
+                asset,
+                getProfileTabs,
                 activeKey,
                 getProfileTabs,
                 handleChangeTab,
@@ -104,11 +116,25 @@ meta:
 <style lang="less" module>
     .profiletab {
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-8;
+            @apply ml-8 !important;
         }
 
         :global(.ant-tabs-tab-active) {
-            @apply font-bold;
+            @apply font-bold !important;
         }
+
+        :global(.ant-tabs-nav) {
+            @apply mb-0 !important;
+        }
+
+        :global(.ant-tabs-content-holder) {
+            @apply bg-primary-light overflow-y-auto !important;
+        }
+    }
+</style>
+
+<style lang="less" scoped>
+    .max-profile-width {
+        max-width: calc(100vw - 420px);
     }
 </style>

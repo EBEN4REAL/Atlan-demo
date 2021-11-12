@@ -6,17 +6,17 @@ import tippy, { Instance, Tippy } from 'tippy.js'
 import CommandsList from './CommandsList.vue'
 
 interface commandsProps {
-    editor: Editor;
-    range: Range;
-    props: any;
+    editor: Editor
+    range: Range
+    props: any
 }
 
 export interface CommandItem {
-    title: string;
-    textIcon?: string;
-    icon?: string;
-    description?: string;
-    color?: string;
+    title: string
+    textIcon?: string
+    icon?: string
+    description?: string
+    color?: string
     command: (props: commandsProps) => void
 }
 
@@ -65,19 +65,14 @@ const commands: Record<string, CommandItem[]> = {
     Transformations: [
         {
             title: 'Bold',
-            icon: "fa bold",
+            icon: 'fa bold',
             command: ({ editor, range }: commandsProps) => {
-                editor
-                    .chain()
-                    .focus()
-                    .deleteRange(range)
-                    .setMark('bold')
-                    .run()
+                editor.chain().focus().deleteRange(range).setMark('bold').run()
             },
         },
         {
             title: 'Italic',
-            icon: "fa italic",
+            icon: 'fa italic',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -89,7 +84,7 @@ const commands: Record<string, CommandItem[]> = {
         },
         {
             title: 'Underline',
-            icon: "fa underline",
+            icon: 'fa underline',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -101,7 +96,7 @@ const commands: Record<string, CommandItem[]> = {
         },
         {
             title: 'Strike',
-            icon: "fa strikethrough",
+            icon: 'fa strikethrough',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -114,39 +109,39 @@ const commands: Record<string, CommandItem[]> = {
         {
             title: 'Align Left',
             description: 'Align text to the left',
-            icon: "fa align-left",
+            icon: 'fa align-left',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
                     .focus()
                     .deleteRange(range)
-                    .setTextAlign("left")
+                    .setTextAlign('left')
                     .run()
             },
         },
         {
             title: 'Align Center',
             description: 'Align text to the center',
-            icon: "fa align-center",
+            icon: 'fa align-center',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
                     .focus()
                     .deleteRange(range)
-                    .setTextAlign("center")
+                    .setTextAlign('center')
                     .run()
             },
         },
         {
             title: 'Align Right',
             description: 'Align text to the right',
-            icon: "fa align-right",
+            icon: 'fa align-right',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
                     .focus()
                     .deleteRange(range)
-                    .setTextAlign("right")
+                    .setTextAlign('right')
                     .run()
             },
         },
@@ -168,20 +163,15 @@ const commands: Record<string, CommandItem[]> = {
         {
             title: 'Checklist',
             description: 'Add a to-do-list',
-            icon: "fa square",
+            icon: 'fal square',
             command: ({ editor, range }: commandsProps) => {
-                editor
-                    .chain()
-                    .focus()
-                    .deleteRange(range)
-                    .toggleTaskList()
-                    .run()
+                editor.chain().focus().deleteRange(range).toggleTaskList().run()
             },
         },
         {
             title: 'Quote',
             description: 'Capture a quote',
-            icon: "fa quote-left",
+            icon: 'fa quote-left',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -194,7 +184,7 @@ const commands: Record<string, CommandItem[]> = {
         {
             title: 'Bulleted List',
             description: 'Create a bulleted list',
-            icon: "fa list-ul",
+            icon: 'fa list-ul',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -207,7 +197,7 @@ const commands: Record<string, CommandItem[]> = {
         {
             title: 'Numbered List',
             description: 'Create a numbered list',
-            icon: "fa list-ol",
+            icon: 'fa list-ol',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -220,7 +210,7 @@ const commands: Record<string, CommandItem[]> = {
 
         {
             title: 'Code Block',
-            icon: "fa code",
+            icon: 'fa code',
             description: 'Add a block of code',
             command: ({ editor, range }: commandsProps) => {
                 editor
@@ -231,11 +221,24 @@ const commands: Record<string, CommandItem[]> = {
                     .run()
             },
         },
+        {
+            title: 'Image Block',
+            description: '',
+            icon: 'fa image',
+            command: ({ editor, range }: commandsProps) => {
+                editor
+                    .chain()
+                    .focus()
+                    .deleteRange(range)
+                    .toggleImageBlock()
+                    .run()
+            },
+        },
     ],
     Highlights: [
         {
             title: 'Default',
-            color:'#FFF',
+            color: '#FFF',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -247,7 +250,7 @@ const commands: Record<string, CommandItem[]> = {
         },
         {
             title: 'Yellow',
-            color:'#fde68a',
+            color: '#fde68a',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -259,7 +262,7 @@ const commands: Record<string, CommandItem[]> = {
         },
         {
             title: 'Green',
-            color:'#a7f3d0',
+            color: '#a7f3d0',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -271,7 +274,7 @@ const commands: Record<string, CommandItem[]> = {
         },
         {
             title: 'Blue',
-            color:'#bfdbfe',
+            color: '#bfdbfe',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -283,7 +286,7 @@ const commands: Record<string, CommandItem[]> = {
         },
         {
             title: 'Pink',
-            color:'#fbcfe8',
+            color: '#fbcfe8',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -295,7 +298,7 @@ const commands: Record<string, CommandItem[]> = {
         },
         {
             title: 'Red',
-            color:'#fca5a5',
+            color: '#fca5a5',
             command: ({ editor, range }: commandsProps) => {
                 editor
                     .chain()
@@ -322,13 +325,15 @@ export default Extension.create({
                 // if (!query){}
                 // else{
                 const categories = Object.keys(commands)
-                const suggestions: Record<string, CommandItem[] | string>[] = [];
+                const suggestions: Record<string, CommandItem[] | string>[] = []
 
                 categories.forEach((category) => {
-                    const filtered = commands[category].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase()))
+                    const filtered = commands[category].filter((item) =>
+                        item.title.toLowerCase().startsWith(query.toLowerCase())
+                    )
                     suggestions.push({
                         categoryTitle: category,
-                        content: filtered
+                        content: filtered,
                     })
                 })
                 return suggestions

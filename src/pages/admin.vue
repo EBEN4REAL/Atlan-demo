@@ -52,6 +52,7 @@
             const route = useRoute()
 
             const handleClick = ({ key }) => {
+                console.log(key)
                 router.push(`/admin/${key}`)
             }
             const initialRoute = route.path.split('/').slice(-1)

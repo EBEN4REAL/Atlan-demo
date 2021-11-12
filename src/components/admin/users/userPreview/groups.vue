@@ -1,8 +1,8 @@
 <template>
-    <div class="mb-3">
+    <div class="px-4 py-2 mb-3">
         <div class="flex items-center justify-between mb-4">
             <div class="text-lg font-bold">Groups</div>
-            <div v-if="showUserGroups">
+            <div v-if="showUserGroups" v-auth="map.ADD_USER_GROUP">
                 <a-button @click="handleAddToGroup">
                     <div class="flex items-center">
                         <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
@@ -23,32 +23,28 @@
                 </a-button>
             </div>
         </div>
-        <div v-if="showUserGroups">
+        <div v-if="showUserGroups" v-auth="map.LIST_GROUPS">
             <div class="flex flex-row justify-between">
                 <div class="w-full">
                     <SearchAndFilter
                         v-model:value="searchText"
-                        :placeholder="`Search ${selectedUser.group_count}  groups`"
-                        @change="handleSearch"
+                        :placeholder="`Search ${
+                            selectedUser.group_count ?? 0
+                        }  groups`"
                         class="mr-1"
                         size="minimal"
+                        @change="handleSearch"
                     />
                 </div>
-                <!-- <div>
-                    <a-button @click="handleAddToGroup">
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
-                            <span>Add to group</span>
-                        </div>
-                    </a-button>
-                </div> -->
             </div>
             <div
                 v-if="!selectedUser.group_count"
                 class="flex flex-col items-center justify-center"
             >
-                <div class="mt-6 text-center">
-                    <p class="text-lg">This user is not part of any group.</p>
+                <div
+                    class="flex items-center justify-center w-full  componentHeight"
+                >
+                    <EmptyState desc="This user is not part of any group." />
                 </div>
             </div>
             <div
@@ -67,7 +63,7 @@
                                 }
                             "
                         >
-                            <fa icon="fal sync" class="mr-2"></fa>Try again
+                            <AtlanIcon icon="Refresh" class="mr-2" />Try again
                         </a-button>
                     </div>
                 </ErrorView>
@@ -98,6 +94,7 @@
                         </div>
                         <div
                             v-if="!removeFromGroupLoading[group.id]"
+                            v-auth="map.REMOVE_USER_GROUP"
                             class="opacity-0 cursor-pointer  text-error group-hover:opacity-100"
                             @click="() => removeUserFromGroup(group)"
                         >
@@ -107,33 +104,9 @@
                             v-else
                             class="flex cursor-default text-error-muted"
                         >
-                            <fa
-                                style="vertical-align: middle"
-                                icon="fal circle-notch"
-                                class="mr-1 animate-spin"
-                            />
+                            <AtlanIcon icon="Loader" class="h-5 mr-1" />
                             <div>Removing...</div>
                         </div>
-                        <!-- <div class="font-bold">
-                            <div
-                                v-if="removeFromGroupLoading[group.id]"
-                                class="flex cursor-default text-error-muted"
-                            >
-                                <fa
-                                    style="vertical-align: middle"
-                                    icon="fal circle-notch"
-                                    class="mr-1 animate-spin"
-                                />
-                                <div>Removing...</div>
-                            </div>
-                            <div
-                                v-else
-                                class="cursor-pointer text-error"
-                                @click="() => removeUserFromGroup(group)"
-                            >
-                                Remove
-                            </div>
-                        </div> -->
                     </div>
                 </div>
                 <div
@@ -143,21 +116,21 @@
                     "
                     class="flex justify-center mt-3"
                 >
-                    <a-spin></a-spin>
+                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>
                 </div>
             </div>
         </div>
-        <div v-else-if="!showUserGroups">
+        <div v-else-if="!showUserGroups" v-auth="map.LIST_GROUPS">
             <GroupList
                 :add-to-group-loading="addToGroupLoading"
+                :show-back-button="false"
+                :show-add-button="false"
                 @updateSelectedGroups="updateSelectedGroups"
                 @showUserGroups="handleShowUserGroups"
                 @addUserToGroups="addUserToGroups"
-                :showBackButton="false"
-                :showAddButton="false"
             />
         </div>
     </div>
@@ -174,20 +147,21 @@
     import { Groups } from '~/services/service/groups'
     import GroupList from '~/components/admin/users/userPreview/groups/groupList.vue'
     import getUserGroups from '~/composables/user/getUserGroups'
-    import {
-        pluralizeString,
-        getNameInitials,
-        getNameInTitleCase,
-    } from '~/utils/string'
+
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import EmptyState from '@/common/empty/index.vue'
+    import map from '~/constant/accessControl/map'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'UserPreviewGroups',
         components: {
             ErrorView,
             GroupList,
+            EmptyState,
             SearchAndFilter,
+            AtlanIcon,
         },
         props: {
             selectedUser: {
@@ -327,9 +301,7 @@
                 handleSearch,
                 handleAddToGroup,
                 removeUserFromGroup,
-                getNameInitials,
-                getNameInTitleCase,
-                pluralizeString,
+                map,
                 getUserGroupList,
                 searchText,
                 showLoadMore,
@@ -348,4 +320,8 @@
     })
 </script>
 
-<style lang="less" module></style>
+<style lang="less" scoped>
+    .componentHeight {
+        height: calc(100vh - 12rem);
+    }
+</style>

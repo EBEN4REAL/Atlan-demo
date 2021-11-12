@@ -1,6 +1,8 @@
 export interface CustomVaribaleInterface {
-    name: string
     type: string
     key: string
-    value: string
+    value: any
+    dummy: any
+    options: any
+    allowMultiple: boolean
 }

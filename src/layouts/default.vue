@@ -25,6 +25,7 @@
                     :closable="false"
                     :maskClosable="true"
                     :style="{ position: 'absolute' }"
+                    :contentWrapperStyle="{ width: '264px' }"
                     :mask="true"
                     :maskStyle="{
                         background: 'rgba(244, 246, 253, 0.9)',
@@ -34,17 +35,20 @@
                 >
                     <SidePanel
                         :page="activeKey"
+                        @closeNavbar="closeNavbar"
+                        @mouseleave="closeNavbar"
                         class="border-r border-gray-200"
                     />
                 </a-drawer>
                 <div style="min-width: 264px" v-else>
                     <SidePanel
                         :page="activeKey"
+                        @closeNavbar="closeNavbar"
                         class="border-r border-gray-200"
                     />
                 </div>
 
-                <div class="w-full">
+                <div class="w-full overflow-y-auto">
                     <CmndK
                         :isCmndKVisible="isCmndKVisible"
                         @closeModal="isCmndKVisible = false"
@@ -96,12 +100,15 @@
                     (keyK.value && meta.value)
                 ) {
                     showModal()
-                    console.log('open cmnd k')
                     keyK.value = false
                     meta.value = false
                     control.value = false
                 }
             })
+            const closeNavbar = () => {
+                console.log('closing navbar')
+                showNavbar.value = false
+            }
 
             const handleToggleNavbar = () => {
                 showNavbar.value = !showNavbar.value
@@ -118,6 +125,7 @@
                 handleClick,
                 currentRoute,
                 isCmndKVisible,
+                closeNavbar,
             }
         },
     })
@@ -126,6 +134,10 @@
     .drawerStyles {
         :global(.ant-drawer-body) {
             @apply h-full !important;
+            width: 264px;
+        }
+        :global(.ant-drawer-content-wrapper) {
+            width: 264px;
         }
     }
 </style>

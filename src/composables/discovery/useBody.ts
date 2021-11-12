@@ -3,6 +3,8 @@ import bodybuilder from 'bodybuilder'
 
 const agg_prefix = 'group_by'
 
+const existsValue = 'NONE'
+
 export function useBody(
     queryText?: string,
     offset?: any,
@@ -15,15 +17,39 @@ export function useBody(
     const base = bodybuilder()
 
     if (queryText) {
-        base.orQuery('match', 'name', { query: queryText })
+        base.orQuery('match', 'name', {
+            query: queryText,
+            boost: 40,
+            analyzer: 'search_synonyms',
+        })
+        base.orQuery('match', 'name', {
+            query: queryText,
+            boost: 40,
+        })
+
         base.orQuery('match', 'name', {
             query: queryText,
             operator: 'AND',
+            boost: 40,
+        })
+        base.orQuery('match', 'name.keyword', {
+            query: queryText,
+            boost: 100,
         })
         base.orQuery('match_phrase', 'name', {
             query: queryText,
-            boost: 2,
+            boost: 70,
         })
+        base.orQuery('wildcard', 'name.keyword', {
+            value: `${queryText}*`,
+        })
+        base.orQuery('match', 'description', {
+            query: queryText,
+        })
+        base.orQuery('match', 'userDescription', {
+            query: queryText,
+        })
+        base.orQuery('match', 'name.stemmed', { query: queryText })
         base.queryMinimumShouldMatch(1)
     }
 
@@ -65,28 +91,72 @@ export function useBody(
             }
             case 'certificateStatus': {
                 if (filterObject) {
-                    if (filterObject.length > 0)
-                        base.filter('terms', 'certificateStatus', filterObject)
+                    if (filterObject.length > 0) {
+                        const index = filterObject.indexOf(existsValue)
+                        if (index > -1) {
+                            const temp = []
+                            filterObject.forEach((element) => {
+                                if (element !== existsValue) {
+                                    temp.push(element)
+                                }
+                            })
+                            base.filter('bool', (q) => {
+                                if (temp.length > 0) {
+                                    q.orFilter(
+                                        'terms',
+                                        'certificateStatus',
+                                        temp
+                                    )
+                                }
+
+                                q.orFilter('bool', (query) => {
+                                    return query.notFilter(
+                                        'exists',
+                                        'certificateStatus'
+                                    )
+                                })
+                                return q
+                            })
+                        } else {
+                            base.filter(
+                                'terms',
+                                'certificateStatus',
+                                filterObject
+                            )
+                        }
+                    }
                 }
                 break
             }
             case 'owners': {
-                if (filterObject.ownerUsers) {
-                    if (filterObject.ownerUsers.length > 0)
-                        base.filter(
-                            'terms',
-                            'ownerUsers',
-                            filterObject.ownerUsers
-                        )
+                if (filterObject) {
+                    base.filter('bool', (q) => {
+                        if (filterObject.ownerUsers?.length > 0)
+                            q.orFilter(
+                                'terms',
+                                'ownerUsers',
+                                filterObject.ownerUsers
+                            )
+
+                        if (filterObject.ownerGroups?.length > 0)
+                            q.orFilter(
+                                'terms',
+                                'ownerGroups',
+                                filterObject.ownerGroups
+                            )
+                        if (filterObject.empty === true) {
+                            q.orFilter('bool', (query) => {
+                                return query.filter('bool', (query2) => {
+                                    query2.notFilter('exists', 'ownerUsers')
+                                    query2.notFilter('exists', 'ownerGroups')
+                                    return query2
+                                })
+                            })
+                        }
+                        return q
+                    })
                 }
-                if (filterObject.ownerGroups) {
-                    if (filterObject.ownerGroups.length > 0)
-                        base.filter(
-                            'terms',
-                            'ownerGroups',
-                            filterObject.ownerGroups
-                        )
-                }
+
                 break
             }
             case 'typeName': {
@@ -105,8 +175,24 @@ export function useBody(
             }
             case '__traitNames': {
                 if (filterObject) {
-                    if (filterObject.length > 0)
-                        base.filter('terms', '__traitNames', filterObject)
+                    base.filter('bool', (q) => {
+                        if (filterObject.classifications?.length > 0)
+                            q.orFilter(
+                                'terms',
+                                '__traitNames',
+                                filterObject.classifications
+                            )
+
+                        if (filterObject.empty === true) {
+                            q.orFilter('bool', (query) => {
+                                return query.filter('bool', (query2) => {
+                                    query2.notFilter('exists', '__traitNames')
+                                    return query2
+                                })
+                            })
+                        }
+                        return q
+                    })
                 }
 
                 break
@@ -141,6 +227,20 @@ export function useBody(
                 }
                 break
             }
+            case 'isRootCategory': {
+                if (filterObject) {
+                    base.notFilter('exists', '__parentCategory')
+                }
+                break
+            }
+
+            case 'parentCategory': {
+                if (filterObject) {
+                    base.orFilter('term', '__categories', filterObject)
+                    base.orFilter('term', '__parentCategory', filterObject)
+                }
+                break
+            }
             case 'guid': {
                 if (filterObject) {
                     base.filter('term', '__guid', filterObject)
@@ -151,81 +251,80 @@ export function useBody(
             case 'table':
             case 'properties': {
                 if (filterObject) {
-                    filterObject.forEach((element) => {
-                        if (element.operator === 'equals') {
-                            if (element.value !== '') {
-                                base.filter(
-                                    'term',
-                                    element.operand,
-                                    element.value
-                                )
+                    console.log(filterObject)
+                    Object.keys(filterObject).forEach((key) => {
+                        filterObject[key].forEach((element) => {
+                            if (element.value) {
+                                if (element.operator === 'equals') {
+                                    base.filter(
+                                        'term',
+                                        element.operand,
+                                        element.value
+                                    )
+                                }
+                                if (element.operator === 'notEquals') {
+                                    base.notFilter(
+                                        'term',
+                                        element.operand,
+                                        element.value
+                                    )
+                                }
+                                if (element.operator === 'startsWith') {
+                                    base.filter(
+                                        'prefix',
+                                        element.operand,
+                                        element.value
+                                    )
+                                }
+                                if (element.operator === 'endsWith') {
+                                    base.filter(
+                                        'wildcard',
+                                        element.operand,
+                                        `*${element.value}`
+                                    )
+                                }
+                                if (element.operator === 'pattern') {
+                                    base.filter(
+                                        'regexp',
+                                        element.operand,
+                                        element.value
+                                    )
+                                }
+                                if (element.operator === 'isNull') {
+                                    base.notFilter('exists', element.operand)
+                                }
+                                if (element.operator === 'isNotNull') {
+                                    base.filter('exists', element.operand)
+                                }
+                                if (element.operator === 'greaterThan') {
+                                    base.filter('range', element.operand, {
+                                        gt: element.value,
+                                    })
+                                }
+                                if (element.operator === 'greaterThanEqual') {
+                                    base.filter('range', element.operand, {
+                                        gte: element.value,
+                                    })
+                                }
+                                if (element.operator === 'lessThan') {
+                                    base.filter('range', element.operand, {
+                                        gt: element.value,
+                                    })
+                                }
+                                if (element.operator === 'lessThanEqual') {
+                                    base.filter('range', element.operand, {
+                                        gte: element.value,
+                                    })
+                                }
+                                if (element.operator === 'boolean') {
+                                    base.filter(
+                                        'term',
+                                        element.operand,
+                                        element.value
+                                    )
+                                }
                             }
-                        }
-                        if (element.operator === 'notEquals') {
-                            if (element.value !== '') {
-                                base.notFilter(
-                                    'term',
-                                    element.operand,
-                                    element.value
-                                )
-                            }
-                        }
-                        if (element.operator === 'startsWith') {
-                            if (element.value !== '') {
-                                base.filter(
-                                    'prefix',
-                                    element.operand,
-                                    element.value
-                                )
-                            }
-                        }
-                        if (element.operator === 'endsWith') {
-                            if (element.value !== '') {
-                                base.filter(
-                                    'wildcard',
-                                    element.operand,
-                                    `*${element.value}`
-                                )
-                            }
-                        }
-                        if (element.operator === 'pattern') {
-                            if (element.value !== '') {
-                                base.filter(
-                                    'regexp',
-                                    element.operand,
-                                    element.value
-                                )
-                            }
-                        }
-                        if (element.operator === 'isNull') {
-                            base.notFilter('exists', element.operand)
-                        }
-                        if (element.operator === 'isNotNull') {
-                            base.filter('exists', element.operand)
-                        }
-                        if (element.operator === 'greaterThan') {
-                            base.filter('range', element.operand, {
-                                gt: element.value,
-                            })
-                        }
-                        if (element.operator === 'greaterThanEqual') {
-                            base.filter('range', element.operand, {
-                                gte: element.value,
-                            })
-                        }
-                        if (element.operator === 'lessThan') {
-                            base.filter('range', element.operand, {
-                                gt: element.value,
-                            })
-                        }
-                        if (element.operator === 'lessThanEqual') {
-                            base.filter('range', element.operand, {
-                                gte: element.value,
-                            })
-                        }
-                        if (element.operator === 'boolean') {
-                            base.filter('term', element.operand, element.value)
-                        }
+                        })
                     })
                 }
                 break
@@ -312,7 +411,8 @@ export function useBody(
     if (
         !facets?.typeNames?.includes('AtlasGlossary') &&
         !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
-        !facets?.typeNames?.includes('AtlasGlossaryCategory')
+        !facets?.typeNames?.includes('AtlasGlossaryCategory') &&
+        !facets?.guid
     ) {
         // Global TypeName Filters
         base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])

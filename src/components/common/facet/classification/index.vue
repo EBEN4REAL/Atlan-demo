@@ -1,56 +1,57 @@
 <template>
-    <div class="flex items-center justify-between px-4 mb-2">
-        <SearchAdvanced
-            ref="classificationSearchRef"
-            placeholder="Search classifications"
-            :autofocus="true"
-            v-model="queryText"
-            class="-mt-1.5"
-        >
-        </SearchAdvanced>
-    </div>
-    <a-checkbox-group
-        class="w-full px-4"
-        v-model:value="localValue"
-        @change="handleChange"
-    >
-        <div class="flex flex-col w-full">
-            <template v-for="item in filteredList" :key="item.id">
-                <div class="status">
-                    <a-checkbox
-                        :value="item.name"
-                        :class="$style.atlanReverse"
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                icon="Shield"
-                                class="text-pink-400"
-                            ></AtlanIcon>
-                            <span class="mb-0 ml-1 text-gray">
-                                {{ item.displayName }}
-                            </span>
-                        </div>
-                    </a-checkbox>
-                </div>
-            </template>
-
-            <div class="mt-1">
-                <a-checkbox
-                    :value="null"
-                    class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
-                >
-                    <component
-                        :is="noStatus"
-                        class="inline-flex self-center w-auto h-4 mb-0.5"
-                    />
-                    <span class="mb-0 ml-1 text-gray-500"
-                        >No Classification</span
-                    >
-                </a-checkbox>
-            </div>
+    <div class="w-full">
+        <div class="flex items-center justify-between px-4">
+            <SearchAdvanced
+                ref="classificationSearchRef"
+                v-model="queryText"
+                placeholder="Search classifications"
+                class="-mt-1.5"
+                :allowClear="true"
+            >
+            </SearchAdvanced>
         </div>
-    </a-checkbox-group>
+
+        <div class="w-full mt-1 overflow-y-auto h-44">
+            <a-checkbox-group
+                class="w-full px-3"
+                v-model:value="localValue.classifications"
+            >
+                <div class="flex flex-col w-full">
+                    <template v-for="item in filteredList" :key="item.id">
+                        <div class="status">
+                            <a-checkbox
+                                :value="item.name"
+                                :class="$style.atlanReverse"
+                                class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Shield"
+                                        class="text-pink-400"
+                                    ></AtlanIcon>
+                                    <span class="mb-0 ml-1 text-gray">
+                                        {{ item.displayName }}
+                                    </span>
+                                </div>
+                            </a-checkbox>
+                        </div>
+                    </template>
+                </div>
+            </a-checkbox-group>
+        </div>
+        <div class="px-4 pt-1" v-if="showNoClassification">
+            <a-checkbox
+                v-model:checked="localValue.empty"
+                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+            >
+                <component
+                    :is="noStatus"
+                    class="inline-flex self-center w-auto h-4 mb-0.5"
+                />
+                <span class="mb-0 ml-1 text-gray-500">No Classification</span>
+            </a-checkbox>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -63,13 +64,11 @@
         toRefs,
         watch,
     } from 'vue'
-    import { certificateList } from '~/constant/certification'
-    import noStatus from '~/assets/images/status/nostatus.svg'
 
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { useDebounceFn, useTimeoutFn, useVModels } from '@vueuse/core'
+    import noStatus from '~/assets/images/status/nostatus.svg'
+    import { useTimeoutFn, useVModels } from '@vueuse/core'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import { useTypedefStore } from '~/store/typedef'
+
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     export default defineComponent({
@@ -78,12 +77,23 @@
         },
         props: {
             modelValue: {
+                type: Object,
                 required: false,
+                default() {
+                    return {}
+                },
+            },
+            showNoClassification: {
+                type: Boolean,
+                default() {
+                    return true
+                },
             },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const queryText = ref('')
+            const { showNoClassification } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -97,10 +107,17 @@
                 )
             )
 
-            const handleChange = () => {
+            watch(localValue.value, (prev, cur) => {
+                console.log(localValue)
+                if (!localValue.value.classifications) {
+                    delete localValue.value.classifications
+                }
+                if (!localValue.value.empty) {
+                    delete localValue.value.empty
+                }
                 modelValue.value = localValue.value
                 emit('change')
-            }
+            })
 
             const classificationSearchRef: Ref<null | HTMLInputElement> =
                 ref(null)
@@ -118,9 +135,10 @@
                 filteredList,
                 localValue,
                 noStatus,
-                handleChange,
+
                 forceFocus,
                 queryText,
+                showNoClassification,
             }
         },
     })

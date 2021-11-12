@@ -1,40 +1,61 @@
 <template>
-    <div class="">
-        <div class="flex items-center justify-between px-4 mb-2">
+    <div class="w-full">
+        <div class="flex items-center justify-between px-4">
             <SearchAdvanced
                 ref="ownerSearchRef"
                 v-model="queryText"
                 :placeholder="placeholder"
                 class="-mt-1.5"
+                :allowClear="true"
                 size="minimal"
             >
                 <template #tab>
                     <div class="flex gap-1">
-                        <AtlanIcon
-                            :class="
-                                componentType === 'users'
-                                    ? 'text-primary font-bold'
-                                    : ''
-                            "
-                            icon="User"
-                            class="mx-auto"
-                            @click="handleUserClick"
-                        />
-                        <AtlanIcon
-                            :class="
-                                componentType === 'groups'
-                                    ? 'text-primary font-bold'
-                                    : ''
-                            "
-                            icon="GroupStatic"
-                            class="mx-auto"
-                            @click="handleGroupClick"
-                        />
+                        <a-tooltip title="users" placement="top">
+                            <div
+                                :class="
+                                    !enableTabs.includes('users')
+                                        ? 'pointer-events-none cursor-not-allowed'
+                                        : ''
+                                "
+                            >
+                                <AtlanIcon
+                                    :class="
+                                        componentType === 'users'
+                                            ? 'text-primary font-bold '
+                                            : ''
+                                    "
+                                    icon="User"
+                                    class="mx-auto"
+                                    @click="handleUserClick"
+                                />
+                            </div>
+                        </a-tooltip>
+                        <a-tooltip title="groups" placement="top">
+                            <div
+                                :class="
+                                    !enableTabs.includes('groups')
+                                        ? 'pointer-events-none cursor-not-allowed'
+                                        : ''
+                                "
+                            >
+                                <AtlanIcon
+                                    :class="
+                                        componentType === 'groups'
+                                            ? 'text-primary font-bold'
+                                            : ''
+                                    "
+                                    icon="GroupStatic"
+                                    class="mx-auto"
+                                    @click="handleGroupClick"
+                                />
+                            </div>
+                        </a-tooltip>
                     </div>
                 </template>
             </SearchAdvanced>
         </div>
-        <div class="">
+        <div class="mt-1">
             <Users
                 v-if="componentType == 'users'"
                 v-model="localValue.ownerUsers"
@@ -48,7 +69,7 @@
         </div>
         <div class="px-4 pt-1" v-if="showNoOwners">
             <a-checkbox
-                :checked="null"
+                v-model:checked="localValue.empty"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
             >
                 <component
@@ -107,13 +128,24 @@
                     return true
                 },
             },
+            enableTabs: {
+                type: Object as PropType<Array<any>>,
+                default: ['users', 'groups'],
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNoOwners } = toRefs(props)
+            const { showNoOwners, enableTabs } = toRefs(props)
             const componentType = ref('users')
+            if (enableTabs.value.length < 2) {
+                watch(enableTabs, () => {
+                    componentType.value = enableTabs.value[0] as
+                        | 'users'
+                        | 'groups'
+                })
+            }
 
             const queryText = ref('')
 
@@ -135,6 +167,7 @@
             })
 
             watch(localValue.value, (prev, cur) => {
+                console.log('changed')
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
                 }
@@ -142,7 +175,7 @@
                     delete localValue.value.ownerGroups
                 }
                 modelValue.value = localValue.value
-                emit('change')
+                emit('change', localValue.value)
             })
 
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
@@ -157,6 +190,7 @@
             }
 
             return {
+                enableTabs,
                 handleGroupClick,
                 componentType,
                 handleUserClick,

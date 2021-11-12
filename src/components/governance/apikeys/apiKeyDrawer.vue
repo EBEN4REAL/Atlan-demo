@@ -4,11 +4,18 @@
             <div
                 class="relative flex items-center justify-between px-4 pb-5 border-b "
             >
-                <div class="text-lg font-bold">
+                <div
+                    class="text-lg font-bold"
+                    v-if="!generatedAPIKey.attributes"
+                >
                     {{
                         apiKeyDirty.id ? apiKeyDirty.displayName : 'Add new key'
                     }}
                 </div>
+                <div class="text-lg font-bold" v-else>
+                    {{ generatedAPIKey.attributes.displayName }}
+                </div>
+
                 <div
                     class="top-0 p-1 border border-gray-300 rounded cursor-pointer  right-2"
                 >
@@ -94,33 +101,44 @@
             </div>
             <div
                 v-else
-                class="flex flex-col items-center justify-center w-full h-full px-4 py-3 "
+                class="flex flex-col items-center justify-center w-full h-full px-4 "
             >
-                <div class="mb-3 text-xl font-bold">
-                    {{ generatedAPIKey.attributes.displayName }}
-                </div>
-                <div class="flex p-1 mb-3 bg-gray-300 rounded">
-                    {{ generatedAPIKey.attributes.accessToken.substr(0, 30) }}
-                    <span
-                        ><AtlanIcon
-                            icon="CopyOutlined"
-                            class="ml-2 cursor-pointer"
-                            @click="handleCopy"
-                        ></AtlanIcon
-                    ></span>
-                </div>
-                <!-- <div class="flex justify-between w-full mb-3"> -->
-                <!-- <div @click="handleCopy">Copy</div> -->
+                <component :is="SuccessIllustration" class="mb-5"></component>
+                <div class="mb-5 text-xl font-bold">API key generated</div>
                 <div
-                    @click="handleDownload"
-                    class="cursor-pointer text-primary"
+                    class="w-full h-24 p-4 mb-5 overflow-y-scroll bg-gray-100 border rounded "
                 >
-                    Download
+                    {{ generatedAPIKey.attributes.accessToken }}
                 </div>
-                <!-- </div> -->
+                <div class="flex items-center justify-between w-full mb-3">
+                    <AtlanBtn
+                        class="px-10 bg-transparent border-none text-primary"
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                        @click="handleDownload"
+                    >
+                        <AtlanIcon icon="Download" class="ml-2"></AtlanIcon>
+                        Download
+                    </AtlanBtn>
+
+                    <AtlanBtn
+                        class="px-10"
+                        size="sm"
+                        color="primary"
+                        padding="compact"
+                        @click="handleCopy"
+                    >
+                        <AtlanIcon icon="CopyOutlined" class="ml-2"></AtlanIcon>
+                        Copy
+                    </AtlanBtn>
+                </div>
             </div>
         </div>
-        <div class="flex justify-end px-4 py-5 border-t">
+        <div
+            class="flex justify-end px-4 py-5 border-t"
+            v-if="!generatedAPIKey.attributes"
+        >
             <!-- <AtlanBtn
                     class="mr-3 bg-transparent border-none text-error"
                     size="lg"
@@ -128,7 +146,7 @@
                 >
                     <AtlanIcon icon="Delete" /> <span>Delete</span></AtlanBtn
                 > -->
-            <div class="flex" v-if="!generatedAPIKey.attributes">
+            <div class="flex">
                 <AtlanBtn
                     color="secondary"
                     padding="compact"
@@ -149,16 +167,14 @@
                     <span v-else>Save</span></AtlanBtn
                 >
             </div>
-            <div v-else>
-                <AtlanBtn
-                    color="primary"
-                    padding="compact"
-                    size="sm"
-                    class="px-5 mr-3 shadow-sm"
-                    @click="handleDone"
-                >
-                    <span>Done</span></AtlanBtn
-                >
+        </div>
+        <div v-else class="px-4 py-6">
+            <div class="flex p-2 rounded-md bg-warning-light">
+                <AtlanIcon icon="Info" class="h-6 mr-2" />
+                <div>
+                    Please copy or download this api key as it will be only
+                    visible this one time
+                </div>
             </div>
         </div>
     </div>
@@ -177,6 +193,7 @@ import { downloadFile } from '~/utils/library/download'
 import { copyToClipboard } from '~/utils/clipboard'
 import { formatDateTime } from '~/utils/date'
 
+import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
 export default defineComponent({
     name: 'APIKeyDrawer',
     components: { PillGroup, PersonaList, Pill, AtlanBtn },
@@ -266,6 +283,7 @@ export default defineComponent({
             handleCopy,
             handleDone,
             generatedAPIKey,
+            SuccessIllustration,
         }
     },
 })

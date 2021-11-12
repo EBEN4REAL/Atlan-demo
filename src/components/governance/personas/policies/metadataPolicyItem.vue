@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 border rounded border-primary">
+    <div class="py-6 mb-2 border rounded border-primary">
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"

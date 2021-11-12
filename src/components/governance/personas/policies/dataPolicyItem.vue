@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 border-b border-gray-300">
+    <div class="py-6 mb-2 border rounded border-primary">
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"
@@ -120,6 +120,7 @@
 
         <div class="flex items-center gap-x-2">
             <a-switch
+                :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
                 @update:checked="policy.allow = !$event"
             />
@@ -295,3 +296,18 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .required:after {
+        content: ' *';
+        color: red;
+    }
+    .plus-btn:focus {
+        border-color: #7b9ce3;
+        border-right-width: 1 px !important;
+        outline: 0;
+        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+    }
+    .checked {
+        background: #e04f1a;
+    }
+</style>

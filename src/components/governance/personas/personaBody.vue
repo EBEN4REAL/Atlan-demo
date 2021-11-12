@@ -14,7 +14,7 @@
                     >
                     <div
                         class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
-                        v-if="t?.data?.key === 'details'"
+                        v-if="t?.data?.key === 'policies'"
                         :class="
                             activeTabKey === t?.data?.key
                                 ? 'text-primary bg-primary-light'

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 border border-gray-300 rounded  card group"
+        class="flex flex-col py-4 mb-2 border border-gray-300 rounded shadow  group"
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">

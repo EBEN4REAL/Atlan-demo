@@ -51,7 +51,7 @@
                         <div
                             class="text-sm tracking-tight text-gray-500 uppercase "
                         >
-                            {{ item.typeName }}
+                            {{ assetTypeLabel(item) || item.typeName }}
                         </div>
                     </div>
 
@@ -252,7 +252,11 @@
                 </div>
 
                 <div class="flex">
-                    <p class="text-xs text-gray-500">{{ description(item) }}</p>
+                    <span
+                        class="text-xs text-gray-500"
+                        v-if="preference.display.includes('description')"
+                        >{{ description(item) }}</span
+                    >
                 </div>
             </div>
         </div>
@@ -376,6 +380,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 description,
+                assetTypeLabel,
             } = useAssetInfo()
 
             // function getTruncatedUsers(arr: string[], wordCount: number = 30) {
@@ -472,6 +477,7 @@
                 tableName,
                 viewName,
                 preference,
+                assetTypeLabel,
                 description,
             }
         },

@@ -25,7 +25,6 @@
     export default defineComponent({
         props: {
             modelValue: {
-                type: String || Array,
                 required: false,
             },
             list: {

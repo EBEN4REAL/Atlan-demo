@@ -260,7 +260,7 @@
 
             const { mutate, isLoading } = updateAsset(body)
 
-            const localDescription = ref(description(selectedAsset.value))
+            const localDescription = ref(description(selectedAsset?.value))
 
             watch(localDescription, () => {
                 entity.value.attributes.userDescription = localDescription.value

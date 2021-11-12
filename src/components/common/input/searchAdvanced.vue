@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-    import { useTimeoutFn, useVModels } from '@vueuse/core'
+    import { useMagicKeys, useTimeoutFn, useVModels } from '@vueuse/core'
     import {
         computed,
         defineComponent,
@@ -60,6 +60,7 @@
         ref,
         toRefs,
         PropType,
+        watch,
     } from 'vue'
     import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -126,6 +127,15 @@
                 localValue.value = ''
                 handleChange()
             }
+
+            const { Escape /* keys you want to monitor */ } = useMagicKeys()
+            watch(Escape, (v) => {
+                if (v) {
+                    if (searchBar.value?.isFocused && localValue.value) {
+                        clearInput()
+                    }
+                }
+            })
 
             return {
                 localValue,

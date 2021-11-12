@@ -32,7 +32,10 @@
             :closable="false"
             :destroyOnClose="true"
         >
-            <AddGroup @closeDrawer="isGroupDrawerVisible = false" />
+            <AddGroup
+                @closeDrawer="isGroupDrawerVisible = false"
+                @refresh="getGroupList"
+            />
         </a-drawer>
 
         <div

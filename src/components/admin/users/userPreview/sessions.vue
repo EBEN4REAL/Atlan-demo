@@ -29,14 +29,14 @@
     </div>
     <template v-else>
         <h1 class="px-4 py-2 text-xl font-bold">Sessions</h1>
-        <!-- <div class="mx-4">
+        <div class="mx-4">
             <SearchAndFilter
-                v-model="searchText"
+                v-model:value="searchText"
                 :placeholder="`Search via IP address`"
                 size="minimal"
                 class=""
             />
-        </div> -->
+        </div>
         <section class="overflow-y-auto componentHeight">
             <template
                 v-for="(s, x) in searchText.length

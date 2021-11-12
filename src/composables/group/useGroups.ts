@@ -87,8 +87,8 @@ export default function useGroups(groupListAPIParams: {
         () => {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((group: any) =>
-                      getFormattedGroup(group)
-                  )
+                    getFormattedGroup(group)
+                )
                 : []
 
             if (data && data.value) {

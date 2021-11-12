@@ -22,3 +22,4 @@ yarn-error.log*
 
 storybook-static
 stats.html
+.env.development

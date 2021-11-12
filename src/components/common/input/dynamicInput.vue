@@ -87,7 +87,7 @@
     </a-select>
     <a-modal
         v-model:visible="createNewVisibility"
-        title="Basic Modal"
+        title="Create Credential"
         width="60%"
         :closable="false"
     >
@@ -429,17 +429,6 @@
             }
             const value: Ref<any> = ref(props.modelValue)
 
-            const initValueTreeSelected = () => {
-                const result = []
-                if (props.dataType === 'asyncTreeSelect' && props.modelValue) {
-                    const obj = props.modelValue
-                    Object.keys(obj).forEach((el) => {
-                        result.push(el)
-                    })
-                }
-                return result
-            }
-            const valueTreeSelected: Ref<any> = ref(initValueTreeSelected())
             watch(
                 [loading, error],
                 () => {
@@ -495,9 +484,15 @@
                 })
                 return allValues
             }
+            const valueTreeSelected: Ref<any> = ref()
+
             onMounted(() => {
-                if (props.dataType === 'asyncTreeSelect')
+                if (props.dataType === 'asyncTreeSelect') {
+                    valueTreeSelected.value = parseDBSchemaValue(
+                        props.modelValue
+                    )
                     value.value = parseDBSchemaValue(modelValue.value)
+                }
                 // for async select, load on mount if possible
                 else if (
                     props.dataType === 'asyncSelect' &&

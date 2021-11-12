@@ -209,6 +209,18 @@ import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
 import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 
+import Download from '~/assets/images/icons/download.svg'
+import Upload from '~/assets/images/icons/upload.svg'
+import Enum from '~/assets/images/icons/label.svg'
+import Boolean from '~/assets/images/icons/boolean.svg'
+import String from '~/assets/images/icons/string.svg'
+import MoveItem from '~/assets/images/icons/move-item.svg'
+import DateTime from '~/assets/images/icons/datetime.svg'
+import Number from '~/assets/images/icons/number.svg'
+
+import NoAvatar from '~/assets/images/icons/no-avatar.svg'
+import Enter from '~/assets/images/icons/enter.svg'
+
 export default {
     RemoveUser,
     NoRuns,
@@ -418,4 +430,14 @@ export default {
     Refresh,
     ErrorLogs,
     EmptyLogs,
+    Download,
+    Upload,
+    Enum,
+    Boolean,
+    String,
+    MoveItem,
+    DateTime,
+    Number,
+    NoAvatar,
+    Enter,
 }

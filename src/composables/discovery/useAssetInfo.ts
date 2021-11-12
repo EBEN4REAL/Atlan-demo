@@ -15,6 +15,7 @@ import { formatDateTime } from '~/utils/date'
 import useDiscoveryStore from '~/store/discovery'
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
+import { assetActions } from '~/constant/assetActions'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -122,6 +123,33 @@ export default function useAssetInfo() {
     }
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))
+    }
+
+    const getActions = (asset) => {
+        return assetActions.filter((i) => {
+            let flag = true
+            if (i.includes) {
+                if (
+                    !i.includes.some(
+                        (t) =>
+                            t.toLowerCase() === assetType(asset)?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            if (i.excludes) {
+                if (
+                    i.excludes.some(
+                        (t) =>
+                            t.toLowerCase() === assetType(asset)?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            return flag
+        })
     }
 
     const getAnchorName = (asset: assetInterface) =>
@@ -385,6 +413,10 @@ export default function useAssetInfo() {
                 : useTimeAgo(attributes(asset)?.announcementUpdatedAt).value
         }
         return ''
+    }
+
+    const webURL = (asset: assetInterface) => {
+        return attributes(asset)?.webUrl
     }
 
     const discoveryStore = useDiscoveryStore()
@@ -707,5 +739,7 @@ export default function useAssetInfo() {
         dataTypeImage,
         dataTypeImageForColumn,
         assetTypeLabel,
+        getActions,
+        webURL,
     }
 }

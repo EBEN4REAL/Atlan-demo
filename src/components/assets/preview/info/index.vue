@@ -14,6 +14,24 @@
             class="mx-5"
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
+
+        <div class="px-5" v-if="webURL(selectedAsset)">
+            <a-button
+                block
+                @click="handlePreviewClick"
+                class="flex items-center justify-between"
+                ><div class="flex items-center">
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
+                        class="h-5 mr-1"
+                    />
+                    {{
+                        assetTypeLabel(selectedAsset) || selectedAsset.typeName
+                    }}
+                </div>
+                <AtlanIcon icon="External" />
+            </a-button>
+        </div>
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 px-5"
@@ -252,6 +270,8 @@
                 sourceCreatedAt,
                 classifications,
                 definition,
+                webURL,
+                assetTypeLabel,
             } = useAssetInfo()
 
             const entity = ref({
@@ -340,6 +360,10 @@
                 console.log('edit click')
             }
 
+            const handlePreviewClick = () => {
+                window.open(webURL(selectedAsset.value), '_blank').focus()
+            }
+
             return {
                 localDescription,
                 selectedAsset,
@@ -376,6 +400,9 @@
                 classificationBody,
                 actions,
                 switchTab,
+                webURL,
+                handlePreviewClick,
+                assetTypeLabel,
             }
         },
     })

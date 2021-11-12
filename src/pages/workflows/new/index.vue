@@ -18,13 +18,7 @@
     </div>
     <div v-else class="flex w-full h-full">
         <div
-            class="
-                flex flex-col
-                h-full
-                bg-white
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
         >
             <AtlanBtn
                 class="m-2"
@@ -258,7 +252,10 @@
             const isFilterAppplied = ref(false)
 
             const shootQuery = () => {
-                const filtered = transformToFilters(AllFilters.value)
+                const filtered = transformToFilters(
+                    AllFilters.value,
+                    'display_name'
+                )
                 //! check if filter is user specific applied check to show empty state
 
                 const filterCopy = JSON.parse(JSON.stringify(filtered?.filter))

@@ -5,6 +5,7 @@ export interface State {
     activeFacetTab: string[]
     activeFacet: any
     preferences: any
+    activePostFacet: any
 }
 
 export const state: State = {
@@ -12,4 +13,5 @@ export const state: State = {
     activeFacetTab: useStorage('activeFacetTab', []),
     preferences: useStorage('preferences', {}),
     activeFacet: useStorage('activeFacet', {}),
+    activePostFacet: useStorage('activePostFacet', {}),
 }

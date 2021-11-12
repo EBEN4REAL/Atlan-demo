@@ -150,9 +150,17 @@
                 return [...arr, ...cmList.value]
             })
 
-            const totalFilteredCount = computed(
-                () => Object.keys(localValue.value).length
-            )
+            const totalFilteredCount = computed(() => {
+                console.log(Object.keys(localValue.value))
+                if (
+                    !!Object.keys(localValue.value).find(
+                        (k) => k === 'typeName'
+                    )
+                ) {
+                    return Object.keys(localValue.value).length - 1
+                }
+                return Object.keys(localValue.value).length
+            })
 
             const handleChange = () => {
                 modelValue.value = localValue.value

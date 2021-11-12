@@ -19,7 +19,7 @@
                     />
                 </div>
                 <router-link
-                    to="/"
+                    :to="assetURL(selectedAsset)"
                     class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
@@ -217,6 +217,10 @@
                 isProfile.value = true
             }
 
+            const assetURL = (asset) => ({
+                path: `/assets/${asset.guid}`,
+            })
+
             watch(
                 () => route.params.id,
                 (newId) => {
@@ -282,6 +286,7 @@
                 certificateStatusMessage,
                 isProfile,
                 actions,
+                assetURL,
             }
         },
     })

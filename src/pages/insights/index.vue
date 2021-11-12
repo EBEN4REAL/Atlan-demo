@@ -34,6 +34,7 @@
             const route = useRoute()
             const { getQueryFolderNamespace } = useQueryFolderNamespace()
             const savedQueryGuidFromURL = ref(route.query?.id)
+
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
             const savedQueryInfo = ref(undefined) as unknown as Ref<
@@ -69,7 +70,22 @@
                 // update: accessStore.checkPermission('UPDATE_GROUP'),
             }))
 
+            const databaseQualifiedNameFromURL =
+                route.query?.databaseQualifiedNameFromURL
+
+            const schemaNameFromURL = route.query?.schemaNameFromURL
+            const tableNameFromURL = route.query?.tableNameFromURL
+            const columnNameFromURL = route.query?.columnNameFromURL
+
             /* --------PROVIDERS---- */
+            provide(
+                'databaseQualifiedNameFromURL',
+                databaseQualifiedNameFromURL
+            )
+            provide('schemaNameFromURL', schemaNameFromURL)
+            provide('tableNameFromURL', tableNameFromURL)
+            provide('columnNameFromURL', columnNameFromURL)
+
             provide('savedQueryGuidFromURL', savedQueryGuidFromURL)
             provide('savedQueryInfo', savedQueryInfo)
             provide('queryFolderNamespace', queryFolderNamespace)
@@ -115,9 +131,13 @@
                     }
                 })
             }
+
             onMounted(() => {
                 fetchQueryFolderNamespace()
-                if (savedQueryGuidFromURL.value) fetchAndPassSavedQueryInfo()
+
+                if (savedQueryGuidFromURL.value) {
+                    fetchAndPassSavedQueryInfo()
+                }
             })
         },
     })

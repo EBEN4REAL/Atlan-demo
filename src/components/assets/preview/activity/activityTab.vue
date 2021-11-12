@@ -51,7 +51,7 @@
                 </a-timeline-item>
             </a-timeline>
             <div
-                v-if="(!checkAuditsCount && !isAllLogsFetched) || true"
+                v-if="!checkAuditsCount && !isAllLogsFetched"
                 class="flex justify-center mb-8 text-center"
             >
                 <a-button

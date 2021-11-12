@@ -4,7 +4,6 @@ import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 import { eventMap } from '~/constant/events'
 import { Entity } from '~/services/meta/entity'
 
-
 const useAssetAudit = (params: any, guid: string) => {
     const response = reactive({
         audits: [] as any,
@@ -56,7 +55,8 @@ const useAssetAudit = (params: any, guid: string) => {
     const getEntityUpdateLogs = (logs: any) => {
         const data = {
             displayValue: 'Asset was updated',
-            value: [],
+            value: <any>[],
+            component: '',
         }
         if ('attributes' in logs) {
             const { attributes } = logs
@@ -68,8 +68,9 @@ const useAssetAudit = (params: any, guid: string) => {
                 'shortDescription' in attributes
 
             if (owners) {
-                let users = [];
-                let groups = [];
+                let users = <any>[];
+                let groups = <any>[];
+
 
                 if (attributes.ownerUsers) {
                     users = attributes.ownerUsers.split(',')
@@ -81,11 +82,16 @@ const useAssetAudit = (params: any, guid: string) => {
                 }
                 if (attributes.ownerUsers === '' && attributes.ownerGroups === '') {
                     data.displayValue = 'owners'
+                    data.component = 'Owners'
+
                     return data
                 }
 
                 data.displayValue = 'owners'
                 data.value = [...users, ...groups]
+
+                data.component = 'Owners'
+
                 return data
             }
             if (experts) {
@@ -96,12 +102,15 @@ const useAssetAudit = (params: any, guid: string) => {
                 }
                 data.displayValue = 'experts'
                 data.value = users
+                data.component = 'Experts'
+
                 return data
             }
 
             if (status) {
                 data.value = attributes
                 data.displayValue = 'status'
+                data.component = 'Status'
 
                 return data
             }
@@ -112,6 +121,7 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = value
 
                 data.displayValue = 'description'
+                data.component = 'Description'
 
                 return data
             }
@@ -126,6 +136,7 @@ const useAssetAudit = (params: any, guid: string) => {
             const data: activityInterface = {
                 displayValue: '',
                 value: [],
+                component: '',
             }
 
             if (eventDetail && eventDetail.length > 2) {

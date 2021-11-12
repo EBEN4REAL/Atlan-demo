@@ -282,7 +282,7 @@
             </div>
         </template>
     </a-popover>
-    <a-popover :visible="showFolderPopover" placement="right">
+    <!-- <a-popover :visible="showFolderPopover" placement="right">
         <template #content>
             <QueryFolderSelector
                 :connector="currentConnector"
@@ -308,7 +308,7 @@
                 >
             </div>
         </template>
-    </a-popover>
+    </a-popover> -->
 </template>
 
 <script lang="ts">
@@ -375,6 +375,11 @@
                 required: true,
                 default: 'root',
             },
+            // refetchTreeData: {
+            //     type: Function,
+            //     required: false,
+            //     default: () => {},
+            // },
         },
         setup(props) {
             const { canUserDeleteFolder } = useAccess()
@@ -440,6 +445,8 @@
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
+
+                            // console.log('query entity1: ', t)
                             activeInlineTabCopy.assetSidebar.assetInfo =
                                 t.entity
                             activeInlineTabCopy.assetSidebar.isVisible = true
@@ -682,13 +689,6 @@
 
             const changeFolder = (item: any) => {
                 if (selectedFolder.value) {
-                    console.log('folder to be updated: ', item)
-                    // useAddEvent('insights', 'folder', 'moved', undefined)
-
-                    console.log(
-                        'selected folder to use as parent: ',
-                        selectedFolder.value
-                    )
                     const newEntity = item
                     newEntity.attributes.parentFolderQualifiedName =
                         selectedFolder.value.attributes.qualifiedName
@@ -704,15 +704,19 @@
                     isUpdating.value = true
 
                     const { data, error, isLoading } =
-                        Insights.CreateQueryFolder({
-                            entity: newEntity,
-                        })
+                        Insights.CreateQueryFolder(
+                            {
+                                entity: newEntity,
+                            },
+                            {}
+                        )
                     watch([error, data, isLoading], (newError) => {
                         // if (newError) {
 
                         if (isLoading.value == false) {
                             isUpdating.value = false
                             if (error.value == undefined) {
+                                // props.refetchTreeData()
                                 message.success({
                                     content: `Folder moved successfully`,
                                 })

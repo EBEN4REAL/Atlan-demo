@@ -764,11 +764,25 @@
                             item.value
                         )}\" LIMIT 50;\n`
 
+                        // console.log('selected query: ', item.value)
+
+                        let schemaQualifiedName =
+                            item.value?.databaseQualifiedName +
+                            '/' +
+                            item.value?.schemaName
+
                         const newText = `${newQuery}${prevText}`
                         activeInlineTabCopy.playground.editor.text = newText
                         /* Setting the current connectors context to editor context so that it can be run */
-                        activeInlineTabCopy.playground.editor.context =
-                            activeInlineTabCopy.explorer.schema.connectors
+                        // activeInlineTabCopy.playground.editor.context =
+                        //     activeInlineTabCopy.explorer.schema.connectors
+
+                        // setting the editor context based on query even if we don't have a schema or database selected in explorer
+                        activeInlineTabCopy.playground.editor.context = {
+                            attributeName: 'schemaQualifiedName',
+                            attributeValue: schemaQualifiedName,
+                        }
+
                         modifyActiveInlineTab(
                             activeInlineTabCopy,
                             inlineTabs,

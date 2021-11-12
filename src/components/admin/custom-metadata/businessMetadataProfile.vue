@@ -40,17 +40,17 @@
                                 :placeholder="'Search for property'"
                             >
                                 <template #suffix>
-                                    <fa
+                                    <AtlanIcon
                                         v-if="!attrsearchText"
-                                        icon="fal search"
-                                        class="text-gray-500"
-                                    ></fa>
-                                    <fa
+                                        icon="Search"
+                                        class="h-4"
+                                    />
+                                    <AtlanIcon
                                         v-else
-                                        icon="fal times-circle"
-                                        class="text-red-600 cursor-pointer"
+                                        icon="Cancel"
+                                        class="h-4 text-red-600"
                                         @click="attrsearchText = ''"
-                                    ></fa>
+                                    />
                                 </template>
                             </a-input>
                         </div>

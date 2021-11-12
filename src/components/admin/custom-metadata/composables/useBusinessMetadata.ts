@@ -61,8 +61,6 @@ export default function useBusinessMetadata() {
     watch(
       [BMListLoading, BMListError],
       ([newLoading, newError]) => {
-        console.log('newLoading', newLoading);
-
         isLoading.value = newLoading
         error.value = newError
       },
@@ -73,8 +71,6 @@ export default function useBusinessMetadata() {
     watch(
       () => BMResponse?.value?.businessMetadataDefs,
       (n) => {
-        console.log("JNJBJJBJNJ", n);
-
         if (n) {
           const list = n.map(
             (bm: BMMap) => ({

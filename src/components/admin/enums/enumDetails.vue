@@ -10,7 +10,7 @@
                 </div>
                 <div>
                     <a-button
-                        v-if="!isEditing && editPermission"
+                        v-if="!isEditing"
                         shape="circle"
                         class="rounded-md ant-btn ant-btn-primary"
                         @click="() => (isEditing = true)"
@@ -78,8 +78,8 @@
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useUpdateEnums } from './composables/useModifyEnums'
-    import { useAccessStore } from '~/services/access/accessStore'
-    import CreateUpdateInfo from '@/common/createUpdateInfo.vue'
+    // import { useAccessStore } from '~/services/access/accessStore'
+    import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
 
     export default defineComponent({
         components: {
@@ -96,10 +96,10 @@
             // Component state essentials
             const localEnum = reactive({ ...props.selectedEnum })
             const isEditing = ref(props.isNew || false)
-            const accessStore = useAccessStore()
-            const editPermission = computed(() =>
-                accessStore.checkPermission('UPDATE_BUSINESS_METADATA')
-            )
+            // const accessStore = useAccessStore()
+            // const editPermission = computed(() =>
+            //     accessStore.checkPermission('UPDATE_BUSINESS_METADATA')
+            // )
             const enumValues = computed((): string[] =>
                 localEnum.elementDefs.map((e) => e.value)
             )
@@ -158,7 +158,7 @@
                 handleChange,
                 saveChanges,
                 handleClickUser,
-                editPermission,
+                // editPermission,
             }
         },
     })

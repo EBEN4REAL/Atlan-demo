@@ -22,7 +22,7 @@
         title="Labels"
         sidebar-class="bg-white"
     >
-        <template v-if="permissions.create" #action>
+        <template #action>
             <AtlanBtn
                 class="flex-none"
                 size="sm"
@@ -35,11 +35,13 @@
         </template>
 
         <template #sidebar>
-            <SearchAndFilter
-                v-model:value="searchText"
-                :placeholder="`Search from ${enumListData.length} labels`"
-                class="mx-4 mt-6 mb-4 bg-white"
-            />
+            <div class="px-4 pt-6 pb-4">
+                <SearchAndFilter
+                    v-model:value="searchText"
+                    :placeholder="`Search from ${enumListData.length} labels`"
+                    class="bg-white"
+                />
+            </div>
             <EnumList
                 v-model:selected="selectedId"
                 :list="sortedSearchedEnum"
@@ -91,7 +93,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import { useAccessStore } from '~/services/access/accessStore'
+    // import { useAccessStore } from '~/services/access/accessStore'
     import NoAcces from '@/admin/common/noAccessPage.vue'
     import noEnumImage from '~/assets/images/admin/no-metadata.png'
 
@@ -109,11 +111,11 @@
             useHead({
                 title: 'Enums',
             })
-            const accessStore = useAccessStore()
-            const permissions = computed(() => ({
-                list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
-                create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
-            }))
+            // const accessStore = useAccessStore()
+            // const permissions = computed(() => ({
+            //     list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
+            //     create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
+            // }))
             const {
                 enumListData,
                 selectedId,
@@ -135,7 +137,7 @@
                 addModalVisible,
                 selectedId,
                 selectedEnum,
-                permissions,
+                // permissions,
                 toggleAddModal,
                 addToList,
                 loadingState,

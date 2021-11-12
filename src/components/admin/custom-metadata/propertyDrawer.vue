@@ -112,7 +112,13 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
+                                    class="
+                                        mb-1
+                                        lowercase
+                                        bg-gray-100
+                                        border-0
+                                        rounded-full
+                                    "
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
@@ -146,7 +152,11 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center  w-60"
+                                                class="
+                                                    flex flex-col
+                                                    items-center
+                                                    w-60
+                                                "
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -203,7 +213,17 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
+                        class="
+                            flex
+                            items-center
+                            justify-around
+                            w-full
+                            gap-4
+                            p-4
+                            bg-gray-100
+                            border
+                            rounded
+                        "
                     >
                         <div class="w-full">
                             <a-form-item class="mb-2">
@@ -225,12 +245,12 @@
                             <a-form-item class="mb-2">
                                 <div class="flex justify-between">
                                     <label :for="`${form.name}-isBadge`"
-                                        >Show in filter</label
+                                        >Allow filtering</label
                                     >
                                     <a-switch
                                         :id="`${form.name}-isBadge`"
                                         v-model:checked="
-                                            form.options.showInFilter
+                                            form.options.allowFiltering
                                         "
                                         class=""
                                         :name="`${form.name}-isBadge`"
@@ -241,12 +261,12 @@
                             <a-form-item class="mb-0">
                                 <div class="flex justify-between">
                                     <label :for="`${form.name}-isBadge`"
-                                        >Show in search</label
+                                        >Allow search</label
                                     >
                                     <a-switch
                                         :id="`${form.name}-isBadge`"
                                         v-model:checked="
-                                            form.options.showInSearch
+                                            form.options.allowSearch
                                         "
                                         class=""
                                         :name="`${form.name}-isBadge`"

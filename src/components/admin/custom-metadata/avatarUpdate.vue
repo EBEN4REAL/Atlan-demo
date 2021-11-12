@@ -42,7 +42,7 @@
                                 class="p-3 text-center border border-dashed rounded "
                             >
                                 <a-upload
-                                    class="relative block w-full mb-3  metadata-avatar-uploader"
+                                    class="relative block w-full mb-3 metadata-avatar-uploader"
                                     name="file"
                                     accept="image/*"
                                     :multiple="false"

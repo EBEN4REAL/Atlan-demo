@@ -441,6 +441,13 @@
                         form.value.options.isEnum === true
                     )
                         tempForm.typeName = tempForm.options.enumType
+                    // handle if is user, group or name
+                    if (
+                        form.value.typeName === 'user' ||
+                        form.value.typeName === 'link' ||
+                        form.value.typeName === 'group'
+                    )
+                        tempForm.typeName = 'string'
 
                     tempBM.attributeDefs.push(tempForm)
                     const { data, error, isReady } = Types.updateCustomMetadata(

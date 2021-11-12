@@ -1,7 +1,7 @@
 <template>
     <div
         class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded  group gap-x-4 hover:bg-primary-light"
-        style="height: 50px"
+        style="height: 72px"
         :class="{
             'bg-primary-light': selected,
             'border-primary': active,
@@ -24,18 +24,17 @@
         </div>
         <!-- RHS -->
         <div class="flex items-center col-span-3">
-            <!-- <ClassificationPiece
+            <ClassificationPiece
                 v-if="
                     request?.request_type === 'create_typedef' &&
                     request?.payload?.classificationDefs
                 "
                 :data="request.payload.classificationDefs"
-            /> -->
-
-            <!-- <ClassificationPiece
+            />
+            <ClassificationPiece
                 v-else-if="request?.request_type === 'attach_classification'"
                 :typeName="request.payload.typeName"
-            /> -->
+            />
 
             <!-- <TermPiece
                 v-else-if="
@@ -48,15 +47,18 @@
                 v-else-if="request.request_type === 'term_link'"
                 :data="request.sourceEntity.attributes"
             />
-
+  -->
+            <!-- v-else-if="request.destination_attribute" -->
             <AttrPiece
                 v-else-if="request.destination_attribute"
                 :name="request.destination_attribute"
                 :value="request.destination_value"
             />
- -->
-            <!-- v-else-if="request.source_qualified_name" -->
-            <!-- <AssetPiece :asset-qf-name="request.source_qualified_name" /> -->
+
+            <AssetPiece
+                v-else-if="request.source_qualified_name"
+                :asset-qf-name="request.source_qualified_name"
+            />
         </div>
 
         <div class="flex items-center justify-end col-span-3 pr-4">
@@ -82,13 +84,14 @@
                         Rejected
                     </div>
                 </div>
-                <!-- <div
-                    class="flex items-center justify-end flex-grow gap-x-2 group-hover:hidden"
-                >
+                <div class="flex flex-col gap-x-2 group-hover:hidden">
                     <UserPiece :user="request.createdByUser" :is-pill="false" />
-                    •
-                    <DatePiece label="Created At" :date="request.created_at" />
-                </div> -->
+                    <DatePiece
+                        label="Created At"
+                        :date="request.created_at"
+                        class="text-gray-500"
+                    />
+                </div>
             </template>
         </div>
     </div>
@@ -102,11 +105,11 @@
 
     import RequestActions from './requestActions.vue'
 
-    // import ClassificationPiece from './pieces/classifications.vue'
+    import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
-    // import AttrPiece from './pieces/attributeUpdate.vue'
-    // import UserPiece from './pieces/user.vue'
-    // import DatePiece from './pieces/date.vue'
+    import AttrPiece from './pieces/attributeUpdate.vue'
+    import UserPiece from './pieces/user.vue'
+    import DatePiece from './pieces/date.vue'
     // import TermPiece from './pieces/term.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
@@ -121,11 +124,11 @@
         components: {
             VirtualList,
             RequestActions,
-            // ClassificationPiece,
+            ClassificationPiece,
             AssetPiece,
-            // AttrPiece,
-            // UserPiece,
-            // DatePiece,
+            AttrPiece,
+            UserPiece,
+            DatePiece,
             // TermPiece,
         },
         props: {

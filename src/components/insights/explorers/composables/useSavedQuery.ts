@@ -43,6 +43,9 @@ export function useSavedQuery(
     } = useInlineTab(treeSelectedKeys)
 
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+
+        // console.log('query entity2: ', savedQuery)
+
         let decodedVariables = decodeBase64Data(
             savedQuery.attributes.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -137,11 +140,14 @@ export function useSavedQuery(
             assetSidebar: {
                 // for taking the previous state from active tab
                 isVisible: false,
-                assetInfo: {},
+                assetInfo: savedQuery,
                 title: activeInlineTab.value?.assetSidebar.title ?? '',
                 id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
+
+      
+        
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
             console.log('not opened')
@@ -740,7 +746,7 @@ export function useSavedQuery(
             if (isLoading.value == false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
-                    console.log('saved query data: ', data)
+                    // console.log('saved query data: ', data)
 
                     // save term
                     const { assignLinkedAssets } = useLinkAssets()
@@ -802,6 +808,22 @@ export function useSavedQuery(
                     //     parentGuid: parentGuid,
                     //     parentQualifiedName: parentQualifiedName
                     // }
+
+                    //fetch query data and initialize asset sidebar
+                    const { data: data2, error: error2, isLoading: isLoading2 } = Insights.GetSavedQuery(
+                        guid,
+                        {}
+                    )
+                    watch([data2, error2, isLoading2], () => {
+                        if (isLoading2.value == false) {
+                            if (error2.value === undefined) {
+                                // console.log('saved query entity: ', data2.value?.entity)
+                                activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entity
+                            } else {
+
+                            }
+                        }
+                    })
 
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                     if (routeToGuid) {

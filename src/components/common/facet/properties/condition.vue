@@ -5,14 +5,14 @@
             v-if="attribute.typeName !== 'boolean'"
         >
             <a-select
-                class="flex-1"
                 v-model:value="localCondition.operator"
+                class="flex-1"
                 @change="handleOperatorChange"
             >
                 <a-select-option
-                    :value="item.id"
                     v-for="item in defaultOperator"
                     :key="item.id"
+                    :value="item.id"
                 >
                     {{ item?.label }}
                 </a-select-option>
@@ -30,6 +30,7 @@
             <DynamicInput
                 :dataType="attribute.subTypeName || attribute.typeName"
                 v-model="localCondition.value"
+                :data-type="attribute.typeName"
                 @change="handleValueChange"
             ></DynamicInput>
         </div>
@@ -40,7 +41,7 @@
     import { useVModels } from '@vueuse/core'
     import { defineComponent, PropType, toRefs, ref, computed } from 'vue'
 
-    import DynamicInput from '@/common/input/dyanmicInput.vue'
+    import DynamicInput from '~/components/common/input/dynamicInput2.vue'
     import { operators } from '~/constant/filters/operators'
 
     export default defineComponent({
@@ -104,7 +105,7 @@
             }
 
             const handleValueChange = () => {
-                if (attribute.value.typeName === 'boolean') {
+                if (attribute.value?.typeName === 'boolean') {
                     condition.value.operator = 'boolean'
                 }
 

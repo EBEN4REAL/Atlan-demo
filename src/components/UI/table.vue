@@ -1,5 +1,5 @@
 <template>
-    <div class="overflow-y-scroll table_height clusterize" id="table-container">
+    <div id="table-container" class="table_height clusterize">
         <div
             id="scrollArea"
             class="clusterize-scroll -mt-0.5"
@@ -39,54 +39,49 @@
     import Clusterize from 'clusterize.js'
 
     export default defineComponent({
-        name: 'Table',
+        name: 'AtlanTable',
         components: {},
         props: {
             dataList: {
                 type: Array as PropType<any[]>,
                 required: true,
             },
-            columnsData: {
-                type: Array as PropType<any[]>,
-                required: true,
-            },
             showLoading: {
                 type: Boolean,
                 default: true,
-                required: true,
+                required: false,
             },
             rowClassNames: {
                 type: String,
-                required: true,
+                required: false,
                 default: '',
             },
         },
         setup(props) {
-            const { showLoading, dataList, rowClassNames, columnsData } =
-                toRefs(props)
+            const { showLoading, dataList, rowClassNames } = toRefs(props)
             let tableRef = ref(null)
             const defaultRowClassNames =
-                'px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light'
+                'px-4 py-2 text-xs text-gray-700 truncate bg-gray-100 border border-gray-light'
 
             watch(tableRef, () => {
                 // if (isQueryRunning === 'success') {
                 if (tableRef.value) {
-                    let data_here = dataList.value.map((row, index) => {
+                    const data_here = dataList.value.map((row, index) => {
                         let rows = `<td style="z-index: 2" class="${
                             rowClassNames.value !== ''
                                 ? rowClassNames.value
                                 : defaultRowClassNames
-                        }">${index}</td>`
-                        for (let [key, value] of Object.entries(row)) {
+                        }">${index + 1}</td>`
+                        for (const [key, value] of Object.entries(row)) {
                             rows += `<td class="px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light">${
                                 value == null ? '-' : value
                             }</td>`
                         }
-                        let res = '<tr>' + rows + '</tr>'
+                        const res = '<tr>' + rows + '</tr>'
                         return res
                     })
 
-                    let clusterize = new Clusterize({
+                    const clusterize = new Clusterize({
                         rows: data_here,
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
@@ -175,10 +170,7 @@
             })
 
             return {
-                columnsData,
                 tableRef,
-                showLoading,
-                dataList,
             }
         },
     })

@@ -1,9 +1,5 @@
 <template>
-    <DefaultLayout
-        v-auth="map.LIST_USERS"
-        title="Users"
-        :badge="totalUserCount"
-    >
+    <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div class="flex justify-between">
                 <div class="flex w-1/4">
@@ -57,6 +53,7 @@
         <!-- Table for users-->
         <template v-else>
             <UserListTable
+                v-auth="map.LIST_USERS"
                 :user-list="userList"
                 :loading="
                     [STATES.PENDING].includes(state) ||

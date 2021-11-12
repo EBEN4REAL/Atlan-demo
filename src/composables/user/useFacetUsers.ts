@@ -14,7 +14,7 @@ export default function useFacetUsers() {
     params.value.append('columns', 'id')
     params.value.append('filter', '{"$and":[{"email_verified":true}]}')
 
-    const { data, mutate } = Users.List(params, {
+    const { data, mutate, isLoading, error, isValidating } = Users.List(params, {
         cacheOptions: {
             shouldRetryOnError: false,
             revalidateOnFocus: false,
@@ -72,6 +72,9 @@ export default function useFacetUsers() {
     }
 
     return {
+        isLoading,
+        error,
+        isValidating,
         list,
         total,
         data,

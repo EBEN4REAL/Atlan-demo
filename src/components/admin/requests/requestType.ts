@@ -6,7 +6,7 @@ export const primaryText: Record<
     (arg: RequestAttributes) => string
 > = {
     attribute: () => 'Update asset attribute',
-    create_typedef: () => 'Create new category',
+    create_typedef: () => 'Create new classification',
     create_glossary: () => 'Create new glossary',
     create_category: () => 'Create new category',
     create_term: () => 'Create new term',
@@ -18,7 +18,7 @@ export const primaryText: Record<
 // Check iconMap.ts for available icons
 export const requestTypeIcon: Record<RequestType, keyof typeof iconMap> = {
     attribute: 'Edit',
-    create_typedef: 'Category',
+    create_typedef: 'Shield',
     create_glossary: 'Glossary',
     create_category: 'Category',
     create_term: 'Term',

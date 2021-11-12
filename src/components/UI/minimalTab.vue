@@ -4,10 +4,15 @@
         @update:activeKey="$emit('update:active', $event)"
         class="flex-none w-full mt-2 minimal-tab-bar"
     >
-        <a-tab-pane v-for="item in data" :key="item.key" :tab="item.label">
-            <!-- TODO: Fix the slot if it aint't working -->
-            <template v-if="$slots.label" #tab>
-                <slot name="label" :data="data" />
+        <a-tab-pane v-for="item in data" :key="item.key">
+            <template #tab v-if="hasLabel">
+                <slot name="label" :data="item" />
+            </template>
+            <!-- If no slot passed -->
+            <template #tab v-else>
+                <div v-if="!hasLabel">
+                    {{ item.label }}
+                </div>
             </template>
         </a-tab-pane>
     </a-tabs>
@@ -18,7 +23,7 @@
         key: string
         label: string
     }
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     export default defineComponent({
         name: 'MinimalTab',
         emits: ['update:active'],
@@ -32,6 +37,18 @@
                 required: true,
             },
         },
+        setup(props, { slots }) {
+            const hasLabel = ref(false)
+
+            // Check if the slot exists by name and has content.
+            // It returns an empty array if it's empty.
+            if (slots.label && slots.label().length) {
+                hasLabel.value = true
+            }
+            return {
+                hasLabel,
+            }
+        },
     })
 </script>
 
@@ -42,7 +59,7 @@
             padding-right: 2px !important;
             padding-top: 8px !important;
             padding-bottom: 16px !important;
-            @apply mr-4 !important;
+            @apply mr-6 ml-0 !important;
             @apply text-gray-500;
             @apply text-sm !important;
             @apply tracking-wide;
@@ -65,9 +82,13 @@
         .ant-tabs-content {
             padding-right: 0px;
         }
+        .ant-tabs-nav {
+            margin-bottom: 0 !important;
+        }
         .ant-tabs-ink-bar {
             @apply rounded-t-sm;
             margin-bottom: 1px;
         }
     }
 </style>
+<style lang="less" module></style>

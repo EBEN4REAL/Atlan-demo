@@ -31,3 +31,40 @@ export const allTabs = [
         activeIcon: 'UserLightActive',
     },
 ]
+
+export const columns = [
+    {
+        title: 'Group Name',
+        key: 'name',
+        sorter: true,
+        ellipsis: true,
+        width: 300,
+        sortKey: 'alias',
+        slots: { title: 'customTitle', customRender: 'name' },
+    },
+    {
+        title: 'Members',
+        dataIndex: 'memberCountString',
+        key: 'memberCountString',
+        sorter: true,
+        ellipsis: true,
+        sortKey: 'user_count',
+    },
+    {
+        title: 'Created By',
+        dataIndex: 'createdBy',
+        key: 'createdBy',
+    },
+    {
+        title: 'Created on',
+        dataIndex: 'createdAtTimeAgo',
+        key: 'createdAt',
+        sorter: true,
+        ellipsis: true,
+        sortKey: 'created_at',
+    },
+    {
+        title: 'Actions',
+        slots: { customRender: 'actions' },
+    },
+]

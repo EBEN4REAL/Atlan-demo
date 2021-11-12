@@ -48,6 +48,7 @@
                             <PreferenceSelector
                                 v-model="preference"
                                 @change="handleChangePreference"
+                                @display="handleDisplayChange"
                             />
                         </template>
                     </SearchAdvanced>
@@ -179,8 +180,13 @@
             const discoveryStore = useDiscoveryStore()
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const { initialFilters } = toRefs(props)
+
             if (discoveryStore.activeFacet) {
                 facets.value = discoveryStore.activeFacet
+            }
+
+            if (discoveryStore.preferences) {
+                preference.value = discoveryStore.preferences
             }
 
             if (props.initialFilters) {
@@ -249,6 +255,11 @@
 
             const handleChangePreference = () => {
                 quickChange()
+                discoveryStore.setPreferences(preference.value)
+            }
+
+            const handleDisplayChange = () => {
+                discoveryStore.setPreferences(preference.value)
             }
 
             const handleEvent = () => {
@@ -285,6 +296,7 @@
                 handleChangePreference,
                 handleEvent,
                 dirtyTimestamp,
+                handleDisplayChange,
             }
         },
     })

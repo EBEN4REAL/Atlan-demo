@@ -124,7 +124,7 @@
             }
 
             const handleBmUpdateSuccess = (serviceResponse: any[]) =>
-                store.businessMetadataUpdateBM(serviceResponse[0])
+                store.updateCustomMetadata(serviceResponse[0])
 
             const handleUpdateBM = (newImage) => {
                 isUpdating.value = true

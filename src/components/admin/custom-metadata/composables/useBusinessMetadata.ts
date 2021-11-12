@@ -56,8 +56,6 @@ export default function useBusinessMetadata() {
     )
 
     // update loading & error states
-    store.setBusinessMetadataListLoading(BMListLoading.value)
-    store.setBusinessMetadataListError(BMListError.value)
     watch(
       [BMListLoading, BMListError],
       ([newLoading, newError]) => {
@@ -94,7 +92,6 @@ export default function useBusinessMetadata() {
             })
           )
           store.setCustomMetadata(list)
-          store.setBusinessMetadataListLoaded(true);
         }
       }
     )
@@ -134,7 +131,7 @@ export default function useBusinessMetadata() {
   const searchedBusinessMetadataList = computed(() => {
     if (searchText.value) {
       return finalBusinessMetadataList.value.filter((bm) =>
-        bm.name.toUpperCase().includes(searchText.value.toUpperCase())
+        bm.displayName.toUpperCase().includes(searchText.value.toUpperCase())
       )
     }
     return finalBusinessMetadataList

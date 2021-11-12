@@ -33,7 +33,7 @@ export const DEFAULT_ATTRIBUTE = {
     enumType: "",
     // new options 
     multiValueSelect: true,
-    allowFiltering: true,
+    showInFilter: true,
     allowSearch: true,
     // customType:'url' // added on submit for user, link or group
 

@@ -12,10 +12,13 @@
                     <a-button
                         v-if="!isEditing"
                         shape="circle"
-                        class="rounded-md ant-btn ant-btn-primary"
+                        class="flex items-center justify-center rounded-md  ant-btn ant-btn-primary"
                         @click="() => (isEditing = true)"
                     >
-                        <fa icon="fal pen" />
+                        <AtlanIcon
+                            icon="Pencil"
+                            class="h-4 text-white fill-current"
+                        />
                     </a-button>
                     <a-button
                         v-if="isEditing"

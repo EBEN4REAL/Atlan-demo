@@ -109,10 +109,8 @@
     import { defineComponent, ref, computed, onMounted, watch, Ref } from 'vue'
 
     // ? Components
-    import { message } from 'ant-design-vue'
     import AddAttributeCard from '@/admin/custom-metadata/addAttributeCard.vue'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     // import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
     import MetadataHeaderButton from './metadataHeaderButton.vue'
     import AddPropertyDrawer from './propertyDrawer.vue'
@@ -123,8 +121,6 @@
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
     // import { useAccessStore } from '~/services/access/accessStore'
-
-    import { copyToClipboard } from '~/utils/clipboard'
 
     interface attributeDefs {
         name: string
@@ -171,124 +167,12 @@
             const error = ref('')
             const addPropertyDrawer = ref(null)
 
-            const { validatePayload } = useBusinessMetadata()
-
             const onUpdate = () => {
                 isUpdated.value = true
                 context.emit(
                     'update',
                     JSON.parse(JSON.stringify(localBm.value))
                 )
-            }
-
-            /**
-             * @param {Array} serviceResponse - BM data return after successfull create/update BM
-             * @desc update stale BM in store
-             */
-            const handleBmUpdateSuccess = (serviceResponse: any[]) => {
-                if (localBm.value.guid === 'new') {
-                    store.businessMetadataAppendToList(serviceResponse[0])
-                    context.emit(
-                        'selectBm',
-                        JSON.parse(JSON.stringify(serviceResponse[0]))
-                    )
-                } else {
-                    store.updateBusinessMetadataInList(serviceResponse[0])
-                }
-                // eslint-disable-next-line
-                localBm.value = JSON.parse(JSON.stringify(serviceResponse[0]))
-                console.log('here')
-            }
-
-            /**
-             * @param {Object} apiResponse - object return from update api call
-             * @desc - handles success and error for update
-             */
-            const handleUpdateBMResponse = (apiResponse: Ref) => {
-                watch(
-                    () => apiResponse.value.data,
-                    () => {
-                        if (
-                            apiResponse.value?.data?.businessMetadataDefs.length
-                        ) {
-                            handleBmUpdateSuccess(
-                                apiResponse.value.data.businessMetadataDefs
-                            )
-                        }
-
-                        loading.value = false
-                        isUpdated.value = false
-                    }
-                )
-
-                watch(
-                    () => apiResponse.value.error,
-                    (e) => {
-                        loading.value = false
-                        console.log(
-                            '🚀 ~ file: businessMetadataProfile.vue ~ handleAddBusinessMetadata ~ error',
-                            e
-                        )
-                        if (e?.response?.data?.errorMessage) {
-                            error.value = {
-                                data: {
-                                    errorMessage: e.response.data.errorMessage,
-                                },
-                            }
-                            console.log(error.value)
-                        }
-                    }
-                )
-            }
-
-            /**
-             * @desc action for @save event, validates the data and/or makes the api call,
-             *       Also updates the BM Store with the updated data
-             */
-            const handleAddBusinessMetadata = async () => {
-                error.value = null
-                const validatedBm = validatePayload(localBm.value)
-
-                if (validatedBm.error) {
-                    error.value = validatedBm.error
-                    return
-                }
-                loading.value = true
-                const apiResponse = ref()
-                // if (validatedBm.data?.guid === 'new')
-                //     apiResponse.value =
-                //         BusinessMetadataService.addNewBusinessMetadata(
-                //             validatedBm.data
-                //         )
-                // else
-                //     apiResponse.value =
-                //         BusinessMetadataService.updateNewBusinessMetadata(
-                //             validatedBm.data
-                //         )
-
-                handleUpdateBMResponse(apiResponse)
-            }
-
-            /**
-             * @desc watchers from add attribute card is emitting this which updates the local BM attributes
-             *
-             */
-            const onAttributeValuesChange = (
-                _uAttribute: {},
-                uIndex: number
-            ) => {
-                localBm.value.attributeDefs = localBm.value.attributeDefs.map(
-                    (attribute: object, index: number) => {
-                        if (index === uIndex) {
-                            return {
-                                ...attribute,
-                                ..._uAttribute,
-                            }
-                        }
-                        return attribute
-                    }
-                )
-                onUpdate()
             }
 
             /**
@@ -310,7 +194,7 @@
                 if (attrsearchText.value) {
                     return localBm.value.attributeDefs.filter(
                         (attr: { name: string }) =>
-                            attr.name
+                            attr.displayName
                                 .toUpperCase()
                                 .includes(attrsearchText.value.toUpperCase())
                     )
@@ -325,14 +209,19 @@
              *       also add an empty attribute for the new BM
              */
             onMounted(() => {
-                if (props.selectedBm && props.selectedBm.guid) {
+                if (props.selectedBm) {
                     localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
-                    if (props.selectedBm.guid === 'new') {
-                        isUpdated.value = true
-                    }
                 }
             })
 
+            watch(props.selectedBm, (newValue) => {
+                console.log('JBJBD')
+
+                if (newValue)
+                    localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
+            })
+
+            // converts customEntityTypes from string to array so they can be set on the a-tree component
             const cleanLocalBm = computed(() => {
                 const tempBM = JSON.parse(JSON.stringify(localBm.value))
                 tempBM.attributeDefs.forEach((x, index) => {
@@ -346,6 +235,7 @@
                 return tempBM
             })
 
+            // computes is search has a text
             const searchedAttributeList = computed(() =>
                 attrsearchText.value
                     ? searchedAttributes.value
@@ -354,7 +244,7 @@
 
             const handlePropertyUpdate = ($event) => {
                 localBm.value.attributeDefs = $event
-                store.businessMetadataUpdateBM(localBm.value)
+                store.updateCustomMetadata(localBm.value)
 
                 // onUpdate()
             }
@@ -362,12 +252,10 @@
             return {
                 attrsearchText,
                 error,
-                handleAddBusinessMetadata,
                 handleRemoveAttribute,
                 isUpdated,
                 loading,
                 localBm,
-                onAttributeValuesChange,
                 onUpdate,
                 cleanLocalBm,
                 panelModel,

@@ -112,13 +112,7 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="
-                                        mb-1
-                                        lowercase
-                                        bg-gray-100
-                                        border-0
-                                        rounded-full
-                                    "
+                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
@@ -152,11 +146,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="
-                                                    flex flex-col
-                                                    items-center
-                                                    w-60
-                                                "
+                                                class="flex flex-col items-center  w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -213,17 +203,7 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-around
-                            w-full
-                            gap-4
-                            p-4
-                            bg-gray-100
-                            border
-                            rounded
-                        "
+                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
                     >
                         <div class="w-full">
                             <a-form-item class="mb-2">
@@ -525,11 +505,7 @@
             const enumTypeOtions = ref(null)
 
             // * Composables
-            const enumsList = ref([])
-            if (visible.value) {
-                const res = useEnums()
-                enumsList.value = res.enumListData
-            }
+            const { enumListData: enumsList } = useEnums()
 
             /** @return all enum list data formatted of the component */
             const finalEnumsList = computed(() => {

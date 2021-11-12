@@ -233,7 +233,7 @@
                     if (isReady && !error.value) {
                         isSorting.value = false
                         message.success('Arrangement saved.')
-                        store.businessMetadataUpdateBM(tempBM)
+                        store.updateCustomMetadata(tempBM)
                     } else if (error && error.value) {
                         isSorting.value = false
                         message.error('Unable to save order, please try again')

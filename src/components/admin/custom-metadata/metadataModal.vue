@@ -10,12 +10,28 @@
             id="name-input"
             v-model:value="form.displayName"
             placeholder="Name the metadata"
-            class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+            class="
+                p-0
+                text-lg
+                font-bold
+                text-gray-700
+                border-0
+                shadow-none
+                outline-none
+            "
         ></a-input>
         <a-textarea
             v-model:value="form.description"
             placeholder="Add description..."
-            class="p-0 font-bold text-gray-700 border-0 shadow-none outline-none resize-none "
+            class="
+                p-0
+                font-bold
+                text-gray-700
+                border-0
+                shadow-none
+                outline-none
+                resize-none
+            "
         ></a-textarea>
         <div class="flex items-center justify-end space-x-3">
             <a-button class="border-0" @click="visible = false"
@@ -63,6 +79,7 @@
             const form = ref({
                 displayName: '',
                 description: '',
+                options: {},
             })
 
             // methods
@@ -86,11 +103,9 @@
 
             const handleBmUpdateSuccess = (serviceResponse: any[]) => {
                 if (props.isEdit) {
-                    store.businessMetadataUpdateBM(serviceResponse[0])
+                    store.updateCustomMetadata(serviceResponse[0])
                     message.success('Metadata updated')
                 } else {
-                    console.log(serviceResponse)
-
                     store.appendCustomMetadata(serviceResponse)
                     message.success('Metadata created')
                     emit('selectBm', serviceResponse[0])
@@ -98,7 +113,6 @@
             }
 
             const handleUpdateBMResponse = (apiResponse: Ref) => {
-                console.log(apiResponse)
                 watch(
                     () => apiResponse.value.data,
                     () => {

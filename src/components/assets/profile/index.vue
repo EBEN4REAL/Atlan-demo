@@ -1,17 +1,17 @@
 <template>
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col w-full h-full asset-profile">
         <AssetHeader :item="selectedAsset"></AssetHeader>
 
         <a-tabs
-            :class="$style.profiletab"
             v-model:activeKey="activeKey"
-            @change="handleChangeTab"
             class="h-full"
+            :class="$style.profiletab"
+            @change="handleChangeTab"
         >
             <a-tab-pane
-                :tab="tab.label"
                 v-for="tab in getProfileTabs(selectedAsset)"
                 :key="tab.id"
+                :tab="tab.label"
             >
                 <component :is="tab.component" :key="tab.id"></component>
             </a-tab-pane>
@@ -22,9 +22,7 @@
 <script lang="ts">
     import {
         defineComponent,
-        computed,
         ref,
-        watch,
         defineAsyncComponent,
         onMounted,
         PropType,
@@ -40,12 +38,6 @@
 
     export default defineComponent({
         name: 'AssetProfile',
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-        },
         components: {
             AssetHeader,
             Columns: defineAsyncComponent(
@@ -57,6 +49,12 @@
             Lineage: defineAsyncComponent(
                 () => import('@/assets/profile/tabs/lineage/index.vue')
             ),
+        },
+        props: {
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
@@ -78,10 +76,8 @@
 
             return {
                 refs,
-                selectedAsset,
-
-                getProfileTabs,
                 activeKey,
+                getProfileTabs,
                 handleChangeTab,
             }
         },
@@ -93,6 +89,17 @@ meta:
     layout: default
     requiresAuth: true
 </route>
+
+<style lang="less">
+    .asset-profile {
+        .ant-tabs-top > .ant-tabs-nav,
+        .ant-tabs-bottom > .ant-tabs-nav,
+        .ant-tabs-top > div > .ant-tabs-nav,
+        .ant-tabs-bottom > div > .ant-tabs-nav {
+            margin: 0 !important;
+        }
+    }
+</style>
 
 <style lang="less" module>
     .profiletab {

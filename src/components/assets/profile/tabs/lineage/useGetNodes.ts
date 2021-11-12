@@ -1,7 +1,7 @@
 const isProcessNode = (graph, guid) => {
-    const nodes = graph.getNodes()
+    const nodes = graph.value.getNodes()
     const entity = nodes.find((x) => x.id === guid)
-    return entity.typeName === 'AtlanProcess'
+    return entity.typeName === 'Process'
 }
 
 export default function useGetNodes() {

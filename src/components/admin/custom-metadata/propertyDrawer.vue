@@ -310,7 +310,7 @@
         applicableEntityTypes,
         customEntityTypes,
     } from '~/constant/businessMetadataTemplate'
-    import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
+    import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
 
     const SHOW_PARENT = TreeSelect.SHOW_PARENT
@@ -414,10 +414,16 @@
                 // api call
                 if (isEdit.value) {
                     tempBM.attributeDefs[propertyIndex.value] = tempForm
-                    const { data, error, isReady } =
-                        BusinessMetadataService.updateNewBusinessMetadata({
+                    const { data, error, isReady } = Types.updateCustomMetadata(
+                        {
                             businessMetadataDefs: [tempBM],
-                        })
+                        },
+                        {
+                            options: {
+                                params: { type: 'BUSINESS_METADATA' },
+                            },
+                        }
+                    )
                     watch([isReady, error], ([newValue, newError]) => {
                         if (newValue) {
                             message.success('Attribute edited')
@@ -437,10 +443,16 @@
                         tempForm.typeName = tempForm.options.enumType
 
                     tempBM.attributeDefs.push(tempForm)
-                    const { data, error, isReady } =
-                        BusinessMetadataService.updateNewBusinessMetadata({
+                    const { data, error, isReady } = Types.updateCustomMetadata(
+                        {
                             businessMetadataDefs: [tempBM],
-                        })
+                        },
+                        {
+                            options: {
+                                params: { type: 'BUSINESS_METADATA' },
+                            },
+                        }
+                    )
 
                     watch([isReady, error], ([newValue, newError]) => {
                         if (newValue) {

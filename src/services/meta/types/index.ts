@@ -20,7 +20,13 @@ const CreateTypedefs = (
 const updateCustomMetadata = (
   body: Record<string, any>,
   options?: useOptions
-) => useAPI<TypedefsInterface>(map.UPDATE_CUSTOM_METADATA, 'PUT', { body }, options || {})
+) => useAPI<TypedefsInterface>(map.GET_TYPEDEFS, 'PUT', { body, }, options || {})
+
+// const updateCustomMetadata = (
+//   guid: String,
+//   body: Record<string, any>,
+//   options?: useOptions
+// ) => useAPI<TypedefsInterface>(map.UPDATE_CUSTOM_METADATA, 'PUT', { body, pathVariables: { guid }, }, options || {})
 
 
 

@@ -149,10 +149,15 @@
                 const apiResponse = ref()
                 if (props.isEdit)
                     apiResponse.value = Types.updateCustomMetadata(
+                        // form.value.guid,
                         {
                             businessMetadataDefs: [form.value],
                         },
-                        { options: { params: { type: 'BUSINESS_METADATA' } } }
+                        {
+                            options: {
+                                params: { type: 'BUSINESS_METADATA' },
+                            },
+                        }
                     )
                 else
                     apiResponse.value = Types.CreateTypedefs(

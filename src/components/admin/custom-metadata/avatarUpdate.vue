@@ -42,7 +42,7 @@
                                 class="p-3 text-center border border-dashed rounded "
                             >
                                 <a-upload
-                                    class="relative block w-full mb-3 metadata-avatar-uploader"
+                                    class="relative block w-full mb-3  metadata-avatar-uploader"
                                     name="file"
                                     accept="image/*"
                                     :multiple="false"
@@ -88,8 +88,9 @@
     } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import useUploadImage from '~/composables/image/uploadImage'
-    import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
-    import { useTypedefStore as useBusinessMetadataStore } from '~/store/typedef'
+    import { Types } from '~/services/meta/types'
+
+    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         props: {
@@ -106,7 +107,7 @@
             const isUpdating = ref(false)
             const imageResponse = ref({})
             const apiResponse = ref({})
-            const store = useBusinessMetadataStore()
+            const store = useTypedefStore()
 
             //  image upload composable
             const {
@@ -130,10 +131,16 @@
                 const tempBM = { ...props.metadata }
                 tempBM.options.imagePath = `/images/${newImage.id}?ContentDisposition=inline&name=${newImage.id}`
                 tempBM.options.logoType = 'image'
-                apiResponse.value =
-                    BusinessMetadataService.updateNewBusinessMetadata({
+                apiResponse.value = Types.updateCustomMetadata(
+                    {
                         businessMetadataDefs: [tempBM],
-                    })
+                    },
+                    {
+                        options: {
+                            params: { type: 'BUSINESS_METADATA' },
+                        },
+                    }
+                )
 
                 watch(
                     () => apiResponse.value.data,

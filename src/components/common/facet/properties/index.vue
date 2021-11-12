@@ -26,7 +26,7 @@
                 @click="handleClick(attribute.name)"
             >
                 <Item
-                    :item="attribute"
+                    :attribute="attribute"
                     :condition="localValue[attribute.name]"
                     :activeProperty="activeProperty"
                     @click="handleClick"

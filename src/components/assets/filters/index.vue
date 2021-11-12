@@ -27,9 +27,13 @@
                 :accordion="isAccordion"
                 :class="$style.filter"
                 expand-icon-position="right"
+                @change="handleActivePanelChange"
                 :bordered="false"
             >
-                <template v-for="item in dynamicList" :key="item.id">
+                <template
+                    v-for="item in dynamicList"
+                    :key="`${item.id}_${componentState}`"
+                >
                     <Panel
                         :item="item"
                         v-model="localValue"
@@ -99,6 +103,11 @@
             const totalAppliedFiltersCount = ref(0)
             const activeKey: Ref<string[]> = ref([])
 
+            const componentState = ref(0)
+            const forceRender = () => {
+                componentState.value += 1
+            }
+
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
             } else {
@@ -141,21 +150,28 @@
                 return [...arr, ...cmList.value]
             })
 
-            const totalFilteredCount = computed(() => 0)
+            const totalFilteredCount = computed(
+                () => Object.keys(localValue.value).length
+            )
 
-            const handleChange = (id) => {
+            const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
             }
 
             const handleClear = (id: string) => {}
 
-            const handleResetAll = () => {}
+            const handleResetAll = () => {
+                localValue.value = {}
+                activeKey.value = []
+                handleChange()
+                forceRender()
+            }
 
             // Function to build filter applied string for owner facet
 
             const handleActivePanelChange = () => {
-                // discoveryStore.setActivePanel(activeKey.value)
+                discoveryStore.setActivePanel(activeKey.value)
             }
 
             return {
@@ -170,6 +186,7 @@
                 getConnectorImageMap,
                 totalFilteredCount,
                 handleResetAll,
+                componentState,
             }
         },
     })

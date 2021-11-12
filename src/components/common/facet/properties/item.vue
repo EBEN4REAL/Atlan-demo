@@ -2,13 +2,13 @@
     <div
         class="flex items-center justify-between px-2 py-1 rounded  hover:border-primary hover:bg-primary-light"
         :class="
-            activeProperty === item.name
+            activeProperty === attribute.name
                 ? 'outline-primary bg-primary-light'
                 : ''
         "
     >
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-700'">
-            {{ item.displayName }}
+            {{ attribute.displayName }}
         </div>
         <div :class="isApplied ? 'text-primary font-bold' : 'text-gray-500'">
             <AtlanIcon icon="CaretRight" class="h-3"></AtlanIcon>
@@ -23,7 +23,7 @@
     export default defineComponent({
         components: {},
         props: {
-            item: {
+            attribute: {
                 required: false,
                 default() {
                     return {}
@@ -43,17 +43,17 @@
             },
         },
         setup(props, { emit }) {
-            const { item, activeProperty, condition } = toRefs(props)
+            const { attribute, activeProperty, condition } = toRefs(props)
 
             const isApplied = computed(() => {
                 console.log(condition)
                 return !!condition.value?.find(
-                    (i) => i.operand === item.value.name && i.value
+                    (i) => i.operand === attribute.value.name && i.value
                 )
             })
 
             return {
-                item,
+                attribute,
                 activeProperty,
                 condition,
                 isApplied,

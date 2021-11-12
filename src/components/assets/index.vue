@@ -20,6 +20,7 @@
                         v-model="queryText"
                         :connectorName="facets?.hierarchy?.connectorName"
                         :autofocus="true"
+                        :allowClear="true"
                         @change="handleSearchChange"
                         placeholder="Search assets..."
                     >

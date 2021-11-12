@@ -55,17 +55,18 @@
                     </div>
                 </div>
                 <a-button-group>
-                    <a-button class="flex items-center justify-center"
-                        ><AtlanIcon icon="OpenTermProfile" class="mr-1 mb-0.5"
-                    /></a-button>
-                    <a-button block class="flex items-center justify-center"
-                        ><AtlanIcon icon="Query" class="mr-1 mb-0.5"
-                    /></a-button>
-                    <a-button block class="flex items-center justify-center"
-                        ><AtlanIcon icon="Share" class="mr-1 mb-0.5"
-                    /></a-button>
-
-                    <a-button><AtlanIcon icon="External" /></a-button>
+                    <a-button
+                        class="flex items-center justify-center"
+                        v-for="action in getActions(selectedAsset)"
+                        :key="action.id"
+                    >
+                        <a-tooltip :title="action.label">
+                            <div>
+                                <AtlanIcon
+                                    :icon="action.icon"
+                                    class="mr-1 mb-0.5"
+                                /></div></a-tooltip
+                    ></a-button>
                 </a-button-group>
             </div>
         </div>
@@ -192,6 +193,7 @@
                 rowCount,
                 sizeBytes,
                 dataType,
+                getActions,
                 columnCount,
                 databaseName,
                 schemaName,
@@ -287,6 +289,7 @@
                 isProfile,
                 actions,
                 assetURL,
+                getActions,
             }
         },
     })

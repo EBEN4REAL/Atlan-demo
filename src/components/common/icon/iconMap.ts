@@ -211,6 +211,14 @@ import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 
 import Download from '~/assets/images/icons/download.svg'
 import Upload from '~/assets/images/icons/upload.svg'
+import Enum from '~/assets/images/icons/label.svg'
+import Boolean from '~/assets/images/icons/boolean.svg'
+import String from '~/assets/images/icons/string.svg'
+import MoveItem from '~/assets/images/icons/move-item.svg'
+import DateTime from '~/assets/images/icons/datetime.svg'
+import Number from '~/assets/images/icons/number.svg'
+
+import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 
 export default {
     RemoveUser,
@@ -423,4 +431,11 @@ export default {
     EmptyLogs,
     Download,
     Upload,
+    Enum,
+    Boolean,
+    String,
+    MoveItem,
+    DateTime,
+    Number,
+    NoAvatar,
 }

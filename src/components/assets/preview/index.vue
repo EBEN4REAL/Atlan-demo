@@ -58,9 +58,19 @@
                     <a-button class="flex items-center justify-center"
                         ><AtlanIcon icon="OpenTermProfile" class="mr-1 mb-0.5"
                     /></a-button>
-                    <a-button block class="flex items-center justify-center"
-                        ><AtlanIcon icon="Query" class="mr-1 mb-0.5"
-                    /></a-button>
+                    <a-button
+                        block
+                        class="flex items-center justify-center"
+                        v-if="
+                            selectedAsset.typeName === 'Table' ||
+                            selectedAsset.typeName === 'Column' ||
+                            selectedAsset.typeName === 'View'
+                        "
+                    >
+                        <router-link :to="queryPath">
+                            <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                        </router-link>
+                    </a-button>
                     <a-button block class="flex items-center justify-center"
                         ><AtlanIcon icon="Share" class="mr-1 mb-0.5"
                     /></a-button>
@@ -185,6 +195,8 @@
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
 
+            console.log('selectedAsset', selectedAsset.value)
+
             const {
                 title,
                 getConnectorImage,
@@ -256,6 +268,41 @@
                 if (idx > -1) activeKey.value = idx
             })
 
+            let queryPath = ref(`/insights`)
+            watch(
+                selectedAsset,
+                () => {
+                    // console.log('selected asste update: ', selectedAsset.value)
+
+                    // CTA to insights
+
+                    let databaseQualifiedName =
+                        selectedAsset?.value?.attributes
+                            ?.connectionQualifiedName +
+                        '/' +
+                        selectedAsset?.value?.attributes?.databaseName
+                    let schema = selectedAsset?.value?.attributes?.schemaName
+                    if (selectedAsset?.value?.typeName === 'Column') {
+                        let tableName =
+                            selectedAsset?.value?.attributes?.tableName
+                        let columnName = selectedAsset?.value?.attributes?.name
+
+                        queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&columnNameFromURL=${columnName}`
+                    } else if (
+                        selectedAsset?.value?.typeName === 'Table' ||
+                        selectedAsset?.value?.typeName === 'View'
+                    ) {
+                        let tableName = selectedAsset?.value?.attributes.name
+                        queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+                    } else {
+                        queryPath.value = `/insights`
+                    }
+
+                    // console.log('query path: ', queryPath.value)
+                },
+                { immediate: true }
+            )
+
             return {
                 title,
                 getConnectorImage,
@@ -282,6 +329,7 @@
                 certificateStatusMessage,
                 isProfile,
                 actions,
+                queryPath,
             }
         },
     })

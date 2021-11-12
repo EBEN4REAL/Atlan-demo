@@ -130,8 +130,8 @@
             const getDefaultIDPList = async () => {
                 try {
                     const { mutate: getDefaultIDP } = Identity.getDefaultIDP()
-                    const data = (await getDefaultIDP()) || {}
-                    defaultIDPList.value = { ...data }
+                    defaultIDPList.value = await getDefaultIDP()
+                    // defaultIDPList.value = { ...data }
                 } catch (error) {
                     console.error(
                         'Unable to fetch default idps::',

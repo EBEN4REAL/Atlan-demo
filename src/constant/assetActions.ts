@@ -1,5 +1,11 @@
 export const assetActions = [
     {
+        id: 'open',
+        label: 'Open',
+        description: 'Open asset profile',
+        icon: 'Enter',
+    },
+    {
         id: 'query',
         label: 'Query',
         description: 'Run a sample query',
@@ -11,11 +17,5 @@ export const assetActions = [
         label: 'Share',
         description: 'Share asset link',
         icon: 'Share',
-    },
-    {
-        id: 'open',
-        label: 'Open',
-        description: 'Open asset profile',
-        icon: 'OpenTermProfile',
     },
 ]

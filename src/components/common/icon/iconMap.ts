@@ -219,6 +219,7 @@ import DateTime from '~/assets/images/icons/datetime.svg'
 import Number from '~/assets/images/icons/number.svg'
 
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
+import Enter from '~/assets/images/icons/enter.svg'
 
 export default {
     RemoveUser,
@@ -438,4 +439,5 @@ export default {
     DateTime,
     Number,
     NoAvatar,
+    Enter,
 }

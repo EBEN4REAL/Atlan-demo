@@ -415,6 +415,10 @@ export default function useAssetInfo() {
         return ''
     }
 
+    const webURL = (asset: assetInterface) => {
+        return attributes(asset)?.webUrl
+    }
+
     const discoveryStore = useDiscoveryStore()
 
     const selectedAsset = computed(() => {
@@ -736,5 +740,6 @@ export default function useAssetInfo() {
         dataTypeImageForColumn,
         assetTypeLabel,
         getActions,
+        webURL,
     }
 }

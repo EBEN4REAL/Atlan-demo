@@ -2,7 +2,7 @@ name: Production Website Workflow
 on:
   push:
     branches:
-      - feat/refractor
+      - beta
       - alpha
 jobs:
   test:
@@ -41,7 +41,7 @@ jobs:
             channel="prod"
           elif [[ "$repo_branch" == "alpha" ]]; then
             channel="alpha"
-          elif [[ "$repo_branch" == "feat/refractor" ]]; then
+          elif [[ "$repo_branch" == "beta" ]]; then
             channel="beta"
           elif [[ "$repo_branch" == "development" ]]; then
             channel="development"

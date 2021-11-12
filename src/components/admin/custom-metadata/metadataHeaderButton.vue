@@ -13,6 +13,13 @@
                 >
                 <a-menu-item
                     key="1"
+                    @click.prevent.stop="copyAPI(metadata.displayName)"
+                >
+                    <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
+                    name</a-menu-item
+                >
+                <a-menu-item
+                    key="1"
                     @click.prevent.stop="copyAPI(metadata.guid)"
                 >
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy

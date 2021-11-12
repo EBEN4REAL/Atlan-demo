@@ -146,7 +146,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center  w-60"
+                                                class="flex flex-col items-center w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -443,9 +443,9 @@
                         tempForm.typeName = tempForm.options.enumType
                     // handle if is user, group or name
                     if (
-                        form.value.typeName === 'user' ||
-                        form.value.typeName === 'link' ||
-                        form.value.typeName === 'group'
+                        form.value.typeName === 'users' ||
+                        form.value.typeName === 'url' ||
+                        form.value.typeName === 'groups'
                     )
                         tempForm.typeName = 'string'
 

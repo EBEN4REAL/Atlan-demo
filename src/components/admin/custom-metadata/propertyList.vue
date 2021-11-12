@@ -44,7 +44,9 @@
                         <div class="capitalize" style="width: 248px">
                             <AtlanIcon
                                 class="inline h-4 mr-2"
-                                :icon="mapTypeToIcon(property.typeName)"
+                                :icon="
+                                    mapTypeToIcon(property.typeName, property)
+                                "
                             />
                             {{ property.typeName }}
                         </div>
@@ -118,7 +120,7 @@
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
-            const mapTypeToIcon = (id) => {
+            const mapTypeToIcon = (id, property) => {
                 const foundIcon = attributesTypes.find((x) => x.id === id)?.icon
                 if (!foundIcon) return 'Enum'
                 return foundIcon
@@ -127,7 +129,7 @@
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
                 message.success({
-                    content: 'Display name copied!',
+                    content: 'Name copied!',
                 })
             }
 
@@ -226,10 +228,9 @@
                 // update
                 const tempBM = { ...metadata.value }
                 tempBM.attributeDefs = sortedProperties.value
-                const { data, error, isReady } =
-                    Types.updateCustomMetadata({
-                        businessMetadataDefs: [tempBM],
-                    })
+                const { data, error, isReady } = Types.updateCustomMetadata({
+                    businessMetadataDefs: [tempBM],
+                })
                 watch([data, isReady, error], () => {
                     if (isReady && !error.value) {
                         isSorting.value = false

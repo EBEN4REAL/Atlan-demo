@@ -1,8 +1,12 @@
-import { GettersTree } from 'pinia'
 import { State } from './state'
 
-import { SourceList } from '~/constant/source'
 
-export interface Getters {}
+export type Getters = {
+  getCustomMetadataList(state: State): object[] | null,
+};
 
-export const getters: GettersTree<State> & Getters = {}
+export const getters: Getters = {
+  getCustomMetadataList(state: State) {
+    return state.customMetadataList;
+  },
+}

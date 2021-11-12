@@ -121,10 +121,6 @@ export function useInlineTab(
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
-
-        // console.log('location: ', path)
-        // console.log('dds: ', {index, activeTab})
-        // console.log('dds tab: ', tabsArray)
         if (index !== -1) {
             console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab

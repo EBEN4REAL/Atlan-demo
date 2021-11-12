@@ -8,7 +8,7 @@
     import { useHead } from '@vueuse/head'
 
     import Users from '@/admin/users/users.vue'
-    import Classifications from '@/admin/classifications/classifications.vue'
+    import Classifications from '@/governance/classifications/classifications.vue'
     import NoAccess from '@/common/secured/access.vue'
 
     import useAuth from '~/composables/auth/useAuth'

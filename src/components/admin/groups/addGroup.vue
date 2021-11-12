@@ -12,7 +12,7 @@
                 />
             </div>
         </div>
-        <div class="px-4 py-3 overflow-y-auto componentHeight">
+        <div class="px-4 py-3 overflow-y-auto formWrapper">
             <a-form layout="vertical" :model="group" :rules="validations">
                 <a-form-item label="Name" name="name">
                     <a-input
@@ -30,43 +30,39 @@
                 <a-form-item label="Description" name="description">
                     <a-textarea v-model:value="group.description" :rows="2" />
                 </a-form-item>
-                <a-form-item :label-col="{ span: 12 }">
-                    <template #label>
-                        <span class="">Mark as default</span>
-                        <a-tooltip
-                            :title="'New users will be automatically added to default groups'"
-                            placement="right"
-                            ><span class="ml-1">
-                                <AtlanIcon
-                                    icon="Info"
-                                    class="text-gray-500 pushtop"
-                                ></AtlanIcon>
-                            </span>
-                        </a-tooltip>
-                    </template>
-                    <a-switch v-model:checked="isDefault" />
-                    <div v-if="isDefault" class="mt-2 text-gray-500">
-                        All new users will be automatically added to this group
-                    </div>
-                </a-form-item>
+
                 <div v-auth="map.LIST_USERS" class="">
                     <div class="mb-2">
-                        <span class="mr-2">Select users</span>
-                        <span class="text-gray">(Optional)</span>
+                        <span class="mr-2">Users</span>
                     </div>
                     <UserList
                         user-list-header-class="min-w-full"
                         :user-list-style="{
-                            maxHeight: 'calc(100vh - 35rem)',
+                            maxHeight: 'calc(100vh - 30rem)',
                         }"
+                        :minimal="true"
                         @updateSelectedUsers="updateUserList"
                     />
                 </div>
             </a-form>
         </div>
-        <div class="border-t">
+        <div class="flex items-center justify-between px-4 mt-1 border-t">
+            <div class="flex items-center mt-3 gap-x-1">
+                <a-checkbox v-model:checked="isDefault" />
+                <span class="">Mark as default</span>
+                <a-tooltip
+                    :title="'New users will be automatically added to default groups'"
+                    placement="right"
+                    ><span class="ml-1">
+                        <AtlanIcon
+                            icon="Info"
+                            class="text-gray-500 pushtop"
+                        ></AtlanIcon>
+                    </span>
+                </a-tooltip>
+            </div>
             <AtlanButton
-                class="mx-auto mt-3"
+                class="mt-3"
                 size="sm"
                 html-type="submit"
                 :disabled="isSubmitDisabled"
@@ -105,6 +101,7 @@
     export default defineComponent({
         name: 'AddGroup',
         components: { UserList, DefaultLayout, NoAcces, AtlanButton },
+        emits: ['refresh', 'closeDrawer'],
         setup(props, { emit }) {
             const router = useRouter()
             const createGroupLoading = ref(false)
@@ -174,6 +171,7 @@
                         if (isReady && !error.value && !isLoading.value) {
                             message.success('Group added')
                             router.push(`/admin/groups`)
+                            emit('refresh')
                         } else if (error && error.value) {
                             message.error(
                                 'Unable to create group, please try again.'
@@ -208,7 +206,13 @@
 </script>
 
 <style lang="less" scoped>
-    .componentHeight {
+    .formWrapper {
         height: calc(100vh - 8rem);
+        :global(.ant-form-item-label) {
+            @apply flex;
+        }
+        :global(.ant-form-item-required) {
+            @apply flex flex-row-reverse;
+        }
     }
 </style>

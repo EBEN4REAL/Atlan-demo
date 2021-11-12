@@ -14,8 +14,8 @@
     import { defineComponent, computed } from 'vue'
     // import { useClassificationStore } from '~/components/admin/classifications/_store'
     // import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
-    import ClassificationHeader from '@/admin/classifications/classificationHeader.vue'
-    import ClassificationBody from '@/admin/classifications/classificationBody.vue'
+    import ClassificationHeader from '@/governance/classifications/classificationHeader.vue'
+    import ClassificationBody from '@/governance/classifications/classificationBody.vue'
     // import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -32,10 +32,15 @@
         setup(props) {
             const { classificationList } = useTypedefData()
 
-            const selectedClassification = computed(() => classificationList.value.find((classification) => classification.name === props.classificationId))
-      
+            const selectedClassification = computed(() =>
+                classificationList.value.find(
+                    (classification) =>
+                        classification.name === props.classificationId
+                )
+            )
+
             return {
-                selectedClassification
+                selectedClassification,
             }
         },
     })

@@ -6,7 +6,7 @@ import { useTypedefStore } from '~/store/typedef'
 import { Types } from '~/services/meta/types'
 
 export default function useTypedefs() {
-    const { data } = Types.GetTypedefs(
+    const { data, } = Types.GetTypedefs(
         {},
         {
             cacheKey: 'DEFAULT_TYPEDEFS',

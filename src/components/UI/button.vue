@@ -21,122 +21,134 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType } from 'vue'
 
-export default defineComponent({
-    name: 'AtlanButton',
-    props: {
-        size: {
-            type: String as PropType<'lg' | 'sm'>,
-            default: () => 'lg',
-            required: false,
+    export default defineComponent({
+        name: 'AtlanButton',
+        props: {
+            size: {
+                type: String as PropType<'lg' | 'sm'>,
+                default: () => 'lg',
+                required: false,
+            },
+            color: {
+                type: String as PropType<
+                    'primary' | 'secondary' | 'light' | 'minimal' | 'danger'
+                >,
+                default: () => 'primary',
+                required: false,
+            },
+            padding: {
+                type: String as PropType<'large' | 'compact'>,
+                default: () => 'large',
+                required: false,
+            },
+            bold: {
+                type: Boolean,
+                default: () => false,
+                required: false,
+            },
+            disabled: {
+                type: Boolean,
+                default: () => false,
+                required: false,
+            },
+            isLoading: {
+                type: Boolean,
+                default: () => false,
+                required: false,
+            },
         },
-        color: {
-            type: String as PropType<'primary' | 'secondary' | 'light'>,
-            default: () => 'primary',
-            required: false,
-        },
-        padding: {
-            type: String as PropType<'large' | 'compact'>,
-            default: () => 'large',
-            required: false,
-        },
-        bold: {
-            type: Boolean,
-            default: () => false,
-            required: false,
-        },
-        disabled: {
-            type: Boolean,
-            default: () => false,
-            required: false,
-        },
-        isLoading: {
-            type: Boolean,
-            default: () => false,
-            required: false,
-        },
-    },
-    setup(prop, { emit }) {},
-})
+        setup(prop, { emit }) {},
+    })
 </script>
 
 <style lang="less" scoped>
-.atlan-btn {
-    @apply box-content;
-    @apply rounded;
-    @apply flex items-center justify-center flex-none;
-    @apply outline-none;
-    @apply border border-primary;
+    .atlan-btn {
+        @apply box-content;
+        @apply rounded;
+        @apply flex items-center justify-center flex-none;
+        @apply outline-none;
+        @apply border border-primary;
 
-    &.lg {
-        @apply h-9;
+        &.lg {
+            @apply h-9;
+        }
+
+        &.sm {
+            height: 30px;
+        }
+
+        &.large {
+            @apply px-8;
+        }
+
+        &.compact {
+            @apply px-3;
+        }
+
+        &.primary {
+            @apply bg-primary;
+            @apply text-white;
+            &:hover {
+                @apply bg-opacity-90;
+            }
+            &:focus-visible {
+                @apply ring-2 ring-primary-focus;
+            }
+            &:active {
+                box-shadow: 0px 3px 4px 0px #00000033 inset;
+            }
+        }
+
+        &.secondary {
+            @apply bg-white;
+            @apply text-gray;
+            @apply border border-gray-300;
+
+            &:hover {
+                @apply opacity-90;
+            }
+            &:focus-visible {
+                @apply ring-2 ring-primary-focus;
+            }
+            &:active {
+                box-shadow: 0px 3px 4px 0px #00000033 inset;
+            }
+        }
+
+        &.light {
+            @apply bg-primary-light;
+            @apply text-primary;
+            @apply border border-primary-light;
+
+            &:hover {
+                @apply opacity-90;
+            }
+            &:focus-visible {
+                @apply ring-2 ring-primary-focus;
+            }
+            &:active {
+                box-shadow: 0px 3px 4px 0px #00000033 inset;
+            }
+        }
+
+        &.minimal {
+            @apply border-0;
+        }
+
+        &.danger {
+            @apply bg-red-500;
+            @apply text-white font-bold;
+            @apply border-0;
+        }
+
+        &:disabled {
+            @apply opacity-70 text-opacity-70;
+            @apply cursor-not-allowed;
+            box-shadow: none !important;
+        }
     }
-
-    &.sm {
-        height: 30px;
-    }
-
-    &.large {
-        @apply px-8;
-    }
-
-    &.compact {
-        @apply px-3;
-    }
-
-    &.primary {
-        @apply bg-primary;
-        @apply text-white;
-        &:hover {
-            @apply bg-opacity-90;
-        }
-        &:focus-visible {
-            @apply ring-2 ring-primary-focus;
-        }
-        &:active {
-            box-shadow: 0px 3px 4px 0px #00000033 inset;
-        }
-    }
-
-    &.secondary {
-        @apply bg-white;
-        @apply text-gray;
-        @apply border border-gray-300;
-
-        &:hover {
-            @apply opacity-90;
-        }
-        &:focus-visible {
-            @apply ring-2 ring-primary-focus;
-        }
-        &:active {
-            box-shadow: 0px 3px 4px 0px #00000033 inset;
-        }
-    }
-
-    &.light {
-        @apply bg-primary-light;
-        @apply text-primary;
-        @apply border border-primary-light;
-
-        &:hover {
-            @apply opacity-90;
-        }
-        &:focus-visible {
-            @apply ring-2 ring-primary-focus;
-        }
-        &:active {
-            box-shadow: 0px 3px 4px 0px #00000033 inset;
-        }
-    }
-
-    &:disabled {
-        @apply opacity-70 text-opacity-70;
-        @apply cursor-not-allowed;
-        box-shadow: none !important;
-    }
-}
 </style>
 
 <!-- ///// Usage ////

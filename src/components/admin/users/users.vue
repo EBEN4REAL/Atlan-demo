@@ -61,6 +61,8 @@
                 "
                 :selected-user-id="selectedUserId"
                 :show-change-role-popover="showChangeRolePopover"
+                :showDisableEnablePopover="showDisableEnablePopover"
+                @toggleDisableEnablePopover="toggleDisableEnablePopover"
                 @change="handleTableChange"
                 @handle-change-role="handleChangeRole"
                 @showUserPreviewDrawer="showUserPreviewDrawer"
@@ -242,6 +244,15 @@
 
                 showChangeRolePopover.value = true
             }
+
+            const showDisableEnablePopover = ref<boolean>(false)
+
+            const toggleDisableEnablePopover = (user: any) => {
+                if (user) selectedUserId.value = user.id
+
+                showDisableEnablePopover.value = !showDisableEnablePopover.value
+            }
+
             const closeChangeRolePopover = () => {
                 showChangeRolePopover.value = false
                 selectedUserId.value = ''
@@ -344,6 +355,7 @@
                         }
                     })
                 }
+                showDisableEnablePopover.value = false
             }
 
             const showResendInvitationConfirm = (invite: {
@@ -385,6 +397,8 @@
                 state,
                 STATES,
                 loginWithEmail,
+                showDisableEnablePopover,
+                toggleDisableEnablePopover,
                 showChangeRolePopover,
                 handleChangeRole,
                 closeChangeRolePopover,

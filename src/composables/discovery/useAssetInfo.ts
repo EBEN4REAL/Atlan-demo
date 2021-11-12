@@ -59,6 +59,11 @@ export default function useAssetInfo() {
 
     const assetType = (asset: assetInterface) => asset?.typeName
 
+    const assetTypeLabel = (asset: assetInterface) => {
+        const found = assetTypeList.find((d) => d.id === assetType(asset))
+        return found?.label
+    }
+
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
@@ -76,7 +81,9 @@ export default function useAssetInfo() {
     //     return found?.label
     // }
     const description = (asset: assetInterface) =>
-        attributes(asset)?.userDescription || attributes(asset)?.description
+        attributes(asset)?.userDescription ||
+        attributes(asset)?.description ||
+        ''
 
     const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
     const isPartition = (asset: assetInterface) =>
@@ -110,11 +117,10 @@ export default function useAssetInfo() {
         })
     }
 
-    const getPreviewTabs = (asset: assetInterface, context: string) => {
+    const getPreviewTabs = (asset: assetInterface) => {
         return getTabs(previewTabs, assetType(asset))
     }
     const getProfileTabs = (asset: assetInterface) => {
-        console.log(assetType(asset))
         return getTabs(profileTabs, assetType(asset))
     }
 
@@ -700,5 +706,6 @@ export default function useAssetInfo() {
         getConnectorsNameFromQualifiedName,
         dataTypeImage,
         dataTypeImageForColumn,
+        assetTypeLabel,
     }
 }

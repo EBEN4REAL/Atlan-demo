@@ -29,7 +29,7 @@ export const getters: GettersTree<State> & Getters = {
 
         const sourceList = SourceList.map((i) => ({
             ...i,
-            count: countMap[i.id],
+            count: countMap[i.id.toLowerCase()],
         }))
 
         console.log(sourceList)

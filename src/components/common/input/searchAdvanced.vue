@@ -9,6 +9,16 @@
         class="px-0 text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
     >
         <template #prefix>
+            <a-tooltip
+                :title="capitalizeFirstLetter(connectorName)"
+                placement="left"
+            >
+                <img
+                    v-if="connectorName"
+                    :src="getConnectorImageMap[connectorName.toLowerCase()]"
+                    class="w-auto h-4 pr-2 mr-2 border-r"
+                />
+            </a-tooltip>
             <AtlanIcon icon="Search" class="flex-none text-gray-500" />
         </template>
 
@@ -40,7 +50,7 @@
 </template>
 
 <script lang="ts">
-    import { useTimeoutFn, useVModels } from '@vueuse/core'
+    import { useMagicKeys, useTimeoutFn, useVModels } from '@vueuse/core'
     import {
         computed,
         defineComponent,
@@ -50,7 +60,11 @@
         ref,
         toRefs,
         PropType,
+        watch,
     } from 'vue'
+    import useConnectionData from '~/composables/connection/useConnectionData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { capitalizeFirstLetter } from '~/utils/string'
 
     export default defineComponent({
         name: 'SearchAndFilter',
@@ -67,12 +81,15 @@
                 required: false,
                 default: () => '',
             },
+            connectorName: { type: String, default: () => '' },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { autofocus } = toRefs(props)
+            const { autofocus, connectorName } = toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
+
+            const { getConnectorImageMap } = useAssetInfo()
 
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
             const localValue = ref(modelValue.value)
@@ -111,12 +128,24 @@
                 handleChange()
             }
 
+            const { Escape /* keys you want to monitor */ } = useMagicKeys()
+            watch(Escape, (v) => {
+                if (v) {
+                    if (searchBar.value?.isFocused && localValue.value) {
+                        clearInput()
+                    }
+                }
+            })
+
             return {
                 localValue,
                 searchBar,
                 clearInput,
                 handleChange,
                 forceFocus,
+                connectorName,
+                getConnectorImageMap,
+                capitalizeFirstLetter,
             }
         },
     })

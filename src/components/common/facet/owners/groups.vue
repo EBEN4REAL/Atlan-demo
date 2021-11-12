@@ -5,7 +5,7 @@
             class="flex flex-col items-center justify-center h-full"
         >
             <div class="flex flex-col items-center">
-                <span class="text-gray-500">No Groups Found</span>
+                <span class="text-gray-500">No groups found</span>
             </div>
         </div>
         <div class="flex flex-col w-full">
@@ -33,6 +33,9 @@
                 </template>
             </a-checkbox-group>
         </div>
+        <p class="px-4 mt-1 text-xs text-gray-500">
+            showing {{ list.length }} of {{ total }} groups
+        </p>
     </div>
 </template>
 
@@ -62,7 +65,7 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
-            const { list, handleSearch } = useFacetGroups()
+            const { list, handleSearch, total, filterTotal } = useFacetGroups()
 
             watch(
                 () => props.queryText,
@@ -74,7 +77,7 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
-            return { list, handleChange, localValue }
+            return { list, handleChange, localValue, total, filterTotal }
         },
     })
 </script>

@@ -303,7 +303,7 @@
             }
 
             const detectQuery = () => {
-                let activeInlineTabCopy: activeInlineTabInterface = {
+                let queryTab: activeInlineTabInterface = {
                     key: String(new Date().getTime()),
                     label: 'Test Query',
                     isSaved: false,
@@ -389,16 +389,21 @@
                     databaseQualifiedNameFromURL + '/' + schemaNameFromURL
 
                 // const newText = `${newQuery}${prevText}`
-                activeInlineTabCopy.playground.editor.text = newQuery
+                queryTab.playground.editor.text = newQuery
 
-                activeInlineTabCopy.playground.editor.context = {
+                queryTab.playground.editor.context = {
                     attributeName: attributeName,
                     attributeValue: attributeValue,
                 }
 
-                inlineTabAdd(activeInlineTabCopy, tabsArray, activeInlineTabKey)
-                activeInlineTabKey.value = activeInlineTabCopy.key
-                syncInlineTabsInLocalStorage(tabsArray.value)
+                queryTab.explorer.schema.connectors = {
+                    attributeName: attributeName,
+                    attributeValue: attributeValue,
+                }
+
+                inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
+                // activeInlineTabKey.value = queryTab.key
+                // syncInlineTabsInLocalStorage(tabsArray.value)
 
                 queryRun(activeInlineTab, getData)
             }

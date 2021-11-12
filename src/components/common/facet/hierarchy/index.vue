@@ -14,12 +14,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRef, toRefs, watch } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
 
     import ConnectorSelect from '@/common/select/connector.vue'
     import ConnectionSelect from '@/common/select/connection.vue'
 
-    import { useVModels, toRef } from '@vueuse/core'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         props: {
@@ -29,9 +29,6 @@
                     return {}
                 },
             },
-            clearTimestamp: {
-                required: false,
-            },
         },
         components: {
             ConnectorSelect,
@@ -40,7 +37,6 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-
             const localValue = ref(modelValue.value)
 
             watch(localValue.value, (prev, cur) => {
@@ -60,5 +56,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped></style>

@@ -55,7 +55,13 @@
                     <template v-for="user in userList" :key="user.id">
                         <a-checkbox
                             :value="user.id"
-                            class="flex items-center w-full py-2 border-b border-gray-100 "
+                            class="
+                                flex
+                                items-center
+                                w-full
+                                py-2
+                                border-b border-gray-100
+                            "
                             @change="handleChange"
                         >
                             <span class="flex justify-between ml-3">
@@ -68,7 +74,7 @@
                                             user.uername ||
                                             user.email
                                         "
-                                        :avatar-size="40"
+                                        :avatar-size="minimal ? 30 : 40"
                                         class="mr-2"
                                     />
                                     <div class="ml-2">
@@ -76,7 +82,10 @@
                                             <div class="mr-2 font-bold">
                                                 {{ user.name }}
                                             </div>
-                                            <div class="mr-2 text-gray">
+                                            <div
+                                                v-if="!minimal"
+                                                class="mr-2 text-gray"
+                                            >
                                                 {{ user.email }}
                                             </div>
                                         </div>
@@ -130,6 +139,10 @@
         },
         props: {
             addMemberLoading: {
+                type: Boolean,
+                default: false,
+            },
+            minimal: {
                 type: Boolean,
                 default: false,
             },

@@ -5,6 +5,7 @@ import postgres from '~/assets/images/source/postgres.png'
 import athena from '~/assets/images/source/athena.png'
 import database from '~/assets/images/assetType/Database.svg'
 import schema from '~/assets/images/assetType/Schema.svg'
+import powerbi from '~/assets/images/source/powerbi.png'
 
 export const SourceList = [
     {
@@ -135,12 +136,22 @@ export const SourceList = [
                 level: 3,
             },
         ],
-        types: ['Database', 'Schema', 'Table', 'Column', 'View', 'TablePartition', 'MaterialisedView', 'Query', 'QueryFolder']
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'TablePartition',
+            'MaterialisedView',
+            'Query',
+            'QueryFolder',
+        ],
     },
     {
-        id: 'powerBI',
+        id: 'powerbi',
         label: 'PowerBI',
-        image: tableau,
+        image: powerbi,
         connectionCount: 0,
         hierarchy: [],
         types: [

@@ -1,14 +1,14 @@
 <template>
-    <div class="flex" :class="className">
+    <div class="flex flex-wrap gap-1">
         <template v-for="item in list" :key="item.id">
             <div
-                class="flex items-center justify-center px-5 py-1 ml-2 text-xs border rounded cursor-pointer  button hover:text-primary hover:border-primary"
+                class="flex items-center justify-center px-5 py-1 text-sm border rounded cursor-pointer  button hover:text-primary hover:border-primary"
                 :class="
-                    item.id === data
+                    isSelected(item.id)
                         ? 'active-btn border-primary'
                         : 'text-gray-500'
                 "
-                @click="() => handleClick(item)"
+                @click="() => handleClick(item.id)"
             >
                 {{ item.label }}
             </div>
@@ -17,37 +17,70 @@
 </template>
 
 <script lang="ts">
+    import { useVModels } from '@vueuse/core'
+    import { ref } from 'vue'
     import { defineComponent, PropType, toRefs } from 'vue'
     import { CheckboxArray, Checkbox } from '~/types'
 
     export default defineComponent({
         props: {
-            data: {
-                type: String,
-                required: true,
+            modelValue: {
+                required: false,
             },
             list: {
                 type: Array as PropType<CheckboxArray>,
-                required: true,
-            },
-            class: {
-                type: String,
                 required: false,
             },
+            isMultiple: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
-        emits: ['update:data', 'change'],
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { data, list, class: className } = toRefs(props)
-            function handleClick(item: Checkbox) {
-                emit('update:data', item.id)
-                emit('change', item.id)
+            const { list, isMultiple } = toRefs(props)
+
+            const { modelValue } = useVModels(props, emit)
+
+            const localValue = ref(modelValue.value)
+
+            const handleClick = (id) => {
+                if (isMultiple.value) {
+                    if (!localValue.value || localValue.value?.length == 0) {
+                        localValue.value = [id]
+                    } else {
+                        const index = localValue.value?.indexOf(id)
+
+                        if (index > -1) {
+                            localValue.value?.splice(index, 1)
+                        } else {
+                            localValue.value?.push(id)
+                        }
+                    }
+                } else {
+                    localValue.value = id
+                }
+                modelValue.value = localValue.value
+                emit('change', id)
+            }
+
+            const isSelected = (id) => {
+                if (isMultiple.value) {
+                    return !!localValue.value?.includes(id)
+                } else {
+                    return id === localValue.value
+                }
             }
 
             return {
                 handleClick,
-                className,
-                data,
+                isMultiple,
+                localValue,
                 list,
+                isSelected,
             }
         },
     })

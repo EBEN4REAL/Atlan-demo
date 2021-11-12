@@ -40,23 +40,16 @@
         <div class="pt-4">
             <p class="mb-3 text-sm text-gray">State</p>
             <div class="">
-                <CustomRadioButton
-                    class=""
-                    :list="radioButtonData"
-                    @change="handleChangeState"
-                    v-model:data="state"
-                />
-            </div>
+             
         </div> -->
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, Ref, ref } from 'vue'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
 
     export default defineComponent({
-        components: { CustomRadioButton },
+        components: {},
         props: {
             defaultProjection: {
                 type: Array,

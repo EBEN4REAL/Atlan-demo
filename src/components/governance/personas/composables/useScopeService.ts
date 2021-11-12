@@ -13,18 +13,43 @@ export default function scopeService() {
         const scopeList = [
             {
                 scopes: [
-                    'entity-create',
-                    'entity-update',
-                    'entity-delete',
-                    'entity-read',
+                    {
+                        value: 'entity-read',
+                        label: 'read',
+                    },
+                    {
+                        value: 'entity-create',
+                        label: 'create',
+                    },
+                    {
+                        value: 'entity-update',
+                        label: 'update',
+                    },
+                    {
+                        value: 'entity-delete',
+                        label: 'delete',
+                    },
                 ],
                 type: 'Asset management',
             },
             {
                 scopes: [
-                    'entity-add-classification',
-                    'entity-remove-classification',
-                    'entity-update-classification',
+                    {
+                        value: 'entity-add-classification',
+                        label: 'add',
+                    },
+                    {
+                        value: 'entity-update-classification',
+                        label: 'update',
+                    },
+                    {
+                        value: 'entity-remove-classification',
+                        label: 'remove',
+                    },
+                    {
+                        value: 'entity-add-classification',
+                        label: 'add',
+                    },
                 ],
                 type: 'Classifications',
             },
@@ -33,7 +58,12 @@ export default function scopeService() {
             //     type: 'Labels',
             // },
             {
-                scopes: ['entity-update-business-metadata'],
+                scopes: [
+                    {
+                        value: 'entity-update-business-metadata',
+                        label: 'update',
+                    },
+                ],
                 type: 'Custom Metadata',
             },
             // {

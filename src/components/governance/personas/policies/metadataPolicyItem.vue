@@ -109,6 +109,7 @@
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
+                style="width: 44px"
                 @update:checked="policy.allow = !$event"
             />
             <span>Deny Permissions</span>
@@ -212,6 +213,9 @@
 
             const assets = computed({
                 get: () => {
+                    if (policy.value.assets.length > 0)
+                        rules.value.assets.show = false
+                    else rules.value.assets.show = true
                     return policy.value.assets.map((name) => ({
                         label: name,
                     }))

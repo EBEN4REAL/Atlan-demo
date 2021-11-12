@@ -52,7 +52,7 @@
                 class="pb-2"
                 :persona="persona"
             />
-            <div v-else-if="activeTabKey === 'policies'" class="mt-6">
+            <div v-else-if="activeTabKey === 'policies'" class="mt-2">
                 <template
                     v-for="(
                         policy, idx
@@ -68,7 +68,7 @@
                         @save="savePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                     />
-                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
+
                     <PolicyCard
                         v-else
                         class="px-5"
@@ -125,7 +125,7 @@
                         </template>
                         Add new policy
                         <template #suffix>
-                            <AtlanIcon icon="ChevronDown" />
+                            <AtlanIcon icon="ChevronDown" class="text-white" />
                         </template>
                     </AtlanBtn>
 

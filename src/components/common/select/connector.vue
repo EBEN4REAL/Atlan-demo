@@ -1,10 +1,11 @@
 <template>
     <a-select
         placeholder="Select a connector"
-        v-model:value="selected"
+        v-model:value="localValue"
         :allowClear="true"
         :showSearch="true"
         notFoundContent="No connector found"
+        :get-popup-container="(target) => target.parentNode"
     >
         <template v-for="item in sourceList" :key="item.id">
             <a-select-option :value="item.id">
@@ -19,8 +20,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, watch, ref, toRef, toRefs } from 'vue'
-
+    import { defineComponent, watch, ref } from 'vue'
     import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
@@ -36,17 +36,17 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { sourceList } = useConnectionData()
-            const { modelValue } = useVModels(props, emit)
-            const selected = ref(modelValue.value)
 
-            watch(selected, () => {
-                modelValue.value = selected.value
+            console.log('list', sourceList)
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+            watch(localValue, () => {
+                modelValue.value = localValue.value
                 emit('change')
             })
-
             return {
                 sourceList,
-                selected,
+                localValue,
             }
         },
     })

@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  md:block facets"
+            class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
         >
             <AssetFilters
                 :key="dirtyTimestamp"
@@ -15,11 +15,13 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-3 py-1 border-b border-gray-200">
+                <div class="flex px-6 py-1 border-b border-gray-200">
                     <SearchAdvanced
                         v-model="queryText"
+                        :connectorName="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         @change="handleSearchChange"
+                        placeholder="Search assets..."
                     >
                         <template #filter>
                             <a-popover
@@ -57,21 +59,6 @@
                         :list="assetTypeAggregationList"
                         @change="handleAssetTypeChange"
                     >
-                        <a-popover trigger="click" placement="bottomLeft">
-                            <template #content>
-                                <div
-                                    class="flex flex-col py-1 rounded  gap-y-3 preference-container"
-                                ></div>
-                            </template>
-
-                            <div
-                                class="flex items-center hover:text-primary"
-                                :class="$style.tab"
-                            >
-                                <AtlanIcon icon="Globe" class="w-auto h-5" />
-                                <AtlanIcon icon="ChevronDown" class="w-3 h-3" />
-                            </div>
-                        </a-popover>
                     </AggregationTabs>
                 </div>
 
@@ -107,7 +94,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, watch, toRefs, PropType } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        PropType,
+    } from 'vue'
     import EmptyView from '@common/empty/discover.vue'
     // import AssetPagination from '@common/pagination/index.vue'
 
@@ -157,8 +151,8 @@
             },
             initialFilters: {
                 type: Object,
-                required: false
-            }
+                required: false,
+            },
         },
         setup(props, { emit }) {
             const limit = ref(20)
@@ -186,10 +180,10 @@
                 facets.value = discoveryStore.activeFacet
             }
 
-            if(props.initialFilters) {
+            if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
-                    ...initialFilters
+                    ...initialFilters,
                 }
             }
 
@@ -261,10 +255,10 @@
             }
 
             watch(initialFilters, (newInitialFilters) => {
-                if(newInitialFilters) {
+                if (newInitialFilters) {
                     facets.value = {
                         ...facets.value,
-                        ...newInitialFilters
+                        ...newInitialFilters,
                     }
                     quickChange()
                 }
@@ -290,12 +284,6 @@
                 dirtyTimestamp,
             }
         },
-        // data() {
-        //     return {
-        //         activeKey: '',
-        //         debounce: null,
-        //     }
-        // },
     })
 </script>
 
@@ -313,17 +301,5 @@
         :global(.ant-popover-content) {
             @apply shadow-sm;
         }
-    }
-
-    .tab {
-        @apply bg-white text-sm !important;
-        border: 1px solid #e6e6eb;
-        border-radius: 24px !important;
-        border: 1px solid #e6e6eb !important;
-
-        padding: 3px 8px !important;
-        box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.05) !important;
-
-        transition: all 0.8s ease-out;
     }
 </style>

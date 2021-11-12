@@ -76,21 +76,34 @@
                     (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
                 )
 
+                console.log(currentType)
+
                 const found = list.value.find(
                     (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
                 )
 
                 localList.value = list.value
 
-                localList.value.unshift({
-                    id: '__all',
-                    label: 'All',
-                    count: sum,
-                })
-
                 if (!found && modelValue.value !== '__all') {
-                    localValue.value = '__all'
-                    handleChange()
+                    if (currentType) {
+                        currentType.count = 0
+                        localList.value.push(currentType)
+                    }
+                    if (sum !== 0) {
+                        localList.value.unshift({
+                            id: '__all',
+                            label: 'All',
+                            count: sum,
+                        })
+                    }
+                } else {
+                    if (localList.value.length !== 1) {
+                        localList.value.unshift({
+                            id: '__all',
+                            label: 'All',
+                            count: sum,
+                        })
+                    }
                 }
             })
 

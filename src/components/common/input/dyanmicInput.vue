@@ -21,6 +21,16 @@
         @change="handleInputChange"
     ></UserSelector>
 
+    <a-date-picker
+        v-if="['datetime'].includes(dataType.toLowerCase())"
+        v-model:value="localValue"
+        format="YYYY-MM-DD HH:mm:ss"
+        :allowClear="true"
+        :disabled-date="disabledDate"
+        @change="handleInputChange"
+        :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
+    />
+
     <a-radio-group
         button-style="solid"
         class="flex"
@@ -50,6 +60,10 @@
     } from 'vue'
     import UserSelector from '@/common/select/users.vue'
     import AtlanIcon from '../icon/atlanIcon.vue'
+    import dayjs, { Dayjs } from 'dayjs'
+
+    import utc from 'dayjs/plugin/utc'
+    dayjs.extend(utc)
     // import useAsyncSelector from './useAsyncSelector'
     // import useAsyncTreeSelect from './useAsyncTreeSelect'
     // import useFileUploader from './useFileUploader'
@@ -65,14 +79,32 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const localValue = ref(modelValue.value)
+            let val = modelValue.value
+
+            if (
+                props.dataType.toLowerCase() === 'datetime' &&
+                modelValue.value
+            ) {
+                val = dayjs(modelValue.value)
+            }
+            const localValue = ref(val)
 
             const handleInputChange = () => {
-                modelValue.value = localValue.value
+                if (props.dataType.toLowerCase() === 'datetime') {
+                    const date = localValue.value
+                    modelValue.value = date?.valueOf()
+                } else {
+                    modelValue.value = localValue.value
+                }
                 emit('change')
             }
 
-            return { localValue, handleInputChange }
+            const disabledDate = (current: Dayjs) => {
+                // Can not select days before today and today
+                return current > dayjs().endOf('day')
+            }
+
+            return { localValue, handleInputChange, dayjs, disabledDate }
         },
     })
 </script>

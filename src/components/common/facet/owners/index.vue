@@ -1,56 +1,61 @@
 <template>
-    <div class="w-full py-1">
-        <div class="flex items-center justify-between mb-2">
+    <div class="w-full">
+        <div class="flex items-center justify-between px-4">
             <SearchAdvanced
                 ref="ownerSearchRef"
                 v-model="queryText"
                 :placeholder="placeholder"
                 class="-mt-1.5"
+                :allowClear="true"
                 size="minimal"
             >
                 <template #tab>
                     <div class="flex gap-1">
-                        <div
-                            :class="
-                                !enableTabs.includes('users')
-                                    ? 'pointer-events-none cursor-not-allowed'
-                                    : ''
-                            "
-                        >
-                            <AtlanIcon
+                        <a-tooltip title="users" placement="top">
+                            <div
                                 :class="
-                                    componentType === 'users'
-                                        ? 'text-primary font-bold '
+                                    !enableTabs.includes('users')
+                                        ? 'pointer-events-none cursor-not-allowed'
                                         : ''
                                 "
-                                icon="User"
-                                class="mx-auto"
-                                @click="handleUserClick"
-                            />
-                        </div>
-                        <div
-                            :class="
-                                !enableTabs.includes('groups')
-                                    ? 'pointer-events-none cursor-not-allowed'
-                                    : ''
-                            "
-                        >
-                            <AtlanIcon
+                            >
+                                <AtlanIcon
+                                    :class="
+                                        componentType === 'users'
+                                            ? 'text-primary font-bold '
+                                            : ''
+                                    "
+                                    icon="User"
+                                    class="mx-auto"
+                                    @click="handleUserClick"
+                                />
+                            </div>
+                        </a-tooltip>
+                        <a-tooltip title="groups" placement="top">
+                            <div
                                 :class="
-                                    componentType === 'groups'
-                                        ? 'text-primary font-bold'
+                                    !enableTabs.includes('groups')
+                                        ? 'pointer-events-none cursor-not-allowed'
                                         : ''
                                 "
-                                icon="GroupStatic"
-                                class="mx-auto"
-                                @click="handleGroupClick"
-                            />
-                        </div>
+                            >
+                                <AtlanIcon
+                                    :class="
+                                        componentType === 'groups'
+                                            ? 'text-primary font-bold'
+                                            : ''
+                                    "
+                                    icon="GroupStatic"
+                                    class="mx-auto"
+                                    @click="handleGroupClick"
+                                />
+                            </div>
+                        </a-tooltip>
                     </div>
                 </template>
             </SearchAdvanced>
         </div>
-        <div class="">
+        <div class="mt-1">
             <Users
                 v-if="componentType == 'users'"
                 v-model="localValue.ownerUsers"
@@ -64,7 +69,7 @@
         </div>
         <div class="px-4 pt-1" v-if="showNoOwners">
             <a-checkbox
-                :checked="null"
+                v-model:checked="localValue.empty"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
             >
                 <component
@@ -162,6 +167,7 @@
             })
 
             watch(localValue.value, (prev, cur) => {
+                console.log('changed')
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
                 }

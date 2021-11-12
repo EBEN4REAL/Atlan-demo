@@ -1,6 +1,6 @@
 <template>
     <Loader v-if="isLoading"></Loader>
-    <AssetProfile :selected-asset="selectedAsset" v-else></AssetProfile>
+    <AssetProfile :asset="selectedAsset" v-else></AssetProfile>
 </template>
 
 <script lang="ts">

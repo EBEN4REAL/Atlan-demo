@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 border-b border-gray-300">
+    <div class="py-6 border rounded border-primary">
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"
             v-model:visible="assetSelectorVisible"
@@ -107,6 +107,7 @@
         <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
         <div class="flex items-center gap-x-2">
             <a-switch
+                :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
                 @update:checked="policy.allow = !$event"
             />
@@ -287,5 +288,8 @@
         border-right-width: 1 px !important;
         outline: 0;
         box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+    }
+    .checked {
+        background: #e04f1a;
     }
 </style>

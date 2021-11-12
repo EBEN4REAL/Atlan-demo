@@ -42,6 +42,7 @@ import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
+import RemoveUser from '~/assets/images/icons/remove-user.svg'
 import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
 import CircleLoader from '~/assets/images/icons/circle-loader.svg'
@@ -200,6 +201,7 @@ import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
 
 export default {
+    RemoveUser,
     QueryVerified,
     QueryDeprecated,
     QueryDraft,

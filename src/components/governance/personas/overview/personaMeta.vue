@@ -2,7 +2,15 @@
     <div>
         <div class="details-section">
             <span class="text-sm text-gray-500">Created By</span>
-            <span class="text-sm text-gray">{{ persona.createdBy }}</span>
+            <div class="flex items-center text-sm">
+                <Avatar
+                    :username="persona.createdBy"
+                    styleClass="bg-white mr-1"
+                />
+                <span class="text-gray">
+                    {{ persona.createdBy }}
+                </span>
+            </div>
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{ persona.createdAt }}</span>
 
@@ -13,35 +21,85 @@
             />
             <span class="text-sm text-gray">Enable Persona</span>
         </div>
-
-        <div class="details-section group" @click="setActiveTab('policies')">
-            <AtlanIcon icon="Policy" class="h-6" />
-            <span class="text-sm font-bold">Policies</span>
-            <span class="data-policy-pill">
-                <b>{{ persona.dataPolicies?.length || 'No' }}</b> Data policies
-            </span>
-            <span class="metadata-policy-pill">
-                <b>{{ persona.metadataPolicies?.length || 'No' }}</b> Metadata
-                policies
-            </span>
-            <AtlanIcon
-                icon="ArrowRight"
-                class="h-6 ml-auto group-hover:text-primary"
-            />
-        </div>
-        <div class="details-section group" @click="setActiveTab('users')">
-            <AtlanIcon icon="GroupStatic" class="h-6" />
-            <span class="text-sm font-bold">Users and Groups</span>
-            <span class="user-group-pill">
-                <b>{{ persona.users?.length || 'No' }}</b> Users
-            </span>
-            <span class="user-group-pill">
-                <b>{{ persona.groups?.length || 'No' }}</b> Groups
-            </span>
-            <AtlanIcon
-                icon="ArrowRight"
-                class="h-6 ml-auto group-hover:text-primary"
-            />
+        <div class="flex items-center my-4 mt-0">
+            <div
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                @click="setActiveTab('policies')"
+            >
+                <div class="p-3 mr-3 rounded text-primary bg-primary-light">
+                    <AtlanIcon icon="Policy" class="h-6" />
+                </div>
+                <div class="w-full">
+                    <div class="mb-1 font-bold text-gray-700">Policy</div>
+                    <div class="flex text-gray-500">
+                        <div
+                            v-if="
+                                persona.dataPolicies?.length === 0 &&
+                                persona.metadataPolicies?.length === 0
+                            "
+                        >
+                            No policies added
+                        </div>
+                        <div v-else class="flex items-center">
+                            <div class="mr-3">
+                                <b>{{ persona.metadataPolicies?.length }}</b>
+                                Metadata policies
+                            </div>
+                            <div>
+                                <b>{{ persona.dataPolicies?.length }}</b>
+                                Data policies
+                            </div>
+                        </div>
+                        <div
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                        >
+                            <AtlanIcon
+                                icon="ArrowRight"
+                                class="h-6 ml-auto group-hover:text-primary"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
+                @click="setActiveTab('policies')"
+            >
+                <div class="p-3 mr-3 rounded text-primary bg-primary-light">
+                    <AtlanIcon icon="GroupStatic" class="h-6" />
+                </div>
+                <div class="w-full group">
+                    <div class="mb-1 text-sm font-bold">Users and Groups</div>
+                    <div class="flex w-full text-gray-500">
+                        <div
+                            v-if="
+                                persona.users?.length === 0 &&
+                                persona.groups?.length === 0
+                            "
+                        >
+                            No users added
+                        </div>
+                        <div v-else class="flex items-center">
+                            <div class="mr-3">
+                                <b>{{ persona.users?.length }}</b>
+                                Users
+                            </div>
+                            <div>
+                                <b>{{ persona.groups?.length }}</b>
+                                Groups
+                            </div>
+                        </div>
+                        <div
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                        >
+                            <AtlanIcon
+                                icon="ArrowRight"
+                                class="h-6 ml-auto group-hover:text-primary"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -52,10 +110,11 @@
     import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
+    import Avatar from '@common/avatar/user.vue'
 
     export default defineComponent({
         name: 'PersonaMeta',
-        components: {},
+        components: { Avatar },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
@@ -75,9 +134,8 @@
 </script>
 <style lang="less" scoped>
     .details-section {
-        @apply flex items-center gap-x-2 py-6 px-5;
+        @apply flex items-center gap-x-2 py-6;
         @apply text-gray-500;
-        @apply border-b border-gray-300;
         @apply cursor-pointer;
     }
     .user-group-pill {
@@ -94,6 +152,10 @@
         color: #d452d7;
     }
     .btn-checked {
-        background: #00a680 !important;
+        background: #00a680;
+    }
+    .vertical-center {
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 </style>

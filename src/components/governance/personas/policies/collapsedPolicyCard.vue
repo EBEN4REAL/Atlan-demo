@@ -1,6 +1,9 @@
 <template>
-    <div class="flex flex-col py-6 border-b border-gray-300 gap-y-2 group">
-        <div class="flex items-center mb-1 gap-x-3">
+    <div
+        class="flex flex-col py-4 mb-2 border border-gray-300 rounded  card group"
+        style="paddingleft: 12px; paddingroght: 12px"
+    >
+        <div class="flex items-center mb-4 gap-x-3">
             <span class="text-base font-bold text-gray">{{ policy.name }}</span>
             <span v-if="type === 'data'" class="data-policy-pill"
                 >Data Policy</span
@@ -24,13 +27,13 @@
                 </span>
             </div>
         </div>
-        <div class="flex items-center gap-x-6">
+        <div class="flex items-center mb-3 gap-x-6">
             <span class="flex-none text-sm">
                 <b>{{ policy.assets.length }}</b> assets selected
             </span>
             <div
                 v-if="type === 'meta'"
-                class="flex items-center mb-2 overflow-hidden gap-x-1"
+                class="flex items-center overflow-hidden gap-x-1"
             >
                 <AtlanIcon class="flex-none text-gray-500" icon="Lock" />
                 <span class="text-sm text-gray-500 truncate">{{
@@ -52,7 +55,7 @@
                 padding="compact"
                 @click.prevent="$emit('edit')"
             >
-                <AtlanIcon icon="Edit" class="-mx-1" />
+                <AtlanIcon icon="Edit" class="mr-0.5" /> Edit
             </AtlanBtn>
         </div>
     </div>
@@ -126,5 +129,8 @@
         @apply rounded-full text-sm px-2 py-1;
         background-color: #fdf5f1;
         color: #e04f1a;
+    }
+    .card {
+        box-shadow: 1px 2px 3px 3px rgba(0, 0, 0, 0.05);
     }
 </style>

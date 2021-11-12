@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center w-full transition duration-300 searchbar h-7"
+        class="flex items-center w-full transition duration-300 searchbar"
         :class="size"
     >
         <!-- <slot name="categoryFilter" /> -->
@@ -78,7 +78,7 @@
             dot: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
-                type: String as PropType<'default' | 'minimal'>,
+                type: String as PropType<'default' | 'minimal' | 'bordered'>,
                 default: () => 'default',
             },
             modelValue: { type: String, default: () => '' },
@@ -121,7 +121,7 @@
 <style lang="less" scoped>
     .searchbar {
         min-width: 100px;
-        @apply pb-1 !important;
+        min-height: 32px;
 
         input {
             min-width: 100px;
@@ -140,15 +140,21 @@
         }
 
         &.default {
-            border-width: 1px;
-            border: none;
-            border-bottom: 1px solid
-                rgba(230, 230, 235, var(--tw-border-opacity));
+            @apply border border-gray-300 rounded shadow;
+            &:hover {
+                @apply shadow-md;
+            }
+            &:focus-within {
+                @apply ring-2 border-primary shadow-none;
+            }
+        }
+        &.bordered {
+            @apply border border-gray-300 rounded shadow-none;
             &:hover {
                 @apply shadow-none;
             }
             &:focus-within {
-                @apply shadow-none;
+                @apply ring-2 border-primary shadow-none;
             }
         }
 

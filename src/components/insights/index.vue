@@ -411,16 +411,6 @@
                     schemaNameFromURL &&
                     tableNameFromURL
                 ) {
-                    console.log('url params: ', {
-                        databaseQualifiedNameFromURL:
-                            databaseQualifiedNameFromURL,
-                        schemaNameFromURL: schemaNameFromURL,
-                        tableNameFromURL: tableNameFromURL,
-                    })
-                    // if (columnNameFromURL.value) {
-                    // } else {
-                    // }
-
                     detectQuery()
                 }
             })

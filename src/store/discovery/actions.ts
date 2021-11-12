@@ -5,6 +5,7 @@ export interface Actions extends State {
     setActivePanel(value: any): void
     setPreferences(value: any): void
     setActiveFacet(value: any): void
+    setActivePostFacet(value: any): void
 }
 
 export const actions: Actions = {
@@ -19,6 +20,9 @@ export const actions: Actions = {
     },
     setPreferences(value) {
         this.preferences = value
+    },
+    setActivePostFacet(value) {
+        this.activePostFacet = value
     },
 }
 export default actions

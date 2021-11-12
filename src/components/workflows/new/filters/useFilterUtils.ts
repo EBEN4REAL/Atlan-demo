@@ -1,4 +1,3 @@
-import { Components } from '~/api/atlas/client'
 import { Ref, computed, ComputedRef } from 'vue'
 
 export default function useFilterUtils(filters: Ref<Record<string, any>>) {

@@ -48,7 +48,7 @@
                         class="flex items-center text-sm text-gray-500 gap-x-1"
                     >
                         <AtlanIcon icon="User" />
-                        <span>{{ `Creator name` }}</span>
+                        <span>{{ creator?.first_name }}</span>
                     </div>
                     <div style="color: rgb(196, 196, 196)">•</div>
                     <div class="flex text-sm text-gray-500">
@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, ref } from 'vue'
+    import { defineComponent, watch, ref, toRefs } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import UtilityButtons from '@/workflows/shared/utilityButtons.vue'
     import {
@@ -86,13 +86,22 @@
         },
         props: {
             workflow: { type: Object, default: () => {} },
+            id: {
+              type: String, 
+              required:true
+            },
+            creator: {
+              type: Object,
+              requred: true
+            }
         },
-        setup () {
+        setup (props) {
           const totalRun = ref(0)
           const latRun = ref("")
+          const {id} = toRefs(props)
           const {
             archivedList,
-          } = getArchivedRunList("tes-samiran-new") 
+          } = getArchivedRunList(id.value) 
           watch(archivedList, (newVal) => {
             totalRun.value = newVal.filter_record
             if(newVal?.records?.length > 0){

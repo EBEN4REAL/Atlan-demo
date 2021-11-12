@@ -4,7 +4,9 @@
     <div v-else class="flex w-full h-full">
         <div class="flex flex-col w-full container-workFlow">
             <Header
+                :id="id"
                 :workflow="data.asset"
+                :creator="creator"
                 class="px-5 pt-3 bg-white"
                 @open-logs="workflowLogsIsOpen = true"
             />
@@ -93,6 +95,7 @@
         watch,
         onMounted,
         provide,
+        ComputedRef
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -103,6 +106,7 @@
     import { storeToRefs } from 'pinia'
     import ProfilePreview from '@/workflows/profile/preview/preview.vue'
     import Header from '@/workflows/profile/header.vue'
+    import { useUsers } from '~/composables/user/useUsers'
 
     // Composables
     import {
@@ -160,6 +164,7 @@
             const selectedPod = ref({})
             const selectedGraph = ref({})
             const loadingFetchPod = ref(true)
+            const userId = ref("")
             const tabs = [
                 {
                     id: 1,
@@ -292,6 +297,15 @@
                 } = useWorkflowByName(id.value)
 
                 watch(response, (v) => {
+                    // useWorkflowByName
+                    const usrId = v?.records[0]?.labels["workflows.argoproj.io/creator"]
+                    if(usrId){
+                      userId.value = usrId
+                    }
+                    // getUserList()
+                    // watch(userList, (newVal) => {
+                    //   console.log(newVal, '<<<sdshdsgdgsdhjs')
+                    // })
                     workflowTemplate.value =
                         v.records[0].workflowtemplate.spec?.templates[0]?.dag?.tasks[0]?.templateRef.name
                     data.value.asset = v.records[0]
@@ -306,6 +320,41 @@
             watch(id, (n, o) => {
                 if (n && !o) fetch()
             })
+
+            const params: ComputedRef<{
+                limit?: number
+                offset?: number
+                filter?: any
+                sort?: string
+            }> = computed(() =>
+                userId.value
+                    ? {
+                        limit: 1,
+                        offset: 0,
+                        sort: 'first_name',
+                        filter: {
+                            $and: [
+                              {
+                                  $or: [
+                                    {
+                                      email_verified: true, 
+                                      id: userId.value
+                                    }
+                                  ],
+                              },
+                          ],
+                        },
+                      }
+                    : {}
+            )
+
+            const { userList, getUserList } = useUsers(params)
+            watch(userId, () => {
+              if(userId.value){
+                getUserList()
+              }
+            })
+            const creator = computed(() =>userList.value.length > 1 ? {} : userList.value[0])
 
             watch(tab, (n, o) => {
                 if (!n) return
@@ -357,6 +406,8 @@
                 selectedGraph,
                 loadingFetchPod,
                 setLoadingFetchPod,
+                id,
+                creator
             }
         },
     })

@@ -2,7 +2,7 @@
     <div class="flex items-center justify-center">
         <div v-if="isLoading" class="flex items-center">
             <AtlanIcon
-                icon="CircleLoader"
+                icon="Loader"
                 class="mr-1 animate-spin text-primary"
             ></AtlanIcon
             >Fetching personas...

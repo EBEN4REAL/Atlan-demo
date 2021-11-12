@@ -209,6 +209,8 @@ import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
 import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 
+import Download from '~/assets/images/icons/download.svg'
+import Upload from '~/assets/images/icons/upload.svg'
 import Enum from '~/assets/images/icons/label.svg'
 import Boolean from '~/assets/images/icons/boolean.svg'
 import String from '~/assets/images/icons/string.svg'
@@ -428,6 +430,8 @@ export default {
     Refresh,
     ErrorLogs,
     EmptyLogs,
+    Download,
+    Upload,
     Enum,
     Boolean,
     String,

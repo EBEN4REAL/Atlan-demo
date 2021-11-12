@@ -4,14 +4,19 @@ import { ref, Ref, computed } from 'vue'
 import { LIST_API_KEYS } from '~/services/service/apikeys/key'
 import { APIKey } from '~/services/service/apikeys'
 import { formatDateTime } from '~/utils/date'
-
-interface APIKeyParams {
+export interface APIKeyParams {
     offset: number
     limit: number
     sort: string
     filter: unknown
 }
 export default function useAPIKeysList() {
+    const params: Ref<APIKeyParams> = ref({
+        offset: 0,
+        limit: 10,
+        sort: '-created_at',
+        filter: {},
+    })
     const selectedAPIKey = ref({
         displayName: '',
         description: '',
@@ -27,12 +32,7 @@ export default function useAPIKeysList() {
             personas: [],
         }
     }
-    const params: Ref<APIKeyParams> = ref({
-        offset: 0,
-        limit: 100,
-        sort: '-created_at',
-        filter: {},
-    })
+
     const {
         data,
         isLoading,
@@ -59,14 +59,27 @@ export default function useAPIKeysList() {
                 },
             })) ?? []
     )
+    const filteredAPIKeysCount = computed(() => {
+        return data?.value?.filter_record
+    })
+    const totalAPIKeysCount = computed(() => {
+        return data?.value?.total_record
+        // return 0
+    })
     const searchAPIKeys = useDebounceFn((searchText: string) => {
         params.value.filter = searchText.length
             ? { display_name: { $ilike: `${searchText}%` } }
             : {}
         reFetchList()
     }, 200)
-
+    const paginateAPIKeys = (page: number) => {
+        // modify offset
+        const offset = (page - 1) * params.value.limit
+        params.value.offset = offset
+        reFetchList()
+    }
     return {
+        params,
         apiKeysList,
         isLoading,
         selectedAPIKey,
@@ -74,5 +87,8 @@ export default function useAPIKeysList() {
         searchAPIKeys,
         resetSelectedAPIKey,
         setSelectedAPIKey,
+        paginateAPIKeys,
+        filteredAPIKeysCount,
+        totalAPIKeysCount,
     }
 }

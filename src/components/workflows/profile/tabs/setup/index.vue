@@ -104,8 +104,10 @@
             })
 
             watch(data, (newVal) => {
-                tasks.value =
-                    newVal.workflowtemplate.spec.templates[0].dag.tasks
+                const entrypoint = newVal.workflowtemplate.spec.entrypoint
+                tasks.value = newVal.workflowtemplate.spec.templates.find(
+                    (t) => t.name === entrypoint
+                ).dag.tasks
             })
 
             return {

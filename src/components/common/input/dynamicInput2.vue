@@ -1,28 +1,28 @@
 <template>
+    <UserSelector
+        v-if="dataType === 'user'"
+        v-model:value="localValue"
+        @change="handleInputChange"
+    ></UserSelector>
     <a-input
-        v-if="dataType === 'string'"
+        v-else-if="dataType === 'string'"
         v-model:value="localValue"
         @change="handleInputChange"
         :maxlength="max || 50"
     ></a-input>
     <a-input-number
-        v-if="['int', 'long'].includes(dataType.toLowerCase())"
+        v-else-if="['int', 'long'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
         @change="handleInputChange"
         :precision="0"
     ></a-input-number>
     <a-input-number
-        v-if="['double', 'float'].includes(dataType.toLowerCase())"
+        v-else-if="['double', 'float'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
     ></a-input-number>
-    <UserSelector
-        v-if="['__user'].includes(dataType.toLowerCase())"
-        v-model:value="localValue"
-        @change="handleInputChange"
-    ></UserSelector>
 
     <a-date-picker
-        v-if="['datetime'].includes(dataType.toLowerCase())"
+        v-else-if="['datetime'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
         format="YYYY-MM-DD HH:mm:ss"
         :allowClear="true"
@@ -34,7 +34,7 @@
     <a-radio-group
         button-style="solid"
         class="flex"
-        v-if="['boolean'].includes(dataType.toLowerCase())"
+        v-else-if="['boolean'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
         @change="handleInputChange"
     >
@@ -69,15 +69,21 @@
     // import useFileUploader from './useFileUploader'
 
     export default defineComponent({
-        components: { UserSelector, AtlanIcon },
+        components: { UserSelector },
         props: {
             modelValue: {},
-            dataType: { default: 'string' },
+            dataType: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
             max: { type: Number },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+
+            const { dataType } = toRefs(props)
 
             let val = modelValue.value
 
@@ -104,7 +110,13 @@
                 return current > dayjs().endOf('day')
             }
 
-            return { localValue, handleInputChange, dayjs, disabledDate }
+            return {
+                localValue,
+                handleInputChange,
+                dayjs,
+                disabledDate,
+                dataType,
+            }
         },
     })
 </script>

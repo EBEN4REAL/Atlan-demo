@@ -81,7 +81,7 @@ export const operators = {
             label: 'Less Than Equal(<=)',
         },
     ],
-    string__user: [
+    string_user: [
         {
             id: 'equals',
             label: 'Equals(=)',
@@ -99,7 +99,7 @@ export const operators = {
             label: 'Is Not Null',
         },
     ],
-    string___user_mandatory: [
+    string_user_mandatory: [
         {
             id: 'equals',
             label: 'Equals(=)',

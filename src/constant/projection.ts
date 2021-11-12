@@ -47,6 +47,7 @@ export const AssetAttributes = [
     'connectorName',
     'connectionName',
     'connectionQualifiedName',
+    'sourceURL',
     'sourceCreatedBy',
     'sourceCreatedAt',
     'sourceUpdatedAt',
@@ -57,6 +58,7 @@ export const AssetAttributes = [
     'readme',
     'links',
     'link',
+    'webUrl',
 ]
 
 export const SQLAttributes = [

@@ -51,7 +51,10 @@
                     </a-tooltip>
 
                     <div class="text-sm tracking-tight uppercase text-gray">
-                        {{ selectedAsset.typeName }}
+                        {{
+                            assetTypeLabel(selectedAsset) ||
+                            selectedAsset.typeName
+                        }}
                     </div>
                 </div>
                 <a-button-group>
@@ -209,6 +212,7 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                assetTypeLabel,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -289,6 +293,7 @@
                 isProfile,
                 actions,
                 assetURL,
+                assetTypeLabel,
                 getActions,
             }
         },

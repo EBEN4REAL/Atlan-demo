@@ -3,68 +3,118 @@
 import { map } from './key'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { AxiosRequestConfig } from 'axios'
+import { useAPI } from '~/services/api/useAPI'
+import { useOptions } from '~/services/api/common'
+import { ref, Ref } from 'vue'
 
-const createIDP = (body: any, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.CREATE_IDP(),
+const createIDP = <T>(body: Record<string, any> | Ref<Record<string, any>>) =>
+    useAPI<T>(
+        map.CREATE_IDP,
         'POST',
-        { body, options: options || {} },
+        { body }, {
+        asyncOptions: ref({
+            immediate: false,
+            onError: (e) => { throw (e) }
+        })
+    },
     )
 
-const updateIDP = (alias?: string, body?: any, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.UPDATE_IDP({ alias }),
+const updateIDP = <T>(alias?: string, body?: Record<string, any> | Ref<Record<string, any>>) =>
+    useAPI<T>(
+        map.UPDATE_IDP,
         'POST',
-        { body, options: options || {} },
+        {
+            body, pathVariables: { alias }
+        }, {
+        asyncOptions: ref({
+            immediate: false,
+            onError: (e) => { throw (e) }
+        })
+    },
     )
 
-const deleteIDP = (alias?: string, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.DELETE_IDP({ alias }),
+const deleteIDP = <T>(alias?: string) =>
+    useAPI<T>(
+        map.DELETE_IDP,
+        'POST', { pathVariables: { alias } },
+        {
+            asyncOptions: ref({
+                immediate: false,
+                onError: (e) => { throw (e) }
+            })
+        },
+    )
+
+const getMappers = <T>(alias?: string) =>
+    useAPI<T>(
+        map.GET_MAPPER,
+        'GET', { pathVariables: { alias } },
+        {
+            asyncOptions: ref({
+                immediate: false,
+                onError: (e) => { throw (e) }
+            })
+        },
+    )
+
+const createMapper = <T>(alias?: string, body?: Record<string, any> | Ref<Record<string, any>>) =>
+    useAPI<T>(
+        map.CREATE_MAPPER,
         'POST',
-        { options: options || {} },
+        { body, pathVariables: { alias } }, {
+        asyncOptions: ref({
+            immediate: false,
+            onError: (e) => { throw (e) }
+        })
+    },
     )
 
-const getMappers = (alias?: string, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.GET_MAPPER({ alias }),
-        'GET',
-        { options: options || {} },
+const updateMapper = <T>(alias?: string, params?: any) =>
+    useAPI<T>(
+        map.UPDATE_MAPPER,
+        'POST', { pathVariables: { alias, id: params.id } },
+        {
+            asyncOptions: ref({
+                immediate: false,
+                onError: (e) => { throw (e) }
+            })
+        },
     )
 
-const createMapper = (alias?: string, body?: any, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.CREATE_MAPPER({ alias }),
-        'POST',
-        { body, options: options || {} },
+const getDefaultIDP = <T>() =>
+    useAPI<T>(
+        map.GET_DEFAULT_IDP,
+        'GET', {},
+        {
+            asyncOptions: ref({
+                immediate: false,
+                onError: (e) => { throw (e) }
+            })
+        },
     )
 
-const updateMapper = (alias?: string, params?: any, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.UPDATE_MAPPER({ alias, id: params.id }),
-        'POST',
-        { options: options || {} },
+const setDefaultIDP = <T>(alias?: string) =>
+    useAPI<T>(
+        map.SET_DEFAULT_IDP,
+        'POST', { pathVariables: { alias } },
+        {
+            asyncOptions: ref({
+                immediate: false,
+                onError: (e) => { throw (e) }
+            })
+        },
     )
 
-const getDefaultIDP = (options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.GET_DEFAULT_IDP(),
-        'GET',
-        { options: options || {} },
-    )
-
-const setDefaultIDP = (alias?: string, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.SET_DEFAULT_IDP({ alias }),
-        'POST',
-        { options: options || {} },
-    )
-
-const deleteDefaultIDP = (alias?: string, options?: AxiosRequestConfig) =>
-    useAPIPromise(
-        map.DELETE_DEFAULT_IDP({ alias }),
-        'POST',
-        { options: options || {} },
+const deleteDefaultIDP = <T>(alias?: string) =>
+    useAPI<T>(
+        map.DELETE_DEFAULT_IDP,
+        'POST', { pathVariables: { alias } },
+        {
+            asyncOptions: ref({
+                immediate: false,
+                onError: (e) => { throw (e) }
+            })
+        },
     )
 
 

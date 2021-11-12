@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between">
         <div class="flex w-full">
             <!-- back button -->
-            <div class="self-center mr-2">
+            <div class="self-start mt-5 mr-2">
                 <router-link
                     class="
                         rounded

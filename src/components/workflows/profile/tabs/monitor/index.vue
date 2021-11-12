@@ -10,6 +10,10 @@
             v-else-if="!isLoading && !graphData?.name"
             empty-screen="WFEmptyTab"
             class="-mt-20"
+            headline="No Runs to Display"
+            desc="There are no runs for this workflow."
+            button-text="Back to Workflows"
+            @event="$router.push('/workflows')"
         />
         <div v-else-if="graphData.name" class="absolute w-full h-full">
             <div

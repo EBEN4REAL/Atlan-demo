@@ -17,12 +17,15 @@ export const transformFacets = (facetsFilters) => {
     return output
 }
 
-export const transformToFilters = (AllFilters) => {
+export const transformToFilters = (AllFilters, searchKey?: string) => {
     // console.log('facetsFilters: ', AllFilters.facetsFilters)
     const output = {}
     const { facetsFilters, searchText, sortOrder } = AllFilters
     const transformedFilters = transformFacets(facetsFilters)
-    if (searchText) output.name = { $ilike: `%${searchText}%` }
+    if (searchText) {
+        if (searchKey) output[searchKey as string] = { $ilike: `%${searchText}%` }
+        else output.name = { $ilike: `%${searchText}%` }
+    }
     if (transformedFilters.length > 0) output.$or = transformedFilters
     return { filter: output, sort: sortOrder }
 }

@@ -46,10 +46,10 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full gap-y-5">
-                <div class="bg-white">
+                <div class="px-3 bg-white">
                     <SearchAndFilter
                         v-model:value="queryText"
-                        class="mx-3 mt-2"
+                        class="mt-2"
                         :placeholder="dynamicSearchPlaceholder"
                         :autofocus="true"
                         @change="handleSearchChange"

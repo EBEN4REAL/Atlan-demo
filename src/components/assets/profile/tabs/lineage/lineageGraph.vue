@@ -1,14 +1,11 @@
 <template>
-    <div ref="lineageContainer" class="h-full lineage">
+    <div ref="lineageContainer" class="lineage">
         <!-- Graph Loader -->
         <div
             v-if="graphLoading"
             style="position: absolute; left: 45%; top: 45%"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <a-spin size="large" />
         </div>
 
         <!-- Highlight Loader -->
@@ -18,42 +15,30 @@
                 highlightLoadingCords.x - 13
             }px; top: ${highlightLoadingCords.y - 130}px; z-index: 999`"
         >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
+            <a-spin size="large" />
         </div>
 
         <!-- Graph Container -->
         <div
-            v-show="!isLineageEmpty"
             ref="graphContainer"
-            style="width: calc(100vw - 1px); height: 1000px"
+            style="width: calc(100vw + 45px); height: 1000px"
         ></div>
-
-        <div
-            v-if="isLineageEmpty"
-            class="flex items-center justify-center w-full h-full"
-        >
-            <EmptyScreen
-                emptyScreen="EmptyLineage"
-                desc="No Lineage Found"
-                image-class="h-32"
-            />
-        </div>
 
         <!-- Lineage Header -->
-        <LineageHeader @show-process="onShowProcess($event)" />
+        <LineageHeader
+            :selected-node-type="selectedNodeType"
+            @show-process="onShowProcess($event)"
+            @show-impacted-assets="onShowImpactedAssets($event)"
+            @show-add-lineage="onShowAddLineage($event)"
+        />
+
+        <LineageFooter />
 
         <!-- Minimap Container -->
-        <div
-            v-show="!isLineageEmpty"
-            ref="minimapContainer"
-            class="lineage-minimap"
-        ></div>
+        <!-- <div ref="minimapContainer" class="lineage-minimap"></div> -->
 
         <!-- Lineage Legend -->
-        <div v-show="!isLineageEmpty" class="lineage-legend">
+        <div class="lineage-legend">
             <div class="lineage-legend__item">
                 <span id="upstream"></span>
                 <span>Upstream</span>
@@ -69,37 +54,49 @@
         </div>
 
         <!-- Lineage Controls -->
-        <div v-show="!isLineageEmpty" class="lineage-control">
-            <!-- Zoom In -->
-            <div class="lineage-control__item">
+        <!-- <div class="lineage-control"> -->
+        <!-- Zoom In -->
+        <!-- <div class="lineage-control__item">
                 <button @click="zoom(0.1)">
                     <fa icon="fal search-plus"></fa>
                 </button>
-            </div>
+            </div> -->
 
-            <!-- Full screen -->
-            <div class="lineage-control__item">
+        <!-- Full screen -->
+        <!-- <div class="lineage-control__item">
                 <button @click="onFullscreen()">
-                    <AtlanIcon
-                        v-if="isFullscreen"
-                        icon="ExitFullScreen"
-                        class="w-auto"
-                    ></AtlanIcon>
-                    <AtlanIcon
-                        v-else
-                        icon="FullScreen"
-                        class="w-auto"
-                    ></AtlanIcon>
+                    <fa v-if="false" icon="fal compress-alt"></fa>
+                    <fa v-else icon="fal expand-arrows"></fa>
                 </button>
-            </div>
+            </div> -->
 
-            <!-- Zoom Out -->
-            <div class="lineage-control__item">
+        <!-- Zoom Out -->
+        <!-- <div class="lineage-control__item">
                 <button @click="zoom(-0.1)">
                     <fa icon="fal search-minus"></fa>
                 </button>
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
+
+        <!-- Impacted Assets -->
+        <LineageImpactedAssets
+            v-if="graph"
+            :visible="showImpactedAssets"
+            :graph="graph"
+            :guid="highlightedNode"
+            style="z-index: 600"
+            @cancel="showImpactedAssets = false"
+        />
+
+        <!-- Add Lineage -->
+        <LineageAdd
+            v-if="graph"
+            :visible="showAddLineage"
+            :graph="graph"
+            :guid="highlightedNode"
+            style="z-index: 600"
+            @cancel="showAddLineage = false"
+        />
     </div>
 </template>
 
@@ -115,26 +112,31 @@
     } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
+    import LineageFooter from './lineageFooter.vue'
+    import LineageImpactedAssets from './lineageImpactedAssets.vue'
+    import LineageAdd from './lineageAdd.vue'
     /** COMPOSABLES */
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
     import useTransformGraph from './useTransformGraph'
     import useHighlight from './useHighlight'
-    import EmptyScreen from '@/common/empty/index.vue'
 
     export default defineComponent({
         name: 'LineageGraph',
-        components: { LineageHeader, EmptyScreen },
+        components: {
+            LineageHeader,
+            LineageFooter,
+            LineageImpactedAssets,
+            LineageAdd,
+        },
         props: {
             lineage: {
                 type: Object,
                 required: true,
             },
-            isLineageEmpty: {
-                type: Boolean,
-            },
         },
-        setup(props) {
+        emits: ['preview'],
+        setup(props, { emit }) {
             const { lineage } = toRefs(props)
 
             /** DATA */
@@ -145,10 +147,14 @@
             const highlightLoadingCords = ref({})
             const graphLoading = ref(false)
             const showProcess = ref(false)
+            const showImpactedAssets = ref(false)
+            const showAddLineage = ref(false)
             const useCyclic = ref(false)
             const isFullscreen = ref(false)
             const searchItems = ref([])
             const selectedSearchItem = ref('')
+            const selectedNodeType = ref('')
+            const highlightedNode = ref('')
 
             /** METHODS */
             // selectSearchItem
@@ -165,6 +171,10 @@
 
             // initialize
             const initialize = (reload = false) => {
+                const { baseEntityGuid: guid } = lineage.value
+                const defaultEntity = lineage.value.guidEntityMap[guid]
+                emit('preview', defaultEntity)
+
                 graphLoading.value = true
                 if (reload) graph.value.dispose()
 
@@ -191,7 +201,7 @@
                 })
 
                 // useHighlight
-                const { highlight } = useHighlight(
+                useHighlight(
                     graph,
                     model,
                     edges,
@@ -199,7 +209,10 @@
                     baseEntityGuid,
                     showProcess,
                     highlightLoadingCords,
-                    selectedSearchItem
+                    highlightedNode,
+                    selectedSearchItem,
+                    selectedNodeType,
+                    emit
                 )
 
                 graphLoading.value = false
@@ -208,7 +221,18 @@
             // onShowProcess
             const onShowProcess = (val) => {
                 showProcess.value = val
+                selectedNodeType.value = ''
                 initialize(true)
+            }
+
+            // onShowImpactedAssets
+            const onShowImpactedAssets = () => {
+                showImpactedAssets.value = true
+            }
+
+            // onShowAddLineage
+            const onShowAddLineage = () => {
+                showAddLineage.value = true
             }
 
             /** PROVIDERS */
@@ -217,29 +241,31 @@
 
             /** LIFECYCLE */
             onMounted(() => {
-                watch(
-                    () => lineage.value,
-                    () => {
-                        if (graph.value) graph.value.dispose()
-                        initialize()
-                    },
-                    { deep: true, immediate: true }
-                )
+                watch(lineage, () => {
+                    if (graph.value) graph.value.dispose()
+                    initialize()
+                })
             })
 
             return {
-                initialize,
+                graph,
                 showProcess,
+                showImpactedAssets,
+                showAddLineage,
                 useCyclic,
                 lineageContainer,
                 graphContainer,
                 minimapContainer,
                 highlightLoadingCords,
+                highlightedNode,
                 graphLoading,
                 isFullscreen,
+                selectedNodeType,
                 zoom,
                 onFullscreen,
                 onShowProcess,
+                onShowImpactedAssets,
+                onShowAddLineage,
             }
         },
     })
@@ -247,18 +273,25 @@
 
 <style lang="less">
     .lineage {
+        position: relative;
+
         // Legend
         &-legend {
-            position: absolute;
+            // top: 580px;
+            bottom: calc(100vh - 29.5rem);
             left: 1.5rem;
+            position: absolute;
             z-index: 9;
             background: #f8f8fd;
-            bottom: 0;
 
             &__item {
                 display: flex;
                 align-items: center;
                 margin-bottom: 0.8rem;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
 
                 & > span {
                     font-size: 0.8rem;
@@ -286,54 +319,33 @@
 
         // Control
         &-control {
-            position: absolute;
-            right: 1.5rem;
-            bottom: 1rem;
+            @apply absolute bg-white flex items-center;
             z-index: 9;
-            background: white;
-            border: 1px solid #e6e6e7;
-            border-radius: 5px;
-            background: #ffffff;
+            border: unset;
+            box-shadow: 0px 9px 32px rgb(0 0 0 / 12%);
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
 
-            &__item {
-                padding: 10px;
-                border-bottom: 1px solid #e4e4e4;
-
-                &:last-child {
-                    border-bottom: unset;
+            &.header {
+                top: 1.5rem;
+                left: 1.5rem;
+                width: 14rem;
+            }
+            &.footer {
+                bottom: calc(100vh - 29.5rem);
+                right: 1.5rem;
+                width: 18rem;
+            }
+            & > .minimap {
+                & .x6-widget-minimap .x6-graph {
+                    box-shadow: unset !important;
                 }
-
-                & > button {
-                    background: #ffffff;
-                    outline: none;
-                    border: unset;
-                    padding: unset;
-                    margin: unset;
-                    display: flex;
-                    align-items: center;
-
-                    & > i {
-                        color: #495057;
-                        font-size: 0.9rem;
-                    }
+                & .x6-widget-minimap-viewport {
+                    border: 1px solid #9296eb !important;
                 }
-            }
-        }
-
-        // Minimap
-        &-minimap {
-            @apply absolute;
-            top: 15px;
-            right: 15px;
-
-            & .x6-widget-minimap .x6-graph {
-                box-shadow: unset !important;
-            }
-            & .x6-widget-minimap-viewport {
-                border: 1px solid #9296eb !important;
-            }
-            & .x6-widget-minimap-viewport-zoom {
-                border: 1px solid #9296eb !important;
+                & .x6-widget-minimap-viewport-zoom {
+                    border: 1px solid #9296eb !important;
+                }
             }
         }
 
@@ -347,6 +359,11 @@
             justify-content: center;
             align-items: center;
             background-color: white;
+
+            &.isHighlightedNode,
+            &.isHighlightedNodePath {
+                border: 2px solid #2351cc;
+            }
         }
 
         // Non-Process Nodes

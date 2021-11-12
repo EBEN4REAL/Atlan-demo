@@ -27,7 +27,7 @@
             </div>
         </CreationModal>
         <div class="flex mb-2 gap-x-2">
-            <div>
+            <div style="width: 90%">
                 <div class="mb-1 text-xl font-bold truncate text-gray">
                     {{ persona.displayName }}
                 </div>

@@ -116,14 +116,11 @@
                                 </Pill>
                             </div>
                             <div
-                                v-else-if="
-                                    assets.length === 0 && !isreadOnlyPillGroup
-                                "
+                                v-else-if="assets.length === 0"
                                 class="flex items-center"
                             >
                                 <Pill
                                     class="group"
-                                    c
                                     @click="addConnectionAsset"
                                     @blur="d?.item?.handleBlur"
                                 >
@@ -316,8 +313,15 @@
                 }
             }
             const addConnectionAsset = () => {
-                assets.value = [{ label: connectorData.value.attributeValue }]
-                policy.value.assets = [connectorData.value.attributeValue]
+                if (connectorData.value.attributeValue) {
+                    assets.value = [
+                        { label: connectorData.value.attributeValue },
+                    ]
+                    policy.value.assets = [connectorData.value.attributeValue]
+                } else {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                    rules.value.connection.show = true
+                }
             }
 
             const connectorData = computed({

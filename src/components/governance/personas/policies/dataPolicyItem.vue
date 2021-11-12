@@ -90,7 +90,68 @@
                     v-model:data="assets"
                     label-key="label"
                     @add="openAssetSelector"
-                />
+                >
+                    <template #addBtn="d">
+                        <div>
+                            <div
+                                v-if="assets.length > 0 && !isreadOnlyPillGroup"
+                            >
+                                <Pill
+                                    class="group"
+                                    @click="d?.item?.handleAdd"
+                                    @blur="d?.item?.handleBlur"
+                                >
+                                    <template #prefix>
+                                        <AtlanIcon
+                                            icon="Add"
+                                            class="
+                                                h-4
+                                                -mx-1.5
+                                                text-gray
+                                                group-hover:text-white
+                                            "
+                                        />
+                                    </template>
+                                </Pill>
+                            </div>
+                            <div
+                                v-else-if="assets.length === 0"
+                                class="flex items-center"
+                            >
+                                <Pill class="group" @click="addConnectionAsset">
+                                    <template #prefix>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                icon="Add"
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                            />
+                                            <span class="text-xs">Add All</span>
+                                        </div>
+                                    </template>
+                                </Pill>
+
+                                <span class="mx-2 text-xs">OR</span>
+                                <Pill
+                                    class="group"
+                                    @click="d?.item?.handleAdd"
+                                    @blur="d?.item?.handleBlur"
+                                >
+                                    <template #prefix>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                icon="Add"
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                            />
+                                            <span class="text-xs"
+                                                >Custom select</span
+                                            >
+                                        </div>
+                                    </template>
+                                </Pill>
+                            </div>
+                        </div>
+                    </template>
+                </PillGroup>
             </div>
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
@@ -167,7 +228,7 @@
     import Connector from './connector.vue'
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import DataMaskingSelector from './dataMaskingSelector.vue'
-
+    import Pill from '@/UI/pill/pill.vue'
     import { useConnectionStore } from '~/store/connection'
     import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
@@ -175,6 +236,7 @@
     export default defineComponent({
         name: 'DataPolicy',
         components: {
+            Pill,
             AtlanBtn,
             Connector,
             PillGroup,
@@ -259,6 +321,17 @@
             const handleConnectorChange = () => {
                 policy.value.assets = []
             }
+            const addConnectionAsset = () => {
+                if (connectorData.value.attributeValue) {
+                    assets.value = [
+                        { label: connectorData.value.attributeValue },
+                    ]
+                    policy.value.assets = [connectorData.value.attributeValue]
+                } else {
+                    connectorComponentRef.value?.treeSelectRef?.focus()
+                    rules.value.connection.show = true
+                }
+            }
 
             const connectorData = computed({
                 get: () => ({
@@ -280,7 +353,17 @@
                 },
             })
 
+            const isreadOnlyPillGroup = computed(() => {
+                return Boolean(
+                    assets.value.find(
+                        (e) => e.label === connectorData.value.attributeValue
+                    )
+                )
+            })
+
             return {
+                addConnectionAsset,
+                isreadOnlyPillGroup,
                 handleConnectorChange,
                 filterSourceIds,
                 connectorData,

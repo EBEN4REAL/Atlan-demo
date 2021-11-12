@@ -1,10 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import { map } from './key'
-import { useAPIPromise } from '~/services/api/useAPIPromise'
-import { AxiosRequestConfig } from 'axios'
 import { useAPI } from '~/services/api/useAPI'
-import { useOptions } from '~/services/api/common'
 import { ref, Ref } from 'vue'
 
 const createIDP = <T>(body: Record<string, any> | Ref<Record<string, any>>) =>

@@ -7,6 +7,7 @@ export interface State {
     identityProviders: any
     loginWithEmailAllowed: boolean
     identityProviderMappers: any
+    tenant: any
 }
 
 export const state: State = {
@@ -16,4 +17,5 @@ export const state: State = {
     smtpServer: {},
     identityProviders: [],
     identityProviderMappers: [],
+    tenant: {},
 }

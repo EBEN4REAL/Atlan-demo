@@ -59,7 +59,7 @@
                 },
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'display'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
@@ -72,6 +72,7 @@
 
             const handleChangeDisplay = () => {
                 modelValue.value = localValue.value
+                emit('display')
             }
 
             return {

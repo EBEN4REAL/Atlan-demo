@@ -84,6 +84,7 @@ export default function useProject() {
         onQueryIdGeneration?: Function,
         selectedText?: string
     ) => {
+        // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
         activeInlineTab.value.playground.resultsPane.result.isQueryAborted = false
@@ -152,7 +153,7 @@ export default function useProject() {
         })
 
         watch([isLoading, error], () => {
-            console.log(isLoading.value, error.value, 'request log')
+            console.log('heka request log: ', isLoading.value, error.value, )
             try {
                 if (!isLoading.value && error.value === undefined) {
                     const { subscribe } = sse.value
@@ -209,7 +210,7 @@ export default function useProject() {
                         }
                         if (message?.details?.status === 'error') {
                             if (eventSource?.close) {
-                                console.log('coonectio closed')
+                                console.log('coonection closed')
                                 eventSource.close()
                             }
                             /* Query related data */
@@ -232,6 +233,7 @@ export default function useProject() {
                     })
                 } else if (!isLoading.value && error.value !== undefined) {
                     /* Setting it undefined for new run */
+                    console.log('HEKA ERROR: ', error.value)
 
                     activeInlineTab.value.playground.resultsPane.result.runQueryId =
                         undefined

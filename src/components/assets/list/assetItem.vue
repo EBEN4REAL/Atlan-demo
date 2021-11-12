@@ -32,8 +32,8 @@
                 </div>
 
                 <!-- Info bar -->
-                <div class="flex items-center gap-x-3">
-                    <div class="flex items-center">
+                <div class="flex items-center gap-x-2">
+                    <div class="flex items-center mr-1">
                         <a-tooltip placement="left">
                             <template #title>
                                 <span>{{
@@ -61,16 +61,16 @@
                                 item.typeName?.toLowerCase()
                             )
                         "
-                        class="flex text-sm text-gray-500 gap-x-1"
+                        class="flex text-sm text-gray-500"
                     >
                         <a-tooltip placement="bottomLeft">
                             <span
                                 v-if="
                                     ['table', 'tablepartition'].includes(
                                         item.typeName?.toLowerCase()
-                                    )
+                                    ) && rowCount(item, false) !== '-'
                                 "
-                                class="text-gray-500"
+                                class="mr-2 text-gray-500"
                                 ><span
                                     class="font-semibold tracking-tight text-gray-500 "
                                     >{{ rowCount(item, false) }}
@@ -126,9 +126,9 @@
 
                             <component
                                 :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500"
+                                class="h-4 text-gray-500 mt-0.5"
                             />
-                            <span class="ml-1 text-sm text-gray-500">{{
+                            <span class="text-sm text-gray-500">{{
                                 dataType(item)
                             }}</span>
                         </div>
@@ -254,7 +254,7 @@
                 <div class="flex">
                     <span
                         class="text-xs text-gray-500"
-                        v-if="preference.display.includes('description')"
+                        v-if="preference?.display?.includes('description')"
                         >{{ description(item) }}</span
                     >
                 </div>

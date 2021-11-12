@@ -17,15 +17,14 @@
                             "
                         >
                             <AtlanIcon
-                                icon="Key"
-                                class="mr-1 mb-0.5"
+                                icon="PrimaryKey"
+                                class="mr-1 mb-0.5 text-yellow-400"
                             ></AtlanIcon>
 
-                            <span
+                            <!-- <span
                                 class="ml-1 text-sm text-gray-700"
                                 v-if="isPrimary(item)"
-                                >Primary Key</span
-                            >
+                            ></span>
                             <span
                                 class="ml-1 text-sm text-gray-700"
                                 v-if="isDist(item)"
@@ -35,7 +34,7 @@
                                 class="ml-1 text-sm text-gray-700"
                                 v-if="isPartition(item)"
                                 >Partition Key</span
-                            >
+                            > -->
                         </div>
                         <component
                             v-else

@@ -48,7 +48,7 @@
                     />
                 </div>
 
-                <div class="w-full overflow-auto">
+                <div class="w-full overflow-y-auto">
                     <CmndK
                         :isCmndKVisible="isCmndKVisible"
                         @closeModal="isCmndKVisible = false"

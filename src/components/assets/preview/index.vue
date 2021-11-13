@@ -83,6 +83,7 @@
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset)"
                 :key="index"
+                class="overflow-y-auto"
             >
                 <template #tab>
                     <PreviewTabsIcon

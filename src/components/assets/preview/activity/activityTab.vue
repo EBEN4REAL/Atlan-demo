@@ -1,9 +1,7 @@
 <template>
     <div>
-        <div
-            class="flex justify-between px-4 py-2 mb-6 border-b  border-gray-light"
-        >
-            <span class="font-semibold text-gray-700 text-md">Activity</span>
+        <div class="flex justify-between px-5 pt-4 pb-6">
+            <span class="font-semibold text-gray-500">Activity</span>
 
             <AtlanIcon
                 icon="Reload"
@@ -22,7 +20,7 @@
             <span class="ml-1">Getting activity logs</span>
         </div>
         <div v-else-if="audits.length && !isLoading">
-            <a-timeline class="mx-4">
+            <a-timeline class="mx-5">
                 <a-timeline-item v-for="(log, index) in audits" :key="index">
                     <template #dot>
                         <div

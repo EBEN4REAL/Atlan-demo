@@ -68,7 +68,7 @@
         setup() {
             const keycloak = inject('$keycloak')
             const handleLogout = () => {
-                console.log('sadasd')
+                window.localStorage.clear()
                 keycloak.logout({
                     redirectUri: window.location.origin,
                 })

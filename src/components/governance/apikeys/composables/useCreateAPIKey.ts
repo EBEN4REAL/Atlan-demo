@@ -1,7 +1,11 @@
 import { APIKey } from '~/services/service/apikeys'
 
 export default function useCreateAPIKey(apiKeyDirty) {
-    const { mutate: createAPIKey, isLoading } = APIKey.Create(apiKeyDirty, {
+    const {
+        data,
+        mutate: createAPIKey,
+        isLoading,
+    } = APIKey.Create(apiKeyDirty, {
         asyncOptions: {
             immediate: false,
             onError: (e) => {
@@ -9,5 +13,5 @@ export default function useCreateAPIKey(apiKeyDirty) {
             },
         },
     })
-    return { createAPIKey, isLoading }
+    return { createAPIKey, isLoading, data }
 }

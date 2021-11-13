@@ -3,7 +3,6 @@
         <AssetHeader :item="selectedAsset"></AssetHeader>
 
         <a-tabs
-            :class="$style.profiletab"
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
             class="flex-1"
@@ -26,14 +25,13 @@
 <script lang="ts">
     import {
         defineComponent,
-        computed,
         ref,
-        watch,
         defineAsyncComponent,
         onMounted,
         PropType,
         toRefs,
         provide,
+        computed,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -90,9 +88,9 @@
             return {
                 refs,
                 asset,
-
                 getProfileTabs,
                 activeKey,
+                getProfileTabs,
                 handleChangeTab,
             }
         },
@@ -104,6 +102,17 @@ meta:
     layout: default
     requiresAuth: true
 </route>
+
+<style lang="less">
+    .asset-profile {
+        .ant-tabs-top > .ant-tabs-nav,
+        .ant-tabs-bottom > .ant-tabs-nav,
+        .ant-tabs-top > div > .ant-tabs-nav,
+        .ant-tabs-bottom > div > .ant-tabs-nav {
+            margin: 0 !important;
+        }
+    }
+</style>
 
 <style lang="less" module>
     .profiletab {

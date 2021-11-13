@@ -36,6 +36,7 @@
                 <template #default="{ item, isSelected }">
                     <div class="flex items-center justify-between">
                         <span
+                            style="width: 95%"
                             class="text-sm truncate"
                             :class="
                                 isSelected

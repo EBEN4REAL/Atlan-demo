@@ -1,5 +1,5 @@
 export default function useUpdateGraph() {
-    const updateEdgesStroke = (
+    const updateEdgesStroke = async (
         graph,
         model,
         edges,
@@ -15,6 +15,11 @@ export default function useUpdateGraph() {
         edges.value.forEach((m) => {
             const edgeData = getEdgeData(m.id)
             let computedStroke
+
+            // #9cb781 - green
+            // #f1a183 - orange
+            // #d9d9d9 - gray
+            // #2351cc - blue
 
             if (reset) {
                 const edgesSplit = m.id.split('@')
@@ -49,7 +54,7 @@ export default function useUpdateGraph() {
             })
         })
 
-        graph.value.fromJSON(model.value)
+        await graph.value.fromJSON(model.value)
     }
 
     // TODO: To improve on
@@ -68,9 +73,10 @@ export default function useUpdateGraph() {
             nodesToHighlight.forEach((x) => {
                 if (m.id === x) {
                     const nodeData = m
+                    nodeData.isHighlightedNode = null
+                    nodeData.isHighlightedNodePath = reset ? null : m.id
                     if (highlightedNode.value === m.id)
-                        nodeData.isHighlightedNode = !reset
-                    nodeData.isHighlightedNodePath = !reset
+                        nodeData.isHighlightedNode = reset ? null : m.id
                     newNodesData.push(nodeData)
                 }
             })
@@ -81,8 +87,6 @@ export default function useUpdateGraph() {
                 if (y.id === z.id) z.updateData(y)
             })
         })
-
-        graph.value.fromJSON(model.value)
     }
 
     return {

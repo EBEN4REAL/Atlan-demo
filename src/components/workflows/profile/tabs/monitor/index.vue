@@ -120,7 +120,7 @@
             } = getArchivedRunList(id.value, true)
             // watcher
             watch([liveList, archivedList], ([newX, newY]) => {
-                if (newX && newY) {
+              if (newX && newY) {
                     let liveRunItems = []
                     let archivedRunItems = []
                     if (newX?.items?.length) {

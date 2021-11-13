@@ -264,8 +264,8 @@
 
             const handleEvent = () => {
                 facets.value = {}
+                handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
-                quickChange()
             }
 
             watch(initialFilters, (newInitialFilters) => {

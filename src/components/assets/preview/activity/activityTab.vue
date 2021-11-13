@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="flex justify-between px-5 pt-4 pb-6">
+        <div class="flex justify-between px-5 pt-4 pb-8">
             <span class="font-semibold text-gray-500">Activity</span>
 
             <AtlanIcon
                 icon="Reload"
-                class="mt-1 cursor-pointer text-primary"
+                class="w-auto h-4 mt-1 cursor-pointer text-primary"
                 @click="refreshAudits"
             />
         </div>
@@ -79,6 +79,7 @@
                 emptyScreen="EmptyDiscover"
                 desc="No logs found"
                 imageClass="h-32"
+                descClass="text-center text-sm"
             />
         </div>
     </div>
@@ -181,6 +182,10 @@
     .ant-timeline-item {
         margin-bottom: 0 !important;
         padding-bottom: 40px !important;
+    }
+
+    .ant-timeline-item-last {
+        padding-bottom: 20px !important;
     }
     .ant-timeline-item-dot {
         width: 13px;

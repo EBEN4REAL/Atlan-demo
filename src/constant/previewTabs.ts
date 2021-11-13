@@ -31,7 +31,7 @@ export const previewTabs = [
         name: 'Activity',
         component: 'activity',
         excludes: ['Query', 'QueryFolder'],
-        icon: 'Activity',
+        icon: 'ActivityLogs',
         tooltip: 'Activity',
     },
     {

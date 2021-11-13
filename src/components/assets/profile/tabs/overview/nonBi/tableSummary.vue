@@ -53,7 +53,7 @@
     } from 'vue'
 
     // Components
-    import ProfileWidgets from '@/assets/profile/tabs/overview/profileWidgets.vue'
+    import ProfileWidgets from '~/components/assets/profile/tabs/overview/nonBi/profileWidgets.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
 
     // Composables
@@ -68,7 +68,10 @@
                 () => import('@/assets/profile/tabs/columns/columnWidget.vue')
             ),
             SampleDataTable: defineAsyncComponent(
-                () => import('@/assets/profile/tabs/overview/sampleData.vue')
+                () =>
+                    import(
+                        '~/components/assets/profile/tabs/overview/nonBi/sampleData.vue'
+                    )
             ),
         },
         props: {

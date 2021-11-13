@@ -1,10 +1,11 @@
 <template>
     <div class="flex flex-col w-full h-full max-profile-width">
-        <AssetHeader :item="selectedAsset"></AssetHeader>
+        <AssetHeader :item="asset"></AssetHeader>
 
         <a-tabs
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
+            :class="$style.profiletab"
             class="flex-1"
         >
             <a-tab-pane
@@ -90,7 +91,6 @@
                 asset,
                 getProfileTabs,
                 activeKey,
-                getProfileTabs,
                 handleChangeTab,
             }
         },

@@ -136,15 +136,19 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const localValue = computed(() => modelValue.value)
             const { showNoOwners, enableTabs } = toRefs(props)
             const componentType = ref('users')
             if (enableTabs.value.length < 2) {
-                watch(enableTabs, () => {
-                    componentType.value = enableTabs.value[0] as
-                        | 'users'
-                        | 'groups'
-                })
+                watch(
+                    enableTabs,
+                    () => {
+                        componentType.value = enableTabs.value[0] as
+                            | 'users'
+                            | 'groups'
+                    },
+                    { immediate: true }
+                )
             }
 
             const queryText = ref('')

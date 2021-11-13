@@ -302,7 +302,7 @@
     })
 </script>
 
-<style scoped>
+<style lang="less">
     .facets {
         max-width: 264px;
         width: 25%;

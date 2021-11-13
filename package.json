@@ -72,6 +72,7 @@
         "vue-axios": "^3.4.0",
         "vue-chart-3": "^0.5.11",
         "vue-linkify": "^1.0.1",
+        "xlsx": "^0.17.3",
         "vue-router": "^4.0.12",
         "vue3-timepicker": "^1.0.0-beta.2"
     },

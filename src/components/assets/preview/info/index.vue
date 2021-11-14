@@ -158,6 +158,7 @@
             </p>
             <Owners
                 v-model="localOwners"
+                :guid="selectedAsset.guid"
                 @change="handleOwnersChange"
                 class="px-5"
             />
@@ -194,226 +195,253 @@
 </template>
 
 <script lang="ts">
-import {
-    computed,
-    defineComponent,
-    PropType,
-    toRefs,
-    inject,
-    ref,
-    watch,
-    Ref,
-} from 'vue'
-import { whenever } from '@vueuse/core'
-import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
-import SQL from '@/assets/preview/popover/sql.vue'
-import useAssetInfo from '~/composables/discovery/useAssetInfo'
-import RowInfoHoverCard from '@/assets/preview/popover/rowInfo.vue'
-import Description from '@/common/input/description/index.vue'
-import Owners from '@/common/input/owner/index.vue'
-import Certificate from '@/common/input/certificate/index.vue'
-import Classification from '@/common/input/classification/index.vue'
-import Terms from '@/common/input/terms/index.vue'
-import CertificationPopover from '@/assets/preview/popover/certification.vue'
-import updateAsset from '~/composables/discovery/updateAsset'
-import useSetClassifications from '~/composables/discovery/useSetClassifications'
-import { message, Modal } from 'ant-design-vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        toRefs,
+        inject,
+        ref,
+        watch,
+        Ref,
+    } from 'vue'
+    import { whenever } from '@vueuse/core'
+    import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
+    import SQL from '@/assets/preview/popover/sql.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import RowInfoHoverCard from '@/assets/preview/popover/rowInfo.vue'
+    import Description from '@/common/input/description/index.vue'
+    import Owners from '@/common/input/owner/index.vue'
+    import Certificate from '@/common/input/certificate/index.vue'
+    import Classification from '@/common/input/classification/index.vue'
+    import Terms from '@/common/input/terms/index.vue'
+    import CertificationPopover from '@/assets/preview/popover/certification.vue'
+    import updateAsset from '~/composables/discovery/updateAsset'
+    import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import { message, Modal } from 'ant-design-vue'
 
-// import useAssetInfo from '~/composables/asset/useAssetInfo'
-// import { assetInterface } from '~/types/assets/asset.interface'
-// import Description from '@common/sidebar/description.vue'
+    // import useAssetInfo from '~/composables/asset/useAssetInfo'
+    // import { assetInterface } from '~/types/assets/asset.interface'
+    // import Description from '@common/sidebar/description.vue'
 
-// import Experts from '@common/sidebar/experts.vue'
-// import Status from '@common/sidebar/status.vue'
-// import Query from '@common/sidebar/query.vue'
-// import { format } from 'sql-formatter'
+    // import Experts from '@common/sidebar/experts.vue'
+    // import Status from '@common/sidebar/status.vue'
+    // import Query from '@common/sidebar/query.vue'
+    // import { format } from 'sql-formatter'
 
-export default defineComponent({
-    name: 'AssetDetails',
-    components: {
-        // Experts,
-        Description,
-        AnnouncementWidget,
-        // Status,
-        Owners,
-        Classification,
-        // Query,
-        Certificate,
-        RowInfoHoverCard,
-        SQL,
-        Terms,
-        CertificationPopover,
-    },
-    setup(props) {
-        const actions = inject('actions')
-        const selectedAsset = inject('selectedAsset')
-        const switchTab = inject('switchTab')
+    export default defineComponent({
+        name: 'AssetDetails',
+        components: {
+            // Experts,
+            Description,
+            AnnouncementWidget,
+            // Status,
+            Owners,
+            Classification,
+            // Query,
+            Certificate,
+            RowInfoHoverCard,
+            SQL,
+            Terms,
+            CertificationPopover,
+        },
+        setup(props) {
+            const actions = inject('actions')
+            const selectedAsset = inject('selectedAsset')
+            const switchTab = inject('switchTab')
 
-        const {
-            title,
-            getConnectorImage,
-            assetType,
-            rowCount,
-            sizeBytes,
-            dataType,
-            columnCount,
-            databaseName,
-            schemaName,
-            connectorName,
-            connectionName,
-            dataTypeCategoryLabel,
-            dataTypeCategoryImage,
-            isDist,
-            isPartition,
-            description,
-            isPrimary,
-            sourceUpdatedAt,
-            ownerGroups,
-            ownerUsers,
-            sourceCreatedAt,
-            classifications,
-            definition,
-            webURL,
-            assetTypeLabel,
-        } = useAssetInfo()
+            const {
+                title,
+                getConnectorImage,
+                assetType,
+                rowCount,
+                sizeBytes,
+                dataType,
+                columnCount,
+                databaseName,
+                schemaName,
+                connectorName,
+                connectionName,
+                dataTypeCategoryLabel,
+                dataTypeCategoryImage,
+                isDist,
+                isPartition,
+                description,
+                isPrimary,
+                sourceUpdatedAt,
+                ownerGroups,
+                ownerUsers,
+                sourceCreatedAt,
+                classifications,
+                definition,
+                webURL,
+                assetTypeLabel,
+            } = useAssetInfo()
 
-        const entity = ref({
-            guid: selectedAsset.value.guid,
-            typeName: selectedAsset.value.typeName,
-            attributes: {
-                name: selectedAsset.value.attributes?.name,
-                qualifiedName: selectedAsset.value.attributes?.qualifiedName,
-                tenantId: 'default',
-            },
-        })
-        const body = ref({
-            entities: [],
-        })
-
-        const { mutate, isLoading, isReady, error } = updateAsset(body)
-
-        const localDescription = ref(description(selectedAsset?.value))
-
-        const currentMessage = ref('')
-
-        watch(localDescription, (newVal, prevVal) => {
-            if (newVal !== prevVal) {
-                entity.value.attributes.userDescription = localDescription.value
-                body.value.entities = {}
-                currentMessage.value = 'Description has been updated'
-                mutate()
-            }
-        })
-
-        whenever(isReady, () => {
-            message.success(currentMessage.value)
-        })
-
-        whenever(error, () => {
-            message.error('Something went wrong. Please try again')
-        })
-
-        const localOwners = ref({
-            ownerUsers: ownerUsers(selectedAsset.value),
-            ownerGroups: ownerGroups(selectedAsset.value),
-        })
-
-        const handleOwnersChange = () => {
-            entity.value.attributes.ownerUsers = localOwners.value?.ownerUsers
-            entity.value.attributes.ownerGroups = localOwners.value?.ownerGroups
-            body.value.entities = [entity.value]
-            mutate()
-        }
-
-        const localClassifications = ref(classifications(selectedAsset.value))
-
-        const classificationBody = ref({
-            guidHeaderMap: {
-                [selectedAsset.value.guid]: {
-                    classifications: localClassifications.value,
+            const entity = ref({
+                guid: selectedAsset.value.guid,
+                typeName: selectedAsset.value.typeName,
+                attributes: {
+                    name: selectedAsset.value.attributes?.name,
+                    qualifiedName:
+                        selectedAsset.value.attributes?.qualifiedName,
+                    tenantId: 'default',
                 },
-            },
-        })
+            })
+            const body = ref({
+                entities: [],
+            })
 
-        const { mutate: mutateClassification } =
-            useSetClassifications(classificationBody)
+            const { mutate, isLoading, isReady, error } = updateAsset(body)
 
-        const handleClassificationChange = () => {
-            console.log('handle change')
-            classificationBody.value = {
+            const localDescription = ref(description(selectedAsset?.value))
+
+            const currentMessage = ref('')
+
+            watch(localDescription, (newVal, prevVal) => {
+                if (newVal !== prevVal) {
+                    entity.value.attributes.userDescription =
+                        localDescription.value
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Description has been updated'
+                    mutate()
+                }
+            })
+
+            whenever(isReady, () => {
+                message.success(currentMessage.value)
+            })
+
+            whenever(error, () => {
+                message.error('Something went wrong. Please try again')
+            })
+
+            const localOwners = ref({
+                ownerUsers: ownerUsers(selectedAsset.value),
+                ownerGroups: ownerGroups(selectedAsset.value),
+            })
+
+            watch(localOwners.value.ownerUsers, (newVal, prevVal) => {})
+
+            const handleOwnersChange = () => {
+                let isChanged = false
+                if (
+                    entity.value.attributes.ownerUsers?.sort().toString() !==
+                    localOwners.value?.ownerUsers.sort().toString()
+                ) {
+                    entity.value.attributes.ownerUsers =
+                        localOwners.value?.ownerUsers
+                    isChanged = true
+                }
+                if (
+                    entity.value.attributes.ownerGroups?.sort().toString() !==
+                    localOwners.value?.ownerGroups.sort().toString()
+                ) {
+                    entity.value.attributes.ownerGroups =
+                        localOwners.value?.ownerGroups
+                    isChanged = true
+                }
+
+                if (isChanged) {
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Owners has been updated'
+
+                    mutate()
+                }
+            }
+
+            const localClassifications = ref(
+                classifications(selectedAsset.value)
+            )
+
+            const classificationBody = ref({
                 guidHeaderMap: {
                     [selectedAsset.value.guid]: {
-                        ...entity.value,
                         classifications: localClassifications.value,
                     },
                 },
+            })
+
+            const { mutate: mutateClassification } =
+                useSetClassifications(classificationBody)
+
+            const handleClassificationChange = () => {
+                console.log('handle change')
+                classificationBody.value = {
+                    guidHeaderMap: {
+                        [selectedAsset.value.guid]: {
+                            ...entity.value,
+                            classifications: localClassifications.value,
+                        },
+                    },
+                }
+
+                mutateClassification()
             }
 
-            mutateClassification()
-        }
+            const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
+                if (
+                    selectedAsset.typeName === 'View' ||
+                    selectedAsset.typeName === 'Table' ||
+                    selectedAsset.typeName === 'TablePartition' ||
+                    selectedAsset.typeName === 'MaterialisedView'
+                ) {
+                    return true
+                }
 
-        const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
-            if (
-                selectedAsset.typeName === 'View' ||
-                selectedAsset.typeName === 'Table' ||
-                selectedAsset.typeName === 'TablePartition' ||
-                selectedAsset.typeName === 'MaterialisedView'
-            ) {
-                return true
+                return false
             }
 
-            return false
-        }
+            const handleEditClick = () => {
+                console.log('edit click')
+            }
 
-        const handleEditClick = () => {
-            console.log('edit click')
-        }
+            const handlePreviewClick = () => {
+                window.open(webURL(selectedAsset.value), '_blank').focus()
+            }
 
-        const handlePreviewClick = () => {
-            window.open(webURL(selectedAsset.value), '_blank').focus()
-        }
+            return {
+                localDescription,
+                selectedAsset,
+                body,
 
-        return {
-            localDescription,
-            selectedAsset,
-            body,
-            handleOwnersChange,
-            localClassifications,
-            handleClassificationChange,
-            currentMessage,
-            isSelectedAssetHaveRowsAndColumns,
-            title,
-            getConnectorImage,
-            assetType,
-            rowCount,
-            sizeBytes,
-            dataType,
-            columnCount,
-            databaseName,
-            schemaName,
-            localOwners,
-            connectorName,
-            connectionName,
-            dataTypeCategoryLabel,
-            dataTypeCategoryImage,
-            isDist,
-            isPartition,
-            isPrimary,
-            ownerGroups,
-            ownerUsers,
-            definition,
-            sourceUpdatedAt,
-            sourceCreatedAt,
-            entity,
-            isLoading,
-            classificationBody,
-            actions,
-            switchTab,
-            webURL,
-            handlePreviewClick,
-            assetTypeLabel,
-            error,
-        }
-    },
-})
+                localClassifications,
+                handleClassificationChange,
+                currentMessage,
+                isSelectedAssetHaveRowsAndColumns,
+                title,
+                getConnectorImage,
+                assetType,
+                rowCount,
+                sizeBytes,
+                dataType,
+                columnCount,
+                databaseName,
+                schemaName,
+                localOwners,
+                connectorName,
+                connectionName,
+                dataTypeCategoryLabel,
+                dataTypeCategoryImage,
+                isDist,
+                isPartition,
+                isPrimary,
+                ownerGroups,
+                ownerUsers,
+                definition,
+                sourceUpdatedAt,
+                sourceCreatedAt,
+                entity,
+                isLoading,
+                classificationBody,
+                actions,
+                switchTab,
+                webURL,
+                handlePreviewClick,
+                assetTypeLabel,
+                error,
+                handleOwnersChange,
+            }
+        },
+    })
 </script>

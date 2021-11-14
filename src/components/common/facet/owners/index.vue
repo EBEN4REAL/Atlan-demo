@@ -67,7 +67,7 @@
                 :query-text="queryText"
             ></Groups>
         </div>
-        <div class="px-4 pt-1" v-if="showNoOwners">
+        <div class="px-4 pt-1" v-if="showOwners">
             <a-checkbox
                 v-model:checked="localValue.empty"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
@@ -122,7 +122,7 @@
                     return {}
                 },
             },
-            showNoOwners: {
+            showOwners: {
                 type: Boolean,
                 default() {
                     return true
@@ -132,12 +132,18 @@
                 type: Object as PropType<Array<any>>,
                 default: ['users', 'groups'],
             },
+            cacheKey: {
+                type: String,
+                default() {
+                    return 'DEFAULT_USERS'
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNoOwners, enableTabs } = toRefs(props)
+            const { showOwners, enableTabs, cacheKey } = toRefs(props)
             const componentType = ref('users')
             if (enableTabs.value.length < 2) {
                 watch(enableTabs, () => {
@@ -167,7 +173,6 @@
             })
 
             watch(localValue.value, (prev, cur) => {
-                console.log('changed')
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
                 }
@@ -198,9 +203,10 @@
                 placeholder,
                 queryText,
                 localValue,
-                showNoOwners,
+                showOwners,
                 ownerSearchRef,
                 forceFocus,
+                cacheKey,
             }
         },
     })

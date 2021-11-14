@@ -27,21 +27,6 @@
                             0
                         }}
                     </div>
-                    <div
-                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
-                        v-if="t?.data?.key === 'users'"
-                        :class="
-                            activeTabKey === t?.data?.key
-                                ? 'text-primary bg-primary-light'
-                                : 'text-gray-500 bg-gray-100'
-                        "
-                    >
-                        {{
-                            selectedPersonaDirty?.users?.length ??
-                            0 + selectedPersonaDirty?.groups?.length ??
-                            0
-                        }}
-                    </div>
                 </div>
             </template>
         </MinimalTab>
@@ -152,11 +137,6 @@
                     </template>
                 </a-dropdown>
             </div>
-            <PurposeUsersGroups
-                v-else-if="activeTabKey === 'users'"
-                class="pt-6 pb-2"
-                v-model:persona="persona"
-            />
         </div>
     </template>
 </template>
@@ -171,7 +151,6 @@
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
 
     import PolicyCard from './policies/collapsedPolicyCard.vue'
-    import PurposeUsersGroups from './users/purposeUsersGroups.vue'
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PurposeMeta from './overview/purposeMeta.vue'
@@ -187,7 +166,7 @@
         discardPolicy,
         PolicyType,
     } from './composables/useEditPurpose'
-    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
+    import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -198,7 +177,6 @@
             DataPolicy,
             AtlanBtn,
             PurposeMeta,
-            PurposeUsersGroups,
         },
         props: {
             persona: {

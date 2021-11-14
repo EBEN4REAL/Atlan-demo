@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="details-section">
-            <span class="text-sm text-gray-500">Created By</span>
+        <div class="pt-6 details-section">
+            <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
                 <Avatar
                     :username="persona.createdBy"
@@ -22,20 +22,13 @@
             />
             <span class="text-sm text-gray">Enable Persona</span>
         </div>
-        <div class="flex items-center my-4 mt-0">
+        <div class="py-4 text-gray-500 gap-x-2">
+            <p class="mb-3 text-sm font-bold text-gray-700">Classifications</p>
+            <Classification :modelValue="[]" />
+        </div>
+        <div class="flex items-center py-4 mt-0">
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    mr-3
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -63,13 +56,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -80,17 +67,7 @@
                 </div>
             </div>
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -118,13 +95,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -143,12 +114,13 @@
 
     import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPurpose'
-    import { setActiveTab } from '../composables/usePersonaTabs'
+    import { setActiveTab } from '../composables/usePurposeTabs'
     import Avatar from '@common/avatar/user.vue'
+    import Classification from '@common/input/classification/index.vue'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Avatar },
+        components: { Avatar, Classification },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
@@ -168,7 +140,7 @@
 </script>
 <style lang="less" scoped>
     .details-section {
-        @apply flex items-center gap-x-2 py-6;
+        @apply flex items-center gap-x-2 py-4;
         @apply text-gray-500;
         @apply cursor-pointer;
     }

@@ -11,7 +11,7 @@
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
 
-    import Resources from '@common/resources/index.vue'
+    import Resources from '@common/widgets/resources/index.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'

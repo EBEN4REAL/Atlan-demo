@@ -59,6 +59,7 @@
         </template>
         <template #actions="{ text: user }">
             <a-button-group v-auth="map.UPDATE_USERS">
+                <!-- change role -->
                 <a-tooltip
                     v-if="user.enabled && user.email_verified"
                     placement="top"
@@ -94,10 +95,15 @@
                         </a-button>
                     </a-popover>
                 </a-tooltip>
-                <a-tooltip
-                    v-if="user.enabled && user.email_verified"
-                    placement="top"
-                >
+                <!-- enable/disable  -->
+                <a-tooltip v-if="user.email_verified" placement="top">
+                    <template #title>
+                        <span>
+                            {{
+                                user.enabled ? 'Disable User' : 'Enable User'
+                            }}</span
+                        >
+                    </template>
                     <a-popover
                         placement="leftTop"
                         trigger="click"
@@ -131,7 +137,9 @@
                                         >Cancel
                                     </AtlanButton>
                                     <AtlanButton
-                                        color="danger"
+                                        :color="
+                                            user.enabled ? 'danger' : 'primary'
+                                        "
                                         size="sm"
                                         padding="compact"
                                         @click="
@@ -140,7 +148,9 @@
                                                 user
                                             )
                                         "
-                                        >Disable
+                                        >{{
+                                            user.enabled ? 'Disable' : 'Enable'
+                                        }}
                                     </AtlanButton>
                                 </div>
                             </div>
@@ -150,56 +160,15 @@
                             class="mr-3.5 rounded"
                             @click="emit('toggleDisableEnablePopover', user)"
                         >
-                            <AtlanIcon icon="DisableUser"></AtlanIcon>
+                            <AtlanIcon
+                                v-if="user.enabled"
+                                icon="DisableUser"
+                            ></AtlanIcon>
+                            <AtlanIcon v-else icon="CheckCircled"></AtlanIcon>
                         </a-button>
                     </a-popover>
-                    <!-- <template #title>
-                        <span>Disable User</span>
-                    </template> -->
-                    <!-- <a-popconfirm
-                        placement="leftTop"
-                        :title="
-                            getEnableDisablePopoverContent(
-                                user,
-                                user.enabled ? 'disable' : 'enable'
-                            )
-                        "
-                        ok-text="Yes"
-                        :ok-type="user.role !== 'admin' ? 'danger' : 'default'"
-                        cancel-text="Cancel"
-                        @confirm="emit('confirmEnableDisablePopover', user)"
-                    >
-                        <a-button size="small" class="mr-3.5 rounded">
-                            <AtlanIcon
-                                icon="DisableUser"
-                            ></AtlanIcon> </a-button
-                    ></a-popconfirm> -->
                 </a-tooltip>
-                <a-tooltip
-                    v-if="!user.enabled"
-                    placement="top"
-                    class="rounded mr-3.5"
-                >
-                    <template #title> <span>Enable User</span> </template
-                    ><a-popconfirm
-                        placement="leftTop"
-                        :title="
-                            getEnableDisablePopoverContent(
-                                user,
-                                user.enabled ? 'disable' : 'enable'
-                            )
-                        "
-                        ok-text="Yes"
-                        :ok-type="user.role !== 'admin' ? 'danger' : 'default'"
-                        cancel-text="Cancel"
-                        @confirm="emit('confirmEnableDisablePopover', user)"
-                    >
-                        <a-button size="small">
-                            <AtlanIcon
-                                icon="CheckCircled"
-                            ></AtlanIcon> </a-button
-                    ></a-popconfirm>
-                </a-tooltip>
+                <!-- invitation -->
                 <a-tooltip
                     v-if="!user.email_verified"
                     placement="top"
@@ -211,7 +180,7 @@
                     <a-button
                         size="small"
                         @click="
-                            emit('showResendInvitationConfirm', {
+                            emit('resendInvite', {
                                 email: user.email,
                                 id: user.id,
                             })
@@ -231,17 +200,67 @@
                     </a-button>
                     <template #overlay>
                         <a-menu>
-                            <a-menu-item
-                                key="1"
-                                @click="
-                                    emit('showRevokeInvitationConfirm', {
-                                        email: user.email,
-                                        id: user.id,
-                                    })
+                            <a-popover
+                                placement="leftTop"
+                                trigger="click"
+                                :destroy-tooltip-on-hide="true"
+                                :visible="
+                                    selectedUserId === user.id &&
+                                    showRevokeInvitePopover
                                 "
                             >
-                                Revoke Invitation </a-menu-item
-                            ><a-popover
+                                <template #content>
+                                    <div class="w-52">
+                                        <h3>
+                                            Revoke invitation for
+                                            <b>{{
+                                                user.name ||
+                                                user.username ||
+                                                user.email ||
+                                                ''
+                                            }}</b>
+                                            ?
+                                        </h3>
+                                        <div
+                                            class="flex items-center justify-between mt-3  gap-x-3"
+                                        >
+                                            <div class="flex-grow"></div>
+                                            <AtlanButton
+                                                color="minimal"
+                                                size="sm"
+                                                padding="compact"
+                                                @click="
+                                                    $emit(
+                                                        'handleRevokeInvite',
+                                                        false
+                                                    )
+                                                "
+                                                >Cancel
+                                            </AtlanButton>
+                                            <AtlanButton
+                                                :color="'danger'"
+                                                size="sm"
+                                                padding="compact"
+                                                @click="
+                                                    $emit('revokeInvite', {
+                                                        email: user.email,
+                                                        id: user.id,
+                                                    })
+                                                "
+                                                >Revoke
+                                            </AtlanButton>
+                                        </div>
+                                    </div>
+                                </template>
+                                <a-menu-item
+                                    key="1"
+                                    @click="emit('handleRevokeInvite', user.id)"
+                                >
+                                    Revoke Invitation
+                                </a-menu-item>
+                            </a-popover>
+
+                            <a-popover
                                 placement="leftTop"
                                 trigger="click"
                                 :destroy-tooltip-on-hide="true"
@@ -249,28 +268,12 @@
                                     selectedUserId === user.id &&
                                     showChangeRolePopover
                                 "
-                                ><template #title>
-                                    <div
-                                        class="flex items-center justify-between "
-                                    >
-                                        <span>Change Role</span
-                                        ><a-button
-                                            type="text"
-                                            class="pr-0 hover:bg-transparent"
-                                            @click="
-                                                emit('closeChangeRolePopover')
-                                            "
-                                            ><AtlanIcon
-                                                icon="Cancel"
-                                                class="h-3"
-                                            ></AtlanIcon
-                                        ></a-button>
-                                    </div>
-                                </template>
+                            >
                                 <template #content>
                                     <ChangeRole
                                         :user="selectedUser"
                                         :role-list="roleList"
+                                        @close="emit('closeChangeRolePopover')"
                                         @updateRole="emit('handleUpdateRole')"
                                         @errorUpdateRole="
                                             emit('handleErrorUpdateRole')
@@ -311,6 +314,7 @@
             selectedUserId: { type: String, required: true },
             showChangeRolePopover: { type: Boolean, required: true },
             showDisableEnablePopover: { type: Boolean, required: true },
+            showRevokeInvitePopover: { type: Boolean, required: true },
         },
         emits: [
             'toggleDisableEnablePopover',
@@ -322,6 +326,9 @@
             'showUserPreviewDrawer',
             'closeChangeRolePopover',
             'handleChangeRole',
+            'resendInvite',
+            'revokeInvite',
+            'handleRevokeInvite',
             'handleErrorUpdateRole',
         ],
         setup(props, { emit }) {

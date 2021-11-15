@@ -9,20 +9,17 @@
         @click="$emit('select')"
     >
         <div class="flex items-center col-span-4 overflow-hidden">
+            <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <AtlanIcon
-                class="flex-none mr-4 text-gray-500"
-                :icon="requestTypeIcon[request.request_type]"
-            />
             <AssetPiece
                 v-if="request.destination_qualified_name"
                 :asset-qf-name="request.destination_qualified_name"
+                :entityType="request?.entity_type"
             />
             <span v-else class="text-sm overflow-ellipsis">
                 {{ primaryText[request.request_type](request) }}
             </span>
         </div>
-        <!-- RHS -->
         <div class="flex items-center col-span-3">
             <ClassificationPiece
                 v-if="
@@ -36,19 +33,18 @@
                 :typeName="request.payload.typeName"
             />
 
-            <!-- <TermPiece
+            <TermPiece
                 v-else-if="
-                    request.request_type === 'create_term' && request.payload
+                    request?.request_type === 'create_term' && request?.payload
                 "
                 :data="request.payload"
             />
 
             <TermPiece
                 v-else-if="request.request_type === 'term_link'"
-                :data="request.sourceEntity.attributes"
+                :data="request?.sourceEntity?.attributes"
             />
-  -->
-            <!-- v-else-if="request.destination_attribute" -->
+
             <AttrPiece
                 v-else-if="request.destination_attribute"
                 :name="request.destination_attribute"
@@ -58,6 +54,7 @@
             <AssetPiece
                 v-else-if="request.source_qualified_name"
                 :asset-qf-name="request.source_qualified_name"
+                :entityType="request?.entity_type"
             />
         </div>
 
@@ -116,7 +113,7 @@
     import AttrPiece from './pieces/attributeUpdate.vue'
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
-    // import TermPiece from './pieces/term.vue'
+    import TermPiece from './pieces/term.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
@@ -135,7 +132,7 @@
             AttrPiece,
             UserPiece,
             DatePiece,
-            // TermPiece,
+            TermPiece,
         },
         props: {
             request: {
@@ -160,7 +157,7 @@
                 isLoading: false,
                 message: '',
             })
-
+            console.log(request.value)
             function raiseErrorMessage(msg?: string) {
                 message.error(msg || 'Request modification failed, try again')
             }

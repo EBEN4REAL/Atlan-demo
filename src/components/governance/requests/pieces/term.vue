@@ -35,7 +35,7 @@
                 </div>
             </div>
         </template>
-        <Pill :label="data.name" :has-action="false">
+        <Pill :label="data?.name" :has-action="false">
             <template #prefix>
                 <AtlanIcon icon="Term"></AtlanIcon>
             </template>
@@ -51,7 +51,10 @@
 
     export default defineComponent({
         props: {
-            data: { type: Object, required: true, default: () => {} },
+            data: {
+                required: true,
+                default: () => {},
+            },
         },
         components: { PillGroup, Pill },
         setup(props) {},

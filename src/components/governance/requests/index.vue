@@ -2,7 +2,7 @@
     <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
         <template #header>
             <SearchAndFilter
-                v-model="searchTerm"
+                v-model:value="searchTerm"
                 class="max-w-xl mb-6"
                 size="default"
             >
@@ -17,12 +17,12 @@
             <a-spin size="large" />
         </div>
         <template v-else-if="requestList.length && !listLoading">
-            <!-- <RequestModal
+            <RequestModal
                 :request="requestList[selectedIndex]"
                 v-model:visible="isDetailsVisible"
                 @up="traverseUp"
                 @down="traverseDown"
-            ></RequestModal> -->
+            ></RequestModal>
             <VirtualList :data="requestList" data-key="id" class="mt-4">
                 <template #default="{ item, index }">
                     <RequestListItem
@@ -51,7 +51,7 @@
     import RequestTypeTabs from './requestTypeTabs.vue'
     import RequestListItem from '~/components/governance/requests/requestListItem.vue'
     // import RequestFilters from './filters/requestFilters.vue'
-    // import RequestModal from './modal/requestDetailsBase.vue'
+    import RequestModal from './modal/requestDetailsBase.vue'
     // import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
@@ -65,7 +65,7 @@
             RequestListItem,
             SearchAndFilter,
             // RequestFilters,
-            // RequestModal,
+            RequestModal,
             RequestTypeTabs,
             DefaultLayout,
             // NoAcces
@@ -150,10 +150,12 @@
             whenever(ArrowDown, traverseDown)
 
             whenever(x, () => {
+                console.log('x pressed')
                 if (
                     selectedIndex.value > -1 &&
                     selectedIndex.value < requestList.value.length - 1
                 ) {
+                    console.log('in if')
                     const guid = requestList.value[selectedIndex.value].id
                     if (selectedList.value.has(guid))
                         selectedList.value.delete(guid)

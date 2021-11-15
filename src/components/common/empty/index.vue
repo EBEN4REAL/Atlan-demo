@@ -37,6 +37,7 @@
 
     export default defineComponent({
         name: 'EmptyPlaceholder',
+        components: { AtlanButton },
         props: {
             headline: {
                 type: String,
@@ -102,7 +103,6 @@
                 },
             },
         },
-        components: { AtlanButton },
         emits: ['event'],
         setup(props, { emit }) {
             const handleClick = () => {

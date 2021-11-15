@@ -1,4 +1,5 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { allTabs } from '~/constant/groups'
 
 const showPreview = ref(false)
@@ -60,6 +61,14 @@ export function useGroupPreview() {
     const setDefaultTab = (tab) => {
         defaultTab.value = tab
     }
+
+    const route = useRoute()
+
+    watch(route, () => {
+        blacklistedTabs.value = []
+        allowedTabs.value = []
+        showPreview.value = false
+    })
 
     return {
         showPreview,

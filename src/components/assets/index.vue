@@ -5,11 +5,11 @@
             class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
         >
             <AssetFilters
+                v-if="showFilters"
                 :key="dirtyTimestamp"
                 v-model="facets"
+                :type-name="postFacets.typeName"
                 @change="handleFilterChange"
-                :typeName="postFacets.typeName"
-                v-if="showFilters"
             ></AssetFilters>
         </div>
 
@@ -18,11 +18,11 @@
                 <div class="flex px-6 py-1 border-b border-gray-200">
                     <SearchAdvanced
                         v-model="queryText"
-                        :connectorName="facets?.hierarchy?.connectorName"
+                        :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
-                        :allowClear="true"
-                        @change="handleSearchChange"
+                        :allow-clear="true"
                         placeholder="Search assets..."
+                        @change="handleSearchChange"
                     >
                         <template #filter>
                             <a-popover
@@ -34,7 +34,7 @@
                                 <template #content
                                     ><AssetFilters
                                         :key="dirtyTimestamp"
-                                        :isAccordion="true"
+                                        :is-accordion="true"
                                         @change="handleFilterChange"
                                     ></AssetFilters
                                 ></template>
@@ -54,7 +54,7 @@
                     </SearchAdvanced>
                 </div>
 
-                <div class="w-full px-4">
+                <div v-if="showAggrs" class="w-full px-4">
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -77,7 +77,17 @@
                     v-else-if="list.length === 0 && !isLoading"
                     class="flex-grow"
                 >
-                    <EmptyView @event="handleEvent"></EmptyView>
+                    <EmptyView
+                        empty-screen="EmptyDiscover"
+                        :desc="
+                            staticUse
+                                ? 'No assets found'
+                                : 'We didnt find anything that matches your search criteria'
+                        "
+                        :button-text="staticUse ? '' : 'Reset Filter'"
+                        class="mb-10"
+                        @event="handleEvent"
+                    ></EmptyView>
                 </div>
 
                 <AssetList
@@ -86,8 +96,8 @@
                     :list="list"
                     :preference="preference"
                     :selected-asset="selectedAsset"
-                    :isLoadMore="isLoadMore"
-                    :isLoading="isValidating"
+                    :is-load-more="isLoadMore"
+                    :is-loading="isValidating"
                     @preview="handlePreview"
                     @loadMore="handleLoadMore"
                 />
@@ -105,7 +115,7 @@
         toRefs,
         PropType,
     } from 'vue'
-    import EmptyView from '@common/empty/discover.vue'
+    import EmptyView from '@common/empty/index.vue'
     // import AssetPagination from '@common/pagination/index.vue'
 
     // import { useDebounceFn } from '@vueuse/core'
@@ -156,6 +166,16 @@
                 type: Object,
                 required: false,
             },
+            showAggrs: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            staticUse: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props, { emit }) {
             const limit = ref(20)
@@ -192,7 +212,7 @@
             if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
-                    ...initialFilters,
+                    ...initialFilters.value,
                 }
             }
 

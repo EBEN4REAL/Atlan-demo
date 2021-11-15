@@ -257,6 +257,7 @@
     import CertificationPopover from '@/common/popover/certification.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -323,6 +324,16 @@
                 },
             })
 
+            const guid = ref(null)
+
+            const {
+                asset,
+                mutate: mutateUpdate,
+                isReady: isUpdateReady,
+            } = useCurrentUpdate({
+                id: guid,
+            })
+
             if (
                 [
                     'AtlasGlossary',
@@ -369,6 +380,15 @@
 
             whenever(isReady, () => {
                 message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                mutateUpdate()
+            })
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                console.log('mutate ready')
+                console.log(asset.value)
+                updateList(asset.value)
             })
 
             whenever(error, () => {
@@ -530,6 +550,8 @@
                 localCertificate,
                 handleChangeCertificate,
                 certificateStatusMessage,
+                mutateUpdate,
+                updateList,
             }
         },
     })

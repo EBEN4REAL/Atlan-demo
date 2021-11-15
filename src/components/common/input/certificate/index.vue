@@ -22,7 +22,10 @@
 
             <CertificatePill
                 class="w-full"
-                v-if="localValue.certificateStatus !== 'NONE'"
+                v-if="
+                    localValue.certificateStatus !== 'NONE' &&
+                    localValue.certificateStatus
+                "
                 :status="localValue.certificateStatus"
                 :message="localValue.certificateStatusMessage"
                 :username="localValue.certificateUpdatedBy"
@@ -89,7 +92,6 @@
             }
 
             const handleVisibleChange = (visible) => {
-                console.log('change')
                 if (!visible) {
                     handleChange()
                 }

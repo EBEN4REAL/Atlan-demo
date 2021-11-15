@@ -406,8 +406,12 @@
             EditorContext,
             WarehouseConnector,
         },
-        props: {},
-        setup() {
+        props: {
+            refreshQueryTree: {
+                type: Function,
+            },
+        },
+        setup(props) {
             const router = useRouter()
             const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
@@ -583,6 +587,7 @@
             const toggleCustomToolbar = () => {
                 showcustomToolBar.value = !showcustomToolBar.value
             }
+
             const saveQuery = (saveQueryData: any, assetTerms: any) => {
                 console.log('assetTerms from editor: ', assetTerms)
                 saveQueryToDatabaseWithTerms(
@@ -595,7 +600,8 @@
                     'personal',
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
-                    activeInlineTab.value
+                    activeInlineTab.value,
+                    props.refreshQueryTree
                 )
             }
             const formatDocument = () => {

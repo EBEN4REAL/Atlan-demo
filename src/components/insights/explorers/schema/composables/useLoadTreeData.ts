@@ -28,6 +28,10 @@ const attributes = [
     'columnCount',
     ...InternalAttributes,
     ...BasicSearchAttributes,
+   'schemaCount',
+   'tableCount',
+   'columnCount',
+   'children'
 ]
 
 const useLoadTreeData = () => {

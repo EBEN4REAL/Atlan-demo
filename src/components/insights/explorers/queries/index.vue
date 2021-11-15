@@ -290,6 +290,8 @@
         toRaw,
         onMounted,
         provide,
+        PropType,
+        toRefs,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import {
@@ -325,8 +327,19 @@
             LoadingView,
             QueryTreeItem,
         },
-        props: {},
+        props: {
+            reset: {
+                type: Boolean,
+                required: true,
+                default: false,
+            },
+            resetQueryTree: {
+                type: Function,
+            },
+        },
         setup(props, { emit }) {
+            let { reset } = toRefs(props)
+
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
@@ -729,8 +742,8 @@
                 )
                 focusEditor(toRaw(editorInstance.value))
 
-                watch(data, (newData) => {
-                    if (newData) {
+                watch(data, (data) => {
+                    if (data) {
                         per_refetchNode(
                             saveQueryData.parentGuid ??
                                 getRelevantTreeData().parentGuid.value,
@@ -854,6 +867,28 @@
                 },
                 { immediate: true }
             )
+
+            watch(reset, () => {
+                // console.log('queryTree query: ', reset.value)
+                if (reset.value) {
+                    // console.log('queryTree inside if')
+                    setTimeout(async () => {
+                        console.log(
+                            'queryTree: ',
+                            getRelevantTreeData().parentGuid.value
+                        )
+                        await all_refetchNode(
+                            getRelevantTreeData().parentGuid.value,
+                            'query'
+                        )
+                        await per_refetchNode(
+                            getRelevantTreeData().parentGuid.value,
+                            'query'
+                        )
+                        props.resetQueryTree()
+                    }, 500)
+                }
+            })
 
             return {
                 searchTreeData,

@@ -152,6 +152,32 @@ export default function useAssetInfo() {
         })
     }
 
+    const getAssetQueryPath = (asset) => {
+        let queryPath='/insights'
+        let databaseQualifiedName = attributes(asset).connectionQualifiedName + '/' + attributes(asset).databaseName
+        let schema = attributes(asset).schemaName
+
+        if (assetType(asset) === 'Column') {
+            // let tableName =
+            //     attributes(asset).tableName
+
+            let name = tableName(asset).length>0 ? tableName(asset) : viewName(asset)
+            let columnName = attributes(asset).name
+
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
+        } else if (
+            assetType(asset) === 'Table' ||
+            assetType(asset) === 'View'
+        ) {
+            let tableName = attributes(asset).name
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+        } else {
+            queryPath = `/insights`
+        }
+
+        return queryPath
+    }
+
     const getAnchorName = (asset: assetInterface) =>
         attributes(asset)?.anchor?.attributes.name
 
@@ -740,6 +766,7 @@ export default function useAssetInfo() {
         dataTypeImageForColumn,
         assetTypeLabel,
         getActions,
+        getAssetQueryPath,
         webURL,
     }
 }

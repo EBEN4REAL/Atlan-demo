@@ -112,8 +112,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    :global(.ant-popover-content) {
-        @apply w-80 !important;
-    }
-</style>
+<style lang="less" scoped></style>

@@ -27,12 +27,11 @@
         </div>
 
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
-            <DynamicInput
-                :dataType="attribute.subTypeName || attribute.typeName"
+            <DynamicInput2
                 v-model="localCondition.value"
-                :data-type="attribute.typeName"
+                :data-type="attribute.subTypeName || attribute.typeName"
                 @change="handleValueChange"
-            ></DynamicInput>
+            ></DynamicInput2>
         </div>
     </div>
 </template>
@@ -41,12 +40,12 @@
     import { useVModels } from '@vueuse/core'
     import { defineComponent, PropType, toRefs, ref, computed } from 'vue'
 
-    import DynamicInput from '~/components/common/input/dynamicInput2.vue'
+    import DynamicInput2 from '~/components/common/input/dynamicInput2.vue'
     import { operators } from '~/constant/filters/operators'
 
     export default defineComponent({
         name: 'TermPopover',
-        components: { DynamicInput },
+        components: { DynamicInput2 },
         props: {
             attribute: {
                 type: Object,

@@ -1,26 +1,20 @@
 <template>
     <div class="relative w-full h-full">
-        <div
-            v-if="isLoading"
-            class="absolute flex items-center justify-center w-full h-full"
-        >
-            <AtlanIcon
-                icon="Loader"
-                class="w-auto h-10 animate-spin"
-            ></AtlanIcon>
-        </div>
-        <div v-else-if="error" class="flex justify-center h-full items center">
-            <EmptyScreen
-                empty-screen="EmptyLineage"
-                desc="Lineage could not be loaded"
-                image-class="h-32"
-            />
-        </div>
-        <div v-else-if="isReady" class="absolute w-full h-full overflow-hidden">
+        <!-- <div class="absolute flex items-center justify-center w-full h-full">
+            <a-spin />
+        </div> -->
+        <div class="absolute w-full h-full">
             <LineageGraph
-                :is-lineage-empty="isLineageEmpty"
+                v-if="!isLineageEmpty"
                 :lineage="lineage"
+                @preview="emit('preview', $event)"
             />
+            <div
+                v-else
+                class="z-20 flex items-center justify-center w-full h-full bg-white "
+            >
+                LINEAGE IS EMPTY
+            </div>
         </div>
     </div>
 </template>
@@ -34,22 +28,20 @@
         provide,
         watch,
         onMounted,
-        ComputedRef,
     } from 'vue'
 
     import { useRoute } from 'vue-router'
 
     // Components
-    import { message } from 'ant-design-vue'
     import LineageGraph from './lineageGraph.vue'
-    import EmptyScreen from '@/common/empty/index.vue'
 
     import useLineageService from '~/services/meta/lineage/lineage_service'
 
     export default defineComponent({
-        name: 'LineageTab',
-        components: { LineageGraph, EmptyScreen },
-        setup() {
+        name: 'Lineage',
+        components: { LineageGraph },
+        emits: ['preview'],
+        setup(_, { emit }) {
             const route = useRoute()
 
             const lineage = ref({})
@@ -60,32 +52,24 @@
 
             const { useFetchLineage } = useLineageService()
 
-            const lineageOptions = computed(() => ({
-                depth: depth.value,
-                guid: guid.value,
-                direction: direction.value,
-            }))
+            const fetchLineage = () => {
+                const { data } = useFetchLineage({
+                    depth: depth.value,
+                    guid: guid.value,
+                    direction: direction.value,
+                })
 
-            const { data, isLoading, reFetch, isReady, error } =
-                useFetchLineage(lineageOptions)
-
-            watch([data, error], () => {
-                lineage.value = data.value
-                isLineageEmpty.value = lineage.value.relations.length === 0
-                if (error.value) {
-                    const errMsg = error.value?.response?.data?.errorMessage
-                    message.error({
-                        key: 'error',
-                        content: errMsg ?? 'Network Error',
-                        duration: 2,
-                    })
-                }
-            })
+                watch(data, () => {
+                    lineage.value = data.value
+                    if (lineage.value.relations.length === 0)
+                        isLineageEmpty.value = true
+                })
+            }
 
             const control = (type, item = null) => {
                 if (type === 'depth') depth.value = item
                 if (type === 'direction') direction.value = item
-                if (type === 'reload') reFetch()
+                if (type === 'reload') fetchLineage()
             }
 
             provide('depth', depth)
@@ -93,19 +77,17 @@
             provide('control', control)
 
             watch([depth, direction], () => {
-                reFetch()
+                fetchLineage()
             })
 
             onMounted(() => {
-                reFetch()
+                fetchLineage()
             })
 
             return {
-                isReady,
-                error,
-                isLoading,
                 lineage,
                 isLineageEmpty,
+                emit,
             }
         },
     })

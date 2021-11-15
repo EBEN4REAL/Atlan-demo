@@ -2,7 +2,7 @@ import { ref, watch } from 'vue'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 
-const { updateEdgesStroke } = useUpdateGraph()
+const { updateEdgesStroke, updateNodesToHighlight } = useUpdateGraph()
 const {
     getPredecessors,
     getSuccessors,
@@ -18,31 +18,31 @@ export default function useHighlight(
     baseEntityGuid,
     showProcess,
     highlightLoadingCords,
-    selectedSearchItem
+    highlightedNode,
+    selectedSearchItem,
+    selectedNodeType,
+    emit
 ) {
-    const highlightedNode = ref(null)
+    const previewedNode = ref('')
 
-    const getEdgesToHighlight = async (guid) => {
+    const getCell = (guid) => graph.value.getCellById(guid)
+    const cell = getCell(baseEntityGuid)
+    const { entity: defaultEntity } = cell.store.data
+
+    const getHighlights = async (guid) => {
+        console.log('guid:', guid)
         await getPredecessors(graph, guid, showProcess)
         await getSuccessors(graph, guid, showProcess)
     }
 
     const highlight = async (guid) => {
         if (!guid || guid === highlightedNode.value) {
-            highlightedNode.value = null
+            highlightedNode.value = ''
             edgesToHighlightSet.clear()
             nodesToHighlightSet.clear()
-            // const nodesToHighlight = Array.from(nodesToHighlightSet)
-            // updateNodesToHighlight(
-            //     graph,
-            //     model,
-            //     nodes,
-            //     highlightedNode,
-            //     nodesToHighlight,
-            //     true
-            // )
+
             const edgesToHighlight = edges.value
-            updateEdgesStroke(
+            await updateEdgesStroke(
                 graph,
                 model,
                 edges,
@@ -50,22 +50,23 @@ export default function useHighlight(
                 baseEntityGuid,
                 true
             )
+            const nodesToHighlight = Array.from(nodesToHighlightSet)
+            updateNodesToHighlight(
+                graph,
+                model,
+                nodes,
+                highlightedNode,
+                nodesToHighlight,
+                true
+            )
         } else {
             highlightedNode.value = guid
             edgesToHighlightSet.clear()
             nodesToHighlightSet.clear()
-            await getEdgesToHighlight(guid)
-            // const nodesToHighlight = Array.from(nodesToHighlightSet)
-            // updateNodesToHighlight(
-            //     graph,
-            //     model,
-            //     nodes,
-            //     highlightedNode,
-            //     nodesToHighlight,
-            //     false
-            // )
+            await getHighlights(guid)
+
             const edgesToHighlight = Array.from(edgesToHighlightSet)
-            updateEdgesStroke(
+            await updateEdgesStroke(
                 graph,
                 model,
                 edges,
@@ -73,23 +74,51 @@ export default function useHighlight(
                 baseEntityGuid,
                 false
             )
+            const nodesToHighlight = Array.from(nodesToHighlightSet)
+            updateNodesToHighlight(
+                graph,
+                model,
+                nodes,
+                highlightedNode,
+                nodesToHighlight,
+                false
+            )
         }
 
         highlightLoadingCords.value = {}
+    }
+
+    const preview = (node) => {
+        if (!node || node.id === previewedNode.value) {
+            previewedNode.value = ''
+            selectedNodeType.value = ''
+            emit('preview', defaultEntity)
+        } else {
+            previewedNode.value = node.id
+            selectedNodeType.value =
+                node.store.data.entity.typeName === 'Process' ? 'p' : 'np'
+            emit('preview', node.store.data.entity)
+        }
     }
 
     watch(selectedSearchItem, (newVal) => {
         highlight(newVal)
     })
 
+    watch(showProcess, (newVal) => {
+        emit('preview', defaultEntity)
+    })
+
     graph.value.on('cell:mouseup', ({ node }) => {
         highlight(node.id)
+        preview(node)
     })
     graph.value.on('blank:click', () => {
         highlight(null)
+        preview(null)
     })
 
     return {
-        highlight,
+        highlightedNode,
     }
 }

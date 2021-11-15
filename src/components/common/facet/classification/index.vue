@@ -13,8 +13,8 @@
 
         <div class="w-full mt-1 overflow-y-auto h-44">
             <a-checkbox-group
-                class="w-full px-3"
                 v-model:value="localValue.classifications"
+                class="w-full px-3"
             >
                 <div class="flex flex-col w-full">
                     <template v-for="item in filteredList" :key="item.id">
@@ -39,7 +39,7 @@
                 </div>
             </a-checkbox-group>
         </div>
-        <div class="px-4 pt-1" v-if="showNoClassification">
+        <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 v-model:checked="localValue.empty"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
@@ -83,7 +83,7 @@
                     return {}
                 },
             },
-            showNoClassification: {
+            showNone: {
                 type: Boolean,
                 default() {
                     return true
@@ -93,7 +93,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const queryText = ref('')
-            const { showNoClassification } = toRefs(props)
+            const { showNone } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -108,7 +108,6 @@
             )
 
             watch(localValue.value, (prev, cur) => {
-                console.log(localValue)
                 if (!localValue.value.classifications) {
                     delete localValue.value.classifications
                 }
@@ -138,7 +137,7 @@
 
                 forceFocus,
                 queryText,
-                showNoClassification,
+                showNone,
             }
         },
     })

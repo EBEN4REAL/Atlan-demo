@@ -112,7 +112,13 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
+                                    class="
+                                        mb-1
+                                        lowercase
+                                        bg-gray-100
+                                        border-0
+                                        rounded-full
+                                    "
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
@@ -146,7 +152,11 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center  w-60"
+                                                class="
+                                                    flex flex-col
+                                                    items-center
+                                                    w-60
+                                                "
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -203,7 +213,17 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
+                        class="
+                            flex
+                            items-center
+                            justify-around
+                            w-full
+                            gap-4
+                            p-4
+                            bg-gray-100
+                            border
+                            rounded
+                        "
                     >
                         <div class="w-full">
                             <a-form-item class="mb-2">
@@ -301,7 +321,7 @@
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
 
-    import useEnums from '@/admin/enums/composables/useEnums'
+    import useEnums from '@/governance/enums/composables/useEnums'
 
     import {
         DEFAULT_ATTRIBUTE,
@@ -443,9 +463,9 @@
                         tempForm.typeName = tempForm.options.enumType
                     // handle if is user, group or name
                     if (
-                        form.value.typeName === 'user' ||
-                        form.value.typeName === 'link' ||
-                        form.value.typeName === 'group'
+                        form.value.typeName === 'users' ||
+                        form.value.typeName === 'url' ||
+                        form.value.typeName === 'groups'
                     )
                         tempForm.typeName = 'string'
 

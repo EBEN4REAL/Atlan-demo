@@ -167,7 +167,14 @@
             />
         </div>
 
-        <div class="flex flex-col">
+        <div
+            v-if="
+                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex flex-col"
+        >
             <p
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
             >
@@ -182,7 +189,16 @@
             </Classification>
         </div>
 
-        <div class="flex flex-col">
+        <div
+            v-if="
+                ![
+                    'AtlasGlossary',
+                    'AtlasGlossaryTerm',
+                    'AtlasGlossaryCategory',
+                ].includes(selectedAsset.typeName)
+            "
+            class="flex flex-col"
+        >
             <p
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
             >
@@ -270,6 +286,7 @@
                 definition,
                 webURL,
                 assetTypeLabel,
+                getAnchorGuid,
             } = useAssetInfo()
 
             const entity = ref({
@@ -282,6 +299,22 @@
                     tenantId: 'default',
                 },
             })
+
+            if (
+                [
+                    'AtlasGlossary',
+                    'AtlasGlossaryTerm',
+                    'AtlasGlossaryCategory',
+                ].includes(entity.value.typeName)
+            ) {
+                entity.value.relationshipAttributes = {
+                    anchor: {
+                        typeName: 'AtlasGlossary',
+                        guid: getAnchorGuid(selectedAsset.value),
+                    },
+                }
+            }
+
             const body = ref({
                 entities: [],
             })
@@ -296,6 +329,7 @@
                 if (newVal !== prevVal) {
                     entity.value.attributes.userDescription =
                         localDescription.value
+
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Description has been updated'
                     mutate()
@@ -442,6 +476,7 @@
                 assetTypeLabel,
                 error,
                 handleOwnersChange,
+                getAnchorGuid,
             }
         },
     })

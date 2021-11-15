@@ -306,7 +306,7 @@
                 fetch,
 
                 quickChange,
-
+                handleSelectedGlossary,
                 selectedGlossary,
             } = useDiscoverList({
                 isCache: true,
@@ -399,6 +399,7 @@
                 baseTreeData,
                 height,
                 glossaryBox,
+                handleSelectedGlossary,
             }
         },
     })

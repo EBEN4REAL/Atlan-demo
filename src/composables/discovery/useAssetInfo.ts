@@ -192,6 +192,9 @@ export default function useAssetInfo() {
     const getAnchorName = (asset: assetInterface) =>
         attributes(asset)?.anchor?.attributes.name
 
+    const getAnchorGuid = (asset: assetInterface) =>
+        attributes(asset)?.anchor?.guid
+
     const logo = (asset: assetInterface) => {
         let img = ''
 
@@ -774,6 +777,7 @@ export default function useAssetInfo() {
         getTableauHierarchy,
         qualifiedName,
         getAnchorName,
+        getAnchorGuid,
         connectionQualifiedName,
         getConnectorImageMap,
         anchorAttributes,

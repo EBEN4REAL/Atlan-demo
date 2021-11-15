@@ -5,22 +5,17 @@
         :bodyStyle="{ padding: '20px' }"
     >
         <template #title>
-            <div class="flex items-center">
-                <AtlanIcon
-                    class="mr-4 text-gray-500"
-                    :icon="requestTypeIcon[request.request_type]"
-                />
-                <span class="text-lg leading-5">
-                    {{ requestTitle }}
-                </span>
-            </div>
+            <span class="text-lg leading-5">
+                {{ requestTitle }}
+            </span>
         </template>
 
         <div class="flex flex-col h-64 overflow-y-auto gap-y-6 max-h-64">
             <!-- TOP SECTION -->
             <AssetDetails
-                v-if="request.destinationEntity"
-                :asset="request.destinationEntity"
+                :asset="request?.destinationEntity"
+                :asset-qf-name="request?.destination_qualified_name"
+                :entityType="request?.entity_type"
             />
 
             <!-- BOTTOM SECTION -->
@@ -28,6 +23,17 @@
                 :attribute="request.destination_attribute"
                 :value="request.destination_value"
                 v-if="request.request_type === 'attribute'"
+            />
+            <ClassificationPiece
+                v-if="
+                    request?.request_type === 'create_typedef' &&
+                    request?.payload?.classificationDefs
+                "
+                :data="request.payload.classificationDefs"
+            />
+            <ClassificationPiece
+                v-else-if="request?.request_type === 'attach_classification'"
+                :typeName="request.payload.typeName"
             />
 
             <!-- <ClassificationDetails
@@ -50,15 +56,14 @@
                 :data="request.sourceEntity.attributes"
             />
 
-            <div v-if="request.message">
-                <p class="mb-1 text-sm text-gray-500">Requestor Note</p>
-                <span class="text-gray">{{ request.message }}</span>
+            <div v-if="request?.message">
+                <p class="mb-1 text-sm text-gray-500">Note</p>
+                <span class="text-gray">{{ request?.message }}</span>
             </div>
 
             <p class="mt-auto mb-0 text-gray-500">
                 Requested {{ createdTimeAgo }} by
-                <UserPiece :user="request.createdByUser" :is-pill="false" /> •
-                {{ createdDate }}
+                <UserPiece :user="request.createdByUser" :is-pill="false" />
             </p>
         </div>
 
@@ -106,6 +111,7 @@
     import AttributeChange from './attributeChange.vue'
 
     import UserPiece from '../pieces/user.vue'
+    import ClassificationPiece from '../pieces/classifications.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import { assetTypeList } from '~/constant/assetType'
@@ -120,6 +126,7 @@
             // ClassificationDetails,
             TermDetails,
             UserPiece,
+            ClassificationPiece,
         },
         props: {
             request: {
@@ -130,6 +137,7 @@
         emits: ['up', 'down'],
         setup(props) {
             const { request } = toRefs(props)
+            console.log(request)
             const requestTitle = computed(() => {
                 let title = `${typeCopyMapping[request.value.request_type]} `
                 // Attribute change title
@@ -147,19 +155,6 @@
                             request.value.destination_attribute
                         ]
                     }`
-                }
-
-                // Linking stuff to asset
-                if (
-                    ['term_link', 'attach_classification'].includes(
-                        request.value.request_type
-                    )
-                ) {
-                    title +=
-                        'to ' +
-                        assetTypeList.find(
-                            (ast) => ast.id == request.value.entity_type
-                        )?.label
                 }
 
                 return title

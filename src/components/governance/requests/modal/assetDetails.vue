@@ -1,23 +1,43 @@
 <template>
     <div>
-        <p class="mb-1 text-sm text-gray-500">Asset Details</p>
-        <div class="flex flex-col pl-3 border-l-2 border-gray-300">
-            <AssetLogo :asset="asset" />
-            <span class="text-base font-bold overflow-ellipsis text-gray"
+        <div class="flex flex-col">
+            <div class="flex items-center mb-1 text-xs">
+                <AssetLogo :asset="assetWrappper" />
+                <span
+                    class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
+                    >{{ entityType?.toUpperCase() }}</span
+                >
+                <span style="color: #c4c4c4" class="mx-2"> • </span>
+                <span class="overflow-hidden text-gray-500 overflow-ellipsis">
+                    {{ assetText[2] }}</span
+                >
+                <span class="px-1 text-gray-300">/</span>
+
+                <span class="overflow-hidden text-gray-500 overflow-ellipsis">
+                    {{ assetText[1] }}</span
+                >
+            </div>
+            <span
+                v-if="asset && title(asset) && title(asset) !== ''"
+                class="text-base font-bold overflow-ellipsis text-primary"
                 >{{ title(asset) }}
             </span>
-            <span class="text-sm text-gray-500 overflow-ellipsis"
+            <span
+                v-else
+                class="text-base font-bold overflow-ellipsis text-primary"
+                >{{ assetText[0] }}</span
+            >
+            <span
+                v-if="asset && description(asset) && description(asset) !== ''"
+                class="text-sm text-gray-500 overflow-ellipsis"
                 >{{ description(asset) }}
-            </span>
-            <span class="text-sm text-gray overflow-ellipsis"
-                >{{ databaseName(asset) }}/{{ schemaName(asset) }}
             </span>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs, computed } from 'vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -27,13 +47,26 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            assetQfName: { type: String, required: true },
+            entityType: {
+                type: String,
+                required: true,
+            },
         },
         components: { AssetLogo },
         setup(props) {
-            const { description, title, schemaName, databaseName } =
-                useAssetInfo()
+            const { assetQfName } = toRefs(props)
+            const assetText = computed(() =>
+                assetQfName.value.split('/').slice(-3).reverse()
+            )
+            const { description, title } = useAssetInfo()
+            const assetWrappper = computed(() => ({
+                attributes: {
+                    integrationName: assetQfName.value.split('/')[1],
+                },
+            }))
 
-            return { description, title, schemaName, databaseName }
+            return { assetText, description, title, assetWrappper }
         },
     })
 </script>

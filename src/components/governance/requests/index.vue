@@ -150,12 +150,10 @@
             whenever(ArrowDown, traverseDown)
 
             whenever(x, () => {
-                console.log('x pressed')
                 if (
                     selectedIndex.value > -1 &&
                     selectedIndex.value < requestList.value.length - 1
                 ) {
-                    console.log('in if')
                     const guid = requestList.value[selectedIndex.value].id
                     if (selectedList.value.has(guid))
                         selectedList.value.delete(guid)

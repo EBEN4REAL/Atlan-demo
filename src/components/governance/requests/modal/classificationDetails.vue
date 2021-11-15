@@ -1,29 +1,32 @@
 <template>
     <div>
-        <p class="mb-1 text-sm text-gray-500">Classification Details</p>
-        <div class="flex flex-col pl-3 border-l-2 border-gray-300">
-            <div class="flex items-center text-gray-500 gap-x-1">
-                <AtlanIcon icon="Shield" /> Classification
-            </div>
-            <span class="text-base font-bold overflow-ellipsis text-gray"
-                >{{
-                    classification?.displayName ||
-                    classification?.typeName ||
-                    classification?.name
-                }}
-            </span>
-            <span class="text-sm text-gray-500 overflow-ellipsis"
-                >{{ classification?.description }}
-            </span>
-        </div>
-    </div>
+        <div class="flex items-center">
+            <PillGroup
+                v-if="classification?.length && classification[0]?.displayName"
+                :data="classification"
+                label-key="displayName"
+                popover-trigger="hover"
+                read-only
+            >
+                <template #pillPrefix>
+                    <AtlanIcon icon="Shield" class="text-pink-500"></AtlanIcon>
+                </template>
+                <template #popover="{ item }">
+                    <ClassificationInfoCard :classification="item" class="w-32"
+                /></template>
+            </PillGroup>
+
+         </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, computed, toRefs } from 'vue'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import PillGroup from '~/components/UI/pill/pillGroup.vue'
+    import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
 
     export default defineComponent({
+        components: { PillGroup, ClassificationInfoCard },
         props: {
             data: {
                 type: Object as PropType<Record<string, any>>,
@@ -31,21 +34,19 @@
             },
             typeName: { type: String, default: () => '' },
         },
-        components: {},
         setup(props) {
             const { data, typeName } = toRefs(props)
-            const classificationsStore = useClassificationStore()
-
-            const classification = computed(() =>
+            const { classificationList } = useTypedefData()
+            const classification = computed(() => [
                 typeName.value
-                    ? classificationsStore.classifications.find(
+                    ? classificationList.value.find(
                           (clsf) => clsf.name === typeName.value
                       )
                     : {
                           ...data.value,
                           typeName: data.value.name,
-                      }
-            )
+                      },
+            ])
 
             return { classification }
         },

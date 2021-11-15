@@ -3,11 +3,12 @@
         <div class="flex items-center justify-between px-5">
             <span class="font-semibold text-gray-500">Overview</span>
             <span v-if="isLoading" class="flex items-center">
-                <AtlanIcon
+                <a-spin
+                    size="small"
                     icon="Loader"
                     class="w-auto h-4 mr-1 animate-spin"
-                ></AtlanIcon
-                >Saving</span
+                ></a-spin>
+                Saving</span
             >
         </div>
         <AnnouncementWidget
@@ -143,6 +144,7 @@
             >
                 <span> Description</span>
             </div>
+
             <Description v-model="localDescription" class="mx-4" />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
@@ -159,6 +161,7 @@
             </p>
             <Owners
                 v-model="localOwners"
+                :guid="selectedAsset.guid"
                 @change="handleOwnersChange"
                 class="px-5"
             />
@@ -205,6 +208,7 @@
         watch,
         Ref,
     } from 'vue'
+    import { whenever } from '@vueuse/core'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/assets/preview/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -215,10 +219,11 @@
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
     import CertificationPopover from '@/assets/preview/popover/certification.vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
+    import SavedQuery from '@common/hovercards/savedQuery.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
-    import SavedQuery from '@common/hovercards/savedQuery.vue'
+
+    import { message, Modal } from 'ant-design-vue'
 
     // import useAssetInfo from '~/composables/asset/useAssetInfo'
     // import { assetInterface } from '~/types/assets/asset.interface'
@@ -288,19 +293,32 @@
                     tenantId: 'default',
                 },
             })
-
             const body = ref({
                 entities: [],
             })
 
-            const { mutate, isLoading } = updateAsset(body)
+            const { mutate, isLoading, isReady, error } = updateAsset(body)
 
             const localDescription = ref(description(selectedAsset?.value))
 
-            watch(localDescription, () => {
-                entity.value.attributes.userDescription = localDescription.value
-                body.value.entities = [entity.value]
-                mutate()
+            const currentMessage = ref('')
+
+            watch(localDescription, (newVal, prevVal) => {
+                if (newVal !== prevVal) {
+                    entity.value.attributes.userDescription =
+                        localDescription.value
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Description has been updated'
+                    mutate()
+                }
+            })
+
+            whenever(isReady, () => {
+                message.success(currentMessage.value)
+            })
+
+            whenever(error, () => {
+                message.error('Something went wrong. Please try again')
             })
 
             const localOwners = ref({
@@ -308,14 +326,33 @@
                 ownerGroups: ownerGroups(selectedAsset.value),
             })
 
+            watch(localOwners.value.ownerUsers, (newVal, prevVal) => {})
+
             const handleOwnersChange = () => {
-                console.log('preview owner changed func')
-                entity.value.attributes.ownerUsers =
-                    localOwners.value?.ownerUsers
-                entity.value.attributes.ownerGroups =
-                    localOwners.value?.ownerGroups
-                body.value.entities = [entity.value]
-                mutate()
+                let isChanged = false
+                if (
+                    entity.value.attributes.ownerUsers?.sort().toString() !==
+                    localOwners.value?.ownerUsers.sort().toString()
+                ) {
+                    entity.value.attributes.ownerUsers =
+                        localOwners.value?.ownerUsers
+                    isChanged = true
+                }
+                if (
+                    entity.value.attributes.ownerGroups?.sort().toString() !==
+                    localOwners.value?.ownerGroups.sort().toString()
+                ) {
+                    entity.value.attributes.ownerGroups =
+                        localOwners.value?.ownerGroups
+                    isChanged = true
+                }
+
+                if (isChanged) {
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Owners has been updated'
+
+                    mutate()
+                }
             }
 
             const localClassifications = ref(
@@ -372,10 +409,10 @@
                 localDescription,
                 selectedAsset,
                 body,
-                handleOwnersChange,
+
                 localClassifications,
                 handleClassificationChange,
-
+                currentMessage,
                 isSelectedAssetHaveRowsAndColumns,
                 title,
                 getConnectorImage,
@@ -407,6 +444,8 @@
                 webURL,
                 handlePreviewClick,
                 assetTypeLabel,
+                error,
+                handleOwnersChange,
             }
         },
     })

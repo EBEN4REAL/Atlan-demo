@@ -10,11 +10,11 @@
             {{ username }}
         </div>
         <div
-            class="flex group-hover:text-white"
+            class="flex text-gray-500 group-hover:text-white"
             @click="handleDelete"
             v-if="allowDelete"
         >
-            <AtlanIcon icon="Cross" class="h-3 ml-1"></AtlanIcon>
+            <AtlanIcon icon="Cross" class="h-3 ml-2"></AtlanIcon>
         </div>
     </div>
 </template>

@@ -277,6 +277,13 @@ export default function useAssetInfo() {
         return dataTypeCategory(asset)?.image
     }
 
+    const compiledQuery = (asset: assetInterface) => {
+        if (attributes(asset)?.compiledQuery && attributes(asset)?.compiledQuery !== "") {
+            return attributes(asset)?.compiledQuery
+        }
+        return '~'
+    }
+
     const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
         if (attributes(asset)?.sourceUpdatedAt) {
             return raw
@@ -725,6 +732,7 @@ export default function useAssetInfo() {
         isPrimary,
         isPartition,
         isDist,
+        compiledQuery,
         definition,
         description,
         classifications,

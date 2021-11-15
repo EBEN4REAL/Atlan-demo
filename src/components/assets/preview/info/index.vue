@@ -145,6 +145,9 @@
             </div>
             <Description v-model="localDescription" class="mx-4" />
         </div>
+        <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
+            <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
+        </div>
         <div
             class="flex flex-col"
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
@@ -215,6 +218,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import SavedQuery from '@common/hovercards/savedQuery.vue'
 
     // import useAssetInfo from '~/composables/asset/useAssetInfo'
     // import { assetInterface } from '~/types/assets/asset.interface'
@@ -234,7 +238,7 @@
             // Status,
             Owners,
             Classification,
-            // Query,
+            SavedQuery,
             Certificate,
             RowInfoHoverCard,
             SQL,

@@ -205,6 +205,7 @@
         computed,
     } from 'vue'
     // import UserSelector from '@common/selector/users/index.vue'
+    import { useVModels } from '@vueuse/core'
     import useAsyncSelector from './useAsyncSelector'
     import useAsyncTreeSelect from './useAsyncTreeSelect'
     import useFileUploader from './useFileUploader'
@@ -341,7 +342,6 @@
         setup(props, { emit }) {
             const {
                 valueObject,
-                modelValue,
                 dateTimeType,
                 limitAfter,
                 limitBefore,
@@ -350,6 +350,8 @@
                 getFormConfig,
                 multiple,
             } = toRefs(props)
+
+            const { modelValue }: any = useVModels(props, emit)
 
             // prop requestConfig is initially defaults to null, then reflects actually value, find out why
             // watch(
@@ -410,7 +412,8 @@
                 createNewVisibility.value = false
                 loadData()
             }
-            const localValue: Ref<any> = ref([])
+
+            const localValue: Ref<any> = ref(modelValue || [])
 
             watch(
                 [loading, error],
@@ -449,7 +452,7 @@
                     else if (schema) result[db] = [schema]
                     else result[db] = []
                 })
-                emit('update:modelValue', result)
+                modelValue.value = result
                 emit('change', result)
             }
 
@@ -471,7 +474,7 @@
             onMounted(() => {
                 // localValue.value = props.multiple ? [] : ''
                 if (props.dataType === 'asyncTreeSelect') {
-                    localValue.value = parseDBSchemaValue(props.modelValue)
+                    localValue.value = parseDBSchemaValue(modelValue)
                 }
                 // for async select, load on mount if possible
                 else if (
@@ -489,10 +492,10 @@
                         localValue.value = e[e.length - 1]
                             ? [e[e.length - 1]]
                             : []
-                        emit('update:modelValue', e[e.length - 1])
+                        modelValue.value = e[e.length - 1]
                     } else {
                         localValue.value = e
-                        emit('update:modelValue', e)
+                        modelValue.value = e
                     }
                     emit('change', e)
                 } else if (
@@ -510,9 +513,9 @@
                         localValue.value = e[e.length - 1]
                             ? [e[e.length - 1]]
                             : []
-                        emit('update:modelValue', e[e.length - 1])
+                        modelValue.value = e[e.length - 1]
                     } else {
-                        emit('update:modelValue', e)
+                        modelValue.value = e
                     }
 
                     emit('getGlobal', temp, true)
@@ -524,16 +527,16 @@
                     }
 
                     if (props.dataType === 'number') {
-                        emit('update:modelValue', parseInt(val, 10))
+                        modelValue.value = parseInt(val, 10)
                     } else if (props.dataType === 'checkbox') {
-                        emit('update:modelValue', Array.from(e))
+                        modelValue.value = Array.from(e)
                     } else if (
                         props.dataType === 'date' ||
                         props.dataType === 'time'
                     ) {
-                        emit('update:modelValue', e)
+                        modelValue.value = e
                     } else {
-                        emit('update:modelValue', val)
+                        modelValue.value = val
                     }
                     emit('change', val)
                 }

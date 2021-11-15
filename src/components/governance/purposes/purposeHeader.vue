@@ -91,13 +91,13 @@
                         try {
                             await deletePersonaById(persona.value.id!)
                             message.success({
-                                content: 'Persona deleted',
+                                content: 'Purpose deleted',
                                 duration: 1.5,
                                 key: msgId,
                             })
                         } catch (error) {
                             message.error({
-                                content: 'Failed to delete persona',
+                                content: 'Failed to delete purpose',
                                 duration: 1.5,
                                 key: msgId,
                             })

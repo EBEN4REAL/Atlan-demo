@@ -38,6 +38,7 @@
         selectedPersonaId,
     } from './composables/usePurposeList'
     import { IPersona } from '~/types/accessPolicies/personas'
+    import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
         name: 'AddPurpose',
@@ -80,23 +81,31 @@
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        metadataPolicies: [],
-                        users: [],
-                        groups: [],
-                        personaType: 'persona',
-                        dataPolicies: [],
+                        tag: `${generateUUID()}`,
+                        /* Hardcode here */
+                        resourcePolicies: [
+                            {
+                                actions: ['entity-create'],
+                                groups: ['testing', 'admin'],
+                                users: ['chawlatanya31', 'admin1'],
+                                allow: true,
+                            },
+                        ],
                     })
                     message.success({
-                        content: `${title.value} persona Created`,
+                        content: `${title.value} purpose Created`,
                         duration: 1.5,
                         key: messageKey,
                     })
-                    reFetchList()
-                    selectedPersonaId.value = newPersona.id!
-                    modalVisible.value = false
+                    description.value = ''
+                    title.value = ''
+                    reFetchList().then(() => {
+                        selectedPersonaId.value = newPersona.id!
+                        modalVisible.value = false
+                    })
                 } catch (error) {
                     message.error({
-                        content: 'Failed to create persona',
+                        content: 'Failed to create purpose',
                         duration: 1.5,
                         key: messageKey,
                     })

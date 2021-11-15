@@ -46,6 +46,7 @@
             <Owners
                 class="mb-6"
                 v-model:modelValue="selectedOwnersData"
+                :read-only="false"
                 @change="handleOwnersChange"
             />
 
@@ -151,7 +152,7 @@
                     show: false,
                 },
                 users: {
-                    text: 'user is required!',
+                    text: 'Atleast one user is required!',
                     show: false,
                 },
                 metadata: {
@@ -167,8 +168,8 @@
 
             /* Mimic the classification Names */
             const selectedOwnersData = ref({
-                ownerUsers: selectedPersonaDirty.value.users,
-                ownerGroups: selectedPersonaDirty.value.users,
+                ownerUsers: policy.value.users,
+                ownerGroups: policy.value.groups,
             })
 
             const handleSave = () => {
@@ -190,16 +191,23 @@
             }
 
             const handleOwnersChange = () => {
-                selectedPersonaDirty.value.users =
-                    selectedOwnersData.value.ownerUsers
-                selectedPersonaDirty.value.groups =
-                    selectedOwnersData.value.ownerGroups
+                policy.value.users = selectedOwnersData.value.ownerUsers
+                policy.value.groups = selectedOwnersData.value.ownerGroups
+                if (
+                    (selectedOwnersData.value.ownerUsers.length ??
+                        0 + selectedOwnersData.value.ownerGroups.length ??
+                        0) < 1
+                ) {
+                    rules.value.users.show = true
+                } else {
+                    rules.value.users.show = false
+                }
                 /* Call save purpose */
             }
             watch(selectedPersonaDirty, () => {
                 selectedOwnersData.value = {
-                    ownerUsers: selectedPersonaDirty.value.users,
-                    ownerGroups: selectedPersonaDirty.value.groups,
+                    ownerUsers: policy.value.users,
+                    ownerGroups: policy.value.groups,
                 }
             })
 

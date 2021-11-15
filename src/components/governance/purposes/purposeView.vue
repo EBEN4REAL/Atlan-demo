@@ -15,7 +15,7 @@
         <template #sidebar>
             <div class="px-4">
                 <SearchAndFilter
-                    v-model:modelValue="searchTerm"
+                    v-model:value="searchTerm"
                     :placeholder="`Search from ${filteredPersonas?.length} purposes`"
                     class="mt-4 mb-2 bg-white"
                     :autofocus="true"

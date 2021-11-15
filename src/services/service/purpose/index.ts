@@ -16,12 +16,31 @@ const listPurposes = () =>
         map.LIST_PURPOSE,
         'GET',
         { initialState: [] },
-        {}
+        {
+            asyncOptions: {
+                onError: (e) => {
+                    throw e
+                },
+            },
+        }
         // { resetOnExecute: false }
     )
 
 const Create = (body: IPersona, options?: useOptions) =>
-    useAPI<IPersona>(map.CREATE_PURPOSE, 'POST', { body }, options || {})
+    useAPI<IPersona>(
+        map.CREATE_PURPOSE,
+        'POST',
+        { body },
+        {
+            ...options,
+            asyncOptions: {
+                ...options?.asyncOptions,
+                onError: (e) => {
+                    throw e
+                },
+            },
+        }
+    )
 
 const createPersona = (body: IPersona) =>
     useAPIPromise(map.CREATE_PURPOSE(), 'POST', {

@@ -22,10 +22,8 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.resourcePolicies?.length ??
-                            0 +
-                                selectedPersonaDirty?.resourcePolicies
-                                    ?.length ??
+                            selectedPersonaDirty?.metadataPolicies?.length ??
+                            0 + selectedPersonaDirty?.datapolicies?.length ??
                             0
                         }}
                     </div>

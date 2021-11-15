@@ -120,9 +120,11 @@
             }
 
             /* Mimic the classification Names */
-            const classificationNames = computed(() => [
-                selectedPersonaDirty.value.tag,
-            ])
+            const classificationNames = computed(() => {
+                if (selectedPersonaDirty.value?.tag)
+                    return [selectedPersonaDirty.value?.tag]
+                else return []
+            })
 
             const selectedClassifications = ref(
                 mapClassificationsFromNames(classificationNames.value)

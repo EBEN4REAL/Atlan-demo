@@ -46,7 +46,6 @@ export const typeCopyMapping: Record<string, string> = {
 export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
     { id: 'All', value: [] },
     { id: 'Metadata', value: ['attribute'] },
-    { id: 'BM', value: ['bm_attribute'] },
     {
         id: 'Glossary',
         value: [
@@ -60,4 +59,5 @@ export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
         id: 'Classification',
         value: ['create_typedef', 'attach_classification'],
     },
+    { id: 'Business metadata', value: ['bm_attribute'] },
 ]

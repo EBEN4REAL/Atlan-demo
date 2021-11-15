@@ -3,14 +3,14 @@
         <template #header>
             <SearchAndFilter
                 v-model="searchTerm"
-                class="max-w-xl mb-4"
+                class="max-w-xl mb-6"
                 size="default"
             >
                 <!-- <template #filter>
                     <RequestFilters v-model:filters="filters" />
                 </template> -->
             </SearchAndFilter>
-            <!-- <RequestTypeTabs v-model:tab="filters.request_type" /> -->
+            <RequestTypeTabs v-model:tab="filters.request_type" />
         </template>
 
         <div v-if="listLoading" class="flex items-center justify-center h-64">
@@ -23,7 +23,7 @@
                 @up="traverseUp"
                 @down="traverseDown"
             ></RequestModal> -->
-            <VirtualList :data="requestList" data-key="id">
+            <VirtualList :data="requestList" data-key="id" class="mt-4">
                 <template #default="{ item, index }">
                     <RequestListItem
                         :request="item"
@@ -48,7 +48,7 @@
     import DefaultLayout from '@/admin/layout.vue'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-    // import RequestTypeTabs from './requestTypeTabs.vue'
+    import RequestTypeTabs from './requestTypeTabs.vue'
     import RequestListItem from '~/components/governance/requests/requestListItem.vue'
     // import RequestFilters from './filters/requestFilters.vue'
     // import RequestModal from './modal/requestDetailsBase.vue'
@@ -66,7 +66,7 @@
             SearchAndFilter,
             // RequestFilters,
             // RequestModal,
-            // RequestTypeTabs,
+            RequestTypeTabs,
             DefaultLayout,
             // NoAcces
         },

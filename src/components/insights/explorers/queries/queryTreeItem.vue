@@ -342,9 +342,8 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
-    // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { message } from 'ant-design-vue'
 
     export default defineComponent({

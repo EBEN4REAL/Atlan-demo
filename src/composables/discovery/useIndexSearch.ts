@@ -47,7 +47,7 @@ export default function useIndexSearch<T>(
         options.cacheKey = dependentKey
     }
 
-    const { data, mutate, error, isLoading, isValidating } =
+    const { data, mutate, error, isLoading, isValidating, isReady } =
         Search.IndexSearch<T>(body, options)
 
     const approximateCount = computed(() => {
@@ -93,7 +93,7 @@ export default function useIndexSearch<T>(
         aggregationMap,
         mutate,
         refresh,
-
+        isReady,
         error,
         isLoading,
         isValidating,

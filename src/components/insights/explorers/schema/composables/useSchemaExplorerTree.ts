@@ -10,7 +10,7 @@ import {
     View,
 } from '~/types/insights/table.interface'
 // import { IndexSearchResponse } from '~/types/common/atlasSearch.interface'
-import {IndexSearchResponse} from '~/services/meta/search/index'
+import { IndexSearchResponse } from '~/services/meta/search/index'
 
 import { Components } from '~/types/atlas/client'
 
@@ -39,6 +39,7 @@ type CustomTreeDataItem =
 
 interface useSchemaExplorerTreeProps {
     emit: any
+    queryText: Ref<string>
     connectionQualifiedName?: Ref<string | undefined>
     databaseQualifiedName?: Ref<string | undefined>
     schemaQualifiedName?: Ref<string | undefined>
@@ -55,6 +56,7 @@ const useTree = ({
     initSelectedKeys,
     cacheKey,
     isAccordion,
+    queryText,
 }: useSchemaExplorerTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -78,7 +80,7 @@ const useTree = ({
         getColumnsForTable,
         // getViewsForSchema,
         getColumnsForView,
-    } = useLoadTreeData()
+    } = useLoadTreeData(queryText)
 
     const serviceMap = {
         Connection: getDatabaseForConnection,
@@ -115,6 +117,18 @@ const useTree = ({
         findPath(targetGuid)
 
         return parentStack
+    }
+
+    function removeDuplicates(treeData: Ref<CustomTreeDataItem[]>) {
+        const arr = []
+        treeData.value.reduce((acc, curr) => {
+            if (acc.indexOf(curr.guid) === -1) {
+                acc.push(curr.guid)
+                arr.push(curr)
+            }
+            return acc
+        }, [])
+        return arr
     }
 
     /**
@@ -160,7 +174,7 @@ const useTree = ({
             const found = loadedKeys.value.find(
                 (qualifiedName) => qualifiedName === databaseQualifiedName
             )
-            const node = treeData.value.find(
+            const node = treeData.value?.find(
                 (node) => node.qualifiedName === databaseQualifiedName
             )
 
@@ -219,6 +233,9 @@ const useTree = ({
         } else if (!connectionQualifiedName) {
             treeData.value = []
         }
+        /* removing duplicates */
+        treeData.value = removeDuplicates(treeData)
+
         isInitingTree.value = false
     }
 
@@ -678,8 +695,14 @@ const useTree = ({
     })
 
     watch(
-        [connectionQualifiedName, databaseQualifiedName, schemaQualifiedName],
+        [
+            connectionQualifiedName,
+            databaseQualifiedName,
+            schemaQualifiedName,
+            queryText,
+        ],
         ([c, d, s]) => {
+            console.log('reinitialized')
             isInitingTree.value = true
             initTreeData(c, d, s)
         }

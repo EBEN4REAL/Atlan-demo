@@ -9,11 +9,26 @@
         >
             <a-tab-pane v-for="item in localList" :key="item.id">
                 <template #tab>
-                    <div :class="{ active: item.id === localValue }">
+                    <div
+                        :class="{ active: item.id === localValue }"
+                        class="flex items-center"
+                    >
+                        <AtlanIcon
+                            :icon="icon"
+                            class="mr-1"
+                            v-if="icon"
+                        ></AtlanIcon>
                         <span>{{ item.label }}</span>
                         <span
                             :class="$style.chip"
-                            class="ml-1 text-xs font-bold tracking-wide text-gray-400 "
+                            class="
+                                mt-0.5
+                                ml-1
+                                text-xs
+                                font-bold
+                                tracking-wide
+                                text-gray-400
+                            "
                             >{{ getCountString(item.count) }}</span
                         >
                     </div>
@@ -48,10 +63,17 @@
                     return []
                 },
             },
+            icon: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { list } = toRefs(props)
+            const { list, icon } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -110,6 +132,7 @@
                 localValue,
                 getCountString,
                 handleChange,
+                icon,
             }
         },
     })
@@ -117,9 +140,6 @@
 
 <style lang="less" module>
     .assetbar {
-        .chip {
-        }
-
         .active {
             .chip {
                 @apply text-primary;

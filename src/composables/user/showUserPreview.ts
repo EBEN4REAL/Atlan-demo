@@ -1,4 +1,5 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const showPreview = ref(false)
 const userId = ref('')
@@ -102,6 +103,12 @@ export function useUserPreview() {
     const setDefaultTab = (tab) => {
         defaultTab.value = tab
     }
+
+    const route = useRoute()
+
+    watch(route, () => {
+        closePreview()
+    })
 
     return {
         showPreview,

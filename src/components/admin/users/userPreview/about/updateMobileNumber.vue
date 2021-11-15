@@ -4,11 +4,11 @@
             <div class="flex flex-row items-center cursor-pointer group">
                 <p class="mb-0 text-gray-500">
                     Mobile Number
-                    <fa
+                    <AtlanIcon
                         v-if="updateSuccess"
-                        icon="fal check"
-                        class="ml-1 text-success"
-                    ></fa>
+                        icon="Approve"
+                        class="inline-block h-3 mb-1 ml-1 text-success"
+                    />
                 </p>
                 <p
                     v-if="!isUpdate && allowUpdate"
@@ -59,17 +59,16 @@
                     <div>
                         <a-spin v-if="updateLoading" size="small" />
                         <a-popover
-                            v-else-if="updateErrorMessage || updateSuccess"
+                            v-else-if="updateErrorMessage"
                             placement="bottom"
                         >
                             <template #content>{{
                                 updateErrorMessage
                             }}</template>
-                            <fa
-                                v-if="updateErrorMessage"
-                                icon="fal exclamation-circle"
+                            <AtlanIcon
+                                icon="ExclaimCircle"
                                 class="cursor-pointer text-error"
-                            ></fa>
+                            ></AtlanIcon>
                         </a-popover>
                     </div>
                 </div>

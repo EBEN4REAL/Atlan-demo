@@ -26,7 +26,7 @@
             class="ml-3"
             @click="deleteUserInput(index)"
         >
-            <fa icon="fal times"></fa>
+            <AtlanIcon icon="Times" class="text-red-100" />
         </a-button>
     </div>
     <a-button type="link" class="px-0" @click="onAddNewUser">

@@ -1,6 +1,7 @@
 <template>
     <div class="flex">
         <a-popover
+            overlay-class-name="cm-avatar-update-modal"
             :visible="popOverVisible"
             :trigger="['click']"
             placement="bottom"
@@ -44,6 +45,17 @@
                 <div style="width: 314px"></div>
 
                 <a-tabs default-active-key="1" size="small">
+                    <template #tabBarExtraContent>
+                        <a-button type="secondary" class="border-0">
+                            <AtlanIcon
+                                icon="Delete"
+                                class="inline mr-1 text-gray-500"
+                            />
+                            <span class="text-gray-500 align-middle"
+                                >Remove</span
+                            >
+                        </a-button>
+                    </template>
                     <a-tab-pane key="1" tab="Emoji">
                         <Picker
                             :data="emojiIndex"
@@ -56,7 +68,7 @@
                         />
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Upload Image" force-render>
-                        <div class="p-1">
+                        <div class="p-3">
                             <div
                                 class="p-3 text-center border border-dashed rounded "
                             >
@@ -227,6 +239,20 @@
 </script>
 
 <style lang="less">
+    .cm-avatar-update-modal {
+        .ant-popover-inner-content {
+            padding: 0px;
+        }
+
+        .emoji-mart {
+            border: unset;
+        }
+
+        .ant-tabs-nav {
+            padding-left: 15px;
+            margin-bottom: 0;
+        }
+    }
     .metadata-avatar-uploader {
         .ant-upload.ant-upload-select {
             display: block;

@@ -36,7 +36,7 @@ export default function useBusinessMetadata() {
   const isLoading = ref(true)
 
 
-  const fetchBMonStore = () => {
+  const fetchBMonStore = (type) => {
 
     const {
       data: BMResponse,

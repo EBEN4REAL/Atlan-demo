@@ -28,6 +28,12 @@ export default function useAssetInfo() {
     const attributes = (asset: assetInterface) => asset?.attributes
     const anchorAttributes = (asset: Term | Category) =>
         asset?.attributes?.anchor?.attributes
+
+    const parentCategory = (asset: assetInterface) =>
+        asset?.attributes?.parentCategory
+
+    const categories = (asset: assetInterface) => asset?.attributes?.categories
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
@@ -780,5 +786,7 @@ export default function useAssetInfo() {
         getAssetQueryPath,
         webURL,
         selectedGlossary,
+        categories,
+        parentCategory,
     }
 }

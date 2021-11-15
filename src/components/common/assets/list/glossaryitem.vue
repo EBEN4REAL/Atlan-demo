@@ -44,7 +44,67 @@
                             }}</span>
                         </div>
 
-                        <div class="flex flex-col mt-1">
+                        <div class="flex items-center mt-1">
+                            <div
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                v-if="categories(item)?.length > 0"
+                            >
+                                in
+                                <div
+                                    v-for="(cat, index) in categories(item)"
+                                    class="flex"
+                                    :key="cat.guid"
+                                    v-if="
+                                        ['atlasglossaryterm'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4 mt-0.5 mr-1"
+                                    ></AtlanIcon>
+                                    {{ cat.attributes?.name }}
+                                    <span
+                                        v-if="
+                                            index ===
+                                                categories(item).length - 2 &&
+                                            categories(item).length > 1
+                                        "
+                                        class="ml-1"
+                                    >
+                                        and
+                                    </span>
+                                    <span
+                                        v-else-if="
+                                            index !==
+                                            categories(item).length - 1
+                                        "
+                                        >,</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                v-if="parentCategory(item)"
+                            >
+                                in
+                                <div
+                                    class="flex"
+                                    :key="parentCategory(item).guid"
+                                    v-if="
+                                        ['atlasglossarycategory'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4 mt-0.5 mr-1"
+                                    ></AtlanIcon>
+                                    {{ parentCategory(item).attributes?.name }}
+                                </div>
+                            </div>
                             <div
                                 class="flex items-center text-sm text-gray-500"
                             >
@@ -128,6 +188,8 @@
                 certificateStatusMessage,
                 getAnchorName,
                 description,
+                categories,
+                parentCategory,
             } = useAssetInfo()
 
             return {
@@ -146,6 +208,8 @@
                 assetURL,
                 selectedGuid,
                 description,
+                categories,
+                parentCategory,
             }
         },
     })

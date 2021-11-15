@@ -168,13 +168,13 @@
 
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
-    import GlossaryItem from '@/common/assets/list/glossaryItem.vue'
+    import GlossaryItem from '~/components/common/assets/list/glossaryItem.vue'
 
     import {
         AssetAttributes,
         AssetRelationAttributes,
         InternalAttributes,
-        SQLAttributes,
+        GlossaryAttributes,
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -228,6 +228,7 @@
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
+                ...GlossaryAttributes,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])

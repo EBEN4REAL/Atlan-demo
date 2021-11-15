@@ -140,7 +140,7 @@ const searchQueries = (
     let isLoading1 = ref(false)
     let error1 = ref()
 
-    const fetchQueries = () => {
+    const fetchQueries = async () => {
         refreshBody()
         body.value.dsl.query.bool.must.push(
             {
@@ -149,7 +149,7 @@ const searchQueries = (
                 }
             }
         )
-        const {isLoading, data, error} =  useAPI(
+        const {isLoading, data, error} =  await useAPI(
             map.INDEX_SEARCH,
             'POST',
             {
@@ -157,9 +157,16 @@ const searchQueries = (
             },
             {}
         )
-        isLoading1.value = isLoading.value;
-        data1.value = data.value
-        error1.value = error.value
+
+        watch([isLoading, data], () => {
+            if(isLoading.value===true) {
+
+            } else {
+                isLoading1.value = isLoading.value;
+                data1.value = data.value
+                error1.value = error.value
+            }
+        })
     }
 
 

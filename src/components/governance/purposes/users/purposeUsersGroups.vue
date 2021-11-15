@@ -324,7 +324,7 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import usePersonaUsers from '../composables/usePersonaUsers'
     import usePersonaGroups from '../composables/usePersonaGroups'
-    import usePersonaService from '../composables/usePersonaService'
+    import usePurposeService from '../composables/usePurposeService'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
 
@@ -371,7 +371,7 @@
 
             const { usePersonaUserList, userColumns } = usePersonaUsers
             const { usePersonaGroupList, groupColumns } = usePersonaGroups
-            const { updateUsers } = usePersonaService()
+            const { updateUsers } = usePurposeService()
             const {
                 list: allUsers,
                 getUserList,

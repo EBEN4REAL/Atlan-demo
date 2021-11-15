@@ -1,13 +1,13 @@
 import { Ref, ref, watch } from 'vue'
 import { IPersona } from '~/types/accessPolicies/personas'
-import usePersonaService from './usePersonaService'
+import usePurposeService from './usePurposeService'
 import {
     selectedPersona,
     personaList,
     selectedPersonaId,
-} from './usePersonaList'
+} from './usePurposeList'
 
-const { updatePersona, deletePersona } = usePersonaService()
+const { updatePersona, deletePersona } = usePurposeService()
 
 export type PolicyType = 'meta' | 'data'
 

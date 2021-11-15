@@ -99,7 +99,7 @@
         selectedPersona,
         selectedPersonaId,
         isPersonaListReady,
-    } from './composables/usePersonaList'
+    } from './composables/usePurposeList'
     import { isEditing } from './composables/useEditPurpose'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
 

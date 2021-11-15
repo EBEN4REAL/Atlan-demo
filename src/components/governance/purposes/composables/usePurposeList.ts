@@ -1,20 +1,25 @@
 import { invoke, until } from '@vueuse/core'
 import { ref, computed } from 'vue'
-import usePersonaService from './usePersonaService'
+import usePurposeService from './usePurposeService'
 
 // Main Persona List, fetched from API
-const { listPersonas } = usePersonaService()
+const { listPurposes } = usePurposeService()
 const {
     data: personaList,
     isReady: isPersonaListReady,
     mutate: reFetchList,
-} = listPersonas()
+} = listPurposes()
 export { reFetchList, personaList, isPersonaListReady }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
 export const selectedPersona = computed(() => {
-    if (selectedPersonaId.value)
-        return personaList.value.find((ps) => ps.id === selectedPersonaId.value)
+    if (selectedPersonaId.value) {
+        const t = personaList.value.find(
+            (ps) => ps.id === selectedPersonaId.value
+        )
+        console.log(t, 'selected Purpose')
+        return t
+    }
     return undefined
 })
 
@@ -33,6 +38,7 @@ export const filteredPersonas = computed(() => {
 
 invoke(async () => {
     await until(isPersonaListReady).toBe(true)
-    if (personaList.value?.length)
+    if (personaList.value?.length) {
         selectedPersonaId.value = personaList.value[0].id!
+    }
 })

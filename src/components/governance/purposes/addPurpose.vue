@@ -32,11 +32,11 @@
     import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import usePersonaService from './composables/usePersonaService'
+    import usePurposeService from './composables/usePurposeService'
     import {
         reFetchList,
         selectedPersonaId,
-    } from './composables/usePersonaList'
+    } from './composables/usePurposeList'
     import { IPersona } from '~/types/accessPolicies/personas'
 
     export default defineComponent({
@@ -66,7 +66,7 @@
                 modalVisible.value = !modalVisible.value
             }
 
-            const { createPersona } = usePersonaService()
+            const { createPersona } = usePurposeService()
 
             async function handleCreation() {
                 const messageKey = Date.now()

@@ -56,7 +56,7 @@
     } from './composables/useEditPurpose'
 
     import Dropdown from '@/UI/dropdown.vue'
-    import { reFetchList } from './composables/usePersonaList'
+    import { reFetchList } from './composables/usePurposeList'
 
     export default defineComponent({
         name: 'PurposeHeader',

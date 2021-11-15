@@ -1,11 +1,5 @@
 <template>
     <div class="py-6 mb-2 border rounded border-primary">
-        <AssetSelectorDrawer
-            v-if="connectorData.attributeValue"
-            v-model:visible="assetSelectorVisible"
-            v-model:assets="policy.assets"
-            :connection-qf-name="connectorData.attributeValue"
-        />
         <div class="flex justify-between mb-6">
             <div class="relative">
                 <div class="relative mb-2 text-sm text-gray-500 required">
@@ -45,131 +39,22 @@
         </div>
 
         <div class="relative">
-            <div class="mb-2 text-sm text-gray-500 required">Connection</div>
-            <Connector
-                v-model:data="connectorData"
-                class="max-w-xs mb-6"
-                :disabled="!policy?.isNew"
-                @change="handleConnectorChange"
-                @blur="
-                    () => {
-                        if (!connectorData.attributeValue)
-                            rules.connection.show = true
-                        else rules.connection.show = false
-                    }
-                "
-                :ref="
-                    (el) => {
-                        connectorComponentRef = el
-                    }
-                "
+            <div class="mb-2 text-sm text-gray-500 required">
+                Users / Groups
+            </div>
+            <Owners
+                class="mb-6"
+                v-model:modelValue="selectedOwnersData"
+                @change="handleOwnersChange"
             />
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
-                v-if="rules.connection.show"
+                v-if="rules.users.show"
             >
-                {{ rules.connection.text }}
+                {{ rules.users.text }}
             </div>
         </div>
 
-        <div class="relative">
-            <div class="flex items-center mb-2 gap-x-1">
-                <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
-                <span class="text-sm text-gray-500 required">Assets</span>
-            </div>
-            <div
-                class="
-                    flex flex-wrap
-                    items-center
-                    flex-grow
-                    gap-x-1 gap-y-1.5
-                    mb-6
-                "
-            >
-                <PillGroup
-                    v-model:data="assets"
-                    label-key="label"
-                    @add="openAssetSelector"
-                >
-                    <template #addBtn="d">
-                        <div>
-                            <div
-                                v-if="assets.length > 0 && !isreadOnlyPillGroup"
-                            >
-                                <Pill
-                                    class="group"
-                                    @click="d?.item?.handleAdd"
-                                    @blur="d?.item?.handleBlur"
-                                >
-                                    <template #prefix>
-                                        <AtlanIcon
-                                            icon="Add"
-                                            class="
-                                                h-4
-                                                -mx-1.5
-                                                text-gray
-                                                group-hover:text-white
-                                            "
-                                        />
-                                    </template>
-                                </Pill>
-                            </div>
-                            <div
-                                v-else-if="assets.length === 0"
-                                class="flex items-center"
-                            >
-                                <Pill class="group" @click="addConnectionAsset">
-                                    <template #prefix>
-                                        <div class="flex items-center">
-                                            <AtlanIcon
-                                                icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
-                                            />
-                                            <span class="text-xs">Add All</span>
-                                        </div>
-                                    </template>
-                                </Pill>
-
-                                <span class="mx-2 text-xs">OR</span>
-                                <Pill
-                                    class="group"
-                                    @click="d?.item?.handleAdd"
-                                    @blur="d?.item?.handleBlur"
-                                >
-                                    <template #prefix>
-                                        <div class="flex items-center">
-                                            <AtlanIcon
-                                                icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
-                                            />
-                                            <span class="text-xs"
-                                                >Custom select</span
-                                            >
-                                        </div>
-                                    </template>
-                                </Pill>
-                            </div>
-                        </div>
-                    </template>
-                </PillGroup>
-            </div>
-            <div
-                class="absolute text-xs text-red-500 -bottom-5"
-                v-if="rules.assets.show && connectorData.attributeValue"
-            >
-                {{ rules.assets.text }}
-            </div>
-        </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Query permissions</span>
@@ -232,25 +117,32 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Connector from './connector.vue'
-    import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
-    import { useConnectionStore } from '~/store/connection'
     import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPurpose'
+    import Owners from '~/components/common/input/owner/index.vue'
+    import { selectedPersonaDirty } from '../composables/useEditPurpose'
 
     export default defineComponent({
         name: 'DataPolicy',
         components: {
             Pill,
+            Owners,
             AtlanBtn,
             Connector,
             PillGroup,
-            AssetSelectorDrawer,
             DataMaskingSelector,
         },
         props: {
@@ -266,18 +158,16 @@
             const policyNameRef = ref()
             const assetSelectorVisible = ref(false)
             const filterSourceIds = ['powerBI', 'tableau']
-            const connectionStore = useConnectionStore()
 
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
                     show: false,
                 },
-                connection: {
-                    text: 'Connection is required!',
+                users: {
+                    text: 'user is required!',
                     show: false,
                 },
-                assets: { text: 'Select atleast 1 asset!', show: false },
                 metadata: {
                     text: 'Select atleast 1 permissions!',
                     show: false,
@@ -290,13 +180,11 @@
                 emit('cancel')
             }
 
-            function openAssetSelector() {
-                if (!connectorData.value.attributeValue) {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
-                } else {
-                    assetSelectorVisible.value = true
-                }
-            }
+            /* Mimic the classification Names */
+            const selectedOwnersData = ref({
+                ownerUsers: selectedPersonaDirty.value.users,
+                ownerGroups: selectedPersonaDirty.value.users,
+            })
 
             const handleSave = () => {
                 /* Validation for name */
@@ -304,83 +192,36 @@
                     policyNameRef.value?.focus()
                     rules.value.policyName.show = true
                     return
-                } /* Validation for connection */ else if (
-                    !connectorData.value.attributeValue
+                } else if (
+                    (selectedOwnersData.value.ownerUsers.length ??
+                        0 + selectedOwnersData.value.ownerGroups.length ??
+                        0) < 1
                 ) {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
-                    rules.value.connection.show = true
-                } else if (policy.value.assets.length < 1) {
-                    rules.value.assets.show = true
+                    rules.value.users.show = true
+                    return
                 } else {
                     emit('save')
                 }
             }
-            const assets = computed({
-                get: () => {
-                    return policy.value.assets.map((name) => ({
-                        label: name,
-                    }))
-                },
-                set: (val) => {
-                    policy.value.assets = val.map((ast) => ast.label)
-                    if (val.length > 0) rules.value.assets.show = false
-                    else rules.value.assets.show = true
-                },
-            })
-
-            const handleConnectorChange = () => {
-                policy.value.assets = []
+            const handleOwnersChange = () => {
+                selectedPersonaDirty.value.users =
+                    selectedOwnersData.value.ownerUsers
+                selectedPersonaDirty.value.groups =
+                    selectedOwnersData.value.ownerGroups
+                /* Call save purpose */
             }
-            const addConnectionAsset = () => {
-                if (connectorData.value.attributeValue) {
-                    assets.value = [
-                        { label: connectorData.value.attributeValue },
-                    ]
-                    policy.value.assets = [connectorData.value.attributeValue]
-                } else {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
-                    rules.value.connection.show = true
+            watch(selectedPersonaDirty, () => {
+                selectedOwnersData.value = {
+                    ownerUsers: selectedPersonaDirty.value.users,
+                    ownerGroups: selectedPersonaDirty.value.groups,
                 }
-            }
-
-            const connectorData = computed({
-                get: () => ({
-                    attributeName: 'connectionQualifiedName',
-                    attributeValue: policy.value.connectionName,
-                }),
-                set: (val) => {
-                    policy.value.connectionName =
-                        val.attributeName === 'connectionQualifiedName'
-                            ? val.attributeValue
-                            : ''
-
-                    const found = connectionStore.getList.find(
-                        (conn) =>
-                            conn.attributes?.qualifiedName ===
-                            val.attributeValue
-                    )
-                    policy.value.connectionId = found?.guid || ''
-                },
-            })
-
-            const isreadOnlyPillGroup = computed(() => {
-                return Boolean(
-                    assets.value.find(
-                        (e) => e.label === connectorData.value.attributeValue
-                    )
-                )
             })
 
             return {
-                addConnectionAsset,
-                isreadOnlyPillGroup,
-                handleConnectorChange,
+                handleOwnersChange,
                 filterSourceIds,
-                connectorData,
                 assetSelectorVisible,
                 removePolicy,
-                openAssetSelector,
-                assets,
                 removeEditFlag,
                 handleSave,
                 policyNameRef,

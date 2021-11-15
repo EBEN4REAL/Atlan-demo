@@ -1,11 +1,5 @@
 <template>
     <div class="py-6 mb-2 border rounded border-primary">
-        <AssetSelectorDrawer
-            v-if="connectorData.attributeValue"
-            v-model:visible="assetSelectorVisible"
-            v-model:assets="policy.assets"
-            :connection-qf-name="connectorData.attributeValue"
-        />
         <div class="flex justify-between mb-6">
             <div class="relative">
                 <div class="relative mb-2 text-sm text-gray-500 required">
@@ -49,6 +43,11 @@
             <div class="mb-2 text-sm text-gray-500 required">
                 Users / Groups
             </div>
+            <Owners
+                class="mb-6"
+                v-model:modelValue="selectedOwnersData"
+                @change="handleOwnersChange"
+            />
 
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
@@ -106,15 +105,20 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Pill from '@/UI/pill/pill.vue'
     import Connector from './connector.vue'
     import MetadataScopes from './metadataScopes.vue'
-    import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
-    import { useConnectionStore } from '~/store/connection'
-
+    import Owners from '~/components/common/input/owner/index.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/personas'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
 
@@ -126,7 +130,7 @@
             Connector,
             MetadataScopes,
             PillGroup,
-            AssetSelectorDrawer,
+            Owners,
         },
         props: {
             policy: {
@@ -140,7 +144,6 @@
             const assetSelectorVisible = ref(false)
             const connectorComponentRef = ref()
             const policyNameRef = ref()
-            const connectionStore = useConnectionStore()
 
             const rules = ref({
                 policyName: {
@@ -162,63 +165,53 @@
                 emit('cancel')
             }
 
-            function openAssetSelector() {
-                if (!connectorData.value.attributeValue) {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
-                } else {
-                    assetSelectorVisible.value = true
-                }
-            }
+            /* Mimic the classification Names */
+            const selectedOwnersData = ref({
+                ownerUsers: selectedPersonaDirty.value.users,
+                ownerGroups: selectedPersonaDirty.value.users,
+            })
 
-            const handleConnectorChange = () => {
-                policy.value.assets = []
-            }
             const handleSave = () => {
                 /* Validation for name */
                 if (!policy.value.name) {
                     policyNameRef.value?.focus()
                     rules.value.policyName.show = true
                     return
-                } /* Validation for connection */ else if (
-                    !connectorData.value.attributeValue
+                } else if (
+                    (selectedOwnersData.value.ownerUsers.length ??
+                        0 + selectedOwnersData.value.ownerGroups.length ??
+                        0) < 1
                 ) {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
                     rules.value.users.show = true
+                    return
                 } else {
                     emit('save')
                 }
             }
 
-            const connectorData = computed({
-                get: () => {
-                    const found = connectionStore.getList.find(
-                        (conn) => conn.guid === policy.value.connectionId
-                    )
-                    return {
-                        attributeName: found ? 'connectionQualifiedName' : '',
-                        attributeValue: found?.attributes?.qualifiedName,
-                    }
-                },
-                set: (val) => {
-                    const found = connectionStore.getList.find(
-                        (conn) =>
-                            conn.attributes?.qualifiedName ===
-                            val.attributeValue
-                    )
-                    policy.value.connectionId = found?.guid
-                },
+            const handleOwnersChange = () => {
+                selectedPersonaDirty.value.users =
+                    selectedOwnersData.value.ownerUsers
+                selectedPersonaDirty.value.groups =
+                    selectedOwnersData.value.ownerGroups
+                /* Call save purpose */
+            }
+            watch(selectedPersonaDirty, () => {
+                selectedOwnersData.value = {
+                    ownerUsers: selectedPersonaDirty.value.users,
+                    ownerGroups: selectedPersonaDirty.value.groups,
+                }
             })
 
             return {
+                selectedOwnersData,
+                handleOwnersChange,
                 rules,
                 handleSave,
                 policyNameRef,
-                handleConnectorChange,
                 connectorComponentRef,
-                connectorData,
                 assetSelectorVisible,
                 removePolicy,
-                openAssetSelector,
             }
         },
     })

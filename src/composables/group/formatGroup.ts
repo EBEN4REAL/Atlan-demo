@@ -3,7 +3,6 @@ import { pluralizeString } from '~//utils/string'
 
 export const getFormattedGroup = (group: any) => {
     // debugger
-    console.log(group, group?.attributes?.alias, 'gropup')
     // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
     const formattedGroup = {
         id: group.id,

@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, watch } from 'vue'
+    import { defineComponent, PropType, ref, computed, watch } from 'vue'
 
     import { useVModels } from '@vueuse/core'
     import useFacetGroups from '~/composables/group/useFacetGroups'
@@ -68,7 +68,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const localValue = computed(() => modelValue.value)
 
             const { list, handleSearch, total, filterTotal } = useFacetGroups()
 

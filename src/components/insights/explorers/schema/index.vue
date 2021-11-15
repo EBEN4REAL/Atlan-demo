@@ -27,6 +27,18 @@
                 @update:data="setConnector"
             ></Connector>
         </div>
+        <div class="w-full px-4 pb-2">
+            <SearchAndFilter
+                v-model:value="queryText"
+                :placeholder="`Search `"
+                size="default"
+                class="h-8 rounded-md shadow-none"
+            >
+                <template #filter>
+                    <div></div>
+                </template>
+            </SearchAndFilter>
+        </div>
         <div
             class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto"
             :style="
@@ -76,6 +88,8 @@
     import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+
     import {
         Attributes,
         Database,
@@ -86,9 +100,10 @@
     } from '~/types/insights/table.interface'
 
     export default defineComponent({
-        components: { Connector, SchemaTree },
+        components: { Connector, SchemaTree, SearchAndFilter },
         props: {},
         setup(props, { emit }) {
+            const queryText = ref('')
             const { qualifiedName } = useAssetInfo()
             const storeDiscovery = useAssetStore()
             const { selectedAsset } = ref()
@@ -212,6 +227,7 @@
                 updateNode,
             } = useSchemaExplorerTree({
                 emit,
+                queryText,
                 // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
                 // databaseQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA'),
                 // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
@@ -302,6 +318,7 @@
             console.log(selectedKeys.value, 'out')
 
             return {
+                queryText,
                 fullSreenState,
                 connectorsData,
                 setConnector,

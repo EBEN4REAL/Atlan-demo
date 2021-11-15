@@ -187,6 +187,9 @@
     :global(.ant-tree-title) {
         width: calc(100% - 1.5rem) !important;
     }
+    :global(.ant-tree-checkbox) {
+        padding-top: 3px !important;
+    }
     :global(.ant-tree .ant-tree-title) {
         @apply pt-0 pb-0 !important;
     }

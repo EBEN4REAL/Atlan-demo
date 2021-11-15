@@ -1,13 +1,13 @@
 <template>
     <div class="border-r glossaryTree" :class="$style.glossaryTree">
         <div :class="$style.parentGroup">
-            
-            <GlossaryContextSwitcher v-model:currentGlossaryGuid="parentGlossaryGuid" />
+            <GlossaryContextSwitcher
+                v-model:currentGlossaryGuid="parentGlossaryGuid"
+            />
 
             <hr />
-            
-            <div class="flex flex-col h-screen">
 
+            <div class="flex flex-col h-screen">
                 <!-- Search bar -->
                 <div class="flex px-4 pt-2 pb-0 pr-3 searchArea w-64">
                     <SearchAdvanced
@@ -23,7 +23,6 @@
                     />
                 </div>
 
-
                 <div v-if="isLoading" class="mt-4">
                     <!-- <LoadingView /> -->
                     Loading
@@ -36,7 +35,12 @@
                 >
                     <!-- Glossary level CTAs -->
                     <div
-                        class="flex justify-between px-4  hover:bg-black hover:bg-opacity-5"
+                        class="
+                            flex
+                            justify-between
+                            px-4
+                            hover:bg-black hover:bg-opacity-5
+                        "
                     >
                         <div class="flex items-center ml-5 pl-0.5">
                             <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
@@ -50,26 +54,37 @@
                                 "
                             >
                                 <span
-                                    class="flex py-2 my-auto text-sm font-bold leading-3 truncate "
+                                    class="
+                                        flex
+                                        py-2
+                                        my-auto
+                                        text-sm
+                                        font-bold
+                                        leading-3
+                                        truncate
+                                    "
                                     :class="{
                                         'text-primary':
-                                            currentGuid ===
-                                            parentGlossaryGuid,
+                                            currentGuid === parentGlossaryGuid,
                                     }"
                                 >
-                                    {{
-                                        parentGlossaryTitle
-                                    }}
+                                    {{ parentGlossaryTitle }}
                                 </span>
                             </div>
                         </div>
 
                         <div
-                            class="flex content-center my-auto  tree-glossary-actioans parent-group-hover"
+                            class="
+                                flex
+                                content-center
+                                my-auto
+                                tree-glossary-actioans
+                                parent-group-hover
+                            "
                         >
                             <div
                                 v-if="expandedKeys.length"
-                                class="flex bg-opacity-0 cursor-pointer  py-auto"
+                                class="flex bg-opacity-0 cursor-pointer py-auto"
                                 @click="collapseAll"
                             >
                                 <AtlanIcon
@@ -78,12 +93,24 @@
                                 />
                             </div>
                             <div
-                                class="flex flex-col justify-center bg-opacity-0 mr-2"
+                                class="
+                                    flex flex-col
+                                    justify-center
+                                    bg-opacity-0
+                                    mr-2
+                                "
                             >
-                                <GlossaryAddCta :parentGlossaryGuid="parentGlossaryGuid" :parentGlossaryTitle="parentGlossaryTitle" />
+                                <GlossaryAddCta
+                                    :parentGlossaryGuid="parentGlossaryGuid"
+                                    :parentGlossaryTitle="parentGlossaryTitle"
+                                />
                             </div>
                             <div
-                                class="flex flex-col justify-center bg-opacity-0 "
+                                class="
+                                    flex flex-col
+                                    justify-center
+                                    bg-opacity-0
+                                "
                             >
                                 <ThreeDotMenu
                                     :entity="{
@@ -92,8 +119,9 @@
                                         displayText: parentGlossaryTitle,
                                         attributes: {
                                             name: parentGlossaryTitle,
-                                            qualifiedName: parentGlossaryQualifiedName
-                                        }
+                                            qualifiedName:
+                                                parentGlossaryQualifiedName,
+                                        },
                                     }"
                                     :showLinks="false"
                                     treeMode
@@ -106,11 +134,16 @@
                         </div>
                     </div>
 
-
                     <!-- Tree Start -->
-                    <div 
+                    <div
                         v-if="treeData.length"
-                        class="py-2 pl-4 pr-2 overflow-x-hidden overflow-y-auto  scrollable-container"
+                        class="
+                            py-2
+                            pl-4
+                            pr-2
+                            overflow-x-hidden overflow-y-auto
+                            scrollable-container
+                        "
                         :class="$style.treeStyles"
                     >
                         <a-tree
@@ -141,7 +174,14 @@
                     <!-- Empty Tree -->
                     <div
                         v-else
-                        class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                        class="
+                            flex flex-col
+                            justify-center
+                            text-base
+                            leading-6
+                            text-center text-gray-500
+                            mt-14
+                        "
                     >
                         <AtlanIcon icon="EmptyGlossary" class="h-40" />
                         <p class="m-0 mt-20">The Glossary is empty,</p>
@@ -159,11 +199,23 @@
                         <div
                             v-for="term in searchTerms"
                             :key="term.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            class="
+                                flex flex-row
+                                p-2
+                                rounded
+                                cursor-pointer
+                                hover:bg-primary-light
+                            "
                             @click="redirectToProfile('term', term.guid)"
                         >
                             <div
-                                class="flex content-center w-full mb-1 space-x-2 "
+                                class="
+                                    flex
+                                    content-center
+                                    w-full
+                                    mb-1
+                                    space-x-2
+                                "
                             >
                                 <span class="my-auto"
                                     ><AtlanIcon
@@ -188,7 +240,9 @@
                                         :rows="1"
                                         classes="w-auto text-gray-500 text-xs"
                                     /> -->
-                                    <span v-if="term.attributes.shortDescription">
+                                    <span
+                                        v-if="term.attributes.shortDescription"
+                                    >
                                         {{ term.attributes.shortDescription }}
                                     </span>
                                 </div>
@@ -200,13 +254,25 @@
                         <div
                             v-for="category in searchCategories"
                             :key="category.guid"
-                            class="flex flex-row p-2 rounded cursor-pointer  hover:bg-primary-light"
+                            class="
+                                flex flex-row
+                                p-2
+                                rounded
+                                cursor-pointer
+                                hover:bg-primary-light
+                            "
                             @click="
                                 redirectToProfile('category', category.guid)
                             "
                         >
                             <div
-                                class="flex content-center w-full mb-1 space-x-2 "
+                                class="
+                                    flex
+                                    content-center
+                                    w-full
+                                    mb-1
+                                    space-x-2
+                                "
                             >
                                 <span class="my-auto"
                                     ><AtlanIcon
@@ -233,8 +299,14 @@
                                         :rows="1"
                                         classes="w-auto text-gray-500 text-xs"
                                     /> -->
-                                    <span v-if="category.attributes.shortDescription">
-                                        {{ category.attributes.shortDescription }}
+                                    <span
+                                        v-if="
+                                            category.attributes.shortDescription
+                                        "
+                                    >
+                                        {{
+                                            category.attributes.shortDescription
+                                        }}
                                     </span>
                                 </div>
                             </div>
@@ -259,14 +331,7 @@
 </template>
 <script lang="ts">
     // library
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        toRef,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRef, toRefs, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
     import { useDebounceFn } from '@vueuse/core'
@@ -291,7 +356,7 @@
     // import { List as StatusList } from '~/constant/status'
     import AtlanBtn from '~/components/UI/button.vue'
 
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     import { Glossary } from '~/types/glossary/glossary.interface'
 
@@ -309,7 +374,6 @@
             GlossaryAddCta,
             GlossaryTreeItem,
             GlossaryContextSwitcher,
-  
         },
         props: {
             isHome: {
@@ -391,16 +455,17 @@
                 type: String,
                 required: false,
                 default: '',
-            }
+            },
         },
         setup(props, { emit }) {
             // data
             const searchQuery = ref<string>('')
             const home = toRef(props, 'isHome')
-            const{ parentGlossaryGuid }= useVModels(props, emit)
+            const { parentGlossaryGuid } = useVModels(props, emit)
             const router = useRouter()
 
-            const { parentGlossaryQualifiedName, parentGlossaryTitle } = toRefs(props)
+            const { parentGlossaryQualifiedName, parentGlossaryTitle } =
+                toRefs(props)
 
             const {
                 entities: searchResults,
@@ -409,7 +474,10 @@
                 glossaries: searchGlossaries,
                 isLoading: searchLoading,
                 fetchAssetsPaginated: searchAssetsPaginated,
-            } = useGtcSearch({ qualifiedName: parentGlossaryQualifiedName, dependantFetchingKey: searchQuery})
+            } = useGtcSearch({
+                qualifiedName: parentGlossaryQualifiedName,
+                dependantFetchingKey: searchQuery,
+            })
 
             // methods
             const redirectToProfile = (type: string, guid: string) => {
@@ -432,7 +500,6 @@
             watch(home, () => {
                 searchQuery.value = ''
             })
- 
 
             return {
                 redirectToProfile,
@@ -452,7 +519,7 @@
                 searchAssetsPaginated,
                 onSearch,
                 parentGlossaryGuid,
-                parentGlossaryTitle
+                parentGlossaryTitle,
             }
         },
     })

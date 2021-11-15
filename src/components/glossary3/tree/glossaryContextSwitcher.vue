@@ -1,6 +1,15 @@
 <template>
     <div
-        class="flex px-4 py-3 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
+        class="
+            flex
+            px-4
+            py-3
+            text-sm
+            leading-5
+            text-gray-500
+            bg-gray-100
+            cursor-pointer
+        "
     >
         <!-- Glossary context switcher -->
         <a-select
@@ -94,7 +103,7 @@
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
 
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import redirect from '@/glossary/utils/redirectToProfile'
 
     import useGlossaryStore from '~/store/glossary'

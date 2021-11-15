@@ -94,7 +94,7 @@
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
 
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import redirect from '@/glossary/utils/redirectToProfile'
 
     import useGlossaryStore from '~/store/glossary'

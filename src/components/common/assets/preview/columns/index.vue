@@ -43,7 +43,7 @@
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Preferences from '@/assets/preference/index.vue'
 
-    import AssetList from '@/assets/preview/columns/assetList.vue'
+    import AssetList from './assetList.vue'
 
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import {
@@ -53,7 +53,6 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import { dataTypeCategoryList } from '~/constant/dataType'
 
     export default defineComponent({
         name: 'ColumnWidget',

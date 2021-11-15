@@ -410,7 +410,7 @@
                 createNewVisibility.value = false
                 loadData()
             }
-            const localValue: Ref<any> = ref(null)
+            const localValue: Ref<any> = ref([])
 
             watch(
                 [loading, error],
@@ -469,7 +469,7 @@
             }
 
             onMounted(() => {
-                localValue.value = props.multiple ? [] : ''
+                // localValue.value = props.multiple ? [] : ''
                 if (props.dataType === 'asyncTreeSelect') {
                     localValue.value = parseDBSchemaValue(props.modelValue)
                 }

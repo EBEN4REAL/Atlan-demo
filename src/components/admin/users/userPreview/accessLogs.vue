@@ -15,7 +15,8 @@
                         }
                     "
                 >
-                    <fa icon="fal sync" class="mr-2"></fa>Try again
+                    <AtlanIcon icon="Refresh" class="inline-block mb-1 mr-1" />
+                    Try again
                 </a-button>
             </div>
         </ErrorView>

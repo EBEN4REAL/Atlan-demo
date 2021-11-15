@@ -14,7 +14,7 @@
                         <div class="flex items-center">
                             <AtlanIcon
                                 icon="Category"
-                                class="h-5 mr-1"
+                                class="h-4 mb-1 mr-1"
                                 v-if="
                                     ['atlasglossarycategory'].includes(
                                         item.typeName?.toLowerCase()
@@ -23,7 +23,7 @@
                             ></AtlanIcon>
                             <AtlanIcon
                                 icon="Term"
-                                class="h-5 mr-1"
+                                class="h-4 mb-1 mr-1"
                                 v-if="
                                     ['atlasglossaryterm'].includes(
                                         item.typeName?.toLowerCase()
@@ -33,24 +33,24 @@
 
                             <router-link
                                 :to="assetURL(item)"
-                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                             >
                                 {{ title(item) }}
                             </router-link>
                         </div>
-                        <div class="flex mt-2" v-if="description(item)">
-                            <span class="text-sm text-gray-500">{{
+                        <div class="flex mt-0" v-if="description(item)">
+                            <span class="text-sm text-gray-700">{{
                                 description(item)
                             }}</span>
                         </div>
 
-                        <div class="flex flex-col">
+                        <div class="flex flex-col mt-1">
                             <div
                                 class="flex items-center text-sm text-gray-500"
                             >
                                 <AtlanIcon
                                     icon="Glossary"
-                                    class="h-5 mr-1"
+                                    class="h-4 mr-1"
                                 ></AtlanIcon>
                                 {{ getAnchorName(item) }}
                             </div>

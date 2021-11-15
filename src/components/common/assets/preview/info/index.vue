@@ -207,9 +207,27 @@
             <Terms :selected-asset="selectedAsset" class="px-5"></Terms>
         </div>
 
-        <CertificationPopover :selected-asset="selectedAsset" placement="left">
-            <Certificate :selected-asset="selectedAsset" />
-        </CertificationPopover>
+        <div
+            v-if="
+                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex flex-col"
+        >
+            <p
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            >
+                Certificate
+            </p>
+
+            <Certificate
+                :selected-asset="selectedAsset"
+                class="px-5"
+                v-model="localCertificate"
+                @change="handleChangeCertificate"
+            />
+        </div>
     </div>
 </template>
 
@@ -223,6 +241,7 @@
         ref,
         watch,
         Ref,
+        reactive,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import { whenever } from '@vueuse/core'
@@ -287,6 +306,9 @@
                 webURL,
                 assetTypeLabel,
                 getAnchorGuid,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
             } = useAssetInfo()
 
             const entity = ref({
@@ -323,13 +345,18 @@
 
             const localDescription = ref(description(selectedAsset?.value))
 
+            const localCertificate = ref({
+                certificateStatus: certificateStatus(selectedAsset.value),
+                certificateUpdatedAt: certificateUpdatedAt(selectedAsset.value),
+                certificateUpdatedBy: certificateUpdatedBy(selectedAsset.value),
+            })
+
             const currentMessage = ref('')
 
-            watch(localDescription, (newVal, prevVal) => {
-                if (newVal !== prevVal) {
+            watch([localDescription], ([newDescription], [prevDescription]) => {
+                if (newDescription !== prevDescription) {
                     entity.value.attributes.userDescription =
                         localDescription.value
-
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Description has been updated'
                     mutate()
@@ -418,6 +445,19 @@
                 message.error('Something went wrong. Please try again')
             })
 
+            const handleChangeCertificate = () => {
+                if (
+                    localCertificate.value.certificateStatus !==
+                    certificateStatus(selectedAsset.value)
+                ) {
+                    entity.value.attributes.certificateStatus =
+                        localCertificate.value.certificateStatus
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Certificate has been updated'
+                    mutate()
+                }
+            }
+
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
                     selectedAsset.typeName === 'View' ||
@@ -477,6 +517,11 @@
                 error,
                 handleOwnersChange,
                 getAnchorGuid,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                localCertificate,
+                handleChangeCertificate,
             }
         },
     })

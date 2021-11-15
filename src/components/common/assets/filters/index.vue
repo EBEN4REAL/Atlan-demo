@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col h-full">
-        <div class="px-4 py-2.5 text-sm border-b shadow-sm bg-white">
+        <div class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm">
             <div
                 class="flex items-center justify-between"
                 v-if="totalFilteredCount > 0"

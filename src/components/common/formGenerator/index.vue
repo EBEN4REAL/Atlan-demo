@@ -160,8 +160,9 @@
                     <a-button
                         :loading="submitStatus.loading"
                         @click="handleFormSubmit(f)"
-                        >Submit</a-button
                     >
+                        Submit
+                    </a-button>
                     <p v-if="submitStatus.error" class="text-red-600">
                         {{ submitStatus.errorMessage }}
                     </p>
@@ -185,6 +186,7 @@
         watch,
         computed,
         toRefs,
+        defineAsyncComponent,
         // onErrorCaptured,
         // Suspense,
     } from 'vue'

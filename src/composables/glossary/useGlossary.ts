@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
-import { useGlossaryStore } from '~/store/glossary'
+import useGlossaryStore from '~/store/glossary'
 
 export const MAX_GLOSSARY = 100
 export const GLOSSARY_ASSET_TYPE = 'AtlasGlossary'

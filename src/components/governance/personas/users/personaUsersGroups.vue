@@ -15,6 +15,7 @@
                 placement="left"
                 v-model:visible="popoverVisible"
                 trigger="click"
+                :destroyTooltipOnHide="true"
             >
                 <AtlanBtn
                     color="secondary"
@@ -428,18 +429,6 @@
                 showUserPreview()
             }
 
-            // const userGroupData = computed({
-            //     get: () => ({
-            //         userValue: selectedPersonaDirty.value!.users,
-            //         groupValue: selectedPersonaDirty.value!.groups,
-            //     }),
-            //     set: (val) => {
-            //         console.log(val, 'value')
-            //         selectedPersonaDirty.value!.users = val.userValue
-            //         selectedPersonaDirty.value!.groups = val.groupValue
-            //     },
-            // })
-
             const getIds = (users: Object) => {
                 let res: string[] = []
                 let k = Object.keys(users)
@@ -488,6 +477,18 @@
                 ownerUsers: persona.value.users ?? [],
                 ownerGroups: persona.value.groups ?? [],
             })
+
+            // const userGroupData = computed({
+            //     get: () => ({
+            //         ownerUsers: persona.value.users ?? [],
+            //         ownerGroups: persona.value.groups ?? [],
+            //     }),
+            //     set: (val) => {
+            //         console.log(val, 'value')
+            //         selectedPersonaDirty.value!.users = val.ownerUsers
+            //         selectedPersonaDirty.value!.groups = val.ownerGroups
+            //     },
+            // })
 
             const insertUserstoMap = (
                 usernames: string[],
@@ -651,6 +652,11 @@
                 setGroupUniqueAttribute(group.id)
                 showGroupPreview()
             }
+
+            watch(persona, () => {
+                userGroupData.value.ownerUsers = persona.value.users ?? []
+                userGroupData.value.ownerGroups = persona.value.groups ?? []
+            })
 
             return {
                 selectedGroupnameToGroupMap,

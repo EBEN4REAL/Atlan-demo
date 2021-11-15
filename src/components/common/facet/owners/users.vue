@@ -46,7 +46,7 @@
     import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
-        name: 'OwnersFilter',
+        name: 'UsersFilter',
         props: {
             queryText: {
                 type: String,

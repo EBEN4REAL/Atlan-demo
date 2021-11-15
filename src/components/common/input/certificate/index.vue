@@ -4,19 +4,27 @@
             placement="leftBottom"
             overlayClassName="certificatePopover"
             @visibleChange="handleVisibleChange"
-            :trigger="['click']"
         >
             <template #content>
                 <CertificateFacet
                     :isRadio="true"
                     v-model="localValue.certificateStatus"
                 ></CertificateFacet>
+                <div class="px-3 mt-1">
+                    <p class="text-sm text-gray-500">Message</p>
+                    <a-textarea
+                        :rows="4"
+                        v-model:value="localValue.certificateStatusMessage"
+                    >
+                    </a-textarea>
+                </div>
             </template>
 
             <CertificatePill
                 class="w-full"
                 v-if="localValue.certificateStatus !== 'NONE'"
                 :status="localValue.certificateStatus"
+                :message="localValue.certificateStatusMessage"
                 :username="localValue.certificateUpdatedBy"
                 :timestamp="localValue.certificateUpdatedAt"
             ></CertificatePill>

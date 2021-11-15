@@ -11,6 +11,12 @@
                 }}</span>
             </div>
         </div>
+        <p
+            class="overflow-hidden text-sm overflow-ellipsis"
+            v-linkified="{ className: 'text-primary', target: '_blank' }"
+        >
+            {{ message }}
+        </p>
 
         <div class="flex items-center mt-1 text-gray-500">
             <div class="flex text-sm gap-x-1">
@@ -45,6 +51,10 @@
                 type: String,
                 default: '',
             },
+            message: {
+                type: String,
+                default: '',
+            },
 
             timestamp: {
                 default() {
@@ -61,7 +71,8 @@
 
         emits: ['delete'],
         setup(props, { emit }) {
-            const { username, status, allowEdit, timestamp } = toRefs(props)
+            const { username, status, allowEdit, timestamp, message } =
+                toRefs(props)
 
             const icon = computed(() => {
                 const found = certificateList.find(
@@ -98,6 +109,7 @@
                 status,
                 allowEdit,
                 timestamp,
+                message,
                 capitalizeFirstLetter,
                 icon,
                 statusClass,

@@ -308,6 +308,7 @@
                 getAnchorGuid,
                 certificateStatus,
                 certificateUpdatedAt,
+                certificateStatusMessage,
                 certificateUpdatedBy,
             } = useAssetInfo()
 
@@ -349,6 +350,9 @@
                 certificateStatus: certificateStatus(selectedAsset.value),
                 certificateUpdatedAt: certificateUpdatedAt(selectedAsset.value),
                 certificateUpdatedBy: certificateUpdatedBy(selectedAsset.value),
+                certificateStatusMessage: certificateStatusMessage(
+                    selectedAsset.value
+                ),
             })
 
             const currentMessage = ref('')
@@ -452,6 +456,9 @@
                 ) {
                     entity.value.attributes.certificateStatus =
                         localCertificate.value.certificateStatus
+
+                    entity.value.attributes.certificateStatusMessage =
+                        localCertificate.value.certificateStatusMessage
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Certificate has been updated'
                     mutate()
@@ -522,6 +529,7 @@
                 certificateUpdatedBy,
                 localCertificate,
                 handleChangeCertificate,
+                certificateStatusMessage,
             }
         },
     })

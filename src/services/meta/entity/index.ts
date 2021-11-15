@@ -39,10 +39,22 @@ const fetchAudits = (params: any, guid: string) =>
         {}
     )
 
+const fetchRelatedAssets = <T>(
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) => useAPI<T>(map.GET_ASSET_RELATIONSHIP, 'POST', { body }, options || {})
+
 const SetClassifications = <T>(
     body: Ref<Record<string, any>> | Record<string, any>,
     options?: useOptions
 ) => useAPI<T>(map.ENTITY_SET_CLASSIFICATIONS, 'POST', { body }, options || {})
+
+const GetEntity = <T>(
+    guid: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) => useAPI<T>(map.GET_ENTITY, 'GET', {
+    pathVariables: { guid: guid?.value || guid },
+}, options || {})
 
 export const Entity = {
     fetchAudits,
@@ -50,4 +62,6 @@ export const Entity = {
     EntityUpdate,
     fetchMoreAudits,
     SetClassifications,
+    fetchRelatedAssets,
+    GetEntity,
 }

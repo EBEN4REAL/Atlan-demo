@@ -7,6 +7,7 @@ export const ENTITY_UPDATE = 'ENTITY_UPDATE'
 export const GET_ASSET_AUDIT = 'GET_ASSET_AUDIT'
 export const ENTITY_SET_CLASSIFICATIONS = 'ENTITY_SET_CLASSIFICATIONS'
 export const GET_ENTITY = 'GET_ENTITY'
+export const GET_ASSET_RELATIONSHIP = 'GET_ASSET_RELATIONSHIP'
 
 export const map = {
     [ENTITY_BULK_UPDATE]: () => getAPIPath(BASE_PATH, '/entity/bulk'),
@@ -16,4 +17,6 @@ export const map = {
     [ENTITY_SET_CLASSIFICATIONS]: () =>
         getAPIPath(BASE_PATH, '/entity/bulk/setClassifications'),
     [GET_ENTITY]: (guid) => getAPIPath('meta', `/entity/guid/${guid}`),
+    [GET_ASSET_RELATIONSHIP]: () =>
+        getAPIPath(BASE_PATH, '/search/relationship'),
 }

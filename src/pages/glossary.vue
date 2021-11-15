@@ -1,59 +1,50 @@
 <template>
-    <splitpanes class="w-full h-full default-theme">
-        <pane
-            min-size="12"
-            max-size="50"
-            :size="12"
-            style="min-width: 264px"
-            class="relative"
-        >
-            <GlossaryDiscovery />
-        </pane>
-
-        <pane :size="82" class="bg-white w-ful">
-            <div class="flex w-full h-full bg-white">
-                <div class="flex-1 border-r border-gray-300 item-stretch">
-                    <div class="flex h-full">
-                        <router-view :selected-glossary="selectedGlossary" />
-                    </div>
-                </div>
-
-                <div
-                    v-if="isItem"
-                    id="overAssetPreviewSidebar"
-                    class="relative bg-white asset-preview-container"
-                >
-                    <!-- <AssetPreview :selected-asset="selectedAsset"></AssetPreview> -->
-                </div>
+    <div class="flex w-full h-full bg-white">
+        <div class="flex-1 border-r border-gray-300 item-stretch">
+            <div class="flex w-full h-full">
+                <transition name="fade" v-if="isItem">
+                    <router-view :selected-asset="selectedGlossary" />
+                </transition>
+                <keep-alive>
+                    <GlossaryDiscovery
+                        :style="isItem ? 'display: none !important;' : ''"
+                    ></GlossaryDiscovery>
+                </keep-alive>
             </div>
-        </pane>
-    </splitpanes>
+        </div>
+
+        <div
+            class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
+        >
+            <GlossaryPreview
+                :selected-asset="selectedGlossary"
+            ></GlossaryPreview>
+            <!-- <AssetPreview :selected-asset="selectedAsset"></AssetPreview> -->
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, watch } from 'vue'
+    import { computed, defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRoute, useRouter } from 'vue-router'
-    // import { useRoute, useRouter } from 'vue-router'
-    // import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
-    import GlossaryDiscovery from '@/glossary/index.vue'
+    import { useRoute } from 'vue-router'
 
-    // composables
+    import GlossaryDiscovery from '@/glossary/index.vue'
+    import GlossaryPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         components: {
             GlossaryDiscovery,
+            GlossaryPreview,
         },
-        setup(props, { emit }) {
+        setup() {
             useHead({
-                title: 'Glossary',
+                title: 'Assets',
             })
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
-
-            const { selectedGlossary } = useGlossaryData()
+            const { selectedGlossary } = useAssetInfo()
             return {
                 isItem,
                 selectedGlossary,

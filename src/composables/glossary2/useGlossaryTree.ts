@@ -13,7 +13,7 @@ import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 // store
-import { useGlossaryStore } from '~/store/glossary'
+import useGlossaryStore from '~/store/glossary'
 import store from '~/utils/storage'
 import useGlossaryData from '../glossary/useGlossaryData'
 import { AssetAttributes, InternalAttributes } from '~/constant/projection'

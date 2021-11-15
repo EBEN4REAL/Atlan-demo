@@ -8,6 +8,7 @@
             v-for="opt in maskingOptions"
             :key="opt.value"
             :value="opt.value"
+            :class="opt.borderBottom ? 'border-b border-gray-300' : ''"
             :label="opt.label"
         >
             <a-tooltip
@@ -18,7 +19,7 @@
                 color="white"
             >
                 <template #title>
-                    <div class="">
+                    <div>
                         <div class="flex items-center p-3 gap-x-2 text-gray">
                             <div
                                 class="border border-gray-300 rounded"
@@ -80,10 +81,12 @@
                 {
                     value: 'MASK_NONE',
                     label: 'None',
+                    borderBottom: true,
                 },
                 {
                     value: 'MASK_DATE_SHOW_YEAR',
                     label: 'Show only year',
+                    borderBottom: false,
                     popover: {
                         field: 'Date of birth',
                         value: '24/4/1990',
@@ -92,9 +95,23 @@
                             'Show only the year portion of a date string and default the month and day to 01/01',
                     },
                 },
+
+                {
+                    value: 'MASK_SHOW_FIRST_4',
+                    label: 'Show first 4',
+                    borderBottom: false,
+                    popover: {
+                        field: 'Credit card number',
+                        value: '4321 9876 1254 4444',
+                        maskedValue: '4312 xxxx xxxx xxxx',
+                        helpText: 'Shows only the first 4 characters',
+                    },
+                },
+
                 {
                     value: 'MASK_SHOW_LAST_4',
                     label: 'Show last 4',
+                    borderBottom: true,
                     popover: {
                         field: 'Phone number',
                         value: '9112349678',
@@ -103,18 +120,9 @@
                     },
                 },
                 {
-                    value: 'MASK_SHOW_FIRST_4',
-                    label: 'Show first 4',
-                    popover: {
-                        field: 'Credit card number',
-                        value: '4321 9876 1254 4444',
-                        maskedValue: '4312 xxxx xxxx xxxx',
-                        helpText: 'Shows only the first 4 characters',
-                    },
-                },
-                {
                     value: 'MASK_HASH',
                     label: 'Hash',
+                    borderBottom: false,
                     popover: {
                         field: 'Address',
                         value: '123 Los Angeles Street',
@@ -126,6 +134,7 @@
                 {
                     value: 'MASK_NULL',
                     label: 'Nullify',
+                    borderBottom: false,
                     popover: {
                         field: 'Age',
                         value: '22 years',
@@ -136,6 +145,7 @@
                 {
                     value: 'MASK_REDACT',
                     label: 'Redact',
+                    borderBottom: false,
                     popover: {
                         field: 'Address',
                         value: '123 Los Angeles Street',

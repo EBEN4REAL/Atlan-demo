@@ -46,7 +46,7 @@
     import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
-        name: 'OwnersFilter',
+        name: 'UsersFilter',
         props: {
             queryText: {
                 type: String,
@@ -67,7 +67,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const localValue = computed(() => modelValue.value)
             const { list, handleSearch, total, filterTotal } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
 

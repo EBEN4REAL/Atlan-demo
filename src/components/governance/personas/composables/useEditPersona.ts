@@ -219,7 +219,8 @@ export function discardPolicy(type: PolicyType, id: string) {
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
                 const policy =
                     selectedPersona.value?.metadataPolicies?.[policyIndex]
-                selectedPersonaDirty[dirtyPolicyIndex] = policy
+                selectedPersonaDirty.value.metadataPolicies[dirtyPolicyIndex] =
+                    policy
             }
 
             policyEditMap.value.metadataPolicies[id] = false
@@ -243,7 +244,8 @@ export function discardPolicy(type: PolicyType, id: string) {
             ) {
                 const policy =
                     selectedPersona.value?.dataPolicies?.[policyIndex]
-                selectedPersonaDirty[dirtyPolicyIndex] = policy
+                selectedPersonaDirty.value.dataPolicies[dirtyPolicyIndex] =
+                    policy
             }
             policyEditMap.value.dataPolicies[id] = false
         }

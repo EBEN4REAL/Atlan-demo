@@ -1,18 +1,15 @@
 // * Composables
 import { computed } from 'vue'
-import { AssetProperties } from '~/constant/assetProperties'
+
 import useTypedefData from '../typedefs/useTypedefData'
 
 export default function useCustomMetadataFacet() {
     const { customMetadataList } = useTypedefData()
 
-    const propertyAttributeList = computed(() => AssetProperties)
-
     /**
      * @desc mapped BM object that has filter support
      * */
     const list = computed(() => {
-        console.log(customMetadataList)
         if (customMetadataList.value?.length > 0) {
             return customMetadataList.value
                 .filter((bm) =>
@@ -22,12 +19,13 @@ export default function useCustomMetadataFacet() {
                     id: bm.name,
                     label: bm.displayName,
                     component: 'properties',
-                    image: bm.options?.image || '',
                     attributes: bm.attributeDefs,
                     overallCondition: 'OR',
                     isDeleted: false,
                     isDisabled: false,
+                    includes: [],
                     exclude: false,
+                    options: bm.options,
                 }))
         }
         return []
@@ -35,7 +33,6 @@ export default function useCustomMetadataFacet() {
 
     return {
         list,
-        propertyAttributeList,
         customMetadataList,
     }
 }

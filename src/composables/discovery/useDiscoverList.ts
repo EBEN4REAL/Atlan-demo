@@ -6,10 +6,12 @@ import { assetInterface } from '~/types/assets/asset.interface'
 
 import useIndexSearch from './useIndexSearch'
 import { assetTypeList } from '~/constant/assetType'
-import useDiscoveryStore from '~/store/discovery'
+import useAssetStore from '~/store/asset'
 import { useBody } from './useBody'
+import useGlossaryStore from '~/store/glossary'
 
 const assetTypeAggregationName = 'group_by_typeName'
+const glossaryAggregationName = 'group_by_glossary'
 
 interface DiscoverListParams {
     isCache?: boolean | false
@@ -108,13 +110,13 @@ export function useDiscoverList({
         const defaultListMap = labelList.map((i) => i.id.toLowerCase())
 
         const diff = defaultListMap.filter((d) => listMap.includes(d) === false)
-
         const overlap = defaultListMap.filter((d) => listMap.includes(d))
 
         overlap.forEach((item) => {
             const found = labelList.find(
                 (t) => t.id.toLowerCase() === item.toLowerCase()
             )
+
             if (found) {
                 found.count = aggregationMap(aggregationKey).find(
                     (i) => i.key.toLowerCase() === item.toLowerCase()
@@ -150,6 +152,11 @@ export function useDiscoverList({
         getAggregationList(assetTypeAggregationName, assetTypeList, false)
     )
 
+    const glossaryStore = useGlossaryStore()
+    const glossaryAggreationList = computed(() =>
+        getAggregationList(glossaryAggregationName, glossaryStore.list, false)
+    )
+
     const totalCount = computed(() => {
         if (assetTypeAggregationList.value.length > 0) {
             const type = postFacets?.value.typeName || '__all'
@@ -178,11 +185,17 @@ export function useDiscoverList({
         generateBody()
         refresh()
     }
-    const discoveryStore = useDiscoveryStore()
+    const assetStore = useAssetStore()
 
     const handleSelectedAsset = (item) => {
-        discoveryStore.setSelectedAsset(item)
+        assetStore.setSelectedAsset(item)
     }
+    const selectedAsset = computed(() => assetStore.selectedAsset)
+
+    const handleSelectedGlossary = (item) => {
+        glossaryStore.setSelectedGlossary(item)
+    }
+    const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
 
     return {
         queryText,
@@ -193,6 +206,7 @@ export function useDiscoverList({
         aggregationMap,
         getAggregationList,
         assetTypeAggregationList,
+        glossaryAggreationList,
         isValidating,
         isLoading,
         list,
@@ -202,5 +216,8 @@ export function useDiscoverList({
         cancelRequest,
         isLoadMore,
         handleSelectedAsset,
+        selectedAsset,
+        handleSelectedGlossary,
+        selectedGlossary,
     }
 }

@@ -16,35 +16,30 @@
         <div
             class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
         >
-            <GlossaryPreview
-                :selected-asset="selectedGlossary"
-            ></GlossaryPreview>
-            <!-- <AssetPreview :selected-asset="selectedAsset"></AssetPreview> -->
+            <!-- <AssetPreview :selected-asset="selectedGlossary"></AssetPreview> -->
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, ref, watch } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
-
     import GlossaryDiscovery from '@/glossary/index.vue'
-    import GlossaryPreview from '@/common/assets/preview/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         components: {
             GlossaryDiscovery,
-            GlossaryPreview,
         },
-        setup() {
+        setup(props, { emit }) {
             useHead({
-                title: 'Assets',
+                title: 'Glossary',
             })
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
-            const { selectedGlossary } = useAssetInfo()
+
+            const { selectedGlossary } = useGlossaryData()
             return {
                 isItem,
                 selectedGlossary,

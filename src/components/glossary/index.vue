@@ -1,57 +1,157 @@
 <template>
-    <div
-        class="flex flex-col w-full h-full bg-gray-100 border-r border-gray-100"
-    >
-        <div class="w-full px-3 py-2 border-b border-gray-200">Glossary</div>
-        <div class="flex flex-col w-full h-full" ref="glossaryBox">
-            <div class="px-3 pt-3 pb-1">
-                <Search
-                    placeholder="Search Terms & Categories"
-                    :autofocus="true"
-                    v-model="queryText"
-                    size="minimal"
-                    @change="handleSearchChange"
+    <div class="flex w-full">
+        <div
+            v-if="showFilters"
+            class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
+        >
+            <AssetFilters
+                v-if="showFilters"
+                :key="dirtyTimestamp"
+                v-model="facets"
+                v-model:activeKey="activeKey"
+                :filter-list="glossaryFilters"
+                :type-name="postFacets.typeName"
+                @change="handleFilterChange"
+                @reset="handleResetEvent"
+                @change-active-key="handleActiveKeyChange"
+            ></AssetFilters>
+        </div>
+
+        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
+            <div class="flex flex-col h-full">
+                <div class="flex px-6 py-1 border-b border-gray-200">
+                    <SearchAdvanced
+                        v-model="queryText"
+                        :connectorName="facets?.hierarchy?.connectorName"
+                        :autofocus="true"
+                        :allowClear="true"
+                        @change="handleSearchChange"
+                        placeholder="Search assets..."
+                    >
+                        <template #filter>
+                            <a-popover
+                                class="sm:block md:hidden"
+                                placement="bottom"
+                                :trigger="['click']"
+                                :overlay-class-name="$style.filterPopover"
+                            >
+                                <template #content>
+                                    <AssetFilters
+                                        :key="dirtyTimestamp"
+                                        v-model="facets"
+                                        v-model:activeKey="activeKey"
+                                        :filter-list="discoveryFilters"
+                                        :type-name="postFacets.typeName"
+                                        @change="handleFilterChange"
+                                        @change-active-key="
+                                            handleActiveKeyChange
+                                        "
+                                    ></AssetFilters
+                                ></template>
+                                <AtlanIcon
+                                    icon="FilterFunnel"
+                                    class="mr-1"
+                                ></AtlanIcon>
+                            </a-popover>
+                        </template>
+                        <template #postFilter>
+                            <PreferenceSelector
+                                v-model="preference"
+                                @change="handleChangePreference"
+                                @display="handleDisplayChange"
+                            />
+                        </template>
+                    </SearchAdvanced>
+                </div>
+
+                <div class="w-full px-4">
+                    <AggregationTabs
+                        v-model="postFacets.glossary"
+                        class="mt-3"
+                        :list="glossaryAggreationList"
+                        icon="Glossary"
+                        @change="handleAssetTypeChange"
+                    >
+                    </AggregationTabs>
+                </div>
+
+                <div
+                    v-if="isLoading"
+                    class="flex items-center justify-center flex-grow"
                 >
-                </Search>
+                    <AtlanIcon
+                        icon="Loader"
+                        class="w-auto h-10 animate-spin"
+                    ></AtlanIcon>
+                </div>
+                <div
+                    v-else-if="list.length === 0 && !isLoading"
+                    class="flex-grow"
+                >
+                    <EmptyView @event="handleResetEvent"></EmptyView>
+                </div>
+
+                <AssetList
+                    v-else
+                    ref="assetlistRef"
+                    :list="list"
+                    :selectedAsset="selectedGlossary"
+                    :preference="preference"
+                    :isLoadMore="isLoadMore"
+                    :isLoading="isValidating"
+                    @loadMore="handleLoadMore"
+                >
+                    <template v-slot:default="{ item }">
+                        <GlossaryItem
+                            :item="item"
+                            :selectedGuid="selectedGlossary.guid"
+                            @preview="handlePreview"
+                        ></GlossaryItem>
+                    </template>
+                </AssetList>
             </div>
-
-            <GlossaryList
-                :list="list"
-                class="pb-3"
-                v-if="queryText"
-            ></GlossaryList>
-
-            <GlossaryTree
-                :list="baseTreeData"
-                :height="height"
-                @select="handleSelect"
-                v-else
-            ></GlossaryTree>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
-    import Search from '@/common/input/searchAdvanced.vue'
-    import GlossaryTree from '@/glossary/tree/glossaryTree2.vue'
-    import GlossaryList from '~/components/glossary/list/index.vue'
-    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { defineComponent, ref, toRefs, Ref } from 'vue'
+    import EmptyView from '@common/empty/discover.vue'
+    import { useDebounceFn } from '@vueuse/core'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import PreferenceSelector from '@/assets/preference/index.vue'
+
+    import AssetFilters from '@/common/assets/filters/index.vue'
+    import AssetList from '@/common/assets/list/index.vue'
+    import GlossaryItem from '@/common/assets/list/glossaryItem.vue'
+
     import {
         AssetAttributes,
-        GlossaryRelationAttributes,
+        AssetRelationAttributes,
         InternalAttributes,
+        SQLAttributes,
     } from '~/constant/projection'
-    import { debouncedWatch } from '@vueuse/core'
-    import { useDebounceFn } from '@vueuse/core'
-    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
-    import { useRouter } from 'vue-router'
+
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+
+    import AtlanIcon from '../common/icon/atlanIcon.vue'
+    import useGlossaryStore from '~/store/glossary'
+    import { assetInterface } from '~/types/assets/asset.interface'
+
+    import { glossaryFilters } from '~/constant/filters/discoveryFilters'
 
     export default defineComponent({
+        name: 'AssetDiscovery',
         components: {
-            GlossaryList,
-            Search,
-            GlossaryTree,
+            AssetList,
+            AggregationTabs,
+            AssetFilters,
+            SearchAdvanced,
+            PreferenceSelector,
+            EmptyView,
+            AtlanIcon,
+            GlossaryItem,
         },
         props: {
             showFilters: {
@@ -59,34 +159,71 @@
                 required: false,
                 default: true,
             },
-            glossaryQualifiedName: {
-                type: String,
+            initialFilters: {
+                type: Object,
                 required: false,
+                default() {
+                    return {}
+                },
             },
         },
         setup(props, { emit }) {
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({
-                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+            const facets = ref({})
+            const preference = ref({
+                sort: 'default',
+                display: [],
             })
-            const aggregations = ref(['typeName'])
-            const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_TERMS')
+            const aggregations = ref(['glossary'])
+            const postFacets = ref({
+                glossary: '__all',
+            })
+            const dependentKey = ref('DEFAULT_GLOSSARY_LIST')
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
             ])
-            const relationAttributes = ref([...GlossaryRelationAttributes])
+            const relationAttributes = ref([...AssetRelationAttributes])
+            const activeKey: Ref<string[]> = ref([])
+            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const { initialFilters } = toRefs(props)
+            const glossaryStore = useGlossaryStore()
+
+            if (glossaryStore.activeFacet && glossaryStore.activeFacet !== {}) {
+                facets.value = glossaryStore.activeFacet
+                console.log(facets.value)
+            }
+
+            if (glossaryStore.preferences) {
+                preference.value = glossaryStore.preferences
+            }
+            if (glossaryStore.activeFacetTab?.length > 0) {
+                activeKey.value = glossaryStore.activeFacetTab
+            } else {
+                activeKey.value = ['glossary']
+            }
+
+            facets.value = {
+                ...facets.value,
+                ...initialFilters.value,
+                typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+            }
+
+            console.log(facets.value)
 
             const {
                 list,
                 isLoading,
-                assetTypeAggregationList,
+                glossaryAggreationList,
                 isLoadMore,
+                isValidating,
                 fetch,
+
                 quickChange,
+                handleSelectedGlossary,
+                selectedGlossary,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -94,75 +231,105 @@
                 facets,
                 postFacets,
                 aggregations,
+                preference,
                 limit,
                 offset,
                 attributes: defaultAttributes,
                 relationAttributes,
             })
 
-            console.log('fetching')
-
-            debouncedWatch(
-                () => props.glossaryQualifiedName,
-                (prev, current) => {
-                    if (prev) {
-                        facets.value.glossary = props.glossaryQualifiedName
-
-                        quickChange()
-                    }
-                },
-                { debounce: 100 }
-            )
-
-            const handleSearchChange = useDebounceFn(() => {
-                console.log('change', queryText.value)
-                quickChange()
-                // tracking.send(events.EVENT_ASSET_SEARCH, {
-                //     trigger: 'discover',
-                // })
-            }, 150)
-
-            const { initTree, handleSelectedGlossary } = useGlossaryData()
-            const baseTreeData = ref(initTree())
-
-            const glossaryBox = ref()
-
-            const height = computed(() => {
-                if (glossaryBox.value) {
-                    return glossaryBox.value.clientHeight - 90
-                }
-                return 400
-            })
-
-            const glossaryURL = (asset) => {
-                return {
-                    path: `/glossary/${asset.guid}`,
-                }
+            const handlePreview = (item) => {
+                console.log('preview')
+                handleSelectedGlossary(item)
             }
 
-            const router = useRouter()
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                quickChange()
+            }, 150)
 
-            const handleSelect = (item) => {
-                handleSelectedGlossary(item)
-                router.push(glossaryURL(item))
+            const handleFilterChange = () => {
+                offset.value = 0
+                quickChange()
+                glossaryStore.setActiveFacet(facets.value)
+            }
+
+            const handleAssetTypeChange = () => {
+                offset.value = 0
+                quickChange()
+            }
+
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                }
+                quickChange()
+            }
+
+            const handleChangePreference = () => {
+                quickChange()
+                glossaryStore.setPreferences(preference.value)
+            }
+
+            const handleDisplayChange = () => {
+                glossaryStore.setPreferences(preference.value)
+            }
+
+            const handleResetEvent = () => {
+                facets.value = {
+                    typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                }
+                console.log(facets.value)
+                handleFilterChange()
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+            }
+
+            const handleActiveKeyChange = () => {
+                glossaryStore.setActivePanel(activeKey.value)
             }
 
             return {
-                baseTreeData,
-                glossaryBox,
-                height,
+                handleFilterChange,
                 isLoading,
                 queryText,
-                assetTypeAggregationList,
+                glossaryAggreationList,
                 list,
                 facets,
                 isLoadMore,
                 postFacets,
+                handleLoadMore,
+                handleAssetTypeChange,
+                handlePreview,
                 fetch,
-                quickChange,
                 handleSearchChange,
-                handleSelect,
+                isValidating,
+                preference,
+                handleChangePreference,
+                handleResetEvent,
+                dirtyTimestamp,
+                handleDisplayChange,
+                handleActiveKeyChange,
+                activeKey,
+                glossaryFilters,
+                selectedGlossary,
             }
         },
     })
 </script>
+
+<style lang="less">
+    .facets {
+        max-width: 264px;
+        width: 25%;
+    }
+</style>
+
+<style lang="less" module>
+    .filterPopover {
+        max-width: 200px;
+        min-width: 200px;
+        :global(.ant-popover-content) {
+            @apply shadow-sm;
+        }
+    }
+</style>

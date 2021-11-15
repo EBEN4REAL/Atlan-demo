@@ -72,7 +72,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
-    import useDiscoveryStore from '~/store/discovery'
+    import useAssetStore from '~/store/asset'
     import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -90,7 +90,7 @@
         props: {},
         setup(props, { emit }) {
             const { qualifiedName } = useAssetInfo()
-            const storeDiscovery = useDiscoveryStore()
+            const storeDiscovery = useAssetStore()
             const { selectedAsset } = ref()
             const isSchemaInitialized = ref(true)
             const { getFirstQueryConnection } = useUtils()

@@ -5,11 +5,15 @@
             class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
         >
             <AssetFilters
+                v-if="showFilters"
                 :key="dirtyTimestamp"
                 v-model="facets"
+                v-model:activeKey="activeKey"
+                :filter-list="discoveryFilters"
+                :type-name="postFacets.typeName"
                 @change="handleFilterChange"
-                :typeName="postFacets.typeName"
-                v-if="showFilters"
+                @reset="handleResetEvent"
+                @change-active-key="handleActiveKeyChange"
             ></AssetFilters>
         </div>
 
@@ -31,11 +35,17 @@
                                 :trigger="['click']"
                                 :overlay-class-name="$style.filterPopover"
                             >
-                                <template #content
-                                    ><AssetFilters
+                                <template #content>
+                                    <AssetFilters
                                         :key="dirtyTimestamp"
-                                        :isAccordion="true"
+                                        v-model="facets"
+                                        v-model:activeKey="activeKey"
+                                        :filter-list="discoveryFilters"
+                                        :type-name="postFacets.typeName"
                                         @change="handleFilterChange"
+                                        @change-active-key="
+                                            handleActiveKeyChange
+                                        "
                                     ></AssetFilters
                                 ></template>
                                 <AtlanIcon
@@ -77,46 +87,43 @@
                     v-else-if="list.length === 0 && !isLoading"
                     class="flex-grow"
                 >
-                    <EmptyView @event="handleEvent"></EmptyView>
+                    <EmptyView @event="handleResetEvent"></EmptyView>
                 </div>
 
                 <AssetList
                     v-else
                     ref="assetlistRef"
                     :list="list"
+                    :selectedAsset="selectedAsset"
                     :preference="preference"
-                    :selected-asset="selectedAsset"
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
-                    @preview="handlePreview"
                     @loadMore="handleLoadMore"
-                />
+                >
+                    <template v-slot:default="{ item }">
+                        <AssetItem
+                            :item="item"
+                            :selectedGuid="selectedAsset.guid"
+                            @preview="handlePreview"
+                        ></AssetItem>
+                    </template>
+                </AssetList>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        ref,
-        watch,
-        toRefs,
-        PropType,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, Ref } from 'vue'
     import EmptyView from '@common/empty/discover.vue'
-    // import AssetPagination from '@common/pagination/index.vue'
-
-    // import { useDebounceFn } from '@vueuse/core'
-
-    // import { useRouter } from 'vue-router'
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
-    import AssetList from '@/assets/list/assetList.vue'
-    import AssetFilters from '@/assets/filters/index.vue'
+
+    import AssetFilters from '@/common/assets/filters/index.vue'
+    import AssetList from '@/common/assets/list/index.vue'
+    import AssetItem from '@/common/assets/list/assetItem.vue'
 
     import {
         AssetAttributes,
@@ -128,8 +135,10 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
     import AtlanIcon from '../common/icon/atlanIcon.vue'
-    import useDiscoveryStore from '~/store/discovery'
+    import useAssetStore from '~/store/asset'
     import { assetInterface } from '~/types/assets/asset.interface'
+
+    import { discoveryFilters } from '~/constant/filters/discoveryFilters'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -141,16 +150,13 @@
             PreferenceSelector,
             EmptyView,
             AtlanIcon,
+            AssetItem,
         },
         props: {
             showFilters: {
                 type: Boolean,
                 required: false,
                 default: true,
-            },
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: false,
             },
             initialFilters: {
                 type: Object,
@@ -177,27 +183,27 @@
                 ...SQLAttributes,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
-            const discoveryStore = useDiscoveryStore()
+            const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const { initialFilters } = toRefs(props)
+            const discoveryStore = useAssetStore()
 
             if (discoveryStore.activeFacet) {
                 facets.value = discoveryStore.activeFacet
             }
-
             if (discoveryStore.preferences) {
                 preference.value = discoveryStore.preferences
             }
-
+            if (discoveryStore.activeFacetTab?.length > 0) {
+                activeKey.value = discoveryStore.activeFacetTab
+            } else {
+                activeKey.value = ['hierarchy']
+            }
             if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
                     ...initialFilters,
                 }
-            }
-
-            if (!facets.value.typeName) {
-                facets.value.typeName = '__all'
             }
 
             const {
@@ -207,6 +213,7 @@
                 isLoadMore,
                 isValidating,
                 fetch,
+                selectedAsset,
                 quickChange,
                 handleSelectedAsset,
             } = useDiscoverList({
@@ -230,9 +237,6 @@
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
-                // tracking.send(events.EVENT_ASSET_SEARCH, {
-                //     trigger: 'discover',
-                // })
             }, 150)
 
             const handleFilterChange = () => {
@@ -262,21 +266,16 @@
                 discoveryStore.setPreferences(preference.value)
             }
 
-            const handleEvent = () => {
+            const handleResetEvent = () => {
                 facets.value = {}
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
-            watch(initialFilters, (newInitialFilters) => {
-                if (newInitialFilters) {
-                    facets.value = {
-                        ...facets.value,
-                        ...newInitialFilters,
-                    }
-                    quickChange()
-                }
-            })
+            const handleActiveKeyChange = () => {
+                discoveryStore.setActivePanel(activeKey.value)
+            }
+
             return {
                 handleFilterChange,
                 isLoading,
@@ -294,9 +293,14 @@
                 isValidating,
                 preference,
                 handleChangePreference,
-                handleEvent,
+                handleResetEvent,
                 dirtyTimestamp,
                 handleDisplayChange,
+                handleActiveKeyChange,
+                activeKey,
+                discoveryFilters,
+
+                selectedAsset,
             }
         },
     })

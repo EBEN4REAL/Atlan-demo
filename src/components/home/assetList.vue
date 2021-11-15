@@ -30,7 +30,7 @@
                 variable-height
             >
                 <template #default="{ item }">
-                    <ListItem
+                    <!-- <ListItem
                         class="mx-1"
                         :item="item"
                         :is-selected="
@@ -40,7 +40,7 @@
                         "
                         :projection="[]"
                         @click="handleCardClicked(item)"
-                    ></ListItem>
+                    ></ListItem> -->
                 </template>
             </VirtualList>
         </template>
@@ -62,7 +62,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, PropType } from 'vue'
-    import ListItem from '~/components/assets/list/assetItem.vue'
+    // import ListItem from '~/components/assets/list/assetItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAssetListing } from '~/composables/home/useHomeDSL'
@@ -72,7 +72,6 @@
     export default defineComponent({
         name: 'AssetList',
         components: {
-            ListItem,
             VirtualList,
         },
         props: {

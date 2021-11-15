@@ -46,134 +46,18 @@
         </div>
 
         <div class="relative">
-            <div class="mb-2 text-sm text-gray-500 required">Connection</div>
-            <Connector
-                v-model:data="connectorData"
-                class="max-w-xs mb-6"
-                :disabled="!policy?.isNew"
-                @change="handleConnectorChange"
-                @blur="
-                    () => {
-                        if (!connectorData.attributeValue)
-                            rules.connection.show = true
-                        else rules.connection.show = false
-                    }
-                "
-                :ref="
-                    (el) => {
-                        connectorComponentRef = el
-                    }
-                "
-            />
+            <div class="mb-2 text-sm text-gray-500 required">
+                Users / Groups
+            </div>
+
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
-                v-if="rules.connection.show"
+                v-if="rules.users.show"
             >
-                {{ rules.connection.text }}
+                {{ rules.users.text }}
             </div>
         </div>
 
-        <div class="relative">
-            <div class="flex items-center mb-2 gap-x-1">
-                <AtlanIcon class="text-gray-500" icon="AssetsInactive" />
-                <span class="text-sm text-gray-500 required">Assets</span>
-            </div>
-            <div
-                class="
-                    flex flex-wrap
-                    items-center
-                    flex-grow
-                    gap-x-1 gap-y-1.5
-                    mb-6
-                "
-            >
-                <PillGroup
-                    v-model:data="assets"
-                    label-key="label"
-                    @add="openAssetSelector"
-                >
-                    <template #addBtn="d">
-                        <div>
-                            <div
-                                v-if="assets.length > 0 && !isreadOnlyPillGroup"
-                            >
-                                <Pill
-                                    class="group"
-                                    @click="d?.item?.handleAdd"
-                                    @blur="d?.item?.handleBlur"
-                                >
-                                    <template #prefix>
-                                        <AtlanIcon
-                                            icon="Add"
-                                            class="
-                                                h-4
-                                                -mx-1.5
-                                                text-gray
-                                                group-hover:text-white
-                                            "
-                                        />
-                                    </template>
-                                </Pill>
-                            </div>
-                            <div
-                                v-else-if="assets.length === 0"
-                                class="flex items-center"
-                            >
-                                <Pill
-                                    class="group"
-                                    @click="addConnectionAsset"
-                                    @blur="d?.item?.handleBlur"
-                                >
-                                    <template #prefix>
-                                        <div class="flex items-center">
-                                            <AtlanIcon
-                                                icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
-                                            />
-                                            <span class="text-xs">Add All</span>
-                                        </div>
-                                    </template>
-                                </Pill>
-                                <span class="mx-2 text-xs">OR</span>
-                                <Pill
-                                    class="group"
-                                    @click="d?.item?.handleAdd"
-                                    @blur="d?.item?.handleBlur"
-                                >
-                                    <template #prefix>
-                                        <div class="flex items-center">
-                                            <AtlanIcon
-                                                icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
-                                            />
-                                            <span class="text-xs"
-                                                >Custom select</span
-                                            >
-                                        </div>
-                                    </template>
-                                </Pill>
-                            </div>
-                        </div>
-                    </template>
-                </PillGroup>
-            </div>
-            <div
-                class="absolute text-xs text-red-500 -bottom-5"
-                v-if="rules.assets.show && connectorData.attributeValue"
-            >
-                {{ rules.assets.text }}
-            </div>
-        </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Metadata permissions</span>
@@ -263,11 +147,10 @@
                     text: 'Enter a policy name!',
                     show: false,
                 },
-                connection: {
-                    text: 'Connection is required!',
+                users: {
+                    text: 'user is required!',
                     show: false,
                 },
-                assets: { text: 'Select atleast 1 asset!', show: false },
                 metadata: {
                     text: 'Select atleast 1 permissions!',
                     show: false,
@@ -287,21 +170,6 @@
                 }
             }
 
-            const assets = computed({
-                get: () => {
-                    if (policy.value.assets.length > 0)
-                        rules.value.assets.show = false
-                    else rules.value.assets.show = true
-                    return policy.value.assets.map((name) => ({
-                        label: name,
-                    }))
-                },
-                set: (val) => {
-                    policy.value.assets = val.map((ast) => ast.label)
-                    if (val.length > 0) rules.value.assets.show = false
-                    else rules.value.assets.show = true
-                },
-            })
             const handleConnectorChange = () => {
                 policy.value.assets = []
             }
@@ -315,22 +183,9 @@
                     !connectorData.value.attributeValue
                 ) {
                     connectorComponentRef.value?.treeSelectRef?.focus()
-                    rules.value.connection.show = true
-                } else if (policy.value.assets.length < 1) {
-                    rules.value.assets.show = true
+                    rules.value.users.show = true
                 } else {
                     emit('save')
-                }
-            }
-            const addConnectionAsset = () => {
-                if (connectorData.value.attributeValue) {
-                    assets.value = [
-                        { label: connectorData.value.attributeValue },
-                    ]
-                    policy.value.assets = [connectorData.value.attributeValue]
-                } else {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
-                    rules.value.connection.show = true
                 }
             }
 
@@ -354,15 +209,7 @@
                 },
             })
 
-            const isreadOnlyPillGroup = computed(() => {
-                return Boolean(
-                    assets.value.find(
-                        (e) => e.label === connectorData.value.attributeValue
-                    )
-                )
-            })
             return {
-                isreadOnlyPillGroup,
                 rules,
                 handleSave,
                 policyNameRef,
@@ -372,8 +219,6 @@
                 assetSelectorVisible,
                 removePolicy,
                 openAssetSelector,
-                assets,
-                addConnectionAsset,
             }
         },
     })

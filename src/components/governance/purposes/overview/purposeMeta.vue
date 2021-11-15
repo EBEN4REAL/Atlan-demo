@@ -24,7 +24,11 @@
         </div>
         <div class="py-4 text-gray-500 gap-x-2">
             <p class="mb-3 text-sm font-bold text-gray-700">Classifications</p>
-            <Classification :modelValue="[]" />
+            <Classification
+                v-model:modelValue="selectedClassifications"
+                :disabled="addClassificationsDisabled"
+                @change="handleClassificationChange"
+            />
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
@@ -71,13 +75,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, watch, computed } from 'vue'
 
     import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
     import Avatar from '@common/avatar/user.vue'
     import Classification from '@common/input/classification/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { selectedPersonaDirty } from '../composables/useEditPurpose'
 
     export default defineComponent({
         name: 'PurposeMeta',
@@ -90,8 +96,58 @@
         },
         emits: ['update:persona', 'update:isEditMode'],
         setup() {
+            const { classificationList } = useTypedefData()
             const enablePersonaCheck = ref(true)
+
+            /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
+            const mapClassificationsFromNames = (names: string[]) => {
+                let arr: any[] = []
+                classificationList.value.forEach((cl) => {
+                    names?.forEach((name) => {
+                        if (name === cl.name) {
+                            arr.push({
+                                typeName: cl.name,
+                                entityGuid: cl.guid,
+                                entityStatus: 'ACTIVE',
+                                propagate: false,
+                                validityPeriods: [],
+                                removePropagationsOnEntityDelete: false,
+                            })
+                        }
+                    })
+                })
+                return arr
+            }
+
+            /* Mimic the classification Names */
+            const classificationNames = computed(() => [
+                selectedPersonaDirty.value.tag,
+            ])
+
+            const selectedClassifications = ref(
+                mapClassificationsFromNames(classificationNames.value)
+            )
+            const addClassificationsDisabled = computed(() =>
+                selectedClassifications.value.length > 0 ? true : false
+            )
+
+            const handleClassificationChange = () => {
+                if (classificationNames.value.length > 0)
+                    selectedPersonaDirty.value.tag =
+                        classificationNames.value[0]
+                else selectedPersonaDirty.value.tag = ''
+                /* Call save purpose */
+            }
+            watch(classificationNames, () => {
+                selectedClassifications.value = mapClassificationsFromNames(
+                    classificationNames.value
+                )
+            })
+
             return {
+                handleClassificationChange,
+                addClassificationsDisabled,
+                selectedClassifications,
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,

@@ -67,7 +67,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const localValue = computed(() => modelValue.value)
+            const localValue = ref(modelValue.value)
             const { list, handleSearch, total, filterTotal } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
 
@@ -106,6 +106,10 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             return {
                 userList,

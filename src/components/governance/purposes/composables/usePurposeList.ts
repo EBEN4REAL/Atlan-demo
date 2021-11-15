@@ -17,7 +17,11 @@ export const selectedPersona = computed(() => {
         const t = personaList.value.find(
             (ps) => ps.id === selectedPersonaId.value
         )
-        console.log(t, 'selected Purpose')
+        // console.log(t, 'selected Purpose')
+        /* Hardcoding classification */
+        t.tag = 'TyT6ITTnmwzIe74TMEE4r5'
+        t.dataPolicies = []
+        t.metadataPolicies = []
         return t
     }
     return undefined

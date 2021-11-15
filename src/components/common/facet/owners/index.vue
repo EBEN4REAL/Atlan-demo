@@ -136,8 +136,8 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const localValue = computed(() => modelValue.value)
-            const { showNoOwners, enableTabs } = toRefs(props)
+            const localValue = ref(modelValue.value)
+            const { showNone, enableTabs } = toRefs(props)
             const componentType = ref('users')
             if (enableTabs.value.length < 2) {
                 watch(
@@ -187,6 +187,10 @@
                     ownerSearchRef.value?.forceFocus()
                 }
             }, 100)
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             const forceFocus = () => {
                 start()

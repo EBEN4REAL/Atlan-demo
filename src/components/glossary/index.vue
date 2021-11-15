@@ -26,7 +26,7 @@
                         :autofocus="true"
                         :allowClear="true"
                         @change="handleSearchChange"
-                        placeholder="Search assets..."
+                        placeholder="Search terms & categories..."
                     >
                         <template #filter>
                             <a-popover
@@ -54,14 +54,58 @@
                                 ></AtlanIcon>
                             </a-popover>
                         </template>
-                        <template #postFilter>
-                            <PreferenceSelector
-                                v-model="preference"
-                                @change="handleChangePreference"
-                                @display="handleDisplayChange"
-                            />
-                        </template>
                     </SearchAdvanced>
+                    <a-dropdown :trigger="['click']" placement="bottomRight">
+                        <a-button class="ml-3" type="primary">
+                            <div class="flex items-center">
+                                <span> New</span>
+
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    class="ml-1 text-white transition duration-300 "
+                                />
+                            </div>
+                        </a-button>
+
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item key="1">
+                                    <div class="flex items-center">
+                                        <AtlanIcon icon="Term" class="mr-1" />
+                                        Term
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item key="1">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Category"
+                                            class="mr-1"
+                                        />
+                                        Category
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item key="1">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Glossary"
+                                            class="mr-1"
+                                        />
+                                        Glossary
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-divider></a-menu-divider>
+                                <a-menu-item key="1">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Glossary"
+                                            class="mr-1"
+                                        />
+                                        Bulk Upload
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
                 </div>
 
                 <div class="w-full px-4">

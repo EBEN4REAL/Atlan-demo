@@ -40,7 +40,7 @@
         },
         setup() {
             useHead({
-                title: 'Assets',
+                title: 'Glossary',
             })
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)

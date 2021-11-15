@@ -21,7 +21,14 @@
                         <span>{{ item.label }}</span>
                         <span
                             :class="$style.chip"
-                            class="mt-1 ml-1 text-xs font-bold tracking-wide text-gray-400 "
+                            class="
+                                mt-0.5
+                                ml-1
+                                text-xs
+                                font-bold
+                                tracking-wide
+                                text-gray-400
+                            "
                             >{{ getCountString(item.count) }}</span
                         >
                     </div>

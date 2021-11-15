@@ -15,8 +15,8 @@
                             style="letter-spacing: 0.07em"
                         >
                             <img
-                                v-if="item.image"
-                                :src="item.image"
+                                v-if="item.options?.imagePath"
+                                :src="imageUrl(item.options?.imagePath)"
                                 class="float-left w-auto h-4 mr-2"
                             />
 
@@ -296,6 +296,9 @@
                 return str
             })
 
+            const imageUrl = (url) =>
+                `${window.location.origin}/api/service${url}`
+
             return {
                 isFiltered,
                 componentState,
@@ -307,6 +310,7 @@
                 getConnectorImageMap,
                 forceRender,
                 componentKey,
+                imageUrl,
             }
         },
     })

@@ -1,12 +1,12 @@
 <template>
-    <div class="flex flex-col w-full h-full max-profile-width">
-        <AssetHeader :item="selectedAsset"></AssetHeader>
+    <div class="flex flex-col w-full h-full">
+        <AssetHeader :item="asset"></AssetHeader>
 
         <a-tabs
-            :class="$style.profiletab"
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
             class="flex-1"
+            :class="$style.profiletab"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -26,14 +26,13 @@
 <script lang="ts">
     import {
         defineComponent,
-        computed,
         ref,
-        watch,
         defineAsyncComponent,
         onMounted,
         PropType,
         toRefs,
         provide,
+        computed,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -90,9 +89,9 @@
             return {
                 refs,
                 asset,
-
                 getProfileTabs,
                 activeKey,
+                getProfileTabs,
                 handleChangeTab,
             }
         },
@@ -122,11 +121,5 @@ meta:
         :global(.ant-tabs-content-holder) {
             @apply bg-primary-light overflow-y-auto !important;
         }
-    }
-</style>
-
-<style lang="less" scoped>
-    .max-profile-width {
-        max-width: calc(100vw - 420px);
     }
 </style>

@@ -13,6 +13,13 @@
                 >
                 <a-menu-item
                     key="1"
+                    @click.prevent.stop="copyAPI(metadata.displayName)"
+                >
+                    <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
+                    name</a-menu-item
+                >
+                <a-menu-item
+                    key="1"
                     @click.prevent.stop="copyAPI(metadata.guid)"
                 >
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
@@ -44,7 +51,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
     import { message, Modal } from 'ant-design-vue'
-    import addMetadataModal from '~/components/admin/custom-metadata/metadataModal.vue'
+    import addMetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import ArchiveMetadataModal from './archiveMetadataModal.vue'
 

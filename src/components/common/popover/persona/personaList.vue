@@ -14,7 +14,7 @@
                     :autofocus="true"
                 ></SearchAdvanced>
             </div>
-            <div class="mt-4">
+            <div class="mt-4 persona-list-wrapper">
                 <div
                     v-for="persona in filteredPersonas"
                     :key="persona.id"
@@ -94,4 +94,10 @@ export default defineComponent({
     },
 })
 </script>
+<style lang="less" scoped>
+.persona-list-wrapper {
+    height: calc(100% - 2rem);
+    overflow-y: auto;
+}
+</style>
 

@@ -12,7 +12,6 @@ export default function useCustomMetadataFacet() {
      * @desc mapped BM object that has filter support
      * */
     const list = computed(() => {
-        console.log(customMetadataList)
         if (customMetadataList.value?.length > 0) {
             return customMetadataList.value
                 .filter((bm) =>
@@ -22,12 +21,13 @@ export default function useCustomMetadataFacet() {
                     id: bm.name,
                     label: bm.displayName,
                     component: 'properties',
-                    image: bm.options?.image || '',
                     attributes: bm.attributeDefs,
                     overallCondition: 'OR',
                     isDeleted: false,
                     isDisabled: false,
+                    includes: [],
                     exclude: false,
+                    options: bm.options,
                 }))
         }
         return []

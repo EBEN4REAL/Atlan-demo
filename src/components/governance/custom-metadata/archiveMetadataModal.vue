@@ -54,7 +54,7 @@
         watch,
     } from 'vue'
 
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
     import { getErrorMessage } from '~/utils/error'
     import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
 

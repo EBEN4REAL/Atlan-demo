@@ -196,7 +196,7 @@
 <script lang="ts">
     import { defineComponent, reactive, ref, computed, onMounted } from 'vue'
 
-    import useEnums from '@/admin/enums/composables/useEnums'
+    import useEnums from '@/governance/enums/composables/useEnums'
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,

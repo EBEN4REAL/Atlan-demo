@@ -34,13 +34,13 @@
                                 <a-popover v-if="c.helpText" title="Help">
                                     <template #content>
                                         <div
-                                            class="text-gray-500"
+                                            class="p-3 text-gray-500"
                                             v-html="c.helpText"
                                         ></div>
                                     </template>
-                                    <fa
-                                        icon="fal info-circle"
-                                        class="ml-2 text-xs"
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="inline-block mb-1"
                                     />
                                 </a-popover>
                                 <a-form-item :name="c.id">
@@ -111,11 +111,11 @@
                     <a-popover v-if="f.helpText" title="Help">
                         <template #content>
                             <div
-                                class="text-gray-500"
+                                class="p-3 text-gray-500"
                                 v-html="f.helpText"
                             ></div>
                         </template>
-                        <fa icon="fal info-circle" class="ml-2 text-xs"></fa>
+                        <AtlanIcon icon="Info" class="inline-block mb-1" />
                     </a-popover>
                     <a-form-item :name="f.id">
                         <DynamicInput

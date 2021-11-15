@@ -13,7 +13,8 @@
                 </div>
                 <div v-auth="map.ADD_USER_GROUP">
                     <a-button type="primary" ghost @click="handleAddMember"
-                        ><fa icon="fal plus" class="mr-2"></fa>Add Member
+                        ><AtlanIcon icon="Add" class="inline-block mr-2" />Add
+                        Member
                     </a-button>
                 </div>
             </div>
@@ -41,7 +42,10 @@
                                 }
                             "
                         >
-                            <fa icon="fal sync" class="mr-2"></fa>Try again
+                            <AtlanIcon
+                                icon="Refresh"
+                                class="inline-block mb-1 mr-1"
+                            />Try again
                         </a-button>
                     </div>
                 </ErrorView>
@@ -92,9 +96,9 @@
                                 v-if="removeMemberLoading[user.id]"
                                 class="flex cursor-default text-error-muted"
                             >
-                                <fa
+                                <AtlanIcon
                                     style="vertical-align: middle"
-                                    icon="fal circle-notch"
+                                    icon="CircleLoader"
                                     class="mr-1 animate-spin"
                                 />
                                 <div>Removing...</div>

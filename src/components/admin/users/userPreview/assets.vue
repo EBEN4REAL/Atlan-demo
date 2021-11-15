@@ -1,13 +1,22 @@
 <template>
-    <div class="mb-2 text-base font-bold text-gray-500">Assets Owned</div>
-    <div class="flex flex-col h-full border rounded-lg">
-        <AssetsWrapper :initial-filters="ownerFilter" :show-filters="false" />
+    <div class="px-4 py-2 mb-3">
+        <div class="mb-4 text-lg font-bold">Assets Owned</div>
+        <div v-auth="map.LIST_USERS" class="flex flex-col border rounded-lg">
+            <AssetsWrapper
+                :initial-filters="ownerFilter"
+                :show-filters="false"
+                :static-use="true"
+                :show-aggrs="false"
+                class="asset-list-height"
+            />
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
     import AssetsWrapper from '@/assets/index.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'AssetsTabs',
@@ -28,10 +37,10 @@
             const { selectedUser, selectedGroup } = toRefs(props)
             const ownerFilter = computed(() => ({
                 owners: {
-                    userValue: selectedUser.value?.username
+                    ownerUsers: selectedUser.value?.username
                         ? [selectedUser.value.username]
                         : [],
-                    groupValue: selectedGroup.value?.name
+                    ownerGroups: selectedGroup.value?.name
                         ? [selectedGroup.value.name]
                         : [],
                 },
@@ -39,6 +48,7 @@
 
             return {
                 ownerFilter,
+                map,
             }
         },
     })
@@ -46,6 +56,6 @@
 
 <style lang="less" scoped>
     .asset-list-height {
-        max-height: calc(100vh - 23.5rem);
+        max-height: calc(100vh - 11rem);
     }
 </style>

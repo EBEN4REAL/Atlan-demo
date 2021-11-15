@@ -12,17 +12,24 @@
             "
         >
             <div
-                v-if="metadata?.options?.imagePath"
-                class="overflow-hidden bg-gray-100 rounded cursor-pointer"
-                style="width: 28px; height: 28px"
+                v-if="metadata?.options?.imagePath || metadata?.options?.emoji"
                 @click="popOverVisible = !popOverVisible"
             >
-                <img
-                    :src="imageUrl"
-                    alt=""
-                    class="object-cover w-full"
-                    style="height: 28px"
-                />
+                <div
+                    v-if="metadata?.options?.logoType === 'image'"
+                    class="overflow-hidden bg-gray-100 rounded cursor-pointer"
+                    style="width: 28px; height: 28px"
+                >
+                    <img
+                        :src="imageUrl"
+                        alt=""
+                        class="object-cover w-full"
+                        style="height: 28px"
+                    />
+                </div>
+                <span v-else style="font-size: 28px">{{
+                    metadata?.options?.emoji
+                }}</span>
             </div>
             <div
                 v-else
@@ -35,14 +42,26 @@
             </div>
             <template #content>
                 <div style="width: 314px"></div>
+
                 <a-tabs default-active-key="1" size="small">
-                    <a-tab-pane key="1" tab="Upload Image" force-render>
+                    <a-tab-pane key="1" tab="Emoji">
+                        <Picker
+                            :data="emojiIndex"
+                            set="twitter"
+                            autoFocus
+                            :showPreview="false"
+                            :emojiTooltip="false"
+                            :infiniteScroll="true"
+                            @select="showEmoji"
+                        />
+                    </a-tab-pane>
+                    <a-tab-pane key="2" tab="Upload Image" force-render>
                         <div class="p-1">
                             <div
                                 class="p-3 text-center border border-dashed rounded "
                             >
                                 <a-upload
-                                    class="relative block w-full mb-3 metadata-avatar-uploader"
+                                    class="relative block w-full mb-3  metadata-avatar-uploader"
                                     name="file"
                                     accept="image/*"
                                     :multiple="false"
@@ -67,9 +86,6 @@
                             </div>
                         </div>
                     </a-tab-pane>
-                    <!-- <a-tab-pane key="1" tab="Emoji">
-                        Emoji library here
-                    </a-tab-pane> -->
                 </a-tabs>
                 <!-- <pre>{{ metadata }}</pre> -->
             </template>
@@ -87,12 +103,22 @@
         onMounted,
     } from 'vue'
     import { message, Modal } from 'ant-design-vue'
+
+    // Emoji
+    import data from 'emoji-mart-vue-fast/data/twitter.json'
+    import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
+    import 'emoji-mart-vue-fast/css/emoji-mart.css'
+
     import useUploadImage from '~/composables/image/uploadImage'
     import { Types } from '~/services/meta/types'
-
     import { useTypedefStore } from '~/store/typedef'
 
+    let emojiIndex = new EmojiIndex(data)
+
     export default defineComponent({
+        components: {
+            Picker,
+        },
         props: {
             metadata: {
                 required: true,
@@ -180,6 +206,12 @@
                     `${window.location.origin}/api/service${props.metadata.options.imagePath}`
             )
 
+            const showEmoji = (emoji) => {
+                props.metadata.options.emoji = emoji.native
+                props.metadata.options.logoType = 'emoji'
+                popOverVisible.value = false
+            }
+
             return {
                 fileList,
                 popOverVisible,
@@ -187,6 +219,8 @@
                 imageUrl,
                 isUpdating,
                 uploadImage,
+                emojiIndex,
+                showEmoji,
             }
         },
     })
@@ -197,5 +231,9 @@
         .ant-upload.ant-upload-select {
             display: block;
         }
+    }
+    button.emoji-mart-emoji,
+    .emoji-mart-category .emoji-mart-emoji span {
+        cursor: pointer;
     }
 </style>

@@ -34,10 +34,10 @@ function fetchRelationAssets(id: string, assetType: string) {
     }
 }
 
-function useEntityRelationships(guid) {
+function useEntityRelationships(id: string) {
     const relationshipAssets = ref([])
 
-    const { data, error, isLoading } = Entity.GetEntity(guid)
+    const { data, error, isLoading } = Entity.GetEntity(id)
 
     watch([data, error], () => {
         if (data.value && error.value == undefined) {

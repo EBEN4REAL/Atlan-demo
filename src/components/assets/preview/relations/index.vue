@@ -90,10 +90,6 @@
     export default defineComponent({
         components: { AssetTypeList, SearchAndFilter },
         props: {
-            id: String,
-            componentData: {
-                type: Object as PropType<any>,
-            },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
@@ -126,7 +122,7 @@
 
             const fetchData = () => {
                 const { relationshipAssetTypes, isLoading } =
-                    useEntityRelationships(selectedAsset.value.guid)
+                    useEntityRelationships(selectedAsset.value?.guid)
                 relationshipAssets.value = relationshipAssetTypes.value
                 assetId.value = selectedAsset.value.guid
                 loading.value = isLoading.value

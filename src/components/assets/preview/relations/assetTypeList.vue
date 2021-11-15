@@ -70,7 +70,7 @@
                 }
                 emit('preview', item)
             }
-            const { fetchRelationAssets } = useRelations()
+            const { fetchRelationAssets } = useRelations
             const { list, isReady, error, isLoading } = fetchRelationAssets(
                 props.assetId,
                 props.assetType

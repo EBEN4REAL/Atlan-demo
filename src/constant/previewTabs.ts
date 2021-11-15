@@ -35,6 +35,19 @@ export const previewTabs = [
         tooltip: 'Activity',
     },
     {
+        name: 'Relations',
+        component: 'relations',
+        exclude: [
+            'Connection',
+            'Database',
+            'Schema',
+            'AtlasGlossaryCategory',
+            'AtlasGlossaryTerm'
+        ],
+        icon: 'Relation',
+        tooltip: 'Relationships',
+    },
+    {
         name: 'Property',
         component: 'property',
         icon: 'Property',

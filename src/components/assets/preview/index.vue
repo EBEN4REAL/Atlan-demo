@@ -161,6 +161,9 @@
             activity: defineAsyncComponent(
                 () => import('./activity/activityTab.vue')
             ),
+            relations: defineAsyncComponent(
+                () => import('./relations/index.vue')
+            ),
             // chat: defineAsyncComponent(
             //     () => import('./tabs/chat/assetChat.vue')
             // ),

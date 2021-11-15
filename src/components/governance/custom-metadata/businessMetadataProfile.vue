@@ -32,7 +32,13 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="mr-4">
                         <div
-                            class="relative flex items-stretch w-full overflow-hidden "
+                            class="
+                                relative
+                                flex
+                                items-stretch
+                                w-full
+                                overflow-hidden
+                            "
                         >
                             <a-input
                                 v-model:value="attrsearchText"
@@ -109,7 +115,7 @@
     import { defineComponent, ref, computed, onMounted, watch, Ref } from 'vue'
 
     // ? Components
-    import AddAttributeCard from '@/admin/custom-metadata/addAttributeCard.vue'
+    import AddAttributeCard from '@/governance/custom-metadata/addAttributeCard.vue'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     // import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
     import MetadataHeaderButton from './metadataHeaderButton.vue'

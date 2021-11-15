@@ -36,7 +36,7 @@ function usePersonaUserList(persona: Ref<IPersona>) {
                     }
                 })
             })
-            console.log(list.value, 'personaUser', persona)
+            // console.log(list.value, 'personaUser', persona)
 
             userList.value = data
         },

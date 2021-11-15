@@ -2,7 +2,7 @@
     <div class="flex items-center justify-center">
         <div v-if="isLoading" class="flex items-center">
             <AtlanIcon
-                icon="CircleLoader"
+                icon="Loader"
                 class="mr-1 animate-spin text-primary"
             ></AtlanIcon
             >Fetching personas...
@@ -14,7 +14,7 @@
                     :autofocus="true"
                 ></SearchAdvanced>
             </div>
-            <div class="mt-4">
+            <div class="mt-4 persona-list-wrapper">
                 <div
                     v-for="persona in filteredPersonas"
                     :key="persona.id"
@@ -94,4 +94,10 @@ export default defineComponent({
     },
 })
 </script>
+<style lang="less" scoped>
+.persona-list-wrapper {
+    height: calc(100% - 2rem);
+    overflow-y: auto;
+}
+</style>
 

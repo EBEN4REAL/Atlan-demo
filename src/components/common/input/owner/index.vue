@@ -2,16 +2,16 @@
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
             placement="leftBottom"
-            class="owner-popover"
+            overlayClassName="ownerPopover"
             @visibleChange="handleVisibleChange"
             :trigger="['click']"
             v-model:visible="isEdit"
         >
             <template #content>
                 <OwnerFacets
-                    ref="ownerFacetRef"
-                    :key="guid"
+                    ref="ownerInputRef"
                     v-model="localValue"
+                    :showNone="false"
                 ></OwnerFacets>
             </template>
             <a-button
@@ -49,24 +49,18 @@
         name: 'OwnersWidget',
         components: { UserPill, GroupPill, AtlanIcon, OwnerFacets },
         props: {
-            guid: {
-                type: String,
-                required: false,
-            },
             modelValue: {
                 type: Object,
                 required: false,
+                default: () => {},
             },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { guid } = toRefs(props)
             const localValue = ref(modelValue.value)
 
             const isEdit = ref(false)
-
-            const dirtyTimestamp = ref()
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -103,14 +97,15 @@
 
             const ownerFacetRef: Ref<null | HTMLInputElement> = ref(null)
 
-            const handleVisibleChange = () => {
-                console.log(isEdit.value)
+            const handleVisibleChange = (visible) => {
                 if (isEdit.value) {
                     if (ownerFacetRef.value?.forceFocus) {
                         ownerFacetRef.value?.forceFocus()
                     }
                 }
-                handleChange()
+                if (!visible) {
+                    handleChange()
+                }
             }
 
             return {
@@ -124,9 +119,10 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .owner-popover {
-        :global(.ant-popover-content) {
+<style lang="less">
+    .ownerPopover {
+        .ant-popover-inner-content {
+            @apply px-0 py-3;
             width: 250px !important;
         }
     }

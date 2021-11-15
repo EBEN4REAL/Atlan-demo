@@ -58,6 +58,11 @@
                 required: false,
                 default: () => [],
             },
+            cacheKey: {
+                type: String,
+                required: false,
+                default: () => 'DEFAULT_USERS',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

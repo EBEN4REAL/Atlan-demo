@@ -87,7 +87,7 @@
     </a-select>
     <a-modal
         v-model:visible="createNewVisibility"
-        title="Basic Modal"
+        title="Create Credential"
         width="60%"
         :closable="false"
     >

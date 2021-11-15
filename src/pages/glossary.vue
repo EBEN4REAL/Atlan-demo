@@ -35,7 +35,7 @@
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     // import { useRoute, useRouter } from 'vue-router'
-    // import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    // import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
     import GlossaryDiscovery from '@/glossary/index.vue'
 
     // composables

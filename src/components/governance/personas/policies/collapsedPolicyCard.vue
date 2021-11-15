@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 border border-gray-300 rounded shadow  group"
+        class="flex flex-col py-4 mb-2 border-b border-gray-300 rounded  group hover:shadow"
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">
@@ -90,11 +90,14 @@
         emits: ['edit'],
         setup(props) {
             const { policy, type } = toRefs(props)
-            const assets = computed(() =>
-                policy.value.assets.map((name) => ({
-                    label: name.split('/').slice(3).join('/'),
+            const assets = computed(() => {
+                return policy.value.assets.map((name) => ({
+                    label:
+                        name.split('/').length > 3
+                            ? name.split('/').slice(3).join('/')
+                            : name.split('/').slice(2).join('/'),
                 }))
-            )
+            })
 
             const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)

@@ -199,13 +199,11 @@
                 // to see which node got selected or unselected and
                 // use a set to maintain the state
                 const assetSet = new Set([
-                    ...addSufffix(checkedKeys.value),
+                    ...checkedKeys.value,
                     ...assets.value,
                     ...regexKeys.value,
-                    ...addSufffix(
-                        getQualifiedNamesFromAssets(
-                            bulkStore.bulkSelectedAssets
-                        )
+                    ...getQualifiedNamesFromAssets(
+                        bulkStore.bulkSelectedAssets
                     ),
                 ])
                 emit('update:assets', [...assetSet])

@@ -7,7 +7,6 @@
                 class="h-6 mr-2 rounded cursor-pointer select-none  hover:bg-primary-light hover:text-primary"
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
-                @mouseover="$emit('openNavbar')"
             />
 
             <router-link to="/">

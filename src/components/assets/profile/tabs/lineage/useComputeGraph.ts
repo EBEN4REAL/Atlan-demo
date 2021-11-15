@@ -50,15 +50,31 @@ export default function useComputeGraph(
             type,
             source,
             isBase,
+            entity,
+
             x: 40,
             y: 40,
             width: isProcess ? 32 : 220,
             height: 32,
             shape: 'html',
+            data: {
+                id: guid,
+            },
             html: {
-                render() {
+                render(node) {
+                    const data = node.getData() as any
+
                     return !isProcess
-                        ? `<div class="lineage-node">
+                        ? `<div class="lineage-node ${
+                              data?.isHighlightedNode === data?.id
+                                  ? 'isHighlightedNode'
+                                  : ''
+                          }
+                          ${
+                              data?.isHighlightedNodePath === data?.id
+                                  ? 'isHighlightedNodePath'
+                                  : ''
+                          }">
                                     <span class="node-type">
                                         <span class="node-type__item">${type}</span>
                                     </span>
@@ -70,7 +86,18 @@ export default function useComputeGraph(
                                     <img class="node-source" src="${img}" />
                                     <span class="node-text">${displayText}</span>
                                 </div>`
-                        : `<div class="lineage-process"> P </div>`
+                        : `<div class="lineage-process ${
+                              data?.isHighlightedNode === data?.id
+                                  ? 'isHighlightedNode'
+                                  : ''
+                          } ${
+                              data?.isHighlightedNodePath === data?.id
+                                  ? 'isHighlightedNodePath'
+                                  : ''
+                          }"> P </div>`
+                },
+                shouldComponentUpdate(node: Cell) {
+                    return node.hasChanged('data')
                 },
             },
         }
@@ -85,7 +112,7 @@ export default function useComputeGraph(
         const getEntity = (x) => guidEntityMap.find((y) => y.guid === x)
         const isProcess = (x) => {
             const entity = getEntity(x)
-            return entity.typeName === 'AtlanProcess'
+            return entity.typeName === 'Process'
         }
         relations.forEach((relation) => {
             // const x = relation.fromEntityId
@@ -128,6 +155,9 @@ export default function useComputeGraph(
         }
         edges.value.push(edge)
     })
+
+    console.log('edges:', edges.value)
+    console.log('nodes:', nodes.value)
 
     /* Render */
     model.value = graphLayout.value.layout({

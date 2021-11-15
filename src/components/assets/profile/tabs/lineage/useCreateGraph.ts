@@ -32,9 +32,9 @@ export default function useCreateGraph(
         minimap: {
             enabled: true,
             container: minimapContainer.value,
-            width: 200,
-            height: 160,
-            padding: 10,
+            width: 165,
+            height: 105,
+            padding: 6,
             graphOptions: {
                 async: true,
                 getCellView(cell) {
@@ -51,9 +51,10 @@ export default function useCreateGraph(
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
-        align: 'UR',
+        // align: 'UR',
         ranksep: 80,
         nodesep: 10,
+
         controlPoints: true,
     })
 

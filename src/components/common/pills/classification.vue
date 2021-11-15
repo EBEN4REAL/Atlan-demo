@@ -62,7 +62,7 @@
             const { name, isPropagated, displayName } = toRefs(props)
 
             const handleRemove = () => {
-                emit('delete')
+                emit('delete', name.value)
             }
 
             return { name, isPropagated, displayName, handleRemove }

@@ -2,17 +2,17 @@
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
             placement="leftBottom"
-            class="classification-popover"
+            overlayClassName="classificationPopover"
             @visibleChange="handleVisibleChange"
             :trigger="['click']"
             v-model:visible="isEdit"
         >
             <template #content>
                 <ClassificationFacet
-                    :key="guid"
                     v-model="selectedValue"
                     ref="classificationFacetRef"
                     @change="handleSelectedChange"
+                    :showNone="false"
                 ></ClassificationFacet>
             </template>
             <a-button
@@ -30,6 +30,7 @@
                 :displayName="classification?.displayName"
                 :isPropagated="isPropagated(classification)"
                 :allowDelete="true"
+                @delete="handleDeleteClassification"
             ></ClassificationPill>
         </template>
     </div>
@@ -64,9 +65,12 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+
             const { guid } = toRefs(props)
             const localValue = ref(modelValue.value)
-            const selectedValue = ref(modelValue.value.map((i) => i.typeName))
+            const selectedValue = ref({
+                classifications: modelValue.value.map((i) => i.typeName),
+            })
 
             const isEdit = ref(false)
             const classificationFacetRef: Ref<null | HTMLInputElement> =
@@ -96,12 +100,23 @@
 
             const handleChange = () => {
                 modelValue.value = localValue.value
+
                 emit('change')
+            }
+
+            const handleDeleteClassification = (name) => {
+                localValue.value = localValue.value.filter(
+                    (i) => i.typeName !== name
+                )
+                selectedValue.value = {
+                    classifications: localValue.value.map((i) => i.typeName),
+                }
+                handleChange()
             }
 
             const handleSelectedChange = () => {
                 localValue.value = []
-                selectedValue.value.forEach((i) => {
+                selectedValue.value.classifications?.forEach((i) => {
                     if (
                         !localValue.value.find(
                             (l) => l.typeName === i && !l.propagate
@@ -115,17 +130,17 @@
                         })
                     }
                 })
-                handleChange()
             }
 
-            const handleVisibleChange = () => {
-                console.log(isEdit.value)
+            const handleVisibleChange = (visible) => {
                 if (isEdit.value) {
                     if (classificationFacetRef.value?.forceFocus) {
                         classificationFacetRef.value?.forceFocus()
                     }
                 }
-                handleChange()
+                if (!visible) {
+                    handleChange()
+                }
             }
 
             return {
@@ -139,13 +154,15 @@
                 handleSelectedChange,
                 classificationFacetRef,
                 isEdit,
+                handleDeleteClassification,
             }
         },
     })
 </script>
-<style lang="less" scoped>
-    .classification-popover {
-        :global(.ant-popover-content) {
+<style lang="less">
+    .classificationPopover {
+        .ant-popover-inner-content {
+            @apply px-0 py-3;
             width: 250px !important;
         }
     }

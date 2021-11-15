@@ -55,13 +55,7 @@
                     <template v-for="user in userList" :key="user.id">
                         <a-checkbox
                             :value="user.id"
-                            class="
-                                flex
-                                items-center
-                                w-full
-                                py-2
-                                border-b border-gray-100
-                            "
+                            class="flex items-center w-full py-2 border-b border-gray-100 "
                             @change="handleChange"
                         >
                             <span class="flex justify-between ml-3">
@@ -120,11 +114,6 @@
     import { ref, reactive, defineComponent, computed } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { useDebounceFn } from '@vueuse/core'
-    import {
-        pluralizeString,
-        getNameInitials,
-        getNameInTitleCase,
-    } from '~/utils/string'
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import { useUsers } from '~/composables/user/useUsers'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -253,9 +242,6 @@
                 state,
                 STATES,
                 handleLoadMore,
-                getNameInitials,
-                getNameInTitleCase,
-                pluralizeString,
                 handleChange,
                 selectedIds,
                 imageUrl,

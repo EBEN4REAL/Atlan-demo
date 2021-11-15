@@ -148,7 +148,13 @@
                     v-else-if="list.length === 0 && !isLoading"
                     class="flex-grow"
                 >
-                    <EmptyView @event="handleResetEvent"></EmptyView>
+                    <EmptyView
+                        empty-screen="EmptyDiscover"
+                        desc="We didnt find anything that matches your search criteria"
+                        button-text="Reset Filter"
+                        class="mb-10"
+                        @event="handleResetEvent"
+                    ></EmptyView>
                 </div>
                 <GlossaryTree
                     v-else-if="!queryText"
@@ -181,7 +187,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
-    import EmptyView from '@common/empty/discover.vue'
+    import EmptyView from '@common/empty/index.vue'
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'

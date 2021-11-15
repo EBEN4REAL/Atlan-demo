@@ -7,8 +7,7 @@
         @update:selected="selectBm"
     >
         <template #default="{ item, isSelected }">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center overflow-hidden">
+            <div class="flex items-center ">
                     <div
                         class="mr-1 overflow-hidden bg-gray-100 rounded cursor-pointer "
                         style="width: 16px; height: 16px"
@@ -29,15 +28,6 @@
                         {{ item.displayName || item.name }}
                         <sup v-if="item && item.guid === 'new'"> * </sup>
                     </p>
-                </div>
-                <span class="flex-none text-xs text-gray-500 flex-inital"
-                    >{{ item.attributeDefs.length || 0 }}
-                    {{
-                        item.attributeDefs.length > 1
-                            ? 'properties'
-                            : 'property'
-                    }}</span
-                >
             </div>
         </template>
     </ExplorerList>

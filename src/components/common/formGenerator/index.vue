@@ -185,6 +185,7 @@
         watch,
         computed,
         toRefs,
+        defineAsyncComponent,
         // onErrorCaptured,
         // Suspense,
     } from 'vue'

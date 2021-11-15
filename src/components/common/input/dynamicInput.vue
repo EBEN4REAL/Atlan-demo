@@ -54,8 +54,8 @@
     <!-- End of Coninuted types -->
     <a-select
         v-if="dataType === 'asyncSelect'"
+        v-model:value="localValue"
         style="width: 100%"
-        :value="value"
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
         :options="asyncData"
         :loading="loading"
@@ -102,7 +102,7 @@
     <!-- async tree select start -->
     <a-tree-select
         v-if="dataType === 'asyncTreeSelect'"
-        v-model:value="valueTreeSelected"
+        v-model:value="localValue"
         :multiple="true"
         :tree-checkable="true"
         style="width: 100%"
@@ -166,20 +166,11 @@
     />
 
     <a-input-group v-if="dataType === 'enum'" compact class="w-full">
-        <!-- <a-input
-            v-if="isCustom"
-            style="width: 80%"
-            :value="modelValue"
-            :placeholder="placeholder"
-            :prefix="prefix"
-            :suffix="suffix"
-            @change="handleChange"
-        ></a-input> -->
         <a-select
             v-if="dataType === 'enum'"
+            v-model:value="localValue"
             style="width: 80%"
             show-search
-            :value="value"
             v-bind="{
                 ...(allowCustom
                     ? { mode: 'tags' }
@@ -191,14 +182,6 @@
             :placeholder="placeholder"
             @change="handleChange"
         ></a-select>
-        <!-- <a-button
-            v-if="allowCustom"
-            style="width: 10%"
-            class="px-1"
-            @click="handleToggleCustom"
-        >
-            <fa icon="fal user-edit"></fa>
-        </a-button> -->
     </a-input-group>
     <!-- <UserSelector v-if="dataType === 'users'"></UserSelector> -->
     <div v-if="errorM || treeErrorM || fileError" class="text-red-600">
@@ -365,6 +348,7 @@
                 responseConfig,
                 requestConfig,
                 getFormConfig,
+                multiple,
             } = toRefs(props)
 
             // prop requestConfig is initially defaults to null, then reflects actually value, find out why
@@ -412,7 +396,6 @@
                 handleUpload,
                 beforeUpload,
                 handleRemove,
-                init: initFileUploader,
                 uploading,
                 fileList,
                 error: fileError,
@@ -427,7 +410,7 @@
                 createNewVisibility.value = false
                 loadData()
             }
-            const value: Ref<any> = ref(props.modelValue)
+            const localValue: Ref<any> = ref(null)
 
             watch(
                 [loading, error],
@@ -484,31 +467,31 @@
                 })
                 return allValues
             }
-            const valueTreeSelected: Ref<any> = ref()
 
             onMounted(() => {
+                localValue.value = props.multiple ? [] : ''
                 if (props.dataType === 'asyncTreeSelect') {
-                    valueTreeSelected.value = parseDBSchemaValue(
-                        props.modelValue
-                    )
-                    value.value = parseDBSchemaValue(modelValue.value)
+                    localValue.value = parseDBSchemaValue(props.modelValue)
                 }
                 // for async select, load on mount if possible
                 else if (
                     props.dataType === 'asyncSelect' &&
                     shouldRefetch.value &&
                     !letAsyncSelectDisabled.value
-                )
+                ) {
                     loadData()
+                }
             })
 
             const handleChange = (e) => {
                 if (props.dataType === 'enum') {
                     if (!props.multiple && props.allowCustom) {
-                        value.value = e[e.length - 1] ? [e[e.length - 1]] : []
+                        localValue.value = e[e.length - 1]
+                            ? [e[e.length - 1]]
+                            : []
                         emit('update:modelValue', e[e.length - 1])
                     } else {
-                        value.value = e
+                        localValue.value = e
                         emit('update:modelValue', e)
                     }
                     emit('change', e)
@@ -524,10 +507,11 @@
                         if (d) temp[k] = getStringFromPath(d, p)
                     })
                     if (!props.multiple && props.allowCustom) {
-                        value.value = e[e.length - 1] ? [e[e.length - 1]] : []
+                        localValue.value = e[e.length - 1]
+                            ? [e[e.length - 1]]
+                            : []
                         emit('update:modelValue', e[e.length - 1])
                     } else {
-                        value.value = e
                         emit('update:modelValue', e)
                     }
 
@@ -556,7 +540,7 @@
             }
 
             const dateTimeTypeComponent = computed(() => {
-                switch (dateTimeType) {
+                switch (dateTimeType.value) {
                     case 'date':
                         return 'a-date-picker'
                     case 'month':
@@ -595,7 +579,7 @@
                 treeErrorM,
                 treeData,
                 handleSelect,
-                value,
+                localValue,
                 onLoadData,
                 loadData,
                 handleClose,
@@ -608,7 +592,6 @@
                 letAsyncSelectDisabled,
                 dateTimeTypeComponent,
                 disabledDate,
-                valueTreeSelected,
             }
         },
     })

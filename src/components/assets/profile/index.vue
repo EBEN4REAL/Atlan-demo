@@ -1,11 +1,12 @@
 <template>
-    <div class="flex flex-col w-full h-full max-profile-width">
-        <AssetHeader :item="selectedAsset"></AssetHeader>
+    <div class="flex flex-col w-full h-full">
+        <AssetHeader :item="asset"></AssetHeader>
 
         <a-tabs
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
             class="flex-1"
+            :class="$style.profiletab"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -103,17 +104,6 @@ meta:
     requiresAuth: true
 </route>
 
-<style lang="less">
-    .asset-profile {
-        .ant-tabs-top > .ant-tabs-nav,
-        .ant-tabs-bottom > .ant-tabs-nav,
-        .ant-tabs-top > div > .ant-tabs-nav,
-        .ant-tabs-bottom > div > .ant-tabs-nav {
-            margin: 0 !important;
-        }
-    }
-</style>
-
 <style lang="less" module>
     .profiletab {
         :global(.ant-tabs-tab:first-child) {
@@ -131,11 +121,5 @@ meta:
         :global(.ant-tabs-content-holder) {
             @apply bg-primary-light overflow-y-auto !important;
         }
-    }
-</style>
-
-<style lang="less" scoped>
-    .max-profile-width {
-        max-width: calc(100vw - 420px);
     }
 </style>

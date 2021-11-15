@@ -76,10 +76,10 @@ specifiers:
   numeral: 2.0.6
   openapi-client-axios: ^4.2.0
   openapi-client-axios-ts: ^3.9.9
-  openapi-typescript-codegen: ^0.11.8
+  openapi-typescript-codegen: ^0.12.1
   pinia: ^2.0.3
   pluralize: ^8.0.0
-  pnpm: ^6.21.0
+  pnpm: ^6.21.1
   postcss: ^8.3.11
   prettier: ^2.4.1
   prosemirror-model: 1.14.1
@@ -204,8 +204,8 @@ devDependencies:
   eslint-plugin-vue: 8.0.3_eslint@8.2.0
   https-localhost: 4.7.0
   husky: 7.0.4
-  openapi-typescript-codegen: 0.11.8
-  pnpm: 6.21.0
+  openapi-typescript-codegen: 0.12.1
+  pnpm: 6.22.1
   postcss: 8.3.11
   prettier: 2.4.1
   rollup-plugin-visualizer: 5.5.2
@@ -2934,6 +2934,10 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /blob-polyfill/5.0.20210201:
+    resolution: {integrity: sha512-SrH6IG6aXL9pCgSysBCiDpGcAJ1j6/c1qCwR3sTEQJhb+MTk6FITNA6eW6WNYQDNZVi4Z9GjxH5v2MMTv59CrQ==}
+    dev: true
+
   /body-parser/1.19.0:
     resolution: {integrity: sha512-dhEPs72UPbDnAQJ9ZKMNTP6ptJaionhP5cBb541nXPlW60Jepo9RV/a4fX4XWW9CuFNK22krhrj1+rgzifNCsw==}
     engines: {node: '>= 0.8'}
@@ -3384,6 +3388,16 @@ packages:
     dependencies:
       luxon: 1.28.0
     dev: false
+
+  /cross-blob/2.0.1:
+    resolution: {integrity: sha512-ARuKPPo3I6DSqizal4UCyMCiGPQdMpMJS3Owx6Lleuh26vSt2UnfWRwbMLCYqbJUrcol+KzGVSLR91ezSHP80A==}
+    engines: {node: ^10.17.0 || >=12.3.0}
+    dependencies:
+      blob-polyfill: 5.0.20210201
+      fetch-blob: 2.1.2
+    transitivePeerDependencies:
+      - domexception
+    dev: true
 
   /cross-spawn/7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
@@ -4299,6 +4313,16 @@ packages:
     dependencies:
       format: 0.2.2
     dev: false
+
+  /fetch-blob/2.1.2:
+    resolution: {integrity: sha512-YKqtUDwqLyfyMnmbw8XD6Q8j9i/HggKtPEI+pZ1+8bvheBu78biSmNaXWusx1TauGqtUUGx/cBb1mKdq2rLYow==}
+    engines: {node: ^10.17.0 || >=12.3.0}
+    peerDependencies:
+      domexception: '*'
+    peerDependenciesMeta:
+      domexception:
+        optional: true
+    dev: true
 
   /fflate/0.7.1:
     resolution: {integrity: sha512-VYM2Xy1gSA5MerKzCnmmuV2XljkpKwgJBKezW+495TTnTCh1x5HcYa1aH8wRU/MfTGhW4ziXqgwprgQUVl3Ohw==}
@@ -5812,8 +5836,8 @@ packages:
     resolution: {integrity: sha512-sR23YjmuwDSMsQVZDHbV9mPgi0RyniQlqR0AQxTC2/F3cpSjRFMH3CFPjoWvNqhC4OxPkDYNb2l8Mc1Me6D/KQ==}
     dev: false
 
-  /openapi-typescript-codegen/0.11.8:
-    resolution: {integrity: sha512-Hurkrn7tfOT4UibZaJljUfoApU80SU8UF/o0zFc/NjG1si0TjXl1L8iT7lF0alBu6D87RZNwfojAh8v4//IL9w==}
+  /openapi-typescript-codegen/0.12.1:
+    resolution: {integrity: sha512-dzLcbk/B2365Wg2EYOYn7xi5ZbbDAZdRX/hEEdFqfBPvg9AaILtLxxMEUOyt1510xidtDi7d0VHj9jQXWd7FbQ==}
     hasBin: true
     dependencies:
       '@types/node-fetch': 2.5.12
@@ -5821,6 +5845,7 @@ packages:
       axios: 0.24.0
       camelcase: 6.2.0
       commander: 8.3.0
+      cross-blob: 2.0.1
       form-data: 4.0.0
       handlebars: 4.7.7
       json-schema-ref-parser: 9.0.9
@@ -5829,6 +5854,7 @@ packages:
       rimraf: 3.0.2
     transitivePeerDependencies:
       - debug
+      - domexception
     dev: true
 
   /optionator/0.9.1:
@@ -6017,8 +6043,8 @@ packages:
     engines: {node: '>=4'}
     dev: false
 
-  /pnpm/6.21.0:
-    resolution: {integrity: sha512-Emhpjbr7MiINYUP6d/X5c2vPa5ltkA1EhJ0wmGotrYZs7DCFvy6SW+RKTGNddedqLhL14LTK+4pE1rHWcQnnfg==}
+  /pnpm/6.22.1:
+    resolution: {integrity: sha512-xJYQh7+AOyXqstjJYJFfv7FQ9IWOcOJowAEXV507a7S0M6SW9FrBlZXXObhc90NaeyBFWve4jQlv1FjB+mbd1A==}
     engines: {node: '>=12.17'}
     hasBin: true
     dev: true

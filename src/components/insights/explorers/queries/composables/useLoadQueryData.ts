@@ -67,6 +67,9 @@ const useLoadQueryData = ({
         body.value = {
             dsl: {
                 size: 100,
+                sort : [
+                    { "name.keyword" : {"order" : "asc"}}
+                ],
                 query: {
                     bool: {
                         must: [

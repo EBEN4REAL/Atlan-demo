@@ -2,6 +2,7 @@
     <div
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
+        {{ searchLoading }}
         <div class="w-full p-4 pb-0 rounded">
             <Connector
                 :connector="connector"
@@ -633,8 +634,18 @@
                     readFolders: permissions.value.public.readFolders,
                 },
             })
-            const { data: searchResults, isLoading: searchLoading } =
+
+            const { data1: searchResults, isLoading1: searchLoading } =
                 useSearchQueries(searchQuery, savedQueryType)
+
+            watch(
+                [searchResults, searchLoading],
+                () => {
+                    console.log('searchResults: ', searchResults.value)
+                    console.log('searchLoad: ', searchLoading.value)
+                },
+                { immediate: true }
+            )
 
             const getRelevantTreeData = (type?: 'personal' | 'all') => {
                 const currentType = type ?? savedQueryType.value

@@ -61,15 +61,19 @@
                 "
                 :selected-user-id="selectedUserId"
                 :show-change-role-popover="showChangeRolePopover"
+                :showDisableEnablePopover="showDisableEnablePopover"
+                :showRevokeInvitePopover="showRevokeInvitePopover"
+                @toggleDisableEnablePopover="toggleDisableEnablePopover"
+                @handleRevokeInvite="handleRevokeInvite"
+                @revokeInvite="revokeInvite"
                 @change="handleTableChange"
                 @handle-change-role="handleChangeRole"
                 @showUserPreviewDrawer="showUserPreviewDrawer"
                 @handleUpdateRole="handleUpdateRole"
                 @handleErrorUpdateRole="handleErrorUpdateRole"
                 @confirmEnableDisablePopover="confirmEnableDisablePopover"
-                @showRevokeInvitationConfirm="showRevokeInvitationConfirm"
                 @closeChangeRolePopover="closeChangeRolePopover"
-                @showResendInvitationConfirm="showResendInvitationConfirm"
+                @resendInvite="resendInvite"
             />
 
             <div class="flex justify-end max-w-full mt-4">
@@ -134,6 +138,7 @@
             const searchText = ref('')
             const statusFilter = ref([])
             const showChangeRolePopover = ref<boolean>(false)
+            const showRevokeInvitePopover = ref<boolean>(false)
             const showInviteUserModal = ref(false)
             const showUserPreview = ref(false)
 
@@ -242,6 +247,15 @@
 
                 showChangeRolePopover.value = true
             }
+
+            const showDisableEnablePopover = ref<boolean>(false)
+
+            const toggleDisableEnablePopover = (user: any) => {
+                if (user) selectedUserId.value = user.id
+
+                showDisableEnablePopover.value = !showDisableEnablePopover.value
+            }
+
             const closeChangeRolePopover = () => {
                 showChangeRolePopover.value = false
                 selectedUserId.value = ''
@@ -296,29 +310,33 @@
                 getUserList()
             }
 
-            const showRevokeInvitationConfirm = (invite: {
-                email: any
-                id: string
-            }) => {
-                Modal.confirm({
-                    title: 'Revoke Invitation',
-                    content: `Are you sure you want to revoke invitation for ${invite.email} ?`,
-                    okText: 'Yes',
-                    okType: 'danger',
-                    onOk() {
-                        const { data, isReady, error, isLoading } =
-                            Users.RevokeInvitation(invite.id)
-                        watch([data, isReady, error, isLoading], () => {
-                            if (isReady && !error.value && !isLoading.value) {
-                                message.success('Invitation revoked.')
-                                reloadTable()
-                            } else if (error && error.value) {
-                                message.error(
-                                    'Unable to revoke invite, please try again'
-                                )
-                            }
+            const handleRevokeInvite = (id) => {
+                if (id) selectedUserId.value = id
+                showRevokeInvitePopover.value = !showRevokeInvitePopover.value
+            }
+
+            const revokeInvite = (invite: { email: any; id: string }) => {
+                showRevokeInvitePopover.value = false
+                const { data, isReady, error, isLoading } =
+                    Users.RevokeInvitation(invite.id)
+                message.loading({
+                    key: 'remoke_invite',
+                    content: 'Revoking invitation...',
+                })
+                watch([data, isReady, error, isLoading], () => {
+                    if (isReady && !error.value && !isLoading.value) {
+                        message.success({
+                            key: 'remoke_invite',
+                            content: 'Invitation revoked.',
                         })
-                    },
+                        reloadTable()
+                    } else if (error && error.value) {
+                        message.error({
+                            key: 'remoke_invite',
+                            content:
+                                'Unable to revoke invite, please try again',
+                        })
+                    }
                 })
             }
 
@@ -344,35 +362,35 @@
                         }
                     })
                 }
+                showDisableEnablePopover.value = false
             }
 
-            const showResendInvitationConfirm = (invite: {
-                email: any
-                id: string
-            }) => {
-                Modal.confirm({
-                    content: `Are you sure you want to resend verification email to ${invite.email}?`,
-                    title: `Resend Verification Email`,
-                    okText: 'Send Email',
-                    okType: 'primary',
-                    onOk() {
-                        const { data, isReady, error, isLoading } =
-                            Users.ResendVerificationEmail(invite.id)
-                        watch([data, isReady, error, isLoading], () => {
-                            if (isReady && !error.value && !isLoading.value) {
-                                message.success('Email sent')
-                            } else if (error && error.value) {
-                                message.error('Failed to send email, try again')
-                            }
+            const resendInvite = (invite: { email: any; id: string }) => {
+                const { data, isReady, error, isLoading } =
+                    Users.ResendVerificationEmail(invite.id)
+                message.loading({
+                    content: 'Sending invitation...',
+                    key: 'send_invite',
+                })
+                watch([data, isReady, error, isLoading], () => {
+                    if (isReady && !error.value && !isLoading.value) {
+                        message.success({
+                            content: 'Email sent',
+                            key: 'send_invite',
                         })
-                    },
+                    } else if (error && error.value) {
+                        message.error({
+                            content: 'Failed to send email, try again',
+                            key: 'send_invite',
+                        })
+                    }
                 })
             }
 
             return {
                 map,
-                showResendInvitationConfirm,
-                showRevokeInvitationConfirm,
+                resendInvite,
+                showRevokeInvitePopover,
                 searchText,
                 statusFilter,
                 handleSearch,
@@ -385,6 +403,8 @@
                 state,
                 STATES,
                 loginWithEmail,
+                showDisableEnablePopover,
+                toggleDisableEnablePopover,
                 showChangeRolePopover,
                 handleChangeRole,
                 closeChangeRolePopover,
@@ -399,7 +419,9 @@
                 handlePagination,
                 filteredUserCount,
                 showPreview,
+                handleRevokeInvite,
                 selectedInvite,
+                revokeInvite,
                 getUserList,
                 confirmEnableDisablePopover,
                 selectedUserId,

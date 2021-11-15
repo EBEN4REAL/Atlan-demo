@@ -20,7 +20,16 @@
             </a-form-item>
             <div
                 v-if="isLoading"
-                class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
+                class="
+                    absolute
+                    top-0
+                    flex
+                    items-center
+                    justify-center
+                    w-full
+                    h-full
+                    bg-white bg-opacity-40
+                "
             >
                 <a-spin size="large" />
             </div>
@@ -32,7 +41,7 @@
     import { defineComponent, ref, watch, DefineComponent, computed } from 'vue'
     import { message } from 'ant-design-vue'
 
-    import { useAddEnums } from '@/admin/enums/composables/useModifyEnums'
+    import { useAddEnums } from '@/governance/enums/composables/useModifyEnums'
 
     export default defineComponent({
         emits: ['success'],

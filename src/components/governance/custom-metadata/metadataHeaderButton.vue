@@ -51,7 +51,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
     import { message, Modal } from 'ant-design-vue'
-    import addMetadataModal from '~/components/admin/custom-metadata/metadataModal.vue'
+    import addMetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import ArchiveMetadataModal from './archiveMetadataModal.vue'
 

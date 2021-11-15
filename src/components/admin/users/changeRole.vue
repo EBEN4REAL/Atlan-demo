@@ -1,33 +1,48 @@
 <template>
-    <template v-if="user">
+    <div v-if="user" class="flex flex-col gap-y-1">
+        <h3 class="text-lg font-bold">Change Role</h3>
         <p class="mb-1">
             {{
-                `Please select the role you want to assign to ${
+                `Assign a new role for ${
                     user.name || user.username || user.email
                 }`
             }}
         </p>
 
-        <a-radio-group v-model:value="selectedRole" class="min-w-full">
+        <a-radio-group
+            v-model:value="selectedRole"
+            class="flex flex-col min-w-full mt-1 gap-y-2"
+        >
             <a-radio v-for="role in roles" :key="role.id" :value="role.id"
                 ><span class="capitalize">{{ role.name }}</span>
             </a-radio>
         </a-radio-group>
 
-        <div class="flex justify-end mt-3">
+        <div class="flex items-center justify-between mt-3 gap-x-3">
+            <div class="flex-grow"></div>
+            <AtlanButton
+                color="minimal"
+                size="sm"
+                padding="compact"
+                @click="$emit('close')"
+                >Cancel
+            </AtlanButton>
             <a-button
                 type="primary"
                 :loading="updateLoading"
                 @click="handleRoleChange"
-                >Change role</a-button
+                :disabled="!selectedRole"
             >
+                Change
+            </a-button>
         </div>
-    </template>
+    </div>
 </template>
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
     import { Users } from '~/services/service/users'
     import useRoles from '~/composables/roles/useRoles'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'ChangeRolePopover',
@@ -41,6 +56,7 @@
                 default: () => [],
             },
         },
+        components: { AtlanButton },
         emits: ['updateRole', 'errorUpdateRole'],
         setup(props, context) {
             const selectedRole = ref('')

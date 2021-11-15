@@ -1,30 +1,28 @@
-import { computed, ref, ComputedRef } from 'vue'
+import { computed, ref, ComputedRef, watch } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Groups } from '~/services/service/groups'
+import { groupInterface } from '~/types/groups/group.interface'
 
 export default function useFacetGroups() {
     const params = ref(new URLSearchParams())
     params.value.append('limit', '20')
     params.value.append('sort', 'name')
-    // params.value.append('columns', 'first_name')
-    // params.value.append('columns', 'last_name')
-    // params.value.append('columns', 'username')
-    // params.value.append('columns', 'id')
-    // params.value.append('filter', '{"$and":[{"email_verified":true}]}')
 
     const { data, mutate } = Groups.List(params, {
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
+        asyncOptions: {
+            immediate: true,
+            resetOnExecute: false,
         },
-        cacheKey: 'DEFAULT_GROUPS',
     })
 
-    const list: ComputedRef<userInterface[]> = computed(
-        () => data.value?.records ?? []
-    )
+    const list = ref([])
+    watch(data, () => {
+        if (data.value?.records) {
+            list.value = [...data?.value?.records]
+        } else {
+            list.value = []
+        }
+    })
 
     // const total: ComputedRef<number> = computed(() => data.value?.total_record)
     const filterTotal = computed(() => data.value?.filter_record)

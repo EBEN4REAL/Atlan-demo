@@ -67,7 +67,7 @@
                 :query-text="queryText"
             ></Groups>
         </div>
-        <div class="px-4 pt-1" v-if="showNoOwners">
+        <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 v-model:checked="localValue.empty"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
@@ -122,7 +122,7 @@
                     return {}
                 },
             },
-            showNoOwners: {
+            showNone: {
                 type: Boolean,
                 default() {
                     return true
@@ -137,7 +137,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNoOwners, enableTabs } = toRefs(props)
+            const { showNone, enableTabs } = toRefs(props)
             const componentType = ref('users')
             if (enableTabs.value.length < 2) {
                 watch(enableTabs, () => {
@@ -167,7 +167,6 @@
             })
 
             watch(localValue.value, (prev, cur) => {
-                console.log('changed')
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
                 }
@@ -198,7 +197,7 @@
                 placeholder,
                 queryText,
                 localValue,
-                showNoOwners,
+                showNone,
                 ownerSearchRef,
                 forceFocus,
             }

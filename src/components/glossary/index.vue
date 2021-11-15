@@ -17,7 +17,10 @@
             ></AssetFilters>
         </div>
 
-        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
+        <div
+            class="flex flex-col items-stretch flex-1 mb-1 w-80"
+            ref="glossaryBox"
+        >
             <div class="flex flex-col h-full">
                 <div class="flex px-6 py-1 border-b border-gray-200">
                     <SearchAdvanced
@@ -26,7 +29,7 @@
                         :autofocus="true"
                         :allowClear="true"
                         @change="handleSearchChange"
-                        placeholder="Search assets..."
+                        placeholder="Search terms & categories..."
                     >
                         <template #filter>
                             <a-popover
@@ -54,17 +57,10 @@
                                 ></AtlanIcon>
                             </a-popover>
                         </template>
-                        <template #postFilter>
-                            <PreferenceSelector
-                                v-model="preference"
-                                @change="handleChangePreference"
-                                @display="handleDisplayChange"
-                            />
-                        </template>
                     </SearchAdvanced>
                 </div>
 
-                <div class="w-full px-4">
+                <div class="w-full px-4" v-if="queryText">
                     <AggregationTabs
                         v-model="postFacets.glossary"
                         class="mt-3"
@@ -73,6 +69,70 @@
                         @change="handleAssetTypeChange"
                     >
                     </AggregationTabs>
+                </div>
+                <div
+                    class="flex justify-between w-full px-4 py-3 mb-3 border-b"
+                    v-else
+                >
+                    <div><GlossarySelect></GlossarySelect></div>
+                    <a-dropdown :trigger="['click']" placement="bottomRight">
+                        <a-button class="ml-3" type="primary">
+                            <div class="flex items-center">
+                                <span> New</span>
+
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    class="ml-1 text-white transition duration-300 "
+                                />
+                            </div>
+                        </a-button>
+
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item key="1">
+                                    <AddGTCModal>
+                                        <template #trigger>
+                                            <div class="flex items-center">
+                                                <AtlanIcon
+                                                    icon="Term"
+                                                    class="mr-1"
+                                                />
+                                                Term
+                                            </div>
+                                        </template>
+                                    </AddGTCModal>
+                                </a-menu-item>
+                                <a-menu-item key="1">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Category"
+                                            class="mr-1"
+                                        />
+                                        Category
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item key="1">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Glossary"
+                                            class="mr-1"
+                                        />
+                                        Glossary
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-divider></a-menu-divider>
+                                <a-menu-item key="1">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Glossary"
+                                            class="mr-1"
+                                        />
+                                        Bulk Upload
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
                 </div>
 
                 <div
@@ -90,6 +150,11 @@
                 >
                     <EmptyView @event="handleResetEvent"></EmptyView>
                 </div>
+                <GlossaryTree
+                    v-else-if="!queryText"
+                    :list="baseTreeData"
+                    :height="height"
+                ></GlossaryTree>
 
                 <AssetList
                     v-else
@@ -115,7 +180,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
     import EmptyView from '@common/empty/discover.vue'
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -124,13 +189,17 @@
 
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
-    import GlossaryItem from '@/common/assets/list/glossaryItem.vue'
+    import GlossaryItem from '~/components/common/assets/list/glossaryItem.vue'
+    import AddGTCModal from './modal/addGtcModal.vue'
+    import GlossaryTree from '@/common/tree/glossary/glossaryTree2.vue'
+
+    import GlossarySelect from '@/common/select/glossary.vue'
 
     import {
         AssetAttributes,
         AssetRelationAttributes,
         InternalAttributes,
-        SQLAttributes,
+        GlossaryAttributes,
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -140,6 +209,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import { glossaryFilters } from '~/constant/filters/discoveryFilters'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -151,7 +221,10 @@
             PreferenceSelector,
             EmptyView,
             AtlanIcon,
+            AddGTCModal,
+            GlossarySelect,
             GlossaryItem,
+            GlossaryTree,
         },
         props: {
             showFilters: {
@@ -184,12 +257,16 @@
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
+                ...GlossaryAttributes,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const { initialFilters } = toRefs(props)
             const glossaryStore = useGlossaryStore()
+
+            const { initTree } = useGlossaryData()
+            const baseTreeData = ref(initTree())
 
             if (glossaryStore.activeFacet && glossaryStore.activeFacet !== {}) {
                 facets.value = glossaryStore.activeFacet
@@ -211,7 +288,14 @@
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
             }
 
-            console.log(facets.value)
+            const glossaryBox = ref()
+
+            const height = computed(() => {
+                if (glossaryBox.value) {
+                    return glossaryBox.value.clientHeight - 100
+                }
+                return 400
+            })
 
             const {
                 list,
@@ -222,7 +306,7 @@
                 fetch,
 
                 quickChange,
-                handleSelectedGlossary,
+
                 selectedGlossary,
             } = useDiscoverList({
                 isCache: true,
@@ -312,6 +396,9 @@
                 activeKey,
                 glossaryFilters,
                 selectedGlossary,
+                baseTreeData,
+                height,
+                glossaryBox,
             }
         },
     })

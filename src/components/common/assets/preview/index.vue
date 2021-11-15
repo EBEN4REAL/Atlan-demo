@@ -236,9 +236,18 @@
                 isProfile.value = true
             }
 
-            const assetURL = (asset) => ({
-                path: `/assets/${asset.guid}`,
-            })
+            const assetURL = (asset) => {
+                if (
+                    [
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossary',
+                        'AtlasGlossaryCategory',
+                    ].includes(asset.typeName)
+                ) {
+                    return `/glossary/${asset.guid}`
+                }
+                return `/assets/${asset.guid}`
+            }
 
             watch(
                 () => route.params.id,

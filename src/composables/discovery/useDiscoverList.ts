@@ -69,6 +69,7 @@ export function useDiscoverList({
         aggregationMap,
         approximateCount,
         cancelRequest,
+        error,
     } = useIndexSearch<assetInterface>(defaultBody, localKey, isCache, false, 1)
 
     const list = ref<assetInterface[]>([])
@@ -219,5 +220,6 @@ export function useDiscoverList({
         selectedAsset,
         handleSelectedGlossary,
         selectedGlossary,
+        error,
     }
 }

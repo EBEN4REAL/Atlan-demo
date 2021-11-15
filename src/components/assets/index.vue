@@ -84,6 +84,12 @@
                     ></AtlanIcon>
                 </div>
                 <div
+                    v-if="!isLoading && error"
+                    class="flex items-center justify-center flex-grow"
+                >
+                    <ErrorView></ErrorView>
+                </div>
+                <div
                     v-else-if="list.length === 0 && !isLoading"
                     class="flex-grow"
                 >
@@ -125,7 +131,10 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, Ref } from 'vue'
+
     import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
+
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
@@ -159,6 +168,7 @@
             SearchAdvanced,
             PreferenceSelector,
             EmptyView,
+            ErrorView,
             AtlanIcon,
             AssetItem,
         },
@@ -233,6 +243,7 @@
                 isLoadMore,
                 isValidating,
                 fetch,
+                error,
                 selectedAsset,
                 quickChange,
                 handleSelectedAsset,
@@ -319,7 +330,7 @@
                 handleActiveKeyChange,
                 activeKey,
                 discoveryFilters,
-
+                error,
                 selectedAsset,
             }
         },

@@ -10,14 +10,13 @@ export default function useSetClassifications(
     options.asyncOptions = ref({
         immediate: false,
     })
-    const { data, mutate, error, isLoading } = Entity.SetClassifications(
-        body,
-        options
-    )
+    const { data, mutate, error, isLoading, isReady } =
+        Entity.SetClassifications(body, options)
     return {
         data,
         mutate,
         error,
         isLoading,
+        isReady,
     }
 }

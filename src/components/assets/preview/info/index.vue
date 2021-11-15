@@ -2,7 +2,10 @@
     <div class="flex flex-col w-full h-full pt-4 overflow-auto gap-y-4">
         <div class="flex items-center justify-between px-5">
             <span class="font-semibold text-gray-500">Overview</span>
-            <span v-if="isLoading" class="flex items-center">
+            <span
+                v-if="isLoading || isLoadingClassification"
+                class="flex items-center"
+            >
                 <a-spin
                     size="small"
                     icon="Loader"
@@ -362,11 +365,14 @@
                 },
             })
 
-            const { mutate: mutateClassification } =
-                useSetClassifications(classificationBody)
+            const {
+                mutate: mutateClassification,
+                isLoading: isLoadingClassification,
+                isReady: isReadyClassification,
+                error: isErrorClassification,
+            } = useSetClassifications(classificationBody)
 
             const handleClassificationChange = () => {
-                console.log('handle change')
                 classificationBody.value = {
                     guidHeaderMap: {
                         [selectedAsset.value.guid]: {
@@ -375,9 +381,17 @@
                         },
                     },
                 }
-
+                currentMessage.value = 'Classifications have been updated'
                 mutateClassification()
             }
+
+            whenever(isReadyClassification, () => {
+                message.success(currentMessage.value)
+            })
+
+            whenever(isErrorClassification, () => {
+                message.error('Something went wrong. Please try again')
+            })
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
@@ -404,7 +418,7 @@
                 localDescription,
                 selectedAsset,
                 body,
-
+                isLoadingClassification,
                 localClassifications,
                 handleClassificationChange,
                 currentMessage,

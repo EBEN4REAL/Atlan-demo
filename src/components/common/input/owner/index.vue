@@ -11,7 +11,7 @@
                 <OwnerFacets
                     ref="ownerInputRef"
                     v-model="localValue"
-                    :showOwners="false"
+                    :showNone="false"
                 ></OwnerFacets>
             </template>
             <a-button

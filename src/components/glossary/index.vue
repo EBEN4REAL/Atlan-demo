@@ -195,7 +195,7 @@
 
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
-    import GlossaryItem from '~/components/common/assets/list/glossaryItem.vue'
+    import GlossaryItem from '~/components/common/assets/list/glossaryAssetItem.vue'
     import AddGTCModal from './modal/addGtcModal.vue'
     import GlossaryTree from '@/common/tree/glossary/glossaryTree2.vue'
 

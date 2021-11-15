@@ -7,7 +7,6 @@
         :alwaysOpen="true"
         @search="handleSearch"
         @change="handleChange"
-        size="large"
         :class="isTransparent ? $style.transparent : ''"
         :get-popup-container="(target) => target.parentNode"
         notFoundContent="No glossary found"

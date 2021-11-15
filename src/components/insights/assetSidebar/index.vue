@@ -63,14 +63,14 @@
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-    import AssetPreview from '~/components/assets/preview/index.vue'
-    import useDiscoveryStore from '~/store/discovery'
+    import AssetPreview from '~/components/common/assets/preview/index.vue'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: { AssetPreview },
         props: {},
         setup(props, { emit }) {
-            const storeDiscovery = useDiscoveryStore()
+            const storeDiscovery = useAssetStore()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>

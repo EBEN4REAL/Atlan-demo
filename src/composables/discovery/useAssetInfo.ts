@@ -12,10 +12,11 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewTabs } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
 import { formatDateTime } from '~/utils/date'
-import useDiscoveryStore from '~/store/discovery'
+import useAssetStore from '~/store/asset'
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
+import useGlossaryStore from '~/store/glossary'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -27,6 +28,12 @@ export default function useAssetInfo() {
     const attributes = (asset: assetInterface) => asset?.attributes
     const anchorAttributes = (asset: Term | Category) =>
         asset?.attributes?.anchor?.attributes
+
+    const parentCategory = (asset: assetInterface) =>
+        asset?.attributes?.parentCategory
+
+    const categories = (asset: assetInterface) => asset?.attributes?.categories
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
@@ -153,15 +160,19 @@ export default function useAssetInfo() {
     }
 
     const getAssetQueryPath = (asset) => {
-        let queryPath='/insights'
-        let databaseQualifiedName = attributes(asset).connectionQualifiedName + '/' + attributes(asset).databaseName
+        let queryPath = '/insights'
+        let databaseQualifiedName =
+            attributes(asset).connectionQualifiedName +
+            '/' +
+            attributes(asset).databaseName
         let schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {
             // let tableName =
             //     attributes(asset).tableName
 
-            let name = tableName(asset).length>0 ? tableName(asset) : viewName(asset)
+            let name =
+                tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
             let columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
@@ -180,6 +191,9 @@ export default function useAssetInfo() {
 
     const getAnchorName = (asset: assetInterface) =>
         attributes(asset)?.anchor?.attributes.name
+
+    const getAnchorGuid = (asset: assetInterface) =>
+        attributes(asset)?.anchor?.guid
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -445,10 +459,16 @@ export default function useAssetInfo() {
         return attributes(asset)?.webUrl
     }
 
-    const discoveryStore = useDiscoveryStore()
+    const discoveryStore = useAssetStore()
 
     const selectedAsset = computed(() => {
         return discoveryStore.selectedAsset
+    })
+
+    const glossaryStore = useGlossaryStore()
+
+    const selectedGlossary = computed(() => {
+        return glossaryStore.selectedGlossary
     })
 
     const getHierarchy = (asset: assetInterface) => {
@@ -757,6 +777,7 @@ export default function useAssetInfo() {
         getTableauHierarchy,
         qualifiedName,
         getAnchorName,
+        getAnchorGuid,
         connectionQualifiedName,
         getConnectorImageMap,
         anchorAttributes,
@@ -768,5 +789,8 @@ export default function useAssetInfo() {
         getActions,
         getAssetQueryPath,
         webURL,
+        selectedGlossary,
+        categories,
+        parentCategory,
     }
 }

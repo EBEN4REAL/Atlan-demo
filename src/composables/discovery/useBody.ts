@@ -357,6 +357,14 @@ export function useBody(
                 }
                 break
             }
+            case 'glossary': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', '__glossary', filterObject)
+                    }
+                }
+                break
+            }
         }
     })
     base.rawOption('post_filter', postFilter.build().query)
@@ -382,6 +390,17 @@ export function useBody(
                         base.aggregation(
                             'terms',
                             'dataType',
+                            { size: 50 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'glossary': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            '__glossary',
                             { size: 50 },
                             `${agg_prefix}_${mkey}`
                         )

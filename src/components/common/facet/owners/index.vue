@@ -140,11 +140,15 @@
             const { showNone, enableTabs } = toRefs(props)
             const componentType = ref('users')
             if (enableTabs.value.length < 2) {
-                watch(enableTabs, () => {
-                    componentType.value = enableTabs.value[0] as
-                        | 'users'
-                        | 'groups'
-                })
+                watch(
+                    enableTabs,
+                    () => {
+                        componentType.value = enableTabs.value[0] as
+                            | 'users'
+                            | 'groups'
+                    },
+                    { immediate: true }
+                )
             }
 
             const queryText = ref('')

@@ -13,17 +13,17 @@ import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 // store
-import { useGlossaryStore } from '~/store/glossary';
+import useGlossaryStore from '~/store/glossary'
 import store from '~/utils/storage'
 
 interface UseTreeParams {
-    emit: any;
+    emit: any
     parentGlossaryGuid: Ref<string>
     parentGlossaryQualifiedName: Ref<string>
-    optimisticUpdate?: boolean;
-    filterMode?: boolean;
-    cacheKey?: string;
-    isAccordion?: boolean;
+    optimisticUpdate?: boolean
+    filterMode?: boolean
+    cacheKey?: string
+    isAccordion?: boolean
     nodesKey?: 'qualifiedName' | 'guid'
 }
 
@@ -35,7 +35,7 @@ const useGlossaryTree = ({
     isAccordion,
     parentGlossaryGuid,
     parentGlossaryQualifiedName,
-    nodesKey = 'guid'
+    nodesKey = 'guid',
 }: UseTreeParams) => {
     const route = useRoute()
     const defaultLimit = 20
@@ -50,7 +50,7 @@ const useGlossaryTree = ({
     } = {}
     const treeData = ref<TreeDataItem[]>([])
     const isInitingTree = ref(false)
-    
+
     const loadedKeys = ref<string[]>([])
     const selectedCacheKey = `${cacheKey}_selected`
     const expandedCacheKey = `${cacheKey}_expanded`
@@ -63,16 +63,11 @@ const useGlossaryTree = ({
     const glossaryStore = useGlossaryStore()
 
     // const { glossaryList, refetch: refetchGlossaryList, updateGlossaryStatusInList } = useGlossaryList()
-    const {
-        getRootTerms,
-        getSubTerms,
-        getAllCategories
-     } = useLoadGlossaryTreeData();
+    const { getRootTerms, getSubTerms, getAllCategories } =
+        useLoadGlossaryTreeData()
 
     const returnTreeDataItemAttributes = (
-        item:
-            | Category
-            | Term,
+        item: Category | Term,
         type: 'term' | 'category',
         glossaryGuid: string,
         isRoot?: Boolean,
@@ -82,7 +77,8 @@ const useGlossaryTree = ({
             ...item,
             ...item.attributes,
             title: item.attributes.name,
-            key: nodesKey === 'guid' ? item.guid : item.attributes.qualifiedName,
+            key:
+                nodesKey === 'guid' ? item.guid : item.attributes.qualifiedName,
             glossaryID: glossaryGuid,
             parentCategoryId: parentCategoryId,
             type,
@@ -145,18 +141,22 @@ const useGlossaryTree = ({
      */
     const initTreeData = async (guid?: string, qualifiedName?: string) => {
         if (qualifiedName && guid) {
-            let categoryList: Category[];
-            try{
-                const categoriesData = await getAllCategories(qualifiedName, { limit: defaultLimit}) // all categories in a glossary
+            let categoryList: Category[]
+            try {
+                const categoriesData = await getAllCategories(qualifiedName, {
+                    limit: defaultLimit,
+                }) // all categories in a glossary
                 categoryList = categoriesData.entities ?? []
             } catch {
                 categoryList = []
             }
-            let termsList: Term[];
+            let termsList: Term[]
             let termsResponse: BasicSearchResponse<Term>
 
             try {
-                termsResponse = await getRootTerms(qualifiedName, { limit: defaultLimit}) // root level terms
+                termsResponse = await getRootTerms(qualifiedName, {
+                    limit: defaultLimit,
+                }) // root level terms
                 termsList = termsResponse.entities ?? []
             } catch {
                 termsList = []
@@ -168,7 +168,8 @@ const useGlossaryTree = ({
             categoryList?.forEach((category) => {
                 // if category is root level, i.e `categoryGuid` does not exist
                 if (!category.attributes.parentCategory?.guid) {
-                    if (category.guid) nodeToParentKeyMap[category.guid] = 'root'
+                    if (category.guid)
+                        nodeToParentKeyMap[category.guid] = 'root'
                     treeData.value.push(
                         returnTreeDataItemAttributes(category, 'category', guid)
                     )
@@ -180,11 +181,10 @@ const useGlossaryTree = ({
                     returnTreeDataItemAttributes(term, 'term', guid)
                 )
             })
-            if(termsResponse)
+            if (termsResponse)
                 checkAndAddLoadMoreNode(termsResponse, 'root', 'root')
 
             isInitingTree.value = false
-
         } else {
             treeData.value = []
             if (glossaryStore.list.length) {
@@ -229,8 +229,18 @@ const useGlossaryTree = ({
         if (treeNode.dataRef.children) {
         } else if (treeNode.dataRef.type === 'glossary') {
             try {
-                const categoryList = (await getAllCategories(treeNode.dataRef.qualifiedName, { limit: defaultLimit})).entities ?? []
-                const termsList = ( await getRootTerms(treeNode.dataRef.qualifiedName, { limit: defaultLimit}) ).entities ?? []
+                const categoryList =
+                    (
+                        await getAllCategories(treeNode.dataRef.qualifiedName, {
+                            limit: defaultLimit,
+                        })
+                    ).entities ?? []
+                const termsList =
+                    (
+                        await getRootTerms(treeNode.dataRef.qualifiedName, {
+                            limit: defaultLimit,
+                        })
+                    ).entities ?? []
 
                 categoryMap[treeNode.dataRef.key] = categoryList
                 categoryList.forEach((category) => {
@@ -267,9 +277,12 @@ const useGlossaryTree = ({
             }
         } else if (treeNode.dataRef.type === 'category') {
             // find all categories which are children
-            const childrenCategories = categoryMap[treeNode.dataRef.glossaryID]?.filter(
+            const childrenCategories = categoryMap[
+                treeNode.dataRef.glossaryID
+            ]?.filter(
                 (category) =>
-                    category.attributes.parentCategory?.guid === treeNode.dataRef.key
+                    category.attributes.parentCategory?.guid ===
+                    treeNode.dataRef.key
             )
 
             childrenCategories?.forEach((category) => {
@@ -290,7 +303,10 @@ const useGlossaryTree = ({
                 )
             })
             try {
-                const termsResponse = await getSubTerms(treeNode.dataRef.qualifiedName, { limit: defaultLimit})
+                const termsResponse = await getSubTerms(
+                    treeNode.dataRef.qualifiedName,
+                    { limit: defaultLimit }
+                )
                 const termsList = termsResponse.entities ?? []
 
                 termsList.forEach((term) => {
@@ -298,8 +314,7 @@ const useGlossaryTree = ({
                         treeNode.dataRef.children = []
                     }
                     if (term.guid) {
-                        const currentParentList =
-                            nodeToParentKeyMap[term.guid]
+                        const currentParentList = nodeToParentKeyMap[term.guid]
                         if (
                             currentParentList &&
                             currentParentList.length &&
@@ -391,7 +406,7 @@ const useGlossaryTree = ({
         guid: string
         entity?: Glossary | Category | Term
         name?: string
-        certificateStatus?: "DRAFT" | "VERIFIED" | "ISSUE"
+        certificateStatus?: 'DRAFT' | 'VERIFIED' | 'ISSUE'
         ownerGroups: string
         ownerUsers?: string
         shortDescription?: string
@@ -497,21 +512,28 @@ const useGlossaryTree = ({
     ) => {
         // if the root level of the tree needs a refetch
         if (guid === 'root' && parentGlossaryGuid.value) {
-            let categoryList:
-                Category[] | null = null
+            let categoryList: Category[] | null = null
 
             let termsList: Term[] | null = null
 
             if (refetchEntityType === 'category' || !refetchEntityType) {
-                categoryList = (await getAllCategories(parentGlossaryQualifiedName.value, { limit: defaultLimit})).entities ?? []
+                categoryList =
+                    (
+                        await getAllCategories(
+                            parentGlossaryQualifiedName.value,
+                            { limit: defaultLimit }
+                        )
+                    ).entities ?? []
             }
             if (refetchEntityType === 'term' || !refetchEntityType) {
-                termsList = (await getRootTerms(
-                    parentGlossaryQualifiedName.value, { limit: defaultLimit}
-                )).entities ?? []
+                termsList =
+                    (
+                        await getRootTerms(parentGlossaryQualifiedName.value, {
+                            limit: defaultLimit,
+                        })
+                    ).entities ?? []
             }
 
-            
             const updatedTreeData: TreeDataItem[] = []
             if (categoryList !== null) {
                 categoryMap[parentGlossaryGuid.value ?? ''] = categoryList
@@ -580,27 +602,34 @@ const useGlossaryTree = ({
 
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
-                    let categoryList:
-                        | Category[]
-                        | null = null
-                    let termsList:
-                        | Term[]
-                        | null = null
+                    let categoryList: Category[] | null = null
+                    let termsList: Term[] | null = null
 
                     if (
                         refetchEntityType === 'category' ||
                         !refetchEntityType
                     ) {
                         categoryList =
-                        (await getAllCategories(parentGlossaryQualifiedName.value, { limit: defaultLimit})).entities ?? []
+                            (
+                                await getAllCategories(
+                                    parentGlossaryQualifiedName.value,
+                                    { limit: defaultLimit }
+                                )
+                            ).entities ?? []
                     }
                     if (refetchEntityType === 'term' || !refetchEntityType) {
-                        termsList = (await getSubTerms(categoryQaulifiedName ?? '', { limit: defaultLimit})).entities ?? []
+                        termsList =
+                            (
+                                await getSubTerms(categoryQaulifiedName ?? '', {
+                                    limit: defaultLimit,
+                                })
+                            ).entities ?? []
                     }
                     const updatedChildren: TreeDataItem[] = []
-                    
+
                     if (categoryList !== null) {
-                        categoryMap[parentGlossaryGuid.value ?? ''] = categoryList
+                        categoryMap[parentGlossaryGuid.value ?? ''] =
+                            categoryList
                         categoryList.forEach((category) => {
                             const existingCategory = node.children?.find(
                                 (entity) => entity.guid === category.guid
@@ -783,7 +812,7 @@ const useGlossaryTree = ({
                 }
                 return true
             })
-        } else if(_fromGuid){
+        } else if (_fromGuid) {
             parentStack = recursivelyFindPath(_fromGuid)[0]
             const parent = parentStack?.pop()
 
@@ -825,7 +854,6 @@ const useGlossaryTree = ({
     }
     // TODO: refactor to not have so many if else. Can be simplified
     const dragAndDropNode = async ({ dragNode, node, event }) => {
-                                                
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
                 if (
@@ -861,7 +889,7 @@ const useGlossaryTree = ({
                                 anchor: dragNode.dataRef.attributes?.anchor,
                                 updates: {
                                     categories: newCategories,
-                                }
+                                },
                             })
                             watch(dropError, (err) => {
                                 setTimeout(() => {
@@ -881,7 +909,7 @@ const useGlossaryTree = ({
                                 anchor: dragNode.dataRef.attributes?.anchor,
                                 updates: {
                                     categories: newCategories,
-                                }
+                                },
                             })
                             watch(data, async (newData) => {
                                 if (newData) {
@@ -919,7 +947,7 @@ const useGlossaryTree = ({
                                 anchor: dragNode.dataRef.attributes?.anchor,
                                 updates: {
                                     categories: newCategories,
-                                }
+                                },
                             })
                             watch(dropError, (err) => {
                                 setTimeout(() => {
@@ -939,12 +967,16 @@ const useGlossaryTree = ({
                                 anchor: dragNode.dataRef.attributes?.anchor,
                                 updates: {
                                     categories: newCategories,
-                                }
+                                },
                             })
                             watch(data, async (newData) => {
                                 if (newData?.guid) {
                                     await refetchNode('root')
-                                    refetchNode(node.dataRef.guid, node.dataRef.qualifiedName, 'term')
+                                    refetchNode(
+                                        node.dataRef.guid,
+                                        node.dataRef.qualifiedName,
+                                        'term'
+                                    )
                                 }
                             })
                         }
@@ -975,7 +1007,10 @@ const useGlossaryTree = ({
         if (parentNodeId === 'root') {
             triggerLoadingState(parentNodeId)
 
-            const termsResponse = await getRootTerms(parentQualifiedName, { limit: defaultLimit, offset}) // root level terms
+            const termsResponse = await getRootTerms(parentQualifiedName, {
+                limit: defaultLimit,
+                offset,
+            }) // root level terms
             const termsList = termsResponse.entities
 
             treeData.value = treeData.value.filter(
@@ -996,14 +1031,16 @@ const useGlossaryTree = ({
                     returnTreeDataItemAttributes(term, 'term', parentGuid)
                 )
             })
-            checkAndAddLoadMoreNode(
-                termsResponse,
-                'root',
-                'root'
-            )
+            checkAndAddLoadMoreNode(termsResponse, 'root', 'root')
         } else {
             triggerLoadingState(parentGuid)
-            const termsList =  (await getSubTerms(parentQualifiedName ?? '', { limit: defaultLimit, offset })).entities ?? [] // root level terms
+            const termsList =
+                (
+                    await getSubTerms(parentQualifiedName ?? '', {
+                        limit: defaultLimit,
+                        offset,
+                    })
+                ).entities ?? [] // root level terms
 
             const path = recursivelyFindPath(parentGuid)[0]
 
@@ -1078,22 +1115,21 @@ const useGlossaryTree = ({
     }
 
     const checkAndAddLoadMoreNode = (
-        response:
-        | BasicSearchResponse<Term>,
+        response: BasicSearchResponse<Term>,
         parentGuid: string,
         key?: string
     ) => {
-        let searchParams;
+        let searchParams
         try {
             searchParams = JSON.parse(response.searchParameters?.query ?? '{}')
         } catch {
-            searchParams = { size: defaultLimit, from: 0}
+            searchParams = { size: defaultLimit, from: 0 }
         }
-        const limit = searchParams.size ?? defaultLimit;
-        const offset = searchParams.from ?? 0;
-        const approxCount = response.approximateCount;
+        const limit = searchParams.size ?? defaultLimit
+        const offset = searchParams.from ?? 0
+        const approxCount = response.approximateCount
 
-        if (approxCount && limit && approxCount > (limit + offset) ) {
+        if (approxCount && limit && approxCount > limit + offset) {
             if (key === 'root') {
                 treeData.value.push({
                     key: (key ?? parentGuid) + '_Load_More',
@@ -1101,7 +1137,12 @@ const useGlossaryTree = ({
                     isLeaf: true,
                     isLoading: false,
                     click: () => {
-                        loadMore(limit + offset, 'root', parentGlossaryGuid.value, parentGlossaryQualifiedName.value)
+                        loadMore(
+                            limit + offset,
+                            'root',
+                            parentGlossaryGuid.value,
+                            parentGlossaryQualifiedName.value
+                        )
                     },
                     typeName: 'LoadMore',
                     guid: 'LoadMore',
@@ -1118,7 +1159,12 @@ const useGlossaryTree = ({
                             isLeaf: true,
                             isLoading: false,
                             click: () =>
-                                loadMore(limit + offset, parentGuid, parentGuid, parentGlossaryQualifiedName.value),
+                                loadMore(
+                                    limit + offset,
+                                    parentGuid,
+                                    parentGuid,
+                                    parentGlossaryQualifiedName.value
+                                ),
                             typeName: 'LoadMore',
                             guid: 'LoadMore',
                         })
@@ -1191,7 +1237,7 @@ const useGlossaryTree = ({
     const collapseAll = () => {
         expandedKeys.value = []
     }
-    
+
     // watch(fetchedEntity, (newEntity) => {
     //     if (newEntity?.typeName === 'AtlasGlossary') {
     //         if (parentGlossaryGuid.value !== newEntity.guid) {
@@ -1203,8 +1249,7 @@ const useGlossaryTree = ({
     //     }
     // })
 
-
-    watch( parentGlossaryQualifiedName, (newQf) => {
+    watch(parentGlossaryQualifiedName, (newQf) => {
         isInitingTree.value = true
         expandedKeys.value = []
         loadedKeys.value = []
@@ -1221,10 +1266,16 @@ const useGlossaryTree = ({
     )
     onMounted(() => {
         isInitingTree.value = true
-        if(!filterMode && parentGlossaryGuid.value && parentGlossaryQualifiedName.value) {
-            initTreeData(parentGlossaryGuid.value, parentGlossaryQualifiedName.value)
-        }
-        else if (filterMode) {
+        if (
+            !filterMode &&
+            parentGlossaryGuid.value &&
+            parentGlossaryQualifiedName.value
+        ) {
+            initTreeData(
+                parentGlossaryGuid.value,
+                parentGlossaryQualifiedName.value
+            )
+        } else if (filterMode) {
             initTreeData()
         }
     })

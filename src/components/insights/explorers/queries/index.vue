@@ -253,7 +253,12 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
+                        class="
+                            my-2
+                            mb-0 mb-6
+                            text-base text-center text-gray-700
+                            max-width-text
+                        "
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for
@@ -312,7 +317,7 @@
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import useDiscoveryStore from '~/store/discovery'
+    import useAssetStore from '~/store/asset'
     import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -343,7 +348,7 @@
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
-            const storeDiscovery = useDiscoveryStore()
+            const storeDiscovery = useAssetStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
             const router = useRouter()
             const showSaveQueryModal: Ref<boolean> = ref(false)

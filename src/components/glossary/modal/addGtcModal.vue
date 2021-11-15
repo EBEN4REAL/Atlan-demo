@@ -78,7 +78,7 @@
                             <AtlanIcon
                                 v-else
                                 icon="Group"
-                                class="h-4 mr-2  text-primary group-hover:text-white"
+                                class="h-4 mr-2 text-primary group-hover:text-white"
                             />
                             <span
                                 class="capitalize"
@@ -123,7 +123,7 @@
                 </div>
             </div>
         </template>
-        
+
         <a-input
             ref="titleBar"
             v-model:value="title"
@@ -154,7 +154,6 @@
         PropType,
         toRefs,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
 
     import StatusBadge from '@common/badge/status/index.vue'
     // import AddGtcModalOwners from './addGtcModalOwners.vue'
@@ -186,7 +185,7 @@
             parentGlossaryGuid: {
                 type: String,
                 required: false,
-                default: ''
+                default: '',
             },
             parentGlossaryQualifiedName: {
                 type: String,
@@ -205,7 +204,8 @@
                 required: false,
                 default: 'create',
             },
-            entity: { // needed only if mode == 'edit'
+            entity: {
+                // needed only if mode == 'edit'
                 type: Object as PropType<Glossary | Category | Term>,
                 required: false,
                 default: () => {},
@@ -225,7 +225,9 @@
 
             const title = ref<string>('')
             const description = ref<string | undefined>('')
-            const currentStatus = ref<"DRAFT" | "VERIFIED" | "ISSUE" | undefined>('DRAFT')
+            const currentStatus = ref<
+                'DRAFT' | 'VERIFIED' | 'ISSUE' | undefined
+            >('DRAFT')
             const ownerUsers = ref<string[]>([myUsername.value])
             const ownerGroups = ref<string[]>([])
             const selectedCategories = ref<{ categoryGuid: string }[]>([])
@@ -240,17 +242,18 @@
             const refreshEntity = inject<() => void>('refreshEntity', () => {})
             // const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
 
-            const updateTreeNode: Function | undefined =
-                inject<any>('updateTreeNode',() => {})
-            const reorderTreeNodes =
-                inject<
-                    (
-                        guid: string,
-                        fromGuid?: string,
-                        toGuid?: string,
-                        categories?: { categoryGuid: string }[]
-                    ) => void
-                >('reorderTreeNodes', () => {})
+            const updateTreeNode: Function | undefined = inject<any>(
+                'updateTreeNode',
+                () => {}
+            )
+            const reorderTreeNodes = inject<
+                (
+                    guid: string,
+                    fromGuid?: string,
+                    toGuid?: string,
+                    categories?: { categoryGuid: string }[]
+                ) => void
+            >('reorderTreeNodes', () => {})
 
             const { createTerm, createCategory, createGlossary } =
                 useCreateGlossary()
@@ -305,103 +308,102 @@
             }
 
             const handleOk = () => {
-                title.value = title.value.length ? title.value : `Untitled ${props.entityType}`
+                title.value = title.value.length
+                    ? title.value
+                    : `Untitled ${props.entityType}`
                 if (props.mode === 'edit') {
                     // if (!selectedCategories.value.length) {
-                    const { data } =
-                        useUpdateGtcEntity(
-                            {
-                                typeName: entity.value.typeName,
-                                qualifiedName: entity.value.attributes.qualifiedName,
-                                name: entity.value.attributes.name,
-                                anchor: entity.value.attributes?.anchor,
-                                updates: {
-                                    name:
-                                        title.value,
-                                    certificateStatus:
-                                        currentStatus.value ?? 'DRAFT',
-                                    shortDescription: description.value ?? '',
-                                    ownerUsers: ownerUsers?.value,
-                                    ownerGroups: ownerGroups?.value,  
-                                    categories: selectedCategories.value
-                                }
-                            }
-                        )
-                        watch(data, () => {
-                            // if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
-                            if (updateTreeNode) {
-                                updateTreeNode({
-                                    guid: props.entity?.guid,
-                                    name:
-                                        title.value ??
-                                        (props.entityType === 'term'
-                                            ? 'Untitled Term'
-                                            : 'Untitled category'),
-                                    certificateStatus:
-                                        currentStatus.value ?? 'DRAFT',
-                                    ownerUsers: ownerUsers?.value?.join(),
-                                    ownerGroups: ownerGroups?.value?.join(),
-                                    shortDescription: description.value ?? '',
-                                })
-                            }
+                    const { data } = useUpdateGtcEntity({
+                        typeName: entity.value.typeName,
+                        qualifiedName: entity.value.attributes.qualifiedName,
+                        name: entity.value.attributes.name,
+                        anchor: entity.value.attributes?.anchor,
+                        updates: {
+                            name: title.value,
+                            certificateStatus: currentStatus.value ?? 'DRAFT',
+                            shortDescription: description.value ?? '',
+                            ownerUsers: ownerUsers?.value,
+                            ownerGroups: ownerGroups?.value,
+                            categories: selectedCategories.value,
+                        },
+                    })
+                    watch(data, () => {
+                        // if (refreshEntity && currentProfile?.value?.guid === props.entity?.guid) refreshEntity()
+                        if (updateTreeNode) {
+                            updateTreeNode({
+                                guid: props.entity?.guid,
+                                name:
+                                    title.value ??
+                                    (props.entityType === 'term'
+                                        ? 'Untitled Term'
+                                        : 'Untitled category'),
+                                certificateStatus:
+                                    currentStatus.value ?? 'DRAFT',
+                                ownerUsers: ownerUsers?.value?.join(),
+                                ownerGroups: ownerGroups?.value?.join(),
+                                shortDescription: description.value ?? '',
+                            })
+                        }
 
-                            if (entity) {
-                                entity.value.attributes.certificateStatus =
-                                    currentStatus.value
-                                entity.value.attributes.ownerUsers =
-                                    ownerUsers?.value
-                                entity.value.attributes.ownerGroups =
-                                    ownerGroups?.value
-                                entity.value.attributes.shortDescription =
-                                    description?.value
-                                entity.value.attributes.name = title.value
-                                entity.value.displayText = title.value
-                                if(entity.value.typeName === 'AtlasGlossaryTerm')
-                                    entity.value.attributes.categories = selectedCategories.value
-                            }
-                            if (reorderTreeNodes) {
-                                addedCategories.value.forEach(
-                                    (category: any) => {
-                                        reorderTreeNodes(
-                                            props.entity?.guid ?? '',
-                                            undefined,
-                                            category.guid,
-                                            selectedCategories.value
-                                        )
-                                    }
+                        if (entity) {
+                            entity.value.attributes.certificateStatus =
+                                currentStatus.value
+                            entity.value.attributes.ownerUsers =
+                                ownerUsers?.value
+                            entity.value.attributes.ownerGroups =
+                                ownerGroups?.value
+                            entity.value.attributes.shortDescription =
+                                description?.value
+                            entity.value.attributes.name = title.value
+                            entity.value.displayText = title.value
+                            if (entity.value.typeName === 'AtlasGlossaryTerm')
+                                entity.value.attributes.categories =
+                                    selectedCategories.value
+                        }
+                        if (reorderTreeNodes) {
+                            addedCategories.value.forEach((category: any) => {
+                                reorderTreeNodes(
+                                    props.entity?.guid ?? '',
+                                    undefined,
+                                    category.guid,
+                                    selectedCategories.value
                                 )
-                                if(selectedCategories.value.length && addedCategories.value.length) {
-                                    reorderTreeNodes(
-                                        props.entity?.guid ?? '',
-                                        'root',
-                                        undefined,
-                                        selectedCategories.value
-                                    )
-                                }
-
-                                if(!selectedCategories.value.length && removedCategories.value.length) {
-                                    reorderTreeNodes(
-                                        props.entity?.guid ?? '',
-                                        undefined,
-                                        'root',
-                                        selectedCategories.value
-                                    )
-                                }
-                                removedCategories.value.forEach(
-                                    (category: any) => {
-                                        reorderTreeNodes(
-                                            props.entity?.guid ?? '',
-                                            category.guid,
-                                            undefined,
-                                            selectedCategories.value
-                                        )
-                                    }
+                            })
+                            if (
+                                selectedCategories.value.length &&
+                                addedCategories.value.length
+                            ) {
+                                reorderTreeNodes(
+                                    props.entity?.guid ?? '',
+                                    'root',
+                                    undefined,
+                                    selectedCategories.value
                                 )
                             }
-                            selectedCategories.value = []
-                        })
-                } 
-                else {
+
+                            if (
+                                !selectedCategories.value.length &&
+                                removedCategories.value.length
+                            ) {
+                                reorderTreeNodes(
+                                    props.entity?.guid ?? '',
+                                    undefined,
+                                    'root',
+                                    selectedCategories.value
+                                )
+                            }
+                            removedCategories.value.forEach((category: any) => {
+                                reorderTreeNodes(
+                                    props.entity?.guid ?? '',
+                                    category.guid,
+                                    undefined,
+                                    selectedCategories.value
+                                )
+                            })
+                        }
+                        selectedCategories.value = []
+                    })
+                } else {
                     if (props.entityType === 'term')
                         createTerm({
                             parentGlossaryGuid: props.parentGlossaryGuid,
@@ -412,7 +414,7 @@
                             status: currentStatus.value,
                             ownerUsers: ownerUsers?.value,
                             ownerGroups: ownerGroups?.value,
-                            categories: selectedCategories.value
+                            categories: selectedCategories.value,
                         })
                     else if (props.entityType === 'category')
                         createCategory({
@@ -423,7 +425,7 @@
                             description: description.value,
                             status: currentStatus.value,
                             ownerUsers: ownerUsers?.value,
-                            ownerGroups: ownerGroups?.value
+                            ownerGroups: ownerGroups?.value,
                         })
                     else if (props.entityType === 'glossary') {
                         const { data } = createGlossary({
@@ -431,7 +433,7 @@
                             description: description.value,
                             status: currentStatus.value,
                             ownerUsers: ownerUsers?.value,
-                            ownerGroups: ownerGroups?.value
+                            ownerGroups: ownerGroups?.value,
                         })
                         watch(data, (newData) => {
                             if (newData) {

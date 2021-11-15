@@ -79,10 +79,12 @@
     import { useGroup } from '~/composables/group/useGroups'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'GroupPreview',
         components: {
+            AtlanButton,
             About: defineAsyncComponent(() => import('./about.vue')),
             Members: defineAsyncComponent(() => import('./members.vue')),
             ErrorView,

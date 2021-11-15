@@ -17,7 +17,10 @@
             ></AssetFilters>
         </div>
 
-        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
+        <div
+            class="flex flex-col items-stretch flex-1 mb-1 w-80"
+            ref="glossaryBox"
+        >
             <div class="flex flex-col h-full">
                 <div class="flex px-6 py-1 border-b border-gray-200">
                     <SearchAdvanced
@@ -55,6 +58,23 @@
                             </a-popover>
                         </template>
                     </SearchAdvanced>
+                </div>
+
+                <div class="w-full px-4" v-if="queryText">
+                    <AggregationTabs
+                        v-model="postFacets.glossary"
+                        class="mt-3"
+                        :list="glossaryAggreationList"
+                        icon="Glossary"
+                        @change="handleAssetTypeChange"
+                    >
+                    </AggregationTabs>
+                </div>
+                <div
+                    class="flex justify-between w-full px-4 py-3 mb-3 border-b"
+                    v-else
+                >
+                    <div><GlossarySelect></GlossarySelect></div>
                     <a-dropdown :trigger="['click']" placement="bottomRight">
                         <a-button class="ml-3" type="primary">
                             <div class="flex items-center">
@@ -70,10 +90,17 @@
                         <template #overlay>
                             <a-menu>
                                 <a-menu-item key="1">
-                                    <div class="flex items-center">
-                                        <AtlanIcon icon="Term" class="mr-1" />
-                                        Term
-                                    </div>
+                                    <AddGTCModal>
+                                        <template #trigger>
+                                            <div class="flex items-center">
+                                                <AtlanIcon
+                                                    icon="Term"
+                                                    class="mr-1"
+                                                />
+                                                Term
+                                            </div>
+                                        </template>
+                                    </AddGTCModal>
                                 </a-menu-item>
                                 <a-menu-item key="1">
                                     <div class="flex items-center">
@@ -108,17 +135,6 @@
                     </a-dropdown>
                 </div>
 
-                <div class="w-full px-4">
-                    <AggregationTabs
-                        v-model="postFacets.glossary"
-                        class="mt-3"
-                        :list="glossaryAggreationList"
-                        icon="Glossary"
-                        @change="handleAssetTypeChange"
-                    >
-                    </AggregationTabs>
-                </div>
-
                 <div
                     v-if="isLoading"
                     class="flex items-center justify-center flex-grow"
@@ -134,6 +150,11 @@
                 >
                     <EmptyView @event="handleResetEvent"></EmptyView>
                 </div>
+                <GlossaryTree
+                    v-else-if="!queryText"
+                    :list="baseTreeData"
+                    :height="height"
+                ></GlossaryTree>
 
                 <AssetList
                     v-else
@@ -159,7 +180,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
     import EmptyView from '@common/empty/discover.vue'
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -169,6 +190,10 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import GlossaryItem from '~/components/common/assets/list/glossaryItem.vue'
+    import AddGTCModal from './modal/addGtcModal.vue'
+    import GlossaryTree from '@/common/tree/glossary/glossaryTree2.vue'
+
+    import GlossarySelect from '@/common/select/glossary.vue'
 
     import {
         AssetAttributes,
@@ -184,6 +209,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import { glossaryFilters } from '~/constant/filters/discoveryFilters'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -195,7 +221,10 @@
             PreferenceSelector,
             EmptyView,
             AtlanIcon,
+            AddGTCModal,
+            GlossarySelect,
             GlossaryItem,
+            GlossaryTree,
         },
         props: {
             showFilters: {
@@ -236,6 +265,9 @@
             const { initialFilters } = toRefs(props)
             const glossaryStore = useGlossaryStore()
 
+            const { initTree } = useGlossaryData()
+            const baseTreeData = ref(initTree())
+
             if (glossaryStore.activeFacet && glossaryStore.activeFacet !== {}) {
                 facets.value = glossaryStore.activeFacet
                 console.log(facets.value)
@@ -256,7 +288,14 @@
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
             }
 
-            console.log(facets.value)
+            const glossaryBox = ref()
+
+            const height = computed(() => {
+                if (glossaryBox.value) {
+                    return glossaryBox.value.clientHeight - 100
+                }
+                return 400
+            })
 
             const {
                 list,
@@ -267,7 +306,7 @@
                 fetch,
 
                 quickChange,
-                handleSelectedGlossary,
+
                 selectedGlossary,
             } = useDiscoverList({
                 isCache: true,
@@ -357,6 +396,9 @@
                 activeKey,
                 glossaryFilters,
                 selectedGlossary,
+                baseTreeData,
+                height,
+                glossaryBox,
             }
         },
     })

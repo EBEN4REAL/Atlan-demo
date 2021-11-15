@@ -28,7 +28,7 @@
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -53,45 +53,6 @@
                             <div>
                                 <b>{{ persona.dataPolicies?.length }}</b>
                                 Data policies
-                            </div>
-                        </div>
-                        <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
-                        >
-                            <AtlanIcon
-                                icon="ArrowRight"
-                                class="h-6 ml-auto group-hover:text-primary"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div
-                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
-                @click="setActiveTab('policies')"
-            >
-                <div class="p-3 mr-3 rounded text-primary bg-primary-light">
-                    <AtlanIcon icon="GroupStatic" class="h-6" />
-                </div>
-                <div class="w-full group">
-                    <div class="mb-1 text-sm font-bold">Users and Groups</div>
-                    <div class="flex w-full text-gray-500">
-                        <div
-                            v-if="
-                                persona.users?.length === 0 &&
-                                persona.groups?.length === 0
-                            "
-                        >
-                            No users added
-                        </div>
-                        <div v-else class="flex items-center">
-                            <div class="mr-3">
-                                <b>{{ persona.users?.length }}</b>
-                                Users
-                            </div>
-                            <div>
-                                <b>{{ persona.groups?.length }}</b>
-                                Groups
                             </div>
                         </div>
                         <div

@@ -13,7 +13,7 @@
             "
         >
             <div
-                v-if="metadata?.options?.imagePath || metadata?.options?.emoji"
+                v-if="metadata?.options?.imageId || metadata?.options?.emoji"
                 @click="popOverVisible = !popOverVisible"
             >
                 <div
@@ -45,7 +45,7 @@
                 <div style="width: 314px"></div>
 
                 <a-tabs default-active-key="1" size="small">
-                    <template #tabBarExtraContent>
+                    <template #rightExtra>
                         <a-button type="secondary" class="border-0">
                             <AtlanIcon
                                 icon="Delete"
@@ -73,7 +73,7 @@
                                 class="p-3 text-center border border-dashed rounded "
                             >
                                 <a-upload
-                                    class="relative block w-full mb-3  metadata-avatar-uploader"
+                                    class="relative block w-full mb-3 metadata-avatar-uploader"
                                     name="file"
                                     accept="image/*"
                                     :multiple="false"
@@ -113,6 +113,8 @@
         watch,
         computed,
         onMounted,
+        Ref,
+        toRef,
     } from 'vue'
     import { message, Modal } from 'ant-design-vue'
 
@@ -139,6 +141,11 @@
             },
         },
         setup(props) {
+            /**
+             * Store options as form
+             * After image upload or emoji set, update form value
+             * Watch form value update and if changed, update CM
+             */
             const fileList = ref([])
             const popOverVisible = ref(false)
             const isUploading = ref(false)
@@ -146,6 +153,26 @@
             const imageResponse = ref({})
             const apiResponse = ref({})
             const store = useTypedefStore()
+            const form: Ref<{
+                imageId: string | null
+                logoType: 'image' | 'emoji'
+                emoji: string | null
+            }> = ref({
+                imageId: null,
+                logoType: 'image',
+                emoji: null,
+            })
+
+            const localCM = computed(() => ({
+                get() {
+                    return props.metadata
+                },
+                set(value) {
+                    console.log(value)
+
+                    // store.commit('setEmail', value)
+                },
+            }))
 
             //  image upload composable
             const {
@@ -167,7 +194,7 @@
             const handleUpdateBM = (newImage) => {
                 isUpdating.value = true
                 const tempBM = { ...props.metadata }
-                tempBM.options.imagePath = `/images/${newImage.id}?ContentDisposition=inline&name=${newImage.id}`
+                tempBM.options.imageId = `/images/${newImage.id}?ContentDisposition=inline&name=${newImage.id}`
                 tempBM.options.logoType = 'image'
                 apiResponse.value = Types.updateCustomMetadata(
                     {
@@ -204,8 +231,11 @@
                         imageResponse.value = newImage
                         isUploading.value = false
                         popOverVisible.value = false
+                        form.value.logoType = 'image'
+                        form.value.imageId = newImage.id
+                        form.value.emoji = null
                         message.success('Image uploaded.')
-                        handleUpdateBM(newImage)
+                        // handleUpdateBM(newImage)
                     }
                     if (newError) {
                         message.error(' Error updating image.')
@@ -213,16 +243,17 @@
                 }
             )
 
-            const imageUrl = computed(
-                () =>
-                    `${window.location.origin}/api/service${props.metadata.options.imagePath}`
-            )
-
-            const showEmoji = (emoji) => {
-                props.metadata.options.emoji = emoji.native
-                props.metadata.options.logoType = 'emoji'
+            const showEmoji = ({ native }) => {
+                form.value.logoType = 'emoji'
+                form.value.emoji = native
+                form.value.imageId = null
                 popOverVisible.value = false
             }
+
+            const imageUrl = computed(
+                () =>
+                    `${window.location.origin}/api/service/images/${props.metadata.options.imageId}?ContentDisposition=inline&name=${props.metadata.options.imageId}`
+            )
 
             return {
                 fileList,

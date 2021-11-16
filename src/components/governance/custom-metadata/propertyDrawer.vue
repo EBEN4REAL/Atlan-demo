@@ -205,7 +205,8 @@
                                             "
                                             class="mb-2"
                                             :allow-clear="false"
-                                            :show-checked-strategy="SHOW_PARENT"
+                                            :check-strictly="true"
+                                            :show-checked-strategy="SHOW_CHILD"
                                             @change="
                                                 form.options.customEntityTypes =
                                                     $event
@@ -329,7 +330,7 @@
     import NewEnumForm from './newEnumForm.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
-    const SHOW_PARENT = TreeSelect.SHOW_PARENT
+    const SHOW_CHILD = TreeSelect.SHOW_CHILD
 
     export default defineComponent({
         components: {
@@ -602,7 +603,7 @@
                 loading,
                 rules,
                 typeTreeSelect,
-                SHOW_PARENT,
+                SHOW_CHILD,
                 enumTypeOtions,
                 finalEnumsList,
                 selectedEnumOptions,

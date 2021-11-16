@@ -18,6 +18,7 @@
         </div>
 
         <VirtualList
+            v-auth="access.LIST_RUNS"
             :class="{ 'animate-pulse': isLoading }"
             :data="list"
             data-key="metadata"
@@ -39,13 +40,32 @@
                 >
                     <button
                         :disabled="isLoading"
-                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            py-2
+                            transition-all
+                            duration-300
+                            bg-white
+                            rounded-full
+                            text-primary
+                        "
                         :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                         @click="loadMore"
                     >
                         <template v-if="!isLoading">
                             <p
-                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                                class="
+                                    m-0
+                                    mr-1
+                                    overflow-hidden
+                                    text-sm
+                                    transition-all
+                                    duration-300
+                                    overflow-ellipsis
+                                    whitespace-nowrap
+                                "
                             >
                                 Load more
                             </p>
@@ -109,6 +129,7 @@
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
+    import access from '~/constant/accessControl/map'
 
     // Composables
     import {
@@ -244,6 +265,7 @@
                 loadRunGraph,
                 loadMore,
                 isReady,
+                access,
                 // handleSortChange,
             }
         },

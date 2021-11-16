@@ -24,7 +24,17 @@
                     :style="{ height: 'calc(100vh - 7.8rem)' }"
                 >
                     <div
-                        class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            px-4
+                            pt-2
+                            mt-2
+                            text-lg
+                            font-semibold
+                            text-gray-700
+                        "
                     >
                         {{ tab.name }}
                     </div>
@@ -60,6 +70,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import PreviewHeader from '@/workflows/shared/previewHeader.vue'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'DiscoverWorkflowPreview',
@@ -129,6 +140,7 @@
             onMounted(init)
 
             return {
+                access,
                 tabHeights,
                 isLoaded,
                 activeKey,

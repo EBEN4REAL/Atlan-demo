@@ -56,6 +56,8 @@ const useGlossaryTree = ({
     })
 
     const loadedKeys = ref<string[]>([])
+    const expandedKeys = ref<string[]>([])
+    const selectedKeys = ref<string[]>([])
 
     const defaultBody = ref({})
     const generateBody = () => {
@@ -133,8 +135,8 @@ const useGlossaryTree = ({
                 if (data.value?.entities) {
                     let map = data.value?.entities?.map((i) => ({
                         ...i,
-                        id: i.attributes?.qualifiedName,
-                        key: i.attributes?.qualifiedName,
+                        id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                         isLeaf: i.typeName === 'AtlasGlossaryTerm',
                     }))
                     if (map) {
@@ -149,6 +151,32 @@ const useGlossaryTree = ({
                 console.log(e)
             }
         }
+    }
+
+    const expandNode = (expanded: string[], event: any) => {
+        if (!event.node.isLeaf) {
+            const key: string = event.node.eventKey
+            const isExpanded = expandedKeys.value?.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.node.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value?.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
+    }
+
+    const selectNode = (selected: any, event: any) => {
+        if (!event.node.isLeaf) {
+            expandNode([], event)
+            // selectedKeys.value = []
+        }
+        console.log('select')
+        emit('select', event.node.dataRef)
     }
 
     // watch(data, () => {
@@ -182,10 +210,13 @@ const useGlossaryTree = ({
 
     return {
         onLoadData,
-
+        expandNode,
         generateBody,
         data,
         loadedKeys,
+        expandedKeys,
+        selectNode,
+        selectedKeys,
     }
 }
 

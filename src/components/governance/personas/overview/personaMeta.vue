@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="details-section">
-            <span class="text-sm text-gray-500">Created By</span>
+        <div class="pt-6 details-section">
+            <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
                 <Avatar
                     :username="persona.createdBy"
@@ -22,7 +22,7 @@
             />
             <span class="text-sm text-gray">Enable Persona</span>
         </div>
-        <div class="flex items-center my-4 mt-0">
+        <div class="flex items-center py-4 pt-2">
             <div
                 class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
@@ -135,7 +135,7 @@
 </script>
 <style lang="less" scoped>
     .details-section {
-        @apply flex items-center gap-x-2 py-6;
+        @apply flex items-center gap-x-2 py-4;
         @apply text-gray-500;
         @apply cursor-pointer;
     }

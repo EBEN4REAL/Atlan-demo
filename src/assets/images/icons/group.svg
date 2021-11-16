@@ -1,6 +1,6 @@
 <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="6" cy="6" r="2.5" stroke="currentColor" class="group-hover:fill-current"/>
-<path d="M10.5 13C10.5 10.5147 8.48528 8.5 6 8.5C3.51472 8.5 1.5 10.5147 1.5 13" stroke="currentColor" class="group-hover:fill-current" stroke-linecap="round"/>
+<circle cx="6" cy="6" r="2.5" stroke="currentColor" />
+<path d="M10.5 13C10.5 10.5147 8.48528 8.5 6 8.5C3.51472 8.5 1.5 10.5147 1.5 13" stroke="currentColor"  stroke-linecap="round"/>
 <path d="M11.5009 9.5C12.6054 9.5 13.5009 8.60457 13.5009 7.5C13.5009 6.39543 12.6054 5.5 11.5009 5.5C11.1768 5.5 10.8707 5.57708 10.6 5.71391" stroke="currentColor" stroke-linecap="round"/>
 <path d="M14.5 12.5C14.5 10.8431 13.1569 9.5 11.5 9.5" stroke="currentColor" stroke-linecap="round"/>
 </svg>

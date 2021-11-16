@@ -18,6 +18,7 @@
 
         <template #title="entity">
             <GlossaryTreeItem2 :item="entity" />
+            <Actions></Actions>
         </template>
     </a-tree>
 </template>
@@ -26,6 +27,7 @@
     import { defineComponent, computed, toRefs, onMounted } from 'vue'
 
     import GlossaryTreeItem2 from './glossaryTreeItem2.vue'
+    import Actions from './actions.vue'
 
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
     import { useRouter } from 'vue-router'
@@ -33,6 +35,7 @@
     export default defineComponent({
         components: {
             GlossaryTreeItem2,
+            Actions,
         },
         props: {
             list: {

@@ -4,11 +4,13 @@
         :draggable="true"
         :block-node="true"
         :load-data="onLoadData"
-        :loadedKeys="loadedKeys"
         :treeDataSimpleMode="true"
-        @select="handleSelect"
-        class="pl-3 bg-transparent"
+        @select="selectNode"
         :auto-expand-parent="false"
+        @expand="expandNode"
+        :loadedKeys="loadedKeys"
+        :selected-keys="selectedKeys"
+        :expanded-keys="expandedKeys"
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
@@ -45,17 +47,24 @@
 
             const router = useRouter()
 
-            const { onLoadData, loadedKeys } = useGlossaryTree({})
-
-            const handleSelect = (node, e) => {
-                emit('select', e.node.dataRef)
-            }
+            const {
+                onLoadData,
+                loadedKeys,
+                expandedKeys,
+                expandNode,
+                selectedKeys,
+                selectNode,
+            } = useGlossaryTree({ emit })
 
             return {
                 list,
                 onLoadData,
                 loadedKeys,
-                handleSelect,
+
+                expandNode,
+                expandedKeys,
+                selectNode,
+                selectedKeys,
             }
             // data
         },

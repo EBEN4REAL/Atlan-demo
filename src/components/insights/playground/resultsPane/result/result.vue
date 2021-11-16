@@ -30,22 +30,22 @@
                     <thead>
                         <tr>
                             <th
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
                                 style="z-index: 4"
                             >
                                 #
-                                <span class="resize-handle"></span>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
 
                             <th
                                 v-for="(col, index) in activeInlineTab
                                     .playground.editor.columnList"
                                 :key="index"
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 3"
+                                class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                style="z-index: 4"
                             >
                                 {{ col.title }}
-                                <span class="resize-handle"></span>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
                         </tr>
                     </thead>

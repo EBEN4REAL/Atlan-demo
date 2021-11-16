@@ -22,9 +22,8 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.metadataPolicies?.length ??
-                            0 + selectedPersonaDirty?.datapolicies?.length ??
-                            0
+                            selectedPersonaDirty?.metadataPolicies.length +
+                            selectedPersonaDirty?.dataPolicies.length
                         }}
                     </div>
                     <div
@@ -47,6 +46,9 @@
         </MinimalTab>
 
         <div class="px-4 overflow-y-auto">
+            <div>
+                {{ selectedPersonaDirty?.datapolicies?.length }}
+            </div>
             <PersonaMeta
                 v-if="activeTabKey === 'details'"
                 class="pb-2"

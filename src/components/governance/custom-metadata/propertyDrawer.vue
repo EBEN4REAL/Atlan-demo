@@ -112,13 +112,7 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="
-                                        mb-1
-                                        lowercase
-                                        bg-gray-100
-                                        border-0
-                                        rounded-full
-                                    "
+                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
@@ -137,7 +131,8 @@
                             />
                         </div>
                     </div>
-                    <!-- <pre>{{ form }}</pre> -->
+                    <!-- <pre>{{ form.typeName }}</pre>
+                    <pre>{{ form.enumValues }}</pre> -->
                     <!-- End of conditonals ========================================= -->
                     <!-- Applicable Asset type ========================================= -->
 
@@ -152,11 +147,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="
-                                                    flex flex-col
-                                                    items-center
-                                                    w-60
-                                                "
+                                                class="flex flex-col items-center w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -213,17 +204,7 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-around
-                            w-full
-                            gap-4
-                            p-4
-                            bg-gray-100
-                            border
-                            rounded
-                        "
+                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
                     >
                         <div class="w-full">
                             <a-form-item class="mb-2">
@@ -305,6 +286,7 @@
                     </div>
                 </a-form>
             </div>
+
             <!-- End of Form =============================================================================================================== -->
         </a-drawer>
     </div>
@@ -394,9 +376,10 @@
                     form.value = theProperty
                 } else {
                     form.value = initializeForm()
-                    // somehow these 2 remained, so delete them
+                    // somehow these 2 remained, so reset them
                     form.value.options.isEnum = false
                     delete form.value.options.enumType
+                    delete form.value.enumValues
                 }
 
                 propertyIndex.value = index
@@ -521,9 +504,13 @@
                 // ? check if enum
                 if (value === 'enum') {
                     form.value.options.isEnum = true
-                } else form.value.options.isEnum = false
+                    updateEnumValues()
+                } else {
+                    form.value.options.isEnum = false
+                    delete form.value.enumValues
+                }
 
-                if (['groups', 'user', 'url'].includes(value))
+                if (['groups', 'users', 'url'].includes(value))
                     form.value.options.customType = value
                 else delete form.value.options.customType
             }
@@ -580,6 +567,8 @@
                     form.value.options.isEnum === 'true' ||
                     form.value.options.isEnum === true
                 ) {
+                    console.log('here', selectedEnumOptions.value)
+
                     form.value.enumValues = selectedEnumOptions.value?.map(
                         (x) => x.value
                     )
@@ -587,25 +576,6 @@
                     delete form.value.enumValues
                 }
             }
-
-            // clears the action of the function above if enum is no longer selected
-            watch(
-                form,
-                (newValue) => {
-                    if (
-                        (form.value.options.isEnum !== 'true' ||
-                            form.value.options.isEnum !== true) &&
-                        newValue.enumValues
-                    ) {
-                        delete form.value.enumValues
-                    }
-                    // just incase ytpeName is changed back to enum and enumType not updated
-                    else if (newValue.typeName === 'enum') {
-                        updateEnumValues()
-                    }
-                },
-                { deep: true }
-            )
 
             return {
                 visible,

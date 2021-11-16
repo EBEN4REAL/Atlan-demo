@@ -7,7 +7,6 @@
             >
                 <div class="flex font-bold">
                     <div style="width: 44px"></div>
-                    <!-- <div style="width: 44px">Order</div> -->
                     <div class="cursor-pointer" style="width: 248px">
                         Property
                     </div>
@@ -21,7 +20,7 @@
                     :id="`prop-${property.name}`"
                     :key="index"
                     :data-property="property"
-                    class="relative flex items-center justify-between  last:rounded-b"
+                    class="relative flex items-center justify-between last:rounded-b"
                     style="height: 44px"
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
@@ -48,7 +47,7 @@
                                     mapTypeToIcon(property.typeName, property)
                                 "
                             />
-                            {{ property.typeName }}
+                            {{ resolveType(property) }}
                         </div>
                     </div>
 
@@ -69,15 +68,12 @@
                 </div>
                 <div
                     v-if="isSorting"
-                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
+                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
                 >
                     <a-spin size="large" />
                 </div>
             </div>
         </div>
-        <!-- <pre style="height: 300px" class="overflow-scroll">{{
-            sortedProperties
-        }}</pre> -->
     </div>
 </template>
 
@@ -120,11 +116,6 @@
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
-            const mapTypeToIcon = (id, property) => {
-                const foundIcon = attributesTypes.find((x) => x.id === id)?.icon
-                if (!foundIcon) return 'Enum'
-                return foundIcon
-            }
 
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
@@ -257,6 +248,25 @@
                 enableDragSort()
             }
 
+            const mapTypeToIcon = (id, property) => {
+                const foundIcon = attributesTypes.find(
+                    (x) =>
+                        x.id ===
+                        (property.options?.customType
+                            ? property.options?.customType
+                            : id) // if has customType property, use it instead of id to search for icon
+                )?.icon // find icon in attributesTypes
+                if (property.options?.isEnum === 'true') return 'Enum'
+                return foundIcon
+            }
+
+            const resolveType = (property) => {
+                if (property.options?.customType) {
+                    return property.options?.customType
+                }
+                return property.typeName
+            }
+
             return {
                 copyAPI,
                 handleRemoveProperty,
@@ -264,6 +274,7 @@
                 sortedProperties,
                 reInitializeDragSort,
                 mapTypeToIcon,
+                resolveType,
             }
         },
     })

@@ -34,7 +34,7 @@
                                 "
                                 @click="formatDocument"
                             >
-                                <AtlanIcon icon="Readme" class="w-5 h-5" />
+                                <AtlanIcon icon="FormatText" class="w-5 h-5" />
                             </div>
                         </a-tooltip>
 

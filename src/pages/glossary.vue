@@ -1,20 +1,16 @@
 <template>
     <div class="flex w-full h-full bg-white">
-        <div class="flex-1 border-r border-gray-300 item-stretch">
+        <div class="w-1/5 h-full border-r border-gray-200">
+            <GlossaryDiscovery class="h-full"></GlossaryDiscovery>
+        </div>
+        <div class="flex-1 border-r border-gray-300">
             <div class="flex w-full h-full">
-                <transition name="fade" v-if="isItem">
-                    <router-view :selected-asset="selectedGlossary" />
-                </transition>
-                <keep-alive>
-                    <GlossaryDiscovery
-                        :style="isItem ? 'display: none !important;' : ''"
-                    ></GlossaryDiscovery>
-                </keep-alive>
+                <router-view :selected-asset="selectedGlossary" v-if="isItem" />
             </div>
         </div>
 
         <div
-            class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
+            class="bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
         >
             <GlossaryPreview
                 :selected-asset="selectedGlossary"
@@ -25,7 +21,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, provide } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -45,6 +41,17 @@
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
             const { selectedGlossary } = useAssetInfo()
+
+            const updateList = (asset) => {
+                console.log('updateList')
+                // console.log(asset)
+                // if (assetdiscovery.value) {
+                //     assetdiscovery.value.updateCurrentList(asset)
+                // }
+            }
+
+            provide('updateList', updateList)
+
             return {
                 isItem,
                 selectedGlossary,

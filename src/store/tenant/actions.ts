@@ -14,7 +14,11 @@ export const actions: Actions = {
         this.identityProviderMappers = value?.identityProviders
         this.identityProviders = value?.identityProviders
         this.loginWithEmailAllowed = value?.loginWithEmailAllowed
-
+        this.announcementTitle = value?.attributes?.announcementTitle
+        this.announcementDescription =
+            value?.attributes?.announcementDescription
+        this.announcementType = value?.attributes?.announcementType
+        this.tenantRaw = { ...value }
         console.log(this.loginWithEmailAllowed)
     },
     setSMTPConfig(payload) {

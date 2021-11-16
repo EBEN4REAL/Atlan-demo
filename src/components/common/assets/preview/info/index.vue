@@ -141,6 +141,16 @@
                 </div>
             </div>
         </div>
+        <div class="flex flex-col" v-if="isGTC(selectedAsset)">
+            <div
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            >
+                <span> Name</span>
+            </div>
+
+            <Name v-model="localName" class="mx-4" />
+        </div>
+
         <div class="flex flex-col">
             <div
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
@@ -251,6 +261,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
+    import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
@@ -267,6 +278,7 @@
         components: {
             // Experts,
             Description,
+            Name,
             AnnouncementWidget,
             // Status,
             Owners,
@@ -316,6 +328,7 @@
                 certificateUpdatedAt,
                 certificateStatusMessage,
                 certificateUpdatedBy,
+                isGTC,
             } = useAssetInfo()
 
             const entity = ref({
@@ -362,6 +375,8 @@
 
             const localDescription = ref(description(selectedAsset?.value))
 
+            const localName = ref(title(selectedAsset?.value))
+
             const localCertificate = ref({
                 certificateStatus: certificateStatus(selectedAsset.value),
                 certificateUpdatedAt: certificateUpdatedAt(selectedAsset.value),
@@ -373,15 +388,24 @@
 
             const currentMessage = ref('')
 
-            watch([localDescription], ([newDescription], [prevDescription]) => {
-                if (newDescription !== prevDescription) {
-                    entity.value.attributes.userDescription =
-                        localDescription.value
-                    body.value.entities = [entity.value]
-                    currentMessage.value = 'Description has been updated'
-                    mutate()
+            watch(
+                [localDescription, localName],
+                ([newDescription, newName], [prevDescription, prevName]) => {
+                    if (newDescription !== prevDescription) {
+                        entity.value.attributes.userDescription =
+                            localDescription.value
+                        body.value.entities = [entity.value]
+                        currentMessage.value = 'Description has been updated'
+                        mutate()
+                    }
+                    if (newName !== prevName) {
+                        entity.value.attributes.name = localName.value
+                        body.value.entities = [entity.value]
+                        currentMessage.value = 'Name has been updated'
+                        mutate()
+                    }
                 }
-            })
+            )
 
             whenever(isReady, () => {
                 message.success(currentMessage.value)
@@ -392,7 +416,13 @@
 
             const updateList = inject('updateList')
             whenever(isUpdateReady, () => {
-                updateList(asset.value)
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                }
             })
 
             whenever(error, () => {
@@ -595,6 +625,8 @@
                 animationPoint,
                 rainConfettis,
                 isConfetti,
+                isGTC,
+                localName,
             }
         },
     })

@@ -30,10 +30,12 @@ export default function uploadOrgLogo() {
     watch(data, () => {
         uploadKey.value = Date.now().toString()
     })
+
     const upload = (imageData: any) => {
         const formDataObject = new FormData()
         formDataObject.append('image', imageData)
         formData.value = formDataObject
+
         mutate()
     }
 

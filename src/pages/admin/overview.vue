@@ -3,21 +3,21 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
-    import { useHead } from '@vueuse/head'
-    import Overview from '@/admin/overview/index.vue'
-    import useAuth from '~/composables/auth/useAuth'
+import { defineComponent } from 'vue'
+import { useHead } from '@vueuse/head'
+import Overview from '@/admin/overview/index.vue'
+import useAuth from '~/composables/auth/useAuth'
 
-    export default defineComponent({
-        components: { Overview },
-        setup() {
-            useHead({
-                title: 'Overview',
-            })
-            const { isAccess } = useAuth()
-            return { isAccess }
-        },
-    })
+export default defineComponent({
+    components: { Overview },
+    setup() {
+        useHead({
+            title: 'Overview',
+        })
+        const { isAccess } = useAuth()
+        return { isAccess }
+    },
+})
 </script>
 <style lang="less" module></style>
 <route lang="yaml">

@@ -9,7 +9,6 @@ import { roleMap } from '~/constant/role'
 import { Users } from '~/services/service/users'
 import { LIST_USERS } from '~/services/service/users/key'
 
-
 export const getUserName = (user: any) => {
     const { first_name } = user
     const { last_name } = user
@@ -84,12 +83,15 @@ export const getFormattedUser = (user: any) => {
     }
     return localUser
 }
-export const useUsers = (userListAPIParams: {
-    limit: number
-    offset: number
-    filter: any
-    sort: string
-}, cacheKey?: string) => {
+export const useUsers = (
+    userListAPIParams: {
+        limit: number
+        offset: number
+        filter?: any
+        sort?: string
+    },
+    cacheKey?: string
+) => {
     const {
         data,
         mutate: getUserList,
@@ -109,16 +111,13 @@ export const useUsers = (userListAPIParams: {
     const localUsersList: Ref<any[]> = ref([])
 
     watch(data, () => {
-        const escapedData = data?.value?.records ? data?.value?.records?.map((user: any) =>
-            getFormattedUser(user)
-        ) : [] // to prevent maping undefined
+        const escapedData = data?.value?.records
+            ? data?.value?.records?.map((user: any) => getFormattedUser(user))
+            : [] // to prevent maping undefined
 
         if (data && data.value) {
             if (userListAPIParams.offset > 0) {
-                localUsersList.value = [
-                    ...localUsersList.value,
-                    ...escapedData
-                ]
+                localUsersList.value = [...localUsersList.value, ...escapedData]
             } else {
                 localUsersList.value = escapedData
             }
@@ -128,7 +127,6 @@ export const useUsers = (userListAPIParams: {
     const usersListConcatenated: ComputedRef<any> = computed(
         () => localUsersList.value || []
     )
-
 
     const userList = computed(() => {
         if (data.value && data?.value?.records)

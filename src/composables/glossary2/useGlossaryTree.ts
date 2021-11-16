@@ -1,4 +1,4 @@
-import { watch, ref, Ref, onMounted } from 'vue'
+import { watch, ref, Ref, onMounted, computed } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
@@ -58,6 +58,7 @@ const useGlossaryTree = ({
     const loadedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
+    const treeData = ref<TreeDataItem[]>([])
 
     const defaultBody = ref({})
     const generateBody = () => {
@@ -179,6 +180,43 @@ const useGlossaryTree = ({
         emit('select', event.node.dataRef)
     }
 
+    const glossaryStore = useGlossaryStore()
+
+    const glossaryList = computed(() =>
+        glossaryStore.list.sort((a, b) =>
+            a.attributes.name > b.attributes.name
+                ? 1
+                : b.attributes.name > a.attributes.name
+                ? -1
+                : 0
+        )
+    )
+
+    const initTreeData = () => {
+        treeData.value = glossaryList.value.map((i) => {
+            let isLeafFlag = false
+            if (i.termsCount === 0 && i.categoryCount === 0) {
+                isLeafFlag = true
+            }
+            return {
+                ...i,
+                id: i.attributes?.qualifiedName,
+                key: i.attributes?.qualifiedName,
+                isLeaf: isLeafFlag,
+            }
+        })
+    }
+
+    let parentStack: string[]
+    const addNode = (asset): TreeDataItem => {
+        treeData.value.unshift({
+            ...asset,
+            id: asset.attributes?.qualifiedName,
+            key: asset.attributes?.qualifiedName,
+            isLeaf: true,
+        })
+    }
+
     // watch(data, () => {
     //     console.log(data.value?.entities)
     //     if (data.value?.entities) {
@@ -217,6 +255,10 @@ const useGlossaryTree = ({
         expandedKeys,
         selectNode,
         selectedKeys,
+        glossaryList,
+        initTreeData,
+        treeData,
+        addNode,
     }
 }
 

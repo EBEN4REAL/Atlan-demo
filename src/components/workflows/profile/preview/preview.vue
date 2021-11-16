@@ -63,7 +63,7 @@
 
             <div
                 class="relative flex flex-col"
-                :style="{ height: 'calc(100vh - 0.8rem)' }"
+                :style="{ height: 'calc(100vh - 3rem)' }"
             >
                 <div
                     class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "

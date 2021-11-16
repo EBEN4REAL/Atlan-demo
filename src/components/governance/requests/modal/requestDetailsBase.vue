@@ -35,17 +35,6 @@
                 v-else-if="request?.request_type === 'attach_classification'"
                 :typeName="request.payload.typeName"
             />
-
-            <!-- <ClassificationDetails
-                :typeName="request.payload.typeName"
-                v-if="request.request_type === 'attach_classification'"
-            />
-
-            <ClassificationDetails
-                :data="request.payload?.classificationDefs?.[0]"
-                v-if="request.request_type === 'create_typedef'"
-            /> -->
-
             <TermDetails
                 v-if="request.request_type === 'create_term'"
                 :data="request.payload"
@@ -89,15 +78,32 @@
                         </template>
                     </AtlanButton>
                 </div>
-                <RequestActions />
+                <RequestActions
+                    v-if="request.status === 'active'"
+                    @accept="approve"
+                    @reject="decline"
+                />
+                <div
+                    v-else-if="request.status === 'approved'"
+                    class="text-success"
+                >
+                    Approved
+                </div>
+                <div
+                    v-else-if="request.status === 'rejected'"
+                    class="text-error"
+                >
+                    Rejected
+                </div>
             </div>
         </template>
     </a-modal>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
+    import { useMagicKeys, whenever } from '@vueuse/core'
     import {
         attributeCopyMapping,
         typeCopyMapping,
@@ -138,6 +144,10 @@
         setup(props) {
             const { request } = toRefs(props)
             console.log(request)
+            const { a, d } = useMagicKeys()
+            const handleRejection = inject('handleRejection')
+            const handleApproval = inject('handleApproval')
+
             const requestTitle = computed(() => {
                 let title = `${typeCopyMapping[request.value.request_type]} `
                 // Attribute change title
@@ -164,12 +174,27 @@
             const createdDate = computed(() =>
                 new Date(request.value.created_at).toLocaleDateString()
             )
-
+            // whenever(a, () => {
+            //     handleApproval(request)
+            // })
+            // whenever(d, () => {
+            //     handleRejection(request)
+            // })
+            const approve = () => {
+                handleApproval(request)
+            }
+            const decline = () => {
+                handleRejection(request)
+            }
             return {
                 requestTitle,
                 requestTypeIcon,
                 createdTimeAgo,
                 createdDate,
+                handleRejection,
+                handleApproval,
+                approve,
+                decline,
             }
         },
     })

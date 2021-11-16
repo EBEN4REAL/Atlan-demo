@@ -67,7 +67,7 @@
             <!-- <div v-else-if="selected"> -->
             <template v-else>
                 <div
-                    class="items-center justify-around hidden group-hover:flex"
+                    class="items-center justify-center hidden w-full font-bold  group-hover:flex"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -87,13 +87,25 @@
                         Rejected
                     </div>
                 </div>
-                <div class="flex flex-col w-1/2 gap-x-2 group-hover:hidden">
-                    <UserPiece :user="request.createdByUser" :is-pill="false" />
-                    <DatePiece
-                        label="Created At"
-                        :date="request.created_at"
-                        class="text-gray-500"
+                <div class="flex w-1/2 gap-x-2 group-hover:hidden">
+                    <Avatar
+                        :allow-upload="false"
+                        :avatar-name="request.createdByUser?.username"
+                        avatar-size="24"
+                        :avatar-shape="'circle'"
                     />
+
+                    <div class="flex flex-col">
+                        <UserPiece
+                            :user="request.createdByUser"
+                            :is-pill="false"
+                        />
+                        <DatePiece
+                            label="Created At"
+                            :date="request.created_at"
+                            class="text-gray-500"
+                        />
+                    </div>
                 </div>
             </template>
         </div>
@@ -103,10 +115,12 @@
 <script lang="ts">
     import { defineComponent, PropType, reactive, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     import RequestActions from './requestActions.vue'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
@@ -133,6 +147,7 @@
             UserPiece,
             DatePiece,
             TermPiece,
+            Avatar,
         },
         props: {
             request: {
@@ -157,7 +172,7 @@
                 isLoading: false,
                 message: '',
             })
-            console.log(request.value)
+
             function raiseErrorMessage(msg?: string) {
                 message.error(msg || 'Request modification failed, try again')
             }
@@ -189,7 +204,6 @@
                 }
                 state.isLoading = false
             }
-
             return {
                 handleApproval,
                 handleRejection,

@@ -41,7 +41,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch, Ref } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        watch,
+        Ref,
+        reactive,
+        provide,
+    } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { useRequestList } from '~/composables/requests/useRequests'
 
@@ -57,6 +65,10 @@
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
     import { message } from 'ant-design-vue'
     // import { useAccessStore } from '~/services/access/accessStore'
+    import {
+        approveRequest,
+        declineRequest,
+    } from '~/composables/requests/useRequests'
 
     export default defineComponent({
         name: 'RequestList',
@@ -70,7 +82,7 @@
             DefaultLayout,
             // NoAcces
         },
-        setup() {
+        setup(props, { emit }) {
             // const accessStore = useAccessStore();
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
@@ -83,6 +95,10 @@
             const filters = ref({
                 status: 'active' as RequestStatus,
                 request_type: [],
+            })
+            const state = reactive({
+                isLoading: false,
+                message: '',
             })
 
             const {
@@ -126,6 +142,37 @@
 
                 isDetailsVisible.value = true
             }
+            function raiseErrorMessage(msg?: string) {
+                message.error(msg || 'Request modification failed, try again')
+            }
+
+            async function handleApproval(request) {
+                state.isLoading = true
+                try {
+                    await approveRequest(request.value.id, state.message)
+                    request.value.message = state.message
+                    request.value.status = 'approved'
+                    emit('action', request.value)
+                    message.success('Request approved')
+                } catch (error) {
+                    raiseErrorMessage()
+                }
+                state.isLoading = false
+            }
+
+            async function handleRejection(request) {
+                state.isLoading = true
+                try {
+                    await declineRequest(request.value.id, state.message)
+                    request.value.message = state.message
+                    request.value.status = 'rejected'
+                    emit('action', request.value)
+                    message.success('Request declined')
+                } catch (error) {
+                    raiseErrorMessage()
+                }
+                state.isLoading = false
+            }
 
             const traverseUp = () => {
                 if (selectedIndex.value > 0) {
@@ -148,18 +195,6 @@
             }
             whenever(ArrowUp, traverseUp)
             whenever(ArrowDown, traverseDown)
-
-            whenever(x, () => {
-                if (
-                    selectedIndex.value > -1 &&
-                    selectedIndex.value < requestList.value.length - 1
-                ) {
-                    const guid = requestList.value[selectedIndex.value].id
-                    if (selectedList.value.has(guid))
-                        selectedList.value.delete(guid)
-                    else selectedList.value.add(guid)
-                }
-            })
 
             whenever(
                 Space,
@@ -186,7 +221,8 @@
                 },
                 { deep: true }
             )
-
+            provide('handleRejection', handleRejection)
+            provide('handleApproval', handleApproval)
             return {
                 requestList,
                 isSelected,

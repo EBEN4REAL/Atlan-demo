@@ -1,9 +1,7 @@
 <template>
     <div>
-        <div class="flex" v-if="attribute === 'certificateStatus'">
-            <span class="mr-1"
-                >Change {{ attributeCopyMapping[attribute] }} to</span
-            >
+        <div class="flex flex-col" v-if="attribute === 'certificateStatus'">
+            <span class="mr-1"> {{ attributeCopyMapping[attribute] }} </span>
             <StatusBadge
                 :status-id="value"
                 show-no-status

@@ -28,7 +28,7 @@ export const requestTypeIcon: Record<RequestType, keyof typeof iconMap> = {
 }
 
 export const attributeCopyMapping: Record<string, string> = {
-    certificateStatus: 'Status',
+    certificateStatus: 'Certificate',
     userDescription: 'Description',
 }
 

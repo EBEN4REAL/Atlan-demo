@@ -155,7 +155,7 @@
                     <div class="flex mb-6">
                         <div class="relative" style="width: 100%">
                             <a-form-item
-                                :name="['options', 'customEntityTypes']"
+                                :name="['options', 'applicableEntityTypes']"
                                 class="mb-0"
                             >
                                 <template #label>
@@ -182,7 +182,7 @@
                                     <div ref="typeTreeSelect">
                                         <a-tree-select
                                             :value="
-                                                form.options.customEntityTypes
+                                                form.options.applicableEntityTypes
                                             "
                                             no-results-text="No entities found"
                                             style="width: 100%"
@@ -208,7 +208,7 @@
                                             :check-strictly="true"
                                             :show-checked-strategy="SHOW_CHILD"
                                             @change="
-                                                form.options.customEntityTypes =
+                                                form.options.applicableEntityTypes =
                                                     $event
                                             "
                                         >
@@ -324,7 +324,7 @@
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
         applicableEntityTypes,
-        customEntityTypes,
+        applicableEntityTypes,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
@@ -366,7 +366,7 @@
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
             const finalApplicableTypeNamesOptions = computed(() => {
-                const options = JSON.parse(JSON.stringify(customEntityTypes))
+                const options = JSON.parse(JSON.stringify(applicableEntityTypes))
                 return options
             })
 
@@ -374,21 +374,17 @@
                 JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES))
             )
 
-            const transfromJson = (theProperty) => {
-                if (typeof this.form.options.customEntityTypes === 'string')
-                    JSON.parse(this.form.options.customEntityTypes)
-            }
 
             // methods
             const open = (theProperty, makeEdit, index) => {
                 // when open we send the property value and if is undefined, means we creating new prioperty
                 if (theProperty !== undefined) {
-                    const customEntityTypes =
-                        theProperty.options.customEntityTypes
-                    if (customEntityTypes) {
-                        if (typeof customEntityTypes === 'string') {
-                            theProperty.options.customEntityTypes =
-                                JSON.parse(customEntityTypes)
+                    const applicableEntityTypes =
+                        theProperty.options.applicableEntityTypes
+                    if (applicableEntityTypes) {
+                        if (typeof applicableEntityTypes === 'string') {
+                            theProperty.options.applicableEntityTypes =
+                                JSON.parse(applicableEntityTypes)
                         }
                     }
                     form.value = theProperty
@@ -418,17 +414,17 @@
 
                 // stringify
                 const tempForm = JSON.parse(JSON.stringify(form.value))
-                tempForm.options.customEntityTypes = JSON.stringify(
-                    tempForm.options.customEntityTypes
+                tempForm.options.applicableEntityTypes = JSON.stringify(
+                    tempForm.options.applicableEntityTypes
                 )
 
                 // make copy to prevent updating
                 const tempBM = JSON.parse(JSON.stringify(metadata.value))
-                // transform the customEntityTypes in the other attributeDefs as they would be object
+                // transform the CET in the other attributeDefs as they would be object
                 tempBM.attributeDefs.forEach((x, index) => {
-                    if (typeof x.options.customEntityTypes === 'object') {
-                        tempBM.attributeDefs[index].options.customEntityTypes =
-                            JSON.stringify(x.options.customEntityTypes)
+                    if (typeof x.options.applicableEntityTypes === 'object') {
+                        tempBM.attributeDefs[index].options.applicableEntityTypes =
+                            JSON.stringify(x.options.applicableEntityTypes)
                     }
                 })
 
@@ -625,22 +621,6 @@
                 test: [],
                 treeSelectOpen: false,
             }
-        },
-        computed: {
-            // name: {
-            //     get() {
-            //         return this.form.displayName
-            //     },
-            //     set(newValue) {
-            //         this.form.name = newValue
-            //         this.form.displayName = newValue
-            //     },
-            // },
-            customEntityTypes: {
-                get() {
-                    return this.form.options.customEntityTypes
-                },
-            },
         },
     })
 </script>

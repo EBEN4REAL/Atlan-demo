@@ -32,13 +32,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="mr-4">
                         <div
-                            class="
-                                relative
-                                flex
-                                items-stretch
-                                w-full
-                                overflow-hidden
-                            "
+                            class="relative flex items-stretch w-full overflow-hidden "
                         >
                             <a-input
                                 v-model:value="attrsearchText"
@@ -115,7 +109,6 @@
     import { defineComponent, ref, computed, onMounted, watch, Ref } from 'vue'
 
     // ? Components
-    import AddAttributeCard from '@/governance/custom-metadata/addAttributeCard.vue'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     // import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
     import MetadataHeaderButton from './metadataHeaderButton.vue'
@@ -135,7 +128,6 @@
 
     export default defineComponent({
         components: {
-            AddAttributeCard,
             CreateUpdateInfo,
             MetadataHeaderButton,
             AddPropertyDrawer,
@@ -227,14 +219,14 @@
                     localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
             })
 
-            // converts customEntityTypes from string to array so they can be set on the a-tree component
+            // converts applicableEntityTypes from string to array so they can be set on the a-tree component
             const cleanLocalBm = computed(() => {
                 const tempBM = JSON.parse(JSON.stringify(localBm.value))
                 tempBM.attributeDefs.forEach((x, index) => {
-                    // console.log(typeof x.options.customEntityTypes)
-                    if (typeof x.options.customEntityTypes === 'string') {
-                        tempBM.attributeDefs[index].options.customEntityTypes =
-                            JSON.parse(x.options.customEntityTypes)
+                    // console.log(typeof x.options.applicableEntityTypes)
+                    if (typeof x.options.applicableEntityTypes === 'string') {
+                        tempBM.attributeDefs[index].options.applicableEntityTypes =
+                            JSON.parse(x.options.applicableEntityTypes)
                     }
                 })
                 // console.log('done:', tempBM.attributeDefs)

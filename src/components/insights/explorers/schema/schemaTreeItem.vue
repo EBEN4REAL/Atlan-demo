@@ -746,7 +746,7 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `${title(t)}, `,
+                                        text: `"${title(t)}", `,
                                     }
                                 )
                             } else {
@@ -754,7 +754,7 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `${title(t)}`,
+                                        text: `"${title(t)}"`,
                                     }
                                 )
                             }
@@ -763,7 +763,7 @@
                                 'keyboard',
                                 'type',
                                 {
-                                    text: `${title(t)}`,
+                                    text: `"${title(t)}"`,
                                 }
                             )
                         }

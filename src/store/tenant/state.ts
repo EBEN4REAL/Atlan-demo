@@ -7,7 +7,11 @@ export interface State {
     identityProviders: any
     loginWithEmailAllowed: boolean
     identityProviderMappers: any
-    tenant: any
+    announcementTitle: string
+    announcementDescription: string
+    announcementType: string
+    // need to send the whole tenant in updateTenant Request
+    tenantRaw: any
 }
 
 export const state: State = {
@@ -17,5 +21,8 @@ export const state: State = {
     smtpServer: {},
     identityProviders: [],
     identityProviderMappers: [],
-    tenant: {},
+    announcementTitle: '',
+    announcementDescription: '',
+    announcementType: '',
+    tenantRaw: {},
 }

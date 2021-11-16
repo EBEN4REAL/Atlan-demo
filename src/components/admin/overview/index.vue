@@ -1,23 +1,128 @@
 <template>
-    <DefaultLayout title="Workspace" sub-title="Manage your workspace settings">
-        <div class="pt-6 mt-5 border-t">
-            <div>
-                <div class="text-lg font-bold">Logo</div>
-                <div>
+    <DefaultLayout>
+        <div>
+            <a-modal
+                :class="$style.input"
+                width="632px"
+                :closable="false"
+                :visible="visible"
+            ></a-modal>
+            <a-modal
+                :visible="showEditTenantNameModal"
+                :closable="false"
+                :class="$style.input"
+                :footer="null"
+                width="632px"
+                ><div class="w-full p-4 bg-white">
+                    <div class="text-gray-500">Workspace name</div>
+                    <a-input
+                        v-model:value="newTenantName"
+                        :placeholder="`Add Workspace Name`"
+                        class="text-lg font-bold border-0 shadow-none outline-none "
+                    />
+                    <div class="flex items-center justify-end">
+                        <AtlanBtn
+                            padding="compact"
+                            size="sm"
+                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none "
+                            @click="showEditTenantNameModal = false"
+                            >Cancel</AtlanBtn
+                        >
+                        <AtlanBtn
+                            padding="compact"
+                            size="sm"
+                            color="primary"
+                            class="px-5 font-bold"
+                            :disabled="updateStatus === 'loading'"
+                            :is-loading="updateStatus === 'loading'"
+                            @click="updateTenant"
+                            ><span v-if="updateStatus !== 'loading'"
+                                >Update</span
+                            ><span v-else>Updating</span></AtlanBtn
+                        >
+                    </div>
+                </div>
+            </a-modal>
+            <div class="flex justify-between">
+                <div class="relative flex items-center">
                     <OrgLogo
                         :image-url="logoUrl"
                         :allow-upload="true"
                         :avatar-name="name"
                         :avatar-size="100"
-                        :bordered="true"
+                        :avatar-shape="'circle'"
+                        :bordered="false"
                         class="mt-2"
                     />
+                    <div
+                        class="absolute bottom-0 p-1 bg-white rounded-full  left-20"
+                    >
+                        <div
+                            class="
+                                p-1
+                                bg-gray-100
+                                border border-gray-300
+                                rounded-full
+                                px-1
+                                py-0.5
+                                text-gray-500
+                            "
+                        >
+                            <AtlanIcon icon="Camera"></AtlanIcon>
+                        </div>
+                    </div>
+                    <div class="ml-5 text-2xl text-gray-700">
+                        {{ newTenantName }}
+                    </div>
                 </div>
-                <div class="mt-2 text-gray-500">
-                    Pick a logo for your organisation
-                </div>
+                <AtlanBtn
+                    padding="compact"
+                    size="sm"
+                    class="px-5 mr-3 text-gray-700 bg-transparent border border-gray-300 "
+                    @click="showEditTenantNameModal = true"
+                    >Edit</AtlanBtn
+                >
             </div>
-            <div class="mt-5">
+            <div class="flex flex-wrap mt-7">
+                <router-link
+                    v-for="card in overviewCards"
+                    :key="card.id"
+                    :to="card.link"
+                    class="flex justify-between p-3 mx-2 my-2 border rounded-md cursor-pointer  overview-card hover:shadow-md group"
+                >
+                    <div class="flex items-center">
+                        <div
+                            class="flex items-center justify-center p-3 mr-3  bg-primary-light text-primary"
+                        >
+                            <AtlanIcon
+                                :icon="card.icon"
+                                class="h-6"
+                            ></AtlanIcon>
+                        </div>
+                        <div class="mt-1">
+                            <div class="font-bold">
+                                {{ card.displayName }}
+                            </div>
+                            <div class="mt-1">
+                                <span v-if="card.value">
+                                    <span
+                                        v-if="!card.excludeValueInCopy"
+                                        class="mr-1 font-bold"
+                                        >{{ card.value }}</span
+                                    >
+                                    <span>{{ card.valueText }}</span>
+                                </span>
+                                <span v-else>{{ card.emptyText }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <AtlanIcon
+                        icon="ArrowRight"
+                        class="mt-1 opacity-0  text-primary group-hover:opacity-100"
+                    ></AtlanIcon>
+                </router-link>
+            </div>
+            <!-- <div class="mt-5">
                 <div class="text-lg font-bold">General</div>
                 <div class="mt-2">Workspace name</div>
                 <div class="flex text-gray-500">
@@ -39,87 +144,122 @@
                         ></AtlanIcon>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </DefaultLayout>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, Ref, ref, watch } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
-    import DefaultLayout from '~/components/admin/layout.vue'
-    import OrgLogo from '~/components/common/logo/orgLogo.vue'
-    import useTenantData from '~/composables/tenant/useTenantData'
-    import useTenantUpdate from '~/composables/tenant/useTenantUpdate'
+import { defineComponent, computed, Ref, ref, watch } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
+import DefaultLayout from '~/components/admin/layout.vue'
+import OrgLogo from '~/components/common/logo/orgLogo.vue'
+import useTenantData from '~/composables/tenant/useTenantData'
+import useTenantUpdate from '~/composables/tenant/useTenantUpdate'
+import useOverviewCards from '~/components/admin/overview/composables/useOverviewCards'
+import AddAnnouncementModal from '~/components/common/widgets/announcement/addAnnouncementModal.vue'
+import AtlanBtn from '@/UI/button.vue'
 
-    export default defineComponent({
-        components: {
-            DefaultLayout,
-            OrgLogo,
-        },
-        setup() {
-            const { name } = useTenantData()
+export default defineComponent({
+    name: 'Overview',
+    components: {
+        DefaultLayout,
+        OrgLogo,
+        AtlanBtn,
+        AddAnnouncementModal,
+    },
+    setup() {
+        const { overviewCards } = useOverviewCards()
+        const showEditTenantNameModal = ref(false)
+        const { name, tenantRaw } = useTenantData()
+        console.log('jhj', name, tenantRaw)
+        const newTenantName: Ref<string> = ref(name)
+        const updateStatus = ref('')
 
-            const newTenantName: Ref<string> = ref(name)
-            const updateStatus = ref('')
+        const logoUrl = computed(
+            () => `${window.location.origin}/api/service/avatars/_logo_`
+        )
 
-            const logoUrl = computed(
-                () => `${window.location.origin}/api/service/avatars/_logo_`
-            )
+        const updateTenant = () => {
+            try {
+                updateStatus.value = 'loading'
+                const { data, error, isLoading } = useTenantUpdate({
+                    ...tenantRaw,
+                    displayName: newTenantName.value,
+                })
 
-            const updateTenant = () => {
-                try {
-                    updateStatus.value = 'loading'
-                    const { data, error, isLoading } = useTenantUpdate({
-                        displayName: newTenantName.value,
-                    })
-
-                    watch([data, error, isLoading], () => {
-                        if (isLoading.value === false) {
-                            if (error.value === undefined) {
-                                updateStatus.value = 'success'
-                                setTimeout(() => {
-                                    updateStatus.value = ''
-                                }, 2500)
-                            } else {
-                                updateStatus.value = 'error'
-                                setTimeout(async () => {
-                                    updateStatus.value = ''
-                                }, 2500)
-                            }
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value === false) {
+                        if (error.value === undefined) {
+                            updateStatus.value = 'success'
+                            showEditTenantNameModal.value = false
+                            setTimeout(() => {
+                                updateStatus.value = ''
+                            }, 2500)
+                        } else {
+                            updateStatus.value = 'error'
+                            showEditTenantNameModal.value = false
+                            setTimeout(async () => {
+                                updateStatus.value = ''
+                            }, 2500)
                         }
-                    })
-                } catch (e) {
-                    updateStatus.value = 'error'
-                    setTimeout(() => {
-                        updateStatus.value = ''
-                    }, 2500)
-                }
+                    }
+                })
+            } catch (e) {
+                updateStatus.value = 'error'
+                setTimeout(() => {
+                    updateStatus.value = ''
+                }, 2500)
             }
-            const onEdit = useDebounceFn(() => {
-                updateTenant()
-            }, 800)
+        }
+        const onEdit = useDebounceFn(() => {
+            updateTenant()
+        }, 800)
 
-            const getStatusIcon = (state) => {
-                if (state === 'loading') return 'CircleLoader'
-                if (state === 'error') return 'Cancel'
-                if (state === 'success') return 'Check'
-                return ''
-            }
-            const getIconClass = (state) => {
-                if (state === 'loading') return 'text-primary'
-                if (state === 'error') return 'text-error'
-                if (state === 'success') return 'text-success'
-                return ''
-            }
-            return {
-                newTenantName,
-                name,
-                logoUrl,
-                getStatusIcon,
-                getIconClass,
-                onEdit,
-                updateStatus,
-            }
-        },
-    })
+        const getStatusIcon = (state) => {
+            if (state === 'loading') return 'CircleLoader'
+            if (state === 'error') return 'Cancel'
+            if (state === 'success') return 'Check'
+            return ''
+        }
+        const getIconClass = (state) => {
+            if (state === 'loading') return 'text-primary'
+            if (state === 'error') return 'text-error'
+            if (state === 'success') return 'text-success'
+            return ''
+        }
+        return {
+            newTenantName,
+            name,
+            logoUrl,
+            getStatusIcon,
+            getIconClass,
+            onEdit,
+            updateStatus,
+            overviewCards,
+            showEditTenantNameModal,
+            updateTenant,
+        }
+    },
+})
 </script>
+<style lang="less" scoped>
+.overview-card {
+    width: 20.1875rem;
+}
+</style>
+<style lang="less" module>
+.input {
+    :global(.ant-input:focus
+            .ant-input:hover
+            .ant-input::selection
+            .focus-visible) {
+        @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
+    }
+    :global(.ant-input) {
+        @apply shadow-none outline-none border-0 px-0 !important;
+    }
+    :global(.ant-modal-body) {
+        @apply p-0 !important;
+    }
+}
+</style>

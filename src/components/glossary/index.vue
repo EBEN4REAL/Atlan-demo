@@ -26,6 +26,7 @@
                             <AddGTCModal
                                 entityType="AtlasGlossaryTerm"
                                 :glossaryQualifiedName="selectedGlossaryQf"
+                                @add="handleAddTerm"
                             >
                                 <template #trigger>
                                     <div class="flex items-center">
@@ -35,13 +36,24 @@
                                 </template>
                             </AddGTCModal>
                         </a-menu-item>
-                        <a-menu-item key="1">
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Category" class="mr-1" />
-                                Category
-                            </div>
+                        <a-menu-item key="2">
+                            <AddGTCModal
+                                entityType="AtlasGlossaryCategory"
+                                :glossaryQualifiedName="selectedGlossaryQf"
+                                @add="handleAddCategory"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Category"
+                                            class="mr-1"
+                                        />
+                                        Category
+                                    </div>
+                                </template>
+                            </AddGTCModal>
                         </a-menu-item>
-                        <a-menu-item key="1">
+                        <a-menu-item key="3">
                             <AddGTCModal
                                 entityType="AtlasGlossary"
                                 @add="handleAddGlossary"
@@ -58,7 +70,7 @@
                             </AddGTCModal>
                         </a-menu-item>
                         <a-menu-divider></a-menu-divider>
-                        <a-menu-item key="1">
+                        <a-menu-item key="4">
                             <div class="flex items-center">
                                 <AtlanIcon icon="Glossary" class="mr-1" />
                                 Bulk Upload
@@ -373,6 +385,17 @@
                 }
             }
 
+            const handleAddTerm = (asset) => {
+                if (glossaryTree.value) {
+                    glossaryTree.value.addTerm(asset)
+                }
+            }
+            const handleAddCategory = (asset) => {
+                if (glossaryTree.value) {
+                    glossaryTree.value.addCategory(asset)
+                }
+            }
+
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
@@ -410,6 +433,8 @@
                 glossaryURL,
                 selectedGlossaryQf,
                 handleSelectGlossary,
+                handleAddTerm,
+                handleAddCategory,
             }
         },
     })

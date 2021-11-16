@@ -114,6 +114,14 @@
                 addNode(asset)
             }
 
+            const addTerm = (asset) => {
+                addNode(asset)
+            }
+
+            const addCategory = (asset) => {
+                addNode(asset)
+            }
+
             return {
                 onLoadData,
                 loadedKeys,
@@ -129,6 +137,8 @@
                 error,
                 isReady,
                 height,
+                addTerm,
+                addCategory,
             }
             // data
         },

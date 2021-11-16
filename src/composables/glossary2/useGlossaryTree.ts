@@ -20,6 +20,7 @@ import { AssetAttributes, InternalAttributes } from '~/constant/projection'
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 interface UseTreeParams {
     emit?: any
@@ -239,14 +240,44 @@ const useGlossaryTree = ({
         }
     }
 
+    const { getAnchorQualifiedName } = useAssetInfo()
+
     let parentStack: string[]
     const addNode = (asset): TreeDataItem => {
-        treeData.value.unshift({
-            ...asset,
-            id: asset.attributes?.qualifiedName,
-            key: asset.attributes?.qualifiedName,
-            isLeaf: true,
-        })
+        if (asset.typeName === 'AtlasGlossary') {
+            treeData.value.unshift({
+                ...asset,
+                id: asset.attributes?.qualifiedName,
+                key: asset.attributes?.qualifiedName,
+                isLeaf: false,
+            })
+        }
+
+        if (asset.typeName === 'AtlasGlossaryTerm') {
+            treeData.value.unshift({
+                ...asset,
+                id: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                key: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                isLeaf: true,
+            })
+        }
+
+        if (asset.typeName === 'AtlasGlossaryCategory') {
+            treeData.value.unshift({
+                ...asset,
+                id: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                key: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                isLeaf: false,
+            })
+        }
     }
 
     // watch(data, () => {
@@ -294,6 +325,7 @@ const useGlossaryTree = ({
         isLoading,
         error,
         isReady,
+        getAnchorQualifiedName,
     }
 }
 

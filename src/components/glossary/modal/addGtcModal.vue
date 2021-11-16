@@ -7,6 +7,7 @@
         v-model:visible="visible"
         :class="$style.input"
         width="50%"
+        :destroyOnClose="true"
         :closable="true"
         okText="Save"
         cancelText=""
@@ -17,7 +18,9 @@
                 <GlossaryPopoverSelect
                     class="p-1 bg-gray-100 rounded"
                     v-model="localQualfiendName"
-                    v-if="typeNameTitle === 'Term'"
+                    v-if="
+                        typeNameTitle === 'Term' || typeNameTitle === 'Category'
+                    "
                 ></GlossaryPopoverSelect>
             </div>
 
@@ -112,12 +115,13 @@
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
             const { entityType, glossaryQualifiedName } = toRefs(props)
+            const { getGlossaryByQF, getFirstGlossaryQF } = useGlossaryData()
 
-            const localQualfiendName = ref(glossaryQualifiedName.value)
+            const localQualfiendName = ref(
+                glossaryQualifiedName.value || getFirstGlossaryQF()
+            )
 
             const visible = ref(false)
-
-            const { getGlossaryByQF } = useGlossaryData()
 
             const entity = reactive({
                 attributes: {
@@ -128,7 +132,11 @@
                 typeName: entityType.value,
             })
 
-            if (entityType.value === 'AtlasGlossaryTerm') {
+            if (
+                ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                    entityType.value
+                )
+            ) {
                 entity.relationshipAttributes = {
                     anchor: {
                         typeName: 'AtlasGlossary',
@@ -155,6 +163,7 @@
                 isLoading,
                 isReady,
                 guidUpdatedMaps,
+                guidCreatedMaps,
                 error,
             } = updateAsset(body)
 
@@ -181,7 +190,14 @@
                     entity.attributes.qualifiedName = generateUUID()
                 }
 
-                if (entityType.value === 'AtlasGlossaryTerm') {
+                if (
+                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                        entityType.value
+                    )
+                ) {
+                    entity.attributes.qualifiedName = `${generateUUID()}@${
+                        localQualfiendName.value
+                    }`
                     entity.relationshipAttributes = {
                         anchor: {
                             typeName: 'AtlasGlossary',
@@ -213,9 +229,11 @@
                 } else {
                     visible.value = false
                     message.success(`${typeNameTitle.value} created`)
-                    if (guidUpdatedMaps.value?.length > 0) {
-                        guid.value = guidUpdatedMaps.value[0]
+
+                    if (guidCreatedMaps.value?.length > 0) {
+                        guid.value = guidCreatedMaps.value[0]
                     }
+
                     setTimeout(() => mutateUpdate(), 1000)
                 }
             })
@@ -247,6 +265,8 @@
                 error,
                 getGlossaryByQF,
                 localQualfiendName,
+                getFirstGlossaryQF,
+                guidCreatedMaps,
             }
         },
     })

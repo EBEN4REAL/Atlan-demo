@@ -17,9 +17,16 @@ export default function updateAsset(
         options
     )
 
-    const guidUpdatedMaps = computed(() => {
+    const guidCreatedMaps = computed(() => {
         if (data.value?.mutatedEntities?.CREATE) {
             return data.value.mutatedEntities.CREATE.map((i) => i.guid)
+        }
+        return []
+    })
+
+    const guidUpdatedMaps = computed(() => {
+        if (data.value?.mutatedEntities?.UPDATE) {
+            return data.value.mutatedEntities.UPDATE.map((i) => i.guid)
         }
         return []
     })
@@ -31,5 +38,6 @@ export default function updateAsset(
         isLoading,
         isReady,
         guidUpdatedMaps,
+        guidCreatedMaps,
     }
 }

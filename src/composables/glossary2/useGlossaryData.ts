@@ -26,7 +26,12 @@ export default function useGlossaryData() {
     )
 
     const getGlossaryByQF = (qf) =>
-        glossaryStore.list.find((i) => i.attributes.qualifiedName === qf)
+        glossaryList.value.find((i) => i.attributes.qualifiedName === qf)
+
+    const getFirstGlossaryQF = () =>
+        glossaryList.value.length > 0
+            ? glossaryList.value[0].attributes.qualifiedName
+            : ''
 
     const handleSelectedGlossary = (item) => {
         glossaryStore.setSelectedGlossary(item)
@@ -78,5 +83,6 @@ export default function useGlossaryData() {
         handleSelectedGlossary,
         selectedGlossary,
         getGlossaryByQF,
+        getFirstGlossaryQF,
     }
 }

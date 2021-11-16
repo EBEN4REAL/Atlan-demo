@@ -40,7 +40,7 @@ export default function useAssetInfo() {
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-            attributes(asset)?.connectorName?.toLowerCase()
+                attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -190,22 +190,25 @@ export default function useAssetInfo() {
     }
 
     const getAnchorName = (asset: assetInterface) =>
-        attributes(asset)?.anchor?.attributes.name
+        anchorAttributes(asset)?.name
 
     const getAnchorGuid = (asset: assetInterface) =>
         attributes(asset)?.anchor?.guid
+
+    const getAnchorQualifiedName = (asset: assetInterface) =>
+        anchorAttributes(asset)?.uniqueAttributes?.qualifiedName
 
     const logo = (asset: assetInterface) => {
         let img = ''
 
         const found = attributes(asset)?.integrationName
             ? SourceList.find(
-                (src) => src.id === attributes(asset)?.integrationName
-            )
+                  (src) => src.id === attributes(asset)?.integrationName
+              )
             : SourceList.find(
-                (src) =>
-                    src.id === attributes(asset)?.qualifiedName?.split('/')[1]
-            )
+                  (src) =>
+                      src.id === attributes(asset)?.qualifiedName?.split('/')[1]
+              )
 
         if (found) img = found.image
 
@@ -292,7 +295,10 @@ export default function useAssetInfo() {
     }
 
     const compiledQuery = (asset: assetInterface) => {
-        if (attributes(asset)?.compiledQuery && attributes(asset)?.compiledQuery !== "") {
+        if (
+            attributes(asset)?.compiledQuery &&
+            attributes(asset)?.compiledQuery !== ''
+        ) {
             return attributes(asset)?.compiledQuery
         }
         return '~'
@@ -363,7 +369,7 @@ export default function useAssetInfo() {
     const readmeGuid = (asset: assetInterface) =>
         attributes(asset)?.readme?.guid
 
-    const isEditAllowed = (asset: assetInterface) => { }
+    const isEditAllowed = (asset: assetInterface) => {}
 
     // const modifiedBy = (asset: assetInterface) =>
     //     attributes(asset)?.__modifiedBy
@@ -427,7 +433,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
-                'N/A'
+                      'N/A'
                 : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
         }
         return ''
@@ -456,7 +462,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.announcementUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.announcementUpdatedAt) ||
-                'N/A'
+                      'N/A'
                 : useTimeAgo(attributes(asset)?.announcementUpdatedAt).value
         }
         return ''
@@ -467,7 +473,10 @@ export default function useAssetInfo() {
     }
 
     const isBiAsset = (asset: assetInterface) => {
-        return assetType(asset).includes('Tableau') || assetType(asset).includes('BI')
+        return (
+            assetType(asset).includes('Tableau') ||
+            assetType(asset).includes('BI')
+        )
     }
 
     const discoveryStore = useAssetStore()
@@ -632,17 +641,17 @@ export default function useAssetInfo() {
             },
             attributes(asset).isPublished
                 ? {
-                    id: 'tableauPublishedDatasource',
-                    label: 'Published Datasource',
-                    value: attributes(asset).datasourceName,
-                    icon: 'TableauPublishedDatasource',
-                }
+                      id: 'tableauPublishedDatasource',
+                      label: 'Published Datasource',
+                      value: attributes(asset).datasourceName,
+                      icon: 'TableauPublishedDatasource',
+                  }
                 : {
-                    id: 'tableauEmbeddedDatasource',
-                    label: 'Embedded Datasource',
-                    value: attributes(asset).datasourceName,
-                    icon: 'TableauEmbeddedDatasource',
-                },
+                      id: 'tableauEmbeddedDatasource',
+                      label: 'Embedded Datasource',
+                      value: attributes(asset).datasourceName,
+                      icon: 'TableauEmbeddedDatasource',
+                  },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',
@@ -827,5 +836,6 @@ export default function useAssetInfo() {
         parentCategory,
         isGTC,
         isGTCByType,
+        getAnchorQualifiedName,
     }
 }

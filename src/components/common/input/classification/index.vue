@@ -39,7 +39,13 @@
 
 <script lang="ts">
     import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
     import ClassificationFacet from '@/common/facet/classification/index.vue'
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -151,6 +157,26 @@
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+            })
+
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA'
+            )
+            const { t, Escape } = useMagicKeys()
+            whenever(and(t, notUsingInput), () => {
+                if (!isEdit.value) {
+                    isEdit.value = true
+                }
+            })
+
+            whenever(and(Escape), () => {
+                if (isEdit.value) {
+                    handleChange()
+                    isEdit.value = false
+                }
             })
 
             return {

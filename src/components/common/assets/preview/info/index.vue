@@ -152,11 +152,13 @@
         </div>
 
         <div class="flex flex-col">
-            <div
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-            >
-                <span> Description</span>
-            </div>
+            <Shortcut shortcutKey="d" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Description</span>
+                </div>
+            </Shortcut>
 
             <Description v-model="localDescription" class="mx-4" />
         </div>
@@ -167,11 +169,14 @@
             class="flex flex-col"
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-            >
-                Owners
-            </p>
+            <Shortcut shortcutKey="o" action="set owners" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Owners</span>
+                </div>
+            </Shortcut>
+
             <Owners
                 v-model="localOwners"
                 :guid="selectedAsset.guid"
@@ -188,11 +193,18 @@
             "
             class="flex flex-col"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            <Shortcut
+                shortcutKey="t"
+                action="set classification"
+                placement="left"
             >
-                Classification
-            </p>
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Classification</span>
+                </div>
+            </Shortcut>
+
             <Classification
                 :guid="selectedAsset.guid"
                 v-model="localClassifications"
@@ -227,13 +239,15 @@
                 )
             "
             class="flex flex-col"
+            ref="animationPoint"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-                ref="animationPoint"
-            >
-                Certificate
-            </p>
+            <Shortcut shortcutKey="c" action="set certificate" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Certificate</span>
+                </div>
+            </Shortcut>
 
             <Certificate
                 :selected-asset="selectedAsset"
@@ -275,6 +289,7 @@
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import whoami from '~/composables/user/whoami'
     import confetti from '~/utils/confetti'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -291,6 +306,7 @@
             RowInfoHoverCard,
             SQL,
             Terms,
+            Shortcut,
         },
         setup(props) {
             const actions = inject('actions')
@@ -552,7 +568,9 @@
                     height: '0.3rem',
                 }
                 if (isConfetti.value) {
-                    confetti(animationPoint.value, config)
+                    if (animationPoint) {
+                        confetti(animationPoint.value, config)
+                    }
                 }
             }
 

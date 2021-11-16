@@ -1,5 +1,5 @@
 <template>
-    <ExplorerLayout title="Personas" sub-title="">
+    <ExplorerLayout title="Purposes" sub-title="">
         <template #action>
             <AtlanBtn
                 :disabled="isEditing"
@@ -16,7 +16,7 @@
             <div class="px-4">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    :placeholder="`Search from ${filteredPersonas?.length} personas`"
+                    :placeholder="`Search from ${filteredPersonas?.length} purposes`"
                     class="mt-4 mb-2 bg-white"
                     :autofocus="true"
                     size="minimal"
@@ -52,7 +52,7 @@
             </ExplorerList>
         </template>
 
-        <AddPersona v-model:visible="modalVisible" />
+        <AddPurpose v-model:visible="modalVisible" />
 
         <a-spin
             v-if="!isPersonaListReady"
@@ -60,13 +60,13 @@
             size="large"
         />
         <template v-else-if="selectedPersona">
-            <PersonaHeader :persona="selectedPersona" />
-            <PersonaBody v-model:persona="selectedPersona" />
+            <PurposeHeader :persona="selectedPersona" />
+            <PurposeBody v-model:persona="selectedPersona" />
         </template>
         <div v-else class="flex flex-col items-center justify-center h-full">
             <component :is="AddPersonaIllustration"></component>
             <span class="mx-auto text-base text-gray"
-                >You don't have any personas</span
+                >You don't have any purposes</span
             >
             <AtlanBtn
                 class="flex-none mx-auto mt-6"
@@ -78,7 +78,7 @@
                 <template #prefix>
                     <AtlanIcon icon="Add" />
                 </template>
-                Add new persona
+                Add new purpose
             </AtlanBtn>
         </div>
     </ExplorerLayout>
@@ -89,19 +89,18 @@
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
-    import PersonaBody from './personaBody.vue'
-    import PersonaHeader from './personaHeader.vue'
+    import PurposeBody from './purposeBody.vue'
+    import PurposeHeader from './purposeHeader.vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
-    import AddPersona from './addPersona.vue'
+    import AddPurpose from './addPurpose.vue'
     import {
         filteredPersonas,
         searchTerm,
         selectedPersona,
         selectedPersonaId,
         isPersonaListReady,
-    } from './composables/usePersonaList'
-    import { isEditing } from './composables/useEditPersona'
-
+    } from './composables/usePurposeList'
+    import { isEditing } from './composables/useEditPurpose'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
 
     export default defineComponent({
@@ -109,11 +108,11 @@
         components: {
             AtlanBtn,
             SearchAndFilter,
-            PersonaBody,
-            PersonaHeader,
+            PurposeBody,
+            PurposeHeader,
             ExplorerLayout,
             ExplorerList,
-            AddPersona,
+            AddPurpose,
         },
         setup() {
             const modalVisible = ref(false)

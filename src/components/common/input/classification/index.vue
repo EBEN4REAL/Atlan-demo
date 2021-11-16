@@ -17,6 +17,7 @@
             </template>
             <a-button
                 shape="circle"
+                :disabled="disabled"
                 size="small"
                 class="text-center shadow  hover:bg-primary-light hover:border-primary"
             >
@@ -61,12 +62,17 @@
                     return []
                 },
             },
+            disabled: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid } = toRefs(props)
+            const { guid, disabled } = toRefs(props)
             const localValue = ref(modelValue.value)
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),
@@ -142,8 +148,13 @@
                     handleChange()
                 }
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             return {
+                disabled,
                 localValue,
                 isPropagated,
                 list,

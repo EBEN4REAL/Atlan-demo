@@ -22,9 +22,17 @@
             />
             <span class="text-sm text-gray">Enable Persona</span>
         </div>
-        <div class="flex items-center py-4 pt-2">
+        <div class="py-4 text-gray-500 gap-x-2">
+            <p class="mb-3 text-sm font-bold text-gray-700">Classifications</p>
+            <Classification
+                v-model:modelValue="selectedClassifications"
+                :disabled="addClassificationsDisabled"
+                @change="handleClassificationChange"
+            />
+        </div>
+        <div class="flex items-center py-4 mt-0">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -62,60 +70,24 @@
                     </div>
                 </div>
             </div>
-            <div
-                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
-                @click="setActiveTab('policies')"
-            >
-                <div class="p-3 mr-3 rounded text-primary bg-primary-light">
-                    <AtlanIcon icon="GroupStatic" class="h-6" />
-                </div>
-                <div class="w-full group">
-                    <div class="mb-1 text-sm font-bold">Users and Groups</div>
-                    <div class="flex w-full text-gray-500">
-                        <div
-                            v-if="
-                                persona.users?.length === 0 &&
-                                persona.groups?.length === 0
-                            "
-                        >
-                            No users added
-                        </div>
-                        <div v-else class="flex items-center">
-                            <div class="mr-3">
-                                <b>{{ persona.users?.length }}</b>
-                                Users
-                            </div>
-                            <div>
-                                <b>{{ persona.groups?.length }}</b>
-                                Groups
-                            </div>
-                        </div>
-                        <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
-                        >
-                            <AtlanIcon
-                                icon="ArrowRight"
-                                class="h-6 ml-auto group-hover:text-primary"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, watch, computed } from 'vue'
 
     import { IPersona } from '~/types/accessPolicies/personas'
-    import { enablePersona } from '../composables/useEditPersona'
-    import { setActiveTab } from '../composables/usePersonaTabs'
+    import { enablePersona } from '../composables/useEditPurpose'
+    import { setActiveTab } from '../composables/usePurposeTabs'
     import Avatar from '@common/avatar/user.vue'
+    import Classification from '@common/input/classification/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { selectedPersonaDirty } from '../composables/useEditPurpose'
 
     export default defineComponent({
-        name: 'PersonaMeta',
-        components: { Avatar },
+        name: 'PurposeMeta',
+        components: { Avatar, Classification },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
@@ -124,8 +96,60 @@
         },
         emits: ['update:persona', 'update:isEditMode'],
         setup() {
+            const { classificationList } = useTypedefData()
             const enablePersonaCheck = ref(true)
+
+            /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
+            const mapClassificationsFromNames = (names: string[]) => {
+                let arr: any[] = []
+                classificationList.value.forEach((cl) => {
+                    names?.forEach((name) => {
+                        if (name === cl.name) {
+                            arr.push({
+                                typeName: cl.name,
+                                entityGuid: cl.guid,
+                                entityStatus: 'ACTIVE',
+                                propagate: false,
+                                validityPeriods: [],
+                                removePropagationsOnEntityDelete: false,
+                            })
+                        }
+                    })
+                })
+                return arr
+            }
+
+            /* Mimic the classification Names */
+            const classificationNames = computed(() => {
+                if (selectedPersonaDirty.value?.tag)
+                    return [selectedPersonaDirty.value?.tag]
+                else return []
+            })
+
+            const selectedClassifications = ref(
+                mapClassificationsFromNames(classificationNames.value)
+            )
+            const addClassificationsDisabled = computed(() =>
+                selectedClassifications.value.length > 0 ? true : false
+            )
+
+            const handleClassificationChange = () => {
+                if (classificationNames.value.length > 0)
+                    selectedPersonaDirty.value.tag =
+                        classificationNames.value[0]
+                else selectedPersonaDirty.value.tag = ''
+                /* Call save purpose */
+            }
+            watch(classificationNames, () => {
+                selectedClassifications.value = mapClassificationsFromNames(
+                    classificationNames.value
+                )
+            })
+
             return {
+                handleClassificationChange,
+                addClassificationsDisabled,
+                selectedClassifications,
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,

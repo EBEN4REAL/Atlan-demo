@@ -32,15 +32,16 @@
     import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import usePersonaService from './composables/usePersonaService'
+    import usePurposeService from './composables/usePurposeService'
     import {
         reFetchList,
         selectedPersonaId,
-    } from './composables/usePersonaList'
+    } from './composables/usePurposeList'
     import { IPersona } from '~/types/accessPolicies/personas'
+    import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
-        name: 'AddPersona',
+        name: 'AddPurpose',
         components: {
             CreationModal,
         },
@@ -66,7 +67,7 @@
                 modalVisible.value = !modalVisible.value
             }
 
-            const { createPersona } = usePersonaService()
+            const { createPersona } = usePurposeService()
 
             async function handleCreation() {
                 const messageKey = Date.now()
@@ -80,25 +81,31 @@
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        metadataPolicies: [],
-                        users: [],
-                        groups: [],
-                        personaType: 'persona',
-                        dataPolicies: [],
+                        tag: `${generateUUID()}`,
+                        /* Hardcode here */
+                        resourcePolicies: [
+                            {
+                                actions: ['entity-create'],
+                                groups: ['testing', 'admin'],
+                                users: ['chawlatanya31', 'admin1'],
+                                allow: true,
+                            },
+                        ],
                     })
                     message.success({
-                        content: `${title.value} persona Created`,
+                        content: `${title.value} purpose Created`,
                         duration: 1.5,
                         key: messageKey,
                     })
                     description.value = ''
                     title.value = ''
-                    reFetchList()
-                    selectedPersonaId.value = newPersona.id!
-                    modalVisible.value = false
+                    reFetchList().then(() => {
+                        selectedPersonaId.value = newPersona.id!
+                        modalVisible.value = false
+                    })
                 } catch (error) {
                     message.error({
-                        content: 'Failed to create persona',
+                        content: 'Failed to create purpose',
                         duration: 1.5,
                         key: messageKey,
                     })

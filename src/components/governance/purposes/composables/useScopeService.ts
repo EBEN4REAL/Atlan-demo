@@ -46,6 +46,10 @@ export default function scopeService() {
                         value: 'entity-remove-classification',
                         label: 'remove',
                     },
+                    {
+                        value: 'entity-add-classification',
+                        label: 'add',
+                    },
                 ],
                 type: 'Classifications',
             },

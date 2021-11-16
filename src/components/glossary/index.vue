@@ -70,6 +70,7 @@
                     >
                     </AggregationTabs>
                 </div>
+
                 <div
                     class="flex justify-between w-full px-6 py-3 mb-3 border-b"
                     v-else
@@ -90,7 +91,7 @@
                         <template #overlay>
                             <a-menu>
                                 <a-menu-item key="1">
-                                    <AddGTCModal>
+                                    <AddGTCModal entityType="AtlasGlossaryTerm">
                                         <template #trigger>
                                             <div class="flex items-center">
                                                 <AtlanIcon
@@ -112,13 +113,20 @@
                                     </div>
                                 </a-menu-item>
                                 <a-menu-item key="1">
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Glossary"
-                                            class="mr-1"
-                                        />
-                                        Glossary
-                                    </div>
+                                    <AddGTCModal
+                                        entityType="AtlasGlossary"
+                                        @add="handleAddGlossary"
+                                    >
+                                        <template #trigger>
+                                            <div class="flex items-center">
+                                                <AtlanIcon
+                                                    icon="Glossary"
+                                                    class="mr-1"
+                                                />
+                                                Glossary
+                                            </div>
+                                        </template>
+                                    </AddGTCModal>
                                 </a-menu-item>
                                 <a-menu-divider></a-menu-divider>
                                 <a-menu-item key="1">
@@ -145,7 +153,11 @@
                     ></AtlanIcon>
                 </div>
                 <div
-                    v-else-if="list.length === 0 && !isLoading"
+                    v-else-if="
+                        list.length === 0 &&
+                        baseTreeData.length == 0 &&
+                        !isLoading
+                    "
                     class="flex-grow"
                 >
                     <EmptyView
@@ -156,12 +168,13 @@
                         @event="handleResetEvent"
                     ></EmptyView>
                 </div>
+
                 <GlossaryTree
+                    ref="glossaryTree"
                     v-else-if="!queryText"
-                    :list="baseTreeData"
                     :height="height"
                     @select="handlePreview"
-                    class="px-6"
+                    class="px-1"
                 ></GlossaryTree>
 
                 <AssetList
@@ -273,9 +286,6 @@
             const { initialFilters } = toRefs(props)
             const glossaryStore = useGlossaryStore()
 
-            const { initTree } = useGlossaryData()
-            const baseTreeData = ref(initTree())
-
             if (glossaryStore.activeFacet && glossaryStore.activeFacet !== {}) {
                 facets.value = glossaryStore.activeFacet
                 console.log(facets.value)
@@ -380,6 +390,13 @@
                 glossaryStore.setActivePanel(activeKey.value)
             }
 
+            const glossaryTree = ref(null)
+            const handleAddGlossary = (asset) => {
+                if (glossaryTree.value) {
+                    glossaryTree.value.addGlossary(asset)
+                }
+            }
+
             return {
                 handleFilterChange,
                 isLoading,
@@ -404,10 +421,12 @@
                 activeKey,
                 glossaryFilters,
                 selectedGlossary,
-                baseTreeData,
+
                 height,
                 glossaryBox,
                 handleSelectedGlossary,
+                handleAddGlossary,
+                glossaryTree,
             }
         },
     })

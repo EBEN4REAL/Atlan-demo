@@ -471,6 +471,26 @@ export default function useAssetInfo() {
         return glossaryStore.selectedGlossary
     })
 
+    const isGTCByType = (typeName) => {
+        if (
+            [
+                'AtlasGlossary',
+                'AtlasGlossaryTerm',
+                'AtlasGlossaryCategory',
+            ].includes(typeName)
+        ) {
+            return true
+        }
+        return false
+    }
+
+    const isGTC = (asset: assetInterface) => {
+        if (isGTCByType(asset.typeName)) {
+            return true
+        }
+        return false
+    }
+
     const getHierarchy = (asset: assetInterface) => {
         const assetType_ = assetTypeList.find((a) => a.id == asset?.typeName)
         const relations: any[] = []
@@ -792,5 +812,7 @@ export default function useAssetInfo() {
         selectedGlossary,
         categories,
         parentCategory,
+        isGTC,
+        isGTCByType,
     }
 }

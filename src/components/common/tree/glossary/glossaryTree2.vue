@@ -1,6 +1,6 @@
 <template>
     <a-tree
-        :tree-data="list"
+        :tree-data="treeData"
         :draggable="true"
         :block-node="true"
         :load-data="onLoadData"
@@ -23,7 +23,7 @@
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, computed, toRefs } from 'vue'
+    import { defineComponent, computed, toRefs, onMounted } from 'vue'
 
     import GlossaryTreeItem2 from './glossaryTreeItem2.vue'
 
@@ -43,8 +43,6 @@
         },
         emits: ['select'],
         setup(props, { emit }) {
-            const { list } = toRefs(props)
-
             const router = useRouter()
 
             const {
@@ -54,17 +52,29 @@
                 expandNode,
                 selectedKeys,
                 selectNode,
+                addNode,
+                initTreeData,
+                treeData,
             } = useGlossaryTree({ emit })
 
+            onMounted(() => {
+                initTreeData()
+            })
+
+            const addGlossary = (asset) => {
+                addNode(asset)
+            }
+
             return {
-                list,
                 onLoadData,
                 loadedKeys,
-
                 expandNode,
                 expandedKeys,
                 selectNode,
                 selectedKeys,
+                addGlossary,
+                treeData,
+                addNode,
             }
             // data
         },

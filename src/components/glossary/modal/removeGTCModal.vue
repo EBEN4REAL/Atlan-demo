@@ -1,5 +1,5 @@
 <template>
-    <div @click="showModal">
+    <div @click="showModal"></div>
         <slot name="trigger" @click="showModal" />
     </div>
 
@@ -13,27 +13,13 @@
         :footer="null"
     >
         <div class="p-3">
-            <p class="font-bold uppercase text-md">New {{ typeNameTitle }}</p>
-
-            <a-input
-                ref="titleBar"
-                v-model:value="entity.attributes.name"
-                :placeholder="`Untitled ${typeNameTitle}`"
-                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-                :class="$style.titleInput"
-            />
-            <a-textarea
-                v-model:value="entity.attributes.description"
-                placeholder="Add description..."
-                class="text-gray-500 border-0 shadow-none outline-none"
-                :maxlength="140"
-                :rows="2"
-            />
+            <p class="font-bold uppercase text-md">Are you sure you want to delete the {{typeNameTitle}} and all its contents? </p>
+    
         </div>
 
         <div class="flex justify-end p-3 border-t border-gray-200">
-            <a-button type="primary" @click="handleSave" :loading="isLoading"
-                >Save</a-button
+            <a-button type="danger" @click="handleSave" :loading="isLoading"
+                >Delete</a-button
             >
         </div>
     </a-modal>
@@ -54,20 +40,7 @@
         reactive,
     } from 'vue'
 
-    import StatusBadge from '@common/badge/status/index.vue'
-    // import AddGtcModalOwners from './addGtcModalOwners.vue'
-    // import Categories from '@/glossary/common/categories.vue'
-
-    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
-    import whoami from '~/composables/user/whoami'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
-
-    import { List } from '~/constant/status'
-    import {
-        Glossary,
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
+    
     import { useVModels, whenever } from '@vueuse/core'
     import updateAsset from '~/composables/discovery/updateAsset'
     import { generateUUID } from '~/utils/helper/generator'
@@ -108,13 +81,10 @@
                 typeName: entityType.value,
             })
 
-            const titleBar: Ref<null | HTMLInputElement> = ref(null)
+          
 
             const showModal = async () => {
-                resetInput()
                 visible.value = true
-                await nextTick()
-                titleBar.value?.focus()
             }
 
             const body = ref({
@@ -129,10 +99,6 @@
                 error,
             } = updateAsset(body)
 
-            const resetInput = () => {
-                // title.value = ''
-                // description.value = ''
-            }
 
             const typeNameTitle = computed(() => {
                 switch (entityType.value) {
@@ -157,16 +123,6 @@
                 mutateAsset()
             }
 
-            const guid = ref(null)
-
-            const {
-                asset,
-                mutate: mutateUpdate,
-                isReady: isUpdateReady,
-            } = useCurrentUpdate({
-                id: guid,
-            })
-
             whenever(isReady, () => {
                 if (error.value) {
                     console.error(error.value)
@@ -183,23 +139,19 @@
             whenever(isUpdateReady, () => {
                 if (error.value) {
                 } else {
-                    emit('add', asset.value)
+                    emit('delete', asset.value)
                 }
             })
 
             return {
                 visible,
                 showModal,
-                resetInput,
-                isUpdateReady,
-                titleBar,
+               
                 entityType,
                 typeNameTitle,
                 handleSave,
-                mutateUpdate,
-                isUpdateReady,
-                guidUpdatedMaps,
-                asset,
+               
+              
 
                 entity,
                 isLoading,

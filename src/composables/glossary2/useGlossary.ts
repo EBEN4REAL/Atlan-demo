@@ -28,8 +28,14 @@ export const GLOSSARY_ATTRIBUTES = [
 const GROUP_TERM_AGGREATION = 'group_by_terms'
 const GROUP_CATEGORY_AGGREATION = 'group_by_category'
 
-export default function useGlossary() {
-    const { data, aggregationMap } = useIndexSearch(
+export default function useGlossary(immediate = true) {
+    const dependentKey = ref('DEFAULT_GLOSSARY')
+
+    if (!immediate) {
+        dependentKey.value = ''
+    }
+
+    const { data, aggregationMap, mutate } = useIndexSearch(
         {
             dsl: {
                 size: MAX_GLOSSARY,
@@ -74,10 +80,11 @@ export default function useGlossary() {
                         },
                     },
                 },
+                sort: [{ 'name.keyword': { order: 'asc' } }],
             },
             attributes: [...GLOSSARY_ATTRIBUTES],
         },
-        ref('DEFAULT_GLOSSARY'),
+        dependentKey,
         false
     )
     const glossaryStore = useGlossaryStore()
@@ -90,4 +97,6 @@ export default function useGlossary() {
             aggregationMap(GROUP_CATEGORY_AGGREATION, true) || []
         )
     })
+
+    return { mutate }
 }

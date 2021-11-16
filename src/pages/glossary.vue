@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, provide } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -45,6 +45,17 @@
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
             const { selectedGlossary } = useAssetInfo()
+
+            const updateList = (asset) => {
+                console.log('updateList')
+                // console.log(asset)
+                // if (assetdiscovery.value) {
+                //     assetdiscovery.value.updateCurrentList(asset)
+                // }
+            }
+
+            provide('updateList', updateList)
+
             return {
                 isItem,
                 selectedGlossary,

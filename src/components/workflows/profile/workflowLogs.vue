@@ -95,17 +95,7 @@
             >
                 <pre
                     id="contentArea-log"
-                    class="
-                        w-full
-                        h-full
-                        p-4
-                        font-mono
-                        whitespace-normal
-                        bg-gray-100
-                        border border-gray-300
-                        rounded-md
-                        clusterize-content
-                    "
+                    class="w-full h-full p-4 font-mono whitespace-normal bg-gray-100 border border-gray-300 rounded-md clusterize-content"
                 >
                   <span v-for="(item, index) in response" :key="index">
                   <span class="no">{{index + 1}}</span>
@@ -236,7 +226,7 @@
                 downloadString(
                     JSON.stringify(response.value),
                     'text/csv',
-                    `runName-timestamp-${new Date().getTime()}.txt`
+                    `${selectedPod.value?.displayName}-timestamp-${new Date().getTime()}.txt`
                 )
             }
 

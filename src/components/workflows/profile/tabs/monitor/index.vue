@@ -86,14 +86,15 @@
         props: {
             selectedRunName: {
                 type: String,
-                required: true,
+                required: false,
+                default: ""
             },
             selectedPod: {
                 type: Object,
                 required: true,
             },
             activeKey: {
-                type: String,
+                type: Number,
                 required: true,
             },
         },

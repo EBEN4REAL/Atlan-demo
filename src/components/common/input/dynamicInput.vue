@@ -102,7 +102,7 @@
     <!-- async tree select start -->
     <a-tree-select
         v-if="dataType === 'asyncTreeSelect'"
-        v-model:value="localValue"
+        v-model:value="valueTreeSelected"
         :multiple="true"
         :tree-checkable="true"
         style="width: 100%"
@@ -353,6 +353,9 @@
 
             const { modelValue }: any = useVModels(props, emit)
 
+            const valueTreeSelected: Ref<any> = ref()
+            const localValue: Ref<any> = ref(modelValue || [])
+
             // prop requestConfig is initially defaults to null, then reflects actually value, find out why
             // watch(
             //     requestConfig,
@@ -413,8 +416,6 @@
                 loadData()
             }
 
-            const localValue: Ref<any> = ref(modelValue || [])
-
             watch(
                 [loading, error],
                 () => {
@@ -474,7 +475,10 @@
             onMounted(() => {
                 // localValue.value = props.multiple ? [] : ''
                 if (props.dataType === 'asyncTreeSelect') {
-                    localValue.value = parseDBSchemaValue(modelValue)
+                    valueTreeSelected.value = parseDBSchemaValue(
+                        modelValue.value
+                    )
+                    // localValue.value = parseDBSchemaValue(modelValue)
                 }
                 // for async select, load on mount if possible
                 else if (
@@ -595,6 +599,7 @@
                 letAsyncSelectDisabled,
                 dateTimeTypeComponent,
                 disabledDate,
+                valueTreeSelected,
             }
         },
     })

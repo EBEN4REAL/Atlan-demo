@@ -224,8 +224,10 @@ import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
+import NoUsers from '~/assets/images/illustrations/no-users.svg'
 
 export default {
+    NoUsers,
     Times,
     ExclaimCircle,
     RemoveUser,

@@ -2,18 +2,16 @@
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div class="flex justify-between">
-                <div class="flex w-1/4 gap-x-2">
-                    <div class="">
-                        <a-input-search
-                            v-model:value="searchText"
-                            :placeholder="`Search all ${
-                                totalUserCount || ''
-                            } users`"
-                            class="mr-1 shadow-sm a-input-search-icon-left"
-                            :allow-clear="true"
-                            @change="handleSearch"
-                        ></a-input-search>
-                    </div>
+                <div class="flex items-baseline w-1/4">
+                    <SearchAndFilter
+                        v-model:value="searchText"
+                        :placeholder="`Search all ${
+                            totalUserCount || ''
+                        } users`"
+                        class="mr-1"
+                        size="minimal"
+                        @change="handleSearch"
+                    />
                     <UserFilter
                         v-model="statusFilter"
                         @change="updateFilters"
@@ -32,7 +30,7 @@
         </template>
 
         <div
-            v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+            v-if="error"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -53,38 +51,44 @@
         </div>
         <!-- Table for users-->
         <template v-else>
-            <UserListTable
-                v-auth="map.LIST_USERS"
-                :user-list="userList"
-                :loading="
-                    [STATES.PENDING].includes(state) ||
-                    [STATES.VALIDATING].includes(state)
-                "
-                :selected-user-id="selectedUserId"
-                :show-change-role-popover="showChangeRolePopover"
-                :showDisableEnablePopover="showDisableEnablePopover"
-                :showRevokeInvitePopover="showRevokeInvitePopover"
-                @toggleDisableEnablePopover="toggleDisableEnablePopover"
-                @handleRevokeInvite="handleRevokeInvite"
-                @revokeInvite="revokeInvite"
-                @change="handleTableChange"
-                @handle-change-role="handleChangeRole"
-                @showUserPreviewDrawer="showUserPreviewDrawer"
-                @handleUpdateRole="handleUpdateRole"
-                @handleErrorUpdateRole="handleErrorUpdateRole"
-                @confirmEnableDisablePopover="confirmEnableDisablePopover"
-                @closeChangeRolePopover="closeChangeRolePopover"
-                @resendInvite="resendInvite"
-            />
-
-            <div class="flex justify-end max-w-full mt-4">
-                <a-pagination
-                    :total="pagination.total"
-                    :current="pagination.current"
-                    :page-size="pagination.pageSize"
-                    @change="handlePagination"
+            <template v-if="userList.length">
+                <UserListTable
+                    v-auth="map.LIST_USERS"
+                    :user-list="userList"
+                    :loading="isLoading"
+                    :selected-user-id="selectedUserId"
+                    :show-change-role-popover="showChangeRolePopover"
+                    :show-disable-enable-popover="showDisableEnablePopover"
+                    :show-revoke-invite-popover="showRevokeInvitePopover"
+                    @toggleDisableEnablePopover="toggleDisableEnablePopover"
+                    @handleRevokeInvite="handleRevokeInvite"
+                    @revokeInvite="revokeInvite"
+                    @change="handleTableChange"
+                    @handle-change-role="handleChangeRole"
+                    @showUserPreviewDrawer="showUserPreviewDrawer"
+                    @handleUpdateRole="handleUpdateRole"
+                    @handleErrorUpdateRole="handleErrorUpdateRole"
+                    @confirmEnableDisablePopover="confirmEnableDisablePopover"
+                    @closeChangeRolePopover="closeChangeRolePopover"
+                    @resendInvite="resendInvite"
                 />
-            </div>
+
+                <div class="flex justify-end max-w-full mt-4">
+                    <a-pagination
+                        :total="pagination.total"
+                        :current="pagination.current"
+                        :page-size="pagination.pageSize"
+                        @change="handlePagination"
+                    />
+                </div>
+            </template>
+            <EmptyView
+                v-else
+                empty-screen="NoUsers"
+                desc=" Oops… we didn’t find any users that match this search"
+                button-text="Clear search"
+                @event="clearFilter"
+            />
         </template>
 
         <a-modal
@@ -106,6 +110,7 @@
     import { useDebounceFn } from '@vueuse/core'
     import { message, Modal } from 'ant-design-vue'
     import ErrorView from '@common/error/index.vue'
+    import EmptyView from '@common/empty/index.vue'
     import DefaultLayout from '@/admin/layout.vue'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -118,15 +123,18 @@
     import UserListTable from '@/admin/users/userListTable.vue'
     import { Users } from '~/services/service/users/index'
     import map from '~/constant/accessControl/map'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
         name: 'UsersView',
         components: {
+            SearchAndFilter,
             UserListTable,
             AtlanButton,
             InviteUsers,
             ErrorView,
             DefaultLayout,
+            EmptyView,
             UserFilter,
         },
 
@@ -155,10 +163,15 @@
                 userList,
                 filteredUserCount,
                 getUserList,
-                state,
-                STATES,
+                isLoading,
+                error,
                 totalUserCount,
             } = useUsers(userListAPIParams)
+
+            const clearFilter = () => {
+                userListAPIParams.filter = {}
+                getUserList()
+            }
 
             const selectedUserId = ref('')
 
@@ -401,8 +414,8 @@
                 pagination,
                 userList,
                 showUserPreview,
-                state,
-                STATES,
+                isLoading,
+                error,
                 loginWithEmail,
                 showDisableEnablePopover,
                 toggleDisableEnablePopover,
@@ -430,6 +443,7 @@
                 limit: userListAPIParams.limit,
                 offset: userListAPIParams.offset,
                 updateFilters,
+                clearFilter,
             }
         },
     })

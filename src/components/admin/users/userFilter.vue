@@ -1,14 +1,10 @@
 <template>
-    <a-dropdown
-        trigger="click"
-        :on-visible-change="handleVisibleChange"
-        :visible="filterOpened"
-    >
+    <a-dropdown v-model:visible="filterOpened">
         <template #overlay>
             <div class="bg-gray-100 rounded shadow-xl" style="width: 240px">
                 <a-collapse
                     v-model="activeCollapse"
-                    default-active-key="1"
+                    s
                     :bordered="false"
                     class=""
                 >
@@ -23,11 +19,7 @@
                 </a-collapse>
             </div>
         </template>
-        <a-button
-            size="default"
-            class="px-2 text-gray-500 rounded-md"
-            @click="filterOpened = !filterOpened"
-        >
+        <a-button size="default" class="px-2 text-gray-500 rounded-md">
             <AtlanIcon icon="FilterFunnel" />
             <div
                 v-if="statusFilter?.length"
@@ -52,8 +44,8 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const activeCollapse = ref<Array<String>>(['1'])
-            const filterOpened = ref<Boolean>(false)
             const statusFilter = ref<Array<any>>(props.modelValue)
+            const filterOpened = ref(false)
             const handleStatusFilterChange = () => {
                 // to ensure that I can do checks for null when updating filter, can use length check
                 const valueToUpdate =
@@ -64,17 +56,12 @@
                 emit('change', valueToUpdate)
             }
 
-            const handleVisibleChange = (flag) => {
-                filterOpened.value = flag
-            }
-
             return {
                 userStatusOptions,
                 statusFilter,
                 handleStatusFilterChange,
-                filterOpened,
-                handleVisibleChange,
                 activeCollapse,
+                filterOpened,
             }
         },
     })

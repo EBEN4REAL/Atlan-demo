@@ -18,7 +18,7 @@
                     :image-url="imageUrl(user.username)"
                     :allow-upload="isCurrentUser(user.username)"
                     :avatar-name="user.name || user.uername || user.email"
-                    :avatar-size="40"
+                    :avatar-size="26"
                     avatar-shape="circle"
                     class="mr-2"
                 />
@@ -38,6 +38,9 @@
                     </p>
                 </div>
             </div>
+        </template>
+        <template #role="{ text: user }">
+            {{ user || 'Default roles' }}
         </template>
         <template #status="{ text: user }">
             <div

@@ -46,7 +46,7 @@ specifiers:
   '@vue/compiler-sfc': ^3.2.22
   '@vue/eslint-config-prettier': ^6.0.0
   '@vue/server-renderer': ^3.2.22
-  '@vueuse/core': ^6.9.1
+  '@vueuse/core': 6.8.0
   '@vueuse/head': ^0.6.0
   ant-design-vue: ^3.0.0-alpha.11
   autoprefixer: ^10.4.0
@@ -142,7 +142,7 @@ dependencies:
   '@tiptap/starter-kit': 2.0.0-beta.139
   '@tiptap/suggestion': 2.0.0-beta.72_@tiptap+core@2.0.0-beta.137
   '@tiptap/vue-3': 2.0.0-beta.79_ca67dcc71850acc7ad70768964aea1cc
-  '@vueuse/core': 6.9.1_vue@3.2.21
+  '@vueuse/core': 6.8.0_vue@3.2.21
   '@vueuse/head': 0.6.0_vue@3.2.21
   ant-design-vue: 3.0.0-alpha.11_19c1876b9ae9e2b6b0ac71289cc54480
   axios: 0.24.0
@@ -2609,8 +2609,8 @@ packages:
     resolution: {integrity: sha512-YwGOcNZjOY/MmadpzFBXWyHEwZSf0lVU4XF5zpD7tXC9dmqjdo38Jkk06wATu4LYHDPW4emXKMB5YLFPWPkwFA==}
     dev: true
 
-  /@vueuse/core/6.9.1_vue@3.2.21:
-    resolution: {integrity: sha512-msa36DxnnbIu41bUTvfSudF6TL4wo0+Yrpw6yr1bFtwtYTOo8GZXYWPKyvXUVGhBBqrTVNTqsTtD0eXXHJ3roA==}
+  /@vueuse/core/6.8.0_vue@3.2.21:
+    resolution: {integrity: sha512-C6KMBus29L/mVtA5eK26WAqj6tyPlugrKaPLi2uLtbV//BHjbxe1uo3gVXCc5SwouDEdc7zswlGPw/l0/++NRg==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0
@@ -2620,7 +2620,7 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@vueuse/shared': 6.9.1_vue@3.2.21
+      '@vueuse/shared': 6.8.0_vue@3.2.21
       vue: 3.2.21
       vue-demi: 0.11.3_vue@3.2.21
     dev: false
@@ -2633,8 +2633,8 @@ packages:
       vue: 3.2.21
     dev: false
 
-  /@vueuse/shared/6.9.1_vue@3.2.21:
-    resolution: {integrity: sha512-nQh+ayxkeCKUU9MZjyQpE7KfOb18e/QOHolOE2ZK5dpoHzCZK7MSXzgDtvb9omGkgK0mjXlLSJsVdGhG+QW7Aw==}
+  /@vueuse/shared/6.8.0_vue@3.2.21:
+    resolution: {integrity: sha512-+YjehQ8Qe4Qgyq8iTToVOzp4sZBAZvScv3AGJSMi6HYbe54+nyjrRfS8DN4fA0eUahyftHKZ00WKgMe7TS5N0w==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0

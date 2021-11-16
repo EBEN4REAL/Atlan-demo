@@ -1,5 +1,27 @@
 <template>
+    <div
+        v-if="isLoading && treeData.length == 0"
+        class="flex items-center justify-center flex-grow"
+    >
+        <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin"></AtlanIcon>
+    </div>
+    <div
+        v-if="!isLoading && error"
+        class="flex items-center justify-center flex-grow"
+    >
+        <ErrorView></ErrorView>
+    </div>
+    <div v-else-if="treeData.length === 0 && !isLoading" class="flex-grow">
+        <EmptyView
+            empty-screen="EmptyDiscover"
+            desc="No terms found"
+            button-text="Add Term"
+            class="mb-10"
+        ></EmptyView>
+    </div>
     <a-tree
+        v-else
+        class="pl-0 pr-3"
         :tree-data="treeData"
         :draggable="true"
         :block-node="true"
@@ -8,9 +30,11 @@
         @select="selectNode"
         :auto-expand-parent="false"
         @expand="expandNode"
+        :height="height"
         :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
+        :class="$style.glossaryTree"
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
@@ -18,14 +42,15 @@
 
         <template #title="entity">
             <GlossaryTreeItem2 :item="entity" />
-            <Actions></Actions>
+            <!-- <Actions></Actions> -->
         </template>
     </a-tree>
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, computed, toRefs, onMounted } from 'vue'
-
+    import { defineComponent, computed, toRefs, onMounted, watch } from 'vue'
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
     import GlossaryTreeItem2 from './glossaryTreeItem2.vue'
     import Actions from './actions.vue'
 
@@ -36,6 +61,8 @@
         components: {
             GlossaryTreeItem2,
             Actions,
+            EmptyView,
+            ErrorView,
         },
         props: {
             list: {
@@ -43,10 +70,21 @@
                 required: false,
                 default: () => [],
             },
+            defaultGlossary: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
+            height: {
+                type: Number,
+                required: false,
+            },
         },
         emits: ['select'],
         setup(props, { emit }) {
             const router = useRouter()
+
+            const { defaultGlossary, height } = toRefs(props)
 
             const {
                 onLoadData,
@@ -58,10 +96,18 @@
                 addNode,
                 initTreeData,
                 treeData,
+                isLoading,
+                error,
+                isReady,
             } = useGlossaryTree({ emit })
 
             onMounted(() => {
-                initTreeData()
+                initTreeData(defaultGlossary.value)
+            })
+
+            watch(defaultGlossary, () => {
+                console.log('changed', defaultGlossary.value)
+                initTreeData(defaultGlossary.value)
             })
 
             const addGlossary = (asset) => {
@@ -78,13 +124,24 @@
                 addGlossary,
                 treeData,
                 addNode,
+                defaultGlossary,
+                isLoading,
+                error,
+                isReady,
+                height,
             }
             // data
         },
     })
 </script>
 <style lang="less" module>
-    :global(.ant-tree-switcher_open) {
-        transform: rotate(90deg);
+    .glossaryTree {
+        :global(.ant-tree-switcher_open) {
+            transform: rotate(90deg);
+        }
+
+        :global(.ant-tree-title) {
+            @apply flex;
+        }
     }
 </style>

@@ -13,7 +13,13 @@
         :footer="null"
     >
         <div class="p-3">
-            <p class="font-bold uppercase text-md">New {{ typeNameTitle }}</p>
+            <div class="flex items-center mb-1">
+                <GlossaryPopoverSelect
+                    class="p-1 bg-gray-100 rounded"
+                    v-model="localQualfiendName"
+                    v-if="typeNameTitle === 'Term'"
+                ></GlossaryPopoverSelect>
+            </div>
 
             <a-input
                 ref="titleBar"
@@ -31,7 +37,7 @@
             />
         </div>
 
-        <div class="flex justify-end p-3 border-t border-gray-200">
+        <div class="flex justify-between p-3 border-t border-gray-200">
             <a-button type="primary" @click="handleSave" :loading="isLoading"
                 >Save</a-button
             >
@@ -74,13 +80,16 @@
     import { message } from 'ant-design-vue'
 
     import { mutate } from 'swrv'
-    import useGlossaryData from '~/composables/glossary/useGlossaryData'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import useGlossary from '~/composables/glossary2/useGlossary'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+
+    import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
 
     export default defineComponent({
         name: 'AddGtcModal',
         components: {
+            GlossaryPopoverSelect,
             // AddGtcModalOwners,
             // Categories,
         },
@@ -92,12 +101,23 @@
                     return ''
                 },
             },
+            glossaryQualifiedName: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
-            const { entityType } = toRefs(props)
+            const { entityType, glossaryQualifiedName } = toRefs(props)
+
+            const localQualfiendName = ref(glossaryQualifiedName.value)
 
             const visible = ref(false)
+
+            const { getGlossaryByQF } = useGlossaryData()
 
             const entity = reactive({
                 attributes: {
@@ -107,6 +127,15 @@
                 },
                 typeName: entityType.value,
             })
+
+            if (entityType.value === 'AtlasGlossaryTerm') {
+                entity.relationshipAttributes = {
+                    anchor: {
+                        typeName: 'AtlasGlossary',
+                        guid: getGlossaryByQF(localQualfiendName.value)?.guid,
+                    },
+                }
+            }
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
@@ -151,6 +180,17 @@
                 if (typeNameTitle.value === 'Glossary') {
                     entity.attributes.qualifiedName = generateUUID()
                 }
+
+                if (entityType.value === 'AtlasGlossaryTerm') {
+                    entity.relationshipAttributes = {
+                        anchor: {
+                            typeName: 'AtlasGlossary',
+                            guid: getGlossaryByQF(localQualfiendName.value)
+                                ?.guid,
+                        },
+                    }
+                }
+
                 body.value = {
                     entities: [entity],
                 }
@@ -200,11 +240,13 @@
                 isUpdateReady,
                 guidUpdatedMaps,
                 asset,
-
+                glossaryQualifiedName,
                 entity,
                 isLoading,
                 isReady,
                 error,
+                getGlossaryByQF,
+                localQualfiendName,
             }
         },
     })

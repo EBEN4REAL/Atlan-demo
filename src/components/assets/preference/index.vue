@@ -24,9 +24,8 @@
 
 <script lang="ts">
     import { defineComponent, Ref, ref, toRefs } from 'vue'
-
-    import Sorting from '@/common/select/sorting.vue'
     import { useVModels } from '@vueuse/core'
+    import Sorting from '@/common/select/sorting.vue'
 
     import { displayProperties } from '~/constant/displayProperties'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'

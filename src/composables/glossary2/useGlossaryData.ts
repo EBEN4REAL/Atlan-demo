@@ -25,6 +25,9 @@ export default function useGlossaryData() {
         )
     )
 
+    const getGlossaryByQF = (qf) =>
+        glossaryStore.list.find((i) => i.attributes.qualifiedName === qf)
+
     const handleSelectedGlossary = (item) => {
         glossaryStore.setSelectedGlossary(item)
     }
@@ -74,5 +77,6 @@ export default function useGlossaryData() {
         getEntityStatusIcon,
         handleSelectedGlossary,
         selectedGlossary,
+        getGlossaryByQF,
     }
 }

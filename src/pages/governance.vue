@@ -15,6 +15,9 @@
                         <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
                             >Personas</a-menu-item
                         >
+                        <a-menu-item v-auth="[map.LIST_PURPOSE]" key="purposes"
+                            >Purposes</a-menu-item
+                        >
                         <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
                             >API Keys</a-menu-item
                         >

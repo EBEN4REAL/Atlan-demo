@@ -111,7 +111,6 @@
                     ref="assetlistRef"
                     :list="list"
                     :selectedAsset="selectedAsset"
-                    :preference="preference"
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
                     @loadMore="handleLoadMore"
@@ -121,6 +120,7 @@
                             :item="item"
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
+                            :preference="preference"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -247,6 +247,7 @@
                 selectedAsset,
                 quickChange,
                 handleSelectedAsset,
+                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -263,6 +264,11 @@
 
             const handlePreview = (item) => {
                 handleSelectedAsset(item)
+            }
+
+            const updateCurrentList = (asset) => {
+                updateList(asset)
+                handleSelectedAsset(asset)
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -332,6 +338,8 @@
                 discoveryFilters,
                 error,
                 selectedAsset,
+                updateList,
+                updateCurrentList,
             }
         },
     })

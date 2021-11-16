@@ -24,6 +24,7 @@
                     />
                 </div>
                 <AtlanButton
+                    v-auth="access.UPDATE_WORKFLOW"
                     class="m-2"
                     size="sm"
                     color="primary"
@@ -109,6 +110,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
     import { message } from 'ant-design-vue'
+    import access from '~/constant/accessControl/map'
     import EmptyState from '~/components/common/empty/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
@@ -292,6 +294,7 @@
             })
 
             return {
+                access,
                 defaultValues,
                 updateWorkflow,
                 isReady,
@@ -305,7 +308,6 @@
                 activeKey,
                 filteredTabs,
                 emit,
-                loadingFetchPod,
             }
         },
     })

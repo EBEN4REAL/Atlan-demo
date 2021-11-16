@@ -15,6 +15,7 @@
                 ></OwnerFacets>
             </template>
             <a-button
+                v-if="!readOnly"
                 shape="circle"
                 size="small"
                 class="text-center shadow  hover:bg-primary-light hover:border-primary"
@@ -25,13 +26,19 @@
         <template v-for="username in localValue?.ownerUsers" :key="username">
             <UserPill
                 :username="username"
-                :allowDelete="true"
+                :allowDelete="!readOnly"
                 @delete="handleDeleteUser"
+                :enableHover="enableHover"
             ></UserPill>
         </template>
 
         <template v-for="name in localValue?.ownerGroups" :key="name">
-            <GroupPill :name="name" :allowDelete="true"></GroupPill>
+            <GroupPill
+                :name="name"
+                :allowDelete="!readOnly"
+                @delete="handleDeleteGroup"
+                :enableHover="enableHover"
+            ></GroupPill>
         </template>
     </div>
 </template>
@@ -49,15 +56,26 @@
         name: 'OwnersWidget',
         components: { UserPill, GroupPill, AtlanIcon, OwnerFacets },
         props: {
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             modelValue: {
                 type: Object,
                 required: false,
                 default: () => {},
             },
+            enableHover: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { readOnly, enableHover } = toRefs(props)
             const localValue = ref(modelValue.value)
 
             const isEdit = ref(false)
@@ -71,6 +89,14 @@
                 localValue.value.ownerUsers =
                     localValue.value?.ownerUsers.filter(
                         (item) => item !== username
+                    )
+
+                handleChange()
+            }
+            const handleDeleteGroup = (name) => {
+                localValue.value.ownerGroups =
+                    localValue.value?.ownerGroups.filter(
+                        (item) => item !== name
                     )
 
                 handleChange()
@@ -109,9 +135,12 @@
             }
 
             return {
+                enableHover,
+                readOnly,
                 localValue,
                 handleChange,
                 handleDeleteUser,
+                handleDeleteGroup,
                 handleVisibleChange,
                 isEdit,
                 ownerFacetRef,

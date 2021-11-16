@@ -217,6 +217,7 @@
         >
             <p
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                ref="animationPoint"
             >
                 Certificate
             </p>
@@ -257,6 +258,9 @@
     import CertificationPopover from '@/common/popover/certification.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import whoami from '~/composables/user/whoami'
+    import confetti from '~/utils/confetti'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -278,6 +282,8 @@
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const isConfetti = ref(false)
 
             const {
                 title,
@@ -321,6 +327,16 @@
                         selectedAsset.value.attributes?.qualifiedName,
                     tenantId: 'default',
                 },
+            })
+
+            const guid = ref(null)
+
+            const {
+                asset,
+                mutate: mutateUpdate,
+                isReady: isUpdateReady,
+            } = useCurrentUpdate({
+                id: guid,
             })
 
             if (
@@ -369,6 +385,14 @@
 
             whenever(isReady, () => {
                 message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                rainConfettis()
+                mutateUpdate()
+            })
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                updateList(asset.value)
             })
 
             whenever(error, () => {
@@ -443,17 +467,30 @@
 
             whenever(isReadyClassification, () => {
                 message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                mutateUpdate()
             })
 
             whenever(isErrorClassification, () => {
                 message.error('Something went wrong. Please try again')
             })
 
+            const { username } = whoami()
             const handleChangeCertificate = () => {
                 if (
                     localCertificate.value.certificateStatus !==
-                    certificateStatus(selectedAsset.value)
+                        certificateStatus(selectedAsset.value) ||
+                    localCertificate.value.certificateStatusMessage !==
+                        certificateStatusMessage(selectedAsset.value)
                 ) {
+                    if (
+                        localCertificate.value.certificateStatus === 'VERIFIED'
+                    ) {
+                        isConfetti.value = true
+                    } else {
+                        isConfetti.value = false
+                    }
+
                     entity.value.attributes.certificateStatus =
                         localCertificate.value.certificateStatus
 
@@ -462,6 +499,28 @@
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Certificate has been updated'
                     mutate()
+                }
+            }
+
+            const animationPoint = ref(null)
+            const rainConfettis = () => {
+                const config = {
+                    angle: 45,
+                    startVelocity: 10,
+                    spread: 200,
+                    elementCount: 100,
+                    colors: [
+                        '#2251cc',
+                        '#2251cc',
+                        '#82b54b',
+                        '#e94a3f',
+                        '#faa040',
+                    ],
+                    width: '0.3rem',
+                    height: '0.3rem',
+                }
+                if (isConfetti.value) {
+                    confetti(animationPoint.value, config)
                 }
             }
 
@@ -530,6 +589,12 @@
                 localCertificate,
                 handleChangeCertificate,
                 certificateStatusMessage,
+                mutateUpdate,
+                updateList,
+                username,
+                animationPoint,
+                rainConfettis,
+                isConfetti,
             }
         },
     })

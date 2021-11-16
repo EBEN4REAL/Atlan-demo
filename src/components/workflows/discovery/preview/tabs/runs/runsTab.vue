@@ -6,7 +6,7 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting Runs</span>
     </div>
-    <template v-else-if="list.length">
+    <div v-else-if="list.length" v-auth="access.LIST_RUNS">
         <div class="flex px-4 mt-4 mb-4">
             <a-input-search
                 v-model:value="searchText"
@@ -23,10 +23,9 @@
             v-for="(r, x) in searchText ? filterList(searchText) : list"
             :key="x"
             :r="r"
-            :curr-run-name="selectedRunName"
             :select-enabled="true"
         />
-    </template>
+    </div>
     <EmptyView
         v-else
         :desc="
@@ -57,6 +56,7 @@
 
     // Composables
     import { getArchivedRunList } from '~/composables/workflow/useWorkflowList'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: { RunCard, EmptyView },
@@ -92,6 +92,7 @@
             })
 
             return {
+                access,
                 searchText,
                 list,
                 filterList,

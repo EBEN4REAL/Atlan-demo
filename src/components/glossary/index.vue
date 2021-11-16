@@ -71,7 +71,7 @@
                     </AggregationTabs>
                 </div>
                 <div
-                    class="flex justify-between w-full px-4 py-3 mb-3 border-b"
+                    class="flex justify-between w-full px-6 py-3 mb-3 border-b"
                     v-else
                 >
                     <div><GlossarySelect></GlossarySelect></div>
@@ -160,6 +160,8 @@
                     v-else-if="!queryText"
                     :list="baseTreeData"
                     :height="height"
+                    @select="handlePreview"
+                    class="px-6"
                 ></GlossaryTree>
 
                 <AssetList

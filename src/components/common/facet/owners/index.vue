@@ -187,6 +187,10 @@
                     ownerSearchRef.value?.forceFocus()
                 }
             }, 100)
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             const forceFocus = () => {
                 start()

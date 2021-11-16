@@ -7,6 +7,7 @@
                 </transition>
                 <keep-alive>
                     <AssetDiscovery
+                        ref="assetdiscovery"
                         :style="isItem ? 'display: none !important;' : ''"
                     ></AssetDiscovery>
                 </keep-alive>
@@ -22,7 +23,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, provide, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -42,9 +43,23 @@
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
             const { selectedAsset } = useAssetInfo()
+
+            const assetdiscovery = ref()
+
+            const updateList = (asset) => {
+                console.log('updateList')
+                console.log(asset)
+                if (assetdiscovery.value) {
+                    assetdiscovery.value.updateCurrentList(asset)
+                }
+            }
+
+            provide('updateList', updateList)
+
             return {
                 isItem,
                 selectedAsset,
+                assetdiscovery,
             }
         },
     })

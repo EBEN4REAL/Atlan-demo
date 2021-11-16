@@ -7,7 +7,6 @@
             >
                 <div class="flex font-bold">
                     <div style="width: 44px"></div>
-                    <!-- <div style="width: 44px">Order</div> -->
                     <div class="cursor-pointer" style="width: 248px">
                         Property
                     </div>
@@ -48,7 +47,7 @@
                                     mapTypeToIcon(property.typeName, property)
                                 "
                             />
-                            {{ property.typeName }}
+                            {{ resolveType(property) }}
                         </div>
                     </div>
 
@@ -75,9 +74,6 @@
                 </div>
             </div>
         </div>
-        <!-- <pre style="height: 300px" class="overflow-scroll">{{
-            sortedProperties
-        }}</pre> -->
     </div>
 </template>
 
@@ -91,12 +87,13 @@
         onMounted,
         watch,
         Ref,
+        nextTick,
     } from 'vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message, Modal } from 'ant-design-vue'
     import { Types } from '~/services/meta/types'
 
-    import { useTypedefStore as useBusinessMetadataStore } from '~/store/typedef'
+    import { useTypedefStore } from '~/store/typedef'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
 
     export default defineComponent({
@@ -112,7 +109,7 @@
         },
         emits: ['openEditDrawer', 'removeProperty', 'changeOrder'],
         setup(props, { emit }) {
-            const store = useBusinessMetadataStore()
+            const store = useTypedefStore()
             const { metadata, properties } = toRefs(props)
             const isSorting = ref(false)
 
@@ -120,11 +117,6 @@
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
-            const mapTypeToIcon = (id, property) => {
-                const foundIcon = attributesTypes.find((x) => x.id === id)?.icon
-                if (!foundIcon) return 'Enum'
-                return foundIcon
-            }
 
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
@@ -187,6 +179,9 @@
 
             const enableDragItem = (item) => {
                 item.setAttribute('draggable', true)
+                // remove event handler first
+                item.removeEventListener('ondrag', handleDrag)
+                item.removeEventListener('ondragend', handleDrop)
                 item.ondrag = handleDrag
                 item.ondragend = handleDrop
                 item.ondragover = (e) => {
@@ -218,8 +213,6 @@
             const updatePropertyValuesStore = () => {
                 isSorting.value = true
                 const dragContainer = document.getElementById('drag-container')
-                console.log(dragContainer.children)
-
                 dragContainer.children.forEach((element, index) => {
                     sortedProperties.value[index] =
                         storePropertyValues.value[element.id]
@@ -257,6 +250,30 @@
                 enableDragSort()
             }
 
+            watch(properties, async () => {
+                await nextTick() // wait for new property to be available in DOM
+                reInitializeDragSort()
+            })
+
+            const mapTypeToIcon = (id, property) => {
+                const foundIcon = attributesTypes.find(
+                    (x) =>
+                        x.id ===
+                        (property.options?.customType
+                            ? property.options?.customType
+                            : id) // if has customType property, use it instead of id to search for icon
+                )?.icon // find icon in attributesTypes
+                if (property.options?.isEnum === 'true') return 'Enum'
+                return foundIcon
+            }
+
+            const resolveType = (property) => {
+                if (property.options?.customType) {
+                    return property.options?.customType
+                }
+                return property.typeName
+            }
+
             return {
                 copyAPI,
                 handleRemoveProperty,
@@ -264,6 +281,7 @@
                 sortedProperties,
                 reInitializeDragSort,
                 mapTypeToIcon,
+                resolveType,
             }
         },
     })

@@ -22,7 +22,10 @@
 
             <CertificatePill
                 class="w-full"
-                v-if="localValue.certificateStatus !== 'NONE'"
+                v-if="
+                    localValue.certificateStatus !== 'NONE' &&
+                    localValue.certificateStatus
+                "
                 :status="localValue.certificateStatus"
                 :message="localValue.certificateStatusMessage"
                 :username="localValue.certificateUpdatedBy"
@@ -62,6 +65,9 @@
 
     import CertificatePill from '@/common/pills/certificate.vue'
     import CertificateFacet from '@/common/facet/certificate/index.vue'
+    import whoami from '~/composables/user/whoami'
+
+    import confetti from '~/utils/confetti'
 
     export default defineComponent({
         name: 'CertificateWidget',
@@ -88,9 +94,11 @@
                 emit('change')
             }
 
+            const { username } = whoami()
+
             const handleVisibleChange = (visible) => {
-                console.log('change')
                 if (!visible) {
+                    localValue.value.certificateUpdatedBy = username.value
                     handleChange()
                 }
             }
@@ -99,6 +107,7 @@
                 localValue,
                 handleChange,
                 handleVisibleChange,
+                username,
             }
         },
     })

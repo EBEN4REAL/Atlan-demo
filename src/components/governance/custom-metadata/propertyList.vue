@@ -21,7 +21,7 @@
                     :id="`prop-${property.name}`"
                     :key="index"
                     :data-property="property"
-                    class="relative flex items-center justify-between last:rounded-b"
+                    class="relative flex items-center justify-between  last:rounded-b"
                     style="height: 44px"
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
@@ -69,7 +69,7 @@
                 </div>
                 <div
                     v-if="isSorting"
-                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
+                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
                 >
                     <a-spin size="large" />
                 </div>
@@ -96,7 +96,7 @@
     import { message, Modal } from 'ant-design-vue'
     import { Types } from '~/services/meta/types'
 
-    import { useTypedefStore as useBusinessMetadataStore } from '~/store/typedef'
+    import { useTypedefStore } from '~/store/typedef'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
 
     export default defineComponent({
@@ -112,7 +112,7 @@
         },
         emits: ['openEditDrawer', 'removeProperty', 'changeOrder'],
         setup(props, { emit }) {
-            const store = useBusinessMetadataStore()
+            const store = useTypedefStore()
             const { metadata, properties } = toRefs(props)
             const isSorting = ref(false)
 

@@ -318,9 +318,6 @@
         watch,
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
-
-    import useEnums from '@/governance/enums/composables/useEnums'
-
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -330,6 +327,7 @@
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
@@ -538,12 +536,12 @@
             const enumTypeOtions = ref(null)
 
             // * Composables
-            const { enumListData: enumsList } = useEnums()
+            const { enumList } = useTypedefData()
 
             /** @return all enum list data formatted of the component */
             const finalEnumsList = computed(() => {
-                if (enumsList.value && enumsList.value.length) {
-                    return enumsList.value.map((item) => ({
+                if (enumList.value && enumList.value?.length) {
+                    return enumList.value?.map((item) => ({
                         value: item.name,
                         key: item.guid,
                         title: item.name,
@@ -559,15 +557,15 @@
              */
             const selectedEnumOptions = computed(() => {
                 if (form.value.options.isEnum) {
-                    const reqIndex = enumsList.value.findIndex(
+                    const reqIndex = enumList.value?.findIndex(
                         (item) => item.name === form.value.options.enumType
                     )
                     if (
                         reqIndex > -1 &&
-                        enumsList.value[reqIndex].elementDefs &&
-                        enumsList.value[reqIndex].elementDefs.length
+                        enumList.value[reqIndex]?.elementDefs &&
+                        enumList.value[reqIndex]?.elementDefs.length
                     ) {
-                        return enumsList.value[reqIndex].elementDefs.map(
+                        return enumList.value[reqIndex]?.elementDefs.map(
                             (item: { value: any }) => ({
                                 key: item.value,
                                 title: item.value,

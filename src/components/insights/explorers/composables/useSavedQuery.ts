@@ -748,6 +748,11 @@ export function useSavedQuery(
                 if (error.value === undefined) {
                     // console.log('saved query data: ', data)
 
+                    if (Callback) {
+                        // console.log('queryTree callback: ', Callback)
+                        Callback()
+                    }
+
                     // save term
                     const { assignLinkedAssets } = useLinkAssets()
                     console.log(
@@ -769,12 +774,13 @@ export function useSavedQuery(
                                     'terms_updated',
                                     undefined
                                 )
+                                
                             })
                         })
                     }
 
                     // handleCancel()
-                    console.log('checked terms: ', assetTerms.value)
+                    // console.log('checked terms: ', assetTerms.value)
 
                     useAddEvent('insights', 'query', 'saved', {
                         num_variables: undefined,
@@ -829,7 +835,10 @@ export function useSavedQuery(
                     if (routeToGuid) {
                         if (guid) router.push(`/insights?id=${guid}`)
                     }
-                    if (Callback) Callback()
+                    // if (Callback) {
+                    //     console.log('queryTree callback: ', Callback)
+                    //     Callback()
+                    // }
                 } else {
                     console.log(error.value.toString())
                     message.error({

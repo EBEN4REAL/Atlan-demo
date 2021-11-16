@@ -567,7 +567,6 @@
                     form.value.options.isEnum === 'true' ||
                     form.value.options.isEnum === true
                 ) {
-                    console.log('here', selectedEnumOptions.value)
 
                     form.value.enumValues = selectedEnumOptions.value?.map(
                         (x) => x.value

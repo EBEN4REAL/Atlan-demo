@@ -87,6 +87,7 @@
         onMounted,
         watch,
         Ref,
+        nextTick,
     } from 'vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message, Modal } from 'ant-design-vue'
@@ -178,6 +179,9 @@
 
             const enableDragItem = (item) => {
                 item.setAttribute('draggable', true)
+                // remove event handler first
+                item.removeEventListener('ondrag', handleDrag)
+                item.removeEventListener('ondragend', handleDrop)
                 item.ondrag = handleDrag
                 item.ondragend = handleDrop
                 item.ondragover = (e) => {
@@ -209,8 +213,6 @@
             const updatePropertyValuesStore = () => {
                 isSorting.value = true
                 const dragContainer = document.getElementById('drag-container')
-                console.log(dragContainer.children)
-
                 dragContainer.children.forEach((element, index) => {
                     sortedProperties.value[index] =
                         storePropertyValues.value[element.id]
@@ -247,6 +249,11 @@
             const reInitializeDragSort = () => {
                 enableDragSort()
             }
+
+            watch(properties, async () => {
+                await nextTick() // wait for new property to be available in DOM
+                reInitializeDragSort()
+            })
 
             const mapTypeToIcon = (id, property) => {
                 const foundIcon = attributesTypes.find(

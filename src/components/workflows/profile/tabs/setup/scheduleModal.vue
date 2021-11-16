@@ -55,15 +55,7 @@
                 <div
                     v-for="(s, index) in data.items"
                     :key="index"
-                    class="
-                        flex
-                        items-center
-                        px-2
-                        py-3
-                        text-base
-                        cursor-pointer
-                        hover:bg-primary-light
-                    "
+                    class="flex items-center px-2 py-3 text-base cursor-pointer  hover:bg-primary-light"
                 >
                     <div class="w-full mr-3">
                         <!-- Name -->
@@ -96,15 +88,7 @@
                     </div>
                     <!-- Label -->
                     <div
-                        class="
-                            flex
-                            items-center
-                            px-3
-                            py-1
-                            mr-3
-                            border
-                            rounded-full
-                        "
+                        class="flex items-center px-3 py-1 mr-3 border rounded-full "
                     >
                         <AtlanIcon
                             :icon="s.spec.suspend ? 'Pause' : 'RunSuccess'"
@@ -124,12 +108,7 @@
                         >
                             <template #content>
                                 <div
-                                    class="
-                                        px-4
-                                        py-2
-                                        cursor-pointer
-                                        hover:bg-primary-light
-                                    "
+                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
                                     @click="setSuspend(s)"
                                 >
                                     {{
@@ -139,24 +118,15 @@
                                     }}
                                 </div>
                                 <div
-                                    class="
-                                        px-4
-                                        py-2
-                                        cursor-pointer
-                                        hover:bg-primary-light
-                                    "
+                                    v-auth="access.UPDATE_WORKFLOW_SCHEDULES"
+                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
                                     @click="setUpdate(s)"
                                 >
                                     Edit
                                 </div>
                                 <div
-                                    class="
-                                        px-4
-                                        py-2
-                                        cursor-pointer
-                                        text-error
-                                        hover:bg-primary-light
-                                    "
+                                    v-auth="access.DELETE_WORKFLOW_SCHEDULES"
+                                    class="px-4 py-2 cursor-pointer  text-error hover:bg-primary-light"
                                     @click="onDeleteSchedule(s.metadata.name)"
                                 >
                                     Delete
@@ -171,6 +141,7 @@
             <div class="flex justify-end w-full">
                 <a-button @click="emit('cancel')">Cancel</a-button>
                 <a-button
+                    v-auth="access.CREATE_WORKFLOW_SCHEDULES"
                     type="primary"
                     class="flex items-center justify-between ml-4"
                     @click="go('add')"
@@ -290,6 +261,10 @@
                     <div class="flex">
                         <a-button @click="emit('cancel')">Cancel</a-button>
                         <a-button
+                            v-auth="[
+                                access.UPDATE_WORKFLOW_SCHEDULES,
+                                access.CREATE_WORKFLOW_SCHEDULES,
+                            ]"
                             type="primary"
                             class="flex items-center justify-between ml-4"
                             :loading="loadingSubmit"
@@ -343,6 +318,8 @@
 
     /**  UTILS */
     import { timezones, formRules, frequencyOptions } from './scheduleUtils.js'
+
+    import access from '~/constant/accessControl/map'
 
     /** TYPE DEF */
     interface FormState {
@@ -622,6 +599,7 @@
             })
 
             return {
+                access,
                 emit,
                 selectDays,
                 onFrequencyChange,

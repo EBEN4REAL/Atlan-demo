@@ -88,6 +88,7 @@
         </template>
     </div>
     <AtlanButton
+        v-auth="access.CREATE_WORKFLOW"
         v-if="!workflowTemplateLoading && !workflowTemplateError"
         class="m-2"
         size="sm"
@@ -123,6 +124,7 @@
     } from '~/composables/workflow/useWorkflowList'
     import AtlanButton from '@/UI/button.vue'
     import PreviewHeader from '@/workflows/shared/previewHeader.vue'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'SetupWorkflowPreview',
@@ -287,6 +289,7 @@
             watch(selectedWorkflow, init, { deep: true })
 
             return {
+                access,
                 overview,
                 invalidName,
                 workflowTemplate,

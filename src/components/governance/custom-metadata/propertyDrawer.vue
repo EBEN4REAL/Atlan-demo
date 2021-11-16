@@ -18,7 +18,7 @@
                     type="default"
                     size="small"
                     class="border-gray-300"
-                    @click="handleClose()"
+                    @click="handleClose"
                 >
                     <AtlanIcon icon="Cancel" class="h-3" />
                 </a-button>
@@ -92,16 +92,36 @@
                             label="Select Enum"
                             :name="['options', 'enumType']"
                         >
-                            <a-tree-select
+                            <a-select
                                 v-model:value="form.options.enumType"
+                                show-search
                                 no-results-text="No enum found"
-                                :tree-data="finalEnumsList"
-                                :multiple="false"
-                                :async="false"
                                 placeholder="Select enum"
+                                :options="finalEnumsList"
                                 @change="updateEnumValues"
                             >
-                            </a-tree-select>
+                                <template #dropdownRender="{ menuNode: menu }">
+                                    <v-nodes :vnodes="menu" />
+                                    <a-divider style="margin: 4px 0" />
+
+                                    <p
+                                        class="mt-3 text-center cursor-pointer text-primary"
+                                        @click="
+                                            () => {
+                                                form.options.enumType = null
+                                                newEnumMode = !newEnumMode
+                                            }
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            class="inline h-4"
+                                            icon="Add"
+                                        />
+
+                                        Create new enum
+                                    </p>
+                                </template>
+                            </a-select>
                         </a-form-item>
 
                         <div v-show="selectedEnumOptions?.length" class="">
@@ -112,24 +132,13 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="
-                                        mb-1
-                                        lowercase
-                                        bg-gray-100
-                                        border-0
-                                        rounded-full
-                                    "
+                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
                         </div>
-                        <p
-                            class="mt-3 text-right cursor-pointer text-primary"
-                            @click="newEnumMode = !newEnumMode"
-                        >
-                            or add new
-                        </p>
-                        <div v-if="newEnumMode">
+
+                        <div v-if="newEnumMode" class="mt-6">
                             <NewEnumForm
                                 v-if="newEnumMode"
                                 ref="newEnumFormRef"
@@ -137,7 +146,9 @@
                             />
                         </div>
                     </div>
-                    <!-- <pre>{{ form }}</pre> -->
+                    <!-- <pre>{{ finalEnumsList }}</pre> -->
+                    <!-- <pre>{{ form.typeName }}</pre>
+                    <pre>{{ form.enumValues }}</pre> -->
                     <!-- End of conditonals ========================================= -->
                     <!-- Applicable Asset type ========================================= -->
 
@@ -152,11 +163,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="
-                                                    flex flex-col
-                                                    items-center
-                                                    w-60
-                                                "
+                                                class="flex flex-col items-center w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -198,7 +205,8 @@
                                             "
                                             class="mb-2"
                                             :allow-clear="false"
-                                            :show-checked-strategy="SHOW_PARENT"
+                                            :check-strictly="true"
+                                            :show-checked-strategy="SHOW_CHILD"
                                             @change="
                                                 form.options.customEntityTypes =
                                                     $event
@@ -213,17 +221,7 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-around
-                            w-full
-                            gap-4
-                            p-4
-                            bg-gray-100
-                            border
-                            rounded
-                        "
+                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
                     >
                         <div class="w-full">
                             <a-form-item class="mb-2">
@@ -291,7 +289,7 @@
                     >
                         <a-button
                             :style="{ marginRight: '8px' }"
-                            @click="handleClose()"
+                            @click="handleClose"
                         >
                             Cancel
                         </a-button>
@@ -305,6 +303,7 @@
                     </div>
                 </a-form>
             </div>
+
             <!-- End of Form =============================================================================================================== -->
         </a-drawer>
     </div>
@@ -320,9 +319,6 @@
         watch,
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
-
-    import useEnums from '@/governance/enums/composables/useEnums'
-
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -332,12 +328,16 @@
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
-    const SHOW_PARENT = TreeSelect.SHOW_PARENT
+    const SHOW_CHILD = TreeSelect.SHOW_CHILD
 
     export default defineComponent({
         components: {
             NewEnumForm,
+            VNodes: (_, { attrs }) => {
+                return attrs.vnodes
+            },
         },
         props: {
             metadata: {
@@ -394,9 +394,10 @@
                     form.value = theProperty
                 } else {
                     form.value = initializeForm()
-                    // somehow these 2 remained, so delete them
+                    // somehow these 2 remained, so reset them
                     form.value.options.isEnum = false
                     delete form.value.options.enumType
+                    delete form.value.enumValues
                 }
 
                 propertyIndex.value = index
@@ -521,9 +522,13 @@
                 // ? check if enum
                 if (value === 'enum') {
                     form.value.options.isEnum = true
-                } else form.value.options.isEnum = false
+                    updateEnumValues()
+                } else {
+                    form.value.options.isEnum = false
+                    delete form.value.enumValues
+                }
 
-                if (['groups', 'user', 'url'].includes(value))
+                if (['groups', 'users', 'url'].includes(value))
                     form.value.options.customType = value
                 else delete form.value.options.customType
             }
@@ -532,12 +537,12 @@
             const enumTypeOtions = ref(null)
 
             // * Composables
-            const { enumListData: enumsList } = useEnums()
+            const { enumList } = useTypedefData()
 
             /** @return all enum list data formatted of the component */
             const finalEnumsList = computed(() => {
-                if (enumsList.value && enumsList.value.length) {
-                    return enumsList.value.map((item) => ({
+                if (enumList.value && enumList.value?.length) {
+                    return enumList.value?.map((item) => ({
                         value: item.name,
                         key: item.guid,
                         title: item.name,
@@ -553,15 +558,15 @@
              */
             const selectedEnumOptions = computed(() => {
                 if (form.value.options.isEnum) {
-                    const reqIndex = enumsList.value.findIndex(
+                    const reqIndex = enumList.value?.findIndex(
                         (item) => item.name === form.value.options.enumType
                     )
                     if (
                         reqIndex > -1 &&
-                        enumsList.value[reqIndex].elementDefs &&
-                        enumsList.value[reqIndex].elementDefs.length
+                        enumList.value[reqIndex]?.elementDefs &&
+                        enumList.value[reqIndex]?.elementDefs.length
                     ) {
-                        return enumsList.value[reqIndex].elementDefs.map(
+                        return enumList.value[reqIndex]?.elementDefs.map(
                             (item: { value: any }) => ({
                                 key: item.value,
                                 title: item.value,
@@ -580,6 +585,7 @@
                     form.value.options.isEnum === 'true' ||
                     form.value.options.isEnum === true
                 ) {
+                    newEnumMode.value = false
                     form.value.enumValues = selectedEnumOptions.value?.map(
                         (x) => x.value
                     )
@@ -587,25 +593,6 @@
                     delete form.value.enumValues
                 }
             }
-
-            // clears the action of the function above if enum is no longer selected
-            watch(
-                form,
-                (newValue) => {
-                    if (
-                        (form.value.options.isEnum !== 'true' ||
-                            form.value.options.isEnum !== true) &&
-                        newValue.enumValues
-                    ) {
-                        delete form.value.enumValues
-                    }
-                    // just incase ytpeName is changed back to enum and enumType not updated
-                    else if (newValue.typeName === 'enum') {
-                        updateEnumValues()
-                    }
-                },
-                { deep: true }
-            )
 
             return {
                 visible,
@@ -616,7 +603,7 @@
                 loading,
                 rules,
                 typeTreeSelect,
-                SHOW_PARENT,
+                SHOW_CHILD,
                 enumTypeOtions,
                 finalEnumsList,
                 selectedEnumOptions,

@@ -95,7 +95,7 @@
         watch,
         onMounted,
         provide,
-        ComputedRef
+        ComputedRef,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -164,7 +164,7 @@
             const selectedPod = ref({})
             const selectedGraph = ref({})
             const loadingFetchPod = ref(true)
-            const userId = ref("")
+            const userId = ref('')
             const tabs = [
                 {
                     id: 1,
@@ -298,9 +298,10 @@
 
                 watch(response, (v) => {
                     // useWorkflowByName
-                    const usrId = v?.records[0]?.labels["workflows.argoproj.io/creator"]
-                    if(usrId){
-                      userId.value = usrId
+                    const usrId =
+                        v?.records[0]?.labels['workflows.argoproj.io/creator']
+                    if (usrId) {
+                        userId.value = usrId
                     }
                     // getUserList()
                     // watch(userList, (newVal) => {
@@ -329,32 +330,34 @@
             }> = computed(() =>
                 userId.value
                     ? {
-                        limit: 1,
-                        offset: 0,
-                        sort: 'first_name',
-                        filter: {
-                            $and: [
-                              {
-                                  $or: [
-                                    {
-                                      email_verified: true, 
-                                      id: userId.value
-                                    }
-                                  ],
-                              },
-                          ],
-                        },
+                          limit: 1,
+                          offset: 0,
+                          sort: 'first_name',
+                          filter: {
+                              $and: [
+                                  {
+                                      $or: [
+                                          {
+                                              email_verified: true,
+                                              id: userId.value,
+                                          },
+                                      ],
+                                  },
+                              ],
+                          },
                       }
                     : {}
             )
 
             const { userList, getUserList } = useUsers(params)
             watch(userId, () => {
-              if(userId.value){
-                getUserList()
-              }
+                if (userId.value) {
+                    getUserList()
+                }
             })
-            const creator = computed(() =>userList.value.length > 1 ? {} : userList.value[0])
+            const creator = computed(() =>
+                userList.value.length > 1 ? {} : userList.value[0]
+            )
 
             watch(tab, (n, o) => {
                 if (!n) return
@@ -407,7 +410,7 @@
                 loadingFetchPod,
                 setLoadingFetchPod,
                 id,
-                creator
+                creator,
             }
         },
     })

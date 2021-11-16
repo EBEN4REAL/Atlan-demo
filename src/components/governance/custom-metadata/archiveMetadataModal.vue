@@ -56,7 +56,7 @@
 
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
     import { getErrorMessage } from '~/utils/error'
-    import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
+    import { Types } from '~/services/meta/types'
 
     // ? composables
 
@@ -82,7 +82,7 @@
 
             // methods
 
-            const { updateNewBusinessMetadata } = BusinessMetadataService
+            const { updateNewBusinessMetadata } = Types
 
             const handleArchive = () => {
                 deleteLoading.value = true

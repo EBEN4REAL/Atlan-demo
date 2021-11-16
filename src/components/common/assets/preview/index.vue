@@ -136,6 +136,7 @@
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset)"
                 :key="index"
+                class="overflow-y-auto"
             >
                 <template #tab>
                     <PreviewTabsIcon
@@ -199,11 +200,11 @@
             activity: defineAsyncComponent(
                 () => import('./activity/activityTab.vue')
             ),
+            relations: defineAsyncComponent(
+                () => import('./relations/index.vue')
+            ),
             // chat: defineAsyncComponent(
             //     () => import('./tabs/chat/assetChat.vue')
-            // ),
-            // relations: defineAsyncComponent(
-            //     () => import('./tabs/relations/relationTab.vue')
             // ),
             // actions: defineAsyncComponent(
             //     () => import('./tabs/actions/actions.vue')

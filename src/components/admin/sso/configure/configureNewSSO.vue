@@ -539,11 +539,12 @@
 
             const createMapper = async (mapper: any) => {
                 try {
-                    const promise = await Identity.createMapper(
+                    const { mutate: createMapper } = Identity.createMapper(
                         config.alias,
                         mapper
                     )
-                    return promise
+                    const response = await createMapper()
+                    return response
                 } catch (error) {
                     console.log('Mapper creation failed=>', error.message)
                 }
@@ -586,7 +587,8 @@
                 console.log('submit SSO data=>', params, mappers)
                 const mapperResponse: any = []
                 try {
-                    await Identity.createIDP(params).then(() => {
+                    const { mutate: createIDP } = Identity.createIDP(params)
+                    await createIDP().then(() => {
                         mappers.map((mapper) =>
                             mapperResponse.push(createMapper(mapper))
                         )
@@ -597,6 +599,7 @@
                     message.success({
                         content: 'SSO added!',
                     })
+
                     router.push('/admin/sso')
                 } catch (error) {
                     isLoading.value = false

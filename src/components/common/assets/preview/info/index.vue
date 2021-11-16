@@ -160,6 +160,9 @@
 
             <Description v-model="localDescription" class="mx-4" />
         </div>
+        <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
+            <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
+        </div>
         <div
             class="flex flex-col"
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
@@ -254,7 +257,6 @@
         Ref,
         reactive,
     } from 'vue'
-    import { message } from 'ant-design-vue'
     import { whenever } from '@vueuse/core'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
@@ -266,9 +268,10 @@
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
-    import CertificationPopover from '@/common/popover/certification.vue'
+    import SavedQuery from '@common/hovercards/savedQuery.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import { message, Modal } from 'ant-design-vue'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import whoami from '~/composables/user/whoami'
     import confetti from '~/utils/confetti'
@@ -283,12 +286,11 @@
             // Status,
             Owners,
             Classification,
-            // Query,
+            SavedQuery,
             Certificate,
             RowInfoHoverCard,
             SQL,
             Terms,
-            CertificationPopover,
         },
         setup(props) {
             const actions = inject('actions')

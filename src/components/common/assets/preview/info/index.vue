@@ -283,6 +283,8 @@
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
 
+            const isConfetti = ref(false)
+
             const {
                 title,
                 getConnectorImage,
@@ -481,6 +483,14 @@
                     localCertificate.value.certificateStatusMessage !==
                         certificateStatusMessage(selectedAsset.value)
                 ) {
+                    if (
+                        localCertificate.value.certificateStatus === 'VERIFIED'
+                    ) {
+                        isConfetti.value = true
+                    } else {
+                        isConfetti.value = false
+                    }
+
                     entity.value.attributes.certificateStatus =
                         localCertificate.value.certificateStatus
 
@@ -509,8 +519,9 @@
                     width: '0.3rem',
                     height: '0.3rem',
                 }
-
-                confetti(animationPoint.value, config)
+                if (isConfetti.value) {
+                    confetti(animationPoint.value, config)
+                }
             }
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
@@ -583,6 +594,7 @@
                 username,
                 animationPoint,
                 rainConfettis,
+                isConfetti,
             }
         },
     })

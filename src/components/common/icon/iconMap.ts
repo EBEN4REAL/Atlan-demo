@@ -223,6 +223,10 @@ import Number from '~/assets/images/icons/number.svg'
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
+import SSO from '~/assets/images/icons/sso.svg'
+import SMTP from '~/assets/images/icons/smtp.svg'
+import APIKey from '~/assets/images/icons/apikey.svg'
+import Camera from '~/assets/images/icons/camera.svg'
 
 export default {
     Times,
@@ -446,4 +450,8 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    SSO,
+    SMTP,
+    APIKey,
+    Camera,
 }

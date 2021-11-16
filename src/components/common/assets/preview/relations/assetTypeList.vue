@@ -21,7 +21,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs } from 'vue'
-    import AssetItem from '@/assets/list/assetItem.vue'
+    import AssetItem from '@/common/assets/list/assetItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'

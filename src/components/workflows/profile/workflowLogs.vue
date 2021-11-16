@@ -128,7 +128,8 @@
             },
             selectedGraph: {
                 type: Object,
-                required: true,
+                required: false,
+                default: () => {}
             },
         },
 

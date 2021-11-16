@@ -44,7 +44,7 @@
                         @openLog="openLog"
                         @setSelectedPod="setSelectedPod"
                         @setSelectedGraph="setSelectedGraph"
-                        @setLoadingFetchPod="setLoadingFetchPod"
+                        @set-loading-fetch-pod="setLoadingFetchPod"
                     />
                     <!-- <EmptyView
                         v-if="!workflowTemplate && !data?.isLoading"
@@ -478,6 +478,9 @@ meta:
     .container-workFlow {
         .ant-tabs-tab {
             margin-right: 0px;
+        }
+        .ant-tabs-tabpane-active{
+          overflow: visible!important;
         }
     }
 </style>

@@ -160,12 +160,12 @@
             const selectedPreviewTab = computed(() => route?.query?.tab || '')
 
             const filteredTabs = [
-                {
-                    name: 'Overview',
-                    component: 'info',
-                    icon: 'Overview',
-                    tooltip: 'Overview',
-                },
+                // {
+                //     name: 'Overview',
+                //     component: 'info',
+                //     icon: 'Overview',
+                //     tooltip: 'Overview',
+                // },
                 {
                     name: 'Run History',
                     component: 'runs',

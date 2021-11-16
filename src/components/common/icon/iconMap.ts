@@ -225,6 +225,12 @@ import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
 
+//source list
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg';
+import Athena from '~/assets/images/source/svg/Athena.svg';
+import Tableau from '~/assets/images/source/svg/Tableau.svg';
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg';
+
 export default {
     Times,
     ExclaimCircle,
@@ -447,5 +453,10 @@ export default {
     Number,
     NoAvatar,
     Enter,
-    FormatText
+    FormatText,
+
+    Snowflake,
+    Athena,
+    PowerBI,
+    Tableau
 }

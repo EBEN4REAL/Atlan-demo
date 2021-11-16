@@ -20,7 +20,7 @@ export const selectedPersona = computed(() => {
         if (t) {
             t.tag = 'TyT6ITTnmwzIe74TMEE4r5'
             t.dataPolicies = []
-            t.metadataPolicies = [
+            t.resourcePolicies = [
                 {
                     actions: ['entity-create', 'entity-update'],
                     allow: true,

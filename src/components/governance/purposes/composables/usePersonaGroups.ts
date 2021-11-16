@@ -1,5 +1,5 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
-import { IPersona, IGroup } from '~/types/accessPolicies/personas'
+import { IPersona, IGroup } from '~/types/accessPolicies/purposes'
 import useGroups from '~/composables/group/useGroups'
 
 function usePersonaGroupList(persona: Ref<IPersona>) {

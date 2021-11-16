@@ -1,8 +1,8 @@
 // import {Ref} from 'vue';
-// import { DataPolicies } from '~/types/accessPolicies/personas'
-// import { MetadataPolicies } from '~/types/accessPolicies/personas'
+// import { DataPolicies } from '~/types/accessPolicies/purposes'
+// import { resourcePolicies } from '~/types/accessPolicies/purposes'
 
-// export function isSavedPolicy(policy:Ref<DataPolicies|MetadataPolicies>){
+// export function isSavedPolicy(policy:Ref<DataPolicies|resourcePolicies>){
 //     return policy?.isNew
 
 // }

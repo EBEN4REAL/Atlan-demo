@@ -37,7 +37,7 @@
         reFetchList,
         selectedPersonaId,
     } from './composables/usePurposeList'
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPersona } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({

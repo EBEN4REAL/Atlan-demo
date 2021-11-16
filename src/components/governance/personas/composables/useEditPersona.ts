@@ -1,5 +1,5 @@
 import { Ref, ref, watch } from 'vue'
-import { IPersona } from '~/types/accessPolicies/personas'
+import { IPurpose } from '~/types/accessPolicies/purposes'
 import usePersonaService from './usePersonaService'
 import {
     selectedPersona,
@@ -12,7 +12,7 @@ const { updatePersona, deletePersona } = usePersonaService()
 export type PolicyType = 'meta' | 'data'
 
 export const isEditing = ref(false)
-export const selectedPersonaDirty: Ref<IPersona | undefined> = ref(undefined)
+export const selectedPersonaDirty: Ref<IPurpose | undefined> = ref(undefined)
 
 watch(
     () => selectedPersona.value?.id,
@@ -28,7 +28,7 @@ watch(
 
 export const policyEditMap = ref({
     dataPolicies: {} as Record<string, boolean>,
-    metadataPolicies: {} as Record<string, boolean>,
+    resourcePolicies: {} as Record<string, boolean>,
 })
 
 watch(selectedPersona, () => {
@@ -38,8 +38,8 @@ watch(selectedPersona, () => {
                 acc[curr.id!] = false
                 return acc
             }, {}) || {},
-        metadataPolicies:
-            selectedPersona.value?.metadataPolicies?.reduce((acc, curr) => {
+        resourcePolicies:
+            selectedPersona.value?.resourcePolicies?.reduce((acc, curr) => {
                 acc[curr.id!] = false
                 return acc
             }, {}) || {},
@@ -47,16 +47,16 @@ watch(selectedPersona, () => {
 })
 
 export function setEditFlag(type: PolicyType, idx: string) {
-    if (type === 'meta') policyEditMap.value.metadataPolicies[idx] = true
+    if (type === 'meta') policyEditMap.value.resourcePolicies[idx] = true
     else if (type === 'data') policyEditMap.value.dataPolicies[idx] = true
 }
 
 export function removeEditFlag(type: PolicyType, idx: string) {
-    if (type === 'meta') policyEditMap.value.metadataPolicies[idx] = false
+    if (type === 'meta') policyEditMap.value.resourcePolicies[idx] = false
     else if (type === 'data') policyEditMap.value.dataPolicies[idx] = false
 }
 
-export async function savePersona(persona: IPersona) {
+export async function savePersona(persona: IPurpose) {
     return updatePersona(persona)
 }
 
@@ -67,7 +67,7 @@ export function discardPersona(type: PolicyType, idx: string) {
 export function addPolicy(type: PolicyType) {
     const id = `new_${Date.now()}`
     if (type === 'meta') {
-        selectedPersonaDirty.value?.metadataPolicies?.push({
+        selectedPersonaDirty.value?.resourcePolicies?.push({
             id,
             actions: [],
             assets: [],
@@ -78,7 +78,7 @@ export function addPolicy(type: PolicyType) {
             type: 'metadata',
             isNew: true,
         })
-        policyEditMap.value.metadataPolicies[id] = true
+        policyEditMap.value.resourcePolicies[id] = true
     }
     if (type === 'data') {
         selectedPersonaDirty.value?.dataPolicies?.push({
@@ -101,14 +101,14 @@ export async function deletePolicy(type: PolicyType, id: string) {
     const tempPersona = { ...selectedPersona.value }
     if (type === 'meta') {
         const policyIndex =
-            selectedPersonaDirty.value?.metadataPolicies?.findIndex(
+            selectedPersonaDirty.value?.resourcePolicies?.findIndex(
                 (pol) => pol.id === id
             )
         if (policyIndex > -1)
-            tempPersona?.metadataPolicies?.splice(policyIndex, 1)
+            tempPersona?.resourcePolicies?.splice(policyIndex, 1)
 
         await savePersona(tempPersona)
-        selectedPersonaDirty.value?.metadataPolicies?.splice(policyIndex, 1)
+        selectedPersonaDirty.value?.resourcePolicies?.splice(policyIndex, 1)
     }
     if (type === 'data') {
         const policyIndex = selectedPersonaDirty.value?.dataPolicies?.findIndex(
@@ -125,26 +125,26 @@ export function savePolicy(type: PolicyType, id: string) {
     const tempPersona = { ...selectedPersona.value }
     if (type === 'meta') {
         const dirtyPolicyIndex =
-            selectedPersonaDirty.value?.metadataPolicies?.findIndex(
+            selectedPersonaDirty.value?.resourcePolicies?.findIndex(
                 (pol) => pol.id === id
             )
 
         if (dirtyPolicyIndex > -1) {
             const policy =
-                selectedPersonaDirty.value?.metadataPolicies?.[dirtyPolicyIndex]
+                selectedPersonaDirty.value?.resourcePolicies?.[dirtyPolicyIndex]
             if (policy?.isNew) {
                 delete policy?.isNew
                 delete policy?.id
-                tempPersona?.metadataPolicies?.push(policy!)
+                tempPersona?.resourcePolicies?.push(policy!)
             } else {
                 const policyIndex =
-                    selectedPersona.value?.metadataPolicies?.findIndex(
+                    selectedPersona.value?.resourcePolicies?.findIndex(
                         (pol) => pol.id === id
                     )
-                tempPersona.metadataPolicies![policyIndex!] = policy
+                tempPersona.resourcePolicies![policyIndex!] = policy
             }
         }
-        policyEditMap.value.metadataPolicies[id] = false
+        policyEditMap.value.resourcePolicies[id] = false
     }
     if (type === 'data') {
         const dirtyPolicyIndex =
@@ -176,15 +176,15 @@ export function discardPolicy(type: PolicyType, id: string) {
     if (id?.includes('new')) {
         if (type === 'meta') {
             const dirtyPolicyIndex =
-                selectedPersonaDirty.value?.metadataPolicies?.findIndex(
+                selectedPersonaDirty.value?.resourcePolicies?.findIndex(
                     (pol) => pol.id === id
                 )
             if (dirtyPolicyIndex > -1) {
-                selectedPersonaDirty.value?.metadataPolicies?.splice(
+                selectedPersonaDirty.value?.resourcePolicies?.splice(
                     dirtyPolicyIndex,
                     1
                 )
-                delete policyEditMap.value.metadataPolicies[id]
+                delete policyEditMap.value.resourcePolicies[id]
             }
         } else if (type === 'data') {
             const dirtyPolicyIndex =
@@ -208,22 +208,22 @@ export function discardPolicy(type: PolicyType, id: string) {
     } else {
         if (type === 'meta') {
             const policyIndex =
-                selectedPersona.value?.metadataPolicies?.findIndex(
+                selectedPersona.value?.resourcePolicies?.findIndex(
                     (pol) => pol.id === id
                 )
             const dirtyPolicyIndex =
-                selectedPersonaDirty.value?.metadataPolicies?.findIndex(
+                selectedPersonaDirty.value?.resourcePolicies?.findIndex(
                     (pol) => pol.id === id
                 )
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
                 const policy =
-                    selectedPersona.value?.metadataPolicies?.[policyIndex]
-                selectedPersonaDirty.value.metadataPolicies[dirtyPolicyIndex] =
+                    selectedPersona.value?.resourcePolicies?.[policyIndex]
+                selectedPersonaDirty.value.resourcePolicies[dirtyPolicyIndex] =
                     policy
             }
 
-            policyEditMap.value.metadataPolicies[id] = false
+            policyEditMap.value.resourcePolicies[id] = false
             console.log(type, id, policyEditMap.value)
         }
         if (type === 'data') {

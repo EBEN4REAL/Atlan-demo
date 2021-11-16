@@ -37,7 +37,7 @@
         reFetchList,
         selectedPersonaId,
     } from './composables/usePersonaList'
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
 
     export default defineComponent({
         name: 'AddPersona',
@@ -76,11 +76,11 @@
                     key: messageKey,
                 })
                 try {
-                    const newPersona: IPersona = await createPersona({
+                    const newPersona: IPurpose = await createPersona({
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        metadataPolicies: [],
+                        resourcePolicies: [],
                         users: [],
                         groups: [],
                         personaType: 'persona',

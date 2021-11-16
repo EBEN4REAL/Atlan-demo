@@ -1,10 +1,10 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { getFormattedGroup } from '~/composables/group/formatGroup'
 // import { IGroup } from '~/services/heracles/apis/groups'
-import { IPersona, IGroup } from '~/types/accessPolicies/personas'
+import { IPurpose, IGroup } from '~/types/accessPolicies/purposes'
 import useGroups from '~/composables/group/useGroups'
 
-function usePersonaGroupList(persona: Ref<IPersona>) {
+function usePersonaGroupList(persona: Ref<IPurpose>) {
     const params = ref(new URLSearchParams())
     // this is needed as there are multiple keys with the same param name
     params.value.append('limit', '20')

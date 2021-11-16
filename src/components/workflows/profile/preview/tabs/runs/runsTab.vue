@@ -5,8 +5,8 @@
     >
         <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
     </div>
-    <div v-else class="pb-8">
-        <div class="sticky top-0 z-20 flex p-4 bg-white">
+    <div v-else>
+        <div class="mt-3">
             <!-- <a-input-search
                 v-model:value="searchText"
                 placeholder="Search runs"

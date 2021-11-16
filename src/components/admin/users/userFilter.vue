@@ -13,14 +13,12 @@
                     class=""
                 >
                     <a-collapse-panel key="1" header="USER STATUS">
-                        <div class="">
-                            <a-checkbox-group
-                                v-model:value="statusFilter"
-                                class="grid gap-y-2"
-                                :options="userStatusOptions"
-                                @change="handleStatusFilterChange"
-                            ></a-checkbox-group>
-                        </div>
+                        <a-checkbox-group
+                            v-model:value="statusFilter"
+                            class="grid gap-y-2"
+                            :options="userStatusOptions"
+                            @change="handleStatusFilterChange"
+                        ></a-checkbox-group>
                     </a-collapse-panel>
                 </a-collapse>
             </div>
@@ -30,7 +28,7 @@
             class="px-2 text-gray-500 rounded-md"
             @click="filterOpened = !filterOpened"
         >
-            <AtlanIcon icon="Filter" />
+            <AtlanIcon icon="FilterFunnel" />
             <div
                 v-if="statusFilter?.length"
                 class="absolute w-2 h-2 bg-blue-500 rounded -top-1 -right-1"
@@ -59,7 +57,9 @@
             const handleStatusFilterChange = () => {
                 // to ensure that I can do checks for null when updating filter, can use length check
                 const valueToUpdate =
-                    statusFilter.value.length === 0 ? null : statusFilter.value
+                    statusFilter.value.length === 0
+                        ? null
+                        : statusFilter.value.map((v) => JSON.parse(v))
                 emit('update:modelValue', valueToUpdate)
                 emit('change', valueToUpdate)
             }

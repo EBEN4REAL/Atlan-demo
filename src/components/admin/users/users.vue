@@ -2,17 +2,18 @@
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div class="flex justify-between">
-                <div class="flex w-1/4">
-                    <a-input-search
-                        v-model:value="searchText"
-                        :placeholder="`Search all ${
-                            totalUserCount || ''
-                        } users`"
-                        class="mr-1 shadow-sm a-input-search-icon-left"
-                        size="default"
-                        :allow-clear="true"
-                        @change="handleSearch"
-                    ></a-input-search>
+                <div class="flex w-1/4 gap-x-2">
+                    <div class="">
+                        <a-input-search
+                            v-model:value="searchText"
+                            :placeholder="`Search all ${
+                                totalUserCount || ''
+                            } users`"
+                            class="mr-1 shadow-sm a-input-search-icon-left"
+                            :allow-clear="true"
+                            @change="handleSearch"
+                        ></a-input-search>
+                    </div>
                     <UserFilter
                         v-model="statusFilter"
                         @change="updateFilters"

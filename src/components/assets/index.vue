@@ -19,7 +19,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-6 py-1 border-b border-gray-200">
+                <div class="flex px-6 py-0 border-b border-gray-200">
                     <SearchAdvanced
                         v-model="queryText"
                         :connector-name="facets?.hierarchy?.connectorName"
@@ -111,7 +111,6 @@
                     ref="assetlistRef"
                     :list="list"
                     :selectedAsset="selectedAsset"
-                    :preference="preference"
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
                     @loadMore="handleLoadMore"
@@ -121,6 +120,7 @@
                             :item="item"
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
+                            :preference="preference"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -247,6 +247,7 @@
                 selectedAsset,
                 quickChange,
                 handleSelectedAsset,
+                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -263,6 +264,11 @@
 
             const handlePreview = (item) => {
                 handleSelectedAsset(item)
+            }
+
+            const updateCurrentList = (asset) => {
+                updateList(asset)
+                handleSelectedAsset(asset)
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -332,6 +338,8 @@
                 discoveryFilters,
                 error,
                 selectedAsset,
+                updateList,
+                updateCurrentList,
             }
         },
     })

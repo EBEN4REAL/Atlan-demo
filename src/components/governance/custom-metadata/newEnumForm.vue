@@ -1,7 +1,13 @@
 <template>
     <div class="add-label-modal">
-        <a-form layout="vertical" class="relative">
-            <a-form-item label="Name">
+        <a-form
+            ref="formRef"
+            layout="vertical"
+            class="relative"
+            :rules="rules"
+            :model="form"
+        >
+            <a-form-item label="Enum name" name="name">
                 <a-input
                     id="name-input"
                     v-model:value="form.name"
@@ -9,7 +15,7 @@
                 ></a-input>
             </a-form-item>
 
-            <a-form-item label="Values">
+            <a-form-item label="Values" name="elementDefs">
                 <a-select
                     mode="tags"
                     placeholder="Enter enum values"
@@ -20,16 +26,7 @@
             </a-form-item>
             <div
                 v-if="isLoading"
-                class="
-                    absolute
-                    top-0
-                    flex
-                    items-center
-                    justify-center
-                    w-full
-                    h-full
-                    bg-white bg-opacity-40
-                "
+                class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
             >
                 <a-spin size="large" />
             </div>
@@ -47,6 +44,7 @@
         emits: ['success'],
         setup(props, context) {
             const enumDetailsComponent = ref<DefineComponent>()
+            const formRef = ref(null)
             const form = ref({
                 elementDefs: [],
                 category: 'ENUM',
@@ -57,7 +55,8 @@
             const { newEnum, addEnum, reset } = useAddEnums()
             const { error: updateError, isReady, state } = addEnum
 
-            function handleCreateEnum() {
+            async function handleCreateEnum() {
+                await formRef.value?.validate()
                 const tempForm = { ...form.value }
                 tempForm.elementDefs = tempForm.elementDefs.map((x, index) => ({
                     value: x,
@@ -81,6 +80,24 @@
                 }
             })
 
+            const rules = {
+                name: [
+                    {
+                        required: true,
+                        message: 'Please provide enum name',
+                        trigger: 'change',
+                    },
+                ],
+                elementDefs: [
+                    {
+                        type: 'array',
+                        required: true,
+                        message: 'Please provide enum values',
+                        trigger: 'change',
+                    },
+                ],
+            }
+
             return {
                 form,
                 enumDetailsComponent,
@@ -90,6 +107,8 @@
                 state,
                 newEnum,
                 isLoading,
+                rules,
+                formRef,
             }
         },
     })

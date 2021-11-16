@@ -117,7 +117,6 @@
             })
 
             const {
-                fetchBMonStore,
                 selectedBm,
                 searchText,
                 handleSelectBm,
@@ -129,10 +128,6 @@
                 finalBusinessMetadataList,
                 sortedSearchedBM,
             } = useBusinessMetadata()
-
-            onMounted(() => {
-                fetchBMonStore()
-            })
 
             return {
                 businessMetadataList,
@@ -146,7 +141,6 @@
                 onUpdate,
                 handleSelectBm,
                 sortedSearchedBM,
-                fetchBMonStore,
             }
         },
         data() {

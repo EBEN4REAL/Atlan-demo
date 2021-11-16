@@ -141,6 +141,16 @@
                 </div>
             </div>
         </div>
+        <div class="flex flex-col" v-if="isGTC(selectedAsset)">
+            <div
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            >
+                <span> Name</span>
+            </div>
+
+            <Name v-model="localName" class="mx-4" />
+        </div>
+
         <div class="flex flex-col">
             <div
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
@@ -207,9 +217,28 @@
             <Terms :selected-asset="selectedAsset" class="px-5"></Terms>
         </div>
 
-        <CertificationPopover :selected-asset="selectedAsset" placement="left">
-            <Certificate :selected-asset="selectedAsset" />
-        </CertificationPopover>
+        <div
+            v-if="
+                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex flex-col"
+        >
+            <p
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                ref="animationPoint"
+            >
+                Certificate
+            </p>
+
+            <Certificate
+                :selected-asset="selectedAsset"
+                class="px-5"
+                v-model="localCertificate"
+                @change="handleChangeCertificate"
+            />
+        </div>
     </div>
 </template>
 
@@ -223,6 +252,7 @@
         ref,
         watch,
         Ref,
+        reactive,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import { whenever } from '@vueuse/core'
@@ -231,6 +261,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
+    import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
@@ -238,12 +269,16 @@
     import CertificationPopover from '@/common/popover/certification.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import whoami from '~/composables/user/whoami'
+    import confetti from '~/utils/confetti'
 
     export default defineComponent({
         name: 'AssetDetails',
         components: {
             // Experts,
             Description,
+            Name,
             AnnouncementWidget,
             // Status,
             Owners,
@@ -259,6 +294,8 @@
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const isConfetti = ref(false)
 
             const {
                 title,
@@ -287,6 +324,11 @@
                 webURL,
                 assetTypeLabel,
                 getAnchorGuid,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateStatusMessage,
+                certificateUpdatedBy,
+                isGTC,
             } = useAssetInfo()
 
             const entity = ref({
@@ -298,6 +340,16 @@
                         selectedAsset.value.attributes?.qualifiedName,
                     tenantId: 'default',
                 },
+            })
+
+            const guid = ref(null)
+
+            const {
+                asset,
+                mutate: mutateUpdate,
+                isReady: isUpdateReady,
+            } = useCurrentUpdate({
+                id: guid,
             })
 
             if (
@@ -323,21 +375,54 @@
 
             const localDescription = ref(description(selectedAsset?.value))
 
+            const localName = ref(title(selectedAsset?.value))
+
+            const localCertificate = ref({
+                certificateStatus: certificateStatus(selectedAsset.value),
+                certificateUpdatedAt: certificateUpdatedAt(selectedAsset.value),
+                certificateUpdatedBy: certificateUpdatedBy(selectedAsset.value),
+                certificateStatusMessage: certificateStatusMessage(
+                    selectedAsset.value
+                ),
+            })
+
             const currentMessage = ref('')
 
-            watch(localDescription, (newVal, prevVal) => {
-                if (newVal !== prevVal) {
-                    entity.value.attributes.userDescription =
-                        localDescription.value
-
-                    body.value.entities = [entity.value]
-                    currentMessage.value = 'Description has been updated'
-                    mutate()
+            watch(
+                [localDescription, localName],
+                ([newDescription, newName], [prevDescription, prevName]) => {
+                    if (newDescription !== prevDescription) {
+                        entity.value.attributes.userDescription =
+                            localDescription.value
+                        body.value.entities = [entity.value]
+                        currentMessage.value = 'Description has been updated'
+                        mutate()
+                    }
+                    if (newName !== prevName) {
+                        entity.value.attributes.name = localName.value
+                        body.value.entities = [entity.value]
+                        currentMessage.value = 'Name has been updated'
+                        mutate()
+                    }
                 }
-            })
+            )
 
             whenever(isReady, () => {
                 message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                rainConfettis()
+                mutateUpdate()
+            })
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                }
             })
 
             whenever(error, () => {
@@ -412,11 +497,62 @@
 
             whenever(isReadyClassification, () => {
                 message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                mutateUpdate()
             })
 
             whenever(isErrorClassification, () => {
                 message.error('Something went wrong. Please try again')
             })
+
+            const { username } = whoami()
+            const handleChangeCertificate = () => {
+                if (
+                    localCertificate.value.certificateStatus !==
+                        certificateStatus(selectedAsset.value) ||
+                    localCertificate.value.certificateStatusMessage !==
+                        certificateStatusMessage(selectedAsset.value)
+                ) {
+                    if (
+                        localCertificate.value.certificateStatus === 'VERIFIED'
+                    ) {
+                        isConfetti.value = true
+                    } else {
+                        isConfetti.value = false
+                    }
+
+                    entity.value.attributes.certificateStatus =
+                        localCertificate.value.certificateStatus
+
+                    entity.value.attributes.certificateStatusMessage =
+                        localCertificate.value.certificateStatusMessage
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Certificate has been updated'
+                    mutate()
+                }
+            }
+
+            const animationPoint = ref(null)
+            const rainConfettis = () => {
+                const config = {
+                    angle: 45,
+                    startVelocity: 10,
+                    spread: 200,
+                    elementCount: 100,
+                    colors: [
+                        '#2251cc',
+                        '#2251cc',
+                        '#82b54b',
+                        '#e94a3f',
+                        '#faa040',
+                    ],
+                    width: '0.3rem',
+                    height: '0.3rem',
+                }
+                if (isConfetti.value) {
+                    confetti(animationPoint.value, config)
+                }
+            }
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
@@ -477,6 +613,20 @@
                 error,
                 handleOwnersChange,
                 getAnchorGuid,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                localCertificate,
+                handleChangeCertificate,
+                certificateStatusMessage,
+                mutateUpdate,
+                updateList,
+                username,
+                animationPoint,
+                rainConfettis,
+                isConfetti,
+                isGTC,
+                localName,
             }
         },
     })

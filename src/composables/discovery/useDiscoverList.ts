@@ -198,6 +198,15 @@ export function useDiscoverList({
     }
     const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
 
+    const updateList = (asset) => {
+        console.log('assset', asset)
+        const index = list.value.findIndex((i) => i.guid === asset.guid)
+        console.log('assset', index)
+        if (index > -1) {
+            list.value[index] = asset
+        }
+    }
+
     return {
         queryText,
         limit,
@@ -221,5 +230,6 @@ export function useDiscoverList({
         handleSelectedGlossary,
         selectedGlossary,
         error,
+        updateList,
     }
 }

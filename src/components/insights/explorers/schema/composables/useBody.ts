@@ -54,12 +54,13 @@ export function useBody(
         }
         if (i == 1) {
             if (Array.isArray(typeName))
-                base.filter('terms', '__typeName.keyword', [
-                    'Database',
-                    'Schema',
-                    'Table',
-                    'Column',
-                ])
+                // base.filter('terms', '__typeName.keyword', [
+                //     'Database',
+                //     'Schema',
+                //     'Table',
+                //     'Column',
+                // ])
+                base.filter('terms', '__typeName.keyword', typeName)
             else {
                 /* Only use queryText when searching for database/ topmost parent, children won't be filtered using query text */
                 if (typeName === 'Database' && queryText)

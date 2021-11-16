@@ -1,4 +1,4 @@
-import { watch, ref, Ref, onMounted } from 'vue'
+import { watch, ref, Ref, onMounted, computed } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
@@ -56,6 +56,9 @@ const useGlossaryTree = ({
     })
 
     const loadedKeys = ref<string[]>([])
+    const expandedKeys = ref<string[]>([])
+    const selectedKeys = ref<string[]>([])
+    const treeData = ref<TreeDataItem[]>([])
 
     const defaultBody = ref({})
     const generateBody = () => {
@@ -133,8 +136,8 @@ const useGlossaryTree = ({
                 if (data.value?.entities) {
                     let map = data.value?.entities?.map((i) => ({
                         ...i,
-                        id: i.attributes?.qualifiedName,
-                        key: i.attributes?.qualifiedName,
+                        id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                         isLeaf: i.typeName === 'AtlasGlossaryTerm',
                     }))
                     if (map) {
@@ -149,6 +152,69 @@ const useGlossaryTree = ({
                 console.log(e)
             }
         }
+    }
+
+    const expandNode = (expanded: string[], event: any) => {
+        if (!event.node.isLeaf) {
+            const key: string = event.node.eventKey
+            const isExpanded = expandedKeys.value?.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.node.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value?.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
+    }
+
+    const selectNode = (selected: any, event: any) => {
+        if (!event.node.isLeaf) {
+            expandNode([], event)
+            // selectedKeys.value = []
+        }
+        console.log('select')
+        emit('select', event.node.dataRef)
+    }
+
+    const glossaryStore = useGlossaryStore()
+
+    const glossaryList = computed(() =>
+        glossaryStore.list.sort((a, b) =>
+            a.attributes.name > b.attributes.name
+                ? 1
+                : b.attributes.name > a.attributes.name
+                ? -1
+                : 0
+        )
+    )
+
+    const initTreeData = () => {
+        treeData.value = glossaryList.value.map((i) => {
+            let isLeafFlag = false
+            if (i.termsCount === 0 && i.categoryCount === 0) {
+                isLeafFlag = true
+            }
+            return {
+                ...i,
+                id: i.attributes?.qualifiedName,
+                key: i.attributes?.qualifiedName,
+                isLeaf: isLeafFlag,
+            }
+        })
+    }
+
+    let parentStack: string[]
+    const addNode = (asset): TreeDataItem => {
+        treeData.value.unshift({
+            ...asset,
+            id: asset.attributes?.qualifiedName,
+            key: asset.attributes?.qualifiedName,
+            isLeaf: true,
+        })
     }
 
     // watch(data, () => {
@@ -182,10 +248,17 @@ const useGlossaryTree = ({
 
     return {
         onLoadData,
-
+        expandNode,
         generateBody,
         data,
         loadedKeys,
+        expandedKeys,
+        selectNode,
+        selectedKeys,
+        glossaryList,
+        initTreeData,
+        treeData,
+        addNode,
     }
 }
 

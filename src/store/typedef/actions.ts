@@ -8,6 +8,8 @@ export interface Actions extends State {
   appendCustomMetadata(value: any): void
   setCustomMetadata(value: any): void
   updateCustomMetadata(value: object): void;
+  setIsLoading(value: boolean): void
+  setError(value: object | null): void
 }
 
 export const actions: Actions = {
@@ -29,10 +31,15 @@ export const actions: Actions = {
   setCustomMetadata(value) {
     this.customMetadataList = value
   },
-  // from Beta 
   updateCustomMetadata(bm) {
     const indexOfBmToUpdate = this.customMetadataList?.findIndex((x) => x.guid === bm.guid)
     if (indexOfBmToUpdate > 0) this.customMetadataList[indexOfBmToUpdate] = bm
-    // console.log("in action", indexOfBmToUpdate);
   },
+  // states updates 
+  setIsLoading(value) {
+    this.isLoading = value
+  },
+  setError(value) {
+    this.error = value
+  }
 }

@@ -227,6 +227,7 @@ import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
+import FormatText from '~/assets/images/icons/formatText.svg'
 
 export default {
     Times,
@@ -454,4 +455,5 @@ export default {
     SMTP,
     APIKey,
     Camera,
+    FormatText,
 }

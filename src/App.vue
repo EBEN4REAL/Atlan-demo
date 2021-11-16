@@ -10,7 +10,7 @@
     import useConnection from '~/composables/connection/useConnection'
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from './store/auth'
-    import useGlossary from './composables/glossary/useGlossary'
+    import useGlossary from './composables/glossary2/useGlossary'
 
     export default defineComponent({
         setup(props, context) {

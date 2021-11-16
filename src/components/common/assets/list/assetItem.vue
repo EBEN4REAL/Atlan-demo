@@ -21,9 +21,27 @@
                         >
                             <component
                                 :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500 mb-0.5"
+                                class="h-4 text-gray-500 mb-0.5 mr-1"
                             />
                         </div>
+                        <AtlanIcon
+                            icon="Category"
+                            v-if="
+                                ['atlasglossarycategory'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="h-4 mb-0.5 mr-1"
+                        ></AtlanIcon>
+                        <AtlanIcon
+                            icon="Term"
+                            v-if="
+                                ['atlasglossaryterm'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="h-4 mb-0.5 mr-1"
+                        ></AtlanIcon>
                         <router-link
                             :to="assetURL(item)"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
@@ -40,10 +58,21 @@
                         ></CertificateBadge>
                     </div>
 
+                    <div class="flex" v-if="description(item)">
+                        <span
+                            class="text-xs text-gray-500"
+                            v-if="preference?.display?.includes('description')"
+                            >{{ description(item) }}</span
+                        >
+                    </div>
+
                     <!-- Info bar -->
                     <div class="flex items-center gap-x-2">
                         <div class="flex items-center mr-1">
-                            <a-tooltip placement="left">
+                            <a-tooltip
+                                placement="left"
+                                v-if="connectionName(item)"
+                            >
                                 <template #title>
                                     <span>{{
                                         `${connectorName(
@@ -56,11 +85,102 @@
                                     class="h-3 mr-1 mb-0.5"
                                 />
                             </a-tooltip>
+                            <AtlanIcon
+                                icon="Category"
+                                v-if="
+                                    ['atlasglossarycategory'].includes(
+                                        item.typeName?.toLowerCase()
+                                    )
+                                "
+                                class="h-4 mb-0.5 mr-1"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                icon="Term"
+                                v-if="
+                                    ['atlasglossaryterm'].includes(
+                                        item.typeName?.toLowerCase()
+                                    )
+                                "
+                                class="h-4 mb-0.5 mr-1"
+                            ></AtlanIcon>
 
                             <div
                                 class="text-sm tracking-tight text-gray-500 uppercase "
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center">
+                            <div
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                v-if="categories(item)?.length > 0"
+                            >
+                                in
+                                <div
+                                    v-for="(cat, index) in categories(item)"
+                                    class="flex"
+                                    :key="cat.guid"
+                                    v-if="
+                                        ['atlasglossaryterm'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4 mt-0.5 mr-1"
+                                    ></AtlanIcon>
+                                    {{ cat.attributes?.name }}
+                                    <span
+                                        v-if="
+                                            index ===
+                                                categories(item).length - 2 &&
+                                            categories(item).length > 1
+                                        "
+                                        class="ml-1"
+                                    >
+                                        and
+                                    </span>
+                                    <span
+                                        v-else-if="
+                                            index !==
+                                            categories(item).length - 1
+                                        "
+                                        >,</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                v-if="parentCategory(item)"
+                            >
+                                in
+                                <div
+                                    class="flex"
+                                    :key="parentCategory(item).guid"
+                                    v-if="
+                                        ['atlasglossarycategory'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                >
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4 mt-0.5 mr-1"
+                                    ></AtlanIcon>
+                                    {{ parentCategory(item).attributes?.name }}
+                                </div>
+                            </div>
+                            <div
+                                v-if="isGTC(item)"
+                                class="flex items-center text-sm text-gray-500"
+                            >
+                                <AtlanIcon
+                                    icon="Glossary"
+                                    class="h-4 mr-1"
+                                ></AtlanIcon>
+                                {{ getAnchorName(item) }}
                             </div>
                         </div>
 
@@ -269,14 +389,6 @@
                             </a-tooltip>
                         </div>
                     </div>
-
-                    <div class="flex">
-                        <span
-                            class="text-xs text-gray-500"
-                            v-if="preference?.display?.includes('description')"
-                            >{{ description(item) }}</span
-                        >
-                    </div>
                 </div>
             </div>
         </div>
@@ -349,6 +461,10 @@
                 certificateStatusMessage,
                 description,
                 assetTypeLabel,
+                getAnchorName,
+                isGTC,
+                categories,
+                parentCategory,
             } = useAssetInfo()
 
             const assetURL = (asset) => ({
@@ -396,6 +512,10 @@
                 assetTypeLabel,
                 description,
                 handlePreview,
+                isGTC,
+                getAnchorName,
+                categories,
+                parentCategory,
             }
         },
     })

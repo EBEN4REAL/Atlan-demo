@@ -195,8 +195,9 @@ export default function useAssetInfo() {
     const getAnchorGuid = (asset: assetInterface) =>
         attributes(asset)?.anchor?.guid
 
-    const getAnchorQualifiedName = (asset: assetInterface) =>
-        anchorAttributes(asset)?.uniqueAttributes?.qualifiedName
+    const getAnchorQualifiedName = (asset: assetInterface) => {
+        return attributes(asset)?.anchor?.uniqueAttributes?.qualifiedName
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''

@@ -1,10 +1,8 @@
 <template>
     <div
-        class="leading-5 group-hover:opacity-100"
+        class="group-hover:opacity-100"
         :class="{
-            'opacity-100': isVisible,
             'opacity-0 treeMode': treeMode,
-            'opacity-100': visible,
         }"
     >
         <a-dropdown
@@ -16,116 +14,17 @@
             }"
             @click.stop="() => {}"
         >
-            <a-button
-                class="px-2 three-dot-menu"
-                :class="{
-                    ' border-0 shadow-none outline-none':
-                        !showLinks || treeMode,
-                    'treeMode h-4 w-4 ml-0.5': treeMode,
-                }"
-                @click.prevent
-            >
-                <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
-            </a-button>
+            <div>
+                <AtlanIcon
+                    icon="KebabMenu"
+                    class="h-4 m-0"
+                    v-if="treeMode"
+                    @click.prevent
+                />
+            </div>
+
             <template #overlay>
                 <a-menu :class="$style.threeDotMenu">
-                    <!-- Go to profile Links -->
-                    <a-menu-item v-if="showLinks" key="profileLink">
-                        <div class="flex items-center">
-                            <atlan-icon
-                                v-if="entity?.typeName === 'AtlasGlossaryTerm'"
-                                icon="OpenTermProfile"
-                                class="w-auto mr-2"
-                            />
-                            <atlan-icon
-                                v-if="
-                                    entity?.typeName === 'AtlasGlossaryCategory'
-                                "
-                                icon="OpenCategoryProfile"
-                                class="w-auto mr-2"
-                            />
-
-                            <p class="p-0 m-0">
-                                Go to
-                                {{ assetTypeLabel[entity?.typeName] }}
-                                profile
-                            </p>
-                        </div>
-                    </a-menu-item>
-
-                    <!-- Copy profile Links -->
-                    <a-menu-item
-                        v-if="showLinks"
-                        key="copyLink"
-                        class="flex items-center"
-                        @click="handleCopyProfileLink"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
-                            <p class="p-0 m-0">
-                                Copy
-                                {{ assetTypeLabel[entity?.typeName] }}
-                                profile link
-                            </p>
-                        </div>
-                    </a-menu-item>
-
-                    <a-menu-divider v-if="showLinks" />
-
-                    <!-- Edit Entity -->
-                    <a-menu-item
-                        v-if="showGtcCrud"
-                        key="edit"
-                        @click="closeMenu"
-                    >
-                        <AddGtcModal
-                            :entityType="assetTypeLabel[entity?.typeName]"
-                            mode="edit"
-                            :entity="entity"
-                        >
-                            <template #header>
-                                <ModalHeader
-                                    :parentEntityType="entity?.typeName"
-                                    :parentEntityTitle="entity?.displayText"
-                                />
-                            </template>
-                            <template #trigger>
-                                <div class="flex items-center">
-                                    <AtlanIcon icon="Pencil" class="m-0 mr-2" />
-                                    <p class="p-0 m-0 capitalize">
-                                        Edit
-                                        {{ assetTypeLabel[entity?.typeName] }}
-                                    </p>
-                                </div>
-                            </template>
-                        </AddGtcModal>
-                    </a-menu-item>
-
-                    <!-- bulk upload term -->
-                    <!-- <a-menu-item
-                        v-if="
-                            showGtcCrud &&
-                            entity?.typeName === 'AtlasGlossary'
-                        "
-                        key="add"
-                        @click="closeMenu"
-                    >
-                        <BulkModal :entity="entity">
-                            <template #trigger>
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        icon="Term"
-                                        class="m-0 mr-2 text-primary"
-                                    />
-                                    <p class="p-0 m-0 capitalize">
-                                        Bulk upload terms
-                                    </p>
-                                </div>
-                            </template>
-                        </BulkModal>
-                    </a-menu-item> -->
-
-                    <!-- Create new term  -->
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -135,18 +34,10 @@
                         @click="closeMenu"
                     >
                         <AddGtcModal
-                            entityType="term"
-                            :parentGlossaryGuid="glossaryId"
-                            :parentCategoryGuid="categoryId"
-                            :categoryQualifiedName="categoryQf"
+                            entityType="AtlasGlossaryTerm"
+                            :glossary-qualified-name="glossaryQualifiedName"
+                            :categoryGuid="categoryGuid"
                         >
-                            <template #header>
-                                <ModalHeader
-                                    entity-to-add="term"
-                                    :parentEntityType="entity?.typeName"
-                                    :parentEntityTitle="entity?.displayText"
-                                />
-                            </template>
                             <template #trigger>
                                 <div class="flex items-center">
                                     <AtlanIcon icon="Term" class="m-0 mr-2" />
@@ -155,228 +46,9 @@
                             </template>
                         </AddGtcModal>
                     </a-menu-item>
-
-                    <!-- Create new category  -->
-                    <a-menu-item
-                        v-if="
-                            showGtcCrud &&
-                            entity?.typeName !== 'AtlasGlossaryTerm'
-                        "
-                        key="addCat"
-                        @click="closeMenu"
-                    >
-                        <AddGtcModal
-                            entityType="category"
-                            :parentGlossaryGuid="glossaryId"
-                            :parentCategoryGuid="categoryId"
-                        >
-                            <template #header>
-                                <ModalHeader
-                                    entity-to-add="category"
-                                    :parentEntityType="entity?.typeName"
-                                    :parentEntityTitle="entity?.displayText"
-                                />
-                            </template>
-                            <template #trigger>
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="m-0 mr-2"
-                                    />
-                                    <p class="p-0 m-0">Create New Category</p>
-                                </div>
-                            </template>
-                        </AddGtcModal>
-                    </a-menu-item>
-
-                    <!-- Unlink Assets for linked assets -->
-                    <a-menu-item v-if="showUnlinkAsset" key="unkink">
-                        <a-button
-                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
-                            @click="$emit('unlinkAsset', entity)"
-                        >
-                            <div class="flex items-center text-red-700">
-                                <AtlanIcon icon="Link" class="mr-2" />
-                                <p class="p-0 m-0">Unlink Asset</p>
-                            </div>
-                        </a-button>
-                    </a-menu-item>
-
-                    <a-menu-divider
-                        v-if="
-                            showGtcCrud &&
-                            entity?.typeName !== 'AtlasGlossaryTerm'
-                        "
-                    />
-
-                    <!-- Status -->
-                    <a-sub-menu key="status">
-                        <template #title>
-                            <div class="flex items-center justify-between">
-                                <StatusBadge
-                                    :key="entity?.guid"
-                                    :status-id="
-                                        entity?.attributes?.certificateStatus
-                                    "
-                                    :show-chip-style-status="false"
-                                    :show-no-status="true"
-                                    :show-label="true"
-                                    class="p-0"
-                                ></StatusBadge>
-                                <AtlanIcon
-                                    class="pt-1 ml-4 transform -rotate-90"
-                                    icon="ChevronDown"
-                                />
-                            </div>
-                        </template>
-
-                        <template #expandIcon><div></div> </template>
-
-                        <a-menu-item class="m-0 bg-white">
-                            <!-- <Status
-                                v-if="entity?.guid"
-                                :selectedAsset="entity"
-                                @update:selectedAsset="updateTree"
-                            /> -->
-                            Status Widget
-                        </a-menu-item>
-                    </a-sub-menu>
-
-                    <!-- Owners -->
-                    <a-sub-menu key="owner">
-                        <template #title>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center justify-between">
-                                    <AtlanIcon
-                                        icon="AddUser"
-                                        class="m-0 mr-2"
-                                    />
-                                    <p class="p-0 m-0">Add Owner</p>
-                                </div>
-                                <AtlanIcon
-                                    class="pt-1 ml-4 transform -rotate-90"
-                                    icon="ChevronDown"
-                                />
-                            </div>
-                        </template>
-                        <template #expandIcon><div></div> </template>
-                        <a-menu-item class="m-0 bg-white">
-                            <!-- <Owners
-                                :selectedAsset="entity"
-                                @update:selectedAsset="updateTree"
-                            /> -->
-                            Owner Widget
-                        </a-menu-item>
-                    </a-sub-menu>
-
-                    <!-- Categories  -->
-                    <a-menu-item
-                        v-if="
-                            showGtcCrud &&
-                            entity?.typeName === 'AtlasGlossaryTerm'
-                        "
-                        key="categories"
-                        class="pr-0"
-                    >
-                        <a-popover :trigger="['hover']" placement="right">
-                            <div
-                                class="flex items-center justify-between pr-4 mr-2 "
-                            >
-                                <div class="flex items-center justify-between">
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="m-0 mr-2"
-                                    />
-                                    <p class="p-0 m-0">Categories</p>
-                                </div>
-                                <AtlanIcon
-                                    class="pt-1 transform -rotate-90"
-                                    icon="ChevronDown"
-                                />
-                            </div>
-                            <template
-                                #content
-                                class="absolute p-0 pb-8 hover:bg-white left-8"
-                                style="max-height: 416px"
-                            >
-                                <!-- <Categories
-                                    :glossaryQualifiedName="
-                                        entity.attributes?.anchor
-                                            ?.uniqueAttributes?.qualifiedName
-                                    "
-                                    :categories="entity.attributes.categories"
-                                    :termGuid="entity.guid"
-                                    :term="entity"
-                                    mode="threeDotMenu"
-                                /> -->
-                                category widget
-                            </template>
-                        </a-popover>
-                        <!-- <template #title>
-                        
-                        </template>
-                        <template #expandIcon><div></div> </template> -->
-                    </a-menu-item>
-
-                    <a-menu-divider v-if="showGtcCrud" />
-
-                    <!-- Archive -->
-                    <a-menu-item
-                        v-if="showGtcCrud"
-                        key="archive"
-                        class="text-red-700"
-                    >
-                        <a-button
-                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
-                            @click="showModal"
-                        >
-                            <div class="flex items-center text-red-700">
-                                <AtlanIcon icon="Trash" class="mr-2" />
-                                <p class="p-0 m-0">Archive</p>
-                            </div>
-                        </a-button>
-                    </a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
-
-        <!-- Delete Modal -->
-        <!-- <a-modal
-            v-model:visible="isModalVisible"
-            :closable="false"
-            @ok="handleDelete"
-        >
-            <template #footer>
-                <a-button key="back" @click="handleCancel">Cancel</a-button>
-                <a-button key="submit" danger @click="handleDelete"
-                    >Delete</a-button
-                >
-            </template>
-            <template #title>
-                Delete {{ assetTypeLabel[entity?.typeName] }}</template
-            >
-            <div v-if="entity?.typeName === 'AtlasGlossary'">
-                <p>
-                    Warning: Deletion of {{ entity?.displayText }} will also
-                    result in permanent deletion of all its child categories and
-                    terms.
-                </p>
-            </div>
-            <div v-if="entity?.typeName === 'AtlasGlossaryCategory'">
-                <p>
-                    Warning: Deletion of {{ entity?.displayText }} will not lead
-                    to deletion of child terms. The terms will get unlinked from
-                    this category.
-                </p>
-            </div>
-            <div v-if="entity?.typeName === 'AtlasGlossaryTerm'">
-                <p>
-                    Warning: Deletion of {{ entity?.displayText }} will lead to
-                    permanent deletion of the term across categories. You may
-                    want to unlink the term instead.
-                </p>
-            </div>
-        </a-modal> -->
     </div>
 </template>
 <script lang="ts">
@@ -429,6 +101,16 @@
                 required: true,
                 default: () => {},
             },
+            glossaryQualifiedName: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
+            categoryGuid: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
             showLinks: {
                 type: Boolean,
                 required: false,
@@ -459,7 +141,8 @@
         emits: ['unlinkAsset'],
         setup(props, context) {
             // data
-            const { entity } = toRefs(props)
+            const { entity, glossaryQualifiedName, categoryGuid } =
+                toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
@@ -609,6 +292,8 @@
                 categoryQf,
                 showCategories,
                 entity,
+                glossaryQualifiedName,
+                categoryGuid,
             }
         },
     })

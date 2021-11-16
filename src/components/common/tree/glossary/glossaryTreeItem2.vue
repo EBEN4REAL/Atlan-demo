@@ -1,11 +1,25 @@
 <template>
-    <div class="flex items-center py-0 m-0">
-        <AtlanIcon
-            :icon="getEntityStatusIcon(item.typeName, certificateStatus(item))"
-            :style="iconSize"
-        />
+    <div class="flex items-center justify-between w-full py-0 m-0 group">
+        <div class="flex items-center">
+            <AtlanIcon
+                :icon="
+                    getEntityStatusIcon(item.typeName, certificateStatus(item))
+                "
+                :style="iconSize"
+                class="self-center"
+            />
 
-        <span class="ml-1 text-sm" :class="textClass">{{ title(item) }}</span>
+            <span class="ml-1 text-sm" :class="textClass">{{
+                title(item)
+            }}</span>
+        </div>
+
+        <Actions
+            :treeMode="true"
+            :glossaryQualifiedName="getAnchorQualifiedName(item)"
+            :categoryGuid="item.guid"
+            :entity="item"
+        ></Actions>
     </div>
 </template>
 <script lang="ts">
@@ -13,6 +27,7 @@
     import { computed, defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import Actions from './actions.vue'
 
     import {
         Glossary,
@@ -21,6 +36,7 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
+        components: { Actions },
         props: {
             item: {
                 type: Object as PropType<Glossary | Term | Category>,
@@ -28,12 +44,14 @@
                 default: () => {},
             },
         },
+
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
 
             const { getEntityStatusIcon } = useGlossaryData()
-            const { certificateStatus, title } = useAssetInfo()
+            const { certificateStatus, title, getAnchorQualifiedName } =
+                useAssetInfo()
 
             const iconSize = computed(() => {
                 if (item.value.typeName === 'AtlasGlossary') {
@@ -60,6 +78,7 @@
                 title,
                 iconSize,
                 textClass,
+                getAnchorQualifiedName,
             }
         },
     })

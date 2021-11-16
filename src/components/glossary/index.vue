@@ -152,10 +152,8 @@
         <GlossaryTree
             ref="glossaryTree"
             v-else-if="!queryText"
-            :height="height"
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
-            class="px-1"
         ></GlossaryTree>
 
         <AssetList

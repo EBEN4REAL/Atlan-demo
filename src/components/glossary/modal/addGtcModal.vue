@@ -22,6 +22,8 @@
                         typeNameTitle === 'Term' || typeNameTitle === 'Category'
                     "
                 ></GlossaryPopoverSelect>
+
+                {{ categoryGuid }}
             </div>
 
             <a-input
@@ -111,10 +113,18 @@
                     return ''
                 },
             },
+            categoryGuid: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
-            const { entityType, glossaryQualifiedName } = toRefs(props)
+            const { entityType, glossaryQualifiedName, categoryGuid } =
+                toRefs(props)
             const { getGlossaryByQF, getFirstGlossaryQF } = useGlossaryData()
 
             const localQualfiendName = ref(
@@ -142,6 +152,15 @@
                         typeName: 'AtlasGlossary',
                         guid: getGlossaryByQF(localQualfiendName.value)?.guid,
                     },
+                }
+
+                if (categoryGuid.value) {
+                    entity.relationshipAttributes.categories = [
+                        {
+                            typeName: 'AtlasGlossaryCategory',
+                            guid: categoryGuid.value,
+                        },
+                    ]
                 }
             }
 
@@ -205,6 +224,14 @@
                                 ?.guid,
                         },
                     }
+                    if (categoryGuid.value) {
+                        entity.relationshipAttributes.categories = [
+                            {
+                                typeName: 'AtlasGlossaryCategory',
+                                guid: categoryGuid.value,
+                            },
+                        ]
+                    }
                 }
 
                 body.value = {
@@ -267,6 +294,7 @@
                 localQualfiendName,
                 getFirstGlossaryQF,
                 guidCreatedMaps,
+                categoryGuid,
             }
         },
     })

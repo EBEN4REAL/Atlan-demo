@@ -21,7 +21,7 @@
     </div>
     <a-tree
         v-else
-        class="pl-0 pr-3"
+        class="pl-0"
         :tree-data="treeData"
         :draggable="true"
         :block-node="true"
@@ -41,8 +41,7 @@
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem2 :item="entity" />
-            <!-- <Actions></Actions> -->
+            <GlossaryTreeItem2 :item="entity" class="mr-2" />
         </template>
     </a-tree>
 </template>

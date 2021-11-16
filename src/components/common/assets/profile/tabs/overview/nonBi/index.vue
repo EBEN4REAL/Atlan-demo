@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-6 gap-y-4">
+    <div class="flex flex-col p-6 gap-y-4 max-profile-width">
         <AnnouncementWidget
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
@@ -35,3 +35,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .max-profile-width {
+        max-width: calc(100vw - 420px);
+    }
+</style>

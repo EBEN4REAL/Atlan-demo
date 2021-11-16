@@ -18,7 +18,7 @@
                     type="default"
                     size="small"
                     class="border-gray-300"
-                    @click="handleClose()"
+                    @click="handleClose"
                 >
                     <AtlanIcon icon="Cancel" class="h-3" />
                 </a-button>
@@ -92,16 +92,36 @@
                             label="Select Enum"
                             :name="['options', 'enumType']"
                         >
-                            <a-tree-select
+                            <a-select
                                 v-model:value="form.options.enumType"
+                                show-search
                                 no-results-text="No enum found"
-                                :tree-data="finalEnumsList"
-                                :multiple="false"
-                                :async="false"
                                 placeholder="Select enum"
+                                :options="finalEnumsList"
                                 @change="updateEnumValues"
                             >
-                            </a-tree-select>
+                                <template #dropdownRender="{ menuNode: menu }">
+                                    <v-nodes :vnodes="menu" />
+                                    <a-divider style="margin: 4px 0" />
+
+                                    <p
+                                        class="mt-3 text-center cursor-pointer text-primary"
+                                        @click="
+                                            () => {
+                                                form.options.enumType = null
+                                                newEnumMode = !newEnumMode
+                                            }
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            class="inline h-4"
+                                            icon="Add"
+                                        />
+
+                                        Create new enum
+                                    </p>
+                                </template>
+                            </a-select>
                         </a-form-item>
 
                         <div v-show="selectedEnumOptions?.length" class="">
@@ -117,13 +137,8 @@
                                 >
                             </p>
                         </div>
-                        <p
-                            class="mt-3 text-right cursor-pointer text-primary"
-                            @click="newEnumMode = !newEnumMode"
-                        >
-                            or add new
-                        </p>
-                        <div v-if="newEnumMode">
+
+                        <div v-if="newEnumMode" class="mt-6">
                             <NewEnumForm
                                 v-if="newEnumMode"
                                 ref="newEnumFormRef"
@@ -131,6 +146,7 @@
                             />
                         </div>
                     </div>
+                    <!-- <pre>{{ finalEnumsList }}</pre> -->
                     <!-- <pre>{{ form.typeName }}</pre>
                     <pre>{{ form.enumValues }}</pre> -->
                     <!-- End of conditonals ========================================= -->
@@ -272,7 +288,7 @@
                     >
                         <a-button
                             :style="{ marginRight: '8px' }"
-                            @click="handleClose()"
+                            @click="handleClose"
                         >
                             Cancel
                         </a-button>
@@ -320,6 +336,9 @@
     export default defineComponent({
         components: {
             NewEnumForm,
+            VNodes: (_, { attrs }) => {
+                return attrs.vnodes
+            },
         },
         props: {
             metadata: {
@@ -567,7 +586,7 @@
                     form.value.options.isEnum === 'true' ||
                     form.value.options.isEnum === true
                 ) {
-
+                    newEnumMode.value = false
                     form.value.enumValues = selectedEnumOptions.value?.map(
                         (x) => x.value
                     )

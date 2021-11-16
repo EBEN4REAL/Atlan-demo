@@ -111,7 +111,7 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center mt-1">
+                        <div class="flex items-center">
                             <div
                                 class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                                 v-if="categories(item)?.length > 0"
@@ -173,6 +173,7 @@
                                 </div>
                             </div>
                             <div
+                                v-if="isGTC(item)"
                                 class="flex items-center text-sm text-gray-500"
                             >
                                 <AtlanIcon

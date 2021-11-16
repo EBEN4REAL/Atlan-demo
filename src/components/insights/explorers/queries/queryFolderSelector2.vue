@@ -434,8 +434,4 @@
         border-bottom: 2px solid #5277d7;
     }
 </style>
-<style lang="less" module>
-    .ant-popover-inner-content {
-        padding: 0 !important;
-    }
-</style>
+<style lang="less" module></style>

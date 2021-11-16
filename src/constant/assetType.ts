@@ -116,7 +116,7 @@ export const assetTypeList: {
     },
     {
         id: 'AtlasGlossaryTerm',
-        label: 'Terms',
+        label: 'Term',
         isDiscoverable: true,
     },
     {

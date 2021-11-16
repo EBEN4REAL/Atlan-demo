@@ -18,6 +18,24 @@
                         class="h-5 text-gray-500 mb-0.5"
                     />
                 </div>
+                <AtlanIcon
+                    icon="Category"
+                    v-if="
+                        ['atlasglossarycategory'].includes(
+                            selectedAsset.typeName?.toLowerCase()
+                        )
+                    "
+                    class="h-4 mb-0.5 mr-1"
+                ></AtlanIcon>
+                <AtlanIcon
+                    icon="Term"
+                    v-if="
+                        ['atlasglossaryterm'].includes(
+                            selectedAsset.typeName?.toLowerCase()
+                        )
+                    "
+                    class="h-4 mb-0.5 mr-1"
+                ></AtlanIcon>
                 <router-link
                     :to="assetURL(selectedAsset)"
                     class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
@@ -36,7 +54,10 @@
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <a-tooltip placement="left">
+                    <a-tooltip
+                        placement="left"
+                        v-if="connectionName(selectedAsset)"
+                    >
                         <template #title>
                             <span>{{
                                 `${connectorName(
@@ -49,6 +70,24 @@
                             class="h-4 mr-1 mb-0.5"
                         />
                     </a-tooltip>
+                    <AtlanIcon
+                        icon="Category"
+                        v-if="
+                            ['atlasglossarycategory'].includes(
+                                selectedAsset.typeName?.toLowerCase()
+                            )
+                        "
+                        class="h-4 mb-0.5 mr-1"
+                    ></AtlanIcon>
+                    <AtlanIcon
+                        icon="Term"
+                        v-if="
+                            ['atlasglossaryterm'].includes(
+                                selectedAsset.typeName?.toLowerCase()
+                            )
+                        "
+                        class="h-4 mb-0.5 mr-1"
+                    ></AtlanIcon>
 
                     <div class="text-sm tracking-tight uppercase text-gray">
                         {{

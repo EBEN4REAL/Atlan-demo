@@ -20,6 +20,7 @@
             <AtlanTable
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
+                    activeInlineTab.playground.editor.dataList.length > 0 &&
                     isQueryRunning === 'success'
                         ? true
                         : false
@@ -51,6 +52,20 @@
                     </thead>
                 </template>
             </AtlanTable>
+
+            <div
+                v-else-if="
+                    (activeInlineTab.playground.editor.columnList.length ===
+                        0 ||
+                        activeInlineTab.playground.editor.dataList.length ===
+                            0) &&
+                    isQueryRunning === 'success'
+                "
+                class="flex flex-col items-center justify-center w-full h-full"
+            >
+                <img :src="ResultsImg" class="text-white" :draggable="false" />
+                <p class="mt-4 mb-0 text-base text-gray-700">No Rows/Columns</p>
+            </div>
 
             <!-- --------------- -->
 

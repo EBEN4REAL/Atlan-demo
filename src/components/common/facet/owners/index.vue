@@ -67,7 +67,7 @@
                 :query-text="queryText"
             ></Groups>
         </div>
-        <div class="px-4 pt-1" v-if="showOwners">
+        <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 v-model:checked="localValue.empty"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
@@ -122,7 +122,7 @@
                     return {}
                 },
             },
-            showOwners: {
+            showNone: {
                 type: Boolean,
                 default() {
                     return true
@@ -132,25 +132,23 @@
                 type: Object as PropType<Array<any>>,
                 default: ['users', 'groups'],
             },
-            cacheKey: {
-                type: String,
-                default() {
-                    return 'DEFAULT_USERS'
-                },
-            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showOwners, enableTabs, cacheKey } = toRefs(props)
+            const { showNone, enableTabs } = toRefs(props)
             const componentType = ref('users')
             if (enableTabs.value.length < 2) {
-                watch(enableTabs, () => {
-                    componentType.value = enableTabs.value[0] as
-                        | 'users'
-                        | 'groups'
-                })
+                watch(
+                    enableTabs,
+                    () => {
+                        componentType.value = enableTabs.value[0] as
+                            | 'users'
+                            | 'groups'
+                    },
+                    { immediate: true }
+                )
             }
 
             const queryText = ref('')
@@ -189,6 +187,10 @@
                     ownerSearchRef.value?.forceFocus()
                 }
             }, 100)
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             const forceFocus = () => {
                 start()
@@ -203,10 +205,9 @@
                 placeholder,
                 queryText,
                 localValue,
-                showOwners,
+                showNone,
                 ownerSearchRef,
                 forceFocus,
-                cacheKey,
             }
         },
     })

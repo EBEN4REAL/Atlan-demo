@@ -82,9 +82,9 @@
     // ? components
     import { defineComponent, computed, onMounted, ref } from 'vue'
     import { useHead } from '@vueuse/head'
-    import BusinessMetadataList from '@/admin/custom-metadata/businessMetadataList.vue'
-    import BusinessMetadataProfile from '@/admin/custom-metadata/businessMetadataProfile.vue'
-    import MetadataModal from '~/components/admin/custom-metadata/metadataModal.vue'
+    import BusinessMetadataList from '@/governance/custom-metadata/businessMetadataList.vue'
+    import BusinessMetadataProfile from '@/governance/custom-metadata/businessMetadataProfile.vue'
+    import MetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
     import AtlanBtn from '@/UI/button.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -94,7 +94,7 @@
     import { useTypedefStore } from '~/store/typedef'
 
     // ? Composables
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
 
     import EmptyBusinessMetadata from '~/assets/images/illustrations/empty_business_metadata.svg'
     import noMetadataImage from '~/assets/images/admin/no-metadata.png'
@@ -117,7 +117,6 @@
             })
 
             const {
-                fetchBMonStore,
                 selectedBm,
                 searchText,
                 handleSelectBm,
@@ -129,10 +128,6 @@
                 finalBusinessMetadataList,
                 sortedSearchedBM,
             } = useBusinessMetadata()
-
-            onMounted(() => {
-                fetchBMonStore()
-            })
 
             return {
                 businessMetadataList,
@@ -146,7 +141,6 @@
                 onUpdate,
                 handleSelectBm,
                 sortedSearchedBM,
-                fetchBMonStore,
             }
         },
         data() {

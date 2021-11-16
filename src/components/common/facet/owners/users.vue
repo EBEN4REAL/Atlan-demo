@@ -46,7 +46,7 @@
     import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
-        name: 'OwnersFilter',
+        name: 'UsersFilter',
         props: {
             queryText: {
                 type: String,
@@ -106,6 +106,10 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             return {
                 userList,

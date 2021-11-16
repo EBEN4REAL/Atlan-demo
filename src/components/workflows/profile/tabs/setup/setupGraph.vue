@@ -7,10 +7,7 @@
         ></div>
 
         <!-- Setup Controls -->
-        <div
-            class="setup-control"
-            :class="isFullscreen ? 'top-7' : 'top-4'" 
-        >
+        <div class="setup-control" :class="isFullscreen ? 'top-7' : 'top-4'">
             <!-- Minimap Container -->
             <div
                 v-show="showMinimap"
@@ -19,7 +16,10 @@
             ></div>
 
             <div class="flex items-center flex-1 controls">
-                <div class="mr-3 cursor-pointer">
+                <div
+                    v-auth="access.SUBMIT_WORKFLOW"
+                    class="mr-3 cursor-pointer"
+                >
                     <a-tooltip placement="top">
                         <template #title>
                             <span>run workflow</span>
@@ -36,7 +36,10 @@
                     </a-tooltip>
                 </div>
 
-                <div class="mr-3 cursor-pointer">
+                <div
+                    v-auth="access.LIST_WORKFLOW_SCHEDULES"
+                    class="mr-3 cursor-pointer"
+                >
                     <a-tooltip placement="top">
                         <template #title>
                             <span>schedule workflow</span>
@@ -152,6 +155,7 @@
     import useHighlight from './useHighlight'
     import useTransformGraph from './useTransformGraph'
     import useControlGraph from './useControlGraph'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'SetupGraph',
@@ -259,6 +263,7 @@
             })
 
             return {
+                access,
                 minimapContainer,
                 setupContainer,
                 graphContainer,

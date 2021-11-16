@@ -188,22 +188,59 @@
                 <div v-if="searchLoading" class="pl-6">
                     <LoadingView />
                 </div>
-                <div class="pl-6" v-else-if="searchResults?.entities?.length">
-                    <div
+                <div v-else-if="searchResults?.entities?.length">
+                    <!-- <div
                         v-for="query in searchResults?.entities"
                         :key="query.guid"
-                        class
                     >
                         <QueryTreeItem
                             :item="{
                                 selected: false,
                                 title: query.displayText,
-                                attributes: query.attributes,
+                                ...query,
                             }"
                             :expandedKeys="per_expandedKeys"
                             :parentFolderQF="
                                 getRelevantTreeData().parentQualifiedName.value
                             "
+                        />
+                    </div> -->
+
+                    <div
+                        v-if="savedQueryType === 'personal'"
+                        class="w-full h-full bg-white"
+                    >
+                        <query-tree
+                            @toggleCreateQueryModal="toggleCreateQueryModal"
+                            @createFolderInput="createFolderInput"
+                            :savedQueryType="savedQueryType"
+                            :tree-data="searchTreeData"
+                            :on-load-data="per_onLoadData"
+                            :select-node="per_selectNode"
+                            :expand-node="per_expandNode"
+                            :is-loading="per_isInitingTree"
+                            :loaded-keys="per_loadedKeys"
+                            :selected-keys="per_selectedKeys"
+                            :expanded-keys="per_expandedKeys"
+                        />
+                    </div>
+                    <div
+                        v-if="savedQueryType === 'all'"
+                        class="w-full h-full bg-white"
+                    >
+                        <query-tree
+                            @toggleCreateQueryModal="toggleCreateQueryModal"
+                            @createFolderInput="createFolderInput"
+                            :savedQueryType="savedQueryType"
+                            :tree-data="searchTreeData"
+                            :on-load-data="all_onLoadData"
+                            :select-node="all_selectNode"
+                            :expand-node="all_expandNode"
+                            :is-loading="all_isInitingTree"
+                            :loaded-keys="all_loadedKeys"
+                            :selected-keys="all_selectedKeys"
+                            :expanded-keys="all_expandedKeys"
+                            :showEmptyState="showEmptyState"
                         />
                     </div>
                 </div>
@@ -216,7 +253,12 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
+                        class="
+                            my-2
+                            mb-0 mb-6
+                            text-base text-center text-gray-700
+                            max-width-text
+                        "
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for
@@ -253,6 +295,8 @@
         toRaw,
         onMounted,
         provide,
+        PropType,
+        toRefs,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import {
@@ -273,7 +317,7 @@
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import useDiscoveryStore from '~/store/discovery'
+    import useAssetStore from '~/store/asset'
     import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -288,12 +332,23 @@
             LoadingView,
             QueryTreeItem,
         },
-        props: {},
+        props: {
+            reset: {
+                type: Boolean,
+                required: true,
+                default: false,
+            },
+            resetQueryTree: {
+                type: Function,
+            },
+        },
         setup(props, { emit }) {
+            let { reset } = toRefs(props)
+
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
-            const storeDiscovery = useDiscoveryStore()
+            const storeDiscovery = useAssetStore()
             const { selectedAsset } = storeToRefs(storeDiscovery)
             const router = useRouter()
             const showSaveQueryModal: Ref<boolean> = ref(false)
@@ -633,7 +688,8 @@
                     readFolders: permissions.value.public.readFolders,
                 },
             })
-            const { data: searchResults, isLoading: searchLoading } =
+
+            const { data1: searchResults, isLoading1: searchLoading } =
                 useSearchQueries(searchQuery, savedQueryType)
 
             const getRelevantTreeData = (type?: 'personal' | 'all') => {
@@ -691,8 +747,8 @@
                 )
                 focusEditor(toRaw(editorInstance.value))
 
-                watch(data, (newData) => {
-                    if (newData) {
+                watch(data, (data) => {
+                    if (data) {
                         per_refetchNode(
                             saveQueryData.parentGuid ??
                                 getRelevantTreeData().parentGuid.value,
@@ -785,7 +841,62 @@
                 }
             })
 
+            let searchTreeData = ref([])
+            const returnTreeDataItemAttributes = (item) => {
+                return {
+                    attributes: item.attributes,
+                    key: item.guid,
+                    qualifiedName: item.attributes.qualifiedName,
+                    class: item.guid,
+                    guid: item.guid,
+                    title: item.attributes.name,
+                    typeName: item.typeName,
+                    classifications: item.classifications,
+                    // ...item.attributes,
+                    isLeaf: item.typeName === 'Query' ? true : false,
+                    entity: item,
+                }
+            }
+
+            watch(
+                [searchResults, searchLoading],
+                () => {
+                    searchTreeData.value = []
+                    if (searchResults.value?.entities?.length) {
+                        searchResults.value.entities.forEach((query) => {
+                            searchTreeData.value.push({
+                                ...returnTreeDataItemAttributes(query),
+                            })
+                        })
+                    }
+                },
+                { immediate: true }
+            )
+
+            watch(reset, () => {
+                // console.log('queryTree query: ', reset.value)
+                if (reset.value) {
+                    // console.log('queryTree inside if')
+                    setTimeout(async () => {
+                        console.log(
+                            'queryTree: ',
+                            getRelevantTreeData().parentGuid.value
+                        )
+                        await all_refetchNode(
+                            getRelevantTreeData().parentGuid.value,
+                            'query'
+                        )
+                        await per_refetchNode(
+                            getRelevantTreeData().parentGuid.value,
+                            'query'
+                        )
+                        props.resetQueryTree()
+                    }, 500)
+                }
+            })
+
             return {
+                searchTreeData,
                 resolvePublicFolderCreationPermission,
                 permissions,
                 raisedTabConfig,

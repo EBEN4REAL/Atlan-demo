@@ -201,6 +201,7 @@ import Strike from '~/assets/images/readme/text-strike.svg'
 import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
 import Running from '~/assets/images/icons/running.svg'
+import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
 import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
 import CreateWF from '~/assets/images/workflows/createWF.svg'
@@ -221,8 +222,12 @@ import Number from '~/assets/images/icons/number.svg'
 
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
+import Times from '~/assets/images/icons/times.svg'
+import FormatText from '~/assets/images/icons/formatText.svg'
 
 export default {
+    Times,
+    ExclaimCircle,
     RemoveUser,
     NoRuns,
     CreateWF,
@@ -442,4 +447,5 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    FormatText
 }

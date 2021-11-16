@@ -5,6 +5,10 @@ export interface Actions extends State {
     setTermsCount(value: any): void
     setCategoryCount(value: any): void
     setSelectedGlossary(value: any): void
+    setActivePanel(value: any): void
+    setPreferences(value: any): void
+    setActiveFacet(value: any): void
+    setActivePostFacet(value: any): void
 }
 
 export const actions: Actions = {
@@ -12,7 +16,11 @@ export const actions: Actions = {
         this.selectedGlossary = value
     },
     setList(value) {
-        this.list = value
+        this.list = value.map((i) => ({
+            ...i,
+            id: i.attributes.qualifiedName,
+            label: i.attributes.name,
+        }))
     },
     setTermsCount(buckets) {
         this.list.forEach((element, index) => {
@@ -37,5 +45,17 @@ export const actions: Actions = {
                 element.categoryCount = 0
             }
         })
+    },
+    setActivePanel(value) {
+        this.activeFacetTab = value
+    },
+    setActiveFacet(value) {
+        this.activeFacet = value
+    },
+    setPreferences(value) {
+        this.preferences = value
+    },
+    setActivePostFacet(value) {
+        this.activePostFacet = value
     },
 }

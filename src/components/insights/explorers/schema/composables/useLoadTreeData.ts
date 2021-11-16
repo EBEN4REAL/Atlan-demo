@@ -10,8 +10,12 @@ import {
 import { IndexSearchResponse } from '~/services/meta/search/index'
 
 import { useAPIPromise } from '~/services/api/useAPIPromise'
-import {map} from '~/services/meta/search/key'
-import { InternalAttributes, BasicSearchAttributes } from '~/constant/projection'
+import { map } from '~/services/meta/search/key'
+import {
+    InternalAttributes,
+    BasicSearchAttributes,
+} from '~/constant/projection'
+import { useBody } from './useBody'
 
 const attributes = [
     'name',
@@ -30,45 +34,35 @@ const attributes = [
     ...BasicSearchAttributes,
 ]
 
-const useLoadTreeData = () => {
-    const body = ref<Record<string, any>>({});
+const useLoadTreeData = (queryText: Ref<string>) => {
+    const body = ref<Record<string, any>>({})
     const parentFilter = ref({
-        term: {}
-    });
-    const typeName = ref<string | string[]>()
+        term: {},
+    })
+    let typeName = ref<string | string[]>()
     const from = ref(0)
     const size = ref(100)
-    const sort = ref<Record<string, any>>({
-        "name.keyword": {
-            order: "asc"
-        }
-    })
+    const sort = ref<String>('asc')
     const refreshBody = () => {
-        body.value = {
-            dsl: {
-                size: size.value,
-                from: from.value,
-                query: {
-                    bool: {
-                        filter: {
-                            bool: {
-                                must: [
-                                    parentFilter.value,
-                                    {
-                                        [Array.isArray(typeName.value) ? 'terms' : 'term']: {
-                                            "__typeName.keyword": typeName.value
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                sort: [
-                    sort.value
-                ]
+        const appliedFilters: Array<any> = []
+        appliedFilters.push(parentFilter.value)
+        appliedFilters.push({
+            [Array.isArray(typeName.value) ? 'terms' : 'term']: {
+                '__typeName.keyword': typeName.value,
             },
-            attributes
+        })
+
+        const dsl = useBody(
+            sort.value,
+            appliedFilters,
+            typeName.value,
+            queryText?.value,
+            from?.value,
+            size?.value
+        )
+        body.value = {
+            dsl,
+            attributes,
         }
     }
     const getDatabaseForConnection = async (
@@ -77,16 +71,13 @@ const useLoadTreeData = () => {
     ) => {
         typeName.value = 'Database'
         parentFilter.value.term = {
-            connectionQualifiedName
+            connectionQualifiedName,
         }
         from.value = offset ?? 0
-        sort.value = {
-            "name.keyword": {
-                order: "asc"
-            }
-        }
+        sort.value = 'asc'
 
-        refreshBody();
+        refreshBody()
+        console.log('body connection: ', body)
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
@@ -99,16 +90,13 @@ const useLoadTreeData = () => {
     ) => {
         typeName.value = 'Schema'
         parentFilter.value.term = {
-            databaseQualifiedName
+            databaseQualifiedName,
         }
         from.value = offset ?? 0
-        sort.value = {
-            "name.keyword": {
-                order: "asc"
-            }
-        }
+        sort.value = 'asc'
 
-        refreshBody();
+        refreshBody()
+        console.log('body database: ', body)
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
@@ -121,16 +109,14 @@ const useLoadTreeData = () => {
     ) => {
         typeName.value = ['Table', 'View']
         parentFilter.value.term = {
-            schemaQualifiedName
+            schemaQualifiedName,
         }
         from.value = offset ?? 0
-        sort.value = {
-            "name.keyword": {
-                order: "asc"
-            }
-        }
+        sort.value = 'asc'
 
-        refreshBody();
+        refreshBody()
+
+        console.log('body schema: ', body)
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
@@ -143,51 +129,40 @@ const useLoadTreeData = () => {
     ) => {
         typeName.value = 'Column'
         parentFilter.value.term = {
-            tableQualifiedName
+            tableQualifiedName,
         }
         from.value = offset ?? 0
-        sort.value = {
-            "order": {
-                order: "asc"
-            }
-        }
+        sort.value = 'asc'
 
-        refreshBody();
+        refreshBody()
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<IndexSearchResponse<Column>>
     }
 
-    const getColumnsForView = (
-        viewQualifiedName: string,
-        offset?: number
-    ) => {
+    const getColumnsForView = (viewQualifiedName: string, offset?: number) => {
         typeName.value = 'Column'
         parentFilter.value.term = {
-            viewQualifiedName
+            viewQualifiedName,
         }
         from.value = offset ?? 0
-        sort.value = {
-            "order": {
-                order: "asc"
-            }
-        }
+        sort.value = 'asc'
 
-        refreshBody();
+        refreshBody()
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
         }) as Promise<IndexSearchResponse<Column>>
     }
-    
+
     return {
         getDatabaseForConnection,
         getSchemaForDatabase,
         getTablesAndViewsForSchema,
         getColumnsForTable,
         // getViewsForSchema,
-        getColumnsForView
+        getColumnsForView,
     }
 }
 

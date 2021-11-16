@@ -1,9 +1,6 @@
 <template>
     <Loader v-if="isLoading"></Loader>
-    <GlossaryProfile
-        :selected-glossary="selectedGlossary"
-        v-else
-    ></GlossaryProfile>
+    <GlossaryProfile :asset="selectedAsset" v-else></GlossaryProfile>
 </template>
 
 <script lang="ts">
@@ -11,17 +8,16 @@
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
-    import GlossaryProfile from '@/glossary/profile/index.vue'
+    import GlossaryProfile from '@/common/assets/profile/index.vue'
     import Loader from '@/common/loaders/page.vue'
 
     import {
         AssetAttributes,
         InternalAttributes,
         SQLAttributes,
-        AssetRelationAttributes,
+        DefaultRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         components: {
@@ -29,7 +25,7 @@
             Loader,
         },
         props: {
-            selectedGlossary: {
+            selectedAsset: {
                 type: Object,
                 required: true,
             },
@@ -39,7 +35,7 @@
                 title: 'Glossary',
             })
 
-            const { selectedGlossary } = toRefs(props)
+            const { selectedAsset } = toRefs(props)
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
             const limit = ref(1)
@@ -48,7 +44,7 @@
                 guid: id.value,
             })
             const fetchKey = computed(() => {
-                if (selectedGlossary.value?.guid) {
+                if (selectedAsset.value.guid) {
                     return null
                 }
                 return id.value
@@ -59,9 +55,9 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
             ])
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
-            const { list, isLoading } = useDiscoverList({
+            const { handleSelectedAsset, list, isLoading } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -71,29 +67,19 @@
                 relationAttributes,
             })
 
-            const { handleSelectedGlossary } = useGlossaryData()
-
             watch(list, () => {
                 if (list.value.length > 0) {
-                    handleSelectedGlossary(list.value[0])
+                    handleSelectedAsset(list.value[0])
                 }
             })
 
             return {
                 fetchKey,
                 isLoading,
-                selectedGlossary,
-                handleSelectedGlossary,
             }
         },
     })
 </script>
-<style scoped>
-    .asset-preview-container {
-        width: 420px !important;
-        max-width: 420px !important;
-    }
-</style>
 
 <route lang="yaml">
 meta:

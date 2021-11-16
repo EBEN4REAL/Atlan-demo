@@ -82,6 +82,8 @@ export const SQLAttributes = [
     'isDist',
 ]
 
+export const GlossaryAttributes = ['categories', 'parentCategory']
+
 export const GlossaryRelationAttributes = ['name']
 
 export const AssetRelationAttributes = [

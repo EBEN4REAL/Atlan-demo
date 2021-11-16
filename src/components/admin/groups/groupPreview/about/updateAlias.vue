@@ -57,11 +57,11 @@
                             <template #content>{{
                                 updateErrorMessage
                             }}</template>
-                            <fa
-                                v-if="updateErrorMessage"
-                                icon="fal exclamation-circle"
-                                class="cursor-pointer text-error"
-                            ></fa>
+
+                            <AtlanIcon
+                                icon="ExclaimCircle"
+                                class="cursor-pointer"
+                            />
                         </a-popover>
                     </div>
                 </div>

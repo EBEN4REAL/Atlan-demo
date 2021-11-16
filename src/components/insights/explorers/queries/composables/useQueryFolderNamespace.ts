@@ -1,11 +1,12 @@
 // FIXME: CHANGE BASIC -> INDEX
 import { Ref, ref } from 'vue'
 
-import { QueryFolderNamespace } from '~/types/insights/savedQuery.interface'
-import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
+// import { QueryFolderNamespace } from '~/types/insights/savedQuery.interface'
+// import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { useAPI } from '~/services/api/useAPI'
-import { map } from '~/services/meta/insights/key'
+// import { map } from '~/services/meta/insights/key'
+import {map} from '~/services/meta/search/key'
 import {
     InternalAttributes,
     BasicSearchAttributes,
@@ -44,25 +45,56 @@ const useQueryFolderNamespace = () => {
     const body = ref()
 
     const refreshBody = () => {
+        // body.value = {
+        //     typeName: 'QueryFolderNamespace',
+        //     excludeDeletedEntities: true,
+        //     includeClassificationAttributes: true,
+        //     includeSubClassifications: true,
+        //     includeSubTypes: true,
+        //     limit: defaultLimit,
+        //     offset: 0,
+        //     attributes,
+        //     // sortBy: 'name',
+        //     sortOrder: 'ASCENDING',
+        // }
         body.value = {
-            typeName: 'QueryFolderNamespace',
-            excludeDeletedEntities: true,
-            includeClassificationAttributes: true,
-            includeSubClassifications: true,
-            includeSubTypes: true,
-            limit: defaultLimit,
-            offset: 0,
-            attributes,
-            // sortBy: 'name',
-            sortOrder: 'ASCENDING',
+            dsl: {
+                size: 100,
+                query: {
+                    bool: {
+                        filter: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            "__typeName.keyword": "QueryFolderNamespace"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            attributes
         }
     }
 
     refreshBody()
+    // const getQueryFolderNamespace = () => {
+    //     refreshBody()
+    //     return useAPI<BasicSearchResponse<QueryFolderNamespace>>(
+    //         map.BASIC_SEARCH,
+    //         'POST',
+    //         {
+    //             body,
+    //         },
+    //         {}
+    //     )
+    // }
     const getQueryFolderNamespace = () => {
         refreshBody()
-        return useAPI<BasicSearchResponse<QueryFolderNamespace>>(
-            map.BASIC_SEARCH,
+        return useAPI(map.INDEX_SEARCH,
             'POST',
             {
                 body,

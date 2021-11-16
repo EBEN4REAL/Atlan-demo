@@ -357,6 +357,14 @@ export function useBody(
                 }
                 break
             }
+            case 'glossary': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', '__glossary', filterObject)
+                    }
+                }
+                break
+            }
         }
     })
     base.rawOption('post_filter', postFilter.build().query)
@@ -382,6 +390,17 @@ export function useBody(
                         base.aggregation(
                             'terms',
                             'dataType',
+                            { size: 50 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'glossary': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            '__glossary',
                             { size: 50 },
                             `${agg_prefix}_${mkey}`
                         )
@@ -416,7 +435,11 @@ export function useBody(
     ) {
         // Global TypeName Filters
         base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
-        base.orFilter('terms', '__typeName.keyword', ['Query'])
+        base.orFilter('terms', '__typeName.keyword', [
+            'Query',
+            'AtlasGlossaryCategory',
+            'AtlasGlossaryTerm',
+        ])
     }
 
     base.filterMinimumShouldMatch(1)

@@ -26,7 +26,7 @@
                     :disabled="addToGroupLoading || !selectedIds.length"
                     @click="$emit('addUserToGroups')"
                 >
-                    <fa icon="fal plus" class="mr-2" />Add
+                    <AtlanIcon icon="Add" class="mr-2" />Add
                 </a-button>
             </div>
         </div>
@@ -46,7 +46,7 @@
                             }
                         "
                     >
-                        <fa icon="fal sync" class="mr-2"></fa>Try again
+                        <AtlanIcon icon="Refresh" class="mb-1 mr-2" />Try again
                     </a-button>
                 </div>
             </ErrorView>

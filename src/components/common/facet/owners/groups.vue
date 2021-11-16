@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, watch } from 'vue'
+    import { defineComponent, PropType, ref, computed, watch } from 'vue'
 
     import { useVModels } from '@vueuse/core'
     import useFacetGroups from '~/composables/group/useFacetGroups'
@@ -82,6 +82,10 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
             return { list, handleChange, localValue, total, filterTotal }
         },
     })

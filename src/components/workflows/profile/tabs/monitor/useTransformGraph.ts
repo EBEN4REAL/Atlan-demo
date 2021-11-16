@@ -1,5 +1,6 @@
 export default function useTransformGraph(graph, currZoom) {
     const zoom = (factor) => {
+      console.log(graph.value, '<<<<<<<')
         graph.value.zoom(factor)
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     }

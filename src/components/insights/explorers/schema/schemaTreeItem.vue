@@ -922,8 +922,9 @@
     .count-box {
         justify-content: center;
         align-items: center;
-        padding: 3px;
+        // padding: 4px;
         margin: 4px;
+        display: inline-flex;
         width: 18px;
         height: 18px;
 

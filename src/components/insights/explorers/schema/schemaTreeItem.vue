@@ -1,9 +1,5 @@
 <template>
-    <div
-        :data-test-id="item?.guid"
-        class="w-full group py-1.5"
-        :class="assetType(item) == 'Column' && hoverActions ? '-ml-3.5' : ''"
-    >
+    <div :data-test-id="item?.guid" class="w-full group py-1.5">
         <div class="flex justify-between w-full overflow-hidden">
             <!-- Popover Allowed -->
             <div

@@ -3,24 +3,44 @@ import { Entity } from '~/services/meta/entity/index'
 
 import { BasicSearchAttributes, AssetAttributes, SavedQueryAttributes, SQLAttributes, AssetRelationAttributes } from '~/constant/projection'
 
-function fetchRelationAssets(id: string, assetType: string) {
-    const body: any = {
+function constructRequest(guid: string, assetType: string) {
+    const finalParams = new URLSearchParams()
+
+    const attributes =
+        [...BasicSearchAttributes, ...AssetAttributes, ...SavedQueryAttributes, ...SQLAttributes]
+
+
+    const paramsObj: any = {
         limit: 1000,
         offset: 0,
         relation: assetType,
         includeClassificationAttributes: true,
-        guid: id,
+        guid,
         excludeDeletedEntities: true,
         includeSubClassifications: true,
-        includeSubTypes: true,
-        attributes: [...BasicSearchAttributes, ...AssetAttributes, ...SavedQueryAttributes, ...SQLAttributes],
-        relationAttributes: [...AssetRelationAttributes]
+        includeSubTypes: true
     }
+
+    attributes.forEach((val: string) => {
+        finalParams.append('attributes', val)
+    })
+
+    Object.keys(paramsObj).forEach((key) => {
+        finalParams.append(key, paramsObj[key])
+    })
+
+    return finalParams
+}
+
+function fetchRelationAssets(id: string, assetType: string) {
+
+    const params = constructRequest(id, assetType)
+
     const { data,
         mutate,
         error,
         isReady,
-        isLoading } = Entity.fetchRelatedAssets(body, {})
+        isLoading } = Entity.fetchRelatedAssets(params, {})
 
     watch(id, (newId, oldId) => {
         if (newId !== oldId) mutate()

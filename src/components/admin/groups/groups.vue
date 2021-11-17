@@ -2,7 +2,7 @@
     <EmptyView
         v-if="!error && !searchText && !isLoading && !groupList?.length"
         empty-screen="CreateGroups"
-        headline="'Create a new group'"
+        headline="Create a new group"
         button-text="Create Group"
         @event="() => (isGroupDrawerVisible = true)"
     />

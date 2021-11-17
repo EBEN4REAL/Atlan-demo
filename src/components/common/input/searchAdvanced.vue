@@ -34,12 +34,10 @@
                     <slot name="postFilter" />
                 </template>
 
-                <button
-                    class="p-1 transition-colors rounded hover:bg-gray-light"
-                >
+                <button class="transition-colors rounded hover:bg-gray-100">
                     <AtlanIcon
                         :icon="dot ? 'FilterDot' : 'Filter'"
-                        class="w-4 h-4"
+                        class="w-4 h-4 px-1"
                     />
                     <slot name="buttonAggregation" />
                 </button>

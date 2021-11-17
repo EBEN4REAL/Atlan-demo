@@ -59,13 +59,17 @@
         </template> -->
         <template v-for="item in dropdownOption" :key="item.label">
             <a-select-option :value="item.value">
-                <div class="flex items-center">
+                <div class="flex items-center truncate">
                     <!-- <img :src="item.image" class="w-auto h-4 mr-1" /> -->
                     <AtlanIcon
                         :icon="typeName + `Gray`"
                         class="w-auto h-4 mr-1"
                     />
-                    {{ item.label }}
+                    {{
+                        item?.label.length > 30
+                            ? `${item?.label.slice(0, 30)}...`
+                            : item.label
+                    }}
                 </div></a-select-option
             >
         </template>

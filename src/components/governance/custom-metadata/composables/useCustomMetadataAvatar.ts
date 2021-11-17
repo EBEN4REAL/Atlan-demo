@@ -43,8 +43,6 @@ export default function useCustomMetadataAvatar(metadata) {
     [imageUploadData, imageUploadError],
     ([newImage, newError]) => {
       if (newImage) {
-        console.log(newImage);
-
         imageResponse.value = newImage
         isUploading.value = false
         popOverVisible.value = false
@@ -126,8 +124,6 @@ export default function useCustomMetadataAvatar(metadata) {
 
   // Form watcher 
   watch(form, () => {
-    console.log("BOUT TO UPDATE", metadata.value);
-
     updateBM()
   }, { deep: true })
 

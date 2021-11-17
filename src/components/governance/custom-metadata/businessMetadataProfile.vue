@@ -213,8 +213,6 @@
             })
 
             watch(props.selectedBm, (newValue) => {
-                console.log('JBJBD')
-
                 if (newValue)
                     localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
             })
@@ -223,7 +221,6 @@
             const cleanLocalBm = computed(() => {
                 const tempBM = JSON.parse(JSON.stringify(localBm.value))
                 tempBM.attributeDefs.forEach((x, index) => {
-                    // console.log(typeof x.options.applicableEntityTypes)
                     if (typeof x.options.applicableEntityTypes === 'string') {
                         tempBM.attributeDefs[index].options.applicableEntityTypes =
                             JSON.parse(x.options.applicableEntityTypes)

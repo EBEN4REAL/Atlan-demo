@@ -19,6 +19,28 @@
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
 
+        <div
+            class="flex flex-col"
+            v-if="
+                isGTC(selectedAsset) || selectedAsset.typeName === 'Connection'
+            "
+        >
+            <Shortcut shortcutKey="n" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Name</span>
+                </div>
+            </Shortcut>
+
+            <Name
+                v-model="localName"
+                class="mx-4"
+                @change="handleChangeName"
+                ref="nameRef"
+            />
+        </div>
+
         <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
 
         <div class="px-5" v-if="webURL(selectedAsset)">
@@ -142,22 +164,6 @@
                     >
                 </div>
             </div>
-        </div>
-        <div class="flex flex-col" v-if="isGTC(selectedAsset)">
-            <Shortcut shortcutKey="n" action="set description" placement="left">
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-                >
-                    <span> Name</span>
-                </div>
-            </Shortcut>
-
-            <Name
-                v-model="localName"
-                class="mx-4"
-                @change="handleChangeName"
-                ref="nameRef"
-            />
         </div>
 
         <div class="flex flex-col">

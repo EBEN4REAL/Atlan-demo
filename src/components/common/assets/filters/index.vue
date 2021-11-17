@@ -36,6 +36,8 @@
                 >
                     <Panel
                         :item="item"
+                        :componentParentKey="`${item.id}_${componentState}`"
+                        :activeKey="localActiveKeyValue"
                         v-model="localValue"
                         @change="handleChange"
                     ></Panel>

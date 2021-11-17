@@ -65,7 +65,6 @@
                     :projections="checkedList"
                     :asset-type="item.displayText"
                     :asset-id="assetId"
-                    page="discovery"
                 />
             </a-collapse-panel>
         </a-collapse>

@@ -70,6 +70,10 @@
                 emit('change')
             }
 
+            const handleReset = (val) => {
+                localValue.value = val
+            }
+
             const { start } = useTimeoutFn(() => {
                 nameRef.value?.focus()
             }, 100)
@@ -96,17 +100,6 @@
                 handleEdit()
             })
 
-            // const { d /* keys you want to monitor */ } = useMagicKeys()
-
-            // watch(d, (v) => {
-            //     if (v) {
-            //         console.log('Description')
-            //         if (!isEdit.value) {
-            //             handleEdit()
-            //         }
-            //     }
-            // })
-
             return {
                 localValue,
                 handleEdit,
@@ -115,6 +108,7 @@
                 isEdit,
                 start,
                 handleBlur,
+                handleReset,
             }
         },
     })

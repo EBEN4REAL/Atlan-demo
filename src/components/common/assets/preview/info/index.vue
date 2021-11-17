@@ -150,7 +150,12 @@
                 </div>
             </Shortcut>
 
-            <Name v-model="localName" class="mx-4" />
+            <Name
+                v-model="localName"
+                class="mx-4"
+                @change="handleChangeName"
+                ref="nameRef"
+            />
         </div>
 
         <div class="flex flex-col">
@@ -162,7 +167,12 @@
                 </div>
             </Shortcut>
 
-            <Description v-model="localDescription" class="mx-4" />
+            <Description
+                ref="descriptionRef"
+                v-model="localDescription"
+                class="mx-4"
+                @change="handleChangeDescription"
+            />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
             <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
@@ -314,7 +324,6 @@
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
-
             const isConfetti = ref(false)
 
             const {
@@ -362,7 +371,7 @@
                 },
             })
 
-            const guid = ref(null)
+            const guid = ref()
 
             const {
                 asset,
@@ -393,10 +402,8 @@
 
             const { mutate, isLoading, isReady, error } = updateAsset(body)
 
-            const localDescription = ref(description(selectedAsset?.value))
-
             const localName = ref(title(selectedAsset?.value))
-
+            const localDescription = ref(description(selectedAsset?.value))
             const localCertificate = ref({
                 certificateStatus: certificateStatus(selectedAsset.value),
                 certificateUpdatedAt: certificateUpdatedAt(selectedAsset.value),
@@ -405,75 +412,44 @@
                     selectedAsset.value
                 ),
             })
-
-            const currentMessage = ref('')
-
-            watch(localDescription, (newDescription, prevDescription) => {
-                if (newDescription !== prevDescription) {
-                    entity.value.attributes.userDescription =
-                        localDescription.value
-                    body.value.entities = entity.value
-                    currentMessage.value = 'Description has been updated'
-                    mutate()
-                }
-            })
-
-            watch(localName, (newName, prevName) => {
-                if (newName !== prevName) {
-                    entity.value.attributes.name = localName.value
-                    body.value.entities = entity.value
-                    currentMessage.value = 'Name has been updated'
-                    mutate()
-                }
-            })
-
-            whenever(error, () => {
-                console.log('error')
-                if (error) {
-                    // console.log(localDescription.value)
-                    // console.log(description(selectedAsset?.value))
-
-                    console.log(localName.value)
-                    console.log(title(selectedAsset?.value))
-
-                    // localDescription.value = description(selectedAsset?.value)
-                    localName.value = title(selectedAsset?.value)
-                    message.error('Something went wrong. Please try again')
-                } else {
-                    message.success(currentMessage.value)
-                    guid.value = selectedAsset.value.guid
-                    rainConfettis()
-                    mutateUpdate()
-                }
-            })
-
-            whenever(isReady, () => {
-                if (!error) {
-                    message.success(currentMessage.value)
-                    guid.value = selectedAsset.value.guid
-                    rainConfettis()
-                    mutateUpdate()
-                }
-            })
-
-            const updateList = inject('updateList')
-            whenever(isUpdateReady, () => {
-                if (
-                    asset.value.typeName !== 'AtlasGlossary' &&
-                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
-                    asset.value.typeName !== 'AtlasGlossaryTerm'
-                ) {
-                    updateList(asset.value)
-                }
-            })
-
             const localOwners = ref({
                 ownerUsers: ownerUsers(selectedAsset.value),
                 ownerGroups: ownerGroups(selectedAsset.value),
             })
 
-            watch(localOwners.value.ownerUsers, (newVal, prevVal) => {})
+            const localClassifications = ref(
+                classifications(selectedAsset.value)
+            )
 
+            const currentMessage = ref('')
+
+            const nameRef = ref(null)
+            const descriptionRef = ref(null)
+
+            // Name Change
+            const handleChangeName = () => {
+                if (title(selectedAsset?.value) !== localName.value) {
+                    entity.value.attributes.name = localName.value
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Name has been updated'
+                    mutate()
+                }
+            }
+
+            // Description Change
+            const handleChangeDescription = () => {
+                if (
+                    description(selectedAsset?.value) !== localDescription.value
+                ) {
+                    entity.value.attributes.userDescription =
+                        localDescription.value
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Description has been updated'
+                    mutate()
+                }
+            }
+
+            // Owners Change
             const handleOwnersChange = () => {
                 let isChanged = false
                 if (
@@ -496,14 +472,42 @@
                 if (isChanged) {
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Owners has been updated'
-
                     mutate()
                 }
             }
 
-            const localClassifications = ref(
-                classifications(selectedAsset.value)
-            )
+            // error handling
+            whenever(error, () => {
+                if (title(selectedAsset?.value) !== localName.value) {
+                    localName.value = title(selectedAsset?.value)
+                    nameRef.value?.handleReset(localName.value)
+                }
+                if (
+                    description(selectedAsset?.value) !== localDescription.value
+                ) {
+                    localDescription.value = description(selectedAsset?.value)
+                    descriptionRef.value?.handleReset(localDescription.value)
+                }
+                message.error('Something went wrong. Please try again')
+            })
+
+            whenever(isReady, () => {
+                message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                rainConfettis()
+                mutateUpdate()
+            })
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                }
+            })
 
             const classificationBody = ref({
                 guidHeaderMap: {
@@ -667,6 +671,10 @@
                 isConfetti,
                 isGTC,
                 localName,
+                handleChangeName,
+                handleChangeDescription,
+                nameRef,
+                descriptionRef,
             }
         },
     })

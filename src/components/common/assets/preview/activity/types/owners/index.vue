@@ -12,7 +12,11 @@
                 <Pill
                     v-if="user.item.name !== ''"
                     :label="user.item.name"
-                    @click.stop="() => handleClickUser(user.item.name)"
+                    @click.stop="
+                        user.item.type === 'user'
+                            ? handleClickUser(user.item.name)
+                            : handleClickGroup(user.item.name)
+                    "
                     ><template #prefix>
                         <avatar
                             v-if="user.item.name && user.item.type === 'user'"
@@ -48,6 +52,8 @@
     import { defineComponent, PropType } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+
     import PillGroup from '../activityPillGroup/index.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { map } from '~/services/service/avatar/key'
@@ -71,13 +77,21 @@
         },
         setup() {
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const { showGroupPreview, setGroupUniqueAttribute } =
+                useGroupPreview()
+
             const handleClickUser = (username: string) => {
                 setUserUniqueAttribute(username, 'username')
                 showUserPreview({ allowed: ['about'] })
             }
 
+            const handleClickGroup = (groupAlias: string) => {
+                setGroupUniqueAttribute(groupAlias, 'groupAlias')
+                showGroupPreview({ allowed: ['about'] })
+            }
             return {
                 handleClickUser,
+                handleClickGroup,
                 map,
             }
         },

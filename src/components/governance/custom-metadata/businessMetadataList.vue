@@ -24,7 +24,7 @@
     </ExplorerList>
 </template>
 <script lang="ts">
-    import { defineComponent, toRefs, computed } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
     import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
 
@@ -32,7 +32,7 @@
         components: { ExplorerList, CustomMetadataAvatar },
         props: {
             finalList: { type: Object, required: true },
-            selectedBm: { type: Object, required: true },
+            selectedBm: { type: [Object, null], required: true },
         },
         emits: ['selectBm'],
         setup(props, context) {
@@ -44,12 +44,8 @@
                 context.emit('selectBm', item)
             }
 
-            const imageUrl = (bm) =>
-                `${window.location.origin}/api/service${bm?.options?.imagePath}`
-
             return {
                 selectBm,
-                imageUrl,
             }
         },
     })

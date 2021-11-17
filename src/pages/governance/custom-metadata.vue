@@ -52,7 +52,7 @@
             v-if="selectedBm"
             :key="selectedBm && selectedBm.guid"
             :selected-bm="selectedBm"
-            @selectBm="handleSelectBm"
+            @select-bm="handleSelectBm"
             @update="onUpdate"
         />
     </ExplorerLayout>

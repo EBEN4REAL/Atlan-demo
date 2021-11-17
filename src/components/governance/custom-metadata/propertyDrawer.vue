@@ -105,7 +105,7 @@
                                     <a-divider style="margin: 4px 0" />
 
                                     <p
-                                        class="mt-3 text-center cursor-pointer text-primary"
+                                        class="mt-3 text-center cursor-pointer  text-primary"
                                         @click="
                                             () => {
                                                 form.options.enumType = null
@@ -163,7 +163,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center w-60"
+                                                class="flex flex-col items-center  w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -171,18 +171,18 @@
                                                 available.
                                             </div>
                                         </template>
-
-                                        <fa
-                                            icon="fal info-circle"
-                                            class="ml-2 text-xs"
-                                        ></fa>
+                                        <AtlanIcon
+                                            icon="Info"
+                                            class="h-3 ml-2"
+                                        />
                                     </a-popover>
                                 </template>
                                 <div class="w-100">
                                     <div ref="typeTreeSelect">
                                         <a-tree-select
                                             :value="
-                                                form.options.applicableEntityTypes
+                                                form.options
+                                                    .applicableEntityTypes
                                             "
                                             no-results-text="No entities found"
                                             style="width: 100%"
@@ -366,14 +366,15 @@
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
             const finalApplicableTypeNamesOptions = computed(() => {
-                const options = JSON.parse(JSON.stringify(applicableEntityTypes))
+                const options = JSON.parse(
+                    JSON.stringify(applicableEntityTypes)
+                )
                 return options
             })
 
             const rules = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES))
             )
-
 
             // methods
             const open = (theProperty, makeEdit, index) => {
@@ -423,8 +424,11 @@
                 // transform the CET in the other attributeDefs as they would be object
                 tempBM.attributeDefs.forEach((x, index) => {
                     if (typeof x.options.applicableEntityTypes === 'object') {
-                        tempBM.attributeDefs[index].options.applicableEntityTypes =
-                            JSON.stringify(x.options.applicableEntityTypes)
+                        tempBM.attributeDefs[
+                            index
+                        ].options.applicableEntityTypes = JSON.stringify(
+                            x.options.applicableEntityTypes
+                        )
                     }
                 })
 

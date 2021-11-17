@@ -1,7 +1,7 @@
 import { Ref, ref, watch } from 'vue'
 import { Entity } from '~/services/meta/entity/index'
 
-import { BasicSearchAttributes, AssetAttributes, SavedQueryAttributes, SQLAttributes, AssetRelationAttributes } from '~/constant/projection'
+import { BasicSearchAttributes, AssetAttributes, SavedQueryAttributes, SQLAttributes } from '~/constant/projection'
 
 function constructRequest(guid: string, assetType: string) {
     const finalParams = new URLSearchParams()
@@ -34,6 +34,8 @@ function constructRequest(guid: string, assetType: string) {
 
 function fetchRelationAssets(id: string, assetType: string) {
 
+    const list = ref([])
+
     const params = constructRequest(id, assetType)
 
     const { data,
@@ -46,8 +48,16 @@ function fetchRelationAssets(id: string, assetType: string) {
         if (newId !== oldId) mutate()
     })
 
+    watch(data, () => {
+        if (data.value?.entities) {
+            list.value = data.value?.entities
+        } else {
+            list.value = []
+        }
+    })
+
     return {
-        list: data,
+        list,
         isReady,
         error,
         isLoading,

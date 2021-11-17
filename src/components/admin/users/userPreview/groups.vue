@@ -24,12 +24,12 @@
             </div>
         </div>
         <div v-if="showUserGroups" v-auth="map.LIST_GROUPS">
-            <div class="flex flex-row justify-between">
+            <div v-if="groupList?.length" class="flex flex-row justify-between">
                 <div class="w-full">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search ${
-                            selectedUser.group_count ?? 0
+                            groupList?.length ?? 0
                         }  groups`"
                         class="mr-1"
                         size="minimal"
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div
-                v-if="!selectedUser.group_count"
+                v-if="!groupList?.length"
                 class="flex flex-col items-center justify-center"
             >
                 <div
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <div
-                v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+                v-if="error"
                 class="flex flex-col items-center justify-center h-full mt-3 bg-white "
             >
                 <ErrorView>
@@ -109,13 +109,7 @@
                         </div>
                     </div>
                 </div>
-                <div
-                    v-if="
-                        [STATES.PENDING].includes(state) ||
-                        [STATES.VALIDATING].includes(state)
-                    "
-                    class="flex justify-center mt-3"
-                >
+                <div v-if="isLoading" class="flex justify-center mt-3">
                     <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
@@ -166,7 +160,7 @@
         props: {
             selectedUser: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
         setup(props, context) {
@@ -190,8 +184,8 @@
                 totalGroupCount,
                 filteredGroupCount,
                 getUserGroupList,
-                state,
-                STATES,
+                error,
+                isLoading,
             } = getUserGroups(groupListAPIParams)
             const handleSearch = useDebounceFn((input: any) => {
                 groupListAPIParams.params.filter = searchText.value
@@ -228,20 +222,26 @@
                     const requestPayload = ref({
                         groups: groupIds,
                     })
-                    const { data, isReady, error, isLoading } = Users.AddGroups(
-                        props.selectedUser.id,
-                        requestPayload
-                    )
+                    const {
+                        data,
+                        isReady,
+                        error: addError,
+                        isLoading: addLoading,
+                    } = Users.AddGroups(props.selectedUser.id, requestPayload)
                     watch(
-                        [data, isReady, error, isLoading],
+                        [data, isReady, addError, addLoading],
                         () => {
-                            addToGroupLoading.value = isLoading.value
-                            if (isReady && !error.value && !isLoading.value) {
+                            addToGroupLoading.value = addLoading.value
+                            if (
+                                isReady &&
+                                !addError.value &&
+                                !addLoading.value
+                            ) {
                                 groupListAPIParams.params.offset = 0
                                 getUserGroupList()
                                 message.success('User added to groups')
                                 showUserGroups.value = true
-                            } else if (error && error.value) {
+                            } else if (addError && addError.value) {
                                 message.error(
                                     'Unable to add user to groups, please try again.'
                                 )
@@ -305,8 +305,8 @@
                 getUserGroupList,
                 searchText,
                 showLoadMore,
-                state,
-                STATES,
+                error,
+                isLoading,
                 addToGroupLoading,
                 removeFromGroupLoading,
                 showAddToGroupModal,

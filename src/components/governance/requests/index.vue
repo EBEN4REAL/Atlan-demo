@@ -6,9 +6,6 @@
                 class="max-w-xl mb-6"
                 size="default"
             >
-                <!-- <template #filter>
-                    <RequestFilters v-model:filters="filters" />
-                </template> -->
             </SearchAndFilter>
             <RequestTypeTabs v-model:tab="filters.request_type" />
         </template>
@@ -35,7 +32,26 @@
                 </template>
             </VirtualList>
         </template>
-        <div v-else>Empty state</div>
+        <div v-else class="flex items-center justify-center h-full">
+            <div
+                v-if="searchTerm?.length > 0"
+                class="flex flex-col items-center justify-center"
+            >
+                <atlan-icon icon="NoRequestFound" class="h-36" />
+                <span class="mt-4 text-center text-gray-500 w-72">
+                    Oops… we didn’t find any requests that match this search
+                </span>
+                <a-button
+                    @click="searchTerm = ''"
+                    class="flex items-center justify-center w-40 py-2 mt-4"
+                    >Clear search</a-button
+                >
+            </div>
+            <div v-else class="flex flex-col">
+                <atlan-icon icon="NoLinkedAssets" class="h-40" />
+                <span class="mt-4 text-xl">No requests available</span>
+            </div>
+        </div>
     </DefaultLayout>
     <!-- <NoAcces v-else /> -->
 </template>

@@ -223,6 +223,8 @@ import Number from '~/assets/images/icons/number.svg'
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
+import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
+import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
 
 export default {
     Times,
@@ -446,4 +448,6 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    NoRequestFound,
+    NoLinkedAssets,
 }

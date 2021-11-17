@@ -240,6 +240,8 @@ import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
 import Athena from '~/assets/images/source/svg/Athena.svg'
 import Tableau from '~/assets/images/source/svg/Tableau.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Schema2Active from '~/assets/images/icons/schema2Active.svg'
+import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 
 export default {
     CreateGroups,
@@ -478,4 +480,6 @@ export default {
     APIKey,
     Camera,
     CustomSaml,
+    Schema2Active,
+    QueriesActive
 }

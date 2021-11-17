@@ -182,6 +182,9 @@ export default function useAssetInfo() {
         ) {
             let tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+        } else if(assetType(asset) === 'Query') {
+            // console.log('assetType: ', asset.guid)
+            queryPath = `/insights?id=${asset.guid}`
         } else {
             queryPath = `/insights`
         }

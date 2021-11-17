@@ -15,8 +15,8 @@
                     {{ item.name }}
                 </p>
                 <span class="flex-none text-xs text-gray-500 flex-inital">
-                    {{ item.elementDefs.length || 0 }}
-                    {{ item.elementDefs.length > 1 ? 'elements' : 'element' }}
+                    {{ item.elementDefs?.length || 0 }}
+                    {{ item.elementDefs?.length > 1 ? 'elements' : 'element' }}
                 </span>
             </div>
         </template>

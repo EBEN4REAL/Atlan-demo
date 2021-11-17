@@ -5,12 +5,6 @@
     >
         <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin"></AtlanIcon>
     </div>
-    <div
-        v-if="!isLoading && error"
-        class="flex items-center justify-center flex-grow"
-    >
-        <ErrorView></ErrorView>
-    </div>
     <div v-else-if="treeData.length === 0 && !isLoading" class="flex-grow">
         <EmptyView
             empty-screen="EmptyDiscover"
@@ -20,7 +14,6 @@
         ></EmptyView>
     </div>
     <a-tree
-        v-else
         class="pl-0"
         :tree-data="treeData"
         :draggable="true"

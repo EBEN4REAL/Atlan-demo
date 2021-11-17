@@ -2,28 +2,27 @@
     <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
         <template #header>
             <SearchAndFilter
-                v-model="searchTerm"
-                class="max-w-xl mb-4"
+                v-model:value="searchTerm"
+                class="max-w-xl mb-6"
                 size="default"
             >
-                <!-- <template #filter>
-                    <RequestFilters v-model:filters="filters" />
-                </template> -->
             </SearchAndFilter>
-            <!-- <RequestTypeTabs v-model:tab="filters.request_type" /> -->
+            <RequestTypeTabs v-model:tab="filters.request_type" />
         </template>
 
         <div v-if="listLoading" class="flex items-center justify-center h-64">
             <a-spin size="large" />
         </div>
         <template v-else-if="requestList.length && !listLoading">
-            <!-- <RequestModal
-                :request="requestList[selectedIndex]"
+            <RequestModal
+                v-if="requestList[selectedIndex]"
                 v-model:visible="isDetailsVisible"
+                :request="requestList[selectedIndex]"
                 @up="traverseUp"
                 @down="traverseDown"
-            ></RequestModal> -->
-            <VirtualList :data="requestList" data-key="id">
+                @action="handleRequestAction($event, index)"
+            ></RequestModal>
+            <VirtualList :data="requestList" data-key="id" class="mt-4">
                 <template #default="{ item, index }">
                     <RequestListItem
                         :request="item"
@@ -35,28 +34,59 @@
                 </template>
             </VirtualList>
         </template>
-        <div v-else>Empty state</div>
+        <div v-else class="flex items-center justify-center h-full">
+            <div
+                v-if="searchTerm?.length > 0"
+                class="flex flex-col items-center justify-center"
+            >
+                <atlan-icon icon="NoRequestFound" class="h-36" />
+                <span class="mt-4 text-center text-gray-500 w-72">
+                    Oops… we didn’t find any requests that match this search
+                </span>
+                <a-button
+                    @click="searchTerm = ''"
+                    class="flex items-center justify-center w-40 py-2 mt-4"
+                    >Clear search</a-button
+                >
+            </div>
+            <div v-else class="flex flex-col">
+                <atlan-icon icon="NoLinkedAssets" class="h-40" />
+                <span class="mt-4 text-xl">No requests available</span>
+            </div>
+        </div>
     </DefaultLayout>
     <!-- <NoAcces v-else /> -->
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch, Ref } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        watch,
+        Ref,
+        reactive,
+        provide,
+    } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { useRequestList } from '~/composables/requests/useRequests'
 
     import DefaultLayout from '@/admin/layout.vue'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-    // import RequestTypeTabs from './requestTypeTabs.vue'
+    import RequestTypeTabs from './requestTypeTabs.vue'
     import RequestListItem from '~/components/governance/requests/requestListItem.vue'
     // import RequestFilters from './filters/requestFilters.vue'
-    // import RequestModal from './modal/requestDetailsBase.vue'
+    import RequestModal from './modal/requestDetailsBase.vue'
     // import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
     import { message } from 'ant-design-vue'
     // import { useAccessStore } from '~/services/access/accessStore'
+    import {
+        approveRequest,
+        declineRequest,
+    } from '~/composables/requests/useRequests'
 
     export default defineComponent({
         name: 'RequestList',
@@ -65,12 +95,12 @@
             RequestListItem,
             SearchAndFilter,
             // RequestFilters,
-            // RequestModal,
-            // RequestTypeTabs,
+            RequestModal,
+            RequestTypeTabs,
             DefaultLayout,
             // NoAcces
         },
-        setup() {
+        setup(props, { emit }) {
             // const accessStore = useAccessStore();
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
@@ -84,20 +114,18 @@
                 status: 'active' as RequestStatus,
                 request_type: [],
             })
-
+            const requestList = ref([])
             const {
                 response,
                 isLoading: listLoading,
                 error: listError,
             } = useRequestList(searchTerm, filters)
-
-            const requestList = computed(
-                () =>
+            watch(response, () => {
+                requestList.value =
                     response.value?.records?.filter(
                         (req) => req.status === filters.value.status
                     ) || []
-            )
-
+            })
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support
                 // return selectedList.value.has(guid)
@@ -105,8 +133,8 @@
             }
 
             /***********************************************************************************
-                /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
-                ***********************************************************************************/
+                    /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
+                    ***********************************************************************************/
 
             function selectRequest(guid: string, index: number) {
                 /** Check if the currently pressed key is not this array,
@@ -126,7 +154,6 @@
 
                 isDetailsVisible.value = true
             }
-
             const traverseUp = () => {
                 if (selectedIndex.value > 0) {
                     selectedIndex.value--
@@ -149,24 +176,13 @@
             whenever(ArrowUp, traverseUp)
             whenever(ArrowDown, traverseDown)
 
-            whenever(x, () => {
-                if (
-                    selectedIndex.value > -1 &&
-                    selectedIndex.value < requestList.value.length - 1
-                ) {
-                    const guid = requestList.value[selectedIndex.value].id
-                    if (selectedList.value.has(guid))
-                        selectedList.value.delete(guid)
-                    else selectedList.value.add(guid)
-                }
-            })
-
             whenever(
                 Space,
                 () => (isDetailsVisible.value = !isDetailsVisible.value)
             )
 
             function handleRequestAction(req: RequestAttributes, idx: number) {
+                isDetailsVisible.value = false
                 if (filters.value.status.includes(req.status)) {
                     requestList.value[idx] = req
                 } else {
@@ -186,7 +202,6 @@
                 },
                 { deep: true }
             )
-
             return {
                 requestList,
                 isSelected,

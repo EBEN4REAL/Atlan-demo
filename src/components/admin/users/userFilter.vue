@@ -1,36 +1,26 @@
 <template>
-    <a-dropdown
-        trigger="click"
-        :on-visible-change="handleVisibleChange"
-        :visible="filterOpened"
-    >
+    <a-dropdown v-model:visible="filterOpened">
         <template #overlay>
             <div class="bg-gray-100 rounded shadow-xl" style="width: 240px">
                 <a-collapse
                     v-model="activeCollapse"
-                    default-active-key="1"
+                    s
                     :bordered="false"
                     class=""
                 >
                     <a-collapse-panel key="1" header="USER STATUS">
-                        <div class="">
-                            <a-checkbox-group
-                                v-model:value="statusFilter"
-                                class="grid gap-y-2"
-                                :options="userStatusOptions"
-                                @change="handleStatusFilterChange"
-                            ></a-checkbox-group>
-                        </div>
+                        <a-checkbox-group
+                            v-model:value="statusFilter"
+                            class="grid gap-y-2"
+                            :options="userStatusOptions"
+                            @change="handleStatusFilterChange"
+                        ></a-checkbox-group>
                     </a-collapse-panel>
                 </a-collapse>
             </div>
         </template>
-        <a-button
-            size="default"
-            class="px-2 text-gray-500 rounded-md"
-            @click="filterOpened = !filterOpened"
-        >
-            <AtlanIcon icon="Filter" />
+        <a-button size="default" class="px-2 text-gray-500 rounded-md">
+            <AtlanIcon icon="FilterFunnel" />
             <div
                 v-if="statusFilter?.length"
                 class="absolute w-2 h-2 bg-blue-500 rounded -top-1 -right-1"
@@ -54,27 +44,24 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const activeCollapse = ref<Array<String>>(['1'])
-            const filterOpened = ref<Boolean>(false)
             const statusFilter = ref<Array<any>>(props.modelValue)
+            const filterOpened = ref(false)
             const handleStatusFilterChange = () => {
                 // to ensure that I can do checks for null when updating filter, can use length check
                 const valueToUpdate =
-                    statusFilter.value.length === 0 ? null : statusFilter.value
+                    statusFilter.value.length === 0
+                        ? null
+                        : statusFilter.value.map((v) => JSON.parse(v))
                 emit('update:modelValue', valueToUpdate)
                 emit('change', valueToUpdate)
-            }
-
-            const handleVisibleChange = (flag) => {
-                filterOpened.value = flag
             }
 
             return {
                 userStatusOptions,
                 statusFilter,
                 handleStatusFilterChange,
-                filterOpened,
-                handleVisibleChange,
                 activeCollapse,
+                filterOpened,
             }
         },
     })

@@ -1,20 +1,23 @@
 <template>
-    <!-- <div @click="showModal"></div>
+    <div @click="showModal">
         <slot name="trigger" @click="showModal" />
-    </div> -->
+    </div>
 
-    <!-- <a-modal
+    <a-modal
         v-model:visible="visible"
         :class="$style.input"
-        width="50%"
-        :closable="true"
+        width="25%"
+        :closable="false"
         okText="Save"
         cancelText=""
         :footer="null"
     >
         <div class="p-3">
-            <p class="font-bold uppercase text-md">Are you sure you want to delete the {{typeNameTitle}} and all its contents? </p>
-    
+            <p class="mb-1 font-bold text-md">Delete {{ typeNameTitle }}</p>
+            <p class="text-md">
+                Are you sure you want to delete the {{ typeNameTitle }} and all
+                its contents?
+            </p>
         </div>
 
         <div class="flex justify-end p-3 border-t border-gray-200">
@@ -22,7 +25,7 @@
                 >Delete</a-button
             >
         </div>
-    </a-modal> -->
+    </a-modal>
 </template>
 
 <script lang="ts">
@@ -69,50 +72,50 @@
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
-            // const { entityType, guid } = toRefs(props)
-            // const visible = ref(false)
-            // const entity = reactive({
-            //     attributes: {
-            //         userDescription: '',
-            //         name: '',
-            //         qualifiedName: '',
-            //     },
-            //     typeName: entityType.value,
-            // })
-            // const showModal = async () => {
-            //     visible.value = true
-            // }
-            // const body = ref({
-            //     entities: [],
-            // })
-            // const {
-            //     mutate: mutateAsset,
-            //     isLoading,
-            //     isReady,
-            //     guidUpdatedMaps,
-            //     error,
-            // } = updateAsset(body)
-            // const typeNameTitle = computed(() => {
-            //     switch (entityType.value) {
-            //         case 'AtlasGlossary':
-            //             return 'Glossary'
-            //         case 'AtlasGlossaryCategory':
-            //             return 'Category'
-            //         case 'AtlasGlossaryTerm':
-            //             return 'Term'
-            //         default:
-            //             return 'Glossary'
-            //     }
-            // })
-            // const handleSave = () => {
-            //     if (typeNameTitle.value === 'Glossary') {
-            //         entity.attributes.qualifiedName = generateUUID()
-            //     }
-            //     body.value = {
-            //         entities: [entity],
-            //     }
-            //     mutateAsset()
-            // }
+            const { entityType, guid } = toRefs(props)
+            const visible = ref(false)
+            const entity = reactive({
+                attributes: {
+                    userDescription: '',
+                    name: '',
+                    qualifiedName: '',
+                },
+                typeName: entityType.value,
+            })
+            const showModal = async () => {
+                visible.value = true
+            }
+            const body = ref({
+                entities: [],
+            })
+            const {
+                mutate: mutateAsset,
+                isLoading,
+                isReady,
+                guidUpdatedMaps,
+                error,
+            } = updateAsset(body)
+            const typeNameTitle = computed(() => {
+                switch (entityType.value) {
+                    case 'AtlasGlossary':
+                        return 'Glossary'
+                    case 'AtlasGlossaryCategory':
+                        return 'Category'
+                    case 'AtlasGlossaryTerm':
+                        return 'Term'
+                    default:
+                        return 'Glossary'
+                }
+            })
+            const handleSave = () => {
+                if (typeNameTitle.value === 'Glossary') {
+                    entity.attributes.qualifiedName = generateUUID()
+                }
+                body.value = {
+                    entities: [entity],
+                }
+                mutateAsset()
+            }
             // whenever(isReady, () => {
             //     if (error.value) {
             //         console.error(error.value)
@@ -131,18 +134,18 @@
             //         emit('delete', asset.value)
             //     }
             // })
-            // return {
-            //     visible,
-            //     showModal,
-            //     entityType,
-            //     typeNameTitle,
-            //     handleSave,
-            //     guid,
-            //     entity,
-            //     isLoading,
-            //     isReady,
-            //     error,
-            // }
+            return {
+                visible,
+                showModal,
+                entityType,
+                typeNameTitle,
+                handleSave,
+                guid,
+                entity,
+                isLoading,
+                isReady,
+                error,
+            }
         },
     })
 </script>

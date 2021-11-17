@@ -5,6 +5,7 @@
             overlayClassName="certificatePopover"
             @visibleChange="handleVisibleChange"
             v-model:visible="isEdit"
+            :trigger="['click']"
         >
             <template #content>
                 <CertificateFacet
@@ -117,10 +118,18 @@
                     activeElement.value?.tagName !== 'INPUT' &&
                     activeElement.value?.tagName !== 'TEXTAREA'
             )
-            const { c, Escape } = useMagicKeys()
+            const { c, Escape, v } = useMagicKeys()
             whenever(and(c, notUsingInput), () => {
                 if (!isEdit.value) {
                     isEdit.value = true
+                }
+            })
+
+            whenever(and(v, notUsingInput), () => {
+                console.log('dd')
+                if (isEdit.value) {
+                    localValue.value.certificateStatus = 'VERIFIED'
+                    handleChange()
                 }
             })
 

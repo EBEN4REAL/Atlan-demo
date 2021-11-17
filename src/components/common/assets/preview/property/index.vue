@@ -83,7 +83,7 @@
 
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Qualified Name</span>
-            <span class="text-gray-700">{{
+            <span class="text-gray-700 break-all">{{
                 qualifiedName(selectedAsset)
             }}</span>
         </div>

@@ -89,8 +89,8 @@ const useGlossaryTree = ({
         )
 
     const onLoadData = async (treeNode: any) => {
-        treeNode.dataRef.isOpen = true
-
+        treeNode.dataRef.isLoading = true
+        treeNode.dataRef.isError = null
         if (treeNode.typeName === 'AtlasGlossary') {
             facets.value = {
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
@@ -98,26 +98,40 @@ const useGlossaryTree = ({
                 isRootTerm: true,
                 isRootCategory: true,
             }
-
             generateBody()
             try {
                 await mutate()
-                if (!treeNode.dataRef.children) {
-                    treeNode.dataRef.children = []
-                }
 
-                let map = data.value?.entities.map((i) => ({
-                    ...i,
-                    id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                    key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                    isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                }))
-                if (map) {
-                    treeNode.dataRef.children.push(...map)
+                if (error) {
                     loadedKeys.value.push(treeNode.dataRef.key)
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = error
+                } else {
+                    if (!treeNode.dataRef.children) {
+                        treeNode.dataRef.children = []
+                    }
+                    let map = data.value?.entities?.map((i) => ({
+                        ...i,
+                        id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                        isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                    }))
+                    if (map) {
+                        treeNode.dataRef.children.push(...map)
+                        loadedKeys.value.push(treeNode.dataRef.key)
+                    } else {
+                        loadedKeys.value.push(treeNode.dataRef.key)
+                    }
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = null
                 }
             } catch (e) {
-                console.log(e)
+                console.log('dd')
+                loadedKeys.value.push(treeNode.dataRef.key)
+                treeNode.dataRef.isLoading = false
+                treeNode.dataRef.isError = e
+                return
+                // return
             }
         } else if (treeNode.typeName === 'AtlasGlossaryCategory') {
             facets.value = {
@@ -131,27 +145,39 @@ const useGlossaryTree = ({
             generateBody()
             try {
                 await mutate()
-                if (!treeNode.dataRef.children) {
-                    treeNode.dataRef.children = []
-                }
-
-                if (data.value?.entities) {
-                    let map = data.value?.entities?.map((i) => ({
-                        ...i,
-                        id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                        isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                    }))
-                    if (map) {
-                        treeNode.dataRef.children.push(...map)
-                        loadedKeys.value.push(treeNode.dataRef.key)
-                    }
+                if (error) {
+                    loadedKeys.value.push(treeNode.dataRef.key)
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = error
                 } else {
-                    treeNode.dataRef.children = null
-                    treeNode.dataRef.isLeaf = true
+                    if (!treeNode.dataRef.children) {
+                        treeNode.dataRef.children = []
+                    }
+
+                    if (data.value?.entities) {
+                        let map = data.value?.entities?.map((i) => ({
+                            ...i,
+                            id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                            key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                            isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                        }))
+                        if (map) {
+                            treeNode.dataRef.children.push(...map)
+                            loadedKeys.value.push(treeNode.dataRef.key)
+                        } else {
+                            loadedKeys.value.push(treeNode.dataRef.key)
+                        }
+                    } else {
+                        treeNode.dataRef.children = null
+                        treeNode.dataRef.isLeaf = true
+                    }
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = null
                 }
             } catch (e) {
                 console.log(e)
+                treeNode.dataRef.isLoading = false
+                treeNode.dataRef.isError = e
             }
         }
     }

@@ -3,7 +3,6 @@ import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import { pluralizeString } from '~/utils/string'
-import swrvState from '~/utils/swrvState'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
@@ -83,6 +82,15 @@ export const getFormattedUser = (user: any) => {
     }
     return localUser
 }
+
+const defaultCacheOption = {
+  cacheOptions: {
+    shouldRetryOnError: false,
+    revalidateOnFocus: false,
+    cache: new LocalStorageCache(),
+    dedupingInterval: 1,
+  }
+}
 export const useUsers = (
     userListAPIParams: {
         limit: number
@@ -90,7 +98,8 @@ export const useUsers = (
         filter?: any
         sort?: string
     },
-    cacheKey?: string
+    cacheKey?: string,
+    cacheOption = defaultCacheOption
 ) => {
     const {
         data,
@@ -99,12 +108,7 @@ export const useUsers = (
         isValidating,
         error,
     } = Users.List(userListAPIParams, {
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
+        ...cacheOption,
         cacheKey: cacheKey ?? LIST_USERS,
     })
 
@@ -136,7 +140,6 @@ export const useUsers = (
         return []
     })
 
-    const { state, STATES } = swrvState(data, error, isValidating)
 
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
@@ -148,8 +151,6 @@ export const useUsers = (
         filteredUserCount,
         getUserList,
         isLoading,
-        state,
-        STATES,
         isValidating,
         error,
     }

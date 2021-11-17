@@ -56,6 +56,9 @@
             Lineage: defineAsyncComponent(
                 () => import('./tabs/lineage/index.vue')
             ),
+            Queries: defineAsyncComponent(
+                () => import('./tabs/queries/index.vue')
+            ),
         },
         props: {
             asset: {

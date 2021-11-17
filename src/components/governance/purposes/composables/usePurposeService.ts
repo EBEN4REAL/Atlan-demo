@@ -1,4 +1,4 @@
-import { IPersona } from '~/types/accessPolicies/personas'
+import { IPersona } from '~/types/accessPolicies/purposes'
 import { Persona } from '../../../../services/service/purpose'
 
 export default function usePurposeService() {

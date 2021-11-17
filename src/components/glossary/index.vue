@@ -125,8 +125,16 @@
             </AggregationTabs>
         </div>
 
+        <GlossaryTree
+            ref="glossaryTree"
+            v-if="!queryText"
+            :height="height"
+            @select="handlePreview"
+            :defaultGlossary="selectedGlossaryQf"
+        ></GlossaryTree>
+
         <div
-            v-if="isLoading"
+            v-if="isLoading && queryText"
             class="flex items-center justify-center flex-grow"
         >
             <AtlanIcon
@@ -135,9 +143,7 @@
             ></AtlanIcon>
         </div>
         <div
-            v-else-if="
-                list.length === 0 && baseTreeData.length == 0 && !isLoading
-            "
+            v-else-if="list.length == 0 && !isLoading && queryText"
             class="flex-grow"
         >
             <EmptyView
@@ -149,16 +155,8 @@
             ></EmptyView>
         </div>
 
-        <GlossaryTree
-            ref="glossaryTree"
-            v-else-if="!queryText"
-            :height="height"
-            @select="handlePreview"
-            :defaultGlossary="selectedGlossaryQf"
-        ></GlossaryTree>
-
         <AssetList
-            v-else
+            v-else-if="queryText"
             ref="assetlistRef"
             :list="list"
             :selectedAsset="selectedGlossary"
@@ -306,7 +304,6 @@
                 isLoadMore,
                 isValidating,
                 fetch,
-
                 quickChange,
                 handleSelectedGlossary,
                 selectedGlossary,
@@ -366,7 +363,6 @@
                 facets.value = {
                     typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
                 }
-                console.log(facets.value)
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }

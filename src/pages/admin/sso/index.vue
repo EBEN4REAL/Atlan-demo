@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col justify-center h-full bg-primary-light">
+    <div class="flex flex-col justify-center h-full">
         <component
             :is="
                 identityProviders.length && alias

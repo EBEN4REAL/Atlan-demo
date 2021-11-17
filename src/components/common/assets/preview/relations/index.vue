@@ -30,9 +30,9 @@
         >
             <template #expandIcon="{ isActive }">
                 <div class="">
-                    <fa
-                        icon="fas chevron-down"
-                        class="ml-1 transition-transform duration-300 transform"
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="ml-1 text-gray-500 transition-transform duration-300 transform  hover:text-primary"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -65,7 +65,6 @@
                     :projections="checkedList"
                     :asset-type="item.displayText"
                     :asset-id="assetId"
-                    page="discovery"
                 />
             </a-collapse-panel>
         </a-collapse>

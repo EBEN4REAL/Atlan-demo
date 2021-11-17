@@ -28,7 +28,7 @@
     </div>
     <div v-else v-auth="access.LIST_WORKFLOW" class="flex w-full h-full">
         <div
-            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300  facets"
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
         >
             <WorkflowFilters
                 :ref="
@@ -184,6 +184,7 @@
             const filters = ref([])
             const offset = ref(0)
             const sortOrder = ref('default')
+            const users = ref([])
             const facets = computed(() => AllFilters.value?.facetsFilters)
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
@@ -306,15 +307,21 @@
                     : {}
             )
 
-            const { userList, getUserList, state, STATES } = useUsers(params)
+            const handleGetUser = () => {
+              const { userList } = useUsers(params, null, {})
+              watch(userList, (newVal) => {
+                users.value = newVal
+              })
+            }
+
 
             watch(iDs, () => {
-                getUserList()
+                handleGetUser()
             })
 
             const creatorDetails = computed(() => {
-                if (userList.value?.length && selected.value) {
-                    return userList.value.filter(
+                if (users.value?.length && selected.value) {
+                    return users.value.filter(
                         (el: { id: any }) =>
                             el?.id ===
                             selected.value?.labels[

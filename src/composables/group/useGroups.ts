@@ -62,6 +62,7 @@ export default function useGroups(groupListAPIParams: {
         data,
         error,
         isValidating,
+        isLoading,
         mutate: getGroupList,
     } = Groups.List(groupListAPIParams, {
         cacheOptions: {
@@ -116,6 +117,7 @@ export default function useGroups(groupListAPIParams: {
         getGroupList,
         state,
         STATES,
+        isLoading, error,
         groupListConcatenated,
     }
 }

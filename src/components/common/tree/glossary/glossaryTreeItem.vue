@@ -14,7 +14,19 @@
             }}</span>
         </div>
 
+        <div v-if="item.dataRef.isLoading">
+            <a-spin
+                size="small"
+                icon="Loader"
+                class="w-auto h-4 mr-1 animate-spin"
+            ></a-spin>
+        </div>
+        <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
+            <AtlanIcon icon="Error"></AtlanIcon>
+        </div>
+
         <Actions
+            v-else
             :treeMode="true"
             :glossaryName="getAnchorName(item) || title(item)"
             :categoryName="title(item)"
@@ -36,9 +48,10 @@
         Term,
         Category,
     } from '~/types/glossary/glossary.interface'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
-        components: { Actions },
+        components: { Actions, AtlanIcon },
         props: {
             item: {
                 type: Object as PropType<Glossary | Term | Category>,

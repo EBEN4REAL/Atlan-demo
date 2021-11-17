@@ -14,9 +14,9 @@
                 v-model:value="localValue"
                 @change="handleChange"
             >
-                <template v-for="item in list" :key="item.name">
+                <template v-for="item in list" :key="item[selectGroupKey]">
                     <a-checkbox
-                        :value="item.name"
+                        :value="item[selectGroupKey]"
                         :class="$style.atlanReverse"
                         class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                     >
@@ -40,7 +40,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        toRefs,
+        watch,
+    } from 'vue'
 
     import { useVModels } from '@vueuse/core'
     import useFacetGroups from '~/composables/group/useFacetGroups'
@@ -59,6 +66,11 @@
                 required: false,
                 default: () => [],
             },
+            selectGroupKey: {
+                type: String,
+                required: false,
+                default: () => 'username', // can be id/username
+            },
             cacheKey: {
                 type: String,
                 required: false,
@@ -68,6 +80,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { selectGroupKey } = toRefs(props)
             const localValue = ref(modelValue.value)
 
             const { list, handleSearch, total, filterTotal } = useFacetGroups()
@@ -82,7 +95,18 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
-            return { list, handleChange, localValue, total, filterTotal }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
+            return {
+                list,
+                handleChange,
+                localValue,
+                total,
+                filterTotal,
+                selectGroupKey,
+            }
         },
     })
 </script>

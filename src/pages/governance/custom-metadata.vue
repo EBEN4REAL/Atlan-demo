@@ -7,11 +7,12 @@
         <a-empty :image="null">
             <template #description>
                 <p class="text-2xl font-bold">Error loading your request</p>
+                <p>Try reloading page</p>
             </template>
 
-            <a-button type="danger" @click="fetchBMonStore()"
+            <!-- <a-button type="danger" @click="fetchBMonStore()"
                 ><AtlanIcon icon="Add" class="inline" /> Try again
-            </a-button>
+            </a-button> -->
         </a-empty>
     </div>
     <ExplorerLayout
@@ -52,7 +53,7 @@
             v-if="selectedBm"
             :key="selectedBm && selectedBm.guid"
             :selected-bm="selectedBm"
-            @selectBm="handleSelectBm"
+            @select-bm="handleSelectBm"
             @update="onUpdate"
         />
     </ExplorerLayout>
@@ -117,7 +118,6 @@
             })
 
             const {
-                fetchBMonStore,
                 selectedBm,
                 searchText,
                 handleSelectBm,
@@ -129,10 +129,6 @@
                 finalBusinessMetadataList,
                 sortedSearchedBM,
             } = useBusinessMetadata()
-
-            onMounted(() => {
-                fetchBMonStore()
-            })
 
             return {
                 businessMetadataList,
@@ -146,7 +142,6 @@
                 onUpdate,
                 handleSelectBm,
                 sortedSearchedBM,
-                fetchBMonStore,
             }
         },
         data() {

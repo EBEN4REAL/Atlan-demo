@@ -14,11 +14,11 @@
                     :avatar-shape="'circle'"
                 />
 
-                <div class="ml-1 text-sm text-gray-700 capitalize">
+                <div class="self-center ml-1 text-sm text-gray-700 capitalize">
                     {{ name }}
                 </div>
             </div>
-            <div><AtlanIcon class="h-3 ml-1" icon="ChevronDown" /></div>
+            <div><AtlanIcon class="flex h-3 ml-1" icon="ChevronDown" /></div>
         </div>
         <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
               Hover me <a-icon type="down" />

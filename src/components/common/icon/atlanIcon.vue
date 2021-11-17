@@ -1,5 +1,9 @@
 <template>
-    <component :style="{ height: '1rem' }" class="w-auto" :is="svgIcon" />
+    <component
+        :style="{ height: '1rem' }"
+        class="inline w-auto"
+        :is="svgIcon"
+    />
 </template>
 
 <script lang="ts">

@@ -1,16 +1,20 @@
 <template>
     <div
-        class="flex items-center py-1 pl-1 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-primary group hover:border-primary"
+        class="flex items-center py-1 pl-1 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer "
+        :class="
+            enableHover ? ' hover:bg-primary group hover:border-primary' : ''
+        "
     >
         <UserAvatar
             :username="username"
             style-class="mr-1 border-none bg-primary-light "
         ></UserAvatar>
-        <div class="group-hover:text-white">
+        <div :class="enableHover ? ' group-hover:text-white' : ''">
             {{ username }}
         </div>
         <div
-            class="flex text-gray-500 group-hover:text-white"
+            :class="enableHover ? ' group-hover:text-white' : ''"
+            class="flex text-gray-500"
             @click="handleDelete"
             v-if="allowDelete"
         >
@@ -38,6 +42,11 @@
                     return false
                 },
             },
+            enableHover: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         components: {
             UserAvatar,
@@ -45,7 +54,7 @@
         },
         emits: ['delete'],
         setup(props, { emit }) {
-            const { username } = toRefs(props)
+            const { username, enableHover } = toRefs(props)
 
             const handleDelete = () => {
                 emit('delete', username.value)

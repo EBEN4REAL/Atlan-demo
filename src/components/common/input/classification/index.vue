@@ -17,6 +17,7 @@
             </template>
             <a-button
                 shape="circle"
+                :disabled="disabled"
                 size="small"
                 class="text-center shadow  hover:bg-primary-light hover:border-primary"
             >
@@ -38,7 +39,13 @@
 
 <script lang="ts">
     import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
     import ClassificationFacet from '@/common/facet/classification/index.vue'
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -61,12 +68,17 @@
                     return []
                 },
             },
+            disabled: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid } = toRefs(props)
+            const { guid, disabled } = toRefs(props)
             const localValue = ref(modelValue.value)
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),
@@ -142,8 +154,33 @@
                     handleChange()
                 }
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
+
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA'
+            )
+            const { t, Escape } = useMagicKeys()
+            whenever(and(t, notUsingInput), () => {
+                if (!isEdit.value) {
+                    isEdit.value = true
+                }
+            })
+
+            whenever(and(Escape), () => {
+                if (isEdit.value) {
+                    handleChange()
+                    isEdit.value = false
+                }
+            })
 
             return {
+                disabled,
                 localValue,
                 isPropagated,
                 list,

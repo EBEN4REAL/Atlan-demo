@@ -44,7 +44,7 @@
                         @openLog="openLog"
                         @setSelectedPod="setSelectedPod"
                         @setSelectedGraph="setSelectedGraph"
-                        @setLoadingFetchPod="setLoadingFetchPod"
+                        @set-loading-fetch-pod="setLoadingFetchPod"
                     />
                     <!-- <EmptyView
                         v-if="!workflowTemplate && !data?.isLoading"
@@ -95,7 +95,7 @@
         watch,
         onMounted,
         provide,
-        ComputedRef
+        ComputedRef,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -164,7 +164,7 @@
             const selectedPod = ref({})
             const selectedGraph = ref({})
             const loadingFetchPod = ref(true)
-            const userId = ref("")
+            const creator = ref({})
             const tabs = [
                 {
                     id: 1,
@@ -283,6 +283,34 @@
                 })
             }
 
+            const handleGetUser = (userId) => {
+              const params: ComputedRef<{
+                 limit?: number
+                 offset?: number
+                 filter?: any
+                 sort?: string
+             }> = {
+                  limit: 1,
+                  offset: 0,
+                  sort: 'first_name',
+                  filter: {
+                      $and: [
+                          {
+                              $or: [
+                                  {
+                                      email_verified: true,
+                                      id: userId,
+                                  },
+                              ],
+                          },
+                      ],
+                  },
+              }
+              const { userList } = useUsers(params, null, {})
+              watch(userList, (newVal) => {
+                creator.value = newVal[0]
+              })
+            }
             // fetch
             const fetch = () => {
                 if (selected.value) {
@@ -298,10 +326,8 @@
 
                 watch(response, (v) => {
                     // useWorkflowByName
-                    const usrId = v?.records[0]?.labels["workflows.argoproj.io/creator"]
-                    if(usrId){
-                      userId.value = usrId
-                    }
+                    const usrId = v?.records[0]?.labels['workflows.argoproj.io/creator']
+                    handleGetUser(usrId)
                     // getUserList()
                     // watch(userList, (newVal) => {
                     //   console.log(newVal, '<<<sdshdsgdgsdhjs')
@@ -320,41 +346,6 @@
             watch(id, (n, o) => {
                 if (n && !o) fetch()
             })
-
-            const params: ComputedRef<{
-                limit?: number
-                offset?: number
-                filter?: any
-                sort?: string
-            }> = computed(() =>
-                userId.value
-                    ? {
-                        limit: 1,
-                        offset: 0,
-                        sort: 'first_name',
-                        filter: {
-                            $and: [
-                              {
-                                  $or: [
-                                    {
-                                      email_verified: true, 
-                                      id: userId.value
-                                    }
-                                  ],
-                              },
-                          ],
-                        },
-                      }
-                    : {}
-            )
-
-            const { userList, getUserList } = useUsers(params)
-            watch(userId, () => {
-              if(userId.value){
-                getUserList()
-              }
-            })
-            const creator = computed(() =>userList.value.length > 1 ? {} : userList.value[0])
 
             watch(tab, (n, o) => {
                 if (!n) return
@@ -407,7 +398,7 @@
                 loadingFetchPod,
                 setLoadingFetchPod,
                 id,
-                creator
+                creator,
             }
         },
     })
@@ -478,6 +469,9 @@ meta:
     .container-workFlow {
         .ant-tabs-tab {
             margin-right: 0px;
+        }
+        .ant-tabs-tabpane-active{
+          overflow: visible!important;
         }
     }
 </style>

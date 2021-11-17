@@ -18,7 +18,7 @@
                     type="default"
                     size="small"
                     class="border-gray-300"
-                    @click="handleClose()"
+                    @click="handleClose"
                 >
                     <AtlanIcon icon="Cancel" class="h-3" />
                 </a-button>
@@ -92,16 +92,36 @@
                             label="Select Enum"
                             :name="['options', 'enumType']"
                         >
-                            <a-tree-select
+                            <a-select
                                 v-model:value="form.options.enumType"
+                                show-search
                                 no-results-text="No enum found"
-                                :tree-data="finalEnumsList"
-                                :multiple="false"
-                                :async="false"
                                 placeholder="Select enum"
+                                :options="finalEnumsList"
                                 @change="updateEnumValues"
                             >
-                            </a-tree-select>
+                                <template #dropdownRender="{ menuNode: menu }">
+                                    <v-nodes :vnodes="menu" />
+                                    <a-divider style="margin: 4px 0" />
+
+                                    <p
+                                        class="mt-3 text-center cursor-pointer  text-primary"
+                                        @click="
+                                            () => {
+                                                form.options.enumType = null
+                                                newEnumMode = !newEnumMode
+                                            }
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            class="inline h-4"
+                                            icon="Add"
+                                        />
+
+                                        Create new enum
+                                    </p>
+                                </template>
+                            </a-select>
                         </a-form-item>
 
                         <div v-show="selectedEnumOptions?.length" class="">
@@ -112,24 +132,13 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="
-                                        mb-1
-                                        lowercase
-                                        bg-gray-100
-                                        border-0
-                                        rounded-full
-                                    "
+                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
                         </div>
-                        <p
-                            class="mt-3 text-right cursor-pointer text-primary"
-                            @click="newEnumMode = !newEnumMode"
-                        >
-                            or add new
-                        </p>
-                        <div v-if="newEnumMode">
+
+                        <div v-if="newEnumMode" class="mt-6">
                             <NewEnumForm
                                 v-if="newEnumMode"
                                 ref="newEnumFormRef"
@@ -137,14 +146,16 @@
                             />
                         </div>
                     </div>
-                    <!-- <pre>{{ form }}</pre> -->
+                    <!-- <pre>{{ finalEnumsList }}</pre> -->
+                    <!-- <pre>{{ form.typeName }}</pre>
+                    <pre>{{ form.enumValues }}</pre> -->
                     <!-- End of conditonals ========================================= -->
                     <!-- Applicable Asset type ========================================= -->
 
                     <div class="flex mb-6">
                         <div class="relative" style="width: 100%">
                             <a-form-item
-                                :name="['options', 'customEntityTypes']"
+                                :name="['options', 'applicableEntityTypes']"
                                 class="mb-0"
                             >
                                 <template #label>
@@ -152,11 +163,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="
-                                                    flex flex-col
-                                                    items-center
-                                                    w-60
-                                                "
+                                                class="flex flex-col items-center  w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -164,18 +171,18 @@
                                                 available.
                                             </div>
                                         </template>
-
-                                        <fa
-                                            icon="fal info-circle"
-                                            class="ml-2 text-xs"
-                                        ></fa>
+                                        <AtlanIcon
+                                            icon="Info"
+                                            class="h-3 ml-2"
+                                        />
                                     </a-popover>
                                 </template>
                                 <div class="w-100">
                                     <div ref="typeTreeSelect">
                                         <a-tree-select
                                             :value="
-                                                form.options.customEntityTypes
+                                                form.options
+                                                    .applicableEntityTypes
                                             "
                                             no-results-text="No entities found"
                                             style="width: 100%"
@@ -198,10 +205,12 @@
                                             "
                                             class="mb-2"
                                             :allow-clear="false"
-                                            :show-checked-strategy="SHOW_PARENT"
+                                            :check-strictly="true"
+                                            :show-checked-strategy="
+                                                CHECKEDSTRATEGY
+                                            "
                                             @change="
-                                                form.options.customEntityTypes =
-                                                    $event
+                                                handleApplicableEntityTypeChange
                                             "
                                         >
                                         </a-tree-select>
@@ -213,17 +222,7 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-around
-                            w-full
-                            gap-4
-                            p-4
-                            bg-gray-100
-                            border
-                            rounded
-                        "
+                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
                     >
                         <div class="w-full">
                             <a-form-item class="mb-2">
@@ -291,7 +290,7 @@
                     >
                         <a-button
                             :style="{ marginRight: '8px' }"
-                            @click="handleClose()"
+                            @click="handleClose"
                         >
                             Cancel
                         </a-button>
@@ -305,6 +304,7 @@
                     </div>
                 </a-form>
             </div>
+
             <!-- End of Form =============================================================================================================== -->
         </a-drawer>
     </div>
@@ -320,24 +320,24 @@
         watch,
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
-
-    import useEnums from '@/governance/enums/composables/useEnums'
-
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
         applicableEntityTypes,
-        customEntityTypes,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
-    const SHOW_PARENT = TreeSelect.SHOW_PARENT
+    const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
             NewEnumForm,
+            VNodes: (_, { attrs }) => {
+                return attrs.vnodes
+            },
         },
         props: {
             metadata: {
@@ -366,7 +366,9 @@
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
             const finalApplicableTypeNamesOptions = computed(() => {
-                const options = JSON.parse(JSON.stringify(customEntityTypes))
+                const options = JSON.parse(
+                    JSON.stringify(applicableEntityTypes)
+                )
                 return options
             })
 
@@ -374,29 +376,25 @@
                 JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES))
             )
 
-            const transfromJson = (theProperty) => {
-                if (typeof this.form.options.customEntityTypes === 'string')
-                    JSON.parse(this.form.options.customEntityTypes)
-            }
-
             // methods
             const open = (theProperty, makeEdit, index) => {
                 // when open we send the property value and if is undefined, means we creating new prioperty
                 if (theProperty !== undefined) {
-                    const customEntityTypes =
-                        theProperty.options.customEntityTypes
-                    if (customEntityTypes) {
-                        if (typeof customEntityTypes === 'string') {
-                            theProperty.options.customEntityTypes =
-                                JSON.parse(customEntityTypes)
+                    const applicableEntityTypes =
+                        theProperty.options.applicableEntityTypes
+                    if (applicableEntityTypes) {
+                        if (typeof applicableEntityTypes === 'string') {
+                            theProperty.options.applicableEntityTypes =
+                                JSON.parse(applicableEntityTypes)
                         }
                     }
                     form.value = theProperty
                 } else {
                     form.value = initializeForm()
-                    // somehow these 2 remained, so delete them
+                    // somehow these 2 remained, so reset them
                     form.value.options.isEnum = false
                     delete form.value.options.enumType
+                    delete form.value.enumValues
                 }
 
                 propertyIndex.value = index
@@ -417,17 +415,20 @@
 
                 // stringify
                 const tempForm = JSON.parse(JSON.stringify(form.value))
-                tempForm.options.customEntityTypes = JSON.stringify(
-                    tempForm.options.customEntityTypes
+                tempForm.options.applicableEntityTypes = JSON.stringify(
+                    tempForm.options.applicableEntityTypes
                 )
 
                 // make copy to prevent updating
                 const tempBM = JSON.parse(JSON.stringify(metadata.value))
-                // transform the customEntityTypes in the other attributeDefs as they would be object
+                // transform the CET in the other attributeDefs as they would be object
                 tempBM.attributeDefs.forEach((x, index) => {
-                    if (typeof x.options.customEntityTypes === 'object') {
-                        tempBM.attributeDefs[index].options.customEntityTypes =
-                            JSON.stringify(x.options.customEntityTypes)
+                    if (typeof x.options.applicableEntityTypes === 'object') {
+                        tempBM.attributeDefs[
+                            index
+                        ].options.applicableEntityTypes = JSON.stringify(
+                            x.options.applicableEntityTypes
+                        )
                     }
                 })
 
@@ -451,6 +452,7 @@
                             visible.value = false
                         }
                         if (newError) {
+                            message.error('Error updating property, try again')
                             loading.value = false
                         }
                     })
@@ -492,7 +494,7 @@
                             visible.value = false
                         }
                         if (newError) {
-                            message.error('Error creating attribute, try again')
+                            message.error('Error creating property, try again')
                             loading.value = false
                         }
                     })
@@ -500,7 +502,6 @@
             }
 
             const handleEnumCreateSuccess = (newEnum) => {
-                console.log(newEnum)
                 newEnumMode.value = false
                 form.value.options.enumType = newEnum.name
                 handleUpdateProperty()
@@ -521,9 +522,13 @@
                 // ? check if enum
                 if (value === 'enum') {
                     form.value.options.isEnum = true
-                } else form.value.options.isEnum = false
+                    updateEnumValues()
+                } else {
+                    form.value.options.isEnum = false
+                    delete form.value.enumValues
+                }
 
-                if (['groups', 'user', 'url'].includes(value))
+                if (['groups', 'users', 'url'].includes(value))
                     form.value.options.customType = value
                 else delete form.value.options.customType
             }
@@ -532,12 +537,12 @@
             const enumTypeOtions = ref(null)
 
             // * Composables
-            const { enumListData: enumsList } = useEnums()
+            const { enumList } = useTypedefData()
 
             /** @return all enum list data formatted of the component */
             const finalEnumsList = computed(() => {
-                if (enumsList.value && enumsList.value.length) {
-                    return enumsList.value.map((item) => ({
+                if (enumList.value && enumList.value?.length) {
+                    return enumList.value?.map((item) => ({
                         value: item.name,
                         key: item.guid,
                         title: item.name,
@@ -553,15 +558,15 @@
              */
             const selectedEnumOptions = computed(() => {
                 if (form.value.options.isEnum) {
-                    const reqIndex = enumsList.value.findIndex(
+                    const reqIndex = enumList.value?.findIndex(
                         (item) => item.name === form.value.options.enumType
                     )
                     if (
                         reqIndex > -1 &&
-                        enumsList.value[reqIndex].elementDefs &&
-                        enumsList.value[reqIndex].elementDefs.length
+                        enumList.value[reqIndex]?.elementDefs &&
+                        enumList.value[reqIndex]?.elementDefs.length
                     ) {
-                        return enumsList.value[reqIndex].elementDefs.map(
+                        return enumList.value[reqIndex]?.elementDefs.map(
                             (item: { value: any }) => ({
                                 key: item.value,
                                 title: item.value,
@@ -580,6 +585,7 @@
                     form.value.options.isEnum === 'true' ||
                     form.value.options.isEnum === true
                 ) {
+                    newEnumMode.value = false
                     form.value.enumValues = selectedEnumOptions.value?.map(
                         (x) => x.value
                     )
@@ -588,24 +594,24 @@
                 }
             }
 
-            // clears the action of the function above if enum is no longer selected
-            watch(
-                form,
-                (newValue) => {
-                    if (
-                        (form.value.options.isEnum !== 'true' ||
-                            form.value.options.isEnum !== true) &&
-                        newValue.enumValues
-                    ) {
-                        delete form.value.enumValues
-                    }
-                    // just incase ytpeName is changed back to enum and enumType not updated
-                    else if (newValue.typeName === 'enum') {
-                        updateEnumValues()
-                    }
-                },
-                { deep: true }
-            )
+            const handleApplicableEntityTypeChange = (data) => {
+                /**
+                 * Data is just an array of ids
+                 * First get items in finalApplicableTypeNamesOptions that match id and have children (store index or id and children)
+                 * Then go through the data again and replace matched items with children ids
+                 * reducer should work
+                 */
+                const childrenExtracted = data.reduce((a, b, index) => {
+                    const isParent = finalApplicableTypeNamesOptions.value.find(
+                        (y) => b === y.value
+                    )
+                    if (isParent)
+                        a.push(...isParent.children.map((z) => z.value))
+                    else a.push(data[index])
+                    return a
+                }, [])
+                form.value.options.applicableEntityTypes = childrenExtracted
+            }
 
             return {
                 visible,
@@ -616,7 +622,7 @@
                 loading,
                 rules,
                 typeTreeSelect,
-                SHOW_PARENT,
+                CHECKEDSTRATEGY,
                 enumTypeOtions,
                 finalEnumsList,
                 selectedEnumOptions,
@@ -631,6 +637,7 @@
                 handleTypeNameChange,
                 updateEnumValues,
                 handleEnumCreateSuccess,
+                handleApplicableEntityTypeChange,
             }
         },
         data() {
@@ -638,22 +645,6 @@
                 test: [],
                 treeSelectOpen: false,
             }
-        },
-        computed: {
-            // name: {
-            //     get() {
-            //         return this.form.displayName
-            //     },
-            //     set(newValue) {
-            //         this.form.name = newValue
-            //         this.form.displayName = newValue
-            //     },
-            // },
-            customEntityTypes: {
-                get() {
-                    return this.form.options.customEntityTypes
-                },
-            },
         },
     })
 </script>

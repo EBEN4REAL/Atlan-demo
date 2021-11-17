@@ -51,7 +51,7 @@
                             rowClassNames.value !== ''
                                 ? rowClassNames.value
                                 : defaultRowClassNames
-                        }">${index + 1}</td>`
+                        } sticky left-0 z-4">${index + 1}</td>`
                         for (const [key, value] of Object.entries(row)) {
                             rows += `<td class="px-4 py-2 text-xs text-gray-700 truncate bg-white border border-gray-light">${
                                 value == null ? '-' : value
@@ -215,10 +215,9 @@
     }
 
     th {
-        position: sticky;
-        top: 0;
+        position: sticky !important;
+        top: 0 !important;
         text-align: left;
-        position: relative;
     }
 
     .resize-handle {

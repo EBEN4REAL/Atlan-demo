@@ -26,16 +26,9 @@
             @event="$router.push('/workflows/new')"
         />
     </div>
-    <div v-else class="flex w-full h-full">
+    <div v-else v-auth="access.LIST_WORKFLOW" class="flex w-full h-full">
         <div
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-gray-100
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-gray-100 border-r border-gray-300 facets"
         >
             <WorkflowFilters
                 :ref="
@@ -63,13 +56,14 @@
                             <template #filter>
                                 <Preferences @sort="handleChangeSort" />
                             </template>
-                            <!-- <template #buttonAggregation>
-                        <span>({{ projection.length }})</span>
-                    </template> -->
                         </SearchAndFilter>
                     </div>
 
                     <AtlanButton
+                        v-auth="[
+                            access.CREATE_WORKFLOW,
+                            access.LIST_WORKFLOWTEMPLATE,
+                        ]"
                         class="ml-2"
                         color="primary"
                         padding="compact"
@@ -144,6 +138,7 @@
     import DiscoveryPreview from '@/workflows/discovery/preview/preview.vue'
 
     import { List as defaultfiltersList } from '@/workflows/discovery/filters/filters'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'WorkflowDiscovery',
@@ -189,6 +184,7 @@
             const filters = ref([])
             const offset = ref(0)
             const sortOrder = ref('default')
+            const users = ref([])
             const facets = computed(() => AllFilters.value?.facetsFilters)
 
             const { generateFacetConfigForRouter } = useFilterUtils(facets)
@@ -311,15 +307,21 @@
                     : {}
             )
 
-            const { userList, getUserList, state, STATES } = useUsers(params)
+            const handleGetUser = () => {
+              const { userList } = useUsers(params, null, {})
+              watch(userList, (newVal) => {
+                users.value = newVal
+              })
+            }
+
 
             watch(iDs, () => {
-                getUserList()
+                handleGetUser()
             })
 
             const creatorDetails = computed(() => {
-                if (userList.value?.length && selected.value) {
-                    return userList.value.filter(
+                if (users.value?.length && selected.value) {
+                    return users.value.filter(
                         (el: { id: any }) =>
                             el?.id ===
                             selected.value?.labels[
@@ -337,6 +339,7 @@
             }
 
             return {
+                access,
                 creatorDetails,
                 isFilterAppplied,
                 handleClearFiltersFromList,
@@ -383,3 +386,10 @@
         max-width: 420px !important;
     }
 </style>
+
+<route lang="yaml">
+meta:
+    layout: default
+    requiresAuth: true
+    permissions: [LIST_WORKFLOW]
+</route>

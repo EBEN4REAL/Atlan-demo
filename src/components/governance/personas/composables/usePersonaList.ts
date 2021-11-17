@@ -5,16 +5,23 @@ import usePersonaService from './usePersonaService'
 // Main Persona List, fetched from API
 const { listPersonas } = usePersonaService()
 const {
-    data: personaList,
+    data: list,
     isReady: isPersonaListReady,
     mutate: reFetchList,
 } = listPersonas()
+
+const personaList = computed(() => list.value?.records)
 export { reFetchList, personaList, isPersonaListReady }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
 export const selectedPersona = computed(() => {
-    if (selectedPersonaId.value)
-        return personaList.value.find((ps) => ps.id === selectedPersonaId.value)
+    if (selectedPersonaId.value) {
+        let t = personaList.value?.find(
+            (ps) => ps.id == selectedPersonaId.value
+        )
+        if (!t) return undefined
+        return t
+    }
     return undefined
 })
 
@@ -24,7 +31,7 @@ export const filteredPersonas = computed(() => {
     if (searchTerm.value) {
         return personaList.value.filter((ps) =>
             ps
-                .displayName!.toLowerCase()
+                .display_name!.toLowerCase()
                 .includes(searchTerm.value.toLowerCase())
         )
     }

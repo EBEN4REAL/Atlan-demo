@@ -1,9 +1,5 @@
 <template>
-    <div
-        :data-test-id="item?.guid"
-        class="w-full group py-1.5"
-        :class="assetType(item) == 'Column' && hoverActions ? '-ml-3.5' : ''"
-    >
+    <div :data-test-id="item?.guid" class="w-full group py-1.5">
         <div class="flex justify-between w-full overflow-hidden">
             <!-- Popover Allowed -->
             <div
@@ -38,8 +34,10 @@
                                 ></component>
                                 <span
                                     class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                                    >{{ title(item) }}</span
-                                >
+                                    >{{ title(item) }}
+                                    <!-- <span> {{ childCount(item) }}</span> -->
+                                </span>
+
                                 <StatusBadge
                                     v-if="certificateStatus(item)"
                                     :key="item?.guid"
@@ -171,8 +169,12 @@
 
                             <span
                                 class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                                >{{ title(item) }}</span
-                            >
+                                >{{ title(item) }}
+                                <span class="count-box">
+                                    {{ childCount(item) }}</span
+                                >
+                            </span>
+
                             <!-- <StatusBadge
                                 v-if="certificateStatus(item)"
                                 :key="item?.guid"
@@ -309,8 +311,12 @@
 
                         <span
                             class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >{{ title(item) }}</span
-                        >
+                            >{{ title(item) }}
+                            <span class="count-box">
+                                {{ childCount(item) }}</span
+                            >
+                        </span>
+
                         <StatusBadge
                             v-if="certificateStatus(item)"
                             :key="item?.guid"
@@ -377,9 +383,12 @@
                                 text-gray-500
                             "
                         ></component>
-                        <span class="mb-0 text-sm text-gray-700">{{
-                            title(item)
-                        }}</span>
+                        <span class="mb-0 text-sm text-gray-700"
+                            >{{ title(item)
+                            }}<span class="count-box">
+                                {{ childCount(item) }}</span
+                            >
+                        </span>
                         <StatusBadge
                             v-if="certificateStatus(item)"
                             :key="item?.guid"
@@ -409,8 +418,11 @@
 
                         <span
                             class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >{{ title(item) }}</span
-                        >
+                            >{{ title(item) }}
+                            <span class="count-box">
+                                {{ childCount(item) }}</span
+                            >
+                        </span>
                         <!-- <StatusBadge
                                 v-if="certificateStatus(item)"
                                 :key="item?.guid"
@@ -546,8 +558,11 @@
 
                         <span
                             class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >{{ title(item) }}</span
-                        >
+                            >{{ title(item) }}
+                            <span class="count-box">
+                                ({{ childCount(item) }})</span
+                            >
+                        </span>
                         <StatusBadge
                             v-if="certificateStatus(item)"
                             :key="item?.guid"
@@ -599,7 +614,7 @@
         nextKeywords,
     } from '~/components/insights/playground/editor/common/composables/useMapping'
     // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         components: { SchemaTreeItemPopover, StatusBadge },
@@ -727,7 +742,7 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `${title(t)}, `,
+                                        text: `"${title(t)}", `,
                                     }
                                 )
                             } else {
@@ -735,7 +750,7 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `${title(t)}`,
+                                        text: `"${title(t)}"`,
                                     }
                                 )
                             }
@@ -744,7 +759,7 @@
                                 'keyboard',
                                 'type',
                                 {
-                                    text: `${title(t)}`,
+                                    text: `"${title(t)}"`,
                                 }
                             )
                         }
@@ -818,6 +833,27 @@
                 }
             }
 
+            let childCount = (item) => {
+                if (assetType(item) === 'Database') {
+                    return item.attributes.schemaCount
+                } else if (assetType(item) === 'Schema') {
+                    return (
+                        item.attributes.tableCount ??
+                        0 + item.attributes.viewCount ??
+                        0
+                    )
+                } else if (
+                    assetType(item) === 'Table' ||
+                    assetType(item) === 'View'
+                ) {
+                    return item.attributes.columnCount
+                }
+            }
+
+            // watch(item, () => {
+            //     console.log('schema tree item: ', item.value)
+            // })
+
             return {
                 hoverActions,
                 isPopoverAllowed,
@@ -832,6 +868,7 @@
                 dataTypeImageForColumn,
                 getEntityStatusIcon,
                 item,
+                childCount,
             }
         },
     })
@@ -876,6 +913,32 @@
     }
     .tree-select-full {
         width: 120%;
+    }
+
+    .count-box {
+        justify-content: center;
+        align-items: center;
+        // padding: 4px;
+        margin: 4px;
+        display: inline-flex;
+        width: 18px;
+        height: 18px;
+
+        /* Blues/primary-light */
+
+        background: #f4f6fd;
+        border-radius: 4px;
+
+        font-family: Avenir LT Pro;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        // line-height: 16px;
+        /* identical to box height, or 133% */
+
+        /* Blues/primary */
+
+        color: #5277d7;
     }
 
     /* ------------------------------- */

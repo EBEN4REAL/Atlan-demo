@@ -1,4 +1,4 @@
-import { useGlossaryStore } from '~/store/glossary'
+import useGlossaryStore from '~/store/glossary'
 
 import { computed } from 'vue'
 

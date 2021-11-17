@@ -7,50 +7,32 @@
         @update:selected="selectBm"
     >
         <template #default="{ item, isSelected }">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center overflow-hidden">
-                    <div
-                        class="mr-1 overflow-hidden bg-gray-100 rounded cursor-pointer "
-                        style="width: 16px; height: 16px"
-                    >
-                        <img
-                            v-if="item?.options?.imagePath"
-                            :src="imageUrl(item)"
-                            alt=""
-                            class="object-cover w-full"
-                            style="height: 16px"
-                        />
-                        <AtlanIcon v-else icon="NoAvatar" />
-                    </div>
-                    <p
-                        class="pr-2 m-0 overflow-hidden text-sm truncate"
-                        :class="isSelected ? 'text-primary' : 'text-gray'"
-                    >
-                        {{ item.displayName || item.name }}
-                        <sup v-if="item && item.guid === 'new'"> * </sup>
-                    </p>
-                </div>
-                <span class="flex-none text-xs text-gray-500 flex-inital"
-                    >{{ item.attributeDefs.length || 0 }}
-                    {{
-                        item.attributeDefs.length > 1
-                            ? 'properties'
-                            : 'property'
-                    }}</span
+            <div class="flex items-center">
+                <CustomMetadataAvatar
+                    class="mr-1"
+                    :metadata="item"
+                    size="16px"
+                />
+                <p
+                    class="pr-2 m-0 overflow-hidden text-sm leading-none truncate "
+                    :class="isSelected ? 'text-primary' : 'text-gray'"
                 >
+                    {{ item.displayName || item.name }}
+                </p>
             </div>
         </template>
     </ExplorerList>
 </template>
 <script lang="ts">
-    import { defineComponent, toRefs, computed } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
     import ExplorerList from '@/admin/common/explorerList.vue'
+    import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
 
     export default defineComponent({
-        components: { ExplorerList },
+        components: { ExplorerList, CustomMetadataAvatar },
         props: {
             finalList: { type: Object, required: true },
-            selectedBm: { type: Object, required: true },
+            selectedBm: { type: [Object, null], required: true },
         },
         emits: ['selectBm'],
         setup(props, context) {
@@ -62,12 +44,8 @@
                 context.emit('selectBm', item)
             }
 
-            const imageUrl = (bm) =>
-                `${window.location.origin}/api/service${bm?.options?.imagePath}`
-
             return {
                 selectBm,
-                imageUrl,
             }
         },
     })

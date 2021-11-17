@@ -126,7 +126,7 @@
                     min-size="30"
                     class="overflow-x-hidden"
                 >
-                    <Editor />
+                    <Editor :refreshQueryTree="refreshQueryTree" />
                 </pane>
                 <pane min-size="0" :size="outputPaneSize" max-size="70">
                     <ResultsPane />
@@ -186,6 +186,9 @@
             activeInlineTabKey: {
                 type: String,
                 required: true,
+            },
+            refreshQueryTree: {
+                type: Function,
             },
         },
         setup(props, { emit }) {
@@ -446,6 +449,7 @@
                         tabRemoveCallbackFunction,
                         false
                     )
+                    props.refreshQueryTree()
                 }
             }
             const saveTabConfirm = (key: string) => {

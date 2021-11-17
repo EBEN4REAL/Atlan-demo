@@ -14,9 +14,9 @@
                 class="w-full px-3"
                 @change="handleChange"
             >
-                <template v-for="item in userList" :key="item.username">
+                <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
-                        :value="item.username"
+                        :value="item[selectUserKey]"
                         class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                         :class="$style.atlanReverse"
                     >
@@ -40,13 +40,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, computed, ref } from 'vue'
+    import { defineComponent, watch, computed, ref, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
-        name: 'OwnersFilter',
+        name: 'UsersFilter',
         props: {
             queryText: {
                 type: String,
@@ -58,6 +58,11 @@
                 required: false,
                 default: () => [],
             },
+            selectUserKey: {
+                type: String,
+                required: false,
+                default: () => 'username', // can be id/username
+            },
             cacheKey: {
                 type: String,
                 required: false,
@@ -67,9 +72,10 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { selectUserKey } = toRefs(props)
             const localValue = ref(modelValue.value)
             const { list, handleSearch, total, filterTotal } = useFacetUsers()
-            const { username, firstName, lastName } = useUserData()
+            const { username, firstName, lastName, id } = useUserData()
 
             watch(
                 () => props.queryText,
@@ -88,6 +94,7 @@
                 return [
                     {
                         username,
+                        id,
                         first_name: firstName,
                         last_name: lastName,
                     },
@@ -106,8 +113,13 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             return {
+                selectUserKey,
                 userList,
                 fullName,
                 username,

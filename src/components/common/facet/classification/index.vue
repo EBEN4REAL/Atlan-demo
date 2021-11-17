@@ -11,7 +11,7 @@
             </SearchAdvanced>
         </div>
 
-        <div class="w-full mt-1 overflow-y-auto h-44">
+        <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
             <a-checkbox-group
                 v-model:value="localValue.classifications"
                 class="w-full px-3"
@@ -107,6 +107,13 @@
                 )
             )
 
+            const height = computed(() => {
+                if (filteredList.value.length < 5) {
+                    return `${filteredList.value.length * 40}px`
+                }
+                return '250px;'
+            })
+
             watch(localValue.value, (prev, cur) => {
                 if (!localValue.value.classifications) {
                     delete localValue.value.classifications
@@ -138,6 +145,7 @@
                 forceFocus,
                 queryText,
                 showNone,
+                height,
             }
         },
     })

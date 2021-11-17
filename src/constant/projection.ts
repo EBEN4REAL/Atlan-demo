@@ -56,9 +56,18 @@ export const AssetAttributes = [
     'ownerGroups',
     'meanings',
     'readme',
+    'rawQuery',
+    'compiledQuery',
     'links',
     'link',
     'webUrl',
+    'category',
+    'lastSyncRun',
+    'lastSyncRunAt',
+    'lastSyncWorkflowName',
+    'queryConfig',
+    'allowQuery',
+    'allowQueryPreview',
 ]
 
 export const SQLAttributes = [
@@ -79,6 +88,8 @@ export const SQLAttributes = [
     'isForeign',
     'isDist',
 ]
+
+export const GlossaryAttributes = ['categories', 'parentCategory']
 
 export const GlossaryRelationAttributes = ['name']
 

@@ -1,7 +1,7 @@
 <template>
     <CreationModal
         v-model:visible="modalVisible"
-        title="New Persona"
+        title=""
         @cancel="() => (modalVisible = false)"
         @ok="handleCreation"
     >
@@ -37,7 +37,7 @@
         reFetchList,
         selectedPersonaId,
     } from './composables/usePersonaList'
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
 
     export default defineComponent({
         name: 'AddPersona',
@@ -76,7 +76,7 @@
                     key: messageKey,
                 })
                 try {
-                    const newPersona: IPersona = await createPersona({
+                    const newPersona: IPurpose = await createPersona({
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
@@ -91,9 +91,10 @@
                         duration: 1.5,
                         key: messageKey,
                     })
-                    reFetchList()
-                    selectedPersonaId.value = newPersona.id!
-                    modalVisible.value = false
+                    reFetchList().then(() => {
+                        selectedPersonaId.value = newPersona.id!
+                        modalVisible.value = false
+                    })
                 } catch (error) {
                     message.error({
                         content: 'Failed to create persona',

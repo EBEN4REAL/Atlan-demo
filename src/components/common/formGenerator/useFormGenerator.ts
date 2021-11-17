@@ -120,7 +120,7 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
     testModal.value[id]
 
   // @desc if isSavedVariables = true, i.e saving variables from async selector directly store in object 
-  const setGlobal = (vO, isSavedVariables) => { testModal.value = { ...testModal.value, ...(isSavedVariables ? vO : { "$global": vO }) } }
+  const setGlobal = (vO, isSavedVariables = false) => { testModal.value = { ...testModal.value, ...(isSavedVariables ? vO : { "$global": vO }) } }
 
   const generateTemplateValue = (s, id, isStringfied) => {
     if (!processedSchema.value.length) return s
@@ -231,6 +231,7 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
 
     testModal.value = { ...testModal.value, ...dV.value }
     finalConfigObject(processedSchema.value)
+
   }
 
 

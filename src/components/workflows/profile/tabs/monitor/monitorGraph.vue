@@ -86,7 +86,9 @@
                     </a-tooltip>
                 </div>
 
-                <div class="mr-3 cursor-pointer">
+                <div 
+                class="mr-3 cursor-pointer"
+                @click="handleRecenter">
                     <a-tooltip placement="top">
                         <template #title>
                             <span>recenter</span>
@@ -191,6 +193,7 @@
             const isFullscreen = ref(false)
             const isRunning = ref(true)
             const isLoadingRefresh = ref(false)
+            const firstNode = ref({})
 
             // Ref indicating if the all the nodes and edges of the graph
             // have been rendered or not.
@@ -207,7 +210,7 @@
             }
 
             // transform
-            const { zoom, fullscreen } = useTransformGraph(graph, currZoom)
+            const { zoom, fullscreen, handleRecenter } = useTransformGraph(graph, currZoom, firstNode)
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
                 fullscreen(monitorContainer)
@@ -234,7 +237,7 @@
                     currZoomDec,
                     reload
                 )
-
+                firstNode.value = nodes.value[0] 
                 // useHighlight
                 useHighlight(
                     graph,
@@ -296,7 +299,8 @@
                 initialize,
                 isLoadingRefresh,
                 handleRefresh,
-                isGraphRendered
+                isGraphRendered,
+                handleRecenter
             }
         },
     })

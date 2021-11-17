@@ -3,44 +3,44 @@ import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 
-import redirect from '@/glossary/utils/redirectToProfile'
+import redirect from '~/components/glossary3/utils/redirectToProfile'
 
 // import useAddEvent from '~/composables/eventTracking/useAddEvent'
-import { Glossary } from '~/services/meta/glossary/index';
+import { Glossary } from '~/services/meta/glossary/index'
 
 import whoami from '~/composables/user/whoami'
 
 interface createGlossaryParams {
-    title?: string,
-    description?: string,
-    status?: string,
-    ownerUsers?: string[],
+    title?: string
+    description?: string
+    status?: string
+    ownerUsers?: string[]
     ownerGroups?: string[]
 }
 interface createCategoryParams {
-    parentGlossaryGuid: string,
-    parentCategoryGuid?: string,
-    title?: string,
-    description?: string,
-    status?: string,
-    ownerUsers?: string[],
+    parentGlossaryGuid: string
+    parentCategoryGuid?: string
+    title?: string
+    description?: string
+    status?: string
+    ownerUsers?: string[]
     ownerGroups?: string[]
-};
+}
 interface createTermParams {
-    parentGlossaryGuid: string,
-    parentCategoryGuid?: string,
-    title?: string,
-    description?: string,
-    status?: string,
-    ownerUsers?: string[],
-    ownerGroups?: string[],
+    parentGlossaryGuid: string
+    parentCategoryGuid?: string
+    title?: string
+    description?: string
+    status?: string
+    ownerUsers?: string[]
+    ownerGroups?: string[]
     categories?: { categoryGuid: string }[]
 }
 const useCreateGlossary = () => {
     const error = ref<any>()
     const isLoading = ref<boolean | null>()
     const router = useRouter()
-    const redirectToProfile = redirect(router);
+    const redirectToProfile = redirect(router)
 
     const { username } = whoami()
 

@@ -2,7 +2,7 @@
     <div class="w-full">
         <div
             class="flex items-center justify-between px-4"
-            v-if="filteredAttributeList.length > 5"
+            v-if="filteredAttributeList.length > 5 || queryText"
         >
             <SearchAdvanced
                 ref="classificationSearchRef"

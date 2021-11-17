@@ -1,4 +1,33 @@
 <template>
+      <div
+          v-if="selectedPod.id"
+          class="absolute flex items-center gap-4 toolbar-workflow"
+      >
+          <AtlanIcon icon="Shield" class="text-pink-400" />
+          <div class="w-80">
+              <p class="text-base font-bold">
+                  {{ selectedPod?.displayName }}
+              </p>
+              <p class="text-sm truncate ...">
+                  {{ selectedPod.id }}
+              </p>
+              <div class="flex items-center gap-1 mt-1">
+                  <p>{{ selectedPod.timecalc }}</p>
+                  <div class="dot" />
+                  <p class="ml-2">
+                      {{ podFinishedAt(selectedPod.finishedAt) }}
+                  </p>
+              </div>
+          </div>
+          <a-button
+              class="flex items-center gap-2"
+              type="link"
+              @click="openLog"
+          >
+              View logs
+              <AtlanIcon icon="ArrowRight" />
+          </a-button>
+      </div>
     <div class="relative w-full h-full">
         <div
             v-if="loadingGeneral"
@@ -16,35 +45,6 @@
             @event="$router.push('/workflows')"
         />
         <div v-else-if="graphData.name" class="absolute w-full h-full">
-            <div
-                v-if="selectedPod.id"
-                class="absolute flex items-center gap-4 toolbar-workflow"
-            >
-                <AtlanIcon icon="Shield" class="text-pink-400" />
-                <div class="w-80">
-                    <p class="text-base font-bold">
-                        {{ selectedPod?.displayName }}
-                    </p>
-                    <p class="text-sm truncate ...">
-                        {{ selectedPod.id }}
-                    </p>
-                    <div class="flex items-center gap-1 mt-1">
-                        <p>{{ selectedPod.timecalc }}</p>
-                        <div class="dot" />
-                        <p class="ml-2">
-                            {{ podFinishedAt(selectedPod.finishedAt) }}
-                        </p>
-                    </div>
-                </div>
-                <a-button
-                    class="flex items-center gap-2"
-                    type="link"
-                    @click="openLog"
-                >
-                    View logs
-                    <AtlanIcon icon="ArrowRight" />
-                </a-button>
-            </div>
             <MonitorGraph
                 :selected-pod="selectedPod"
                 :graph-data="graphData"
@@ -86,14 +86,15 @@
         props: {
             selectedRunName: {
                 type: String,
-                required: true,
+                required: false,
+                default: ""
             },
             selectedPod: {
                 type: Object,
                 required: true,
             },
             activeKey: {
-                type: String,
+                type: Number,
                 required: true,
             },
         },
@@ -210,6 +211,8 @@
         margin-top: 16px;
         margin-left: 20px;
         z-index: 1;
+        // top: 170px;
+        // max-width: 500px;
     }
     .dot {
         background: #c4c4c4;

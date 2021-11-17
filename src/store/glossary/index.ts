@@ -4,7 +4,7 @@ import { state } from './state'
 import { actions } from './actions'
 import { getters } from './getters'
 
-export const useGlossaryStore = defineStore({
+const useGlossaryStore = defineStore({
     // name of the store
     // it is used in devtools and allows restoring state
     id: 'glossary',
@@ -15,3 +15,5 @@ export const useGlossaryStore = defineStore({
     // optional actions
     actions,
 })
+
+export default useGlossaryStore

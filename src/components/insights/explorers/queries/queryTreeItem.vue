@@ -207,6 +207,13 @@
                                                 @click="renameFolder"
                                                 >Rename query</a-menu-item
                                             >
+                                            <a-menu-item
+                                                key="ChangeFolder"
+                                                @click="
+                                                    showFolderPopover = true
+                                                "
+                                                >Move query</a-menu-item
+                                            >
                                             <!-- DELETE QUERY PERMISSIONS -->
                                             <a-menu-item
                                                 key="deleteFolder"
@@ -282,33 +289,6 @@
             </div>
         </template>
     </a-popover>
-    <!-- <a-popover :visible="showFolderPopover" placement="right">
-        <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="savedQueryType"
-                :selectedFolderQF="parentFolderQF"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
-
-            <div class="flex justify-end w-full">
-                <a-button
-                    class="px-5 mr-4 text-sm border rounded"
-                    style="width: 100px"
-                    type="default"
-                    @click="showFolderPopover = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    class="px-5 text-sm rounded"
-                    type="primary"
-                    @click="changeFolder"
-                    >Move</a-button
-                >
-            </div>
-        </template>
-    </a-popover> -->
 </template>
 
 <script lang="ts">
@@ -342,9 +322,8 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
-    // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { message } from 'ant-design-vue'
 
     export default defineComponent({
@@ -688,6 +667,7 @@
             const isUpdating = ref(false)
 
             const changeFolder = (item: any) => {
+                console.log('selected item: ', item)
                 if (selectedFolder.value) {
                     const newEntity = item
                     newEntity.attributes.parentFolderQualifiedName =
@@ -703,31 +683,59 @@
 
                     isUpdating.value = true
 
-                    const { data, error, isLoading } =
-                        Insights.CreateQueryFolder(
-                            {
-                                entity: newEntity,
-                            },
-                            {}
-                        )
-                    watch([error, data, isLoading], (newError) => {
-                        // if (newError) {
+                    if (item.typeName == 'QueryFolder') {
+                        const { data, error, isLoading } =
+                            Insights.CreateQueryFolder(
+                                {
+                                    entity: newEntity,
+                                },
+                                {}
+                            )
+                        watch([error, data, isLoading], (newError) => {
+                            // if (newError) {
 
-                        if (isLoading.value == false) {
-                            isUpdating.value = false
-                            if (error.value == undefined) {
-                                // props.refetchTreeData()
-                                message.success({
-                                    content: `Folder moved successfully`,
-                                })
-                            } else {
-                                message.success({
-                                    content: `Folder move failed`,
-                                })
+                            if (isLoading.value == false) {
+                                isUpdating.value = false
+                                if (error.value == undefined) {
+                                    // props.refetchTreeData()
+                                    message.success({
+                                        content: `Folder moved successfully`,
+                                    })
+                                } else {
+                                    message.success({
+                                        content: `Folder move failed`,
+                                    })
+                                }
                             }
-                        }
-                        showFolderPopover.value = false
-                    })
+                            showFolderPopover.value = false
+                        })
+                    } else if (item.typeName === 'Query') {
+                        const { data, error, isLoading } =
+                            Insights.UpdateSavedQuery(
+                                {
+                                    entity: newEntity,
+                                },
+                                {}
+                            )
+                        watch([error, data, isLoading], (newError) => {
+                            // if (newError) {
+
+                            if (isLoading.value == false) {
+                                isUpdating.value = false
+                                if (error.value == undefined) {
+                                    // props.refetchTreeData()
+                                    message.success({
+                                        content: `Query moved successfully`,
+                                    })
+                                } else {
+                                    message.success({
+                                        content: `Query move failed`,
+                                    })
+                                }
+                            }
+                            showFolderPopover.value = false
+                        })
+                    }
                 }
             }
             return {

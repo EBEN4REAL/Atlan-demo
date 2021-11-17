@@ -64,7 +64,6 @@ export function useSavedQuery(
         )
         console.log(connectors, 'connectors')
         console.log('saved query: ', savedQuery)
-        /* --------NOTE- TEMPERORY FIX-------*/
 
         const newTab: activeInlineTabInterface = {
             attributes: savedQuery.attributes,
@@ -81,7 +80,7 @@ export function useSavedQuery(
             connectionId: savedQuery.attributes.connectionId,
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
-            parentGuid: savedQuery.attributes.parent.guid,
+            parentGuid: savedQuery.attributes?.parent?.guid,
             parentQualifiedName:
                 savedQuery.attributes.parentFolderQualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
@@ -150,7 +149,7 @@ export function useSavedQuery(
         
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
-            console.log('not opened')
+            console.log('saved query tab not opened')
             /* CAREFUL:-------Order is important here------ */
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             activeInlineTabKey.value = newTab.queryId
@@ -159,6 +158,7 @@ export function useSavedQuery(
             syncInlineTabsInLocalStorage(tabsArray.value)
             return
         } else {
+            console.log('saved query tab opened')
             // show user that this tab is already opened
             let key = undefined
             tabsArray.value.forEach((tab) => {
@@ -748,6 +748,11 @@ export function useSavedQuery(
                 if (error.value === undefined) {
                     // console.log('saved query data: ', data)
 
+                    if (Callback) {
+                        // console.log('queryTree callback: ', Callback)
+                        Callback()
+                    }
+
                     // save term
                     const { assignLinkedAssets } = useLinkAssets()
                     console.log(
@@ -769,12 +774,13 @@ export function useSavedQuery(
                                     'terms_updated',
                                     undefined
                                 )
+                                
                             })
                         })
                     }
 
                     // handleCancel()
-                    console.log('checked terms: ', assetTerms.value)
+                    // console.log('checked terms: ', assetTerms.value)
 
                     useAddEvent('insights', 'query', 'saved', {
                         num_variables: undefined,
@@ -829,7 +835,10 @@ export function useSavedQuery(
                     if (routeToGuid) {
                         if (guid) router.push(`/insights?id=${guid}`)
                     }
-                    if (Callback) Callback()
+                    // if (Callback) {
+                    //     console.log('queryTree callback: ', Callback)
+                    //     Callback()
+                    // }
                 } else {
                     console.log(error.value.toString())
                     message.error({

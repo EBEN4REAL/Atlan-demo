@@ -15,10 +15,12 @@
         </div>
         <template v-else-if="requestList.length && !listLoading">
             <RequestModal
-                :request="requestList[selectedIndex]"
+                v-if="requestList[selectedIndex]"
                 v-model:visible="isDetailsVisible"
+                :request="requestList[selectedIndex]"
                 @up="traverseUp"
                 @down="traverseDown"
+                @action="handleRequestAction($event, index)"
             ></RequestModal>
             <VirtualList :data="requestList" data-key="id" class="mt-4">
                 <template #default="{ item, index }">
@@ -112,24 +114,18 @@
                 status: 'active' as RequestStatus,
                 request_type: [],
             })
-            const state = reactive({
-                isLoading: false,
-                message: '',
-            })
-
+            const requestList = ref([])
             const {
                 response,
                 isLoading: listLoading,
                 error: listError,
             } = useRequestList(searchTerm, filters)
-
-            const requestList = computed(
-                () =>
+            watch(response, () => {
+                requestList.value =
                     response.value?.records?.filter(
                         (req) => req.status === filters.value.status
                     ) || []
-            )
-
+            })
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support
                 // return selectedList.value.has(guid)
@@ -137,8 +133,8 @@
             }
 
             /***********************************************************************************
-                /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
-                ***********************************************************************************/
+                    /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
+                    ***********************************************************************************/
 
             function selectRequest(guid: string, index: number) {
                 /** Check if the currently pressed key is not this array,
@@ -158,38 +154,6 @@
 
                 isDetailsVisible.value = true
             }
-            function raiseErrorMessage(msg?: string) {
-                message.error(msg || 'Request modification failed, try again')
-            }
-
-            async function handleApproval(request) {
-                state.isLoading = true
-                try {
-                    await approveRequest(request.value.id, state.message)
-                    request.value.message = state.message
-                    request.value.status = 'approved'
-                    emit('action', request.value)
-                    message.success('Request approved')
-                } catch (error) {
-                    raiseErrorMessage()
-                }
-                state.isLoading = false
-            }
-
-            async function handleRejection(request) {
-                state.isLoading = true
-                try {
-                    await declineRequest(request.value.id, state.message)
-                    request.value.message = state.message
-                    request.value.status = 'rejected'
-                    emit('action', request.value)
-                    message.success('Request declined')
-                } catch (error) {
-                    raiseErrorMessage()
-                }
-                state.isLoading = false
-            }
-
             const traverseUp = () => {
                 if (selectedIndex.value > 0) {
                     selectedIndex.value--
@@ -218,6 +182,7 @@
             )
 
             function handleRequestAction(req: RequestAttributes, idx: number) {
+                isDetailsVisible.value = false
                 if (filters.value.status.includes(req.status)) {
                     requestList.value[idx] = req
                 } else {
@@ -237,8 +202,6 @@
                 },
                 { deep: true }
             )
-            provide('handleRejection', handleRejection)
-            provide('handleApproval', handleApproval)
             return {
                 requestList,
                 isSelected,

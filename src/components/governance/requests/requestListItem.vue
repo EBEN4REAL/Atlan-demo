@@ -113,7 +113,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs } from 'vue'
+    import { defineComponent, PropType, reactive, toRefs, inject } from 'vue'
     import { message } from 'ant-design-vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
 
@@ -168,6 +168,7 @@
         emits: ['select', 'action'],
         setup(props, { emit }) {
             const { request } = toRefs(props)
+
             const state = reactive({
                 isLoading: false,
                 message: '',

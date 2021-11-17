@@ -22,7 +22,7 @@
             <AttributeChange
                 :attribute="request.destination_attribute"
                 :value="request.destination_value"
-                v-if="request.request_type === 'attribute'"
+                v-if="request?.request_type === 'attribute'"
             />
             <ClassificationPiece
                 v-if="
@@ -33,16 +33,16 @@
             />
             <ClassificationPiece
                 v-else-if="request?.request_type === 'attach_classification'"
-                :typeName="request.payload.typeName"
+                :typeName="request?.payload.typeName"
             />
             <TermDetails
-                v-if="request.request_type === 'create_term'"
-                :data="request.payload"
+                v-if="request?.request_type === 'create_term'"
+                :data="request?.payload"
             />
 
             <TermDetails
-                v-if="request.request_type === 'term_link'"
-                :data="request.sourceEntity.attributes"
+                v-if="request?.request_type === 'term_link'"
+                :data="request?.sourceEntity.attributes"
             />
 
             <div v-if="request?.message">
@@ -52,7 +52,7 @@
 
             <p class="mt-auto mb-0 text-gray-500">
                 Requested {{ createdTimeAgo }} by
-                <UserPiece :user="request.createdByUser" :is-pill="false" />
+                <UserPiece :user="request?.createdByUser" :is-pill="false" />
             </p>
         </div>
 
@@ -79,18 +79,18 @@
                     </AtlanButton>
                 </div>
                 <RequestActions
-                    v-if="request.status === 'active'"
-                    @accept="approve"
-                    @reject="decline"
+                    v-if="request?.status === 'active'"
+                    @accept="handleApproval"
+                    @reject="handleRejection"
                 />
                 <div
-                    v-else-if="request.status === 'approved'"
+                    v-else-if="request?.status === 'approved'"
                     class="text-success"
                 >
                     Approved
                 </div>
                 <div
-                    v-else-if="request.status === 'rejected'"
+                    v-else-if="request?.status === 'rejected'"
                     class="text-error"
                 >
                     Rejected
@@ -101,7 +101,8 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
+    import { computed, defineComponent, PropType, toRefs, reactive } from 'vue'
+    import { message } from 'ant-design-vue'
     import { useTimeAgo } from '@vueuse/core'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import {
@@ -121,6 +122,10 @@
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import { assetTypeList } from '~/constant/assetType'
+    import {
+        approveRequest,
+        declineRequest,
+    } from '~/composables/requests/useRequests'
 
     export default defineComponent({
         name: 'RequestDetails',
@@ -140,13 +145,14 @@
                 required: true,
             },
         },
-        emits: ['up', 'down'],
-        setup(props) {
+        emits: ['up', 'down', 'action'],
+        setup(props, { emit }) {
             const { request } = toRefs(props)
-            console.log(request)
             const { a, d } = useMagicKeys()
-            const handleRejection = inject('handleRejection')
-            const handleApproval = inject('handleApproval')
+            const state = reactive({
+                isLoading: false,
+                message: '',
+            })
 
             const requestTitle = computed(() => {
                 let title = `${typeCopyMapping[request.value.request_type]} `
@@ -174,18 +180,44 @@
             const createdDate = computed(() =>
                 new Date(request.value.created_at).toLocaleDateString()
             )
+            function raiseErrorMessage(msg?: string) {
+                message.error(msg || 'Request modification failed, try again')
+            }
+
+            async function handleApproval() {
+                state.isLoading = true
+                try {
+                    await approveRequest(request.value.id, state.message)
+                    request.value.message = state.message
+                    request.value.status = 'approved'
+                    emit('action', request.value)
+                    message.success('Request approved')
+                } catch (error) {
+                    raiseErrorMessage()
+                }
+                state.isLoading = false
+            }
+
+            async function handleRejection() {
+                state.isLoading = true
+                try {
+                    await declineRequest(request.value.id, state.message)
+                    request.value.message = state.message
+                    request.value.status = 'rejected'
+                    emit('action', request.value)
+                    message.success('Request declined')
+                } catch (error) {
+                    raiseErrorMessage()
+                }
+                state.isLoading = false
+            }
+
             // whenever(a, () => {
             //     handleApproval(request)
             // })
             // whenever(d, () => {
             //     handleRejection(request)
             // })
-            const approve = () => {
-                handleApproval(request)
-            }
-            const decline = () => {
-                handleRejection(request)
-            }
             return {
                 requestTitle,
                 requestTypeIcon,
@@ -193,8 +225,6 @@
                 createdDate,
                 handleRejection,
                 handleApproval,
-                approve,
-                decline,
             }
         },
     })

@@ -88,7 +88,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import {
         DataPolicies,
-        ResourcePolicies,
+        MetadataPolicies,
     } from '~/types/accessPolicies/purposes'
     import { useConnectionStore } from '~/store/connection'
 
@@ -100,7 +100,7 @@
         },
         props: {
             policy: {
-                type: Object as PropType<DataPolicies & ResourcePolicies>,
+                type: Object as PropType<DataPolicies & MetadataPolicies>,
                 required: true,
             },
             type: {

@@ -80,7 +80,7 @@
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        resourcePolicies: [],
+                        metadataPolicies: [],
                         users: [],
                         groups: [],
                         personaType: 'persona',

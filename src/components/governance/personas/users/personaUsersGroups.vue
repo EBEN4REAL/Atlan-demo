@@ -104,104 +104,198 @@
                 </template>
             </a-popover>
         </div>
-        <!-- USER TABLE START -->
-        <a-table
-            v-if="filteredList && listType === 'users'"
-            id="userList"
-            class="border rounded border-300"
-            :key="persona.id"
-            :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :table-layout="'fixed'"
-            :data-source="filteredList"
-            :columns="userColumns"
-            :row-key="(user) => user.id"
-            :class="$style.table"
-            :loading="
-                [USER_STATES.PENDING].includes(userState) ||
-                [USER_STATES.VALIDATING].includes(userState)
-            "
-            @change="handleUsersTableChange"
-        >
-            <template #headerCell="{ title, column }">
-                <div class="flex justify-center">
-                    <span>{{ title }}</span>
-                </div>
-            </template>
-            <template #name="{ text: user }">
-                <div class="flex items-center align-middle">
-                    <avatar
-                        :image-url="imageUrl(user.username)"
-                        :allow-upload="false"
-                        :avatar-name="
-                            user.name ||
-                            user.username ||
-                            user.email ||
-                            user.first_name + user.last_name
-                        "
-                        :avatar-size="40"
-                        class="mr-2"
-                    />
-                    <div
-                        class="truncate cursor-pointer"
-                        @click="
-                            () => {
-                                showUserPreviewDrawer(user)
-                            }
-                        "
-                    >
-                        <span class="text-primary">{{ user.name || '-' }}</span>
-                        <p class="mb-0 truncate text-gray">
-                            @{{ user.username || '-' }}
-                        </p>
-                    </div>
-                </div>
-            </template>
-            <template #role="{ text: user }">
-                <div
-                    class="
-                        inline-flex
-                        items-center
-                        px-2
-                        py-0.5
-                        rounded
-                        text-gray-500
-                    "
-                >
-                    <div>{{ user.role_object.name || '-' }}</div>
-                </div>
-            </template>
-            <template #actions="{ text: user }">
-                <a-button-group>
-                    <a-tooltip placement="top">
-                        <template #title>
-                            <span>Remove User</span>
-                        </template>
-                        <a-popconfirm
-                            placement="leftTop"
-                            :title="getPopoverContent(user, 'remove', 'user')"
-                            ok-text="Yes"
-                            :ok-type="'default'"
-                            cancel-text="Cancel"
-                            @confirm="confirmPopover(user, 'user')"
-                        >
-                            <a-button
-                                size="small"
-                                class="ml-3.5 w-8 h-8 rounded"
-                            >
-                                <AtlanIcon
-                                    icon="RemoveUser"
-                                ></AtlanIcon> </a-button
-                        ></a-popconfirm>
-                    </a-tooltip>
-                </a-button-group>
-            </template>
-        </a-table>
         <div
             v-if="
-                [USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
+                ![USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
                     userState
                 )
             "
+        >
+            <!-- USER TABLE START -->
+            <a-table
+                v-if="filteredList && listType === 'users'"
+                id="userList"
+                class="border rounded border-300"
+                :key="persona.id"
+                :scroll="{ y: 'calc(100vh - 20rem)' }"
+                :table-layout="'fixed'"
+                :data-source="filteredList"
+                :columns="userColumns"
+                :row-key="(user) => user.id"
+                :class="$style.table"
+                :loading="
+                    [USER_STATES.PENDING].includes(userState) ||
+                    [USER_STATES.VALIDATING].includes(userState)
+                "
+                @change="handleUsersTableChange"
+            >
+                <template #headerCell="{ title, column }">
+                    <div class="flex justify-center">
+                        <span>{{ title }}</span>
+                    </div>
+                </template>
+                <template #name="{ text: user }">
+                    <div class="flex items-center align-middle">
+                        <avatar
+                            :image-url="imageUrl(user.username)"
+                            :allow-upload="false"
+                            :avatar-name="
+                                user.name ||
+                                user.username ||
+                                user.email ||
+                                user.first_name + user.last_name
+                            "
+                            :avatar-size="40"
+                            class="mr-2"
+                        />
+                        <div
+                            class="truncate cursor-pointer"
+                            @click="
+                                () => {
+                                    showUserPreviewDrawer(user)
+                                }
+                            "
+                        >
+                            <span class="text-primary">{{
+                                user.name || '-'
+                            }}</span>
+                            <p class="mb-0 truncate text-gray">
+                                @{{ user.username || '-' }}
+                            </p>
+                        </div>
+                    </div>
+                </template>
+                <template #role="{ text: user }">
+                    <div
+                        class="
+                            inline-flex
+                            items-center
+                            px-2
+                            py-0.5
+                            rounded
+                            text-gray-500
+                        "
+                    >
+                        <div>{{ user.role_object.name || '-' }}</div>
+                    </div>
+                </template>
+                <template #actions="{ text: user }">
+                    <a-button-group>
+                        <a-tooltip placement="top">
+                            <template #title>
+                                <span>Remove User</span>
+                            </template>
+                            <a-popconfirm
+                                placement="leftTop"
+                                :title="
+                                    getPopoverContent(user, 'remove', 'user')
+                                "
+                                ok-text="Yes"
+                                :ok-type="'default'"
+                                cancel-text="Cancel"
+                                @confirm="confirmPopover(user, 'user')"
+                            >
+                                <a-button
+                                    size="small"
+                                    class="ml-3.5 w-8 h-8 rounded"
+                                >
+                                    <AtlanIcon
+                                        icon="RemoveUser"
+                                    ></AtlanIcon> </a-button
+                            ></a-popconfirm>
+                        </a-tooltip>
+                    </a-button-group>
+                </template>
+            </a-table>
+        </div>
+
+        <!-- USER TABLE END -->
+        <div
+            v-else-if="
+                ![GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
+                    groupState
+                )
+            "
+        >
+            <a-table
+                v-if="filteredList && listType === 'groups'"
+                id="groupList"
+                :key="persona.id"
+                :class="$style.table"
+                :scroll="{ y: 'calc(100vh - 20rem)' }"
+                :table-layout="'fixed'"
+                :data-source="filteredList"
+                :columns="groupColumns"
+                :row-key="(group) => group.id"
+                :loading="
+                    [GROUP_STATES.PENDING].includes(groupState) ||
+                    [GROUP_STATES.VALIDATING].includes(groupState)
+                "
+                @change="handleGroupsTableChange"
+            >
+                <template #headerCell="{ title, column }">
+                    <div class="flex justify-center">
+                        <span>{{ title }}</span>
+                    </div>
+                </template>
+                <template #group="{ text: group }">
+                    <div class="flex items-center align-middle">
+                        <avatar
+                            :image-url="imageUrl(group.alias)"
+                            :allow-upload="false"
+                            :avatar-name="group.alias"
+                            :avatar-size="40"
+                            class="mr-2"
+                        />
+                        <div
+                            class="truncate cursor-pointer"
+                            @click="
+                                () => {
+                                    showGroupPreviewDrawer(group)
+                                }
+                            "
+                        >
+                            <span class="text-primary">{{
+                                group.alias || '-'
+                            }}</span>
+                            <p class="mb-0 truncate text-gray">
+                                @{{ group.alias || '-' }}
+                            </p>
+                        </div>
+                    </div>
+                </template>
+
+                <template #actions="{ text: group }">
+                    <a-button-group>
+                        <a-tooltip placement="top">
+                            <template #title>
+                                <span>Remove group</span>
+                            </template>
+                            <a-popconfirm
+                                placement="leftTop"
+                                :title="
+                                    getPopoverContent(group, 'remove', 'group')
+                                "
+                                ok-text="Yes"
+                                :ok-type="'default'"
+                                cancel-text="Cancel"
+                                @confirm="confirmPopover(group, 'group')"
+                            >
+                                <a-button
+                                    size="small"
+                                    class="ml-3.5 w-8 h-8 rounded"
+                                >
+                                    <AtlanIcon
+                                        icon="RemoveUser"
+                                    ></AtlanIcon> </a-button
+                            ></a-popconfirm>
+                        </a-tooltip>
+                    </a-button-group>
+                </template>
+            </a-table>
+        </div>
+        <div
+            v-else
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -223,82 +317,6 @@
                 </div>
             </ErrorView>
         </div>
-
-        <!-- USER TABLE END -->
-        <a-table
-            v-if="filteredList && listType === 'groups'"
-            id="groupList"
-            :key="persona.id"
-            :class="$style.table"
-            :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :table-layout="'fixed'"
-            :data-source="filteredList"
-            :columns="groupColumns"
-            :row-key="(group) => group.id"
-            :loading="
-                [GROUP_STATES.PENDING].includes(groupState) ||
-                [GROUP_STATES.VALIDATING].includes(groupState)
-            "
-            @change="handleGroupsTableChange"
-        >
-            <template #headerCell="{ title, column }">
-                <div class="flex justify-center">
-                    <span>{{ title }}</span>
-                </div>
-            </template>
-            <template #group="{ text: group }">
-                <div class="flex items-center align-middle">
-                    <avatar
-                        :image-url="imageUrl(group.alias)"
-                        :allow-upload="false"
-                        :avatar-name="group.alias"
-                        :avatar-size="40"
-                        class="mr-2"
-                    />
-                    <div
-                        class="truncate cursor-pointer"
-                        @click="
-                            () => {
-                                showGroupPreviewDrawer(group)
-                            }
-                        "
-                    >
-                        <span class="text-primary">{{
-                            group.alias || '-'
-                        }}</span>
-                        <p class="mb-0 truncate text-gray">
-                            @{{ group.alias || '-' }}
-                        </p>
-                    </div>
-                </div>
-            </template>
-
-            <template #actions="{ text: group }">
-                <a-button-group>
-                    <a-tooltip placement="top">
-                        <template #title>
-                            <span>Remove group</span>
-                        </template>
-                        <a-popconfirm
-                            placement="leftTop"
-                            :title="getPopoverContent(group, 'remove', 'group')"
-                            ok-text="Yes"
-                            :ok-type="'default'"
-                            cancel-text="Cancel"
-                            @confirm="confirmPopover(group, 'group')"
-                        >
-                            <a-button
-                                size="small"
-                                class="ml-3.5 w-8 h-8 rounded"
-                            >
-                                <AtlanIcon
-                                    icon="RemoveUser"
-                                ></AtlanIcon> </a-button
-                        ></a-popconfirm>
-                    </a-tooltip>
-                </a-button-group>
-            </template>
-        </a-table>
     </div>
 </template>
 

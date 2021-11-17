@@ -47,14 +47,14 @@
                         <div
                             v-if="
                                 persona.dataPolicies?.length === 0 &&
-                                persona.resourcePolicies?.length === 0
+                                persona.metadataPolicies?.length === 0
                             "
                         >
                             No policies added
                         </div>
                         <div v-else class="flex items-center">
                             <div class="mr-3">
-                                <b>{{ persona.resourcePolicies?.length }}</b>
+                                <b>{{ persona.metadataPolicies?.length }}</b>
                                 Metadata policies
                             </div>
                             <div>

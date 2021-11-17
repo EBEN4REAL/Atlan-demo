@@ -30,13 +30,13 @@ function usePersonaUserList(persona: Ref<IPurpose>) {
             userList.value = []
             let data: IUser[] = []
             list.value.forEach((t) => {
-                persona.value.users?.forEach((username) => {
-                    if (t.username === username) {
+                persona.value.users?.forEach((userIds) => {
+                    if (t.id === userIds) {
                         data.push(t)
                     }
                 })
             })
-            // console.log(list.value, 'personaUser', persona)
+            console.log(data, 'personaUser', persona)
 
             userList.value = data
         },

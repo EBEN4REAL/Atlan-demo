@@ -231,7 +231,7 @@
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import { useConnectionStore } from '~/store/connection'
 
-    import { ResourcePolicies } from '~/types/accessPolicies/purposes'
+    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPersona'
 
     export default defineComponent({
@@ -246,7 +246,7 @@
         },
         props: {
             policy: {
-                type: Object as PropType<ResourcePolicies>,
+                type: Object as PropType<MetadataPolicies>,
                 required: true,
             },
         },

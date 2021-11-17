@@ -22,9 +22,8 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.resourcePolicies?.length ??
-                            0 + selectedPersonaDirty?.datapolicies?.length ??
-                            0
+                            selectedPersonaDirty?.metadataPolicies?.length +
+                            selectedPersonaDirty?.datapolicies?.length
                         }}
                     </div>
                     <div
@@ -37,9 +36,8 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.users?.length ??
-                            0 + selectedPersonaDirty?.groups?.length ??
-                            0
+                            selectedPersonaDirty?.users?.length +
+                            selectedPersonaDirty?.groups?.length
                         }}
                     </div>
                 </div>
@@ -56,12 +54,12 @@
                 <template
                     v-for="(
                         policy, idx
-                    ) in selectedPersonaDirty.resourcePolicies"
+                    ) in selectedPersonaDirty.metadataPolicies"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
                     <MetadataPolicy
-                        v-if="policyEditMap.resourcePolicies[policy.id!]"
+                        v-if="policyEditMap.metadataPolicies[policy.id!]"
                         class="px-5"
                         :policy="policy"
                         @delete="deletePolicyUI('meta', policy.id!)"
@@ -102,7 +100,7 @@
                 </template>
                 <div
                     v-if="
-                        !selectedPersonaDirty.resourcePolicies?.length &&
+                        !selectedPersonaDirty.metadataPolicies?.length &&
                         !selectedPersonaDirty.dataPolicies?.length
                     "
                     class="flex flex-col items-center justify-center mt-8"

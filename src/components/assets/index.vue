@@ -28,7 +28,7 @@
                         :allow-clear="true"
                         size="large"
                         class="px-6"
-                        placeholder="Search assets..."
+                        :placeholder="placeholder"
                         @change="handleSearchChange"
                     >
                         <template #filter>
@@ -133,7 +133,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -253,6 +253,7 @@
                 isLoadMore,
                 isValidating,
                 fetch,
+
                 error,
                 selectedAsset,
                 quickChange,
@@ -325,6 +326,18 @@
                 discoveryStore.setActivePanel(activeKey.value)
             }
 
+            const placeholder = computed(() => {
+                const found = assetTypeAggregationList.value.find(
+                    (item) => item.id === postFacets.value.typeName
+                )
+
+                if (found) {
+                    console.log(found)
+                    return `Search ${found.label.toLowerCase()} assets`
+                }
+                return 'Search all assets'
+            })
+
             return {
                 handleFilterChange,
                 isLoading,
@@ -338,6 +351,7 @@
                 handleAssetTypeChange,
                 handlePreview,
                 fetch,
+                placeholder,
                 handleSearchChange,
                 isValidating,
                 preference,
@@ -352,6 +366,7 @@
                 selectedAsset,
                 updateList,
                 updateCurrentList,
+                placeholder,
                 searchDirtyTimestamp,
             }
         },

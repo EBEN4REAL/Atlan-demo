@@ -96,7 +96,7 @@
         props: {
             selectedUser: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
         setup(props, context) {

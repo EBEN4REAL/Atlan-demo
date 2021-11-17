@@ -203,6 +203,7 @@
                 showGroupPreview: openPreview,
                 setGroupUniqueAttribute,
                 setDefaultTab,
+                closePreview,
             } = useGroupPreview()
 
             const showGroupPreviewDrawer = (
@@ -282,7 +283,6 @@
             }
 
             const handleGroupClick = (group: any) => {
-                // showGroupPreview.value = true;
                 showGroupPreviewDrawer(group)
             }
             const selectedGroup = computed(() => {

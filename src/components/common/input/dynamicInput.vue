@@ -73,7 +73,7 @@
     >
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
-            <template v-if="allowCreate">
+            <div v-if="allowCreate">
                 <a-divider style="margin: 4px 0" />
                 <div
                     style="padding: 4px 8px; cursor: pointer"
@@ -82,7 +82,7 @@
                 >
                     {{ createNewLabel || 'Create More' }}
                 </div>
-            </template>
+            </div>
         </template>
     </a-select>
     <a-modal
@@ -209,6 +209,7 @@
     import useAsyncSelector from './useAsyncSelector'
     import useAsyncTreeSelect from './useAsyncTreeSelect'
     import useFileUploader from './useFileUploader'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
@@ -574,6 +575,7 @@
             }
 
             return {
+                access,
                 fileError,
                 fileSuccess,
                 uploading,

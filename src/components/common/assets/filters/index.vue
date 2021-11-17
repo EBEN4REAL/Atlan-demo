@@ -152,7 +152,14 @@
                     }
                 }
 
-                return Object.keys(localValue.value).length
+                let count = 0
+                Object.keys(localValue.value).forEach((key) => {
+                    console.log(key)
+                    if (localValue.value[key]) {
+                        count += 1
+                    }
+                })
+                return count
             })
 
             const handleChange = () => {

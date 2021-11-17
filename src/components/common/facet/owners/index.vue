@@ -186,8 +186,13 @@
             watch(localValue.value, (prev, cur) => {
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
+                } else if (localValue.value.ownerUsers?.length === 0) {
+                    delete localValue.value.ownerUsers
                 }
+
                 if (!localValue.value.ownerGroups) {
+                    delete localValue.value.ownerGroups
+                } else if (localValue.value.ownerGroups?.length === 0) {
                     delete localValue.value.ownerGroups
                 }
                 modelValue.value = localValue.value

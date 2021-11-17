@@ -32,7 +32,13 @@
                                         }}</template>
                                         <component
                                             :is="images[col.data_type]"
-                                            class="w-4 h-4 mr-1 cursor-pointer"
+                                            class="
+                                                w-4
+                                                h-4
+                                                mr-1
+                                                cursor-pointer
+                                                -mt-0.5
+                                            "
                                         ></component>
                                     </a-tooltip>
 

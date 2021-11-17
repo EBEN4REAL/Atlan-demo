@@ -133,7 +133,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed, watch } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -336,6 +336,16 @@
                     return `Search ${found.label.toLowerCase()} assets`
                 }
                 return 'Search all assets'
+            })
+
+            watch(initialFilters, (newInitialfilters) => {
+                if(newInitialfilters) {
+                    facets.value = {
+                        ...facets.value,
+                        ...newInitialfilters,
+                    }
+                    quickChange()
+                }
             })
 
             return {

@@ -29,15 +29,6 @@
                                 :key="index"
                                 class="truncate bg-gray-100 border  border-gray-light"
                             >
-                                <!-- {{ col.title }} -->
-                                <!-- <component
-                                    :is="images[col.type]"
-                                    class="w-4 h-4 mr-1 cursor-pointer"
-                                ></component>
-                                <Tooltip
-                                    :tooltip-text="`${col.title}`"
-                                    width="250px"
-                                /> -->
                                 <div class="flex items-center">
                                     <a-tooltip>
                                         <template #title>{{

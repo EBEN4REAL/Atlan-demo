@@ -34,7 +34,7 @@ export interface IPersona {
     groups?: string[]
     metadataPolicies?: MetadataPolicies[]
     // Will be camel cased from BE
-    datapolicies?: DataPolicies[]
+    dataPolicies?: DataPolicies[]
     updatedAt?: string
     updatedBy?: string
     createdAt?: string

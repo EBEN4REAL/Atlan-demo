@@ -22,7 +22,7 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.metadataPolicies?.length ??
+                            selectedPersonaDirty?.resourcePolicies?.length ??
                             0 + selectedPersonaDirty?.datapolicies?.length ??
                             0
                         }}
@@ -41,12 +41,12 @@
                 <template
                     v-for="(
                         policy, idx
-                    ) in selectedPersonaDirty.metadataPolicies"
+                    ) in selectedPersonaDirty.resourcePolicies"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
                     <MetadataPolicy
-                        v-if="policyEditMap.metadataPolicies[policy.id!]"
+                        v-if="policyEditMap.resourcePolicies[policy.id!]"
                         class="px-5"
                         :policy="policy"
                         @delete="deletePolicyUI('meta', policy.id!)"
@@ -87,7 +87,7 @@
                 </template>
                 <div
                     v-if="
-                        !selectedPersonaDirty.metadataPolicies?.length &&
+                        !selectedPersonaDirty.resourcePolicies?.length &&
                         !selectedPersonaDirty.dataPolicies?.length
                     "
                     class="flex flex-col items-center justify-center mt-8"
@@ -154,7 +154,7 @@
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PurposeMeta from './overview/purposeMeta.vue'
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPersona } from '~/types/accessPolicies/purposes'
     import {
         selectedPersonaDirty,
         addPolicy,

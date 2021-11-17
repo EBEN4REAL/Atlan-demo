@@ -6,7 +6,7 @@ import { useAPIPromise } from '~/services/api/useAPIPromise'
 
 import { useOptions } from '~/services/api/common'
 
-import { IPersona } from '~/types/accessPolicies/personas'
+import { IPersona } from '~/types/accessPolicies/purposes'
 
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PURPOSE, 'GET', { params }, options || {})

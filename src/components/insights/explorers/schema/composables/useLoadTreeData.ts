@@ -29,6 +29,7 @@ const attributes = [
     'ownerGroups',
     'classifications',
     'tableCount',
+    'viewCount',
     'columnCount',
     ...InternalAttributes,
     ...BasicSearchAttributes,

@@ -31,8 +31,21 @@ export const previewTabs = [
         name: 'Activity',
         component: 'activity',
         excludes: ['Query', 'QueryFolder'],
-        icon: 'Activity',
+        icon: 'ActivityLogs',
         tooltip: 'Activity',
+    },
+    {
+        name: 'Relations',
+        component: 'relations',
+        exclude: [
+            'Connection',
+            'Database',
+            'Schema',
+            'AtlasGlossaryCategory',
+            'AtlasGlossaryTerm'
+        ],
+        icon: 'Relation',
+        tooltip: 'Relationships',
     },
     {
         name: 'Property',

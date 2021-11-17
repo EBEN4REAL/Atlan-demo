@@ -13,18 +13,21 @@ export interface Actions extends State {
 }
 
 export const actions: Actions = {
+  // classiffication
   appendClassificationList(value) {
     this.classificationList.push(...value)
   },
   setClassificationList(value) {
     this.classificationList = value
   },
+  // enum list
   appendEnumList(value) {
     this.enumList.push(...value)
   },
   setEnumList(value) {
     this.enumList = value
   },
+  // custom metadata
   appendCustomMetadata(value) {
     this.customMetadataList.push(...value)
   },
@@ -33,7 +36,7 @@ export const actions: Actions = {
   },
   updateCustomMetadata(bm) {
     const indexOfBmToUpdate = this.customMetadataList?.findIndex((x) => x.guid === bm.guid)
-    if (indexOfBmToUpdate > 0) this.customMetadataList[indexOfBmToUpdate] = bm
+    if (indexOfBmToUpdate > -1) this.customMetadataList[indexOfBmToUpdate] = bm
   },
   // states updates 
   setIsLoading(value) {

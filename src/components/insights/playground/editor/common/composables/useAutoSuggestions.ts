@@ -78,21 +78,22 @@ function generateMarkdown(
         descriptionHTML,
         rowCountHTML = '',
         guid
-    // const URL = getAssetProfileURL(entity)
+
     if (assetType === 'TABLE') {
         description =
-            entity.metadata.userDescription || entity.metadata.description
-        ownerString = entity.metadata.ownerUsers.join(', ')
+            entity.attributes.userDescription || entity.attributes.description
+        ownerString = entity.attributes.ownerUsers.join(', ')
         rowCountHTML = `<div>Row count:</div>
-        <p> ${entity.metadata.rowCount}</p>
+        <p> ${entity.attributes.rowCount}</p>
         &nbsp; 
         </div>`
         ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>&nbsp;`
         descriptionHTML = `</p> Owned by:</br>${description}</p>`
-        guid = entity.metadata.guid
+        guid = entity.guid
     } else {
-        description = entity.userDescription || entity.description
-        ownerString = entity.ownerUsers.join(', ')
+
+        description = entity.attributes.userDescription || entity.attributes.description
+        ownerString = entity.attributes.ownerUsers.join(', ')
         ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>`
         descriptionHTML = `</p> Owned by:</br>${description}</p>`
         guid = entity.guid
@@ -131,7 +132,7 @@ export function entitiesToEditorKeyword(
     const turndownService = new TurndownService()
     return new Promise((resolve) => {
         response.then((res) => {
-            const entities = res.entities
+            const entities = res.entities ?? 0
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
             for (let i = 0; i < len; i++) {
@@ -140,13 +141,16 @@ export function entitiesToEditorKeyword(
                     case 'TABLE': {
                         /* When Schema Or database not selected TableQN will be used */
                         let entityType = `${type}`
-                        let insertText = entities[i].name
-                        let label = entities[i].name
+                        let insertText = entities[i].attributes.name
+                        let label = entities[i].attributes.name
+
+                        let qualifiedName = entities[i].attributes.qualifiedName.split('/')
+                        let tableQN = `${qualifiedName[4]}.${qualifiedName[4]}.${qualifiedName[5]}`
+
                         if (!connectorsInfo.schemaName) {
                             insertText = entities[i].tableQN as string
                             const spilltedVal = insertText.split('.')
-                            /* Spliited val will be always >3 i,e 3 */
-                            insertText = entities[i].tableQN as string
+                            insertText = tableQN as string
                             /* database name is selected */
                             if (connectorsInfo.databaseName) {
                                 insertText = `${spilltedVal[1]}.${spilltedVal[2]}`
@@ -155,7 +159,7 @@ export function entitiesToEditorKeyword(
                                 entityType = `${type}: ${entities[i].tableQN}`
                             }
                         } else if (!connectorsInfo.databaseName) {
-                            insertText = entities[i].tableQN as string
+                            insertText = tableQN as string
                             entityType = `${type}: ${insertText}`
                         }
 
@@ -175,24 +179,24 @@ export function entitiesToEditorKeyword(
                         words.push(keyword)
                     }
                     case 'COLUMN': {
-                        let cols: autosuggestionEntityColumn[] =
-                            entities[i]?.columns
-                        for (let j = 0; j < cols?.length; j++) {
-                            keyword = {
-                                label: cols[j].name,
-                                detail: `${type}: ${entities[i].name}`, // COLUMN - TABLE_NAME,
-                                kind: monaco.languages.CompletionItemKind.Field,
-                                documentation: {
-                                    value: generateMarkdown(
-                                        turndownService,
-                                        cols[j],
-                                        `${type}`
-                                    ),
-                                },
-                                insertText: `${cols[j].name}`,
-                            }
-                            words.push(keyword)
+                        let qualifiedName = entities[i].attributes.qualifiedName.split('/')
+                        let tableName = qualifiedName[qualifiedName.length-2];
+
+                        keyword = {
+                            label: entities[i].attributes.name,
+                            detail: `${type}: ${tableName}`, // COLUMN - TABLE_NAME,
+                            kind: monaco.languages.CompletionItemKind.Field,
+                            documentation: {
+                                value: generateMarkdown(
+                                    turndownService,
+                                    entities[i],
+                                    `${type}`
+                                ),
+                            },
+                            insertText: `${entities[i].attributes.name}`,
                         }
+                        words.push(keyword)
+                        // }
                     }
                 }
             }
@@ -238,6 +242,57 @@ export function getLastMappedKeyword(
     return undefined
 }
 
+const attributes = [
+    "name",
+    "displayName",
+    "typeName",
+    "dataType",
+    "description",
+    "userDescription",
+    "ownerUsers",
+    "ownerGroups",
+
+    "connectorName",
+    "connectionId",
+    "connectionQualifiedName",
+    "parentFolderQualifiedName",
+    "defaultSchemaQualifiedName",
+    "rowCount",
+    "columnCount",
+    "tableCount",
+    "__guid",
+    "qualifiedName",
+    "connectionName",
+]
+const body = ref()
+
+const refreshBody = () => {
+    body.value = {
+        dsl: {
+            from: 0,
+            size: 100,
+            sort: [
+                {
+                    "name.keyword": {
+                        order: "asc"
+                    }
+                }
+            ],
+            query: {
+                bool: {
+                    filter: {
+                        bool: {
+                            must: [
+                               
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        attributes
+    }
+}
 async function getSuggestionsUsingType(
     type: string = 'TABLE',
     token: string,
@@ -249,25 +304,36 @@ async function getSuggestionsUsingType(
     },
     cancelTokenSource: Ref<any>
 ) {
-    const body = {
-        dataSourceName: connectorsInfo.connectionQualifiedName,
-        assetType: type === 'TABLE' ? 'Table' : 'Column',
-        prefix: currentWord,
-    }
-    if (connectorsInfo.databaseName) {
-        body.catalog = connectorsInfo.databaseName
-    }
-    if (connectorsInfo.schemaName) {
-        body.schema = connectorsInfo.schemaName
-    }
+    refreshBody()
+    body.value.dsl.query.bool.filter.bool.must.push(
+        {
+            term: {
+                "schemaQualifiedName": `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}`
+            }
+        }
+    )
+    body.value.dsl.query.bool.filter.bool.must.push(
+        {
+            regexp: {
+                "name.keyword": `${currentWord}.*`
+            }
+        }
+    )
 
-    switch (type) {
+    switch(type) {
         case 'TABLE': {
-            /* Make a network request  all tables starting with word/text for user typing right now */
-            // let len = tokens.length
-            // currentWord = tokens[len - 1]
-            // fetchTables(currentWord)
-
+            
+            body.value.dsl.query.bool.filter.bool.must.push(
+                {
+                    terms: {
+                        "__typeName.keyword": [
+                            "Table",
+                            "View"
+                        ]
+                    }
+                }
+            )
+            
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
@@ -293,6 +359,16 @@ async function getSuggestionsUsingType(
             return getLocalSQLSugggestions(currentWord)
         }
         case 'COLUMN': {
+            body.value.dsl.query.bool.filter.bool.must.push(
+                {
+                    terms: {
+                        "__typeName.keyword": [
+                            "Column"
+                        ]
+                    }
+                }
+            )
+
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }

@@ -141,24 +141,54 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col">
-            <div
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-            >
-                <span> Description</span>
-            </div>
+        <div class="flex flex-col" v-if="isGTC(selectedAsset)">
+            <Shortcut shortcutKey="n" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Name</span>
+                </div>
+            </Shortcut>
 
-            <Description v-model="localDescription" class="mx-4" />
+            <Name
+                v-model="localName"
+                class="mx-4"
+                @change="handleChangeName"
+                ref="nameRef"
+            />
+        </div>
+
+        <div class="flex flex-col">
+            <Shortcut shortcutKey="d" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Description</span>
+                </div>
+            </Shortcut>
+
+            <Description
+                ref="descriptionRef"
+                v-model="localDescription"
+                class="mx-4"
+                @change="handleChangeDescription"
+            />
+        </div>
+        <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
+            <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
         </div>
         <div
             class="flex flex-col"
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-            >
-                Owners
-            </p>
+            <Shortcut shortcutKey="o" action="set owners" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Owners</span>
+                </div>
+            </Shortcut>
+
             <Owners
                 v-model="localOwners"
                 :guid="selectedAsset.guid"
@@ -175,11 +205,18 @@
             "
             class="flex flex-col"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            <Shortcut
+                shortcutKey="t"
+                action="set classification"
+                placement="left"
             >
-                Classification
-            </p>
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Classification</span>
+                </div>
+            </Shortcut>
+
             <Classification
                 :guid="selectedAsset.guid"
                 v-model="localClassifications"
@@ -214,13 +251,15 @@
                 )
             "
             class="flex flex-col"
+            ref="animationPoint"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-                ref="animationPoint"
-            >
-                Certificate
-            </p>
+            <Shortcut shortcutKey="c" action="set certificate" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Certificate</span>
+                </div>
+            </Shortcut>
 
             <Certificate
                 :selected-asset="selectedAsset"
@@ -244,45 +283,47 @@
         Ref,
         reactive,
     } from 'vue'
-    import { message } from 'ant-design-vue'
     import { whenever } from '@vueuse/core'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
+    import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
-    import CertificationPopover from '@/common/popover/certification.vue'
+    import SavedQuery from '@common/hovercards/savedQuery.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import { message, Modal } from 'ant-design-vue'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import whoami from '~/composables/user/whoami'
     import confetti from '~/utils/confetti'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
         components: {
             // Experts,
             Description,
+            Name,
             AnnouncementWidget,
             // Status,
             Owners,
             Classification,
-            // Query,
+            SavedQuery,
             Certificate,
             RowInfoHoverCard,
             SQL,
             Terms,
-            CertificationPopover,
+            Shortcut,
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
-
             const isConfetti = ref(false)
 
             const {
@@ -316,6 +357,7 @@
                 certificateUpdatedAt,
                 certificateStatusMessage,
                 certificateUpdatedBy,
+                isGTC,
             } = useAssetInfo()
 
             const entity = ref({
@@ -329,7 +371,7 @@
                 },
             })
 
-            const guid = ref(null)
+            const guid = ref()
 
             const {
                 asset,
@@ -360,8 +402,8 @@
 
             const { mutate, isLoading, isReady, error } = updateAsset(body)
 
+            const localName = ref(title(selectedAsset?.value))
             const localDescription = ref(description(selectedAsset?.value))
-
             const localCertificate = ref({
                 certificateStatus: certificateStatus(selectedAsset.value),
                 certificateUpdatedAt: certificateUpdatedAt(selectedAsset.value),
@@ -370,42 +412,44 @@
                     selectedAsset.value
                 ),
             })
+            const localOwners = ref({
+                ownerUsers: ownerUsers(selectedAsset.value),
+                ownerGroups: ownerGroups(selectedAsset.value),
+            })
+
+            const localClassifications = ref(
+                classifications(selectedAsset.value)
+            )
 
             const currentMessage = ref('')
 
-            watch([localDescription], ([newDescription], [prevDescription]) => {
-                if (newDescription !== prevDescription) {
+            const nameRef = ref(null)
+            const descriptionRef = ref(null)
+
+            // Name Change
+            const handleChangeName = () => {
+                if (title(selectedAsset?.value) !== localName.value) {
+                    entity.value.attributes.name = localName.value
+                    body.value.entities = [entity.value]
+                    currentMessage.value = 'Name has been updated'
+                    mutate()
+                }
+            }
+
+            // Description Change
+            const handleChangeDescription = () => {
+                if (
+                    description(selectedAsset?.value) !== localDescription.value
+                ) {
                     entity.value.attributes.userDescription =
                         localDescription.value
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Description has been updated'
                     mutate()
                 }
-            })
+            }
 
-            whenever(isReady, () => {
-                message.success(currentMessage.value)
-                guid.value = selectedAsset.value.guid
-                rainConfettis()
-                mutateUpdate()
-            })
-
-            const updateList = inject('updateList')
-            whenever(isUpdateReady, () => {
-                updateList(asset.value)
-            })
-
-            whenever(error, () => {
-                message.error('Something went wrong. Please try again')
-            })
-
-            const localOwners = ref({
-                ownerUsers: ownerUsers(selectedAsset.value),
-                ownerGroups: ownerGroups(selectedAsset.value),
-            })
-
-            watch(localOwners.value.ownerUsers, (newVal, prevVal) => {})
-
+            // Owners Change
             const handleOwnersChange = () => {
                 let isChanged = false
                 if (
@@ -428,14 +472,42 @@
                 if (isChanged) {
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Owners has been updated'
-
                     mutate()
                 }
             }
 
-            const localClassifications = ref(
-                classifications(selectedAsset.value)
-            )
+            // error handling
+            whenever(error, () => {
+                if (title(selectedAsset?.value) !== localName.value) {
+                    localName.value = title(selectedAsset?.value)
+                    nameRef.value?.handleReset(localName.value)
+                }
+                if (
+                    description(selectedAsset?.value) !== localDescription.value
+                ) {
+                    localDescription.value = description(selectedAsset?.value)
+                    descriptionRef.value?.handleReset(localDescription.value)
+                }
+                message.error('Something went wrong. Please try again')
+            })
+
+            whenever(isReady, () => {
+                message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                rainConfettis()
+                mutateUpdate()
+            })
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                }
+            })
 
             const classificationBody = ref({
                 guidHeaderMap: {
@@ -520,7 +592,9 @@
                     height: '0.3rem',
                 }
                 if (isConfetti.value) {
-                    confetti(animationPoint.value, config)
+                    if (animationPoint) {
+                        confetti(animationPoint.value, config)
+                    }
                 }
             }
 
@@ -595,6 +669,12 @@
                 animationPoint,
                 rainConfettis,
                 isConfetti,
+                isGTC,
+                localName,
+                handleChangeName,
+                handleChangeDescription,
+                nameRef,
+                descriptionRef,
             }
         },
     })

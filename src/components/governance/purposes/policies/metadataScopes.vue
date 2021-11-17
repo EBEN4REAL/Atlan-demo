@@ -44,7 +44,7 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import {} from '../composables/useEditPurpose'
+    // import {} from '../composables/useEditPurpose'
     import useScopeService from '../composables/useScopeService'
 
     export default defineComponent({

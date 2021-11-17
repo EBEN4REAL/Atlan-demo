@@ -1,27 +1,22 @@
 <template>
-    <div class="flex flex-col p-6 gap-y-4">
-        <AnnouncementWidget
-            :selected-asset="selectedAsset"
-        ></AnnouncementWidget>
-        <TableSumamry :asset="selectedAsset" />
-        <Readme :guid="readmeGuid(selectedAsset)" />
-        <Resources :asset="selectedAsset" />
-    </div>
+    <BiOverview
+        v-if="isBiAsset(selectedAsset)"
+        :selectedAsset="selectedAsset"
+    />
+    <NonBiOverview v-else :selectedAsset="selectedAsset" />
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
 
-    import Resources from '@common/resources/index.vue'
-    import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Readme from '@/common/widgets/readme/index.vue'
-    import TableSumamry from './tableSummary.vue'
+    import NonBiOverview from './nonBi/index.vue'
+    import BiOverview from './bi/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'OverviewTab',
-        components: { AnnouncementWidget, Readme, Resources, TableSumamry },
+        components: { NonBiOverview, BiOverview },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -29,9 +24,9 @@
             },
         },
         setup() {
-            const { readmeGuid } = useAssetInfo()
+            const { isBiAsset } = useAssetInfo()
 
-            return { readmeGuid }
+            return { isBiAsset }
         },
     })
 </script>

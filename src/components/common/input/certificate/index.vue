@@ -4,6 +4,7 @@
             placement="leftBottom"
             overlayClassName="certificatePopover"
             @visibleChange="handleVisibleChange"
+            v-model:visible="isEdit"
         >
             <template #content>
                 <CertificateFacet
@@ -54,7 +55,13 @@
         nextTick,
         reactive,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
     // import { message } from 'ant-design-vue'
     // import updateAsset from '~/composables/discovery/updateAsset'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -88,6 +95,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const isEdit = ref(false)
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -103,11 +111,40 @@
                 }
             }
 
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA'
+            )
+            const { c, Escape, v } = useMagicKeys()
+            whenever(and(c, notUsingInput), () => {
+                if (!isEdit.value) {
+                    isEdit.value = true
+                }
+            })
+
+            whenever(and(v, notUsingInput), () => {
+                console.log('dd')
+                if (isEdit.value) {
+                    localValue.value.certificateStatus = 'VERIFIED'
+                    handleChange()
+                }
+            })
+
+            whenever(and(Escape), () => {
+                if (isEdit.value) {
+                    handleChange()
+                    isEdit.value = false
+                }
+            })
+
             return {
                 localValue,
                 handleChange,
                 handleVisibleChange,
                 username,
+                isEdit,
             }
         },
     })

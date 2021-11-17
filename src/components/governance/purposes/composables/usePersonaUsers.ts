@@ -1,7 +1,7 @@
 import { computed, ComputedRef, Ref, watch, reactive, ref } from 'vue'
 import { getFormattedUser } from '~/composables/user/useUsers'
 // import { IUser } from '~/services/heracles/apis/users'
-import { IPersona, IUser } from '~/types/accessPolicies/personas'
+import { IPersona, IUser } from '~/types/accessPolicies/purposes'
 import { useUsers } from '~/composables/user/useUsers'
 
 function usePersonaUserList(persona: Ref<IPersona>) {

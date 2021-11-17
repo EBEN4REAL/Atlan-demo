@@ -129,8 +129,9 @@
             const defaultIDPList: any = ref({})
             const getDefaultIDPList = async () => {
                 try {
-                    const data = (await Identity.getDefaultIDP()) || {}
-                    defaultIDPList.value = { ...data }
+                    const { mutate: getDefaultIDP } = Identity.getDefaultIDP()
+                    defaultIDPList.value = await getDefaultIDP()
+                    // defaultIDPList.value = { ...data }
                 } catch (error) {
                     console.error(
                         'Unable to fetch default idps::',
@@ -154,7 +155,7 @@
             setConfig()
             const updateTenant = async () => {
                 const tenantResponse: any = await Tenant.GetTenant()
-                tenantStore.setData(tenantResponse)
+                tenantStore.setTenant(tenantResponse)
             }
             const handleChangeEnableSSO = async () => {
                 try {
@@ -163,9 +164,17 @@
                         ...idp.value,
                         enabled: ssoForm.enabled,
                     }
-                    await Identity.updateIDP(idp.value?.alias, config)
-                    if (!ssoForm.enabled)
-                        await Identity.deleteDefaultIDP(idp.value?.alias)
+                    const { mutate: updateIDP } = Identity.updateIDP(
+                        idp.value?.alias,
+                        config
+                    )
+                    await updateIDP()
+                    if (!ssoForm.enabled) {
+                        const { mutate: deleteDefaultIDP } =
+                            Identity.deleteDefaultIDP(idp.value?.alias)
+                        await deleteDefaultIDP()
+                    }
+
                     await updateTenant()
                     await getDefaultIDPList()
                     await setConfig()
@@ -189,9 +198,13 @@
                 try {
                     enforceSSOChanging.value = true
                     if (ssoForm.enforceSSO) {
-                        await Identity.setDefaultIDP(idp.value?.alias)
+                        const { mutate: setDefaultIDP } =
+                            Identity.setDefaultIDP(idp.value?.alias)
+                        await setDefaultIDP()
                     } else {
-                        await Identity.deleteDefaultIDP(idp.value?.alias)
+                        const { mutate: deleteDefaultIDP } =
+                            Identity.deleteDefaultIDP(idp.value?.alias)
+                        await deleteDefaultIDP()
                     }
                     await updateTenant()
                     await getDefaultIDPList()

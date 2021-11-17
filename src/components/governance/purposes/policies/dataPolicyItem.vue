@@ -131,7 +131,7 @@
     import Connector from './connector.vue'
     import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
-    import { DataPolicies } from '~/types/accessPolicies/personas'
+    import { DataPolicies } from '~/types/accessPolicies/purposes'
     import { removeEditFlag } from '../composables/useEditPurpose'
     import Owners from '~/components/common/input/owner/index.vue'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'

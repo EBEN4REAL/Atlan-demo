@@ -20,11 +20,11 @@
                     :id="`prop-${property.name}`"
                     :key="index"
                     :data-property="property"
-                    class="relative flex items-center justify-between last:rounded-b"
+                    class="relative flex items-center justify-between  last:rounded-b"
                     style="height: 44px"
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
-                    <div class="flex">
+                    <div class="flex items-center">
                         <div style="width: 44px">
                             <AtlanIcon class="h-4 mx-auto" icon="MoveItem" />
                         </div>
@@ -32,7 +32,7 @@
                             {{ index + 1 }}
                         </div> -->
                         <div
-                            class="cursor-pointer text-primary"
+                            class="leading-none cursor-pointer  text-primary align-center"
                             style="width: 248px"
                             @click="
                                 $emit('openEditDrawer', { property, index })
@@ -42,6 +42,9 @@
                         </div>
                         <div class="capitalize" style="width: 248px">
                             <AtlanIcon
+                                v-if="
+                                    mapTypeToIcon(property.typeName, property)
+                                "
                                 class="inline h-4 mr-2"
                                 :icon="
                                     mapTypeToIcon(property.typeName, property)
@@ -68,7 +71,7 @@
                 </div>
                 <div
                     v-if="isSorting"
-                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
+                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
                 >
                     <a-spin size="large" />
                 </div>

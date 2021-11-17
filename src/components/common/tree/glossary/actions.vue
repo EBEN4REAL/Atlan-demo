@@ -30,42 +30,35 @@
                             showGtcCrud &&
                             entity?.typeName !== 'AtlasGlossaryTerm'
                         "
-                        key="addCat"
+                        class="p-0"
+                        key="add"
                         @click="closeMenu"
-                        ><a-menu-item
-                            v-if="
-                                showGtcCrud &&
-                                entity?.typeName !== 'AtlasGlossaryTerm'
-                            "
-                            key="add"
-                            @click="closeMenu"
+                    >
+                        <AddGtcModal
+                            entityType="AtlasGlossaryCategory"
+                            :glossaryName="glossaryName"
+                            :categoryName="categoryName"
+                            :glossary-qualified-name="glossaryQualifiedName"
+                            :categoryGuid="categoryGuid"
                         >
-                            <AddGtcModal
-                                entityType="AtlasGlossaryCategory"
-                                :glossaryName="glossaryName"
-                                :categoryName="categoryName"
-                                :glossary-qualified-name="glossaryQualifiedName"
-                                :categoryGuid="categoryGuid"
-                            >
-                                <template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Category"
-                                            class="m-0 mr-2"
-                                        />
-                                        <p class="p-0 m-0">
-                                            Create New Category
-                                        </p>
-                                    </div>
-                                </template>
-                            </AddGtcModal>
-                        </a-menu-item>
+                            <template #trigger>
+                                <div class="flex items-center px-3 py-2">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-2"
+                                    />
+                                    <p class="p-0 m-0">Add Category</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
                     </a-menu-item>
+
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
                             entity?.typeName !== 'AtlasGlossaryTerm'
                         "
+                        class="p-0"
                         key="add"
                         @click="closeMenu"
                     >
@@ -77,28 +70,30 @@
                             :categoryGuid="categoryGuid"
                         >
                             <template #trigger>
-                                <div class="flex items-center">
+                                <div class="flex items-center px-3 py-2">
                                     <AtlanIcon icon="Term" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Create New Term</p>
+                                    <p class="p-0 m-0">Add Term</p>
                                 </div>
                             </template>
                         </AddGtcModal>
                     </a-menu-item>
-                    <!-- <a-menu-item
+                    <a-menu-item
                         v-if="showGtcCrud"
                         key="archive"
-                        class="text-red-700"
+                        class="p-0 text-red-700"
                         @click="closeMenu"
                     >
-                        <AddGtcModal>
+                        <RemoveGTCModal :entityType="entity.typeName">
                             <template #trigger>
-                                <div class="flex items-center text-red-700">
+                                <div
+                                    class="flex items-center px-3 py-2 text-red-700 "
+                                >
                                     <AtlanIcon icon="Trash" class="m-0 mr-2" />
                                     <p class="p-0 m-0">Archive</p>
                                 </div>
                             </template>
-                        </AddGtcModal>
-                    </a-menu-item> -->
+                        </RemoveGTCModal>
+                    </a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
@@ -376,7 +371,6 @@
     }
     .threeDotMenu {
         :global(.ant-dropdown-menu-item) {
-            padding: 9px 16px !important;
             margin: 0;
         }
         :global(.ant-dropdown-menu-submenu-title) {

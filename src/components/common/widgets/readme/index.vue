@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-4 bg-white border border-gray-100 rounded">
+    <div class="flex flex-col p-4 bg-white rounded">
         <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span

@@ -1,4 +1,4 @@
-export interface MetadataPolicies {
+export interface ResourcePolicies {
     name: string
     description: string
     actions: string[]
@@ -6,7 +6,6 @@ export interface MetadataPolicies {
     connectionId: string
     allow: boolean
 }
-
 export interface DataPolicies {
     actions: string[]
     allow: boolean
@@ -24,7 +23,7 @@ export interface DataPolicies {
     name: string
 }
 
-export interface IPersona {
+export interface IPurpose {
     id?: string
     name?: string
     displayName?: string
@@ -32,28 +31,11 @@ export interface IPersona {
     personaType?: 'persona'
     users?: string[]
     groups?: string[]
-    resourcePolicies?: MetadataPolicies[]
+    resourcePolicies?: ResourcePolicies[]
     // Will be camel cased from BE
-    dataPolicies?: DataPolicies[]
+    datapolicies?: DataPolicies[]
     updatedAt?: string
     updatedBy?: string
     createdAt?: string
     createdBy?: string
-}
-
-export interface IUser {
-    email: string
-    firstName: string
-    lastName: string
-    username: string
-}
-
-export interface IGroup {
-    alias: string
-    description: string
-    memberCountString: string
-    memberCount: number
-    id: string
-    name: string
-    user_count: string
 }

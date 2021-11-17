@@ -46,7 +46,7 @@
 
     import CreationModal from '@/admin/common/addModal.vue'
 
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPersona } from '~/types/accessPolicies/purposes'
     import {
         isEditing,
         savePersona,

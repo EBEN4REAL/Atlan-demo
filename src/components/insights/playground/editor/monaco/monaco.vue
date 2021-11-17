@@ -19,6 +19,7 @@
         PropType,
         toRefs,
         toRaw,
+        computed,
         ComputedRef,
     } from 'vue'
 
@@ -66,6 +67,7 @@
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const toggleRun = inject('toggleRun') as Function
+            const runQuery = inject('runQuery') as Function
             const saveOrUpdate = inject('saveOrUpdate') as Function
             const editorPos = inject('editorPos') as Ref<{
                 column: number
@@ -301,6 +303,13 @@
                 autoclosePairsConfig
             )
             /* ----------------------------------------------------- */
+
+            const isQueryRunning = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning
+            )
+
             onMounted(() => {
                 loadThemes(monaco)
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
@@ -352,7 +361,14 @@
                 editor?.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
                     function () {
-                        toggleRun()
+                        if (
+                            isQueryRunning.value == '' ||
+                            isQueryRunning.value == 'success' ||
+                            isQueryRunning.value == 'error'
+                        ) {
+                            // toggleRun()
+                            runQuery()
+                        }
                     }
                 )
                 editor?.addCommand(

@@ -15,6 +15,7 @@
                 ></OwnerFacets>
             </template>
             <a-button
+                v-if="!readOnly"
                 shape="circle"
                 size="small"
                 class="text-center shadow  hover:bg-primary-light hover:border-primary"
@@ -25,39 +26,62 @@
         <template v-for="username in localValue?.ownerUsers" :key="username">
             <UserPill
                 :username="username"
-                :allowDelete="true"
+                :allowDelete="!readOnly"
                 @delete="handleDeleteUser"
+                :enableHover="enableHover"
             ></UserPill>
         </template>
 
         <template v-for="name in localValue?.ownerGroups" :key="name">
-            <GroupPill :name="name" :allowDelete="true"></GroupPill>
+            <GroupPill
+                :name="name"
+                :allowDelete="!readOnly"
+                @delete="handleDeleteGroup"
+                :enableHover="enableHover"
+            ></GroupPill>
         </template>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
 
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import { useMagicKeys, useVModels } from '@vueuse/core'
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
 
     export default defineComponent({
         name: 'OwnersWidget',
         components: { UserPill, GroupPill, AtlanIcon, OwnerFacets },
         props: {
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             modelValue: {
                 type: Object,
                 required: false,
                 default: () => {},
             },
+            enableHover: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { readOnly, enableHover } = toRefs(props)
             const localValue = ref(modelValue.value)
 
             const isEdit = ref(false)
@@ -75,6 +99,34 @@
 
                 handleChange()
             }
+            const handleDeleteGroup = (name) => {
+                localValue.value.ownerGroups =
+                    localValue.value?.ownerGroups.filter(
+                        (item) => item !== name
+                    )
+
+                handleChange()
+            }
+
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA'
+            )
+            const { o, Escape } = useMagicKeys()
+            whenever(and(o, notUsingInput), () => {
+                if (!isEdit.value) {
+                    isEdit.value = true
+                }
+            })
+
+            whenever(and(Escape), () => {
+                if (isEdit.value) {
+                    handleChange()
+                    isEdit.value = false
+                }
+            })
 
             // const { o, Escape, d } = useMagicKeys()
 
@@ -109,9 +161,12 @@
             }
 
             return {
+                enableHover,
+                readOnly,
                 localValue,
                 handleChange,
                 handleDeleteUser,
+                handleDeleteGroup,
                 handleVisibleChange,
                 isEdit,
                 ownerFacetRef,

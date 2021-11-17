@@ -20,6 +20,7 @@
             <AtlanTable
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
+                    activeInlineTab.playground.editor.dataList.length > 0 &&
                     isQueryRunning === 'success'
                         ? true
                         : false
@@ -30,27 +31,41 @@
                     <thead>
                         <tr>
                             <th
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
                                 style="z-index: 4"
                             >
                                 #
-                                <span class="resize-handle"></span>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
 
                             <th
                                 v-for="(col, index) in activeInlineTab
                                     .playground.editor.columnList"
                                 :key="index"
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 3"
+                                class="sticky top-0 px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
+                                style="z-index: 4"
                             >
                                 {{ col.title }}
-                                <span class="resize-handle"></span>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
                         </tr>
                     </thead>
                 </template>
             </AtlanTable>
+
+            <div
+                v-else-if="
+                    (activeInlineTab.playground.editor.columnList.length ===
+                        0 ||
+                        activeInlineTab.playground.editor.dataList.length ===
+                            0) &&
+                    isQueryRunning === 'success'
+                "
+                class="flex flex-col items-center justify-center w-full h-full"
+            >
+                <img :src="ResultsImg" class="text-white" :draggable="false" />
+                <p class="mt-4 mb-0 text-base text-gray-700">No Rows/Columns</p>
+            </div>
 
             <!-- --------------- -->
 

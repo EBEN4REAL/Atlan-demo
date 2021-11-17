@@ -1,15 +1,15 @@
 import { AssetTypeList } from '~/constant/assetType';
-import newAssetType from '~/constant/newAssetType';
+import assetCategories from '~/constant/assetCategories';
 
 const inApplicableTypeName = ['Connection']
 const otherTypes = [{ title: 'Glossary Term', value: 'AtlasGlossaryTerm', key: 'AtlasGlossaryTerm' }]
 
 
-export const customEntityTypes = [
-  ...newAssetType.map(t => ({ title: t.label, value: t.id, key: t.id, children: t.children?.map(a => ({ title: a.label, value: a.id, key: a.id })) }))
+export const applicableEntityTypes = [
+  ...assetCategories.map(t => ({ title: t.label, value: t.id, key: t.id, children: t.children?.map(a => ({ title: a.label, value: a.id, key: a.id })) }))
 ]
 
-export const applicableEntityTypes = ['Catalog', 'AtlasGlossaryTerm']
+// export const applicableEntityTypes = ['Catalog', 'AtlasGlossaryTerm']
 
 /**
  * @desc default template for new BM attribute
@@ -22,9 +22,9 @@ export const DEFAULT_ATTRIBUTE = {
   isUnique: false,
   name: "",
   options: {
-    /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas */
-    applicableEntityTypes: JSON.stringify(applicableEntityTypes),
-    customEntityTypes: [],
+    /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas hold this here: [JSON.stringify(applicableEntityTypes)] */
+    applicableEntityTypes: [],
+    customEntityTypes: JSON.stringify([]),
     maxStrLength: "100000000",
     displayName: "",
     isBadge: false,

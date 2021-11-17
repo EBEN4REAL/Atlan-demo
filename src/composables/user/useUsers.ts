@@ -3,12 +3,10 @@ import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import { pluralizeString } from '~/utils/string'
-import swrvState from '~/utils/swrvState'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
 import { LIST_USERS } from '~/services/service/users/key'
-
 
 export const getUserName = (user: any) => {
     const { first_name } = user
@@ -84,12 +82,25 @@ export const getFormattedUser = (user: any) => {
     }
     return localUser
 }
-export const useUsers = (userListAPIParams: {
-    limit: number
-    offset: number
-    filter: any
-    sort: string
-}, cacheKey?: string) => {
+
+const defaultCacheOption = {
+  cacheOptions: {
+    shouldRetryOnError: false,
+    revalidateOnFocus: false,
+    cache: new LocalStorageCache(),
+    dedupingInterval: 1,
+  }
+}
+export const useUsers = (
+    userListAPIParams: {
+        limit: number
+        offset: number
+        filter?: any
+        sort?: string
+    },
+    cacheKey?: string,
+    cacheOption = defaultCacheOption
+) => {
     const {
         data,
         mutate: getUserList,
@@ -97,28 +108,20 @@ export const useUsers = (userListAPIParams: {
         isValidating,
         error,
     } = Users.List(userListAPIParams, {
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
+        ...cacheOption,
         cacheKey: cacheKey ?? LIST_USERS,
     })
 
     const localUsersList: Ref<any[]> = ref([])
 
     watch(data, () => {
-        const escapedData = data?.value?.records ? data?.value?.records?.map((user: any) =>
-            getFormattedUser(user)
-        ) : [] // to prevent maping undefined
+        const escapedData = data?.value?.records
+            ? data?.value?.records?.map((user: any) => getFormattedUser(user))
+            : [] // to prevent maping undefined
 
         if (data && data.value) {
             if (userListAPIParams.offset > 0) {
-                localUsersList.value = [
-                    ...localUsersList.value,
-                    ...escapedData
-                ]
+                localUsersList.value = [...localUsersList.value, ...escapedData]
             } else {
                 localUsersList.value = escapedData
             }
@@ -129,7 +132,6 @@ export const useUsers = (userListAPIParams: {
         () => localUsersList.value || []
     )
 
-
     const userList = computed(() => {
         if (data.value && data?.value?.records)
             return data?.value.records.map((user: any) =>
@@ -138,7 +140,6 @@ export const useUsers = (userListAPIParams: {
         return []
     })
 
-    const { state, STATES } = swrvState(data, error, isValidating)
 
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
@@ -150,8 +151,6 @@ export const useUsers = (userListAPIParams: {
         filteredUserCount,
         getUserList,
         isLoading,
-        state,
-        STATES,
         isValidating,
         error,
     }

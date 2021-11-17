@@ -1,12 +1,9 @@
 <template>
     <!-- <div v-if="permissions.list"> -->
-    <div
-        v-if="loadingState.pending"
-        class="flex items-center justify-center h-64"
-    >
+    <div v-if="isLoading" class="flex items-center justify-center h-64">
         <a-spin size="large" />
     </div>
-    <div v-else-if="loadingState.error">
+    <div v-else-if="error">
         <a-empty :image="null">
             <template #description>
                 <p class="text-2xl font-bold">Error loading your request</p>
@@ -18,7 +15,7 @@
         </a-empty>
     </div>
     <ExplorerLayout
-        v-else-if="enumListData.length"
+        v-else-if="enumList.length"
         title="Labels"
         sidebar-class="bg-white"
     >
@@ -38,13 +35,13 @@
             <div class="px-4 pt-6 pb-4">
                 <SearchAndFilter
                     v-model:value="searchText"
-                    :placeholder="`Search from ${enumListData.length} labels`"
+                    :placeholder="`Search from ${enumList.length} labels`"
                     class="bg-white"
                 />
             </div>
             <EnumList
                 v-model:selected="selectedId"
-                :list="sortedSearchedEnum"
+                :list="searchedEnumList"
             />
         </template>
 
@@ -116,15 +113,15 @@
             //     list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
             //     create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
             // }))
+
             const {
-                enumListData,
+                enumList,
                 selectedId,
                 selectedEnum,
                 addToList,
-                loadingState,
+                isLoading,
                 searchText,
-                sortedSearchedEnum,
-                refetchEnumList,
+                searchedEnumList,
             } = useEnums()
             const addModalVisible = ref(false)
 
@@ -132,23 +129,28 @@
                 addModalVisible.value = state
             }
 
+            const refetchEnumList = () => {
+                // change into a means to load just enums
+            }
+
             return {
-                enumListData,
+                enumList,
                 addModalVisible,
                 selectedId,
                 selectedEnum,
                 // permissions,
                 toggleAddModal,
                 addToList,
-                loadingState,
+                isLoading,
                 searchText,
-                sortedSearchedEnum,
+                searchedEnumList,
                 refetchEnumList,
             }
         },
         data() {
             return {
                 noEnumImage,
+                error: null, // temp
             }
         },
     })

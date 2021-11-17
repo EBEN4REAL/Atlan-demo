@@ -46,7 +46,7 @@
 
     import CreationModal from '@/admin/common/addModal.vue'
 
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import {
         isEditing,
         savePersona,
@@ -63,7 +63,7 @@
         components: { Dropdown, CreationModal },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },

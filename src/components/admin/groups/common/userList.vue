@@ -30,7 +30,7 @@
             </div>
         </div>
         <div
-            v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+            v-if="error"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -90,13 +90,7 @@
                     </template>
                 </div>
             </a-checkbox-group>
-            <div
-                v-if="
-                    [STATES.PENDING].includes(state) ||
-                    [STATES.VALIDATING].includes(state)
-                "
-                class="flex justify-center mt-3"
-            >
+            <div v-if="isLoading" class="flex justify-center mt-3">
                 <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
             <div
@@ -168,8 +162,8 @@
                 usersListConcatenated: userList,
                 filteredUserCount,
                 getUserList,
-                state,
-                STATES,
+                isLoading,
+                error,
             } = useUsers(userListAPIParams)
 
             const handleSearch = useDebounceFn(() => {
@@ -239,8 +233,8 @@
                 filteredUserCount,
                 getUserList,
                 handleSearch,
-                state,
-                STATES,
+                isLoading,
+                error,
                 handleLoadMore,
                 handleChange,
                 selectedIds,

@@ -10,7 +10,7 @@
         <div class="flex items-center">
             <div
                 v-if="totalAppliedFiltersCount"
-                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset
@@ -57,7 +57,7 @@
                                 />
                                 <span
                                     v-if="isFilterApplied(item.id)"
-                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    class="ml-auto text-xs text-gray-500 opacity-0 hover:text-primary group-hover:opacity-100"
                                     @click.stop.prevent="handleClear(item.id)"
                                 >
                                     Clear
@@ -126,7 +126,7 @@
         },
         emits: ['refresh', 'initialize'],
         setup(props, { emit }) {
-            const activeKey: Ref<string[]> = ref([])
+            const activeKey: Ref<string[]> = ref(["owners"])
             const dirtyTimestamp = ref('dirty_')
 
             // Mapping of Data to child components

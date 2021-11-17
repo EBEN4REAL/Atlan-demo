@@ -223,11 +223,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, PropType } from 'vue'
+    import { defineComponent, inject, PropType, watch } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AssetMenu from './assetMenu.vue'
+    import { useMagicKeys } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -322,6 +324,13 @@
             const assetURL = (asset) => {
                 return `/assets/${asset.guid}`
             }
+
+            const { Escape /* keys you want to monitor */ } = useMagicKeys()
+
+            const router = useRouter()
+            watch(Escape, (v) => {
+                if (v) router.back()
+            })
 
             return {
                 title,

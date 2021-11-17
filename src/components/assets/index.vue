@@ -1,8 +1,8 @@
 <template>
-    <div class="flex w-full">
+    <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -22,6 +22,7 @@
                 <div class="flex px-6 py-0 border-b border-gray-200">
                     <SearchAdvanced
                         v-model="queryText"
+                        :key="searchDirtyTimestamp"
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
@@ -111,7 +112,6 @@
                     ref="assetlistRef"
                     :list="list"
                     :selectedAsset="selectedAsset"
-                    :preference="preference"
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
                     @loadMore="handleLoadMore"
@@ -121,6 +121,7 @@
                             :item="item"
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
+                            :preference="preference"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -215,6 +216,7 @@
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const { initialFilters } = toRefs(props)
             const discoveryStore = useAssetStore()
 
@@ -247,6 +249,7 @@
                 selectedAsset,
                 quickChange,
                 handleSelectedAsset,
+                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -263,6 +266,11 @@
 
             const handlePreview = (item) => {
                 handleSelectedAsset(item)
+            }
+
+            const updateCurrentList = (asset) => {
+                updateList(asset)
+                handleSelectedAsset(asset)
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -299,8 +307,10 @@
 
             const handleResetEvent = () => {
                 facets.value = {}
+                queryText.value = ''
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
             const handleActiveKeyChange = () => {
@@ -332,6 +342,9 @@
                 discoveryFilters,
                 error,
                 selectedAsset,
+                updateList,
+                updateCurrentList,
+                searchDirtyTimestamp,
             }
         },
     })

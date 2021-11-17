@@ -13,6 +13,7 @@ export default function useCreateGraph(
     const { DagreLayout } = window.layout
 
     graph.value = new Graph({
+        async: true, // Saves resources and enhances performance.
         autoResize: true,
         interacting: false,
         container: graphContainer.value,

@@ -2,10 +2,8 @@
 import { Ref } from 'vue'
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
-import { useAPIPromise } from '~/services/api/useAPIPromise'
-import { AxiosRequestConfig } from 'axios'
 
-import { useOptions, resolveUrl } from '~/services/api/common'
+import { useOptions } from '~/services/api/common'
 
 const GetTenant = (options?: useOptions) =>
     useAPI(map.GET_TENANT, 'GET', {}, options || {})

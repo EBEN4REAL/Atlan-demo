@@ -15,6 +15,9 @@
                         <a-menu-item v-auth="[map.LIST_PERSONA]" key="personas"
                             >Personas</a-menu-item
                         >
+                        <a-menu-item v-auth="[map.LIST_PURPOSE]" key="purposes"
+                            >Purposes</a-menu-item
+                        >
                         <a-menu-item v-auth="[map.LIST_APIKEY]" key="apikeys"
                             >API Keys</a-menu-item
                         >
@@ -41,6 +44,13 @@
                         <a-menu-item key="enums" v-auth="[map.LIST_ENUM]">
                             Enums
                         </a-menu-item>
+                    </a-menu-item-group>
+                    <a-menu-item-group title="Logs">
+                        <a-menu-item
+                            v-auth="[map.QUERY_SQL_LOGS]"
+                            key="queryLogs"
+                            >Query Logs</a-menu-item
+                        >
                     </a-menu-item-group>
                 </a-menu>
             </div>

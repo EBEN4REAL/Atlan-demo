@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="details-section">
-            <span class="text-sm text-gray-500">Created By</span>
+        <div class="pt-6 details-section">
+            <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
                 <Avatar
                     :username="persona.createdBy"
@@ -22,9 +22,20 @@
             />
             <span class="text-sm text-gray">Enable Persona</span>
         </div>
-        <div class="flex items-center my-4 mt-0">
+        <div class="flex items-center py-4 pt-2">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                class="
+                    relative
+                    flex
+                    items-center
+                    flex-1
+                    p-4
+                    mr-3
+                    border border-gray-300
+                    rounded
+                    cursor-pointer
+                    group
+                "
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -52,7 +63,13 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="
+                                absolute
+                                right-0
+                                opacity-0
+                                vertical-center
+                                group-hover:opacity-100
+                            "
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -63,7 +80,17 @@
                 </div>
             </div>
             <div
-                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
+                class="
+                    relative
+                    flex
+                    items-center
+                    flex-1
+                    p-4
+                    border border-gray-300
+                    rounded
+                    cursor-pointer
+                    group
+                "
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -91,7 +118,13 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="
+                                absolute
+                                right-0
+                                opacity-0
+                                vertical-center
+                                group-hover:opacity-100
+                            "
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -108,7 +141,7 @@
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
 
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import Avatar from '@common/avatar/user.vue'
@@ -118,7 +151,7 @@
         components: { Avatar },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },
@@ -135,7 +168,7 @@
 </script>
 <style lang="less" scoped>
     .details-section {
-        @apply flex items-center gap-x-2 py-6;
+        @apply flex items-center gap-x-2 py-4;
         @apply text-gray-500;
         @apply cursor-pointer;
     }

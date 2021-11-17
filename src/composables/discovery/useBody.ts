@@ -435,7 +435,12 @@ export function useBody(
     ) {
         // Global TypeName Filters
         base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
-        base.orFilter('terms', '__typeName.keyword', ['Query'])
+        base.orFilter('terms', '__typeName.keyword', [
+            'Query',
+            'AtlasGlossaryCategory',
+            'AtlasGlossaryTerm',
+            'Connection',
+        ])
     }
 
     base.filterMinimumShouldMatch(1)

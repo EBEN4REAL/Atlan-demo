@@ -73,7 +73,7 @@
     >
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
-            <template v-if="allowCreate">
+            <div v-if="allowCreate">
                 <a-divider style="margin: 4px 0" />
                 <div
                     style="padding: 4px 8px; cursor: pointer"
@@ -82,18 +82,17 @@
                 >
                     {{ createNewLabel || 'Create More' }}
                 </div>
-            </template>
+            </div>
         </template>
     </a-select>
     <a-modal
         v-model:visible="createNewVisibility"
         title="Create Credential"
-        width="60%"
+        width="40%"
         :closable="false"
+        :body-style="{ overflowY: 'scroll', height: '65vh' }"
     >
-        <div class="overflow-y-scroll" style="height: 65vh">
-            <FormGenerator :config="newConfig" />
-        </div>
+        <FormGenerator :config="newConfig" />
         <template #footer>
             <a-button @click="handleClose">Close</a-button>
         </template>
@@ -102,7 +101,7 @@
     <!-- async tree select start -->
     <a-tree-select
         v-if="dataType === 'asyncTreeSelect'"
-        v-model:value="localValue"
+        v-model:value="valueTreeSelected"
         :multiple="true"
         :tree-checkable="true"
         style="width: 100%"
@@ -209,6 +208,7 @@
     import useAsyncSelector from './useAsyncSelector'
     import useAsyncTreeSelect from './useAsyncTreeSelect'
     import useFileUploader from './useFileUploader'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
@@ -353,6 +353,9 @@
 
             const { modelValue }: any = useVModels(props, emit)
 
+            const valueTreeSelected: Ref<any> = ref()
+            const localValue: Ref<any> = ref(modelValue || [])
+
             // prop requestConfig is initially defaults to null, then reflects actually value, find out why
             // watch(
             //     requestConfig,
@@ -413,8 +416,6 @@
                 loadData()
             }
 
-            const localValue: Ref<any> = ref(modelValue || [])
-
             watch(
                 [loading, error],
                 () => {
@@ -474,7 +475,10 @@
             onMounted(() => {
                 // localValue.value = props.multiple ? [] : ''
                 if (props.dataType === 'asyncTreeSelect') {
-                    localValue.value = parseDBSchemaValue(modelValue)
+                    valueTreeSelected.value = parseDBSchemaValue(
+                        modelValue.value
+                    )
+                    // localValue.value = parseDBSchemaValue(modelValue)
                 }
                 // for async select, load on mount if possible
                 else if (
@@ -570,6 +574,7 @@
             }
 
             return {
+                access,
                 fileError,
                 fileSuccess,
                 uploading,
@@ -595,6 +600,7 @@
                 letAsyncSelectDisabled,
                 dateTimeTypeComponent,
                 disabledDate,
+                valueTreeSelected,
             }
         },
     })

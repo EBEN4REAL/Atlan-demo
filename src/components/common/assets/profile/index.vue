@@ -5,8 +5,8 @@
         <a-tabs
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
-            class="flex-1"
             :class="$style.profiletab"
+            class="flex-1"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -56,6 +56,9 @@
             Lineage: defineAsyncComponent(
                 () => import('./tabs/lineage/index.vue')
             ),
+            Queries: defineAsyncComponent(
+                () => import('./tabs/queries/index.vue')
+            ),
         },
         props: {
             asset: {
@@ -91,7 +94,6 @@
                 asset,
                 getProfileTabs,
                 activeKey,
-                getProfileTabs,
                 handleChangeTab,
             }
         },

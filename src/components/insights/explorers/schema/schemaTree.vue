@@ -228,6 +228,10 @@
     :global(.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected) {
         background-color: rgba(219, 234, 254, 1) !important;
     }
+    :global(.ant-tree span.ant-tree-indent-unit) {
+        width: 14px !important;
+        // background-color: red !important;
+    }
     // :global(.ant-tree-treenode-switcher-close.ant-tree-treenode-selected
     //         > .ant-tree-switcher_open) {
     //     background-color: rgba(219, 234, 254, 1) !important;

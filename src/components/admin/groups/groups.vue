@@ -405,6 +405,9 @@
         :global(.ant-table-measure-row) {
             @apply hidden;
         }
+        :global(.ant-table-column-title) {
+            @apply text-left;
+        }
     }
 </style>
 <route lang="yaml">

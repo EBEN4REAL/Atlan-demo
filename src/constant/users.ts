@@ -3,7 +3,7 @@ export const userColumns = [
         title: 'User',
         key: 'user',
         sorter: true,
-        width: 390,
+        width: 400,
         slots: { customRender: 'name' },
         sortKey: 'first_name',
         colSpan: 2,

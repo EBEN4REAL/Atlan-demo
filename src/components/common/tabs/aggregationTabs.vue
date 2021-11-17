@@ -18,7 +18,16 @@
                             class="self-center mr-1"
                             v-if="icon"
                         ></AtlanIcon>
-                        <div class="self-center text-sm">{{ item.label }}</div>
+
+                        <AtlanIcon
+                            v-if="item.label == 'All'"
+                            icon="Globe"
+                            class="self-center mr-1"
+                        ></AtlanIcon>
+
+                        <div class="self-center text-sm" v-else>
+                            {{ item.label }}
+                        </div>
                         <div
                             :class="$style.chip"
                             class="
@@ -176,6 +185,7 @@
         }
 
         :global(.ant-tabs-tab:first-child) {
+            border-top-left-radius: 4px !important;
         }
 
         :global(.ant-tabs-nav-container-scrolling) {

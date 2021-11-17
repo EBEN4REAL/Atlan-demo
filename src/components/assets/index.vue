@@ -19,13 +19,15 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-6 py-1 border-b border-gray-200">
+                <div class="flex">
                     <SearchAdvanced
                         v-model="queryText"
                         :key="searchDirtyTimestamp"
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
+                        size="large"
+                        class="px-6"
                         placeholder="Search assets..."
                         @change="handleSearchChange"
                     >

@@ -268,6 +268,7 @@
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
+                handleSelectedAsset(asset)
             }
 
             const handleSearchChange = useDebounceFn(() => {

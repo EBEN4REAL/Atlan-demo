@@ -5,8 +5,8 @@
         <a-tabs
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
-            class="flex-1"
             :class="$style.profiletab"
+            class="flex-1"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -91,7 +91,6 @@
                 asset,
                 getProfileTabs,
                 activeKey,
-                getProfileTabs,
                 handleChangeTab,
             }
         },

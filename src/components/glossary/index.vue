@@ -1,108 +1,48 @@
 <template>
-    <div class="flex w-full">
+    <div
+        class="flex flex-col items-stretch flex-1 h-full mb-1"
+        ref="glossaryBox"
+    >
         <div
-            v-if="showFilters"
-            class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
+            class="flex items-center justify-between w-full px-4 py-3 border-b"
         >
-            <AssetFilters
-                v-if="showFilters"
-                :key="dirtyTimestamp"
-                v-model="facets"
-                v-model:activeKey="activeKey"
-                :filter-list="glossaryFilters"
-                :type-name="postFacets.typeName"
-                @change="handleFilterChange"
-                @reset="handleResetEvent"
-                @change-active-key="handleActiveKeyChange"
-            ></AssetFilters>
-        </div>
+            <GlossarySelect
+                v-model="selectedGlossaryQf"
+                @change="handleSelectGlossary"
+            ></GlossarySelect>
+            <a-dropdown :trigger="['click']" placement="bottomLeft">
+                <a-button class="ml-3" size="small">
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            icon="Add"
+                            class="transition duration-300 text-primary"
+                        />
+                    </div>
+                </a-button>
 
-        <div
-            class="flex flex-col items-stretch flex-1 mb-1 w-80"
-            ref="glossaryBox"
-        >
-            <div class="flex flex-col h-full">
-                <div class="flex px-6 py-1 border-b border-gray-200">
-                    <SearchAdvanced
-                        v-model="queryText"
-                        :connectorName="facets?.hierarchy?.connectorName"
-                        :autofocus="true"
-                        :allowClear="true"
-                        @change="handleSearchChange"
-                        placeholder="Search terms & categories..."
-                    >
-                        <template #filter>
-                            <a-popover
-                                class="sm:block md:hidden"
-                                placement="bottom"
-                                :trigger="['click']"
-                                :overlay-class-name="$style.filterPopover"
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item key="1">
+                            <AddGTCModal
+                                entityType="AtlasGlossaryTerm"
+                                :glossaryQualifiedName="selectedGlossaryQf"
+                                @add="handleAddTerm"
                             >
-                                <template #content>
-                                    <AssetFilters
-                                        :key="dirtyTimestamp"
-                                        v-model="facets"
-                                        v-model:activeKey="activeKey"
-                                        :filter-list="discoveryFilters"
-                                        :type-name="postFacets.typeName"
-                                        @change="handleFilterChange"
-                                        @change-active-key="
-                                            handleActiveKeyChange
-                                        "
-                                    ></AssetFilters
-                                ></template>
-                                <AtlanIcon
-                                    icon="FilterFunnel"
-                                    class="mr-1"
-                                ></AtlanIcon>
-                            </a-popover>
-                        </template>
-                    </SearchAdvanced>
-                </div>
-
-                <div class="w-full px-4" v-if="queryText">
-                    <AggregationTabs
-                        v-model="postFacets.glossary"
-                        class="mt-3"
-                        :list="glossaryAggreationList"
-                        icon="Glossary"
-                        @change="handleAssetTypeChange"
-                    >
-                    </AggregationTabs>
-                </div>
-                <div
-                    class="flex justify-between w-full px-4 py-3 mb-3 border-b"
-                    v-else
-                >
-                    <div><GlossarySelect></GlossarySelect></div>
-                    <a-dropdown :trigger="['click']" placement="bottomRight">
-                        <a-button class="ml-3" type="primary">
-                            <div class="flex items-center">
-                                <span> New</span>
-
-                                <AtlanIcon
-                                    icon="ChevronDown"
-                                    class="ml-1 text-white transition duration-300 "
-                                />
-                            </div>
-                        </a-button>
-
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item key="1">
-                                    <AddGTCModal>
-                                        <template #trigger>
-                                            <div class="flex items-center">
-                                                <AtlanIcon
-                                                    icon="Term"
-                                                    class="mr-1"
-                                                />
-                                                Term
-                                            </div>
-                                        </template>
-                                    </AddGTCModal>
-                                </a-menu-item>
-                                <a-menu-item key="1">
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon icon="Term" class="mr-1" />
+                                        Term
+                                    </div>
+                                </template>
+                            </AddGTCModal>
+                        </a-menu-item>
+                        <a-menu-item key="2">
+                            <AddGTCModal
+                                entityType="AtlasGlossaryCategory"
+                                :glossaryQualifiedName="selectedGlossaryQf"
+                                @add="handleAddCategory"
+                            >
+                                <template #trigger>
                                     <div class="flex items-center">
                                         <AtlanIcon
                                             icon="Category"
@@ -110,8 +50,15 @@
                                         />
                                         Category
                                     </div>
-                                </a-menu-item>
-                                <a-menu-item key="1">
+                                </template>
+                            </AddGTCModal>
+                        </a-menu-item>
+                        <a-menu-item key="3">
+                            <AddGTCModal
+                                entityType="AtlasGlossary"
+                                @add="handleAddGlossary"
+                            >
+                                <template #trigger>
                                     <div class="flex items-center">
                                         <AtlanIcon
                                             icon="Glossary"
@@ -119,69 +66,115 @@
                                         />
                                         Glossary
                                     </div>
-                                </a-menu-item>
-                                <a-menu-divider></a-menu-divider>
-                                <a-menu-item key="1">
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Glossary"
-                                            class="mr-1"
-                                        />
-                                        Bulk Upload
-                                    </div>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                    </a-dropdown>
-                </div>
-
-                <div
-                    v-if="isLoading"
-                    class="flex items-center justify-center flex-grow"
-                >
-                    <AtlanIcon
-                        icon="Loader"
-                        class="w-auto h-10 animate-spin"
-                    ></AtlanIcon>
-                </div>
-                <div
-                    v-else-if="list.length === 0 && !isLoading"
-                    class="flex-grow"
-                >
-                    <EmptyView
-                        empty-screen="EmptyDiscover"
-                        desc="We didnt find anything that matches your search criteria"
-                        button-text="Reset Filter"
-                        class="mb-10"
-                        @event="handleResetEvent"
-                    ></EmptyView>
-                </div>
-                <GlossaryTree
-                    v-else-if="!queryText"
-                    :list="baseTreeData"
-                    :height="height"
-                ></GlossaryTree>
-
-                <AssetList
-                    v-else
-                    ref="assetlistRef"
-                    :list="list"
-                    :selectedAsset="selectedGlossary"
-                    :preference="preference"
-                    :isLoadMore="isLoadMore"
-                    :isLoading="isValidating"
-                    @loadMore="handleLoadMore"
-                >
-                    <template v-slot:default="{ item }">
-                        <GlossaryItem
-                            :item="item"
-                            :selectedGuid="selectedGlossary.guid"
-                            @preview="handlePreview"
-                        ></GlossaryItem>
-                    </template>
-                </AssetList>
-            </div>
+                                </template>
+                            </AddGTCModal>
+                        </a-menu-item>
+                        <a-menu-divider></a-menu-divider>
+                        <a-menu-item key="4">
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Glossary" class="mr-1" />
+                                Bulk Upload
+                            </div>
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+            </a-dropdown>
         </div>
+
+        <div class="flex px-4 py-1 mb-2 border-b border-gray-200">
+            <SearchAdvanced
+                v-model="queryText"
+                :connectorName="facets?.hierarchy?.connectorName"
+                :autofocus="true"
+                :allowClear="true"
+                @change="handleSearchChange"
+                placeholder="Search terms & categories..."
+            >
+                <template #filter>
+                    <a-popover
+                        class="sm:block md:hidden"
+                        placement="bottom"
+                        :trigger="['click']"
+                        :overlay-class-name="$style.filterPopover"
+                    >
+                        <template #content>
+                            <AssetFilters
+                                :key="dirtyTimestamp"
+                                v-model="facets"
+                                v-model:activeKey="activeKey"
+                                :filter-list="discoveryFilters"
+                                :type-name="postFacets.typeName"
+                                @change="handleFilterChange"
+                                @change-active-key="handleActiveKeyChange"
+                            ></AssetFilters
+                        ></template>
+                        <AtlanIcon icon="FilterFunnel" class="mr-1"></AtlanIcon>
+                    </a-popover>
+                </template>
+            </SearchAdvanced>
+        </div>
+
+        <div class="w-full px-4" v-if="queryText">
+            <AggregationTabs
+                v-model="postFacets.glossary"
+                class="mt-3"
+                :list="glossaryAggreationList"
+                icon="Glossary"
+                @change="handleAssetTypeChange"
+            >
+            </AggregationTabs>
+        </div>
+
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
+        </div>
+        <div
+            v-else-if="
+                list.length === 0 && baseTreeData.length == 0 && !isLoading
+            "
+            class="flex-grow"
+        >
+            <EmptyView
+                empty-screen="EmptyDiscover"
+                desc="We didnt find anything that matches your search criteria"
+                button-text="Reset Filter"
+                class="mb-10"
+                @event="handleResetEvent"
+            ></EmptyView>
+        </div>
+
+        <GlossaryTree
+            ref="glossaryTree"
+            v-else-if="!queryText"
+            :height="height"
+            @select="handlePreview"
+            :defaultGlossary="selectedGlossaryQf"
+        ></GlossaryTree>
+
+        <AssetList
+            v-else
+            ref="assetlistRef"
+            :list="list"
+            :selectedAsset="selectedGlossary"
+            :preference="preference"
+            :isLoadMore="isLoadMore"
+            :isLoading="isValidating"
+            @loadMore="handleLoadMore"
+        >
+            <template v-slot:default="{ item }">
+                <GlossaryItem
+                    :item="item"
+                    :selectedGuid="selectedGlossary.guid"
+                    @preview="handlePreview"
+                ></GlossaryItem>
+            </template>
+        </AssetList>
     </div>
 </template>
 
@@ -199,7 +192,9 @@
     import AddGTCModal from './modal/addGtcModal.vue'
     import GlossaryTree from '@/common/tree/glossary/glossaryTree2.vue'
 
-    import GlossarySelect from '@/common/select/glossary.vue'
+    // import GlossarySelect from '@/common/select/glossary.vue'
+
+    import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 
     import {
         AssetAttributes,
@@ -216,6 +211,7 @@
 
     import { glossaryFilters } from '~/constant/filters/discoveryFilters'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -247,6 +243,7 @@
             },
         },
         setup(props, { emit }) {
+            const selectedGlossaryQf = ref('')
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -270,9 +267,6 @@
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const { initialFilters } = toRefs(props)
             const glossaryStore = useGlossaryStore()
-
-            const { initTree } = useGlossaryData()
-            const baseTreeData = ref(initTree())
 
             if (glossaryStore.activeFacet && glossaryStore.activeFacet !== {}) {
                 facets.value = glossaryStore.activeFacet
@@ -298,10 +292,14 @@
 
             const height = computed(() => {
                 if (glossaryBox.value) {
-                    return glossaryBox.value.clientHeight - 100
+                    return glossaryBox.value.clientHeight - 150
                 }
                 return 400
             })
+
+            const handleSelectGlossary = (val) => {
+                selectedGlossaryQf.value = val
+            }
 
             const {
                 list,
@@ -328,8 +326,9 @@
                 relationAttributes,
             })
 
+            const router = useRouter()
             const handlePreview = (item) => {
-                console.log('preview')
+                router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
             }
 
@@ -378,6 +377,28 @@
                 glossaryStore.setActivePanel(activeKey.value)
             }
 
+            const glossaryTree = ref(null)
+            const handleAddGlossary = (asset) => {
+                if (glossaryTree.value) {
+                    glossaryTree.value.addGlossary(asset)
+                }
+            }
+
+            const handleAddTerm = (asset) => {
+                if (glossaryTree.value) {
+                    glossaryTree.value.addTerm(asset)
+                }
+            }
+            const handleAddCategory = (asset) => {
+                if (glossaryTree.value) {
+                    glossaryTree.value.addCategory(asset)
+                }
+            }
+
+            const glossaryURL = (asset) => ({
+                path: `/glossary/${asset.guid}`,
+            })
+
             return {
                 handleFilterChange,
                 isLoading,
@@ -402,10 +423,17 @@
                 activeKey,
                 glossaryFilters,
                 selectedGlossary,
-                baseTreeData,
+
                 height,
                 glossaryBox,
                 handleSelectedGlossary,
+                handleAddGlossary,
+                glossaryTree,
+                glossaryURL,
+                selectedGlossaryQf,
+                handleSelectGlossary,
+                handleAddTerm,
+                handleAddCategory,
             }
         },
     })

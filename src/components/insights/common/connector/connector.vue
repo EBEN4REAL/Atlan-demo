@@ -14,24 +14,14 @@
             :data-test-id="'conector'"
             @select="selectNode"
         >
-            <!-- <template #title="node">
-                <div class="flex items-center" v-if="node?.img">
-                    <img :src="node.img" class="w-auto h-3 mr-2" />
-                    <span class="">{{
-                        capitalizeFirstLetter(node.value)
-                    }}</span>
-                </div>
-                <div class="flex items-center" v-if="node?.integrationName">
-                    <img
-                        :src="getImage(node?.integrationName)"
-                        class="w-auto h-3 mr-2"
+            <template #title="node">
+                <div class="flex items-center">
+                    <AtlanIcon
+                        :icon="iconName(node)"
+                        class="h-4 -ml-0.5 mr-1"
                     />
-                    <span class="">{{ node.name }}</span>
+                    {{ capitalizeFirstLetter(node.title) }}
                 </div>
-            </template> -->
-
-            <template #suffixIcon>
-                <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
         <AssetDropdown
@@ -203,6 +193,7 @@
             const treeData = computed(() =>
                 transformConnectorToTree(filteredList.value)
             )
+            console.log('tree: ', treeData.value)
 
             watch([connector, connection], () => emitChangedFilters())
 
@@ -289,6 +280,15 @@
                 emit('update:data', payload)
             }
 
+            const iconName = (node) => {
+                if (node.title === 'athena' || node.title === 'snowflake') {
+                    return capitalizeFirstLetter(node.title)
+                } else {
+                    let el = node.key.split('/')
+                    return capitalizeFirstLetter(el[1])
+                }
+            }
+
             return {
                 onChange,
                 expandedKeys,
@@ -306,6 +306,7 @@
                 capitalizeFirstLetter,
                 connector,
                 connection,
+                iconName,
             }
         },
     })

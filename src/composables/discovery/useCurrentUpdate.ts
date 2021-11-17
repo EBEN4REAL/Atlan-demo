@@ -10,6 +10,7 @@ import useGlossaryStore from '~/store/glossary'
 import {
     AssetAttributes,
     AssetRelationAttributes,
+    GlossaryAttributes,
     InternalAttributes,
     SQLAttributes,
 } from '~/constant/projection'
@@ -27,6 +28,7 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         ...InternalAttributes,
         ...AssetAttributes,
         ...SQLAttributes,
+        ...GlossaryAttributes,
     ])
     const relationAttributes = ref([...AssetRelationAttributes])
 
@@ -60,16 +62,6 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         }
     })
 
-    // const handleSelectedAsset = (item) => {
-    //     assetStore.setSelectedAsset(item)
-    // }
-    // const selectedAsset = computed(() => assetStore.selectedAsset)
-
-    // const handleSelectedGlossary = (item) => {
-    //     glossaryStore.setSelectedGlossary(item)
-    // }
-    // const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
-
     return {
         aggregationMap,
         isValidating,
@@ -78,10 +70,7 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         fetch,
         cancelRequest,
         mutate,
-        // handleSelectedAsset,
-        // selectedAsset,
-        // handleSelectedGlossary,
-        // selectedGlossary,
+
         error,
         asset,
         isReady,

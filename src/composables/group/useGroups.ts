@@ -54,8 +54,8 @@ export const useGroup = (groupListAPIParams: {
 export default function useGroups(groupListAPIParams: {
     limit: number
     offset: number
-    filter: any
-    sort: string
+    filter?: any
+    sort?: string
 }) {
     // API to get groups based on params groupListAPIParams
     const {
@@ -87,8 +87,8 @@ export default function useGroups(groupListAPIParams: {
         () => {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((group: any) =>
-                    getFormattedGroup(group)
-                )
+                      getFormattedGroup(group)
+                  )
                 : []
 
             if (data && data.value) {

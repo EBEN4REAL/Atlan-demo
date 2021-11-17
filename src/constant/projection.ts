@@ -56,6 +56,8 @@ export const AssetAttributes = [
     'ownerGroups',
     'meanings',
     'readme',
+    'rawQuery',
+    'compiledQuery',
     'links',
     'link',
     'webUrl',

@@ -12,8 +12,8 @@
                     <div class="flex items-center mr-1">
                         <QueryFolderSelector
                             :connector="currentConnector"
-                            :savedQueryType="queryType"
-                            :selectedFolderQF="parentFolderQF"
+                            :saved-query-type="queryType"
+                            :selected-folder-q-f="parentFolderQF"
                             @folderChange="getSelectedFolder"
                         />
                     </div>
@@ -50,7 +50,7 @@
                             :show-chip-style-status="false"
                             :show-no-status="true"
                             :show-label="true"
-                            :isTree="false"
+                            :is-tree="false"
                             class="p-0 cursor-pointer"
                         ></StatusBadge>
                     </a-dropdown>
@@ -127,8 +127,8 @@
         toRefs,
         watch,
     } from 'vue'
-    import { List } from '~/constant/status'
     import StatusBadge from '@common/badge/status/index.vue'
+    import { List } from '~/constant/status'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'

@@ -32,76 +32,15 @@ interface BMObject {
 export default function useBusinessMetadata() {
   // * Get all available BMs and save on store
   const store = useTypedefStore()
-  const error = ref(null)
-  const isLoading = ref(true)
 
-
-  const fetchBMonStore = () => {
-
-    const {
-      data: BMResponse,
-      error: BMListError,
-      isLoading: BMListLoading,
-    } = Types.GetTypedefs(
-      { type: "BUSINESS_METADATA" },
-      {
-        cacheKey: 'DEFAULT_TYPEDEFS',
-        cacheOptions: {
-          shouldRetryOnError: false,
-          revalidateOnFocus: false,
-          cache: new LocalStorageCache(),
-          dedupingInterval: 1,
-        },
-      }
-    )
-
-    // update loading & error states
-    watch(
-      [BMListLoading, BMListError],
-      ([newLoading, newError]) => {
-        isLoading.value = newLoading
-        error.value = newError
-      },
-      { deep: true }
-    )
-
-    // update list with response and map with defaults
-    watch(
-      () => BMResponse?.value?.businessMetadataDefs,
-      (n) => {
-        if (n) {
-          const list = n.map(
-            (bm: BMMap) => ({
-              ...bm,
-              options: {
-                ...bm?.options,
-                displayName: bm?.options?.displayName
-                  ? bm.options.displayName
-                  : bm.name,
-              },
-              attributeDefs: bm.attributeDefs.map((a) => {
-                if (a.options?.displayName?.length) return a // TODO not sure why
-                return {
-                  ...a,
-                  options: {
-                    ...a.options,
-                    displayName: a.name,
-                  },
-                }
-              }),
-            })
-          )
-          store.setCustomMetadata(list)
-        }
-      }
-    )
-  }
 
   // * Data
   const selectedBm = ref(null)
   const searchText = ref('')
 
   const businessMetadataList = computed(() => store.getCustomMetadataList)
+  const isLoading = computed(() => store.isLoading)
+  const error = computed(() => store.error)
 
   // TODO might use store for loading and error if needed
 
@@ -234,7 +173,6 @@ export default function useBusinessMetadata() {
     businessMetadataList,
     error,
     isLoading,
-    fetchBMonStore,
     finalBusinessMetadataList,
     getDefaultAttributeTemplate,
     handleAfterArchive,

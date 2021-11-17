@@ -4,13 +4,16 @@ import { ref, Ref, computed } from 'vue'
 import { LIST_API_KEYS } from '~/services/service/apikeys/key'
 import { APIKey } from '~/services/service/apikeys'
 import { formatDateTime } from '~/utils/date'
+
 export interface APIKeyParams {
     offset: number
     limit: number
-    sort: string
-    filter: unknown
+    sort?: string
+    filter?: unknown
 }
-export default function useAPIKeysList() {
+export default function useAPIKeysList(
+    payload: Ref<APIKeyParams | null> = ref(null)
+) {
     const params: Ref<APIKeyParams> = ref({
         offset: 0,
         limit: 10,
@@ -32,12 +35,13 @@ export default function useAPIKeysList() {
             personas: [],
         }
     }
+    const options = payload && payload.value ? payload.value : params.value
 
     const {
         data,
         isLoading,
         mutate: reFetchList,
-    } = APIKey.List(params.value, {
+    } = APIKey.List(options, {
         cacheOptions: {
             shouldRetryOnError: false,
             revalidateOnFocus: false,
@@ -59,13 +63,11 @@ export default function useAPIKeysList() {
                 },
             })) ?? []
     )
-    const filteredAPIKeysCount = computed(() => {
-        return data?.value?.filter_record
-    })
-    const totalAPIKeysCount = computed(() => {
-        return data?.value?.total_record
+    const filteredAPIKeysCount = computed(() => data?.value?.filter_record)
+    const totalAPIKeysCount = computed(
+        () => data?.value?.total_record
         // return 0
-    })
+    )
     const searchAPIKeys = useDebounceFn((searchText: string) => {
         params.value.filter = searchText.length
             ? { display_name: { $ilike: `${searchText}%` } }

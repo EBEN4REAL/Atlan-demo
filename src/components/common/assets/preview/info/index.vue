@@ -141,24 +141,42 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col" v-if="isGTC(selectedAsset)">
             <div
                 class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
             >
-                <span> Description</span>
+                <span> Name</span>
             </div>
 
+            <Name v-model="localName" class="mx-4" />
+        </div>
+
+        <div class="flex flex-col">
+            <Shortcut shortcutKey="d" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Description</span>
+                </div>
+            </Shortcut>
+
             <Description v-model="localDescription" class="mx-4" />
+        </div>
+        <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
+            <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
         </div>
         <div
             class="flex flex-col"
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-            >
-                Owners
-            </p>
+            <Shortcut shortcutKey="o" action="set owners" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Owners</span>
+                </div>
+            </Shortcut>
+
             <Owners
                 v-model="localOwners"
                 :guid="selectedAsset.guid"
@@ -175,11 +193,18 @@
             "
             class="flex flex-col"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+            <Shortcut
+                shortcutKey="t"
+                action="set classification"
+                placement="left"
             >
-                Classification
-            </p>
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Classification</span>
+                </div>
+            </Shortcut>
+
             <Classification
                 :guid="selectedAsset.guid"
                 v-model="localClassifications"
@@ -214,12 +239,15 @@
                 )
             "
             class="flex flex-col"
+            ref="animationPoint"
         >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-            >
-                Certificate
-            </p>
+            <Shortcut shortcutKey="c" action="set certificate" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Certificate</span>
+                </div>
+            </Shortcut>
 
             <Certificate
                 :selected-asset="selectedAsset"
@@ -243,42 +271,49 @@
         Ref,
         reactive,
     } from 'vue'
-    import { message } from 'ant-design-vue'
     import { whenever } from '@vueuse/core'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
+    import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
-    import CertificationPopover from '@/common/popover/certification.vue'
+    import SavedQuery from '@common/hovercards/savedQuery.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
+    import { message, Modal } from 'ant-design-vue'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import whoami from '~/composables/user/whoami'
+    import confetti from '~/utils/confetti'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
         components: {
             // Experts,
             Description,
+            Name,
             AnnouncementWidget,
             // Status,
             Owners,
             Classification,
-            // Query,
+            SavedQuery,
             Certificate,
             RowInfoHoverCard,
             SQL,
             Terms,
-            CertificationPopover,
+            Shortcut,
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const isConfetti = ref(false)
 
             const {
                 title,
@@ -311,6 +346,7 @@
                 certificateUpdatedAt,
                 certificateStatusMessage,
                 certificateUpdatedBy,
+                isGTC,
             } = useAssetInfo()
 
             const entity = ref({
@@ -357,6 +393,8 @@
 
             const localDescription = ref(description(selectedAsset?.value))
 
+            const localName = ref(title(selectedAsset?.value))
+
             const localCertificate = ref({
                 certificateStatus: certificateStatus(selectedAsset.value),
                 certificateUpdatedAt: certificateUpdatedAt(selectedAsset.value),
@@ -368,27 +406,41 @@
 
             const currentMessage = ref('')
 
-            watch([localDescription], ([newDescription], [prevDescription]) => {
-                if (newDescription !== prevDescription) {
-                    entity.value.attributes.userDescription =
-                        localDescription.value
-                    body.value.entities = [entity.value]
-                    currentMessage.value = 'Description has been updated'
-                    mutate()
+            watch(
+                [localDescription, localName],
+                ([newDescription, newName], [prevDescription, prevName]) => {
+                    if (newDescription !== prevDescription) {
+                        entity.value.attributes.userDescription =
+                            localDescription.value
+                        body.value.entities = [entity.value]
+                        currentMessage.value = 'Description has been updated'
+                        mutate()
+                    }
+                    if (newName !== prevName) {
+                        entity.value.attributes.name = localName.value
+                        body.value.entities = [entity.value]
+                        currentMessage.value = 'Name has been updated'
+                        mutate()
+                    }
                 }
-            })
+            )
 
             whenever(isReady, () => {
                 message.success(currentMessage.value)
                 guid.value = selectedAsset.value.guid
+                rainConfettis()
                 mutateUpdate()
             })
 
             const updateList = inject('updateList')
             whenever(isUpdateReady, () => {
-                console.log('mutate ready')
-                console.log(asset.value)
-                updateList(asset.value)
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                }
             })
 
             whenever(error, () => {
@@ -463,17 +515,30 @@
 
             whenever(isReadyClassification, () => {
                 message.success(currentMessage.value)
+                guid.value = selectedAsset.value.guid
+                mutateUpdate()
             })
 
             whenever(isErrorClassification, () => {
                 message.error('Something went wrong. Please try again')
             })
 
+            const { username } = whoami()
             const handleChangeCertificate = () => {
                 if (
                     localCertificate.value.certificateStatus !==
-                    certificateStatus(selectedAsset.value)
+                        certificateStatus(selectedAsset.value) ||
+                    localCertificate.value.certificateStatusMessage !==
+                        certificateStatusMessage(selectedAsset.value)
                 ) {
+                    if (
+                        localCertificate.value.certificateStatus === 'VERIFIED'
+                    ) {
+                        isConfetti.value = true
+                    } else {
+                        isConfetti.value = false
+                    }
+
                     entity.value.attributes.certificateStatus =
                         localCertificate.value.certificateStatus
 
@@ -482,6 +547,30 @@
                     body.value.entities = [entity.value]
                     currentMessage.value = 'Certificate has been updated'
                     mutate()
+                }
+            }
+
+            const animationPoint = ref(null)
+            const rainConfettis = () => {
+                const config = {
+                    angle: 45,
+                    startVelocity: 10,
+                    spread: 200,
+                    elementCount: 100,
+                    colors: [
+                        '#2251cc',
+                        '#2251cc',
+                        '#82b54b',
+                        '#e94a3f',
+                        '#faa040',
+                    ],
+                    width: '0.3rem',
+                    height: '0.3rem',
+                }
+                if (isConfetti.value) {
+                    if (animationPoint) {
+                        confetti(animationPoint.value, config)
+                    }
                 }
             }
 
@@ -552,6 +641,12 @@
                 certificateStatusMessage,
                 mutateUpdate,
                 updateList,
+                username,
+                animationPoint,
+                rainConfettis,
+                isConfetti,
+                isGTC,
+                localName,
             }
         },
     })

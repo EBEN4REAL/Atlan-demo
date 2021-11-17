@@ -1,29 +1,29 @@
 <template>
-    <div v-if="newStatus?.label" class="mb-3">
+    <div v-if="newCertificate?.label" class="mb-3">
         <b>Certification</b> changed to
         <component
-            :is="newStatus.icon"
+            :is="newCertificate.icon"
             class="inline-flex self-center w-auto h-4 mb-1"
-        /><b>{{ ' ' }}{{ newStatus.label }}</b>
+        /><b>{{ ' ' }}{{ newCertificate.label }}</b>
 
-        <div v-if="data.value?.assetStatusMessage" class="flex my-3">
+        <div v-if="data.value?.certificateStatusMessage" class="flex my-3">
             <div class="w-1 mr-3 bg-gray-500 rounded-full min-h-6"></div>
             <div class="my-0.5 text-sm">
                 <div class="text-xs text-gray-500">Certification Message</div>
                 <div>
-                    {{ data.value.assetStatusMessage }}
+                    {{ data.value.certificateStatusMessage }}
                 </div>
             </div>
         </div>
     </div>
     <div v-else>
-        <div v-if="data.value?.assetStatusMessage === ''">
+        <div v-if="data.value?.certificateStatusMessage === ''">
             <div class="mb-3"><b>Certification message</b> removed</div>
         </div>
         <div v-else>
             <div><b>Certification message</b> updated</div>
             <div class="my-3 text-sm text-gray-500">
-                {{ data.value.assetStatusMessage }}
+                {{ data.value.certificateStatusMessage }}
             </div>
         </div>
     </div>
@@ -45,17 +45,17 @@
             },
         },
         setup(props) {
-            const newStatus = ref<any>()
+            const newCertificate = ref<any>()
 
             onMounted(() => {
                 if (props.data.value.certificateStatus) {
-                    newStatus.value = statusList.find(
+                    newCertificate.value = statusList.find(
                         (stat) => stat.id === props.data.value.certificateStatus
                     )
                 }
             })
             return {
-                newStatus,
+                newCertificate,
             }
         },
     })

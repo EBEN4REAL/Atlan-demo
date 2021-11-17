@@ -1,4 +1,4 @@
-import { watch, ref, Ref, onMounted } from 'vue'
+import { watch, ref, Ref, onMounted, computed } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
@@ -20,6 +20,7 @@ import { AssetAttributes, InternalAttributes } from '~/constant/projection'
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 interface UseTreeParams {
     emit?: any
@@ -56,6 +57,9 @@ const useGlossaryTree = ({
     })
 
     const loadedKeys = ref<string[]>([])
+    const expandedKeys = ref<string[]>([])
+    const selectedKeys = ref<string[]>([])
+    const treeData = ref<TreeDataItem[]>([])
 
     const defaultBody = ref({})
     const generateBody = () => {
@@ -75,13 +79,14 @@ const useGlossaryTree = ({
         }
     }
 
-    const { data, mutate } = useIndexSearch<assetInterface>(
-        defaultBody,
-        dependentKey,
-        false,
-        false,
-        1
-    )
+    const { data, mutate, isLoading, error, isReady } =
+        useIndexSearch<assetInterface>(
+            defaultBody,
+            dependentKey,
+            false,
+            false,
+            1
+        )
 
     const onLoadData = async (treeNode: any) => {
         treeNode.dataRef.isOpen = true
@@ -133,8 +138,8 @@ const useGlossaryTree = ({
                 if (data.value?.entities) {
                     let map = data.value?.entities?.map((i) => ({
                         ...i,
-                        id: i.attributes?.qualifiedName,
-                        key: i.attributes?.qualifiedName,
+                        id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                         isLeaf: i.typeName === 'AtlasGlossaryTerm',
                     }))
                     if (map) {
@@ -148,6 +153,130 @@ const useGlossaryTree = ({
             } catch (e) {
                 console.log(e)
             }
+        }
+    }
+
+    const expandNode = (expanded: string[], event: any) => {
+        if (!event.node.isLeaf) {
+            const key: string = event.node.eventKey
+            const isExpanded = expandedKeys.value?.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.node.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value?.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
+    }
+
+    const selectNode = (selected: any, event: any) => {
+        if (!event.node.isLeaf) {
+            expandNode([], event)
+            // selectedKeys.value = []
+        }
+        console.log('select')
+        emit('select', event.node.dataRef)
+    }
+
+    const glossaryStore = useGlossaryStore()
+
+    const glossaryList = computed(() =>
+        glossaryStore.list.sort((a, b) =>
+            a.attributes.name > b.attributes.name
+                ? 1
+                : b.attributes.name > a.attributes.name
+                ? -1
+                : 0
+        )
+    )
+
+    const initTreeData = async (defaultGlossaryQf) => {
+        let glossaryFound = null
+        if (defaultGlossaryQf !== '') {
+            glossaryFound = glossaryList.value.find(
+                (i) => i.attributes.qualifiedName === defaultGlossaryQf
+            )
+            if (glossaryFound) {
+                facets.value = {
+                    typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                    glossary: defaultGlossaryQf,
+                    isRootTerm: true,
+                    isRootCategory: true,
+                }
+                generateBody()
+                try {
+                    await mutate()
+                    treeData.value = []
+                    if (data.value?.entities) {
+                        treeData.value = data.value?.entities.map((i) => ({
+                            ...i,
+                            id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
+                            key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
+                            isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                        }))
+                    }
+                } catch (e) {
+                    console.log(e)
+                    treeData.value = []
+                }
+            }
+        } else {
+            treeData.value = glossaryList.value.map((i) => {
+                let isLeafFlag = false
+                if (i.termsCount === 0 && i.categoryCount === 0) {
+                    isLeafFlag = true
+                }
+                return {
+                    ...i,
+                    id: i.attributes?.qualifiedName,
+                    key: i.attributes?.qualifiedName,
+                    isLeaf: isLeafFlag,
+                }
+            })
+        }
+    }
+
+    const { getAnchorQualifiedName } = useAssetInfo()
+
+    let parentStack: string[]
+    const addNode = (asset): TreeDataItem => {
+        if (asset.typeName === 'AtlasGlossary') {
+            treeData.value.unshift({
+                ...asset,
+                id: asset.attributes?.qualifiedName,
+                key: asset.attributes?.qualifiedName,
+                isLeaf: false,
+            })
+        }
+
+        if (asset.typeName === 'AtlasGlossaryTerm') {
+            treeData.value.unshift({
+                ...asset,
+                id: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                key: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                isLeaf: true,
+            })
+        }
+
+        if (asset.typeName === 'AtlasGlossaryCategory') {
+            treeData.value.unshift({
+                ...asset,
+                id: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                key: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                isLeaf: false,
+            })
         }
     }
 
@@ -182,10 +311,21 @@ const useGlossaryTree = ({
 
     return {
         onLoadData,
-
+        expandNode,
         generateBody,
         data,
         loadedKeys,
+        expandedKeys,
+        selectNode,
+        selectedKeys,
+        glossaryList,
+        initTreeData,
+        treeData,
+        addNode,
+        isLoading,
+        error,
+        isReady,
+        getAnchorQualifiedName,
     }
 }
 

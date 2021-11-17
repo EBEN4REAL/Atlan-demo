@@ -65,7 +65,7 @@
             ProfileWidgets,
             RaisedTab,
             OverviewColumns: defineAsyncComponent(
-                () => import('../columns/columnWidget.vue')
+                () => import('../../columns/columnWidget.vue')
             ),
             SampleDataTable: defineAsyncComponent(
                 () => import('./sampleData.vue')

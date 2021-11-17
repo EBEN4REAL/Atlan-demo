@@ -29,6 +29,7 @@ const attributes = [
     'ownerGroups',
     'classifications',
     'tableCount',
+    'viewCount',
     'columnCount',
     ...InternalAttributes,
     ...BasicSearchAttributes,
@@ -39,7 +40,7 @@ const useLoadTreeData = (queryText: Ref<string>) => {
     const parentFilter = ref({
         term: {},
     })
-    const typeName = ref<string | string[]>()
+    let typeName = ref<string | string[]>()
     const from = ref(0)
     const size = ref(100)
     const sort = ref<String>('asc')
@@ -77,7 +78,7 @@ const useLoadTreeData = (queryText: Ref<string>) => {
         sort.value = 'asc'
 
         refreshBody()
-        console.log(body.value, 'from Database')
+        console.log('body connection: ', body)
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
@@ -96,6 +97,7 @@ const useLoadTreeData = (queryText: Ref<string>) => {
         sort.value = 'asc'
 
         refreshBody()
+        console.log('body database: ', body)
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,
@@ -114,6 +116,8 @@ const useLoadTreeData = (queryText: Ref<string>) => {
         sort.value = 'asc'
 
         refreshBody()
+
+        console.log('body schema: ', body)
 
         return useAPIPromise(map.INDEX_SEARCH(), 'POST', {
             body,

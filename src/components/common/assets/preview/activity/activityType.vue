@@ -11,8 +11,8 @@
     export default defineComponent({
         name: 'ActivityType',
         components: {
-            Status: defineAsyncComponent(
-                () => import('./types/status/index.vue')
+            Certificate: defineAsyncComponent(
+                () => import('./types/certificate/index.vue')
             ),
             Classifications: defineAsyncComponent(
                 () => import('./types/classifications/index.vue')

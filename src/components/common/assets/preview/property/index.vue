@@ -1,22 +1,24 @@
 <template>
-    <div class="flex flex-col w-full h-full px-4 pt-4 overflow-auto gap-y-4">
-        <div class="flex items-center">
-            <img :src="getConnectorImage(selectedAsset)" class="h-4 mr-1" />
-            <span
-                >{{ capitalizeFirstLetter(connectorName(selectedAsset)) }}
-            </span>
+    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
+        <div class="flex items-center justify-between">
+            <span class="font-semibold text-gray-500">Properties</span>
         </div>
-
-        <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Updated</span>
+        <div
+            class="flex flex-col text-sm"
+            v-if="
+                sourceUpdatedBy(selectedAsset) ||
+                sourceUpdatedAt(selectedAsset, true)
+            "
+        >
+            <span class="mb-1 text-gray-500">Source updated</span>
             <div class="flex flex-col">
-                <div class="flex mb-2">
-                    <UserPill
-                        :username="sourceUpdatedBy(selectedAsset)"
-                    ></UserPill>
+                <div class="flex mb-2" v-if="sourceUpdatedBy(selectedAsset)">
+                    {{ sourceUpdatedBy(selectedAsset) }}
                 </div>
 
-                <span class="text-xs text-gray-700"
+                <span
+                    class="text-xs text-gray-700"
+                    v-if="sourceUpdatedAt(selectedAsset, true)"
                     >{{ sourceUpdatedAt(selectedAsset, true) }} ({{
                         sourceUpdatedAt(selectedAsset, false)
                     }})</span
@@ -24,10 +26,16 @@
             </div>
         </div>
 
-        <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Created</span>
+        <div
+            class="flex flex-col text-sm"
+            v-if="
+                sourceCreatedBy(selectedAsset) ||
+                sourceCreatedAt(selectedAsset, true)
+            "
+        >
+            <span class="mb-1 text-gray-500">Source created</span>
             <div class="flex flex-col">
-                <div class="flex mb-2">
+                <div class="flex mb-2" v-if="sourceCreatedBy(selectedAsset)">
                     <UserPill
                         :username="sourceCreatedBy(selectedAsset)"
                     ></UserPill>
@@ -41,10 +49,8 @@
             </div>
         </div>
 
-        <div class="mt-3">Atlan</div>
-
         <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Connection</span>
+            <span class="mb-1 text-gray-500">Connection</span>
             <div class="flex items-center">
                 <img :src="getConnectorImage(selectedAsset)" class="h-4 mr-1" />
                 <span>{{
@@ -56,19 +62,7 @@
         </div>
 
         <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Connection Owners</span>
-            <!-- {{ getConnection(connectionQualifiedName(selectedAsset)) }} -->
-
-            <Owners
-                :selected-asset="
-                    getConnection(connectionQualifiedName(selectedAsset))
-                "
-                :include-label="false"
-            />
-        </div>
-
-        <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Updated</span>
+            <span class="mb-1 text-gray-500">Last updated</span>
             <div class="flex flex-col">
                 <div class="flex mb-2">
                     <UserPill :username="modifiedBy(selectedAsset)"></UserPill>
@@ -83,19 +77,19 @@
         </div>
 
         <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Unique ID (GUID)</span>
+            <span class="mb-1 text-gray-500">Unique Identifier</span>
             <span class="text-gray-700">{{ selectedAsset?.guid }}</span>
         </div>
 
         <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Qualified Name</span>
+            <span class="mb-1 text-gray-500">Qualified Name</span>
             <span class="text-gray-700">{{
                 qualifiedName(selectedAsset)
             }}</span>
         </div>
 
         <div class="flex flex-col text-sm">
-            <span class="mb-2 text-gray-500">Created</span>
+            <span class="mb-1 text-gray-500">Created</span>
 
             <div class="flex flex-col">
                 <div class="flex mb-2">
@@ -108,8 +102,6 @@
                 >
             </div>
         </div>
-
-        <p class="text-sm font-semibold text-gray-500 uppercase">Snowfalke</p>
     </div>
 </template>
 

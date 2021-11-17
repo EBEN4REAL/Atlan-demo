@@ -36,15 +36,9 @@
 </template>
 
 <script lang="ts">
-    import { useRouter } from 'vue-router'
-    import { defineComponent, ref, inject, computed, watch } from 'vue'
-    import { message } from 'ant-design-vue'
+    import { defineComponent, ref } from 'vue'
     import FormGen from '~/components/common/formGenerator/index.vue'
-    import {
-        updateWorkflowByName,
-        runWorkflowByName,
-        createWorkflow,
-    } from '~/composables/workflow/useWorkFlowList'
+    import useBulkUpload from `@/glossary/modal/useBulkUpload.ts`
 
     export default defineComponent({
         components: { FormGen },
@@ -60,68 +54,6 @@
             // data
             const visible = ref<boolean>(false)
             const fileS3Key = ref('') // s3 key is what we get from the files api
-            const body = computed(() => ({
-                metadata: {
-                    name: `atlan-gtc-bulk-upload-${props.entity.guid.slice(
-                        -8
-                    )}`,
-                    namespace: 'default',
-                    labels: {},
-                },
-                spec: {
-                    arguments: {
-                        parameters: [
-                            {
-                                name: 's3-file-key',
-                                value: fileS3Key.value,
-                            },
-                            {
-                                name: 'glossary-guid',
-                                value: props.entity.guid,
-                            },
-                            {
-                                name: 'glossary-type',
-                                value: 'term',
-                            },
-                        ],
-                    },
-                    templates: [
-                        {
-                            name: 'main',
-                            dag: {
-                                tasks: [
-                                    {
-                                        name: 'run',
-                                        arguments: {
-                                            parameters: [
-                                                {
-                                                    name: 's3-file-key',
-                                                    value: fileS3Key.value,
-                                                },
-                                                {
-                                                    name: 'glossary-guid',
-                                                    value: props.entity.guid,
-                                                },
-                                                {
-                                                    name: 'glossary-type',
-                                                    value: 'term',
-                                                },
-                                            ],
-                                        },
-                                        templateRef: {
-                                            name: 'atlan-glossary-bulk-upload',
-                                            template: 'main',
-                                            clusterScope: true,
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    ],
-                    entrypoint: 'main',
-                },
-            }))
-
             // http on local https on production
             const getBasePath = function (): any {
                 if (process.env.NODE_ENV === 'development')
@@ -129,7 +61,6 @@
                 return 'https://{{domain}}/api/service/files'
             }
 
-            // TODO: this config will come from backend
             const formConfig = ref([
                 {
                     type: 'upload',
@@ -145,7 +76,7 @@
                         },
                     },
                 },
-            ])
+            ]) // this drives the upload form
 
             // function to show modal
             const showModal = async () => {
@@ -155,91 +86,26 @@
             const handleCancel = () => {
                 visible.value = false
             }
-            // run workflow
-            const run = (name) => {
-                const runBody = {
-                    namespace: 'default',
-                    resourceKind: 'WorkflowTemplate',
-                    resourceName: name,
-                    submitOptions: {
-                        entryPoint: 'main',
-                        labels: '',
-                        parameters: [],
-                    },
-                }
 
-                const { data } = runWorkflowByName(runBody, true)
-
-                watch(data, () => {
-                    message.success({
-                        content: `Starting bulk upload!`,
-                        duration: 2,
-                    })
-                    visible.value = false
-                })
-            }
-
-            // update workflow if already exists
-            const updateWorkflow = () => {
-                console.log('updating workflow')
-                const { workflow, error, isLoading, mutate, isReady } =
-                    updateWorkflowByName(
-                        `atlan-gtc-bulk-upload-${props.entity.guid.slice(-8)}`,
-                        body,
-                        false
-                    )
-                mutate()
-                watch([workflow, error], () => {
-                    if (workflow.value && !error.value && !isLoading.value) {
-                        run(
-                            `atlan-gtc-bulk-upload-${props.entity.guid.slice(
-                                -8
-                            )}`
-                        )
-                    } else if (error.value) {
-                        const errMsg = error.value?.response?.data?.message
-                        handleCreateWorkflow()
-                    }
-                })
-            }
-            // create workflow on file upload
-            const handleCreateWorkflow = (s3Key) => {
-                const { data, error, isLoading, execute } = createWorkflow(
-                    body,
-                    false
-                )
-                execute(true)
-                watch([data, error], (v) => {
-                    if (data.value && !error.value) {
-                        message.success({
-                            content: `Starting bulk upload!`,
-                            key: `bulkUpload`,
-                            duration: 2,
-                        })
-                        visible.value = false
-                    } else {
-                        const errMsg = error.value?.response?.data?.message
-                        message.error({
-                            content: `${errMsg || `Failed to create workflow`}`,
-                            key: `bulkUpload`,
-                            duration: 5,
-                        })
-                    }
-                })
-            }
+            // get called on file upload
             const handleFormChange = (data) => {
-                if (data.value.key) {
-                    console.log(data.value.key)
-                    fileS3Key.value = data.value.key
-                    updateWorkflow()
+                if (data.key) {
+                    fileS3Key.value = data.key
+                    const { startUpload } = useBulkUpload({
+                        guid: props?.entity?.guid,
+                        fileS3Key,
+                    })
+                    startUpload()
+                    visible.value = false // close modal on hit submit
                 }
             }
 
+            // handles download of sample file
             const handleDownload = () => {
                 const link = window.document.createElement('a')
                 link.setAttribute(
                     'href',
-                    '/src/assets/samples/sample_terms.csv'
+                    '/src/assets/samples/terms-template.csv'
                 )
                 link.setAttribute('download', 'sample.csv')
                 link.click()

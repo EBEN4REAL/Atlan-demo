@@ -2,39 +2,39 @@
     <div>
         <div
             v-if="showConfigOptions"
-            class="flex flex-col items-center justify-center h-64 px-10 m-auto text-center bg-white border rounded  configure-wrapper"
+            class="m-auto"
         >
-            <span class="mb-8 text-lg text-center text-gray">
-                Choose your SAML provider
+            <span class="text-2xl text-gray">
+                Choose SAML provider
             </span>
 
-            <div class="flex justify-center w-full">
+            <div class="flex flex-col justify-center w-full mt-6">
                 <div
                     v-for="(provider, index) in samlProviders"
                     :key="provider.alias"
-                    class="py-5 border rounded-sm cursor-pointer  provider-wrapper"
+                    class="p-4 mb-3 border border-gray-200 rounded cursor-pointer provider-wrapper"
                     :class="[
-                        index !== samlProviders.length - 1 ? 'mr-4' : '',
+                        index !== samlProviders.length - 1 ? '' : '',
                         selectedOption === provider.alias
                             ? 'bg-primary-light border rounded border-primary'
                             : '',
                     ]"
                     @click="setSelectedOption(provider.alias)"
                 >
-                    <div class="flex flex-col justify-center">
+                    <div class="flex items-center">
                         <img
                             v-if="!provider.isCustomSaml"
                             :src="provider.image"
                             :alt="provider.title"
-                            class="self-center w-4 h-4 mb-2"
+                            class="w-6 h-6 mr-5"
                         />
                         <AtlanIcon
                             v-else
-                            icon="PrimaryKey"
-                            class="self-center mb-2 text-alert"
+                            icon="CustomSaml"
+                            class="h-6 mr-5"
                         />
 
-                        <span>{{ provider.title }}</span>
+                        <span class="text-lg font-bold">{{ provider.title }}</span>
                     </div>
                 </div>
             </div>
@@ -50,7 +50,13 @@
                     "
                     @click="configureSSO"
                 >
-                    Configure</AtlanBtn
+                    Configure
+                    <template v-slot:suffix>
+                        <AtlanIcon
+                            icon="ArrowRight"
+                        ></AtlanIcon>
+                    </template>
+                </AtlanBtn
                 >
             </div>
         </div>
@@ -103,12 +109,8 @@ export default defineComponent({
 .ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder {
     @apply text-gray-500 !important;
 }
-.configure-wrapper {
-    max-width: 43.5rem;
-    max-height: 17rem;
-    .provider-wrapper {
-        width: 8.75rem;
-    }
+.provider-wrapper {
+    width: 546px;
 }
 </style>
 <route lang="yaml">

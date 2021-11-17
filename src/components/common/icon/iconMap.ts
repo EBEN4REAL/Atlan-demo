@@ -228,6 +228,7 @@ import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
+import CustomSaml from '~/assets/images/icons/customSaml.svg'
 
 //source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg';
@@ -466,5 +467,6 @@ export default {
     SSO,
     SMTP,
     APIKey,
-    Camera
+    Camera,
+    CustomSaml
 }

@@ -6,8 +6,8 @@
         :closable="false"
         :mask-closable="false"
     >
-        <template #title />
-        <p class="mb-4 text-base font-bold text-gray">{{ title }}</p>
+        <!-- <template #title />
+        <p class="mb-4 text-base font-bold text-gray">{{ title }}</p> -->
         <slot />
         <div class="flex items-center justify-end gap-x-4">
             <AtlanBtn

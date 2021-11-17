@@ -1,7 +1,7 @@
 <template>
     <CreationModal
         v-model:visible="modalVisible"
-        title="New Persona"
+        title=""
         @cancel="() => (modalVisible = false)"
         @ok="handleCreation"
     >
@@ -9,7 +9,7 @@
             <input
                 ref="titleBar"
                 v-model="title"
-                placeholder="Untitled persona"
+                placeholder="Untitled purpose"
                 type="text"
                 class="text-lg font-bold text-gray-700 clean-input"
                 @keyup.esc="$event?.target?.blur()"
@@ -37,7 +37,7 @@
         reFetchList,
         selectedPersonaId,
     } from './composables/usePurposeList'
-    import { IPersona } from '~/types/accessPolicies/purposes'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
@@ -72,22 +72,30 @@
             async function handleCreation() {
                 const messageKey = Date.now()
                 message.loading({
-                    content: 'Adding new persona',
+                    content: 'Adding new purpose',
                     duration: 0,
                     key: messageKey,
                 })
                 try {
-                    const newPersona: IPersona = await createPersona({
+                    const newPersona: IPurpose = await createPersona({
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        tag: `${generateUUID()}`,
+                        tag: 'NjsqRXpy1X9ckrw0R9G3RH',
                         /* Hardcode here */
                         resourcePolicies: [
                             {
-                                actions: ['entity-create'],
-                                groups: ['testing', 'admin'],
-                                users: ['chawlatanya31', 'admin1'],
+                                actions: [],
+                                groups: [],
+                                users: [],
+                                allow: true,
+                            },
+                        ],
+                        dataPolicies: [
+                            {
+                                actions: [],
+                                groups: [],
+                                users: [],
                                 allow: true,
                             },
                         ],

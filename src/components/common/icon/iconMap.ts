@@ -225,8 +225,12 @@ import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
+import NoGroups from '~/assets/images/illustrations/no-groups.svg'
+import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 
 export default {
+    CreateGroups,
+    NoGroups,
     NoUsers,
     Times,
     ExclaimCircle,

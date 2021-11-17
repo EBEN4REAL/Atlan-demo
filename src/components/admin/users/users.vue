@@ -2,7 +2,7 @@
     <DefaultLayout title="Users" :badge="totalUserCount">
         <template #header>
             <div class="flex justify-between">
-                <div class="flex items-baseline w-1/4">
+                <div v-auth="map.LIST_USERS" class="flex items-baseline w-1/4">
                     <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search all ${
@@ -73,7 +73,10 @@
                     @resendInvite="resendInvite"
                 />
 
-                <div class="flex justify-end max-w-full mt-4">
+                <div
+                    v-auth="map.LIST_USERS"
+                    class="flex justify-end max-w-full mt-4"
+                >
                     <a-pagination
                         :total="pagination.total"
                         :current="pagination.current"
@@ -85,7 +88,7 @@
             <EmptyView
                 v-else
                 empty-screen="NoUsers"
-                desc=" Oops… we didn’t find any users that match this search"
+                desc="Oops… we didn’t find any users that match this search"
                 button-text="Clear search"
                 @event="clearFilter"
             />

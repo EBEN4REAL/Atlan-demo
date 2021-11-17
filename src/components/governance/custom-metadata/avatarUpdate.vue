@@ -48,10 +48,12 @@
                                 class="p-3 text-center border border-dashed rounded "
                             >
                                 <a-upload
-                                    class="relative block w-full mb-3  metadata-avatar-uploader"
+                                    class="relative block w-full mb-3 metadata-avatar-uploader"
                                     name="file"
                                     accept="image/*"
                                     :multiple="false"
+                                    :file-list="fileList"
+                                    :show-upload-list="false"
                                     :custom-request="handleUploadImage"
                                 >
                                     <a-button
@@ -118,6 +120,7 @@
                 isUploading,
                 imageUrl,
                 isUpdating,
+                fileList,
                 handleUploadImage,
                 handleEmojiSelect,
             } = useCustomMetadataAvatar(metadata)

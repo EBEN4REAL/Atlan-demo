@@ -14,6 +14,16 @@ interface avatarOptions {
   emoji: string | null
 }
 
+interface FileItem {
+  uid: string;
+  name?: string;
+  status?: string;
+  response?: string;
+  url?: string;
+  preview?: string;
+  originFileObj?: any;
+  file: string | Blob;
+}
 
 
 
@@ -22,7 +32,8 @@ export default function useCustomMetadataAvatar(metadata) {
   const popOverVisible = ref(false)
   const isUpdating = ref(false)
   const imageResponse = ref({})
-  const apiResponse = ref({})
+  const fileList = ref<FileItem[]>([]);
+
   const store = useTypedefStore()
   const form: Ref<avatarOptions> = ref({
     logoType: 'image',
@@ -50,9 +61,11 @@ export default function useCustomMetadataAvatar(metadata) {
         form.value.imageId = newImage.id
         form.value.emoji = null
         message.success('Image uploaded.')
+        fileList.value = []
       }
       if (newError) {
         message.error(' Error updating image.')
+        fileList.value = []
       }
     }
   )
@@ -60,6 +73,7 @@ export default function useCustomMetadataAvatar(metadata) {
   // methods
   const handleUploadImage = (payload: { file: File }) => {
     if (!popOverVisible.value) return
+    fileList.value[0] = payload
     const { file } = payload
     isUploading.value = true
     upload(file)
@@ -141,6 +155,7 @@ export default function useCustomMetadataAvatar(metadata) {
     isUploading,
     imageUrl,
     isUpdating,
+    fileList,
     handleUploadImage,
     handleEmojiSelect,
   }

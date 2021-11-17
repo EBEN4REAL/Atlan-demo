@@ -18,7 +18,7 @@
                     :image-url="imageUrl(user.username)"
                     :allow-upload="isCurrentUser(user.username)"
                     :avatar-name="user.name || user.uername || user.email"
-                    :avatar-size="40"
+                    :avatar-size="26"
                     avatar-shape="circle"
                     class="mr-2"
                 />
@@ -38,6 +38,9 @@
                     </p>
                 </div>
             </div>
+        </template>
+        <template #role="{ text: user }">
+            {{ user || 'Default roles' }}
         </template>
         <template #status="{ text: user }">
             <div
@@ -85,14 +88,13 @@
                                 @errorUpdateRole="emit('handleErrorUpdateRole')"
                             />
                         </template>
-                        <a-button
+                        <div
                             v-if="user.enabled"
-                            size="small"
-                            class="rounded"
+                            class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
                             @click="emit('handleChangeRole', user)"
                         >
                             <AtlanIcon icon="StarCircled"></AtlanIcon>
-                        </a-button>
+                        </div>
                     </a-popover>
                 </a-tooltip>
                 <!-- enable/disable  -->
@@ -155,9 +157,9 @@
                                 </div>
                             </div>
                         </template>
-                        <a-button
+                        <div
                             size="small"
-                            class="mr-3.5 rounded"
+                            class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
                             @click="emit('toggleDisableEnablePopover', user)"
                         >
                             <AtlanIcon
@@ -165,7 +167,7 @@
                                 icon="DisableUser"
                             ></AtlanIcon>
                             <AtlanIcon v-else icon="CheckCircled"></AtlanIcon>
-                        </a-button>
+                        </div>
                     </a-popover>
                 </a-tooltip>
                 <!-- invitation -->

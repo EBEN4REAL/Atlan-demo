@@ -3,7 +3,6 @@ import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import { pluralizeString } from '~/utils/string'
-import swrvState from '~/utils/swrvState'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
@@ -136,7 +135,6 @@ export const useUsers = (
         return []
     })
 
-    const { state, STATES } = swrvState(data, error, isValidating)
 
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
@@ -148,8 +146,6 @@ export const useUsers = (
         filteredUserCount,
         getUserList,
         isLoading,
-        state,
-        STATES,
         isValidating,
         error,
     }

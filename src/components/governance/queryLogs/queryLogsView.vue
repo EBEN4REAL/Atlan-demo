@@ -51,8 +51,8 @@
                 </div>
             </template>
 
-            <APIKeysTable
-                :api-keys-list="apiKeysList"
+            <QueryLogTable
+                :api-keys-list="[]"
                 :is-loading="isLoading"
                 :deleteAPIKeyLoading="deleteAPIKeyLoading"
                 @selectAPIKey="handleSelectAPIKey"
@@ -101,18 +101,19 @@
     import useCreateAPIKey from '@/governance/apikeys/composables/useCreateAPIKey'
     import DefaultLayout from '~/components/admin/layout.vue'
     import AtlanBtn from '@/UI/button.vue'
-    import APIKeysTable from '@/governance/apikeys/apiKeysTable.vue'
+    import QueryLogTable from '@/governance/queryLogs/queryLogTable.vue'
     import APIKeyDrawer from '@/governance/apikeys/apiKeyDrawer.vue'
     import filteredPersonas from '~/components/governance/personas/personaView.vue'
     import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
     import TimeFrameSelector from '@/governance/queryLogs/timeFrameSelector.vue'
+    import dayjs from 'dayjs'
 
     export default defineComponent({
         name: 'ApiKeysView',
         components: {
             DefaultLayout,
             AtlanBtn,
-            APIKeysTable,
+            QueryLogTable,
             TimeFrameSelector,
             APIKeyDrawer,
         },
@@ -249,6 +250,11 @@
 
             const handleRangePickerChange = (e) => {
                 console.log(e, 'Date pick')
+                message.info(
+                    `Selected Dates b/w ${dayjs(e[0]).format(
+                        'DD MMM YYYY'
+                    )} - ${dayjs(e[1]).format('DD MMM YYYY')}`
+                )
             }
 
             /**WATCHERS */

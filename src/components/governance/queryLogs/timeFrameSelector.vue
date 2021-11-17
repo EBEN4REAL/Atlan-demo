@@ -41,20 +41,24 @@
                     >
                         <a-radio-group
                             v-model:value="modelValue.value"
+                            class="w-full"
                             @change="triggerChange"
                         >
                             <div
-                                class="flex flex-col px-3 text-sm text-gray-700  hover:text-primary"
+                                class="flex flex-col w-full px-3 text-sm text-gray-700  hover:text-primary"
                             >
                                 <template
                                     v-for="item in timeFrameOptions"
                                     :key="item.label"
                                 >
-                                    <div class="px-0 py-1">
-                                        <a-radio :value="item.value">
-                                            <span class="hover:text-primary">
+                                    <div class="w-full px-0 py-1">
+                                        <a-radio
+                                            :value="item.value"
+                                            :class="$style.radio_btn"
+                                        >
+                                            <div>
                                                 {{ item.label }}
-                                            </span>
+                                            </div>
                                         </a-radio>
                                     </div>
                                 </template>
@@ -208,5 +212,8 @@
     }
     .menu_item {
         @apply px-0 !important;
+    }
+    .radio_btn {
+        @apply w-full hover:text-primary  !important;
     }
 </style>

@@ -1,6 +1,7 @@
 <template>
     <div class="flex flex-col h-full">
         <div class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm">
+            {{ localValue }}
             <div
                 class="flex items-center justify-between"
                 v-if="totalFilteredCount > 0"
@@ -49,7 +50,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     import Panel from './panel.vue'
@@ -136,29 +137,38 @@
                 return [...arr, ...cmList.value]
             })
 
-            const totalFilteredCount = computed(() => {
-                if (Object.keys(localValue.value).length > 0) {
-                    if (
-                        Object.keys(localValue.value).find(
-                            (k) => k === 'typeName'
-                        )
-                    ) {
-                        return Object.keys(localValue.value).length - 1
-                    }
-                    if (
-                        Object.keys(localValue.value).find(
-                            (k) => k === 'typeNames'
-                        )
-                    ) {
-                        return Object.keys(localValue.value).length - 1
-                    }
-                }
+            // const totalFilteredCount = ref(0)
+            // watch(
+            //     () => localValue,
+            //     () => {
+            //         console.log('change')
+            //         let count = 0
+            //         Object.keys(localValue.value).forEach((key) => {
+            //             console.log(localValue.value[key])
+            //             if (localValue.value[key]) {
+            //                 if (localValue.value[key] !== {}) {
+            //                     count += 1
+            //                 }
+            //             }
+            //         })
+            //         totalFilteredCount.value = count
+            //     }
+            // )
 
+            const totalFilteredCount = computed(() => {
                 let count = 0
                 Object.keys(localValue.value).forEach((key) => {
-                    console.log(key)
-                    if (localValue.value[key]) {
-                        count += 1
+                    if (Array.isArray(localValue.value[key])) {
+                        if (localValue.value[key].length > 0) {
+                            count += 1
+                        }
+                    } else if (
+                        typeof localValue.value[key] === 'object' &&
+                        localValue.value[key] !== null
+                    ) {
+                        if (Object.keys(localValue.value[key]).length > 0) {
+                            count += 1
+                        }
                     }
                 })
                 return count

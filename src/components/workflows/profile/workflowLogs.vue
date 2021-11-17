@@ -124,11 +124,12 @@
     import { useArchivedWorkflowRunLogs } from '~/composables/workflow/useWorkflowList'
     import useWorkflowLogsStream from '~/composables/workflow/useWorkflowLogsStream'
 
-    import WorkflowMixin from '~/mixins/workflow'
+    // import WorkflowMixin from '~/mixins/workflow'
+    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
 
     export default defineComponent({
         components: { EmptyView },
-        mixins: [WorkflowMixin],
+        // mixins: [WorkflowMixin],
         props: {
             isOpen: { type: Boolean, default: false },
             run: { type: Object, default: () => {} },
@@ -257,6 +258,7 @@
                 selectedPod,
                 selectedGraph,
                 isEmptyLogs,
+                ...useWorkFlowHelper()
             }
         },
     })

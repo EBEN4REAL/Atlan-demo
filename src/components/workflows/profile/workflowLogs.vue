@@ -95,17 +95,7 @@
             >
                 <pre
                     id="contentArea-log"
-                    class="
-                        w-full
-                        h-full
-                        p-4
-                        font-mono
-                        whitespace-normal
-                        bg-gray-100
-                        border border-gray-300
-                        rounded-md
-                        clusterize-content
-                    "
+                    class="w-full h-full p-4 font-mono whitespace-normal bg-gray-100 border border-gray-300 rounded-md  clusterize-content"
                 >
                   <span v-for="(item, index) in response" :key="index">
                   <span class="no">{{index + 1}}</span>
@@ -124,11 +114,12 @@
     import { useArchivedWorkflowRunLogs } from '~/composables/workflow/useWorkflowList'
     import useWorkflowLogsStream from '~/composables/workflow/useWorkflowLogsStream'
 
-    import WorkflowMixin from '~/mixins/workflow'
+    // import WorkflowMixin from '~/mixins/workflow'
+    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
 
     export default defineComponent({
         components: { EmptyView },
-        mixins: [WorkflowMixin],
+        // mixins: [WorkflowMixin],
         props: {
             isOpen: { type: Boolean, default: false },
             run: { type: Object, default: () => {} },
@@ -254,6 +245,7 @@
                 selectedPod,
                 selectedGraph,
                 isEmptyLogs,
+                ...useWorkFlowHelper()
             }
         },
     })

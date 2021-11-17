@@ -92,9 +92,12 @@
             <div
                 v-if="rowCount(selectedAsset) > 0"
                 class="flex flex-col text-sm cursor-pointer"
+                @click="showSampleDataModal"
             >
                 <span class="mb-2 text-sm text-gray-500">Rows</span>
-                <span class="text-gray-700">{{ rowCount(selectedAsset) }}</span>
+                <span class="font-semibold text-primary">{{
+                    rowCount(selectedAsset)
+                }}</span>
             </div>
             <!-- </RowInfoHoverCard> -->
             <div
@@ -279,6 +282,15 @@
                 @change="handleChangeCertificate"
             />
         </div>
+        <a-modal
+            v-model:visible="sampleDataVisible"
+            :footer="null"
+            :closable="false"
+            width="1000px"
+            :class="$style.sampleDataModal"
+        >
+            <SampleDataTable :asset="selectedAsset" />
+        </a-modal>
     </div>
 </template>
 
@@ -286,7 +298,7 @@
     import {
         computed,
         defineComponent,
-        PropType,
+        defineAsyncComponent,
         toRefs,
         inject,
         ref,
@@ -333,12 +345,24 @@
             SQL,
             Terms,
             Shortcut,
+            SampleDataTable: defineAsyncComponent(
+                () =>
+                    import(
+                        '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
+                    )
+            ),
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
             const isConfetti = ref(false)
+
+            const sampleDataVisible = ref<boolean>(false)
+
+            const showSampleDataModal = () => {
+                sampleDataVisible.value = true
+            }
 
             const {
                 title,
@@ -689,7 +713,17 @@
                 handleChangeDescription,
                 nameRef,
                 descriptionRef,
+                sampleDataVisible,
+                showSampleDataModal,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .sampleDataModal {
+        :global(.ant-modal-body) {
+            @apply p-2 !important;
+        }
+    }
+</style>

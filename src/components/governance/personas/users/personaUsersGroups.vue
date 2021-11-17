@@ -30,15 +30,17 @@
                         class="flex flex-col items-center py-1 bg-white rounded"
                         style="width: 270px"
                     >
-                        <!-- <UserSelector
+                        <!-- <OwnersSelector
                             :no-owners-assigned="false"
                             :enableTabs="enableTabs"
                             :data="userGroupData"
                             @change="handleUsersChange"
                         /> -->
-                        <UserSelector
-                            :showNoOwners="false"
+                        <OwnersSelector
+                            :showNone="false"
                             :enableTabs="enableTabs"
+                            selectGroupKey="id"
+                            selectUserKey="id"
                             v-model:modelValue="userGroupData"
                             @change="handleUsersChange"
                         />
@@ -208,10 +210,32 @@
                 </template>
             </a-table>
         </div>
+        <div
+            v-else-if="
+                listType === 'users' &&
+                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
+                    groupState
+                )
+            "
+            class="flex flex-col items-center h-full align-middle bg-white"
+        >
+            <ErrorView>
+                <div class="mt-3">
+                    <a-button
+                        size="large"
+                        type="primary"
+                        ghost
+                        @click="getUserList()"
+                    >
+                        <fa icon="fal sync" class="mr-2"></fa>Try again
+                    </a-button>
+                </div>
+            </ErrorView>
+        </div>
 
         <!-- USER TABLE END -->
         <div
-            v-else-if="
+            v-if="
                 ![GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
                     groupState
                 )
@@ -295,7 +319,12 @@
             </a-table>
         </div>
         <div
-            v-else
+            v-else-if="
+                listType === 'groups' &&
+                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
+                    groupState
+                )
+            "
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -304,13 +333,7 @@
                         size="large"
                         type="primary"
                         ghost
-                        @click="
-                            () => {
-                                listType === 'users'
-                                    ? getUserList()
-                                    : getGroupList()
-                            }
-                        "
+                        @click="getGroupList()"
                     >
                         <fa icon="fal sync" class="mr-2"></fa>Try again
                     </a-button>
@@ -336,7 +359,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import UserSelector from '@common/facet/owners/index.vue'
+    import OwnersSelector from '@common/facet/owners/index.vue'
 
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -358,7 +381,7 @@
             AtlanBtn,
             RaisedTab,
             SearchAndFilter,
-            UserSelector,
+            OwnersSelector,
         },
         props: {
             persona: {
@@ -381,17 +404,11 @@
             const queryText = ref('')
             const popoverVisible = ref(false)
             const addUsersLoading = ref(false)
-            const selectedUsernameToUserMap: Ref<Record<string, Object>> = ref(
-                {}
-            )
-            const selectedGroupnameToGroupMap: Ref<Record<string, Object>> =
-                ref({})
 
             const { usePersonaUserList, userColumns } = usePersonaUsers
             const { usePersonaGroupList, groupColumns } = usePersonaGroups
             const { updateUsers } = usePersonaService()
             const {
-                list: allUsers,
                 getUserList,
                 userListAPIParams,
                 STATES: USER_STATES,
@@ -399,7 +416,6 @@
                 userList,
             } = usePersonaUserList(persona)
             const {
-                list: allGroups,
                 getGroupList,
                 STATES: GROUP_STATES,
                 state: groupState,
@@ -447,20 +463,11 @@
                 showUserPreview()
             }
 
-            const getIds = (users: Object) => {
-                let res: string[] = []
-                let k = Object.keys(users)
-                k.forEach((e) => {
-                    res.push(users[e].id as string)
-                })
-                return res
-            }
-
             const handleUpdate = () => {
                 if (persona.value?.id) {
                     addUsersLoading.value = true
-                    const userIds = getIds(selectedUsernameToUserMap.value)
-                    const groupIds = getIds(selectedGroupnameToGroupMap.value)
+                    const userIds = userGroupData.value.ownerUsers
+                    const groupIds = userGroupData.value.ownerGroups
                     updateUsers({
                         id: persona.value.id,
                         users: userIds,
@@ -496,48 +503,6 @@
                 ownerGroups: persona.value.groups ?? [],
             })
 
-            // const userGroupData = computed({
-            //     get: () => ({
-            //         ownerUsers: persona.value.users ?? [],
-            //         ownerGroups: persona.value.groups ?? [],
-            //     }),
-            //     set: (val) => {
-            //         console.log(val, 'value')
-            //         selectedPersonaDirty.value!.users = val.ownerUsers
-            //         selectedPersonaDirty.value!.groups = val.ownerGroups
-            //     },
-            // })
-
-            const insertUserstoMap = (
-                usernames: string[],
-                usersList: any[]
-            ) => {
-                usernames.forEach((username: string) => {
-                    usersList.forEach((e: any) => {
-                        if (e.username === username) {
-                            selectedUsernameToUserMap.value[username] = e
-                        }
-                    })
-                })
-                console.log(
-                    selectedUsernameToUserMap.value,
-                    usernames,
-                    usersList
-                )
-            }
-            const insertGroupstoMap = (
-                groupnames: string[],
-                usersList: any[]
-            ) => {
-                groupnames.forEach((groupname: string) => {
-                    usersList.forEach((e: any) => {
-                        if (e.name === groupname) {
-                            selectedGroupnameToGroupMap.value[groupname] = e
-                        }
-                    })
-                })
-            }
-
             const getPopoverContent = (
                 user: any,
                 action: 'remove',
@@ -548,60 +513,38 @@
                 }?`
             }
 
-            const getUsersFromUsername = (usernames: string[]) => {
-                let res: Object[] = []
-                usernames.forEach((username) => {
-                    userList.value.forEach((e) => {
-                        if (e.username === username) res.push(e)
-                    })
-                })
-                return res
-            }
-            const getGroupsFromGroupname = (aliases: string[]) => {
-                let res: Object[] = []
-                aliases.forEach((alias) => {
-                    groupList.value.forEach((e) => {
-                        if (e.alias === alias) res.push(e)
-                    })
-                })
-                return res
-            }
-
             const confirmPopover = (
                 userOrGroup: any,
                 type: 'user' | 'group'
             ) => {
                 addUsersLoading.value = true
-                let users = getUsersFromUsername(persona.value.users ?? [])
-                let groups = getGroupsFromGroupname(persona.value.groups ?? [])
 
                 // console.log(persona.value, 'persona')
-
+                let updatedUsersIds = userGroupData.value.ownerUsers
+                let updatedGroupIds = userGroupData.value.ownerGroups
                 if (type === 'user') {
-                    users = users.filter((user) => user.id !== userOrGroup.id)
+                    updatedUsersIds = userGroupData.value.ownerUsers.filter(
+                        (userId) => userId !== userOrGroup.id
+                    )
                 } else {
-                    groups = groups.filter(
-                        (group) => group.id !== userOrGroup.id
+                    updatedGroupIds = userGroupData.value.ownerGroups.filter(
+                        (groupId) => groupId !== userOrGroup.id
                     )
                 }
-                const usernames = users.map((user) => user.username)
-                persona.value.users = usernames
-                selectedPersonaDirty.value.users = usernames
-                const groupaliases = groups.map((group) => group.alias)
-                persona.value.groups = groupaliases
-                selectedPersonaDirty.value.groups = groupaliases
-                let userIds = users.map((user) => user.id)
-                let groupIds = groups.map((group) => group.id)
+                persona.value.users = updatedUsersIds
+                selectedPersonaDirty.value.users = updatedUsersIds
+                persona.value.groups = updatedGroupIds
+                selectedPersonaDirty.value.groups = updatedGroupIds
 
                 updateUsers({
                     id: persona.value.id,
-                    users: userIds,
-                    groups: groupIds,
+                    users: updatedUsersIds,
+                    groups: updatedGroupIds,
                 })
                     .then(() => {
                         addUsersLoading.value = false
-                        userGroupData.value.ownerUsers = usernames
-                        userGroupData.value.ownerGroups = groupaliases
+                        userGroupData.value.ownerUsers = updatedUsersIds
+                        userGroupData.value.ownerGroups = updatedGroupIds
 
                         getUserList()
                         getGroupList()
@@ -628,10 +571,7 @@
                 ownerUsers: string[]
                 ownerGroups: string[]
             }) => {
-                insertUserstoMap(data?.ownerUsers ?? [], allUsers.value)
                 persona.value.users = data?.ownerUsers ?? []
-
-                insertGroupstoMap(data?.ownerGroups ?? [], allGroups.value)
                 persona.value.groups = data?.ownerGroups ?? []
                 return
             }
@@ -677,8 +617,6 @@
             })
 
             return {
-                selectedGroupnameToGroupMap,
-                selectedUsernameToUserMap,
                 showGroupPreviewDrawer,
                 getGroupList,
                 getUserList,

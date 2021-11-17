@@ -10,6 +10,7 @@ export default function useUserData() {
     )
 
     return {
+        id: authStore.id,
         name: authStore.name,
         username: authStore.username,
         avatar: avatarURL.value,

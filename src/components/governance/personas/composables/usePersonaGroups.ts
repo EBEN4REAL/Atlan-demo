@@ -31,9 +31,9 @@ function usePersonaGroupList(persona: Ref<IPurpose>) {
         () => {
             // console.log(data.value, 'data edit first')
             groupList.value = []
-            persona.value.groups?.forEach((grpname) => {
+            persona.value.groups?.forEach((grpid) => {
                 data.value.forEach((t) => {
-                    if (t.alias === grpname) {
+                    if (t.id === grpid) {
                         groupList.value.push(t)
                     }
                 })

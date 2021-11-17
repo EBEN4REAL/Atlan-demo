@@ -23,7 +23,7 @@
                     >
                         {{
                             selectedPersonaDirty?.metadataPolicies?.length +
-                            selectedPersonaDirty?.datapolicies?.length
+                            selectedPersonaDirty?.dataPolicies?.length
                         }}
                     </div>
                     <div

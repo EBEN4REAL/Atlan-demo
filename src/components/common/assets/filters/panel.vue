@@ -246,14 +246,12 @@
                         usersLength > 0
                     ) {
                         val = facetMap.value[id]?.ownerUsers?.join(', ')
-                    } else if (usersLength + groupsLength > 2) {
+                    } else if (usersLength + groupsLength >= 2) {
                         val = `${getOwnerFilterAppliedString(
                             usersLength,
                             groupsLength
                         )}`
                     }
-
-                    console.log(val)
 
                     if (facetMap.value[id].empty) {
                         if (val !== '') {

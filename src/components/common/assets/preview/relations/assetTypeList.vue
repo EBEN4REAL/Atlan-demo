@@ -40,7 +40,6 @@
                     return {}
                 },
             },
-
             assetType: {
                 type: String,
                 requred: true,
@@ -51,13 +50,8 @@
                 requred: true,
                 default: () => '',
             },
-            page: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
         },
-        emits: ['preview', 'loadMore', 'update:autoSelect'],
+        emits: ['preview'],
         setup(props, { emit }) {
             const selectedAssetId = ref('')
             // const shouldReSelect = false

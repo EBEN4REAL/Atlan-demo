@@ -19,6 +19,8 @@
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
 
+        <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
+
         <div class="px-5" v-if="webURL(selectedAsset)">
             <a-button
                 block
@@ -199,9 +201,11 @@
 
         <div
             v-if="
-                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
-                    selectedAsset.typeName
-                )
+                ![
+                    'AtlasGlossary',
+                    'AtlasGlossaryCategory',
+                    'Connection',
+                ].includes(selectedAsset.typeName)
             "
             class="flex flex-col"
         >
@@ -232,6 +236,7 @@
                     'AtlasGlossary',
                     'AtlasGlossaryTerm',
                     'AtlasGlossaryCategory',
+                    'Connection',
                 ].includes(selectedAsset.typeName)
             "
             class="flex flex-col"
@@ -303,9 +308,12 @@
     import confetti from '~/utils/confetti'
     import Shortcut from '@/common/popover/shortcut.vue'
 
+    import Connection from './connection.vue'
+
     export default defineComponent({
         name: 'AssetDetails',
         components: {
+            Connection,
             // Experts,
             Description,
             Name,

@@ -766,6 +766,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        attributes,
         title,
         getConnectorImage,
         getConnectorName,

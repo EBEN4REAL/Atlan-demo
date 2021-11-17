@@ -56,13 +56,12 @@
                 <div class="flex items-center">
                     <a-tooltip
                         placement="left"
-                        v-if="connectionName(selectedAsset)"
+                        v-if="connectorName(selectedAsset)"
                     >
                         <template #title>
-                            <span>{{
-                                `${connectorName(
-                                    selectedAsset
-                                )}/${connectionName(selectedAsset)}`
+                            <span>{{ connectorName(selectedAsset) }} </span>
+                            <span v-if="connectionName(selectedAsset)">{{
+                                `/${connectionName(selectedAsset)}`
                             }}</span>
                         </template>
                         <img

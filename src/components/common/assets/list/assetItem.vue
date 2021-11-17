@@ -71,13 +71,12 @@
                         <div class="flex items-center mr-1">
                             <a-tooltip
                                 placement="left"
-                                v-if="connectionName(item)"
+                                v-if="connectorName(item)"
                             >
                                 <template #title>
-                                    <span>{{
-                                        `${connectorName(
-                                            item
-                                        )}/${connectionName(item)}`
+                                    <span>{{ connectorName(item) }} </span>
+                                    <span v-if="connectionName(item)">{{
+                                        `/${connectionName(item)}`
                                     }}</span>
                                 </template>
                                 <img
@@ -85,6 +84,7 @@
                                     class="h-3 mr-1 mb-0.5"
                                 />
                             </a-tooltip>
+
                             <AtlanIcon
                                 icon="Category"
                                 v-if="

@@ -1,8 +1,8 @@
 <template>
-    <div class="flex w-full">
+    <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"

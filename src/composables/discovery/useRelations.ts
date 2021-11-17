@@ -52,7 +52,6 @@ function useEntityRelationships(id: string) {
                         })
                 }
             )
-            console.log(relationshipAssets.value)
         } else {
             // if data not found
             console.log(

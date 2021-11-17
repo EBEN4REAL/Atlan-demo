@@ -64,20 +64,10 @@
 
             <div
                 class="relative flex flex-col"
-                :style="{ height: 'calc(100vh - 0.8rem)' }"
+                :style="{ height: 'calc(100vh - 3rem)' }"
             >
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        px-4
-                        pt-2
-                        mt-2
-                        text-lg
-                        font-semibold
-                        text-gray-700
-                    "
+                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
                 >
                     {{ tab.name }}
                 </div>
@@ -104,6 +94,7 @@
         watch,
         computed,
         onErrorCaptured,
+        provide
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
@@ -171,12 +162,12 @@
             const selectedPreviewTab = computed(() => route?.query?.tab || '')
 
             const filteredTabs = [
-                {
-                    name: 'Overview',
-                    component: 'info',
-                    icon: 'Overview',
-                    tooltip: 'Overview',
-                },
+                // {
+                //     name: 'Overview',
+                //     component: 'info',
+                //     icon: 'Overview',
+                //     tooltip: 'Overview',
+                // },
                 {
                     name: 'Run History',
                     component: 'runs',
@@ -187,7 +178,7 @@
 
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
-
+            provide("creatorDetails", {})
             if (selectedPreviewTab.value === 'runs') activeKey.value = 1
 
             watch(selectedPreviewTab, (n) => {

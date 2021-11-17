@@ -206,10 +206,11 @@
                                             class="mb-2"
                                             :allow-clear="false"
                                             :check-strictly="true"
-                                            :show-checked-strategy="SHOW_CHILD"
+                                            :show-checked-strategy="
+                                                CHECKEDSTRATEGY
+                                            "
                                             @change="
-                                                form.options.applicableEntityTypes =
-                                                    $event
+                                                handleApplicableEntityTypeChange
                                             "
                                         >
                                         </a-tree-select>
@@ -324,13 +325,12 @@
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
         applicableEntityTypes,
-        applicableEntityTypes,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
-    const SHOW_CHILD = TreeSelect.SHOW_CHILD
+    const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
@@ -593,6 +593,25 @@
                 }
             }
 
+            const handleApplicableEntityTypeChange = (data) => {
+                /**
+                 * Data is just an array of ids
+                 * First get items in finalApplicableTypeNamesOptions that match id and have children (store index or id and children)
+                 * Then go through the data again and replace matched items with children ids
+                 * reducer should work
+                 */
+                const childrenExtracted = data.reduce((a, b, index) => {
+                    const isParent = finalApplicableTypeNamesOptions.value.find(
+                        (y) => b === y.value
+                    )
+                    if (isParent)
+                        a.push(...isParent.children.map((z) => z.value))
+                    else a.push(data[index])
+                    return a
+                }, [])
+                form.value.options.applicableEntityTypes = childrenExtracted
+            }
+
             return {
                 visible,
                 form,
@@ -602,7 +621,7 @@
                 loading,
                 rules,
                 typeTreeSelect,
-                SHOW_CHILD,
+                CHECKEDSTRATEGY,
                 enumTypeOtions,
                 finalEnumsList,
                 selectedEnumOptions,
@@ -617,6 +636,7 @@
                 handleTypeNameChange,
                 updateEnumValues,
                 handleEnumCreateSuccess,
+                handleApplicableEntityTypeChange,
             }
         },
         data() {

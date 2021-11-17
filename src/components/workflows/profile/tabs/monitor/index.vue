@@ -77,12 +77,13 @@
         getArchivedRunList,
     } from '~/composables/workflow/useWorkflowList'
 
-    import WorkflowMixin from '~/mixins/workflow'
+    // import WorkflowMixin from '~/mixins/workflow'
+    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
         components: { MonitorGraph, EmptyView },
-        mixins: [WorkflowMixin],
+        // mixins: [WorkflowMixin],
         props: {
             selectedRunName: {
                 type: String,
@@ -197,6 +198,7 @@
                 selectedPod,
                 loadingGeneral,
                 handleRefresh,
+                ...useWorkFlowHelper()
             }
         },
     })

@@ -20,7 +20,11 @@
                         :icon="iconName(node)"
                         class="h-4 -ml-0.5 mr-1"
                     />
-                    {{ capitalizeFirstLetter(node.title) }}
+                    {{
+                        node?.title
+                            ? capitalizeFirstLetter(node?.title)
+                            : 'No Data'
+                    }}
                 </div>
             </template>
         </a-tree-select>
@@ -284,8 +288,11 @@
                 if (node.title === 'athena' || node.title === 'snowflake') {
                     return capitalizeFirstLetter(node.title)
                 } else {
-                    let el = node.key.split('/')
-                    return capitalizeFirstLetter(el[1])
+                    let el = node?.key?.split('/')
+                    if (el && el.length) {
+                        return capitalizeFirstLetter(el[1])
+                    }
+                    return ''
                 }
             }
 

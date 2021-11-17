@@ -94,6 +94,26 @@
                             </template>
                         </RemoveGTCModal>
                     </a-menu-item>
+                    <a-menu-item
+                        v-if="showGtcCrud"
+                        key="bulk"
+                        class="p-0"
+                        @click="closeMenu"
+                    >
+                        <BulkUploadModal :entity="entity">
+                            <template #trigger>
+                                <div class="flex items-center px-3 py-2">
+                                    <AtlanIcon
+                                        icon="Term"
+                                        class="m-0 mr-2 text-primary"
+                                    />
+                                    <p class="p-0 m-0 text-gray-700 capitalize">
+                                        Bulk upload terms
+                                    </p>
+                                </div>
+                            </template>
+                        </BulkUploadModal>
+                    </a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
@@ -121,7 +141,7 @@
     import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     // import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/modal/modalHeader.vue'
-    // import BulkModal from '@/glossary/gtcCrud/bulkModal.vue'
+    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
@@ -143,7 +163,7 @@
             // Categories,
             RemoveGTCModal,
             ModalHeader,
-            // BulkModal,
+            BulkUploadModal,
         },
         props: {
             entity: {

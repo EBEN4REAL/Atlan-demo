@@ -16,7 +16,6 @@
                         <tr>
                             <th
                                 class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 4"
                             >
                                 #
                                 <span class="resize-handle"></span>
@@ -25,7 +24,6 @@
                                 v-for="(col, index) in tableColumns"
                                 :key="index"
                                 class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 3"
                             >
                                 <div class="flex items-center">
                                     <a-tooltip>

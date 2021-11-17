@@ -224,7 +224,13 @@
                 facets.value = discoveryStore.activeFacet
             }
             if (discoveryStore.preferences) {
-                preference.value = discoveryStore.preferences
+                console.log(discoveryStore.preferences)
+
+                preference.value.sort =
+                    discoveryStore.preferences.sort || preference.value.sort
+                preference.value.display =
+                    discoveryStore.preferences.display ||
+                    preference.value.display
             }
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab

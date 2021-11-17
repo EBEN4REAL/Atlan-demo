@@ -71,9 +71,7 @@ export default function useGlossaryData() {
         return `${typeName}${status}`
     }
 
-    const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
-    })
+    const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
 
     return {
         glossaryList,

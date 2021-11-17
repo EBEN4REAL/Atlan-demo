@@ -31,7 +31,7 @@
                                 <template #trigger>
                                     <div class="flex items-center">
                                         <AtlanIcon icon="Term" class="mr-1" />
-                                        Term
+                                        New Term
                                     </div>
                                 </template>
                             </AddGTCModal>
@@ -48,7 +48,7 @@
                                             icon="Category"
                                             class="mr-1"
                                         />
-                                        Category
+                                        New Category
                                     </div>
                                 </template>
                             </AddGTCModal>
@@ -64,7 +64,7 @@
                                             icon="Glossary"
                                             class="mr-1"
                                         />
-                                        Glossary
+                                        New Glossary
                                     </div>
                                 </template>
                             </AddGTCModal>
@@ -125,8 +125,16 @@
             </AggregationTabs>
         </div>
 
+        <GlossaryTree
+            ref="glossaryTree"
+            v-if="!queryText"
+            :height="height"
+            @select="handlePreview"
+            :defaultGlossary="selectedGlossaryQf"
+        ></GlossaryTree>
+
         <div
-            v-if="isLoading"
+            v-if="isLoading && queryText"
             class="flex items-center justify-center flex-grow"
         >
             <AtlanIcon
@@ -135,9 +143,7 @@
             ></AtlanIcon>
         </div>
         <div
-            v-else-if="
-                list.length === 0 && baseTreeData.length == 0 && !isLoading
-            "
+            v-else-if="list.length == 0 && !isLoading && queryText"
             class="flex-grow"
         >
             <EmptyView
@@ -149,16 +155,8 @@
             ></EmptyView>
         </div>
 
-        <GlossaryTree
-            ref="glossaryTree"
-            v-else-if="!queryText"
-            :height="height"
-            @select="handlePreview"
-            :defaultGlossary="selectedGlossaryQf"
-        ></GlossaryTree>
-
         <AssetList
-            v-else
+            v-else-if="queryText"
             ref="assetlistRef"
             :list="list"
             :selectedAsset="selectedGlossary"
@@ -190,9 +188,7 @@
     import AssetList from '@/common/assets/list/index.vue'
     import GlossaryItem from '~/components/common/assets/list/glossaryAssetItem.vue'
     import AddGTCModal from './modal/addGtcModal.vue'
-    import GlossaryTree from '@/common/tree/glossary/glossaryTree2.vue'
-
-    // import GlossarySelect from '@/common/select/glossary.vue'
+    import GlossaryTree from '@/common/tree/glossary/glossaryTree.vue'
 
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 
@@ -308,7 +304,6 @@
                 isLoadMore,
                 isValidating,
                 fetch,
-
                 quickChange,
                 handleSelectedGlossary,
                 selectedGlossary,
@@ -368,7 +363,6 @@
                 facets.value = {
                     typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
                 }
-                console.log(facets.value)
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }

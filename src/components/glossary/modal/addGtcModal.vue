@@ -7,7 +7,7 @@
         v-model:visible="visible"
         :class="$style.input"
         width="50%"
-        :destroyOnClose="true"
+        :destroy-on-close="true"
         :closable="true"
         okText="Save"
         cancelText=""
@@ -15,15 +15,32 @@
     >
         <div class="p-3">
             <div class="flex items-center mb-1">
+                <div v-if="glossaryName" class="flex items-center mr-2">
+                    <AtlanIcon
+                        icon="Glossary"
+                        class="self-center pr-1"
+                    ></AtlanIcon>
+                    {{ glossaryName }}
+                </div>
+                <div
+                    v-if="glossaryName && categoryName && categoryGuid"
+                    class="flex items-center"
+                >
+                    <AtlanIcon
+                        icon="Category"
+                        class="self-center pr-1"
+                    ></AtlanIcon>
+                    {{ categoryName }}
+                </div>
+
                 <GlossaryPopoverSelect
+                    v-else-if="localQualifiedName"
                     class="p-1 bg-gray-100 rounded"
-                    v-model="localQualfiendName"
+                    v-model="localQualifiedName"
                     v-if="
                         typeNameTitle === 'Term' || typeNameTitle === 'Category'
                     "
                 ></GlossaryPopoverSelect>
-
-                {{ categoryGuid }}
             </div>
 
             <a-input
@@ -106,6 +123,21 @@
                     return ''
                 },
             },
+            glossaryName: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
+            categoryName: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
+
             glossaryQualifiedName: {
                 type: String,
                 required: false,
@@ -123,13 +155,21 @@
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
-            const { entityType, glossaryQualifiedName, categoryGuid } =
-                toRefs(props)
+            const {
+                entityType,
+                glossaryQualifiedName,
+                categoryGuid,
+                glossaryName,
+                categoryName,
+            } = toRefs(props)
             const { getGlossaryByQF, getFirstGlossaryQF } = useGlossaryData()
 
-            const localQualfiendName = ref(
+            const localQualifiedName = ref(
                 glossaryQualifiedName.value || getFirstGlossaryQF()
             )
+
+            if (!glossaryQualifiedName.value)
+                localQualifiedName.value = getFirstGlossaryQF()
 
             const visible = ref(false)
 
@@ -150,7 +190,7 @@
                 entity.relationshipAttributes = {
                     anchor: {
                         typeName: 'AtlasGlossary',
-                        guid: getGlossaryByQF(localQualfiendName.value)?.guid,
+                        guid: getGlossaryByQF(localQualifiedName.value)?.guid,
                     },
                 }
 
@@ -187,8 +227,11 @@
             } = updateAsset(body)
 
             const resetInput = () => {
-                // title.value = ''
-                // description.value = ''
+                entity.attributes.name = ''
+                entity.attributes.userDescription = ''
+                if (glossaryQualifiedName.value) {
+                    localQualifiedName.value = glossaryQualifiedName.value
+                }
             }
 
             const typeNameTitle = computed(() => {
@@ -215,7 +258,7 @@
                     )
                 ) {
                     entity.attributes.qualifiedName = `${generateUUID()}@${
-                        localQualfiendName.value
+                        localQualifiedName.value
                     }`
                     entity.relationshipAttributes = {
                         anchor: {
@@ -291,10 +334,12 @@
                 isReady,
                 error,
                 getGlossaryByQF,
-                localQualfiendName,
+                localQualifiedName,
                 getFirstGlossaryQF,
                 guidCreatedMaps,
                 categoryGuid,
+                glossaryName,
+                categoryName,
             }
         },
     })

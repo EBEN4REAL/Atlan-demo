@@ -19,13 +19,21 @@ export default function useTypedefs() {
     }
   )
   const typedefStore = useTypedefStore()
-  watch(data, () => {
-    typedefStore.setClassificationList(data.value?.classificationDefs || [])
-    typedefStore.setCustomMetadata(data.value?.businessMetadataDefs || [])
-    typedefStore.setEnumList(data.value?.enumDefs || [])
+
+  const fillStore = (theData) => {
+    typedefStore.setClassificationList(theData?.classificationDefs || [])
+    typedefStore.setCustomMetadata(theData?.businessMetadataDefs || [])
+    typedefStore.setEnumList(theData?.enumDefs || [])
+  }
+
+  if (data.value) fillStore(data.value) // if cached then set data
+  watch(data, (newValue) => {
+    fillStore(newValue)
   })
 
-  watch([isLoading.value, error.value], ([newIsLoading, newError]) => {
+
+
+  watch([isLoading, error], ([newIsLoading, newError], [oldisLoading, oldError]) => {
     typedefStore.setIsLoading(newIsLoading)
     typedefStore.setError(newError)
   }, { deep: true })

@@ -26,6 +26,7 @@
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         nextTick,
         onMounted,
@@ -36,6 +37,8 @@
         watch,
     } from 'vue'
     import {
+        and,
+        useActiveElement,
         useMagicKeys,
         useTimeoutFn,
         useVModels,
@@ -79,6 +82,19 @@
                 isEdit.value = true
                 start()
             }
+
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA'
+            )
+
+            const { n } = useMagicKeys()
+
+            whenever(and(n, notUsingInput), () => {
+                handleEdit()
+            })
 
             // const { d /* keys you want to monitor */ } = useMagicKeys()
 

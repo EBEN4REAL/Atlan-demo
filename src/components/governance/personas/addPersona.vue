@@ -1,7 +1,7 @@
 <template>
     <CreationModal
         v-model:visible="modalVisible"
-        title="New Persona"
+        title=""
         @cancel="() => (modalVisible = false)"
         @ok="handleCreation"
     >

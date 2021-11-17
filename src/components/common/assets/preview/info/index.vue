@@ -142,11 +142,13 @@
             </div>
         </div>
         <div class="flex flex-col" v-if="isGTC(selectedAsset)">
-            <div
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-            >
-                <span> Name</span>
-            </div>
+            <Shortcut shortcutKey="n" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Name</span>
+                </div>
+            </Shortcut>
 
             <Name v-model="localName" class="mx-4" />
         </div>
@@ -406,30 +408,52 @@
 
             const currentMessage = ref('')
 
-            watch(
-                [localDescription, localName],
-                ([newDescription, newName], [prevDescription, prevName]) => {
-                    if (newDescription !== prevDescription) {
-                        entity.value.attributes.userDescription =
-                            localDescription.value
-                        body.value.entities = [entity.value]
-                        currentMessage.value = 'Description has been updated'
-                        mutate()
-                    }
-                    if (newName !== prevName) {
-                        entity.value.attributes.name = localName.value
-                        body.value.entities = [entity.value]
-                        currentMessage.value = 'Name has been updated'
-                        mutate()
-                    }
+            watch(localDescription, (newDescription, prevDescription) => {
+                if (newDescription !== prevDescription) {
+                    entity.value.attributes.userDescription =
+                        localDescription.value
+                    body.value.entities = entity.value
+                    currentMessage.value = 'Description has been updated'
+                    mutate()
                 }
-            )
+            })
+
+            watch(localName, (newName, prevName) => {
+                if (newName !== prevName) {
+                    entity.value.attributes.name = localName.value
+                    body.value.entities = entity.value
+                    currentMessage.value = 'Name has been updated'
+                    mutate()
+                }
+            })
+
+            whenever(error, () => {
+                console.log('error')
+                if (error) {
+                    // console.log(localDescription.value)
+                    // console.log(description(selectedAsset?.value))
+
+                    console.log(localName.value)
+                    console.log(title(selectedAsset?.value))
+
+                    // localDescription.value = description(selectedAsset?.value)
+                    localName.value = title(selectedAsset?.value)
+                    message.error('Something went wrong. Please try again')
+                } else {
+                    message.success(currentMessage.value)
+                    guid.value = selectedAsset.value.guid
+                    rainConfettis()
+                    mutateUpdate()
+                }
+            })
 
             whenever(isReady, () => {
-                message.success(currentMessage.value)
-                guid.value = selectedAsset.value.guid
-                rainConfettis()
-                mutateUpdate()
+                if (!error) {
+                    message.success(currentMessage.value)
+                    guid.value = selectedAsset.value.guid
+                    rainConfettis()
+                    mutateUpdate()
+                }
             })
 
             const updateList = inject('updateList')
@@ -441,10 +465,6 @@
                 ) {
                     updateList(asset.value)
                 }
-            })
-
-            whenever(error, () => {
-                message.error('Something went wrong. Please try again')
             })
 
             const localOwners = ref({

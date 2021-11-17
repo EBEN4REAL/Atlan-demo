@@ -45,6 +45,13 @@
                             Enums
                         </a-menu-item>
                     </a-menu-item-group>
+                    <a-menu-item-group title="Logs">
+                        <a-menu-item
+                            v-auth="[map.QUERY_SQL_LOGS]"
+                            key="queryLogs"
+                            >Query Logs</a-menu-item
+                        >
+                    </a-menu-item-group>
                 </a-menu>
             </div>
         </div>

@@ -22,6 +22,7 @@
                 <div class="flex px-6 py-0 border-b border-gray-200">
                     <SearchAdvanced
                         v-model="queryText"
+                        :key="searchDirtyTimestamp"
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
@@ -215,6 +216,7 @@
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const { initialFilters } = toRefs(props)
             const discoveryStore = useAssetStore()
 
@@ -305,8 +307,10 @@
 
             const handleResetEvent = () => {
                 facets.value = {}
+                queryText.value = ''
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
             const handleActiveKeyChange = () => {
@@ -340,6 +344,7 @@
                 selectedAsset,
                 updateList,
                 updateCurrentList,
+                searchDirtyTimestamp,
             }
         },
     })

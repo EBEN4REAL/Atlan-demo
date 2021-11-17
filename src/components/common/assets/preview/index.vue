@@ -100,23 +100,13 @@
                         class="flex items-center justify-center"
                         v-for="action in getActions(selectedAsset)"
                         :key="action.id"
+                        @click="handleAction(action.id)"
                     >
                         <a-tooltip :title="action.label">
-                            <div>
-                                <router-link
-                                    v-if="action.id === 'query'"
-                                    :to="getAssetQueryPath(selectedAsset)"
-                                >
-                                    <AtlanIcon
-                                        :icon="action.icon"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                </router-link>
-                                <AtlanIcon
-                                    v-else
-                                    :icon="action.icon"
-                                    class="mr-1 mb-0.5"
-                                /></div></a-tooltip
+                            <AtlanIcon
+                                :icon="action.icon"
+                                class="mb-0.5"
+                            /> </a-tooltip
                     ></a-button>
                 </a-button-group>
             </div>
@@ -173,7 +163,7 @@
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
 
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { debouncedWatch } from '@vueuse/core'
@@ -276,15 +266,6 @@
             }
 
             const assetURL = (asset) => {
-                if (
-                    [
-                        'AtlasGlossaryTerm',
-                        'AtlasGlossary',
-                        'AtlasGlossaryCategory',
-                    ].includes(asset.typeName)
-                ) {
-                    return `/glossary/${asset.guid}`
-                }
                 return `/assets/${asset.guid}`
             }
 
@@ -326,6 +307,23 @@
                 )
                 if (idx > -1) activeKey.value = idx
             })
+
+            const router = useRouter()
+
+            const handleAction = (key) => {
+                console.log('sdasd', key)
+
+                switch (key) {
+                    case 'open':
+                        router.push(assetURL(selectedAsset.value))
+                        break
+                    case 'query':
+                        router.push(getAssetQueryPath(selectedAsset.value))
+                        break
+                    default:
+                        break
+                }
+            }
 
             // let queryPath = ref(`/insights`)
             // watch(
@@ -388,6 +386,7 @@
                 assetTypeLabel,
                 getActions,
                 getAssetQueryPath,
+                handleAction,
             }
         },
     })

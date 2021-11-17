@@ -19,14 +19,16 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-6 py-0 border-b border-gray-200">
+                <div class="flex">
                     <SearchAdvanced
                         v-model="queryText"
                         :key="searchDirtyTimestamp"
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
-                        placeholder="Search assets..."
+                        size="large"
+                        class="px-6"
+                        :placeholder="placeholder"
                         @change="handleSearchChange"
                     >
                         <template #filter>
@@ -131,7 +133,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -224,7 +226,13 @@
                 facets.value = discoveryStore.activeFacet
             }
             if (discoveryStore.preferences) {
-                preference.value = discoveryStore.preferences
+                console.log(discoveryStore.preferences)
+
+                preference.value.sort =
+                    discoveryStore.preferences.sort || preference.value.sort
+                preference.value.display =
+                    discoveryStore.preferences.display ||
+                    preference.value.display
             }
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -245,6 +253,7 @@
                 isLoadMore,
                 isValidating,
                 fetch,
+
                 error,
                 selectedAsset,
                 quickChange,
@@ -317,6 +326,18 @@
                 discoveryStore.setActivePanel(activeKey.value)
             }
 
+            const placeholder = computed(() => {
+                const found = assetTypeAggregationList.value.find(
+                    (item) => item.id === postFacets.value.typeName
+                )
+
+                if (found) {
+                    console.log(found)
+                    return `Search ${found.label.toLowerCase()} assets`
+                }
+                return 'Search all assets'
+            })
+
             return {
                 handleFilterChange,
                 isLoading,
@@ -330,6 +351,7 @@
                 handleAssetTypeChange,
                 handlePreview,
                 fetch,
+                placeholder,
                 handleSearchChange,
                 isValidating,
                 preference,
@@ -344,6 +366,7 @@
                 selectedAsset,
                 updateList,
                 updateCurrentList,
+                placeholder,
                 searchDirtyTimestamp,
             }
         },

@@ -1,9 +1,8 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex-1 border-r border-gray-200">
-            <transition name="fade" v-if="isItem">
-                <router-view :selected-asset="selectedAsset" />
-            </transition>
+            <router-view :selected-asset="selectedAsset" v-if="isItem" />
+
             <keep-alive>
                 <AssetDiscovery
                     ref="assetdiscovery"

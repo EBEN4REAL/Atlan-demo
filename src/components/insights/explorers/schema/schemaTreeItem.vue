@@ -1,5 +1,5 @@
 <template>
-    <div :data-test-id="item?.guid" class="w-full group py-1.5">
+    <div :data-test-id="item?.guid" class="flex items-center w-full h-8 group">
         <div class="flex justify-between w-full overflow-hidden">
             <!-- Popover Allowed -->
             <div
@@ -19,6 +19,7 @@
                         <div
                             v-if="assetType(item) == 'Column'"
                             class="relative flex items-center justify-between w-full "
+                            style="height: 34px !important"
                         >
                             <div class="relative parent-ellipsis-container">
                                 <component
@@ -638,7 +639,7 @@
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            const popoverAllowed = ['Column', 'Table']
+            const popoverAllowed = ['Column', 'Table', 'View']
             const isPopoverAllowed = (typeName: string) => {
                 return popoverAllowed.includes(typeName)
             }
